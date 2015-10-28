@@ -1,0 +1,36 @@
+{% extends "demo/base.html" %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% block extra_head %}
+<style>
+ul
+{
+    list-style-type: none;
+}
+.books{
+    margin: 20px;
+}
+</style>
+{% endblock %}
+
+{% block heading %}
+  <div class="page-header">
+    <h2>
+      {{ self.title }}
+    </h2>
+
+  </div>
+{% endblock %}
+
+{% block content %}   
+    <div class="intro">{{ self.intro|richtext }}</div>
+    
+    {% for book in self.books %}
+        {# Book cover image - first store image as a variable in order to construct an image tag with a class applied #}
+        {% image book.cover_image width-300 as photo %}
+        <a href="{{ book.url }}">
+            <img src="{{ photo.url }}" width="{{ photo.width }}" height="{{ photo.height }}" alt="{{ photo.alt }}" class="img-thumbnail" />
+        </a>
+    {% endfor %}
+    
+{% endblock %}
