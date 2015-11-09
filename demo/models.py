@@ -1,8 +1,4 @@
-from datetime import date
-
 from django.db import models
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-from django.http import HttpResponse
 from django import forms
 
 from wagtail.wagtailcore.models import Page, Orderable
@@ -15,7 +11,6 @@ from wagtail.wagtailadmin.edit_handlers import (FieldPanel,
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 from wagtail.wagtaildocs.edit_handlers import DocumentChooserPanel
 from wagtail.wagtailsnippets.models import register_snippet
-from wagtail.wagtailforms.models import AbstractEmailForm, AbstractFormField
 from wagtail.wagtailsearch import index
 
 from wagtail.wagtailcore.blocks import TextBlock, ChooserBlock, StructBlock, ListBlock, StreamBlock, FieldBlock, CharBlock, RichTextBlock, PageChooserBlock, RawHTMLBlock
@@ -23,10 +18,7 @@ from wagtail.wagtailimages.blocks import ImageChooserBlock
 from wagtail.wagtaildocs.blocks import DocumentChooserBlock
 
 from modelcluster.fields import ParentalKey
-from modelcluster.tags import ClusterTaggableManager
-from taggit.models import TaggedItemBase
 
-from demo.utils import export_event
 
 
 EVENT_AUDIENCE_CHOICES = (
@@ -297,112 +289,6 @@ StandardPage.promote_panels = Page.promote_panels + [
     ImageChooserPanel('feed_image'),
 ]
 
-
-# Blog index page
-
-# class BlogIndexPageRelatedLink(Orderable, RelatedLink):
-#     page = ParentalKey('demo.BlogIndexPage', related_name='related_links')
-# 
-# 
-# class BlogIndexPage(Page):
-#     intro = RichTextField(blank=True)
-# 
-#     search_fields = Page.search_fields + (
-#         index.SearchField('intro'),
-#     )
-# 
-#     @property
-#     def blogs(self):
-#         # Get list of live blog pages that are descendants of this page
-#         blogs = BlogPage.objects.live().descendant_of(self)
-# 
-#         # Order by most recent date first
-#         blogs = blogs.order_by('-date')
-# 
-#         return blogs
-# 
-#     def get_context(self, request):
-#         # Get blogs
-#         blogs = self.blogs
-# 
-#         # Filter by tag
-#         tag = request.GET.get('tag')
-#         if tag:
-#             blogs = blogs.filter(tags__name=tag)
-# 
-#         # Pagination
-#         page = request.GET.get('page')
-#         paginator = Paginator(blogs, 10)  # Show 10 blogs per page
-#         try:
-#             blogs = paginator.page(page)
-#         except PageNotAnInteger:
-#             blogs = paginator.page(1)
-#         except EmptyPage:
-#             blogs = paginator.page(paginator.num_pages)
-# 
-#         # Update template context
-#         context = super(BlogIndexPage, self).get_context(request)
-#         context['blogs'] = blogs
-#         return context
-# 
-# BlogIndexPage.content_panels = [
-#     FieldPanel('title', classname="full title"),
-#     FieldPanel('intro', classname="full"),
-#     InlinePanel('related_links', label="Related links"),
-# ]
-# 
-# BlogIndexPage.promote_panels = Page.promote_panels
-# 
-# 
-# # Blog page
-# 
-# class BlogPageCarouselItem(Orderable, CarouselItem):
-#     page = ParentalKey('demo.BlogPage', related_name='carousel_items')
-# 
-# 
-# class BlogPageRelatedLink(Orderable, RelatedLink):
-#     page = ParentalKey('demo.BlogPage', related_name='related_links')
-# 
-# 
-# class BlogPageTag(TaggedItemBase):
-#     content_object = ParentalKey('demo.BlogPage', related_name='tagged_items')
-# 
-# 
-# class BlogPage(Page):
-#     body = StreamField(DemoStreamBlock())
-#     tags = ClusterTaggableManager(through=BlogPageTag, blank=True)
-#     date = models.DateField("Post date")
-#     feed_image = models.ForeignKey(
-#         'wagtailimages.Image',
-#         null=True,
-#         blank=True,
-#         on_delete=models.SET_NULL,
-#         related_name='+'
-#     )
-# 
-#     search_fields = Page.search_fields + (
-#         index.SearchField('body'),
-#     )
-# 
-#     @property
-#     def blog_index(self):
-#         # Find closest ancestor which is a blog index
-#         return self.get_ancestors().type(BlogIndexPage).last()
-# 
-# BlogPage.content_panels = [
-#     FieldPanel('title', classname="full title"),
-#     FieldPanel('date'),
-#     StreamFieldPanel('body'),
-#     InlinePanel('carousel_items', label="Carousel items"),
-#     InlinePanel('related_links', label="Related links"),
-# ]
-# 
-# BlogPage.promote_panels = Page.promote_panels + [
-#     ImageChooserPanel('feed_image'),
-#     FieldPanel('tags'),
-# ]
-
-
 # Person page
 
 class PersonPageRelatedLink(Orderable, RelatedLink):
@@ -477,170 +363,6 @@ ContactPage.content_panels = [
 ContactPage.promote_panels = Page.promote_panels + [
     ImageChooserPanel('feed_image'),
 ]
-
-
-# Event index page
-
-# class EventIndexPageRelatedLink(Orderable, RelatedLink):
-#     page = ParentalKey('demo.EventIndexPage', related_name='related_links')
-# 
-# 
-# class EventIndexPage(Page):
-#     intro = RichTextField(blank=True)
-# 
-#     search_fields = Page.search_fields + (
-#         index.SearchField('intro'),
-#     )
-# 
-#     @property
-#     def events(self):
-#         # Get list of live event pages that are descendants of this page
-#         events = EventPage.objects.live().descendant_of(self)
-# 
-#         # Filter events list to get ones that are either
-#         # running now or start in the future
-#         events = events.filter(date_from__gte=date.today())
-# 
-#         # Order by date
-#         events = events.order_by('date_from')
-# 
-#         return events
-# 
-# EventIndexPage.content_panels = [
-#     FieldPanel('title', classname="full title"),
-#     FieldPanel('intro', classname="full"),
-#     InlinePanel('related_links', label="Related links"),
-# ]
-# 
-# EventIndexPage.promote_panels = Page.promote_panels
-# 
-# 
-# # Event page
-# 
-# class EventPageCarouselItem(Orderable, CarouselItem):
-#     page = ParentalKey('demo.EventPage', related_name='carousel_items')
-# 
-# 
-# class EventPageRelatedLink(Orderable, RelatedLink):
-#     page = ParentalKey('demo.EventPage', related_name='related_links')
-# 
-# 
-# class EventPageSpeaker(Orderable, LinkFields):
-#     page = ParentalKey('demo.EventPage', related_name='speakers')
-#     first_name = models.CharField("Name", max_length=255, blank=True)
-#     last_name = models.CharField("Surname", max_length=255, blank=True)
-#     image = models.ForeignKey(
-#         'wagtailimages.Image',
-#         null=True,
-#         blank=True,
-#         on_delete=models.SET_NULL,
-#         related_name='+'
-#     )
-# 
-#     @property
-#     def name_display(self):
-#         return self.first_name + " " + self.last_name
-# 
-#     panels = [
-#         FieldPanel('first_name'),
-#         FieldPanel('last_name'),
-#         ImageChooserPanel('image'),
-#         MultiFieldPanel(LinkFields.panels, "Link"),
-#     ]
-# 
-# 
-# class EventPage(Page):
-#     date_from = models.DateField("Start date")
-#     date_to = models.DateField(
-#         "End date",
-#         null=True,
-#         blank=True,
-#         help_text="Not required if event is on a single day"
-#     )
-#     time_from = models.TimeField("Start time", null=True, blank=True)
-#     time_to = models.TimeField("End time", null=True, blank=True)
-#     audience = models.CharField(max_length=255, choices=EVENT_AUDIENCE_CHOICES)
-#     location = models.CharField(max_length=255)
-#     body = RichTextField(blank=True)
-#     cost = models.CharField(max_length=255)
-#     signup_link = models.URLField(blank=True)
-#     feed_image = models.ForeignKey(
-#         'wagtailimages.Image',
-#         null=True,
-#         blank=True,
-#         on_delete=models.SET_NULL,
-#         related_name='+'
-#     )
-# 
-#     search_fields = Page.search_fields + (
-#         index.SearchField('get_audience_display'),
-#         index.SearchField('location'),
-#         index.SearchField('body'),
-#     )
-# 
-#     @property
-#     def event_index(self):
-#         # Find closest ancestor which is an event index
-#         return self.get_ancestors().type(EventIndexPage).last()
-# 
-#     def serve(self, request):
-#         if "format" in request.GET:
-#             if request.GET['format'] == 'ical':
-#                 # Export to ical format
-#                 response = HttpResponse(
-#                     export_event(self, 'ical'),
-#                     content_type='text/calendar',
-#                 )
-#                 response['Content-Disposition'] = 'attachment; filename=' + self.slug + '.ics'
-#                 return response
-#             else:
-#                 # Unrecognised format error
-#                 message = 'Could not export event\n\nUnrecognised format: ' + request.GET['format']
-#                 return HttpResponse(message, content_type='text/plain')
-#         else:
-#             # Display event page as usual
-#             return super(EventPage, self).serve(request)
-# 
-# EventPage.content_panels = [
-#     FieldPanel('title', classname="full title"),
-#     FieldPanel('date_from'),
-#     FieldPanel('date_to'),
-#     FieldPanel('time_from'),
-#     FieldPanel('time_to'),
-#     FieldPanel('location'),
-#     FieldPanel('audience'),
-#     FieldPanel('cost'),
-#     FieldPanel('signup_link'),
-#     InlinePanel('carousel_items', label="Carousel items"),
-#     FieldPanel('body', classname="full"),
-#     InlinePanel('speakers', label="Speakers"),
-#     InlinePanel('related_links', label="Related links"),
-# ]
-# 
-# EventPage.promote_panels = Page.promote_panels + [
-#     ImageChooserPanel('feed_image'),
-# ]
-# 
-# 
-# class FormField(AbstractFormField):
-#     page = ParentalKey('FormPage', related_name='form_fields')
-# 
-# 
-# class FormPage(AbstractEmailForm):
-#     intro = RichTextField(blank=True)
-#     thank_you_text = RichTextField(blank=True)
-# 
-# FormPage.content_panels = [
-#     FieldPanel('title', classname="full title"),
-#     FieldPanel('intro', classname="full"),
-#     InlinePanel('form_fields', label="Form fields"),
-#     FieldPanel('thank_you_text', classname="full"),
-#     MultiFieldPanel([
-#         FieldPanel('to_address', classname="full"),
-#         FieldPanel('from_address', classname="full"),
-#         FieldPanel('subject', classname="full"),
-#     ], "Email")
-# ]
 
 # Book pages
 
