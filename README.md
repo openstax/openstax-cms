@@ -14,7 +14,7 @@ With PostgreSQL running (and configured to allow you to connect as the 'postgres
     git clone https://github.com/Connexions/openstax-cms.git
     cd openstax-cms
     pip install -r requirements/dev.txt
-    createdb -Upostgres openstax
+    createdb -U postgres openstax
     ./manage.py migrate
     ./manage.py load_initial_data
     ./manage.py createsuperuser
