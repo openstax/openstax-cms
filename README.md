@@ -32,4 +32,4 @@ Run:
 
     ./manage.py dumpdata --natural-foreign --indent=4 -e contenttypes -e auth.Permission -e sessions -e wagtailcore.pagerevision > site.json
 
-_There is currently an issue where the site export table has a duplicate entry and breaks upon import. The best way to fix this is not remove the extra site from this dump. Otherwise, remove it from the database manually. TODO: make this not happen_
+_There is currently an issue where the site export JSON has a duplicate entry and breaks upon import. The best way I have found to fix this is to remove the default site from your local postgres install after running loaddata. TODO: make this not happen_
