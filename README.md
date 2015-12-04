@@ -20,6 +20,10 @@ With PostgreSQL running (and configured to allow you to connect as the 'postgres
     ./manage.py createsuperuser
     ./manage.py runserver
 
+### Testing
+
+Run with ``./manage.py test``
+
 ### SQLite support
 
 SQLite is supported as an alternative to PostgreSQL - update the `DATABASES` setting
