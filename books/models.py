@@ -34,3 +34,13 @@ class Book(Page):
         FieldPanel('isbn_10'),
         FieldPanel('isbn_13'),
     ]
+    
+    api_fields = ('created',
+                  'updated',
+                  'name',
+                  'revision',
+                  'description',
+                  'cover_image',
+                  'publish_date',
+                  'isbn_10',
+                  'isbn_13')
