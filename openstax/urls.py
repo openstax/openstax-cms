@@ -8,8 +8,6 @@ from wagtail.wagtaildocs import urls as wagtaildocs_urls
 from wagtail.wagtailcore import urls as wagtail_urls
 from wagtail.contrib.wagtailapi import urls as wagtailapi_urls
 
-from demo import views
-
 
 urlpatterns = [
     url(r'^django-admin/', include(admin.site.urls)),
@@ -17,7 +15,6 @@ urlpatterns = [
     url(r'^admin/', include(wagtailadmin_urls)),
     url(r'^documents/', include(wagtaildocs_urls)),
 
-    url(r'search/$', views.search, name='search'),
     url(r'^api/', include(wagtailapi_urls)),
 
     # For anything not caught by a more specific rule above, hand over to
@@ -33,5 +30,5 @@ if settings.DEBUG:
     urlpatterns += staticfiles_urlpatterns()
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += [
-        url(r'^favicon\.ico$', RedirectView.as_view(url=settings.STATIC_URL + 'demo/images/favicon.ico'))
+        url(r'^favicon\.ico$', RedirectView.as_view(url=settings.STATIC_URL + 'pages/images/favicon.ico'))
     ]
