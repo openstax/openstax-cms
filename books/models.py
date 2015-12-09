@@ -25,7 +25,6 @@ class Book(Page):
     isbn_13 = models.CharField(max_length=255, blank=True, null=True)
 
     content_panels = Page.content_panels + [
-        FieldPanel('name'),
         FieldPanel('revision'),
         FieldPanel('description', classname="full"),
         ImageChooserPanel('cover_image'),
