@@ -11,7 +11,6 @@ from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 class Book(Page):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
-    name = models.CharField(max_length=255)
     revision = models.CharField(max_length=255, blank=True, null=True)
     description = RichTextField(blank=True)
     cover_image = models.ForeignKey(
@@ -37,7 +36,6 @@ class Book(Page):
     
     api_fields = ('created',
                   'updated',
-                  'name',
                   'revision',
                   'description',
                   'cover_image',
