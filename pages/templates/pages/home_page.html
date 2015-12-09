@@ -1,0 +1,23 @@
+{% extends "pages/base.html" %}
+
+
+{% block heading %}
+    <div class="jumbotron">
+        <h1>{{ self.title }}</h1>
+        {% block search_box %}
+            {% include "pages/includes/search_box.html" only %}
+        {% endblock %}
+    </div>
+{% endblock %}
+
+
+{% block content %}
+    {% include "pages/includes/carousel.html" with carousel_items=self.carousel_items.all only %}
+
+    {% if self.body %}
+        <div class="body-content">
+            {% include "pages/includes/streamfield.html" with content=self.body %}
+        </div>
+    {% endif %}
+
+{% endblock %}
