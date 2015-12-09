@@ -152,6 +152,7 @@ INSTALLED_APPS = (
     # 'django.contrib.admindocs',
     
     'demo',
+    'books',
 
     'wagtail.wagtailcore',
     'wagtail.wagtailadmin',
