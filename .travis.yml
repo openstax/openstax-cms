@@ -4,18 +4,19 @@ python:
 addons:
   postgresql: "9.4"
 before_install:
-  - sudo apt-get update
   - pip install coverage
   - pip install coveralls
 install:
   - pip install -r requirements/dev.txt
 before_script:
-  - sudo createdb -U postgres openstax
-  - ./manage.py migrate
+  - createdb -U postgres openstax
+  - python manage.py migrate
 script:
-  - ./manage.py test
+  # same as 'python manage.py test books' but with a coverage wrapper
+  - coverage run --source=books manage.py test
+  - coverage run --source=pages manage.py test
 after_success:
   - coveralls
 notifications:
   email: false
-
+sudo: false
