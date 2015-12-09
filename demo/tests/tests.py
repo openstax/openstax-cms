@@ -55,6 +55,6 @@ class AdminPages(TestCase, WagtailTestUtils):
     def test_admin_search(self):
         response = self.client.get('/admin/pages/search/?q=openstax')
         self.assertEqual(response.status_code, 200)
-        self.assertTrue('Openstax College' in response.content)
-        self.assertTrue('About Openstax' in response.content)
+        self.assertIn('Openstax College',response.content)
+        self.assertIn('About Openstax',response.content)
 
