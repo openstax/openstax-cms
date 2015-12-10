@@ -136,7 +136,7 @@ class HomePage(Page):
         index.SearchField('body'),
     )
     
-    api_fields = ('body', )
+    api_fields = ('body', 'carousel_items', 'related_links')
 
     class Meta:
         verbose_name = "Website Page"
