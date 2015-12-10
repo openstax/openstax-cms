@@ -147,3 +147,14 @@ HomePage.content_panels = [
     InlinePanel('carousel_items', label="Carousel items"),
     InlinePanel('related_links', label="Related links"),
 ]
+    
+class StandardPage(Page):
+    body = RichTextField()
+    
+    api_fields = ('body', )
+    
+    
+StandardPage.content_panels = [
+    FieldPanel('title', classname="full title"),
+    FieldPanel('body', classname="full"),
+]
