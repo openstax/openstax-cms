@@ -30,7 +30,6 @@ class HTMLAlignmentChoiceBlock(FieldBlock):
 
 class ImageBlock(StructBlock):
     image = ImageChooserBlock()
-    caption = RichTextBlock()
     alignment = ImageFormatChoiceBlock()
 
 
@@ -137,7 +136,7 @@ class HomePage(Page):
         index.SearchField('body'),
     )
     
-    api_fields = ('body', )
+    api_fields = ('body', 'carousel_items', 'related_links')
 
     class Meta:
         verbose_name = "Website Page"
@@ -147,4 +146,15 @@ HomePage.content_panels = [
     StreamFieldPanel('body'),
     InlinePanel('carousel_items', label="Carousel items"),
     InlinePanel('related_links', label="Related links"),
+]
+    
+class StandardPage(Page):
+    body = RichTextField()
+    
+    api_fields = ('body', )
+    
+    
+StandardPage.content_panels = [
+    FieldPanel('title', classname="full title"),
+    FieldPanel('body', classname="full"),
 ]
