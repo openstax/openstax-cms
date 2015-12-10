@@ -30,7 +30,6 @@ class HTMLAlignmentChoiceBlock(FieldBlock):
 
 class ImageBlock(StructBlock):
     image = ImageChooserBlock()
-    caption = RichTextBlock()
     alignment = ImageFormatChoiceBlock()
 
 
