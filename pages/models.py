@@ -2,18 +2,17 @@ from django.db import models
 from django import forms
 
 from wagtail.wagtailcore.models import Page, Orderable
-from wagtail.wagtailcore.fields import RichTextField, StreamField
+from wagtail.wagtailcore.fields import RichTextField
 from wagtail.wagtailadmin.edit_handlers import (FieldPanel,
                                                 InlinePanel,
                                                 MultiFieldPanel,
-                                                PageChooserPanel,
-                                                StreamFieldPanel)
+                                                PageChooserPanel)
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 from wagtail.wagtaildocs.edit_handlers import DocumentChooserPanel
 from wagtail.wagtailsnippets.models import register_snippet
 from wagtail.wagtailsearch import index
 
-from wagtail.wagtailcore.blocks import TextBlock, ChooserBlock, StructBlock, ListBlock, StreamBlock, FieldBlock, CharBlock, RichTextBlock, PageChooserBlock, RawHTMLBlock
+from wagtail.wagtailcore.blocks import TextBlock, ChooserBlock, StructBlock, ListBlock, FieldBlock, CharBlock, RichTextBlock, PageChooserBlock, RawHTMLBlock
 from wagtail.wagtailimages.blocks import ImageChooserBlock
 from wagtail.wagtaildocs.blocks import DocumentChooserBlock
 
@@ -39,18 +38,6 @@ class AlignedHTMLBlock(StructBlock):
 
     class Meta:
         icon = "code"
-
-
-class CommonStreamBlock(StreamBlock):
-    h2 = CharBlock(icon="title", classname="title")
-    h3 = CharBlock(icon="title", classname="title")
-    h4 = CharBlock(icon="title", classname="title")
-    intro = RichTextBlock(icon="pilcrow")
-    paragraph = RichTextBlock(icon="pilcrow")
-    aligned_image = ImageBlock(icon="image", label="Aligned image")
-    aligned_html = AlignedHTMLBlock(icon="code", label='Raw HTML')
-    document = DocumentChooserBlock(icon="doc-full-inverse")
-    page = PageChooserBlock(icon="doc-full-inverse", label="Internal Link")
 
 
 class LinkFields(models.Model):
@@ -119,9 +106,9 @@ class RelatedLink(LinkFields):
 
     class Meta:
         abstract = True
-        
-# Home Page
 
+
+# Home Page
 class HomePageCarouselItem(Orderable, CarouselItem):
     page = ParentalKey('pages.HomePage', related_name='carousel_items')
 
@@ -131,30 +118,26 @@ class HomePageRelatedLink(Orderable, RelatedLink):
 
 
 class HomePage(Page):
-    body = StreamField(CommonStreamBlock())
-    search_fields = Page.search_fields + (
-        index.SearchField('body'),
+    page_header = models.CharField(max_length=255)
+    introduction = RichTextField()
+    intro_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
     )
     
-    api_fields = ('body', 'carousel_items', 'related_links')
+    api_fields = ('page_header', 'introduction', 'intro_image')
 
     class Meta:
-        verbose_name = "Website Page"
+        verbose_name = "Home Page"
 
 HomePage.content_panels = [
     FieldPanel('title', classname="full title"),
-    StreamFieldPanel('body'),
+    FieldPanel('page_header'),
+    ImageChooserPanel('intro_image'),
+    FieldPanel('introduction'),
     InlinePanel('carousel_items', label="Carousel items"),
     InlinePanel('related_links', label="Related links"),
-]
-    
-class StandardPage(Page):
-    body = RichTextField()
-    
-    api_fields = ('body', )
-    
-    
-StandardPage.content_panels = [
-    FieldPanel('title', classname="full title"),
-    FieldPanel('body', classname="full"),
 ]
