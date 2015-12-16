@@ -119,9 +119,9 @@ class RelatedLink(LinkFields):
 
     class Meta:
         abstract = True
-        
-# Home Page
 
+       
+# Home Page
 class HomePageCarouselItem(Orderable, CarouselItem):
     page = ParentalKey('pages.HomePage', related_name='carousel_items')
 
@@ -131,30 +131,26 @@ class HomePageRelatedLink(Orderable, RelatedLink):
 
 
 class HomePage(Page):
-    body = StreamField(CommonStreamBlock())
-    search_fields = Page.search_fields + (
-        index.SearchField('body'),
+    page_header = models.CharField(max_length=255)
+    introduction = RichTextField()
+    intro_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
     )
     
-    api_fields = ('body', 'carousel_items', 'related_links')
+    api_fields = ('page_header', 'introduction', 'intro_image')
 
     class Meta:
-        verbose_name = "Website Page"
+        verbose_name = "Home Page"
 
 HomePage.content_panels = [
     FieldPanel('title', classname="full title"),
-    StreamFieldPanel('body'),
+    FieldPanel('page_header'),
+    ImageChooserPanel('intro_image'),
+    FieldPanel('introduction'),
     InlinePanel('carousel_items', label="Carousel items"),
     InlinePanel('related_links', label="Related links"),
-]
-    
-class StandardPage(Page):
-    body = RichTextField()
-    
-    api_fields = ('body', )
-    
-    
-StandardPage.content_panels = [
-    FieldPanel('title', classname="full title"),
-    FieldPanel('body', classname="full"),
 ]
