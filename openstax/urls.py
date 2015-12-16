@@ -9,40 +9,9 @@ from wagtail.wagtaildocs import urls as wagtaildocs_urls
 from wagtail.wagtailcore import urls as wagtail_urls
 from wagtail.contrib.wagtailapi import urls as wagtailapi_urls
 
-from wagtail.wagtailimages.models import Image
-from rest_framework import routers, serializers, viewsets
-from django.views.generic.base import RedirectView
-
-# Serializers define the API representation.
-
-
-class ImageSerializer(serializers.HyperlinkedModelSerializer):
-
-    class Meta:
-        model = Image
-        fields = ('id',
-                  'file',
-                  'title',
-                  'height',
-                  'width',
-                  'created_at',
-                  #'url',
-                  )
-
-
-# ViewSets define the view behavior.
-class ImageViewSet(viewsets.ModelViewSet):
-    queryset = Image.objects.all()
-    serializer_class = ImageSerializer
-
-# Routers provide an easy way of automatically determining the URL conf.
-router = routers.DefaultRouter()
-router.register(r'/images', ImageViewSet)
-
+from api import urls as image_api_urls_v0
 
 urlpatterns = [
-
-
     url(r'^django-admin/', include(admin.site.urls)),
 
     url(r'^admin/', include(wagtailadmin_urls)),
@@ -50,7 +19,7 @@ urlpatterns = [
     url(r'^images/', include(wagtailimages_urls)),
 
     url(r'^api/', include(wagtailapi_urls)),
-    url(r'^api/v0', include(router.urls)),
+    url(r'^api/v0/images', include(image_api_urls_v0)),
 
     # For anything not caught by a more specific rule above, hand over to
     # Wagtail's serving mechanism
