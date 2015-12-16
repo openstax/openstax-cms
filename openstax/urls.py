@@ -14,7 +14,10 @@ from rest_framework import routers, serializers, viewsets
 from django.views.generic.base import RedirectView
 
 # Serializers define the API representation.
+
+
 class ImageSerializer(serializers.HyperlinkedModelSerializer):
+
     class Meta:
         model = Image
         fields = ('id',
@@ -24,8 +27,8 @@ class ImageSerializer(serializers.HyperlinkedModelSerializer):
                   'width',
                   'created_at',
                   #'url',
-        )
-        
+                  )
+
 
 # ViewSets define the view behavior.
 class ImageViewSet(viewsets.ModelViewSet):
