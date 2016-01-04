@@ -108,6 +108,24 @@ class RelatedLink(LinkFields):
         abstract = True
 
 
+class Funders(LinkFields):
+    name = models.CharField(max_length=255, help_text="Funder Name")
+    logo = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    description = RichTextField()
+    
+    panels = [
+        FieldPanel('name'),
+        ImageChooserPanel('logo'),
+        FieldPanel('description'),
+    ]
+
+
 # Home Page
 class HomePageCarouselItem(Orderable, CarouselItem):
     page = ParentalKey('pages.HomePage', related_name='carousel_items')
@@ -246,12 +264,19 @@ ContactUs.content_panels = [
     FieldPanel('classroom_text'),
 ]
 
+
+class AboutUsFunders(Orderable, Funders):
+    page = ParentalKey('pages.AboutUs', related_name='funders')
+    
 class AboutUs(Page):
-    classroom_text = RichTextField()
+    who_we_are = RichTextField()
+    funder_intro = RichTextField()
 
 AboutUs.content_panels = [
     FieldPanel('title', classname="full title"),
-    FieldPanel('classroom_text'),
+    FieldPanel('who_we_are'),
+    FieldPanel('funder_intro'),
+    InlinePanel('funders', label="Funders"),
 ]
 
 class Give(Page):
