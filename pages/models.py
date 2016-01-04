@@ -144,16 +144,42 @@ HomePage.content_panels = [
 
 
 class HigherEducationCarouselItem(Orderable, CarouselItem):
-    page = ParentalKey('pages.HomePage', related_name='higher_education_carousel_items')
+    page = ParentalKey('pages.HigherEducation', related_name='higher_education_carousel_items')
     
     
 class HigherEducation(Page):
-    classroom_text = RichTextField()
+    intro = RichTextField()
+    get_started_step_1 = RichTextField()
+    get_started_step_2 = RichTextField()
+    get_started_step_3 = RichTextField()
+    get_started_step_4 = RichTextField()
+    our_books = RichTextField()
+    our_impact = RichTextField()
+    cnx = RichTextField()
+    allies = RichTextField()
+    ally_1 = RichTextField()
+    ally_2 = RichTextField()
+    ally_3 = RichTextField()
+    ally_4 = RichTextField()
+    ally_5 = RichTextField()
 
 HigherEducation.content_panels = [
     FieldPanel('title', classname="full title"),
-    FieldPanel('classroom_text'),
     InlinePanel('higher_education_carousel_items', label="Carousel items"),
+    FieldPanel('intro'),
+    FieldPanel('get_started_step_1'),
+    FieldPanel('get_started_step_2'),
+    FieldPanel('get_started_step_3'),
+    FieldPanel('get_started_step_4'),
+    FieldPanel('our_books'),
+    FieldPanel('our_impact'),
+    FieldPanel('cnx'),
+    FieldPanel('allies'),
+    FieldPanel('ally_1'),
+    FieldPanel('ally_2'),
+    FieldPanel('ally_3'),
+    FieldPanel('ally_4'),
+    FieldPanel('ally_5'),
 ]
 
 class K12(Page):
