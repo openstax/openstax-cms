@@ -141,3 +141,123 @@ HomePage.content_panels = [
     InlinePanel('carousel_items', label="Carousel items"),
     InlinePanel('related_links', label="Related links"),
 ]
+
+
+class HigherEducationCarouselItem(Orderable, CarouselItem):
+    page = ParentalKey('pages.HomePage', related_name='higher_education_carousel_items')
+    
+    
+class HigherEducation(Page):
+    classroom_text = RichTextField()
+
+HigherEducation.content_panels = [
+    FieldPanel('title', classname="full title"),
+    FieldPanel('classroom_text'),
+    InlinePanel('higher_education_carousel_items', label="Carousel items"),
+]
+
+class K12(Page):
+    classroom_text = RichTextField()
+
+K12.content_panels = [
+    FieldPanel('title', classname="full title"),
+    FieldPanel('classroom_text'),
+]
+
+class Books(Page):
+    classroom_text = RichTextField()
+
+Books.content_panels = [
+    FieldPanel('title', classname="full title"),
+    FieldPanel('classroom_text'),
+]
+
+class BookDetail(Page):
+    classroom_text = RichTextField()
+
+BookDetail.content_panels = [
+    FieldPanel('title', classname="full title"),
+    FieldPanel('classroom_text'),
+]
+
+class Products(Page):
+    classroom_text = RichTextField()
+
+Products.content_panels = [
+    FieldPanel('title', classname="full title"),
+    FieldPanel('classroom_text'),
+]
+
+class Research(Page):
+    classroom_text = RichTextField()
+
+Research.content_panels = [
+    FieldPanel('title', classname="full title"),
+    FieldPanel('classroom_text'),
+]
+
+class News(Page):
+    classroom_text = RichTextField()
+
+News.content_panels = [
+    FieldPanel('title', classname="full title"),
+    FieldPanel('classroom_text'),
+]
+
+class NewsArticle(Page):
+    classroom_text = RichTextField()
+
+NewsArticle.content_panels = [
+    FieldPanel('title', classname="full title"),
+    FieldPanel('classroom_text'),
+]
+
+class ContactUs(Page):
+    classroom_text = RichTextField()
+
+ContactUs.content_panels = [
+    FieldPanel('title', classname="full title"),
+    FieldPanel('classroom_text'),
+]
+
+class AboutUs(Page):
+    classroom_text = RichTextField()
+
+AboutUs.content_panels = [
+    FieldPanel('title', classname="full title"),
+    FieldPanel('classroom_text'),
+]
+
+class Give(Page):
+    classroom_text = RichTextField()
+
+Give.content_panels = [
+    FieldPanel('title', classname="full title"),
+    FieldPanel('classroom_text'),
+]
+
+class Adopters(Page):
+    classroom_text = RichTextField()
+
+Adopters.content_panels = [
+    FieldPanel('title', classname="full title"),
+    FieldPanel('classroom_text'),
+]
+
+class EcosystemAllies(Page):
+    classroom_text = RichTextField()
+
+EcosystemAllies.content_panels = [
+    FieldPanel('title', classname="full title"),
+    FieldPanel('classroom_text'),
+]
+
+class AdoptionForm(Page):
+    classroom_text = RichTextField()
+
+AdoptionForm.content_panels = [
+    FieldPanel('title', classname="full title"),
+    FieldPanel('classroom_text'),
+]
+
+#class GeneralHTMLPage(Page): #this will be used for confirmations/forms from sales force, these won't be editable
