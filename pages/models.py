@@ -119,6 +119,8 @@ class Funders(LinkFields):
     )
     description = RichTextField()
     
+    api_fields = ('name', 'logo', 'description', )
+    
     panels = [
         FieldPanel('name'),
         ImageChooserPanel('logo'),
@@ -181,6 +183,8 @@ class HigherEducation(Page):
     ally_4 = RichTextField()
     ally_5 = RichTextField()
 
+    api_fields = ('intro', 'get_started_step_1', 'get_started_step_2', 'get_started_step_3', 'get_started_step_4', 'our_books', 'our_impact', 'cnx', 'allies', 'ally_1', 'ally_2', 'ally_3', 'ally_4', 'ally_5', 'slug', 'seo_title', 'search_description',)
+    
 HigherEducation.content_panels = [
     FieldPanel('title', classname="full title"),
     InlinePanel('higher_education_carousel_items', label="Carousel items"),
@@ -225,11 +229,27 @@ BookDetail.content_panels = [
 ]
 
 class Products(Page):
-    classroom_text = RichTextField()
+    intro = RichTextField()
+    tutor_intro = RichTextField()
+    concept_coach_intro = RichTextField()
+    cnx_intro = RichTextField()
+    allies_intro = RichTextField()
+    ally_1 = RichTextField()
+    ally_2 = RichTextField()
+    ally_3 = RichTextField()
+    ally_4 = RichTextField()
 
 Products.content_panels = [
     FieldPanel('title', classname="full title"),
-    FieldPanel('classroom_text'),
+    FieldPanel('intro'),
+    FieldPanel('tutor_intro'),
+    FieldPanel('concept_coach_intro'),
+    FieldPanel('cnx_intro'),
+    FieldPanel('allies_intro'),
+    FieldPanel('ally_1'),
+    FieldPanel('ally_2'),
+    FieldPanel('ally_3'),
+    FieldPanel('ally_4'),
 ]
 
 class Research(Page):
@@ -272,6 +292,7 @@ class AboutUs(Page):
     who_we_are = RichTextField()
     funder_intro = RichTextField()
 
+    api_fields = ('who_we_are', 'funder_intro', 'funders', 'slug', 'seo_title', 'search_description',)
 AboutUs.content_panels = [
     FieldPanel('title', classname="full title"),
     FieldPanel('who_we_are'),
