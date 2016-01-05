@@ -153,14 +153,14 @@ class HomePage(Page):
     class Meta:
         verbose_name = "Home Page"
 
-HomePage.content_panels = [
-    FieldPanel('title', classname="full title"),
-    FieldPanel('page_header'),
-    ImageChooserPanel('intro_image'),
-    FieldPanel('introduction'),
-    InlinePanel('carousel_items', label="Carousel items"),
-    InlinePanel('related_links', label="Related links"),
-]
+    content_panels = [
+        FieldPanel('title', classname="full title"),
+        FieldPanel('page_header'),
+        ImageChooserPanel('intro_image'),
+        FieldPanel('introduction'),
+        InlinePanel('carousel_items', label="Carousel items"),
+        InlinePanel('related_links', label="Related links"),
+    ]
 
 
 class HigherEducationCarouselItem(Orderable, CarouselItem):
@@ -185,48 +185,48 @@ class HigherEducation(Page):
 
     api_fields = ('intro', 'get_started_step_1', 'get_started_step_2', 'get_started_step_3', 'get_started_step_4', 'our_books', 'our_impact', 'cnx', 'allies', 'ally_1', 'ally_2', 'ally_3', 'ally_4', 'ally_5', 'slug', 'seo_title', 'search_description',)
     
-HigherEducation.content_panels = [
-    FieldPanel('title', classname="full title"),
-    InlinePanel('higher_education_carousel_items', label="Carousel items"),
-    FieldPanel('intro'),
-    FieldPanel('get_started_step_1'),
-    FieldPanel('get_started_step_2'),
-    FieldPanel('get_started_step_3'),
-    FieldPanel('get_started_step_4'),
-    FieldPanel('our_books'),
-    FieldPanel('our_impact'),
-    FieldPanel('cnx'),
-    FieldPanel('allies'),
-    FieldPanel('ally_1'),
-    FieldPanel('ally_2'),
-    FieldPanel('ally_3'),
-    FieldPanel('ally_4'),
-    FieldPanel('ally_5'),
-]
+    content_panels = [
+        FieldPanel('title', classname="full title"),
+        InlinePanel('higher_education_carousel_items', label="Carousel items"),
+        FieldPanel('intro'),
+        FieldPanel('get_started_step_1'),
+        FieldPanel('get_started_step_2'),
+        FieldPanel('get_started_step_3'),
+        FieldPanel('get_started_step_4'),
+        FieldPanel('our_books'),
+        FieldPanel('our_impact'),
+        FieldPanel('cnx'),
+        FieldPanel('allies'),
+        FieldPanel('ally_1'),
+        FieldPanel('ally_2'),
+        FieldPanel('ally_3'),
+        FieldPanel('ally_4'),
+        FieldPanel('ally_5'),
+    ]
 
 class K12(Page):
     classroom_text = RichTextField()
 
-K12.content_panels = [
-    FieldPanel('title', classname="full title"),
-    FieldPanel('classroom_text'),
-]
+    content_panels = [
+        FieldPanel('title', classname="full title"),
+        FieldPanel('classroom_text'),
+    ]
 
 class Books(Page):
     classroom_text = RichTextField()
 
-Books.content_panels = [
-    FieldPanel('title', classname="full title"),
-    FieldPanel('classroom_text'),
-]
+    content_panels = [
+        FieldPanel('title', classname="full title"),
+        FieldPanel('classroom_text'),
+    ]
 
 class BookDetail(Page):
     classroom_text = RichTextField()
 
-BookDetail.content_panels = [
-    FieldPanel('title', classname="full title"),
-    FieldPanel('classroom_text'),
-]
+    content_panels = [
+        FieldPanel('title', classname="full title"),
+        FieldPanel('classroom_text'),
+    ]
 
 class Products(Page):
     intro = RichTextField()
@@ -239,50 +239,50 @@ class Products(Page):
     ally_3 = RichTextField()
     ally_4 = RichTextField()
 
-Products.content_panels = [
-    FieldPanel('title', classname="full title"),
-    FieldPanel('intro'),
-    FieldPanel('tutor_intro'),
-    FieldPanel('concept_coach_intro'),
-    FieldPanel('cnx_intro'),
-    FieldPanel('allies_intro'),
-    FieldPanel('ally_1'),
-    FieldPanel('ally_2'),
-    FieldPanel('ally_3'),
-    FieldPanel('ally_4'),
-]
+    content_panels = [
+        FieldPanel('title', classname="full title"),
+        FieldPanel('intro'),
+        FieldPanel('tutor_intro'),
+        FieldPanel('concept_coach_intro'),
+        FieldPanel('cnx_intro'),
+        FieldPanel('allies_intro'),
+        FieldPanel('ally_1'),
+        FieldPanel('ally_2'),
+        FieldPanel('ally_3'),
+        FieldPanel('ally_4'),
+    ]
 
 class Research(Page):
     classroom_text = RichTextField()
 
-Research.content_panels = [
-    FieldPanel('title', classname="full title"),
-    FieldPanel('classroom_text'),
-]
+    content_panels = [
+        FieldPanel('title', classname="full title"),
+        FieldPanel('classroom_text'),
+    ]
 
 class News(Page):
     classroom_text = RichTextField()
 
-News.content_panels = [
-    FieldPanel('title', classname="full title"),
-    FieldPanel('classroom_text'),
-]
+    content_panels = [
+        FieldPanel('title', classname="full title"),
+        FieldPanel('classroom_text'),
+    ]
 
 class NewsArticle(Page):
     classroom_text = RichTextField()
 
-NewsArticle.content_panels = [
-    FieldPanel('title', classname="full title"),
-    FieldPanel('classroom_text'),
-]
+    content_panels = [
+        FieldPanel('title', classname="full title"),
+        FieldPanel('classroom_text'),
+    ]
 
 class ContactUs(Page):
     classroom_text = RichTextField()
 
-ContactUs.content_panels = [
-    FieldPanel('title', classname="full title"),
-    FieldPanel('classroom_text'),
-]
+    content_panels = [
+        FieldPanel('title', classname="full title"),
+        FieldPanel('classroom_text'),
+    ]
 
 
 class AboutUsFunders(Orderable, Funders):
@@ -293,43 +293,44 @@ class AboutUs(Page):
     funder_intro = RichTextField()
 
     api_fields = ('who_we_are', 'funder_intro', 'funders', 'slug', 'seo_title', 'search_description',)
-AboutUs.content_panels = [
-    FieldPanel('title', classname="full title"),
-    FieldPanel('who_we_are'),
-    FieldPanel('funder_intro'),
-    InlinePanel('funders', label="Funders"),
-]
+    
+    content_panels = [
+        FieldPanel('title', classname="full title"),
+        FieldPanel('who_we_are'),
+        FieldPanel('funder_intro'),
+        InlinePanel('funders', label="Funders"),
+    ]
 
 class Give(Page):
     classroom_text = RichTextField()
 
-Give.content_panels = [
-    FieldPanel('title', classname="full title"),
-    FieldPanel('classroom_text'),
-]
+    content_panels = [
+        FieldPanel('title', classname="full title"),
+        FieldPanel('classroom_text'),
+    ]
 
 class Adopters(Page):
     classroom_text = RichTextField()
 
-Adopters.content_panels = [
-    FieldPanel('title', classname="full title"),
-    FieldPanel('classroom_text'),
-]
+    content_panels = [
+        FieldPanel('title', classname="full title"),
+        FieldPanel('classroom_text'),
+    ]
 
 class EcosystemAllies(Page):
     classroom_text = RichTextField()
 
-EcosystemAllies.content_panels = [
-    FieldPanel('title', classname="full title"),
-    FieldPanel('classroom_text'),
-]
+    content_panels = [
+        FieldPanel('title', classname="full title"),
+        FieldPanel('classroom_text'),
+    ]
 
 class AdoptionForm(Page):
     classroom_text = RichTextField()
 
-AdoptionForm.content_panels = [
-    FieldPanel('title', classname="full title"),
-    FieldPanel('classroom_text'),
-]
+    content_panels = [
+        FieldPanel('title', classname="full title"),
+        FieldPanel('classroom_text'),
+    ]
 
 #class GeneralHTMLPage(Page): #this will be used for confirmations/forms from sales force, these won't be editable
