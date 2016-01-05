@@ -194,7 +194,38 @@ class HigherEducation(Page):
     ally_5_heading = models.CharField(max_length=255)
     ally_5 = RichTextField()
 
-    api_fields = ('intro_heading', 'intro', 'get_started_heading', 'get_started_step_1', 'get_started_step_2', 'get_started_step_3', 'get_started_step_4', 'our_books_heading', 'our_books', 'our_impact_heading', 'our_impact', 'cnx_heading', 'cnx', 'allies_heading', 'allies', 'ally_1_heading', 'ally_1', 'ally_2_heading', 'ally_2', 'ally_3_heading', 'ally_3', 'ally_4_heading', 'ally_4', 'ally_5_heading', 'ally_5', 'slug', 'seo_title', 'search_description', 'go_live_at', 'expire_at', )
+    api_fields = (
+        'intro_heading', 
+        'intro', 
+        'get_started_heading', 
+        'get_started_step_1', 
+        'get_started_step_2', 
+        'get_started_step_3', 
+        'get_started_step_4', 
+        'our_books_heading', 
+        'our_books', 
+        'our_impact_heading', 
+        'our_impact', 
+        'cnx_heading', 
+        'cnx', 
+        'allies_heading', 
+        'allies', 
+        'ally_1_heading', 
+        'ally_1', 
+        'ally_2_heading', 
+        'ally_2', 
+        'ally_3_heading', 
+        'ally_3', 
+        'ally_4_heading', 
+        'ally_4', 
+        'ally_5_heading', 
+        'ally_5', 
+        'slug', 
+        'seo_title', 
+        'search_description', 
+        'go_live_at', 
+        'expire_at', 
+    )
     
     content_panels = [
         FieldPanel('title', classname="full title"),
@@ -258,7 +289,31 @@ class Products(Page):
     ally_5_heading = models.CharField(max_length=255)
     ally_5 = RichTextField()
     
-    api_fields = ('intro_heading', 'intro', 'tutor_heading', 'tutor', 'concept_coach_heading', 'concept_coach', 'cnx_heading', 'cnx', 'allies_heading', 'allies', 'ally_1_heading', 'ally_1', 'ally_2_heading', 'ally_2', 'ally_3_heading', 'ally_3', 'ally_4_heading', 'ally_4', 'ally_5_heading', 'ally_5', 'slug', 'seo_title', 'search_description', )
+    api_fields = (
+        'intro_heading', 
+        'intro', 
+        'tutor_heading', 
+        'tutor', 
+        'concept_coach_heading', 
+        'concept_coach', 
+        'cnx_heading', 
+        'cnx', 
+        'allies_heading', 
+        'allies', 
+        'ally_1_heading', 
+        'ally_1', 
+        'ally_2_heading', 
+        'ally_2', 
+        'ally_3_heading', 
+        'ally_3', 
+        'ally_4_heading', 
+        'ally_4', 
+        'ally_5_heading', 
+        'ally_5', 
+        'slug', 
+        'seo_title', 
+        'search_description', 
+    )
 
     content_panels = [
         FieldPanel('title', classname="full title"),
@@ -329,7 +384,14 @@ class AboutUs(Page):
     who_we_are = RichTextField()
     funder_intro = RichTextField()
 
-    api_fields = ('who_we_are', 'funder_intro', 'funders', 'slug', 'seo_title', 'search_description',)
+    api_fields = (
+        'who_we_are', 
+        'funder_intro', 
+        'funders', 
+        'slug', 
+        'seo_title', 
+        'search_description',
+    )
     
     content_panels = [
         FieldPanel('title', classname="full title"),
