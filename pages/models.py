@@ -226,6 +226,7 @@ class HigherEducation(Page):
         FieldPanel('ally_5'),
     ]
 
+
 class K12(Page):
     classroom_text = RichTextField()
 
@@ -234,21 +235,6 @@ class K12(Page):
         FieldPanel('classroom_text'),
     ]
 
-class Books(Page):
-    classroom_text = RichTextField()
-
-    content_panels = [
-        FieldPanel('title', classname="full title"),
-        FieldPanel('classroom_text'),
-    ]
-
-class BookDetail(Page):
-    classroom_text = RichTextField()
-
-    content_panels = [
-        FieldPanel('title', classname="full title"),
-        FieldPanel('classroom_text'),
-    ]
 
 class Products(Page):
     intro_heading = models.CharField(max_length=255)
