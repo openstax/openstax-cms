@@ -168,39 +168,61 @@ class HigherEducationCarouselItem(Orderable, CarouselItem):
     
     
 class HigherEducation(Page):
+    intro_heading = models.CharField(max_length=255)
     intro = RichTextField()
+    get_started_heading = models.CharField(max_length=255)
     get_started_step_1 = RichTextField()
     get_started_step_2 = RichTextField()
     get_started_step_3 = RichTextField()
     get_started_step_4 = RichTextField()
+    our_books_heading = models.CharField(max_length=255)
     our_books = RichTextField()
+    our_impact_heading = models.CharField(max_length=255)
     our_impact = RichTextField()
+    cnx_heading = models.CharField(max_length=255)
     cnx = RichTextField()
+    allies_heading = models.CharField(max_length=255)
     allies = RichTextField()
+    ally_1_heading = models.CharField(max_length=255)
     ally_1 = RichTextField()
+    ally_2_heading = models.CharField(max_length=255)
     ally_2 = RichTextField()
+    ally_3_heading = models.CharField(max_length=255)
     ally_3 = RichTextField()
+    ally_4_heading = models.CharField(max_length=255)
     ally_4 = RichTextField()
+    ally_5_heading = models.CharField(max_length=255)
     ally_5 = RichTextField()
 
-    api_fields = ('intro', 'get_started_step_1', 'get_started_step_2', 'get_started_step_3', 'get_started_step_4', 'our_books', 'our_impact', 'cnx', 'allies', 'ally_1', 'ally_2', 'ally_3', 'ally_4', 'ally_5', 'slug', 'seo_title', 'search_description',)
+    api_fields = ('intro_heading', 'intro', 'get_started_heading', 'get_started_step_1', 'get_started_step_2', 'get_started_step_3', 'get_started_step_4', 'our_books_heading', 'our_books', 'our_impact_heading', 'our_impact', 'cnx_heading', 'cnx', 'allies_heading', 'allies', 'ally_1_heading', 'ally_1', 'ally_2_heading', 'ally_2', 'ally_3_heading', 'ally_3', 'ally_4_heading', 'ally_4', 'ally_5_heading', 'ally_5', 'slug', 'seo_title', 'search_description', 'go_live_at', 'expire_at', )
     
     content_panels = [
         FieldPanel('title', classname="full title"),
         InlinePanel('higher_education_carousel_items', label="Carousel items"),
+        FieldPanel('intro_heading'),
         FieldPanel('intro'),
+        FieldPanel('get_started_heading'),
         FieldPanel('get_started_step_1'),
         FieldPanel('get_started_step_2'),
         FieldPanel('get_started_step_3'),
         FieldPanel('get_started_step_4'),
+        FieldPanel('our_books_heading'),
         FieldPanel('our_books'),
+        FieldPanel('our_impact_heading'),
         FieldPanel('our_impact'),
+        FieldPanel('cnx_heading'),
         FieldPanel('cnx'),
+        FieldPanel('allies_heading'),
         FieldPanel('allies'),
+        FieldPanel('ally_1_heading'),
         FieldPanel('ally_1'),
+        FieldPanel('ally_2_heading'),
         FieldPanel('ally_2'),
+        FieldPanel('ally_3_heading'),
         FieldPanel('ally_3'),
+        FieldPanel('ally_4_heading'),
         FieldPanel('ally_4'),
+        FieldPanel('ally_5_heading'),
         FieldPanel('ally_5'),
     ]
 
@@ -229,28 +251,53 @@ class BookDetail(Page):
     ]
 
 class Products(Page):
+    intro_heading = models.CharField(max_length=255)
     intro = RichTextField()
-    tutor_intro = RichTextField()
-    concept_coach_intro = RichTextField()
-    cnx_intro = RichTextField()
-    allies_intro = RichTextField()
+    tutor_heading = models.CharField(max_length=255)
+    tutor = RichTextField()
+    concept_coach_heading = models.CharField(max_length=255)
+    concept_coach = RichTextField()
+    cnx_heading = models.CharField(max_length=255)
+    cnx = RichTextField()
+    allies_heading = models.CharField(max_length=255)
+    allies = RichTextField()
+    ally_1_heading = models.CharField(max_length=255)
     ally_1 = RichTextField()
+    ally_2_heading = models.CharField(max_length=255)
     ally_2 = RichTextField()
+    ally_3_heading = models.CharField(max_length=255)
     ally_3 = RichTextField()
+    ally_4_heading = models.CharField(max_length=255)
     ally_4 = RichTextField()
+    ally_5_heading = models.CharField(max_length=255)
+    ally_5 = RichTextField()
+    
+    api_fields = ('intro_heading', 'intro', 'tutor_heading', 'tutor', 'concept_coach_heading', 'concept_coach', 'cnx_heading', 'cnx', 'allies_heading', 'allies', 'ally_1_heading', 'ally_1', 'ally_2_heading', 'ally_2', 'ally_3_heading', 'ally_3', 'ally_4_heading', 'ally_4', 'ally_5_heading', 'ally_5', 'slug', 'seo_title', 'search_description', )
 
     content_panels = [
         FieldPanel('title', classname="full title"),
+        FieldPanel('intro_heading'),
         FieldPanel('intro'),
-        FieldPanel('tutor_intro'),
-        FieldPanel('concept_coach_intro'),
-        FieldPanel('cnx_intro'),
-        FieldPanel('allies_intro'),
+        FieldPanel('tutor_heading'),
+        FieldPanel('tutor'),
+        FieldPanel('concept_coach_heading'),
+        FieldPanel('concept_coach'),
+        FieldPanel('cnx_heading'),
+        FieldPanel('cnx'),
+        FieldPanel('allies_heading'),
+        FieldPanel('allies'),
+        FieldPanel('ally_1_heading'),
         FieldPanel('ally_1'),
+        FieldPanel('ally_2_heading'),
         FieldPanel('ally_2'),
+        FieldPanel('ally_3_heading'),
         FieldPanel('ally_3'),
+        FieldPanel('ally_4_heading'),
         FieldPanel('ally_4'),
+        FieldPanel('ally_5_heading'),
+        FieldPanel('ally_5'),
     ]
+
 
 class Research(Page):
     classroom_text = RichTextField()
@@ -260,6 +307,7 @@ class Research(Page):
         FieldPanel('classroom_text'),
     ]
 
+
 class News(Page):
     classroom_text = RichTextField()
 
@@ -268,6 +316,7 @@ class News(Page):
         FieldPanel('classroom_text'),
     ]
 
+
 class NewsArticle(Page):
     classroom_text = RichTextField()
 
@@ -275,6 +324,7 @@ class NewsArticle(Page):
         FieldPanel('title', classname="full title"),
         FieldPanel('classroom_text'),
     ]
+
 
 class ContactUs(Page):
     classroom_text = RichTextField()
@@ -287,6 +337,7 @@ class ContactUs(Page):
 
 class AboutUsFunders(Orderable, Funders):
     page = ParentalKey('pages.AboutUs', related_name='funders')
+    
     
 class AboutUs(Page):
     who_we_are = RichTextField()
@@ -301,6 +352,7 @@ class AboutUs(Page):
         InlinePanel('funders', label="Funders"),
     ]
 
+
 class Give(Page):
     classroom_text = RichTextField()
 
@@ -308,6 +360,7 @@ class Give(Page):
         FieldPanel('title', classname="full title"),
         FieldPanel('classroom_text'),
     ]
+
 
 class Adopters(Page):
     classroom_text = RichTextField()
@@ -317,6 +370,7 @@ class Adopters(Page):
         FieldPanel('classroom_text'),
     ]
 
+
 class EcosystemAllies(Page):
     classroom_text = RichTextField()
 
@@ -325,6 +379,7 @@ class EcosystemAllies(Page):
         FieldPanel('classroom_text'),
     ]
 
+
 class AdoptionForm(Page):
     classroom_text = RichTextField()
 
@@ -332,5 +387,6 @@ class AdoptionForm(Page):
         FieldPanel('title', classname="full title"),
         FieldPanel('classroom_text'),
     ]
+
 
 #class GeneralHTMLPage(Page): #this will be used for confirmations/forms from sales force, these won't be editable
