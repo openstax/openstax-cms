@@ -138,15 +138,19 @@ class HomePageRelatedLink(Orderable, RelatedLink):
 
 
 class HomePage(Page):
-    page_header = models.CharField(max_length=255)
-    introduction = RichTextField()
-    intro_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
+    about_us_heading = models.CharField(max_length=255)
+    about_us = RichTextField()
+    wwd_higher_ed_heading = models.CharField(max_length=255)
+    wwd_higher_ed = RichTextField()
+    wwd_k12_heading = models.CharField(max_length=255)
+    wwd_12 = RichTextField()
+    give_heading = models.CharField(max_length=255)
+    give = RichTextField()
+    adopter_heading = models.CharField(max_length=255)
+    adopter = RichTextField()
+    allies_heading = models.CharField(max_length=255)
+    allies = RichTextField()
+    ap_disclaimer = RichTextField()
     
     api_fields = ('page_header', 'introduction', 'intro_image')
 
@@ -155,9 +159,19 @@ class HomePage(Page):
 
     content_panels = [
         FieldPanel('title', classname="full title"),
-        FieldPanel('page_header'),
-        ImageChooserPanel('intro_image'),
-        FieldPanel('introduction'),
+        FieldPanel('about_us_heading'),
+        FieldPanel('about_us'),
+        FieldPanel('wwd_higher_ed_heading'),
+        FieldPanel('wwd_higher_ed'),
+        FieldPanel('wwd_k12_heading'),
+        FieldPanel('wwd_12'),
+        FieldPanel('give_heading'),
+        FieldPanel('give'),
+        FieldPanel('adopter_heading'),
+        FieldPanel('adopter'),
+        FieldPanel('allies_heading'),
+        FieldPanel('allies'),
+        FieldPanel('ap_disclaimer'),
         InlinePanel('carousel_items', label="Carousel items"),
         InlinePanel('related_links', label="Related links"),
     ]
