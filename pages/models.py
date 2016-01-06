@@ -1,9 +1,12 @@
 from django.db import models
 from django import forms
+from django.http import JsonResponse
 
 from wagtail.wagtailcore.models import Page, Orderable
-from wagtail.wagtailcore.fields import RichTextField
+from wagtail.wagtailcore.fields import RichTextField, StreamField
+from wagtail.wagtailcore import blocks
 from wagtail.wagtailadmin.edit_handlers import (FieldPanel,
+                                                StreamFieldPanel,
                                                 InlinePanel,
                                                 MultiFieldPanel,
                                                 PageChooserPanel)
@@ -270,6 +273,40 @@ class HigherEducation(Page):
         FieldPanel('ally_5_heading'),
         FieldPanel('ally_5'),
     ]
+    
+    def serve(self, request):
+        return JsonResponse({
+            'intro_heading': self.intro_heading, 
+            'intro': self.intro, 
+            'get_started_heading': self.get_started_heading, 
+            'get_started_step_1': self.get_started_step_1, 
+            'get_started_step_2': self.get_started_step_2, 
+            'get_started_step_3': self.get_started_step_3, 
+            'get_started_step_4': self.get_started_step_4, 
+            'our_books_heading': self.our_books_heading, 
+            'our_books': self.our_books, 
+            'our_impact_heading': self.our_impact_heading, 
+            'our_impact': self.our_impact, 
+            'cnx_heading': self.cnx_heading, 
+            'cnx': self.cnx, 
+            'allies_heading': self.allies_heading, 
+            'allies': self.allies, 
+            'ally_1_heading': self.ally_1_heading, 
+            'ally_1': self.ally_1, 
+            'ally_2_heading': self.ally_2_heading, 
+            'ally_2': self.ally_2, 
+            'ally_3_heading': self.ally_3_heading, 
+            'ally_3': self.ally_3, 
+            'ally_4_heading': self.ally_4_heading, 
+            'ally_4': self.ally_4, 
+            'ally_5_heading': self.ally_5_heading, 
+            'ally_5': self.ally_5, 
+            'slug': self.slug, 
+            'seo_title': self.seo_title, 
+            'search_description': self.search_description, 
+            'go_live_at': self.go_live_at, 
+            'expire_at': self.expire_at, 
+        })
 
 
 class K12(Page):
@@ -397,12 +434,30 @@ class AboutUs(Page):
     ]
 
 
+class GeneralPage(Page):
+    body = StreamField([
+        ('heading', blocks.CharBlock(classname="full title")),
+        ('paragraph', blocks.RichTextBlock()),
+        ('image', ImageChooserBlock()),
+        ('html', RawHTMLBlock()),
+    ])
+    
+    api_fields = (
+        'title',
+        'body',
+    )
+    
+    content_panels = [
+        FieldPanel('title'),
+        StreamFieldPanel('body'),
+    ]
+
 class Give(Page):
-    classroom_text = RichTextField()
+    touchnet_form = RawHTMLBlock()
 
     content_panels = [
         FieldPanel('title', classname="full title"),
-        FieldPanel('classroom_text'),
+        #FieldPanel('touchnet_form'),
     ]
 
 
