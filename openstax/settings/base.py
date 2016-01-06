@@ -153,6 +153,7 @@ INSTALLED_APPS = (
     
     'pages',
     'books',
+    'news', 
 
     'wagtail.wagtailcore',
     'wagtail.wagtailadmin',

@@ -349,24 +349,6 @@ class Research(Page):
     ]
 
 
-class News(Page):
-    classroom_text = RichTextField()
-
-    content_panels = [
-        FieldPanel('title', classname="full title"),
-        FieldPanel('classroom_text'),
-    ]
-
-
-class NewsArticle(Page):
-    classroom_text = RichTextField()
-
-    content_panels = [
-        FieldPanel('title', classname="full title"),
-        FieldPanel('classroom_text'),
-    ]
-
-
 class ContactUs(Page):
     classroom_text = RichTextField()
 
