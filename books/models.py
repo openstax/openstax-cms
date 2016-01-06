@@ -41,3 +41,5 @@ class Book(Page):
                   'publish_date',
                   'isbn_10',
                   'isbn_13')
+
+    parent_page_types = ['pages.HomePage']
