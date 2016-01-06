@@ -6,7 +6,7 @@ from wagtail.wagtailadmin.edit_handlers import FieldPanel
 from wagtail.wagtailsearch import index
 
 
-class News(Page):
+class NewsIndex(Page):
     intro = RichTextField(blank=True)
 
     content_panels = Page.content_panels + [
@@ -18,6 +18,7 @@ class News(Page):
     )
     
     subpage_types = ['news.NewsArticle']
+    parent_page_types = ['pages.HomePage']
 
 
 class NewsArticle(Page):
@@ -36,4 +37,4 @@ class NewsArticle(Page):
         FieldPanel('body', classname="full")
     ]
     
-    parent_page_types = ['news.News']
+    parent_page_types = ['news.NewsIndex']
