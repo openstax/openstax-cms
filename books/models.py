@@ -42,4 +42,39 @@ class Book(Page):
                   'isbn_10',
                   'isbn_13')
 
+    parent_page_types = ['books.BookIndex']
+
+
+class BookIndex(Page):
+    page_description = RichTextField()
+    dev_standards_heading = models.CharField(max_length=255, blank=True, null=True)
+    dev_standard_1_heading = models.CharField(max_length=255, blank=True, null=True)
+    dev_standard_1_description = RichTextField()
+    dev_standard_2_heading = models.CharField(max_length=255, blank=True, null=True)
+    dev_standard_2_description = RichTextField()
+    dev_standard_3_heading = models.CharField(max_length=255, blank=True, null=True)
+    dev_standard_3_description = RichTextField()
+    
+    content_panels = Page.content_panels + [
+        FieldPanel('page_description'),
+        FieldPanel('dev_standards_heading'),
+        FieldPanel('dev_standard_1_heading'),
+        FieldPanel('dev_standard_1_description'),
+        FieldPanel('dev_standard_2_heading'),
+        FieldPanel('dev_standard_2_description'),
+        FieldPanel('dev_standard_3_heading'),
+        FieldPanel('dev_standard_3_description'),
+    ]
+    
+    api_fields = (
+        'page_description',
+        'dev_standards_heading',
+        'dev_standard_1_heading',
+        'dev_standard_1_description',
+        'dev_standard_2_heading',
+        'dev_standard_2_description',
+        'dev_standard_3_heading',
+        'dev_standard_3_description',
+    )
+    
     parent_page_types = ['pages.HomePage']
