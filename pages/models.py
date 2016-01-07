@@ -1,9 +1,12 @@
 from django.db import models
 from django import forms
+from django.http import JsonResponse
 
 from wagtail.wagtailcore.models import Page, Orderable
-from wagtail.wagtailcore.fields import RichTextField
+from wagtail.wagtailcore.fields import RichTextField, StreamField
+from wagtail.wagtailcore import blocks
 from wagtail.wagtailadmin.edit_handlers import (FieldPanel,
+                                                StreamFieldPanel,
                                                 InlinePanel,
                                                 MultiFieldPanel,
                                                 PageChooserPanel)
@@ -96,18 +99,6 @@ class CarouselItem(LinkFields):
         abstract = True
 
 
-class RelatedLink(LinkFields):
-    title = models.CharField(max_length=255, help_text="Link title")
-
-    panels = [
-        FieldPanel('title'),
-        MultiFieldPanel(LinkFields.panels, "Link"),
-    ]
-
-    class Meta:
-        abstract = True
-
-
 class Funders(LinkFields):
     name = models.CharField(max_length=255, help_text="Funder Name")
     logo = models.ForeignKey(
@@ -133,33 +124,55 @@ class HomePageCarouselItem(Orderable, CarouselItem):
     page = ParentalKey('pages.HomePage', related_name='carousel_items')
 
 
-class HomePageRelatedLink(Orderable, RelatedLink):
-    page = ParentalKey('pages.HomePage', related_name='related_links')
-
-
 class HomePage(Page):
-    page_header = models.CharField(max_length=255)
-    introduction = RichTextField()
-    intro_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
+    about_us_heading = models.CharField(max_length=255)
+    about_us = RichTextField()
+    wwd_higher_ed_heading = models.CharField(max_length=255)
+    wwd_higher_ed = RichTextField()
+    wwd_k12_heading = models.CharField(max_length=255)
+    wwd_12 = RichTextField()
+    give_heading = models.CharField(max_length=255)
+    give_to_openstax = RichTextField()
+    adopter_heading = models.CharField(max_length=255)
+    adopter = RichTextField()
+    allies_heading = models.CharField(max_length=255)
+    allies = RichTextField()
+    ap_disclaimer = RichTextField()
     
-    api_fields = ('page_header', 'introduction', 'intro_image')
+    api_fields = (
+        'about_us_heading', 
+        'about_us', 
+        'wwd_higher_ed_heading',
+        'wwd_higher_ed',
+        'wwd_k12_heading',
+        'wwd_k12',
+        'give_heading',
+        'give_to_openstax',
+        'adopter_heading',
+        'adopter',
+        'allies_heading',
+        'allies',
+        'ap_disclaimer',)
 
     class Meta:
         verbose_name = "Home Page"
 
     content_panels = [
         FieldPanel('title', classname="full title"),
-        FieldPanel('page_header'),
-        ImageChooserPanel('intro_image'),
-        FieldPanel('introduction'),
+        FieldPanel('about_us_heading'),
+        FieldPanel('about_us'),
+        FieldPanel('wwd_higher_ed_heading'),
+        FieldPanel('wwd_higher_ed'),
+        FieldPanel('wwd_k12_heading'),
+        FieldPanel('wwd_12'),
+        FieldPanel('give_heading'),
+        FieldPanel('give_to_openstax'),
+        FieldPanel('adopter_heading'),
+        FieldPanel('adopter'),
+        FieldPanel('allies_heading'),
+        FieldPanel('allies'),
+        FieldPanel('ap_disclaimer'),
         InlinePanel('carousel_items', label="Carousel items"),
-        InlinePanel('related_links', label="Related links"),
     ]
 
 
@@ -256,6 +269,40 @@ class HigherEducation(Page):
         FieldPanel('ally_5_heading'),
         FieldPanel('ally_5'),
     ]
+    
+    def serve(self, request):
+        return JsonResponse({
+            'intro_heading': self.intro_heading, 
+            'intro': self.intro, 
+            'get_started_heading': self.get_started_heading, 
+            'get_started_step_1': self.get_started_step_1, 
+            'get_started_step_2': self.get_started_step_2, 
+            'get_started_step_3': self.get_started_step_3, 
+            'get_started_step_4': self.get_started_step_4, 
+            'our_books_heading': self.our_books_heading, 
+            'our_books': self.our_books, 
+            'our_impact_heading': self.our_impact_heading, 
+            'our_impact': self.our_impact, 
+            'cnx_heading': self.cnx_heading, 
+            'cnx': self.cnx, 
+            'allies_heading': self.allies_heading, 
+            'allies': self.allies, 
+            'ally_1_heading': self.ally_1_heading, 
+            'ally_1': self.ally_1, 
+            'ally_2_heading': self.ally_2_heading, 
+            'ally_2': self.ally_2, 
+            'ally_3_heading': self.ally_3_heading, 
+            'ally_3': self.ally_3, 
+            'ally_4_heading': self.ally_4_heading, 
+            'ally_4': self.ally_4, 
+            'ally_5_heading': self.ally_5_heading, 
+            'ally_5': self.ally_5, 
+            'slug': self.slug, 
+            'seo_title': self.seo_title, 
+            'search_description': self.search_description, 
+            'go_live_at': self.go_live_at, 
+            'expire_at': self.expire_at, 
+        })
 
 
 class K12(Page):
@@ -411,12 +458,30 @@ class AboutUs(Page):
     ]
 
 
+class GeneralPage(Page):
+    body = StreamField([
+        ('heading', blocks.CharBlock(classname="full title")),
+        ('paragraph', blocks.RichTextBlock()),
+        ('image', ImageChooserBlock()),
+        ('html', RawHTMLBlock()),
+    ])
+    
+    api_fields = (
+        'title',
+        'body',
+    )
+    
+    content_panels = [
+        FieldPanel('title'),
+        StreamFieldPanel('body'),
+    ]
+
 class Give(Page):
-    classroom_text = RichTextField()
+    touchnet_form = RawHTMLBlock()
 
     content_panels = [
         FieldPanel('title', classname="full title"),
-        FieldPanel('classroom_text'),
+        #FieldPanel('touchnet_form'),
     ]
 
 
