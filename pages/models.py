@@ -126,33 +126,34 @@ class HomePageCarouselItem(Orderable, CarouselItem):
 
 class HomePage(Page):
     about_us_heading = models.CharField(max_length=255)
-    about_us = RichTextField()
+    about_us_description = RichTextField()
     wwd_higher_ed_heading = models.CharField(max_length=255)
-    wwd_higher_ed = RichTextField()
+    wwd_higher_ed_description = RichTextField()
     wwd_k12_heading = models.CharField(max_length=255)
-    wwd_12 = RichTextField()
+    wwd_k12_description = RichTextField()
     give_heading = models.CharField(max_length=255)
-    give_to_openstax = RichTextField()
+    give_description = RichTextField()
     adopter_heading = models.CharField(max_length=255)
-    adopter = RichTextField()
+    adopter_description = RichTextField()
     allies_heading = models.CharField(max_length=255)
-    allies = RichTextField()
-    ap_disclaimer = RichTextField()
+    allies_description = RichTextField()
     
     api_fields = (
         'about_us_heading', 
-        'about_us', 
+        'about_us_description', 
         'wwd_higher_ed_heading',
-        'wwd_higher_ed',
+        'wwd_higher_ed_description',
         'wwd_k12_heading',
-        'wwd_k12',
+        'wwd_k12_description',
         'give_heading',
-        'give_to_openstax',
+        'give_description',
         'adopter_heading',
-        'adopter',
+        'adopter_description',
         'allies_heading',
-        'allies',
-        'ap_disclaimer',)
+        'allies_description',
+        'slug', 
+        'seo_title', 
+        'search_description', )
 
     class Meta:
         verbose_name = "Home Page"
@@ -160,18 +161,17 @@ class HomePage(Page):
     content_panels = [
         FieldPanel('title', classname="full title"),
         FieldPanel('about_us_heading'),
-        FieldPanel('about_us'),
+        FieldPanel('about_us_description'),
         FieldPanel('wwd_higher_ed_heading'),
-        FieldPanel('wwd_higher_ed'),
+        FieldPanel('wwd_higher_ed_description'),
         FieldPanel('wwd_k12_heading'),
-        FieldPanel('wwd_12'),
+        FieldPanel('wwd_k12_description'),
         FieldPanel('give_heading'),
-        FieldPanel('give_to_openstax'),
+        FieldPanel('give_description'),
         FieldPanel('adopter_heading'),
-        FieldPanel('adopter'),
+        FieldPanel('adopter_description'),
         FieldPanel('allies_heading'),
-        FieldPanel('allies'),
-        FieldPanel('ap_disclaimer'),
+        FieldPanel('allies_description'),
         InlinePanel('carousel_items', label="Carousel items"),
     ]
     
@@ -257,8 +257,7 @@ class HigherEducation(Page):
         'seo_title', 
         'search_description', 
         'go_live_at', 
-        'expire_at', 
-    )
+        'expire_at', )
     
     content_panels = [
         FieldPanel('title', classname="full title"),
