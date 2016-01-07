@@ -259,11 +259,39 @@ class HigherEducation(Page):
 
 
 class K12(Page):
-    classroom_text = RichTextField()
+    k12_heading = models.CharField(max_length=255)
+    k12_description = RichTextField()
+    tutor_heading = models.CharField(max_length=255)
+    tutor_description = RichTextField()
+    cnx_heading = models.CharField(max_length=255)
+    cnx_description = RichTextField()
+    allies_heading = models.CharField(max_length=255)
+    allies_description = RichTextField()
+    
+    api_fields = (
+        'k12_heading', 
+        'k12_description', 
+        'tutor_heading', 
+        'tutor_description', 
+        'cnx_heading', 
+        'cnx_description', 
+        'allies_heading', 
+        'allies_description', 
+        'slug', 
+        'seo_title', 
+        'search_description', 
+    )
 
     content_panels = [
         FieldPanel('title', classname="full title"),
-        FieldPanel('classroom_text'),
+        FieldPanel('k12_heading'),
+        FieldPanel('k12_description'),
+        FieldPanel('tutor_heading'),
+        FieldPanel('tutor_description'),
+        FieldPanel('cnx_heading'),
+        FieldPanel('cnx_description'),
+        FieldPanel('allies_heading'),
+        FieldPanel('allies_description'),
     ]
 
 
