@@ -174,6 +174,26 @@ class HomePage(Page):
         FieldPanel('ap_disclaimer'),
         InlinePanel('carousel_items', label="Carousel items"),
     ]
+    
+    # do not allow homepages to be created below homepages
+    parent_page_types = []
+    
+    # we are controlling what types of pages are allowed under a homepage
+    # if a new page type is created, it needs to be added here to show up in the admin
+    subpage_types = [
+        'pages.HigherEducation', 
+        'pages.K12',
+        'pages.Products',
+        'pages.Research',
+        'pages.ContactUs',
+        'pages.AboutUs',
+        'pages.Give',
+        'pages.Adopters',
+        'pages.EcosystemAllies',
+        'pages.AdoptionForm',
+        'books.Book',
+        'news.NewsIndex',
+        ]
 
 
 class HigherEducationCarouselItem(Orderable, CarouselItem):
@@ -270,39 +290,7 @@ class HigherEducation(Page):
         FieldPanel('ally_5'),
     ]
     
-    def serve(self, request):
-        return JsonResponse({
-            'intro_heading': self.intro_heading, 
-            'intro': self.intro, 
-            'get_started_heading': self.get_started_heading, 
-            'get_started_step_1': self.get_started_step_1, 
-            'get_started_step_2': self.get_started_step_2, 
-            'get_started_step_3': self.get_started_step_3, 
-            'get_started_step_4': self.get_started_step_4, 
-            'our_books_heading': self.our_books_heading, 
-            'our_books': self.our_books, 
-            'our_impact_heading': self.our_impact_heading, 
-            'our_impact': self.our_impact, 
-            'cnx_heading': self.cnx_heading, 
-            'cnx': self.cnx, 
-            'allies_heading': self.allies_heading, 
-            'allies': self.allies, 
-            'ally_1_heading': self.ally_1_heading, 
-            'ally_1': self.ally_1, 
-            'ally_2_heading': self.ally_2_heading, 
-            'ally_2': self.ally_2, 
-            'ally_3_heading': self.ally_3_heading, 
-            'ally_3': self.ally_3, 
-            'ally_4_heading': self.ally_4_heading, 
-            'ally_4': self.ally_4, 
-            'ally_5_heading': self.ally_5_heading, 
-            'ally_5': self.ally_5, 
-            'slug': self.slug, 
-            'seo_title': self.seo_title, 
-            'search_description': self.search_description, 
-            'go_live_at': self.go_live_at, 
-            'expire_at': self.expire_at, 
-        })
+    parent_page_types = ['pages.HomePage']
 
 
 class K12(Page):
@@ -340,6 +328,8 @@ class K12(Page):
         FieldPanel('allies_heading'),
         FieldPanel('allies_description'),
     ]
+    
+    parent_page_types = ['pages.HomePage']
 
 
 class Products(Page):
@@ -413,6 +403,8 @@ class Products(Page):
         FieldPanel('ally_5_heading'),
         FieldPanel('ally_5'),
     ]
+    
+    parent_page_types = ['pages.HomePage']
 
 
 class Research(Page):
@@ -422,6 +414,8 @@ class Research(Page):
         FieldPanel('title', classname="full title"),
         FieldPanel('classroom_text'),
     ]
+    
+    parent_page_types = ['pages.HomePage']
 
 
 class ContactUs(Page):
@@ -431,6 +425,8 @@ class ContactUs(Page):
         FieldPanel('title', classname="full title"),
         FieldPanel('classroom_text'),
     ]
+    
+    parent_page_types = ['pages.HomePage']
 
 
 class AboutUsFunders(Orderable, Funders):
@@ -456,6 +452,8 @@ class AboutUs(Page):
         FieldPanel('funder_intro'),
         InlinePanel('funders', label="Funders"),
     ]
+    
+    parent_page_types = ['pages.HomePage']
 
 
 class GeneralPage(Page):
@@ -483,6 +481,8 @@ class Give(Page):
         FieldPanel('title', classname="full title"),
         #FieldPanel('touchnet_form'),
     ]
+    
+    parent_page_types = ['pages.HomePage']
 
 
 class Adopters(Page):
@@ -492,6 +492,8 @@ class Adopters(Page):
         FieldPanel('title', classname="full title"),
         FieldPanel('classroom_text'),
     ]
+    
+    parent_page_types = ['pages.HomePage']
 
 
 class EcosystemAllies(Page):
@@ -501,6 +503,8 @@ class EcosystemAllies(Page):
         FieldPanel('title', classname="full title"),
         FieldPanel('classroom_text'),
     ]
+    
+    parent_page_types = ['pages.HomePage']
 
 
 class AdoptionForm(Page):
@@ -510,6 +514,8 @@ class AdoptionForm(Page):
         FieldPanel('title', classname="full title"),
         FieldPanel('classroom_text'),
     ]
+    
+    parent_page_types = ['pages.HomePage']
 
 
 #class GeneralHTMLPage(Page): #this will be used for confirmations/forms from sales force, these won't be editable
