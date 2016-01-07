@@ -99,18 +99,6 @@ class CarouselItem(LinkFields):
         abstract = True
 
 
-class RelatedLink(LinkFields):
-    title = models.CharField(max_length=255, help_text="Link title")
-
-    panels = [
-        FieldPanel('title'),
-        MultiFieldPanel(LinkFields.panels, "Link"),
-    ]
-
-    class Meta:
-        abstract = True
-
-
 class Funders(LinkFields):
     name = models.CharField(max_length=255, help_text="Funder Name")
     logo = models.ForeignKey(
@@ -136,10 +124,6 @@ class HomePageCarouselItem(Orderable, CarouselItem):
     page = ParentalKey('pages.HomePage', related_name='carousel_items')
 
 
-class HomePageRelatedLink(Orderable, RelatedLink):
-    page = ParentalKey('pages.HomePage', related_name='related_links')
-
-
 class HomePage(Page):
     about_us_heading = models.CharField(max_length=255)
     about_us = RichTextField()
@@ -148,14 +132,27 @@ class HomePage(Page):
     wwd_k12_heading = models.CharField(max_length=255)
     wwd_12 = RichTextField()
     give_heading = models.CharField(max_length=255)
-    give = RichTextField()
+    give_to_openstax = RichTextField()
     adopter_heading = models.CharField(max_length=255)
     adopter = RichTextField()
     allies_heading = models.CharField(max_length=255)
     allies = RichTextField()
     ap_disclaimer = RichTextField()
     
-    api_fields = ('page_header', 'introduction', 'intro_image')
+    api_fields = (
+        'about_us_heading', 
+        'about_us', 
+        'wwd_higher_ed_heading',
+        'wwd_higher_ed',
+        'wwd_k12_heading',
+        'wwd_k12',
+        'give_heading',
+        'give_to_openstax',
+        'adopter_heading',
+        'adopter',
+        'allies_heading',
+        'allies',
+        'ap_disclaimer',)
 
     class Meta:
         verbose_name = "Home Page"
@@ -169,14 +166,13 @@ class HomePage(Page):
         FieldPanel('wwd_k12_heading'),
         FieldPanel('wwd_12'),
         FieldPanel('give_heading'),
-        FieldPanel('give'),
+        FieldPanel('give_to_openstax'),
         FieldPanel('adopter_heading'),
         FieldPanel('adopter'),
         FieldPanel('allies_heading'),
         FieldPanel('allies'),
         FieldPanel('ap_disclaimer'),
         InlinePanel('carousel_items', label="Carousel items"),
-        InlinePanel('related_links', label="Related links"),
     ]
 
 
