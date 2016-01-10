@@ -106,6 +106,11 @@ TEMPLATE_LOADERS = (
 #     'django.template.loaders.eggs.Loader',
 )
 
+AUTHENTICATION_BACKENDS = (
+    'oauth2_provider.backends.OAuth2Backend',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -115,8 +120,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     'wagtail.wagtailcore.middleware.SiteMiddleware',
-
     'wagtail.wagtailredirects.middleware.RedirectMiddleware',
+    
+    'oauth2_provider.middleware.OAuth2TokenMiddleware',
 )
 
 from django.conf import global_settings
@@ -147,6 +153,7 @@ INSTALLED_APPS = (
     'taggit',
     'modelcluster',
     'overextends',
+    'oauth2_provider',
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
