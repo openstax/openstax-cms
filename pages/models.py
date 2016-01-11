@@ -191,7 +191,7 @@ class HomePage(Page):
         'pages.Adopters',
         'pages.EcosystemAllies',
         'pages.AdoptionForm',
-        'books.Book',
+        'books.BookIndex',
         'news.NewsIndex',
         ]
 
