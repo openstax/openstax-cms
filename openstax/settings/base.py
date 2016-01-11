@@ -1,12 +1,10 @@
 # Django settings for openstax project.
 
 import os
-
 PROJECT_ROOT = os.path.join(os.path.dirname(__file__), '..', '..')
 BASE_DIR = PROJECT_ROOT
 
 DEBUG = True
-TEMPLATE_DEBUG = DEBUG
 
 ADMINS = (
     # ('Michael Harrison', 'mwharrison@rice.edu'),
@@ -77,21 +75,14 @@ STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
 # Example: "http://media.lawrence.com/static/"
 STATIC_URL = '/static/'
 
-# Additional locations of static files
-STATICFILES_DIRS = (
-    # Put strings here, like "/home/html/static" or "C:/www/django/static".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-)
-
 # List of finder classes that know how to find static files in
 # various locations.
-STATICFILES_FINDERS = (
+STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
     'compressor.finders.CompressorFinder',
-)
+]
 
 # ** You would never normally put the SECRET_KEY in a public repository,
 # ** however this is a demo app so we're using the default settings.
@@ -99,41 +90,45 @@ STATICFILES_FINDERS = (
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'wq21wtjo3@d_qfjvd-#td!%7gfy2updj2z+nev^k$iy%=m4_tr'
 
-# List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
-)
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE_CLASSES = [
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-
     'wagtail.wagtailcore.middleware.SiteMiddleware',
-
     'wagtail.wagtailredirects.middleware.RedirectMiddleware',
-)
+]
 
 from django.conf import global_settings
-TEMPLATE_CONTEXT_PROCESSORS = global_settings.TEMPLATE_CONTEXT_PROCESSORS + [
-    'django.core.context_processors.request',
+TEMPLATES = [
+    {
+        'BACKEND': 'django.template.backends.django.DjangoTemplates',
+        'APP_DIRS': True,
+        'OPTIONS': {
+            'context_processors': [
+                'django.contrib.auth.context_processors.auth',
+                'django.template.context_processors.debug',
+                'django.template.context_processors.i18n',
+                'django.template.context_processors.media',
+                'django.template.context_processors.static',
+                'django.template.context_processors.tz',
+                'django.contrib.messages.context_processors.messages',
+                'django.core.context_processors.request',
+            ],
+            'builtins': [
+                'overextends.templatetags.overextends_tags',
+            ],
+        },
+    },
 ]
 
 ROOT_URLCONF = 'openstax.urls'
 
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'openstax.wsgi.application'
-
-TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-)
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -220,5 +215,4 @@ LOGGING = {
 
 
 # WAGTAIL SETTINGS
-
 WAGTAIL_SITE_NAME = 'openstax'
