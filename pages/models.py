@@ -120,59 +120,121 @@ class Funders(LinkFields):
 
 
 # Home Page
-class HomePageCarouselItem(Orderable, CarouselItem):
-    page = ParentalKey('pages.HomePage', related_name='carousel_items')
-
-
 class HomePage(Page):
-    about_us_heading = models.CharField(max_length=255)
-    about_us = RichTextField()
-    wwd_higher_ed_heading = models.CharField(max_length=255)
-    wwd_higher_ed = RichTextField()
-    wwd_k12_heading = models.CharField(max_length=255)
-    wwd_12 = RichTextField()
+    quote_1_quote = RichTextField()
+    quote_1_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    quote_1_cta_link = models.URLField(blank=True)
+    quote_1_cta_text = models.CharField(max_length=255)
+    quote_2_quote = RichTextField()
+    quote_2_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    quote_2_cta_link = models.URLField(blank=True)
+    quote_2_cta_text = models.CharField(max_length=255)
+    quote_3_quote = RichTextField()
+    quote_3_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    quote_3_cta_link = models.URLField(blank=True)
+    quote_3_cta_text = models.CharField(max_length=255)    
+    header_2_text = RichTextField()
+    higher_ed_heading = models.CharField(max_length=255)
+    higher_ed_description = RichTextField()
+    k12_heading = models.CharField(max_length=255)
+    k12_description = RichTextField()
     give_heading = models.CharField(max_length=255)
-    give_to_openstax = RichTextField()
+    give_description = RichTextField()
+    give_cta_link = models.URLField(blank=True)
+    give_cta_text = models.CharField(max_length=255)
     adopter_heading = models.CharField(max_length=255)
-    adopter = RichTextField()
+    adopter_description = RichTextField()
+    adopter_cta_link = models.URLField(blank=True)
+    adopter_cta_text = models.CharField(max_length=255)
     allies_heading = models.CharField(max_length=255)
-    allies = RichTextField()
-    ap_disclaimer = RichTextField()
+    allies_description = RichTextField()
+    allies_cta_link = models.URLField(blank=True)
+    allies_cta_text = models.CharField(max_length=255)
     
     api_fields = (
-        'about_us_heading', 
-        'about_us', 
-        'wwd_higher_ed_heading',
-        'wwd_higher_ed',
-        'wwd_k12_heading',
-        'wwd_k12',
+        'quote_1_quote', 
+        'quote_1_image',
+        'quote_1_cta_link',
+        'quote_1_cta_text',
+        'quote_2_quote',
+        'quote_2_image',
+        'quote_2_cta_link',
+        'quote_2_cta_text',
+        'quote_3_quote',
+        'quote_3_image',
+        'quote_3_cta_link',
+        'quote_3_cta_text',
+        'header_2_text',
+        'higher_ed_heading',
+        'higher_ed_description',
+        'k12_heading',
+        'k12_description',
         'give_heading',
-        'give_to_openstax',
+        'give_description',
+        'give_cta_link',
+        'give_cta_text',
         'adopter_heading',
-        'adopter',
+        'adopter_description',
+        'adopter_cta_link',
+        'adopter_cta_text',
         'allies_heading',
-        'allies',
-        'ap_disclaimer',)
+        'allies_description',
+        'allies_cta_link',
+        'allies_cta_text',)
+    
 
     class Meta:
         verbose_name = "Home Page"
 
     content_panels = [
         FieldPanel('title', classname="full title"),
-        FieldPanel('about_us_heading'),
-        FieldPanel('about_us'),
-        FieldPanel('wwd_higher_ed_heading'),
-        FieldPanel('wwd_higher_ed'),
-        FieldPanel('wwd_k12_heading'),
-        FieldPanel('wwd_12'),
+        FieldPanel('quote_1_quote'), 
+        FieldPanel('quote_1_image'),
+        FieldPanel('quote_1_cta_link'),
+        FieldPanel('quote_1_cta_text'),
+        FieldPanel('quote_2_quote'),
+        FieldPanel('quote_2_image'),
+        FieldPanel('quote_2_cta_link'),
+        FieldPanel('quote_2_cta_text'),
+        FieldPanel('quote_3_quote'),
+        FieldPanel('quote_3_image'),
+        FieldPanel('quote_3_cta_link'),
+        FieldPanel('quote_3_cta_text'),
+        FieldPanel('header_2_text'),
+        FieldPanel('higher_ed_heading'),
+        FieldPanel('higher_ed_description'),
+        FieldPanel('k12_heading'),
+        FieldPanel('k12_description'),
         FieldPanel('give_heading'),
-        FieldPanel('give_to_openstax'),
+        FieldPanel('give_description'),
+        FieldPanel('give_cta_link'),
+        FieldPanel('give_cta_text'),
         FieldPanel('adopter_heading'),
-        FieldPanel('adopter'),
+        FieldPanel('adopter_description'),
+        FieldPanel('adopter_cta_link'),
+        FieldPanel('adopter_cta_text'),
         FieldPanel('allies_heading'),
-        FieldPanel('allies'),
-        FieldPanel('ap_disclaimer'),
-        InlinePanel('carousel_items', label="Carousel items"),
+        FieldPanel('allies_description'),
+        FieldPanel('allies_cta_link'),
+        FieldPanel('allies_cta_text'),
     ]
     
     # do not allow homepages to be created below homepages
