@@ -98,10 +98,12 @@ class CarouselItem(LinkFields):
     class Meta:
         abstract = True
 
+# NOTE: Consider joining Funders, StrategicAdvisors, and OpenStaxTeam under
+# the same superclass in future code updates.
 
 class Funders(LinkFields):
     name = models.CharField(max_length=255, help_text="Funder Name")
-    logo = models.ForeignKey(
+    image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
         blank=True,
@@ -110,14 +112,49 @@ class Funders(LinkFields):
     )
     description = RichTextField()
     
-    api_fields = ('name', 'logo', 'description', )
+    api_fields = ('name', 'image', 'description', )
     
     panels = [
         FieldPanel('name'),
-        ImageChooserPanel('logo'),
+        ImageChooserPanel('image'),
         FieldPanel('description'),
     ]
-
+class StrategicAdvisors(LinkFields):
+    name = models.CharField(max_length=255, help_text="Strategic Advisor Name")
+    image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    description = RichTextField()
+    
+    api_fields = ('name', 'image', 'description', )
+    
+    panels = [
+        FieldPanel('name'),
+        ImageChooserPanel('image'),
+        FieldPanel('description'),
+    ]
+class OpenStaxTeam(LinkFields):
+    name = models.CharField(max_length=255, help_text="Team Member Name")
+    image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    description = RichTextField()
+    
+    api_fields = ('name', 'image', 'description', )
+    
+    panels = [
+        FieldPanel('name'),
+        ImageChooserPanel('image'),
+        FieldPanel('description'),
+    ]
 
 # Home Page
 class HomePage(Page):
@@ -511,12 +548,17 @@ class ContactUs(Page):
 
 class AboutUsFunders(Orderable, Funders):
     page = ParentalKey('pages.AboutUs', related_name='funders')
-    
-    
+
+class AboutUsStrategicAdvisors(Orderable, StrategicAdvisors):
+    page = ParentalKey('pages.AboutUs', related_name='strategic_advisors')   
+class AboutUsOpenStaxTeam(Orderable, StrategicAdvisors):
+    page = ParentalKey('pages.AboutUs', related_name='openstax_team')   
+
 class AboutUs(Page):
     who_we_are = RichTextField()
     funder_intro = RichTextField()
-
+    strategic_advisors_intro = RichTextField()
+    openstax_team_intro = RichTextField()
     api_fields = (
         'who_we_are', 
         'funder_intro', 
@@ -524,6 +566,10 @@ class AboutUs(Page):
         'slug', 
         'seo_title', 
         'search_description',
+        'strategic_advisors_intro',
+        'strategic_advisors',
+        'openstax_team_intro',
+        'openstax_team'
     )
     
     content_panels = [
@@ -531,6 +577,10 @@ class AboutUs(Page):
         FieldPanel('who_we_are'),
         FieldPanel('funder_intro'),
         InlinePanel('funders', label="Funders"),
+        FieldPanel('strategic_advisors_intro'),
+        InlinePanel('strategic_advisors', label="Strategic Advisors"),
+        FieldPanel('openstax_team_intro'),
+        InlinePanel('openstax_team', label="OpenStax Team"),
     ]
     
     parent_page_types = ['pages.HomePage']
