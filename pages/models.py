@@ -121,6 +121,14 @@ class Funders(LinkFields):
 
 # Home Page
 class HomePage(Page):
+    LEFT = 'L'
+    RIGHT = 'R'
+    ENTIRE = 'F'
+    IMAGE_ALIGNMENT_CHOICES = (
+        ('L', 'Left Aligned'),
+        ('R', 'Right Aligned'),
+        ('F', 'Full Width'),
+    )
     quote_1_quote = RichTextField()
     quote_1_image = models.ForeignKey(
         'wagtailimages.Image',
@@ -129,6 +137,9 @@ class HomePage(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+    quote_1_image_alignment = models.CharField(max_length=1,
+                                      choices=IMAGE_ALIGNMENT_CHOICES,
+                                      default=ENTIRE)
     quote_1_cta_link = models.URLField(blank=True)
     quote_1_cta_text = models.CharField(max_length=255)
     quote_2_quote = RichTextField()
@@ -139,6 +150,9 @@ class HomePage(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+    quote_2_image_alignment = models.CharField(max_length=1,
+                                      choices=IMAGE_ALIGNMENT_CHOICES,
+                                      default=ENTIRE)
     quote_2_cta_link = models.URLField(blank=True)
     quote_2_cta_text = models.CharField(max_length=255)
     quote_3_quote = RichTextField()
@@ -149,6 +163,9 @@ class HomePage(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+    quote_3_image_alignment = models.CharField(max_length=1,
+                                      choices=IMAGE_ALIGNMENT_CHOICES,
+                                      default=ENTIRE)
     quote_3_cta_link = models.URLField(blank=True)
     quote_3_cta_text = models.CharField(max_length=255)    
     header_2_text = RichTextField()
@@ -172,14 +189,17 @@ class HomePage(Page):
     api_fields = (
         'quote_1_quote', 
         'quote_1_image',
+        'quote_1_image_alignment',
         'quote_1_cta_link',
         'quote_1_cta_text',
         'quote_2_quote',
         'quote_2_image',
+        'quote_2_image_alignment',
         'quote_2_cta_link',
         'quote_2_cta_text',
         'quote_3_quote',
         'quote_3_image',
+        'quote_3_image_alignment',
         'quote_3_cta_link',
         'quote_3_cta_text',
         'header_2_text',
@@ -206,15 +226,18 @@ class HomePage(Page):
     content_panels = [
         FieldPanel('title', classname="full title"),
         FieldPanel('quote_1_quote'), 
-        FieldPanel('quote_1_image'),
+        ImageChooserPanel('quote_1_image'),
+        FieldPanel('quote_1_image_alignment'),
         FieldPanel('quote_1_cta_link'),
         FieldPanel('quote_1_cta_text'),
         FieldPanel('quote_2_quote'),
-        FieldPanel('quote_2_image'),
+        ImageChooserPanel('quote_2_image'),
+        FieldPanel('quote_2_image_alignment'),
         FieldPanel('quote_2_cta_link'),
         FieldPanel('quote_2_cta_text'),
         FieldPanel('quote_3_quote'),
-        FieldPanel('quote_3_image'),
+        ImageChooserPanel('quote_3_image'),
+        FieldPanel('quote_3_image_alignment'),
         FieldPanel('quote_3_cta_link'),
         FieldPanel('quote_3_cta_text'),
         FieldPanel('header_2_text'),
@@ -235,10 +258,7 @@ class HomePage(Page):
         FieldPanel('allies_cta_link'),
         FieldPanel('allies_cta_text'),
     ]
-    
-    # do not allow homepages to be created below homepages
-    parent_page_types = []
-    
+        
     # we are controlling what types of pages are allowed under a homepage
     # if a new page type is created, it needs to be added here to show up in the admin
     subpage_types = [
