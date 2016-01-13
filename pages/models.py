@@ -499,7 +499,7 @@ class AboutUsFunders(Orderable, Funders):
 
 class AboutUsStrategicAdvisors(Orderable, StrategicAdvisors):
     page = ParentalKey('pages.AboutUs', related_name='strategic_advisors')   
-class AboutUsOpenStaxTeam(Orderable, StrategicAdvisors):
+class AboutUsOpenStaxTeam(Orderable, OpenStaxTeam):
     page = ParentalKey('pages.AboutUs', related_name='openstax_team')   
 
 class AboutUs(Page):
