@@ -156,11 +156,23 @@ class OpenStaxTeam(LinkFields):
         FieldPanel('description'),
     ]
 
+
+class Allies(LinkFields):
+    heading = models.CharField(max_length=255) 
+    description = RichTextField()
+    link_url = models.URLField(blank=True, help_text="Call to Action Link")
+    link_text = models.CharField(max_length=255, help_text="Call to Action Text")
+    
+    panels = [
+        FieldPanel('heading'),
+        FieldPanel('description'),
+        FieldPanel('link_url'),
+        FieldPanel('link_text'),
+    ]
+
+
 # Home Page
 class HomePage(Page):
-    LEFT = 'L'
-    RIGHT = 'R'
-    ENTIRE = 'F'
     IMAGE_ALIGNMENT_CHOICES = (
         ('L', 'Left Aligned'),
         ('R', 'Right Aligned'),
@@ -176,7 +188,7 @@ class HomePage(Page):
     )
     quote_1_image_alignment = models.CharField(max_length=1,
                                       choices=IMAGE_ALIGNMENT_CHOICES,
-                                      default=ENTIRE)
+                                      default='F')
     quote_1_cta_link = models.URLField(blank=True)
     quote_1_cta_text = models.CharField(max_length=255)
     quote_2_quote = RichTextField()
@@ -189,7 +201,7 @@ class HomePage(Page):
     )
     quote_2_image_alignment = models.CharField(max_length=1,
                                       choices=IMAGE_ALIGNMENT_CHOICES,
-                                      default=ENTIRE)
+                                      default='F')
     quote_2_cta_link = models.URLField(blank=True)
     quote_2_cta_text = models.CharField(max_length=255)
     quote_3_quote = RichTextField()
@@ -202,7 +214,7 @@ class HomePage(Page):
     )
     quote_3_image_alignment = models.CharField(max_length=1,
                                       choices=IMAGE_ALIGNMENT_CHOICES,
-                                      default=ENTIRE)
+                                      default='F')
     quote_3_cta_link = models.URLField(blank=True)
     quote_3_cta_text = models.CharField(max_length=255)    
     header_2_text = RichTextField()
@@ -218,10 +230,6 @@ class HomePage(Page):
     adopter_description = RichTextField()
     adopter_cta_link = models.URLField(blank=True)
     adopter_cta_text = models.CharField(max_length=255)
-    allies_heading = models.CharField(max_length=255)
-    allies_description = RichTextField()
-    allies_cta_link = models.URLField(blank=True)
-    allies_cta_text = models.CharField(max_length=255)
     
     api_fields = (
         'quote_1_quote', 
@@ -251,11 +259,7 @@ class HomePage(Page):
         'adopter_heading',
         'adopter_description',
         'adopter_cta_link',
-        'adopter_cta_text',
-        'allies_heading',
-        'allies_description',
-        'allies_cta_link',
-        'allies_cta_text',)
+        'adopter_cta_text',)
     
     class Meta:
         verbose_name = "Home Page"
@@ -290,10 +294,6 @@ class HomePage(Page):
         FieldPanel('adopter_description'),
         FieldPanel('adopter_cta_link'),
         FieldPanel('adopter_cta_text'),
-        FieldPanel('allies_heading'),
-        FieldPanel('allies_description'),
-        FieldPanel('allies_cta_link'),
-        FieldPanel('allies_cta_text'),
     ]
         
     # we are controlling what types of pages are allowed under a homepage
@@ -314,63 +314,44 @@ class HomePage(Page):
         ]
 
 
-class HigherEducationCarouselItem(Orderable, CarouselItem):
-    page = ParentalKey('pages.HigherEducation', related_name='higher_education_carousel_items')
+class HigherEducationAllies(Orderable, Allies):
+    page = ParentalKey('pages.HigherEducation', related_name='higher_education_allies')
     
     
 class HigherEducation(Page):
     intro_heading = models.CharField(max_length=255)
-    intro = RichTextField()
+    intro_description = RichTextField()
     get_started_heading = models.CharField(max_length=255)
-    get_started_step_1 = RichTextField()
-    get_started_step_2 = RichTextField()
-    get_started_step_3 = RichTextField()
-    get_started_step_4 = RichTextField()
+    get_started_step_1_description = RichTextField()
+    get_started_step_2_description = RichTextField()
+    get_started_step_3_description = RichTextField()
+    get_started_step_4_description = RichTextField()
     our_books_heading = models.CharField(max_length=255)
-    our_books = RichTextField()
+    our_books_description = RichTextField()
     our_impact_heading = models.CharField(max_length=255)
-    our_impact = RichTextField()
+    our_impact_description = RichTextField()
     cnx_heading = models.CharField(max_length=255)
-    cnx = RichTextField()
+    cnx_description = RichTextField()
     allies_heading = models.CharField(max_length=255)
-    allies = RichTextField()
-    ally_1_heading = models.CharField(max_length=255)
-    ally_1 = RichTextField()
-    ally_2_heading = models.CharField(max_length=255)
-    ally_2 = RichTextField()
-    ally_3_heading = models.CharField(max_length=255)
-    ally_3 = RichTextField()
-    ally_4_heading = models.CharField(max_length=255)
-    ally_4 = RichTextField()
-    ally_5_heading = models.CharField(max_length=255)
-    ally_5 = RichTextField()
+    allies_description = RichTextField()
 
     api_fields = (
         'intro_heading', 
-        'intro', 
+        'intro_description', 
         'get_started_heading', 
-        'get_started_step_1', 
-        'get_started_step_2', 
-        'get_started_step_3', 
-        'get_started_step_4', 
+        'get_started_step_1_description', 
+        'get_started_step_2_description', 
+        'get_started_step_3_description', 
+        'get_started_step_4_description', 
         'our_books_heading', 
-        'our_books', 
+        'our_books_description', 
         'our_impact_heading', 
-        'our_impact', 
+        'our_impact_description', 
         'cnx_heading', 
-        'cnx', 
+        'cnx_description', 
         'allies_heading', 
-        'allies', 
-        'ally_1_heading', 
-        'ally_1', 
-        'ally_2_heading', 
-        'ally_2', 
-        'ally_3_heading', 
-        'ally_3', 
-        'ally_4_heading', 
-        'ally_4', 
-        'ally_5_heading', 
-        'ally_5', 
+        'allies_description',  
+        'higher_education_allies',
         'slug', 
         'seo_title', 
         'search_description', 
@@ -379,32 +360,22 @@ class HigherEducation(Page):
     
     content_panels = [
         FieldPanel('title', classname="full title"),
-        InlinePanel('higher_education_carousel_items', label="Carousel items"),
         FieldPanel('intro_heading'),
-        FieldPanel('intro'),
+        FieldPanel('intro_description'),
         FieldPanel('get_started_heading'),
-        FieldPanel('get_started_step_1'),
-        FieldPanel('get_started_step_2'),
-        FieldPanel('get_started_step_3'),
-        FieldPanel('get_started_step_4'),
+        FieldPanel('get_started_step_1_description'),
+        FieldPanel('get_started_step_2_description'),
+        FieldPanel('get_started_step_3_description'),
+        FieldPanel('get_started_step_4_description'),
         FieldPanel('our_books_heading'),
-        FieldPanel('our_books'),
+        FieldPanel('our_books_description'),
         FieldPanel('our_impact_heading'),
-        FieldPanel('our_impact'),
+        FieldPanel('our_impact_description'),
         FieldPanel('cnx_heading'),
-        FieldPanel('cnx'),
+        FieldPanel('cnx_description'),
         FieldPanel('allies_heading'),
-        FieldPanel('allies'),
-        FieldPanel('ally_1_heading'),
-        FieldPanel('ally_1'),
-        FieldPanel('ally_2_heading'),
-        FieldPanel('ally_2'),
-        FieldPanel('ally_3_heading'),
-        FieldPanel('ally_3'),
-        FieldPanel('ally_4_heading'),
-        FieldPanel('ally_4'),
-        FieldPanel('ally_5_heading'),
-        FieldPanel('ally_5'),
+        FieldPanel('allies_description'),
+        InlinePanel('higher_education_allies', label="Allies"),
     ]
     
     parent_page_types = ['pages.HomePage']
@@ -449,49 +420,35 @@ class K12(Page):
     parent_page_types = ['pages.HomePage']
 
 
+
+class ProductsAllies(Orderable, Allies):
+    page = ParentalKey('pages.Products', related_name='products_allies')
+    
+    
 class Products(Page):
     intro_heading = models.CharField(max_length=255)
-    intro = RichTextField()
+    intro_description = RichTextField()
     tutor_heading = models.CharField(max_length=255)
-    tutor = RichTextField()
+    tutor_description = RichTextField()
     concept_coach_heading = models.CharField(max_length=255)
-    concept_coach = RichTextField()
+    concept_coach_description = RichTextField()
     cnx_heading = models.CharField(max_length=255)
-    cnx = RichTextField()
+    cnx_description = RichTextField()
     allies_heading = models.CharField(max_length=255)
-    allies = RichTextField()
-    ally_1_heading = models.CharField(max_length=255)
-    ally_1 = RichTextField()
-    ally_2_heading = models.CharField(max_length=255)
-    ally_2 = RichTextField()
-    ally_3_heading = models.CharField(max_length=255)
-    ally_3 = RichTextField()
-    ally_4_heading = models.CharField(max_length=255)
-    ally_4 = RichTextField()
-    ally_5_heading = models.CharField(max_length=255)
-    ally_5 = RichTextField()
+    allies_description = RichTextField()
     
     api_fields = (
         'intro_heading', 
-        'intro', 
+        'intro_description', 
         'tutor_heading', 
-        'tutor', 
+        'tutor_description', 
         'concept_coach_heading', 
-        'concept_coach', 
+        'concept_coach_description', 
         'cnx_heading', 
-        'cnx', 
+        'cnx_description', 
         'allies_heading', 
-        'allies', 
-        'ally_1_heading', 
-        'ally_1', 
-        'ally_2_heading', 
-        'ally_2', 
-        'ally_3_heading', 
-        'ally_3', 
-        'ally_4_heading', 
-        'ally_4', 
-        'ally_5_heading', 
-        'ally_5', 
+        'allies_description',
+        'products_allies',  
         'slug', 
         'seo_title', 
         'search_description', 
@@ -500,25 +457,16 @@ class Products(Page):
     content_panels = [
         FieldPanel('title', classname="full title"),
         FieldPanel('intro_heading'),
-        FieldPanel('intro'),
+        FieldPanel('intro_description'),
         FieldPanel('tutor_heading'),
-        FieldPanel('tutor'),
+        FieldPanel('tutor_description'),
         FieldPanel('concept_coach_heading'),
-        FieldPanel('concept_coach'),
+        FieldPanel('concept_coach_description'),
         FieldPanel('cnx_heading'),
-        FieldPanel('cnx'),
+        FieldPanel('cnx_description'),
         FieldPanel('allies_heading'),
-        FieldPanel('allies'),
-        FieldPanel('ally_1_heading'),
-        FieldPanel('ally_1'),
-        FieldPanel('ally_2_heading'),
-        FieldPanel('ally_2'),
-        FieldPanel('ally_3_heading'),
-        FieldPanel('ally_3'),
-        FieldPanel('ally_4_heading'),
-        FieldPanel('ally_4'),
-        FieldPanel('ally_5_heading'),
-        FieldPanel('ally_5'),
+        FieldPanel('allies_description'),
+        InlinePanel('products_allies', label="Allies"),
     ]
     
     parent_page_types = ['pages.HomePage']
