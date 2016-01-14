@@ -6,8 +6,24 @@ from wagtail.wagtailadmin.edit_handlers import (FieldPanel,
                                                 InlinePanel)
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 
+from modelcluster.fields import ParentalKey
+
 # Create your models here.
 
+class Authors(models.Model):
+    name = models.CharField(max_length=255)
+        
+    api_fields = ('name', )
+    
+    panels = [
+        FieldPanel('name'),
+    ]
+        
+
+class BookAuthors(Orderable, Authors):
+    page = ParentalKey('books.Book', related_name='book_authors')
+    
+    
 class Book(Page):
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
@@ -31,6 +47,7 @@ class Book(Page):
         FieldPanel('publish_date'),
         FieldPanel('isbn_10'),
         FieldPanel('isbn_13'),
+        InlinePanel('book_authors', label="Authors"),
     ]
     
     api_fields = ('created',
@@ -40,7 +57,8 @@ class Book(Page):
                   'cover_image',
                   'publish_date',
                   'isbn_10',
-                  'isbn_13')
+                  'isbn_13'
+                  'book_authors',)
 
     parent_page_types = ['books.BookIndex']
 
