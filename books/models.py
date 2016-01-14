@@ -57,7 +57,7 @@ class Book(Page):
                   'cover_image',
                   'publish_date',
                   'isbn_10',
-                  'isbn_13'
+                  'isbn_13',
                   'book_authors',)
 
     parent_page_types = ['books.BookIndex']
