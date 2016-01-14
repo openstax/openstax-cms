@@ -163,6 +163,8 @@ class Allies(LinkFields):
     link_url = models.URLField(blank=True, help_text="Call to Action Link")
     link_text = models.CharField(max_length=255, help_text="Call to Action Text")
     
+    api_fields = ('heading', 'description', 'link_url', 'link_text', )
+    
     panels = [
         FieldPanel('heading'),
         FieldPanel('description'),
