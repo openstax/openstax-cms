@@ -163,6 +163,8 @@ class Allies(LinkFields):
     link_url = models.URLField(blank=True, help_text="Call to Action Link")
     link_text = models.CharField(max_length=255, help_text="Call to Action Text")
     
+    api_fields = ('heading', 'description', 'link_url', 'link_text', )
+    
     panels = [
         FieldPanel('heading'),
         FieldPanel('description'),
@@ -259,7 +261,10 @@ class HomePage(Page):
         'adopter_heading',
         'adopter_description',
         'adopter_cta_link',
-        'adopter_cta_text',)
+        'adopter_cta_text',
+        'slug',
+        'seo_title',
+        'search_description',)
     
     class Meta:
         verbose_name = "Home Page"
@@ -294,6 +299,13 @@ class HomePage(Page):
         FieldPanel('adopter_description'),
         FieldPanel('adopter_cta_link'),
         FieldPanel('adopter_cta_text'),
+    ]
+    
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        
     ]
         
     # we are controlling what types of pages are allowed under a homepage
@@ -354,9 +366,7 @@ class HigherEducation(Page):
         'higher_education_allies',
         'slug', 
         'seo_title', 
-        'search_description', 
-        'go_live_at', 
-        'expire_at', )
+        'search_description',)
     
     content_panels = [
         FieldPanel('title', classname="full title"),
@@ -376,6 +386,13 @@ class HigherEducation(Page):
         FieldPanel('allies_heading'),
         FieldPanel('allies_description'),
         InlinePanel('higher_education_allies', label="Allies"),
+    ]
+    
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        
     ]
     
     parent_page_types = ['pages.HomePage']
@@ -415,6 +432,13 @@ class K12(Page):
         FieldPanel('cnx_description'),
         FieldPanel('allies_heading'),
         FieldPanel('allies_description'),
+    ]
+    
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        
     ]
     
     parent_page_types = ['pages.HomePage']
@@ -469,6 +493,13 @@ class Products(Page):
         InlinePanel('products_allies', label="Allies"),
     ]
     
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        
+    ]
+    
     parent_page_types = ['pages.HomePage']
 
 
@@ -480,6 +511,13 @@ class Research(Page):
         FieldPanel('classroom_text'),
     ]
     
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        
+    ]
+    
     parent_page_types = ['pages.HomePage']
 
 
@@ -489,6 +527,13 @@ class ContactUs(Page):
     content_panels = [
         FieldPanel('title', classname="full title"),
         FieldPanel('classroom_text'),
+    ]
+    
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        
     ]
     
     parent_page_types = ['pages.HomePage']
@@ -511,14 +556,13 @@ class AboutUs(Page):
         'who_we_are', 
         'funder_intro', 
         'funders', 
-        'slug', 
-        'seo_title', 
-        'search_description',
         'strategic_advisors_intro',
         'strategic_advisors',
         'openstax_team_intro',
         'openstax_team'
-    )
+        'slug',
+        'seo_title',
+        'search_description',)
     
     content_panels = [
         FieldPanel('title', classname="full title"),
@@ -529,6 +573,13 @@ class AboutUs(Page):
         InlinePanel('strategic_advisors', label="Strategic Advisors"),
         FieldPanel('openstax_team_intro'),
         InlinePanel('openstax_team', label="OpenStax Team"),
+    ]
+    
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        
     ]
     
     parent_page_types = ['pages.HomePage']
@@ -551,6 +602,13 @@ class GeneralPage(Page):
         FieldPanel('title'),
         StreamFieldPanel('body'),
     ]
+    
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        
+    ]
 
 class Give(Page):
     touchnet_form = RawHTMLBlock()
@@ -558,6 +616,13 @@ class Give(Page):
     content_panels = [
         FieldPanel('title', classname="full title"),
         #FieldPanel('touchnet_form'),
+    ]
+    
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        
     ]
     
     parent_page_types = ['pages.HomePage']
@@ -582,6 +647,13 @@ class EcosystemAllies(Page):
         FieldPanel('classroom_text'),
     ]
     
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        
+    ]
+    
     parent_page_types = ['pages.HomePage']
 
 
@@ -591,6 +663,13 @@ class AdoptionForm(Page):
     content_panels = [
         FieldPanel('title', classname="full title"),
         FieldPanel('classroom_text'),
+    ]
+    
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        
     ]
     
     parent_page_types = ['pages.HomePage']
