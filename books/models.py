@@ -9,6 +9,20 @@ from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 from modelcluster.fields import ParentalKey
 
 
+class Quotes(models.Model):
+    quote_text = RichTextField()
+    quote_author = models.CharField(max_length=255)
+    quote_author_school = models.CharField(max_length=255)
+    
+    api_fields = ('quote_text', 'quote_author', 'quote_author_school', )
+    
+    panels = [
+        FieldPanel('quote_text'),
+        FieldPanel('quote_author'),
+        FieldPanel('quote_author_school'),
+    ]
+
+
 class Allies(models.Model):
     logo = models.ForeignKey(
         'wagtailimages.Image',
@@ -73,6 +87,10 @@ class Authors(models.Model):
     ]
     
 
+class BookQuotes(Orderable, Quotes):
+    ally = ParentalKey('books.Book', related_name='book_quotes')
+    
+
 class BookAllies(Orderable, Allies):
     ally = ParentalKey('books.Book', related_name='book_allies')
 
@@ -109,6 +127,7 @@ class Book(Page):
         FieldPanel('revision'),
         FieldPanel('description', classname="full"),
         ImageChooserPanel('cover_image'),
+        InlinePanel('book_quotes', label="Quotes"),
         InlinePanel('book_allies', label="Allies"),
         InlinePanel('book_student_resources', label="Student Resources"),
         InlinePanel('book_faculty_resources', label="Faculty Resources"),
@@ -123,6 +142,7 @@ class Book(Page):
                   'revision',
                   'description',
                   'cover_image',
+                  'book_quotes',
                   'book_allies',
                   'book_student_resources',
                   'book_faculty_resources',
