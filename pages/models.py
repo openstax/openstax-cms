@@ -171,54 +171,52 @@ class Allies(LinkFields):
         FieldPanel('link_url'),
         FieldPanel('link_text'),
     ]
+    
 
-
-# Home Page
-class HomePage(Page):
+class Quote(models.Model):
     IMAGE_ALIGNMENT_CHOICES = (
         ('L', 'Left Aligned'),
         ('R', 'Right Aligned'),
         ('F', 'Full Width'),
     )
-    quote_1_quote = RichTextField()
-    quote_1_image = models.ForeignKey(
+    quote_text = RichTextField()
+    quote_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
         related_name='+'
     )
-    quote_1_image_alignment = models.CharField(max_length=1,
+    quote_image_alignment = models.CharField(max_length=1,
                                       choices=IMAGE_ALIGNMENT_CHOICES,
-                                      default='F')
-    quote_1_cta_link = models.URLField(blank=True)
-    quote_1_cta_text = models.CharField(max_length=255)
-    quote_2_quote = RichTextField()
-    quote_2_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
+                                      blank=True,
+                                      null=True)
+    quote_link = models.URLField(blank=True, null=True)
+    quote_link_text = models.CharField(max_length=255, blank=True, null=True)
+    
+    api_fields = (
+        'quote_text', 
+        'quote_image', 
+        'quote_image_alignment', 
+        'quote_link', 
+        'quote_link_text', 
     )
-    quote_2_image_alignment = models.CharField(max_length=1,
-                                      choices=IMAGE_ALIGNMENT_CHOICES,
-                                      default='F')
-    quote_2_cta_link = models.URLField(blank=True)
-    quote_2_cta_text = models.CharField(max_length=255)
-    quote_3_quote = RichTextField()
-    quote_3_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-    quote_3_image_alignment = models.CharField(max_length=1,
-                                      choices=IMAGE_ALIGNMENT_CHOICES,
-                                      default='F')
-    quote_3_cta_link = models.URLField(blank=True)
-    quote_3_cta_text = models.CharField(max_length=255)    
+    
+    panels = [
+        FieldPanel('quote_text'),
+        ImageChooserPanel('quote_image'),
+        FieldPanel('quote_image_alignment'),
+        FieldPanel('quote_link'),
+        FieldPanel('quote_link_text'),
+    ]
+
+
+class HomePageQuotes(Orderable, Quote):
+    quote = ParentalKey('pages.HomePage', related_name='homepage_quotes')
+    
+    
+# Home Page
+class HomePage(Page):   
     header_2_text = RichTextField()
     higher_ed_heading = models.CharField(max_length=255)
     higher_ed_description = RichTextField()
@@ -234,21 +232,8 @@ class HomePage(Page):
     adopter_cta_text = models.CharField(max_length=255)
     
     api_fields = (
-        'quote_1_quote', 
-        'quote_1_image',
-        'quote_1_image_alignment',
-        'quote_1_cta_link',
-        'quote_1_cta_text',
-        'quote_2_quote',
-        'quote_2_image',
-        'quote_2_image_alignment',
-        'quote_2_cta_link',
-        'quote_2_cta_text',
-        'quote_3_quote',
-        'quote_3_image',
-        'quote_3_image_alignment',
-        'quote_3_cta_link',
-        'quote_3_cta_text',
+        'title',
+        'homepage_quotes',
         'header_2_text',
         'higher_ed_heading',
         'higher_ed_description',
@@ -271,21 +256,7 @@ class HomePage(Page):
 
     content_panels = [
         FieldPanel('title', classname="full title"),
-        FieldPanel('quote_1_quote'), 
-        ImageChooserPanel('quote_1_image'),
-        FieldPanel('quote_1_image_alignment'),
-        FieldPanel('quote_1_cta_link'),
-        FieldPanel('quote_1_cta_text'),
-        FieldPanel('quote_2_quote'),
-        ImageChooserPanel('quote_2_image'),
-        FieldPanel('quote_2_image_alignment'),
-        FieldPanel('quote_2_cta_link'),
-        FieldPanel('quote_2_cta_text'),
-        FieldPanel('quote_3_quote'),
-        ImageChooserPanel('quote_3_image'),
-        FieldPanel('quote_3_image_alignment'),
-        FieldPanel('quote_3_cta_link'),
-        FieldPanel('quote_3_cta_text'),
+        InlinePanel('homepage_quotes', label="Quotes"),
         FieldPanel('header_2_text'),
         FieldPanel('higher_ed_heading'),
         FieldPanel('higher_ed_description'),
