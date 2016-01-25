@@ -24,6 +24,13 @@ class Quotes(models.Model):
 
 
 class Allies(models.Model):
+    ALLY_CATEGORY = (
+        ('OH', 'Online Homework'),
+        ('AC', 'Adaptive Courseware'),
+        ('CT', 'Customized Tools'),
+    )
+    ally_category = models.CharField(max_length=2,
+                        choices=ALLY_CATEGORY)
     logo = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -36,9 +43,10 @@ class Allies(models.Model):
     link_url = models.URLField(blank=True, help_text="Call to Action Link")
     link_text = models.CharField(max_length=255, help_text="Call to Action Text")
     
-    api_fields = ('logo', 'heading', 'description', 'link_url', 'link_text', )
+    api_fields = ('ally_category', 'logo', 'heading', 'description', 'link_url', 'link_text', )
     
     panels = [
+        FieldPanel('ally_category'),
         ImageChooserPanel('logo'),
         FieldPanel('heading'),
         FieldPanel('description'),
