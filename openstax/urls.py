@@ -10,6 +10,7 @@ from wagtail.wagtailcore import urls as wagtail_urls
 from wagtail.contrib.wagtailapi import urls as wagtailapi_urls
 
 from api import urls as image_api_urls_v0
+from accounts import urls as user_api_urls
 
 urlpatterns = [
     url(r'^django-admin/', include(admin.site.urls)),
@@ -19,8 +20,9 @@ urlpatterns = [
     url(r'^images/', include(wagtailimages_urls)),
 
     url(r'^api/', include(wagtailapi_urls)),
+    url(r'^api/', include(user_api_urls)),
     url(r'^api/v0/images', include(image_api_urls_v0)),
-
+    
     # For anything not caught by a more specific rule above, hand over to
     # Wagtail's serving mechanism
     url(r'', include(wagtail_urls)),

@@ -131,25 +131,27 @@ ROOT_URLCONF = 'openstax.urls'
 WSGI_APPLICATION = 'openstax.wsgi.application'
 
 INSTALLED_APPS = (
+    #core
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    # 'django.contrib.sites',  # Wagtail uses its own site management logic
     'django.contrib.messages',
     'django.contrib.staticfiles',
-
+    'django.contrib.admin',
+    #contrib
     'compressor',
     'taggit',
     'modelcluster',
     'overextends',
-    'django.contrib.admin',
-    # Uncomment the next line to enable admin documentation:
-    # 'django.contrib.admindocs',
-    
+    'rest_framework',
+    'rest_framework.authtoken',
+    'rest_auth',
+    #custom
     'pages',
     'books',
     'news', 
-
+    'accounts',
+    #wagtail
     'wagtail.wagtailcore',
     'wagtail.wagtailadmin',
     'wagtail.wagtaildocs',
@@ -161,9 +163,7 @@ INSTALLED_APPS = (
     'wagtail.wagtailredirects',
     'wagtail.wagtailforms',
     'wagtail.wagtailsites',
-    'wagtail.contrib.wagtailapi',
-    'rest_framework',
-
+    'wagtail.contrib.wagtailapi'
 )
 
 # Add wagtail.contrib.wagtailsearchpromotions to INSTALLED_APPS
