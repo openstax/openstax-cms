@@ -20,8 +20,7 @@ urlpatterns = [
     url(r'^images/', include(wagtailimages_urls)),
 
     url(r'^api/', include(wagtailapi_urls)),
-    url(r'^api/', include(user_api_urls)),
-    url(r'^api/v0/images', include(image_api_urls_v0)),
+    url(r'^api/', include(api_urls)),
     
     # For anything not caught by a more specific rule above, hand over to
     # Wagtail's serving mechanism
