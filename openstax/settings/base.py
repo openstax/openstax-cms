@@ -161,7 +161,7 @@ INSTALLED_APPS = [
     'wagtail.wagtailredirects',
     'wagtail.wagtailforms',
     'wagtail.wagtailsites',
-
+    'wagtail.contrib.wagtailapi',
 ]
 
 # Add wagtail.contrib.wagtailsearchpromotions to INSTALLED_APPS
