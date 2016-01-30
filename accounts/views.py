@@ -19,7 +19,7 @@ def logout(request):
 
 @csrf_protect
 def oauth(request):
-    """A csrf protected view to gather login information
+    """A csrf protected view to gather request information
     and direct user to the link that begins the oauth procedure.
     """
     return redirect('/accounts/login/openstax')
