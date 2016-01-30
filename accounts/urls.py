@@ -10,6 +10,6 @@ urlpatterns = patterns('',
     url(r'^logout/$', 'accounts.views.logout',name='logout'),
     url(r'^done/$', 'accounts.views.done', name='done'),
     url(r'^profile/$', 'accounts.views.profile', name='profile'),
-    url(r'^oauth/$', 'accounts.views.oauth',name='oauth'),
+    url(r'^auth/$', 'accounts.views.auth',name='auth'),
     url(r'', include('social.apps.django_app.urls', namespace='social')),
 )
