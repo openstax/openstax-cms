@@ -219,9 +219,9 @@ WAGTAIL_SITE_NAME = 'openstax'
 #        ACCOUNTS SETTINGS       #
 ##################################
 
-APP_LOGIN_URL = '/admin/login'
-APP_LOGOUT_URL = '/admin/login'
-APP_PROFILE_URL = '/admin'
+ACC_APP_LOGIN_URL = '/admin/login'
+ACC_APP_LOGOUT_URL = '/admin/login'
+ACC_APP_PROFILE_URL = '/admin'
 
 ACCOUNTS_LOGIN_URL = 'https://accounts-qa.openstax.org/login?'
 AUTHORIZATION_URL = 'https://accounts-qa.openstax.org/oauth/authorize'

@@ -18,9 +18,9 @@ except ImportError:
 ##################################
 
 # Use default login, logout and profile urls
-APP_LOGIN_URL = None
-APP_LOGOUT_URL = None
-APP_PROFILE_URL = None
+ACC_APP_LOGIN_URL = None
+ACC_APP_LOGOUT_URL = None
+ACC_APP_PROFILE_URL = None
 
 ACCOUNTS_LOGIN_URL = 'https://accounts-qa.openstax.org/login?'
 AUTHORIZATION_URL = 'https://accounts-qa.openstax.org/oauth/authorize'

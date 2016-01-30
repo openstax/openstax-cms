@@ -13,8 +13,8 @@ from django.views.decorators.csrf import csrf_protect
 def logout(request):
     """Logs out user"""
     auth_logout(request)
-    if settings.APP_LOGOUT_URL:
-        return redirect(settings.APP_LOGOUT_URL)    
+    if settings.ACC_APP_LOGOUT_URL:
+        return redirect(settings.ACC_APP_LOGOUT_URL)    
     return redirect('login')
 
 @csrf_protect
@@ -27,8 +27,8 @@ def oauth(request):
 
 def login(request):
     """Displays login mechanism""" 
-    if settings.APP_LOGIN_URL:
-        return redirect(settings.APP_LOGIN_URL)
+    if settings.ACC_APP_LOGIN_URL:
+        return redirect(settings.ACC_APP_LOGIN_URL)
 
     if request.user.is_authenticated():
         return redirect('done')
@@ -36,8 +36,8 @@ def login(request):
 
 def home(request):
     """Home view for this app, redirects to login view"""
-    if settings.APP_LOGIN_URL:
-        return redirect(settings.APP_LOGIN_URL)
+    if settings.ACC_APP_LOGIN_URL:
+        return redirect(settings.ACC_APP_LOGIN_URL)
     return redirect('login')
 
 @login_required
@@ -48,6 +48,6 @@ def done(request):
 @login_required
 def profile(request):
     """displays user data"""
-    if settings.APP_PROFILE_URL:
-        return redirect(settings.APP_PROFILE_URL)
+    if settings.ACC_APP_PROFILE_URL:
+        return redirect(settings.ACC_APP_PROFILE_URL)
     return render(request,'profile.html')

@@ -17,8 +17,8 @@ class Integration(unittest.TestCase):
     def test_oauth_login(self):
         driver = self.driver
         driver.get("http://127.0.0.1:8000/accounts")
-        if settings.APP_LOGIN_URL:
-            self.assertEqual(driver.current_url,settings.APP_LOGIN_URL)
+        if settings.ACC_APP_LOGIN_URL:
+            self.assertEqual(driver.current_url,settings.ACC_APP_LOGIN_URL)
         else:
             self.assertEqual(driver.current_url,"http://127.0.0.1:8000/accounts/login/")
         connect_button=driver.find_element_by_name('connect')
@@ -32,13 +32,13 @@ class Integration(unittest.TestCase):
         self.assertIn(USERNAME,driver.page_source)
         logout_button = driver.find_element_by_id('openstax-logout')
         logout_button.click()
-        if settings.APP_LOGOUT_URL:
-            self.assertEqual(driver.current_url,settings.APP_LOGOUT_URL)
+        if settings.ACC_APP_LOGOUT_URL:
+            self.assertEqual(driver.current_url,settings.ACC_APP_LOGOUT_URL)
         else:
             self.assertEqual(driver.current_url,'http://127.0.0.1:8000/accounts/login/')
         driver.get("http://127.0.0.1:8000/accounts/profile")
-        if settings.APP_LOGIN_URL:
-            self.assertEqual(driver.current_url,settings.APP_LOGIN_URL)
+        if settings.ACC_APP_LOGIN_URL:
+            self.assertEqual(driver.current_url,settings.ACC_APP_LOGIN_URL)
         else:
             self.assertEqual(driver.current_url,'http://127.0.0.1:8000/accounts/login/?next=/accounts/profile/')
    
