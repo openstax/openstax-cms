@@ -228,14 +228,14 @@ ACC_APP_LOGIN_URL = '/admin/login'
 ACC_APP_LOGOUT_URL = '/admin/login'
 ACC_APP_PROFILE_URL = '/admin'
 
-ACCOUNTS_LOGIN_URL = 'https://accounts-qa.openstax.org/login?'
-AUTHORIZATION_URL = 'https://accounts-qa.openstax.org/oauth/authorize'
-ACCESS_TOKEN_URL = 'https://accounts-qa.openstax.org/oauth/token'
-USER_QUERY = 'https://accounts-qa.openstax.org/api/user?'
+ACCOUNTS_LOGIN_URL = None
+AUTHORIZATION_URL = None
+ACCESS_TOKEN_URL = None 
+USER_QUERY = None 
 
-SOCIAL_AUTH_OPENSTAX_KEY = '0a3c6b8c21091873805181b4b2a42cdbabeec6f6871332b817f59fac37033537'
-SOCIAL_AUTH_OPENSTAX_SECRET = '40035a7f2a7948b33ffce370af3918d692b958a6cc195e8b57b1fbe621a88157'
-
+SOCIAL_AUTH_OPENSTAX_KEY = None 
+SOCIAL_AUTH_OPENSTAX_SECRET = None
+ 
 AUTHENTICATION_BACKENDS = (
     'accounts.backend.OpenStaxOAuth2',
     'django.contrib.auth.backends.ModelBackend',

@@ -16,6 +16,11 @@ except ImportError:
 #        ACCOUNTS SETTINGS       #
 ##################################
 
+ACC_APP_LOGIN_URL = None
+ACC_APP_LOGOUT_URL = None
+ACC_APP_PROFILE_URL = None
+
+
 ACCOUNTS_LOGIN_URL = 'https://accounts-qa.openstax.org/login?'
 AUTHORIZATION_URL = 'https://accounts-qa.openstax.org/oauth/authorize'
 ACCESS_TOKEN_URL = 'https://accounts-qa.openstax.org/oauth/token'
