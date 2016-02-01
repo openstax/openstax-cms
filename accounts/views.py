@@ -33,7 +33,7 @@ def login(request):
 
     if request.user.is_authenticated():
         return redirect('done')
-    return render(request,'login.html')
+    return render(request,'oauth_login.html')
 
 def home(request):
     """Home view for this app, redirects to login view"""

@@ -10,7 +10,7 @@
     {% if user.is_authenticated %}
         {% include "logout.html" %}
     {% else %}
-        {% include "login.html" %}
+        {% include "oauth_login.html" %}
     {% endif %}
 {% endblock %}
 
