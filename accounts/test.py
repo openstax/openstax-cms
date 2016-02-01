@@ -1,19 +1,22 @@
 import unittest
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, WebDriverException
 from django.conf import settings
 
 USERNAME = 'openstax_cms_tester'
 PASSWORD = 'openstax_cms_tester'
 
+
+
 class Integration(unittest.TestCase):
 
     def setUp(self):
-        self.driver = webdriver.Firefox()
-        
+        try:
+            self.driver = webdriver.Firefox()
+        except WebDriverException:
+            raise unittest.SkipTest("selenium not available")
 
-    @unittest.skip("web driver won't work on travis")
     def test_oauth_login(self):
         driver = self.driver
         driver.get("http://127.0.0.1:8000/accounts")
