@@ -130,7 +130,7 @@ ROOT_URLCONF = 'openstax.urls'
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'openstax.wsgi.application'
 
-INSTALLED_APPS = [
+INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -162,7 +162,12 @@ INSTALLED_APPS = [
     'wagtail.wagtailforms',
     'wagtail.wagtailsites',
     'wagtail.contrib.wagtailapi',
-]
+
+    # Needed for accounts OAuth2 Authentication
+    'accounts',
+    'social.apps.django_app.default',
+
+)
 
 # Add wagtail.contrib.wagtailsearchpromotions to INSTALLED_APPS
 # if we're on Wagtail 1.1 or later.
@@ -230,12 +235,6 @@ USER_QUERY = 'https://accounts-qa.openstax.org/api/user?'
 
 SOCIAL_AUTH_OPENSTAX_KEY = '0a3c6b8c21091873805181b4b2a42cdbabeec6f6871332b817f59fac37033537'
 SOCIAL_AUTH_OPENSTAX_SECRET = '40035a7f2a7948b33ffce370af3918d692b958a6cc195e8b57b1fbe621a88157'
-
-INSTALLED_APPS = INSTALLED_APPS + [
-    'accounts',
-    # Need for accounts OAuth2 integration
-    'social.apps.django_app.default',
-]
 
 AUTHENTICATION_BACKENDS = (
     'accounts.backend.OpenStaxOAuth2',
