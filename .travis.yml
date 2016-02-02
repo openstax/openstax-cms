@@ -12,9 +12,8 @@ before_script:
   - createdb -U postgres openstax
   - python manage.py migrate
 script:
-  # same as 'python manage.py test books' but with a coverage wrapper
-  - coverage run --source=books manage.py test
-  - coverage run --source=pages manage.py test
+  # same as 'python manage.py test' but with a coverage wrapper
+  - coverage run manage.py test
 after_success:
   - coveralls
 notifications:
