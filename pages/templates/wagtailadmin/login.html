@@ -1,6 +1,16 @@
-{% overextends "wagtailadmin/login.html" %}
+{% extends "wagtailadmin/login.html" %}
 {% load static %}
 
 {% block branding_login %}
     <img src="/static/images/openstax.png" alt="Openstax" width="80" /> Login to OpenstaxCMS
 {% endblock %}
+
+{% block furniture %}
+{{ block.super }}
+    {% if user.is_authenticated %}
+        {% include "logout.html" %}
+    {% else %}
+        {% include "oauth_login.html" %}
+    {% endif %}
+{% endblock %}
+

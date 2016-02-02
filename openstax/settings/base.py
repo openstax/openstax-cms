@@ -131,7 +131,6 @@ ROOT_URLCONF = 'openstax.urls'
 WSGI_APPLICATION = 'openstax.wsgi.application'
 
 INSTALLED_APPS = (
-    #core
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -150,7 +149,6 @@ INSTALLED_APPS = (
     'pages',
     'books',
     'news', 
-    'accounts',
     #wagtail
     'wagtail.wagtailcore',
     'wagtail.wagtailadmin',
@@ -163,7 +161,12 @@ INSTALLED_APPS = (
     'wagtail.wagtailredirects',
     'wagtail.wagtailforms',
     'wagtail.wagtailsites',
-    'wagtail.contrib.wagtailapi'
+    'wagtail.contrib.wagtailapi',
+
+    # Needed for accounts OAuth2 Authentication
+    'accounts',
+    'social.apps.django_app.default',
+
 )
 
 # Add wagtail.contrib.wagtailsearchpromotions to INSTALLED_APPS
@@ -216,3 +219,26 @@ LOGGING = {
 
 # WAGTAIL SETTINGS
 WAGTAIL_SITE_NAME = 'openstax'
+
+##################################
+#        ACCOUNTS SETTINGS       #
+##################################
+
+ACC_APP_LOGIN_URL = '/admin/login'
+ACC_APP_LOGOUT_URL = '/admin/login'
+ACC_APP_PROFILE_URL = '/admin'
+
+ACCOUNTS_LOGIN_URL = None
+AUTHORIZATION_URL = None
+ACCESS_TOKEN_URL = None 
+USER_QUERY = None 
+
+SOCIAL_AUTH_OPENSTAX_KEY = None 
+SOCIAL_AUTH_OPENSTAX_SECRET = None
+ 
+AUTHENTICATION_BACKENDS = (
+    'accounts.backend.OpenStaxOAuth2',
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+
