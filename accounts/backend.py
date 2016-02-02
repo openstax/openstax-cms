@@ -1,8 +1,16 @@
 from django.conf import settings
 from social.backends.oauth import BaseOAuth2
-from urllib.parse import urlencode
 import json
-import urllib
+
+try:
+    from urllib.request import urlopen
+except ImportError:
+    from urllib import urlopen
+
+try:
+    from urllib.parse import urlencode
+except ImportError:
+    from urllib import urlencode
 
 
 class OpenStaxOAuth2(BaseOAuth2):
@@ -37,6 +45,6 @@ class OpenStaxOAuth2(BaseOAuth2):
             return None
 
     def urlopen(self,url):
-        with urllib.request.urlopen(url) as f:
+        with urlopen(url) as f:
             response = f.read()
         return response.decode("utf-8")
