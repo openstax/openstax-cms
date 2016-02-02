@@ -7,11 +7,6 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 # BASE_URL required for notification emails
 BASE_URL = 'http://localhost:8000'
 
-try:
-    from .local import *
-except ImportError:
-    pass
-
 ##################################
 #        ACCOUNTS SETTINGS       #
 ##################################
@@ -28,4 +23,11 @@ USER_QUERY = 'https://accounts-qa.openstax.org/api/user?'
 
 SOCIAL_AUTH_OPENSTAX_KEY = '0a3c6b8c21091873805181b4b2a42cdbabeec6f6871332b817f59fac37033537'
 SOCIAL_AUTH_OPENSTAX_SECRET = '40035a7f2a7948b33ffce370af3918d692b958a6cc195e8b57b1fbe621a88157'
+
+
+try:
+    from .local import *
+except ImportError:
+    pass
+
 
