@@ -174,7 +174,6 @@ class BookIndex(Page):
     subject_list_heading = models.CharField(max_length=255, blank=True, null=True)
     
     content_panels = Page.content_panels + [
-        FieldPanel('title'),
         FieldPanel('page_description'),
         FieldPanel('dev_standards_heading'),
         FieldPanel('dev_standard_1_heading'),
