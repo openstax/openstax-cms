@@ -171,6 +171,7 @@ class BookIndex(Page):
     dev_standard_2_description = RichTextField()
     dev_standard_3_heading = models.CharField(max_length=255, blank=True, null=True)
     dev_standard_3_description = RichTextField()
+    subject_list_heading = models.CharField(max_length=255, blank=True, null=True)
     
     content_panels = Page.content_panels + [
         FieldPanel('page_description'),
@@ -181,9 +182,11 @@ class BookIndex(Page):
         FieldPanel('dev_standard_2_description'),
         FieldPanel('dev_standard_3_heading'),
         FieldPanel('dev_standard_3_description'),
+        FieldPanel('subject_list_heading'),
     ]
     
     api_fields = (
+        'title',
         'page_description',
         'dev_standards_heading',
         'dev_standard_1_heading',
@@ -192,6 +195,7 @@ class BookIndex(Page):
         'dev_standard_2_description',
         'dev_standard_3_heading',
         'dev_standard_3_description',
+        'subject_list_heading',
     )
     
     parent_page_types = ['pages.HomePage']

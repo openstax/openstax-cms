@@ -146,6 +146,7 @@ INSTALLED_APPS = (
     'rest_framework.authtoken',
     'rest_auth',
     #custom
+    'admin_templates', #this overrides the admin templates
     'pages',
     'books',
     'news', 
