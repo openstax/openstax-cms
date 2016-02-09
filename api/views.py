@@ -1,7 +1,13 @@
 from rest_framework import viewsets
 from django.contrib.auth.models import User
-from .serializers import ImageSerializer, UserSerializer
+from .serializers import ImageSerializer, UserSerializer, PageSerializer 
 from wagtail.wagtailimages.models import Image
+from wagtail.wagtailcore.models import Page
+
+
+class PageViewSet(viewsets.ModelViewSet):
+    queryset = Page.objects.all()
+    serializer_class = PageSerializer
 
 class ImageViewSet(viewsets.ModelViewSet):
     queryset = Image.objects.all()
