@@ -10,12 +10,14 @@ class DocumentSerializer(serializers.HyperlinkedModelSerializer):
         model = Document
         fields = ('id',
                   'title',
+                  'file',
                   )
 class PageSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Page
         fields = ('id',
                   'title',
+                  'url',
                   )
 
 class ImageSerializer(serializers.HyperlinkedModelSerializer):
