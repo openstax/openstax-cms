@@ -27,3 +27,7 @@ Run with ``./manage.py test``
 
 SQLite is supported as an alternative to PostgreSQL - update the `DATABASES` setting
 in openstax/settings/base.py to use `'django.db.backends.sqlite3'` and set `NAME` to be the full path of your database file, as you would with a regular Django project.
+
+### APIs
+
+There are two REST APIs that can be used to access webpage content and other resources such as images.  The first is implemented using [Wagtail's API framework](http://docs.wagtail.io/en/v1.0/reference/contrib/api/index.html), and can be accessed through the links ``/api/v1/pages/``, ``/api/v1/images/``, ``/api/v1/documents/``.  The second is implemented using [Django's REST API framework](http://www.django-rest-framework.org/) and can be accessed through the link ``/api/v0``.
