@@ -221,6 +221,9 @@ LOGGING = {
 # WAGTAIL SETTINGS
 WAGTAIL_SITE_NAME = 'openstax'
 
+#used in page.models to retrieve book information
+CNX_ARCHIVE_URL = 'http://archive.cnx.org'
+
 ##################################
 #        ACCOUNTS SETTINGS       #
 ##################################

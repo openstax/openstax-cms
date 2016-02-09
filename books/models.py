@@ -1,10 +1,18 @@
+import urllib, json, dateutil.parser, requests
+from lxml import html, etree
+
 from django.db import models
+from django.conf import settings
+from django.core import checks
+from django.core.exceptions import ValidationError
+from django.utils.translation import ugettext_lazy as _
 
 from wagtail.wagtailcore.models import Page, Orderable
 from wagtail.wagtailcore.fields import RichTextField
 from wagtail.wagtailadmin.edit_handlers import (FieldPanel,
                                                 InlinePanel)
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
+from wagtail.wagtailsnippets.models import register_snippet
 
 from modelcluster.fields import ParentalKey
 
@@ -81,19 +89,36 @@ class FacultyResources(models.Model):
 
 class Authors(models.Model):
     name = models.CharField(max_length=255) 
-    university = models.CharField(max_length=255) 
-    country = models.CharField(max_length=255) 
-    senior_author = models.BooleanField()
+    university = models.CharField(max_length=255, null=True, blank=True) 
+    country = models.CharField(max_length=255, null=True, blank=True) 
+    senior_author = models.BooleanField(default=False)
+    display_at_top = models.BooleanField(default=False)
+    book = ParentalKey('books.Book', related_name='book_contributing_authors', null=True, blank=True)
     
-    api_fields = ('name', 'university', 'country', 'senior_author', )
+    api_fields = ('name', 'university', 'country', 'senior_author', 'display_at_top', )
     
     panels = [
         FieldPanel('name'),
         FieldPanel('university'),
         FieldPanel('country'),
         FieldPanel('senior_author'),
+        FieldPanel('display_at_top'),
+    ]
+
+class Subject(models.Model):
+    name = models.CharField(max_length=255)
+    
+    api_fields = ('name', )
+    
+    panels = [
+        FieldPanel('name'),
     ]
     
+    def __str__(self):
+        return self.name
+    
+
+register_snippet(Subject)
 
 class BookQuotes(Orderable, Quotes):
     ally = ParentalKey('books.Book', related_name='book_quotes')
@@ -109,17 +134,15 @@ class BookStudentResources(Orderable, StudentResources):
 
 class BookFacultyResources(Orderable, FacultyResources):
     resource = ParentalKey('books.Book', related_name='book_faculty_resources')
-
-
-class ContributingAuthors(Orderable, Authors):
-    resource = ParentalKey('books.Book', related_name='book_contributing_authors')
               
     
 class Book(Page):
     created = models.DateTimeField(auto_now_add=True)
+    cnx_id = models.CharField(max_length=255, help_text="This is used to pull relevant information from CNX.")
+    subject = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True)
     updated = models.DateTimeField(auto_now=True)
-    revision = models.CharField(max_length=255, blank=True, null=True)
-    description = RichTextField(blank=True)
+    short_description = RichTextField(blank=True, help_text="Description shown on Subject page.")
+    description = RichTextField(blank=True, help_text="Description shown on Book Detail page.")
     cover_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -127,12 +150,16 @@ class Book(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
-    publish_date = models.DateField(blank=True, null=True)
+    publish_date = models.DateField(blank=True, null=True, editable=False)
     isbn_10 = models.IntegerField(blank=True, null=True)
     isbn_13 = models.CharField(max_length=255, blank=True, null=True)
+    license_name = models.CharField(max_length=255, blank=True, null=True, editable=False)
+    license_version = models.CharField(max_length=255, blank=True, null=True, editable=False)
+    license_url = models.CharField(max_length=255, blank=True, null=True, editable=False)
 
     content_panels = Page.content_panels + [
-        FieldPanel('revision'),
+        FieldPanel('cnx_id'),
+        FieldPanel('subject'),
         FieldPanel('description', classname="full"),
         ImageChooserPanel('cover_image'),
         InlinePanel('book_quotes', label="Quotes"),
@@ -140,14 +167,15 @@ class Book(Page):
         InlinePanel('book_student_resources', label="Student Resources"),
         InlinePanel('book_faculty_resources', label="Faculty Resources"),
         InlinePanel('book_contributing_authors', label="Contributing Authors"),
-        FieldPanel('publish_date'),
         FieldPanel('isbn_10'),
         FieldPanel('isbn_13'),
     ]
     
     api_fields = ('created',
                   'updated',
-                  'revision',
+                  'title',
+                  'cnx_id',
+                  'subject',
                   'description',
                   'cover_image',
                   'book_quotes',
@@ -157,9 +185,60 @@ class Book(Page):
                   'book_contributing_authors',
                   'publish_date',
                   'isbn_10',
-                  'isbn_13')
+                  'isbn_13',
+                  'license_name',
+                  'license_version',
+                  'license_url',)
 
     parent_page_types = ['books.BookIndex']
+    
+    # we are overriding the save() method to go to CNX and fetch information with the CNX ID
+    def save(self, *args, **kwargs):
+        errors = super(Book, self).check(**kwargs)
+        
+        url = '{}/contents/{}.json'.format(settings.CNX_ARCHIVE_URL, self.cnx_id)
+        response = urllib.request.urlopen(url).read()
+        result = json.loads(response.decode('utf-8'))
+        
+        self.license_name = result['license']['name']
+        self.license_version = result['license']['version']
+        self.license_url = result['license']['url']
+        
+        self.publish_date = dateutil.parser.parse(result['created'])
+        
+        # now let's go fetch the authors from the preface
+        try:
+            preface = result['tree']['contents'][0]
+            if(preface['title'] == 'Preface'):
+                url = '{}/contents/{}.html'.format(settings.CNX_ARCHIVE_URL, preface['id'])
+                page = requests.get(url)
+                tree = html.fromstring(page.content)
+                # we need to save the book so we get a PK that we can attach to the authors
+                super(Book, self).save(*args, **kwargs)
+                ## FIXME - We need authors! Not h1 titles! For development only!
+                # classes will be contrib-auth and sr-contrib-auth
+                # use this to debug - http://videlibri.sourceforge.net/cgi-bin/xidelcgi
+                titles = tree.xpath('//*[@id="import-auto-id6936523"]/*[not(self::div and @data-type="newline")]//text() | //*[@id="import-auto-id6936523"]/text()')[1:-3]
+                for title in titles:
+                    author = title.split(',')[0].strip()
+                    try:
+                        university = title.split(',')[1].strip().replace('*', '')
+                    except IndexError:
+                        university = None
+                    # this is causing only one author to get created
+                    if author:
+                        author, created = Authors.objects.get_or_create(name=author, university=university, book=self)
+                        
+                    ## do we need to check if author is no longer there and delete them?
+                    
+                raise ValidationError({'cnx_id': _( "A Preface for the CNX ID you entered was not found.")})
+        except KeyError:
+            # should this just fail silently and allow them to override? If so, CNX ID not required?
+            raise ValidationError({'cnx_id': _( "The CNX ID you entered does not match a book with a Preface. This is required to parse authors.")})
+        
+        return super(Book, self).save(*args, **kwargs)
+        
+    
 
 
 class BookIndex(Page):
