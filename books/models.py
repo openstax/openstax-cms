@@ -1,17 +1,18 @@
 import urllib, json, dateutil.parser, requests
-from lxml import html, etree
+from lxml import html
 
 from django.db import models
 from django.conf import settings
-from django.core import checks
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
 from wagtail.wagtailcore.models import Page, Orderable
 from wagtail.wagtailcore.fields import RichTextField
 from wagtail.wagtailadmin.edit_handlers import (FieldPanel,
-                                                InlinePanel)
+                                                InlinePanel,
+                                                PageChooserPanel)
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
+from wagtail.wagtaildocs.edit_handlers import DocumentChooserPanel
 from wagtail.wagtailsnippets.models import register_snippet
 
 from modelcluster.fields import ParentalKey
@@ -21,9 +22,9 @@ class Quotes(models.Model):
     quote_text = RichTextField()
     quote_author = models.CharField(max_length=255)
     quote_author_school = models.CharField(max_length=255)
-    
+
     api_fields = ('quote_text', 'quote_author', 'quote_author_school', )
-    
+
     panels = [
         FieldPanel('quote_text'),
         FieldPanel('quote_author'),
@@ -46,13 +47,13 @@ class Allies(models.Model):
         on_delete=models.SET_NULL,
         related_name='+'
     )
-    heading = models.CharField(max_length=255) 
+    heading = models.CharField(max_length=255)
     description = RichTextField()
     link_url = models.URLField(blank=True, help_text="Call to Action Link")
     link_text = models.CharField(max_length=255, help_text="Call to Action Text")
-    
+
     api_fields = ('ally_category', 'logo', 'heading', 'description', 'link_url', 'link_text', )
-    
+
     panels = [
         FieldPanel('ally_category'),
         ImageChooserPanel('logo'),
@@ -64,26 +65,60 @@ class Allies(models.Model):
 
 
 class StudentResources(models.Model):
-    heading = models.CharField(max_length=255) 
+    heading = models.CharField(max_length=255)
     description = RichTextField()
-    
-    api_fields = ('heading', 'description', )
-    
+    link_external = models.URLField("External link", blank=True)
+    link_page = models.ForeignKey(
+        'wagtailcore.Page',
+        null=True,
+        blank=True,
+        related_name='+'
+    )
+    link_document = models.ForeignKey(
+        'wagtaildocs.Document',
+        null=True,
+        blank=True,
+        related_name='+'
+    )
+
+    api_fields = ('heading', 'description', 'link_external', 'link_page',
+                  'link_document', )
+
     panels = [
         FieldPanel('heading'),
         FieldPanel('description'),
+        FieldPanel('link_external'),
+        PageChooserPanel('link_page'),
+        DocumentChooserPanel('link_document'),
     ]
 
 
 class FacultyResources(models.Model):
-    heading = models.CharField(max_length=255) 
+    heading = models.CharField(max_length=255)
     description = RichTextField()
-    
-    api_fields = ('heading', 'description', )
-    
+    link_external = models.URLField("External link", blank=True)
+    link_page = models.ForeignKey(
+        'wagtailcore.Page',
+        null=True,
+        blank=True,
+        related_name='+'
+    )
+    link_document = models.ForeignKey(
+        'wagtaildocs.Document',
+        null=True,
+        blank=True,
+        related_name='+'
+    )
+
+    api_fields = ('heading', 'description', 'link_external', 'link_page',
+                  'link_document', )
+
     panels = [
         FieldPanel('heading'),
         FieldPanel('description'),
+        FieldPanel('link_external'),
+        PageChooserPanel('link_page'),
+        DocumentChooserPanel('link_document'),
     ]
     
 
