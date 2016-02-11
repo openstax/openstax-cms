@@ -239,39 +239,43 @@ class Book(Page):
         self.license_version = result['license']['version']
         self.license_url = result['license']['url']
         
-        self.publish_date = dateutil.parser.parse(result['created'])
-        
-        # now let's go fetch the authors from the preface
-        try:
-            preface = result['tree']['contents'][0]
-            if(preface['title'] == 'Preface'):
-                url = '{}/contents/{}.html'.format(settings.CNX_ARCHIVE_URL, preface['id'])
-                page = requests.get(url)
-                tree = html.fromstring(page.content)
-                # we need to save the book so we get a PK that we can attach to the authors
-                super(Book, self).save(*args, **kwargs)
-                ## FIXME - We need authors! Not h1 titles! For development only!
-                # classes will be contrib-auth and sr-contrib-auth
-                # use this to debug - http://videlibri.sourceforge.net/cgi-bin/xidelcgi
-                titles = tree.xpath('//*[@id="import-auto-id6936523"]/*[not(self::div and @data-type="newline")]//text() | //*[@id="import-auto-id6936523"]/text()')[1:-3]
-                for title in titles:
-                    author = title.split(',')[0].strip()
-                    try:
-                        university = title.split(',')[1].strip().replace('*', '')
-                    except IndexError:
-                        university = None
-                    # this is causing only one author to get created
-                    if author:
-                        author, created = Authors.objects.get_or_create(name=author, university=university, book=self)
-                        
-                    ## do we need to check if author is no longer there and delete them?
-                    
-                raise ValidationError({'cnx_id': _( "A Preface for the CNX ID you entered was not found.")})
-        except KeyError:
-            # should this just fail silently and allow them to override? If so, CNX ID not required?
-            raise ValidationError({'cnx_id': _( "The CNX ID you entered does not match a book with a Preface. This is required to parse authors.")})
+        #self.publish_date = dateutil.parser.parse(result['created'])
         
         return super(Book, self).save(*args, **kwargs)
+
+        #self.publish_date = dateutil.parser.parse(result['created'])
+
+        # now let's go fetch the authors from the preface
+        # try:
+        #     preface = result['tree']['contents'][0]
+        #     if(preface['title'] == 'Preface'):
+        #         url = '{}/contents/{}.html'.format(settings.CNX_ARCHIVE_URL, preface['id'])
+        #         page = requests.get(url)
+        #         tree = html.fromstring(page.content)
+        #         # we need to save the book so we get a PK that we can attach to the authors
+        #         super(Book, self).save(*args, **kwargs)
+        #         ## FIXME - We need authors! Not h1 titles! For development only!
+        #         # classes will be contrib-auth and sr-contrib-auth
+        #         # use this to debug - http://videlibri.sourceforge.net/cgi-bin/xidelcgi
+        #         titles = tree.xpath('//*[@id="import-auto-id6936523"]/*[not(self::div and @data-type="newline")]//text() | //*[@id="import-auto-id6936523"]/text()')[1:-3]
+        #         for title in titles:
+        #             author = title.split(',')[0].strip()
+        #             try:
+        #                 university = title.split(',')[1].strip().replace('*', '')
+        #             except IndexError:
+        #                 university = None
+        #             # this is causing only one author to get created
+        #             if author:
+        #                 author, created = Authors.objects.get_or_create(name=author, university=university, book=self)
+        #
+        #             ## do we need to check if author is no longer there and delete them?
+        #
+        #         raise ValidationError({'cnx_id': _( "A Preface for the CNX ID you entered was not found.")})
+        # except KeyError:
+        #     # should this just fail silently and allow them to override? If so, CNX ID not required?
+        #     raise ValidationError({'cnx_id': _( "The CNX ID you entered does not match a book with a Preface. This is required to parse authors.")})
+        #
+        # return super(Book, self).save(*args, **kwargs)
         
     
 
