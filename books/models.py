@@ -18,6 +18,8 @@ from wagtail.wagtailsnippets.models import register_snippet
 
 from modelcluster.fields import ParentalKey
 
+from allies.models import Ally
+
 
 class Quotes(models.Model):
     quote_text = RichTextField()
@@ -30,38 +32,6 @@ class Quotes(models.Model):
         FieldPanel('quote_text'),
         FieldPanel('quote_author'),
         FieldPanel('quote_author_school'),
-    ]
-
-
-class Allies(models.Model):
-    ALLY_CATEGORY = (
-        ('OH', 'Online Homework'),
-        ('AC', 'Adaptive Courseware'),
-        ('CT', 'Customized Tools'),
-    )
-    ally_category = models.CharField(max_length=2,
-                        choices=ALLY_CATEGORY)
-    logo = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-    heading = models.CharField(max_length=255)
-    description = RichTextField()
-    link_url = models.URLField(blank=True, help_text="Call to Action Link")
-    link_text = models.CharField(max_length=255, help_text="Call to Action Text")
-
-    api_fields = ('ally_category', 'logo', 'heading', 'description', 'link_url', 'link_text', )
-
-    panels = [
-        FieldPanel('ally_category'),
-        ImageChooserPanel('logo'),
-        FieldPanel('heading'),
-        FieldPanel('description'),
-        FieldPanel('link_url'),
-        FieldPanel('link_text'),
     ]
 
 
@@ -164,6 +134,27 @@ class Authors(models.Model):
         FieldPanel('display_at_top'),
     ]
 
+
+class BookAlly(models.Model):
+    ally = models.ForeignKey(
+        Ally,
+        null=True,
+        help_text="Manage allies through snippets.",
+        on_delete=models.SET_NULL,
+        related_name='allies_ally'
+    )
+    book_link_url = models.URLField(blank=True, help_text="Call to Action Link")
+    book_link_text = models.CharField(max_length=255, help_text="Call to Action Text")
+
+    api_fields = ('ally', 'book_link_url', 'book_link_text', )
+
+    panels = [
+        SnippetChooserPanel('ally'),
+        FieldPanel('book_link_url'),
+        FieldPanel('book_link_text'),
+    ]
+
+
 class Subject(models.Model):
     name = models.CharField(max_length=255)
     
@@ -179,22 +170,21 @@ class Subject(models.Model):
 
 register_snippet(Subject)
 
-class BookQuotes(Orderable, Quotes):
-    ally = ParentalKey('books.Book', related_name='book_quotes')
-    
 
-class BookAllies(Orderable, Allies):
-    ally = ParentalKey('books.Book', related_name='book_allies')
+class BookQuotes(Orderable, Quotes):
+    quote = ParentalKey('books.Book', related_name='book_quotes')
 
 
 class BookStudentResources(Orderable, StudentResources):
-    book_student_resource = ParentalKey('books.Book',
-                            related_name='book_student_resources')
+    book_student_resource = ParentalKey('books.Book', related_name='book_student_resources')
 
 
 class BookFacultyResources(Orderable, FacultyResources):
-    book_facutly_resource = ParentalKey('books.Book',
-                             related_name='book_faculty_resources')
+    book_faculty_resource = ParentalKey('books.Book', related_name='book_faculty_resources')
+
+
+class BookAllies(Orderable, BookAlly):
+    book_ally = ParentalKey('books.Book', related_name='book_allies')
               
     
 class Book(Page):
@@ -303,8 +293,6 @@ class Book(Page):
         #     raise ValidationError({'cnx_id': _( "The CNX ID you entered does not match a book with a Preface. This is required to parse authors.")})
         #
         # return super(Book, self).save(*args, **kwargs)
-        
-    
 
 
 class BookIndex(Page):
