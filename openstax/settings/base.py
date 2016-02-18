@@ -149,7 +149,8 @@ INSTALLED_APPS = (
     'admin_templates', #this overrides the admin templates
     'pages',
     'books',
-    'news', 
+    'news',
+    'allies',
     #wagtail
     'wagtail.wagtailcore',
     'wagtail.wagtailadmin',

@@ -12,10 +12,13 @@ from wagtail.wagtailadmin.edit_handlers import (FieldPanel,
                                                 InlinePanel,
                                                 PageChooserPanel)
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
+from wagtail.wagtailsnippets.edit_handlers import SnippetChooserPanel
 from wagtail.wagtaildocs.edit_handlers import DocumentChooserPanel
 from wagtail.wagtailsnippets.models import register_snippet
 
 from modelcluster.fields import ParentalKey
+
+from allies.models import Ally
 
 
 class Quotes(models.Model):
@@ -32,41 +35,30 @@ class Quotes(models.Model):
     ]
 
 
-class Allies(models.Model):
-    ALLY_CATEGORY = (
-        ('OH', 'Online Homework'),
-        ('AC', 'Adaptive Courseware'),
-        ('CT', 'Customized Tools'),
-    )
-    ally_category = models.CharField(max_length=2,
-                        choices=ALLY_CATEGORY)
-    logo = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
+class Resource(models.Model):
     heading = models.CharField(max_length=255)
     description = RichTextField()
-    link_url = models.URLField(blank=True, help_text="Call to Action Link")
-    link_text = models.CharField(max_length=255, help_text="Call to Action Text")
 
-    api_fields = ('ally_category', 'logo', 'heading', 'description', 'link_url', 'link_text', )
+    api_fields = ('heading', 'description', )
 
     panels = [
-        FieldPanel('ally_category'),
-        ImageChooserPanel('logo'),
         FieldPanel('heading'),
         FieldPanel('description'),
-        FieldPanel('link_url'),
-        FieldPanel('link_text'),
     ]
+
+    def __str__(self):
+        return self.heading
+
+register_snippet(Resource)
 
 
 class StudentResources(models.Model):
-    heading = models.CharField(max_length=255)
-    description = RichTextField()
+    resource = models.ForeignKey(
+        Resource,
+        null=True,
+        help_text="Manage resources through snippets.",
+        related_name='+'
+    )
     link_external = models.URLField("External link", blank=True)
     link_page = models.ForeignKey(
         'wagtailcore.Page',
@@ -81,12 +73,11 @@ class StudentResources(models.Model):
         related_name='+'
     )
 
-    api_fields = ('heading', 'description', 'link_external', 'link_page',
+    api_fields = ('resource', 'link_external', 'link_page',
                   'link_document', )
 
     panels = [
-        FieldPanel('heading'),
-        FieldPanel('description'),
+        SnippetChooserPanel('resource', Resource),
         FieldPanel('link_external'),
         PageChooserPanel('link_page'),
         DocumentChooserPanel('link_document'),
@@ -94,8 +85,12 @@ class StudentResources(models.Model):
 
 
 class FacultyResources(models.Model):
-    heading = models.CharField(max_length=255)
-    description = RichTextField()
+    resource = models.ForeignKey(
+        Resource,
+        null=True,
+        help_text="Manage resources through snippets.",
+        related_name='+'
+    )
     link_external = models.URLField("External link", blank=True)
     link_page = models.ForeignKey(
         'wagtailcore.Page',
@@ -110,12 +105,11 @@ class FacultyResources(models.Model):
         related_name='+'
     )
 
-    api_fields = ('heading', 'description', 'link_external', 'link_page',
+    api_fields = ('resource', 'link_external', 'link_page',
                   'link_document', )
 
     panels = [
-        FieldPanel('heading'),
-        FieldPanel('description'),
+        SnippetChooserPanel('resource', Resource),
         FieldPanel('link_external'),
         PageChooserPanel('link_page'),
         DocumentChooserPanel('link_document'),
@@ -140,6 +134,27 @@ class Authors(models.Model):
         FieldPanel('display_at_top'),
     ]
 
+
+class BookAlly(models.Model):
+    ally = models.ForeignKey(
+        Ally,
+        null=True,
+        help_text="Manage allies through snippets.",
+        on_delete=models.SET_NULL,
+        related_name='allies_ally'
+    )
+    book_link_url = models.URLField(blank=True, help_text="Call to Action Link")
+    book_link_text = models.CharField(max_length=255, help_text="Call to Action Text")
+
+    api_fields = ('ally', 'book_link_url', 'book_link_text', )
+
+    panels = [
+        SnippetChooserPanel('ally'),
+        FieldPanel('book_link_url'),
+        FieldPanel('book_link_text'),
+    ]
+
+
 class Subject(models.Model):
     name = models.CharField(max_length=255)
     
@@ -155,26 +170,28 @@ class Subject(models.Model):
 
 register_snippet(Subject)
 
-class BookQuotes(Orderable, Quotes):
-    ally = ParentalKey('books.Book', related_name='book_quotes')
-    
 
-class BookAllies(Orderable, Allies):
-    ally = ParentalKey('books.Book', related_name='book_allies')
+class BookQuotes(Orderable, Quotes):
+    quote = ParentalKey('books.Book', related_name='book_quotes')
 
 
 class BookStudentResources(Orderable, StudentResources):
-    resource = ParentalKey('books.Book', related_name='book_student_resources')  
+    book_student_resource = ParentalKey('books.Book', related_name='book_student_resources')
 
 
 class BookFacultyResources(Orderable, FacultyResources):
-    resource = ParentalKey('books.Book', related_name='book_faculty_resources')
+    book_faculty_resource = ParentalKey('books.Book', related_name='book_faculty_resources')
+
+
+class BookAllies(Orderable, BookAlly):
+    book_ally = ParentalKey('books.Book', related_name='book_allies')
               
     
 class Book(Page):
     created = models.DateTimeField(auto_now_add=True)
     cnx_id = models.CharField(max_length=255, help_text="This is used to pull relevant information from CNX.")
-    subject = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True)
+    subject = models.ForeignKey(Subject, on_delete=models.SET_NULL,
+                                null=True, related_name='+')
     updated = models.DateTimeField(auto_now=True)
     short_description = RichTextField(blank=True, help_text="Description shown on Subject page.")
     description = RichTextField(blank=True, help_text="Description shown on Book Detail page.")
@@ -194,7 +211,7 @@ class Book(Page):
 
     content_panels = Page.content_panels + [
         FieldPanel('cnx_id'),
-        FieldPanel('subject'),
+        SnippetChooserPanel('subject', Subject),
         FieldPanel('description', classname="full"),
         ImageChooserPanel('cover_image'),
         InlinePanel('book_quotes', label="Quotes"),
@@ -276,8 +293,6 @@ class Book(Page):
         #     raise ValidationError({'cnx_id': _( "The CNX ID you entered does not match a book with a Preface. This is required to parse authors.")})
         #
         # return super(Book, self).save(*args, **kwargs)
-        
-    
 
 
 class BookIndex(Page):
