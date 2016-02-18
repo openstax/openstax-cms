@@ -195,8 +195,9 @@ class Book(Page):
     updated = models.DateTimeField(auto_now=True)
     short_description = RichTextField(blank=True, help_text="Description shown on Subject page.")
     description = RichTextField(blank=True, help_text="Description shown on Book Detail page.")
-    cover_image = models.ForeignKey(
-        'wagtailimages.Image',
+    # we have to change this to a document upload to support SVGs - see
+    cover = models.ForeignKey(
+        'wagtaildocs.Document',
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
@@ -213,7 +214,7 @@ class Book(Page):
         FieldPanel('cnx_id'),
         SnippetChooserPanel('subject', Subject),
         FieldPanel('description', classname="full"),
-        ImageChooserPanel('cover_image'),
+        DocumentChooserPanel('cover'),
         InlinePanel('book_quotes', label="Quotes"),
         InlinePanel('book_allies', label="Allies"),
         InlinePanel('book_student_resources', label="Student Resources"),
@@ -229,7 +230,7 @@ class Book(Page):
                   'cnx_id',
                   'subject',
                   'description',
-                  'cover_image',
+                  'cover',
                   'book_quotes',
                   'book_allies',
                   'book_student_resources',
