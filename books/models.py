@@ -192,6 +192,11 @@ class Book(Page):
     cnx_id = models.CharField(max_length=255, help_text="This is used to pull relevant information from CNX.")
     subject = models.ForeignKey(Subject, on_delete=models.SET_NULL,
                                 null=True, related_name='+')
+
+    def get_subject_name(self):
+        return self.subject.name
+
+    subject_name = property(get_subject_name)
     updated = models.DateTimeField(auto_now=True)
     short_description = RichTextField(blank=True, help_text="Description shown on Subject page.")
     description = RichTextField(blank=True, help_text="Description shown on Book Detail page.")
@@ -228,7 +233,7 @@ class Book(Page):
                   'updated',
                   'title',
                   'cnx_id',
-                  'subject',
+                  'subject_name',
                   'description',
                   'cover',
                   'book_quotes',
@@ -244,7 +249,7 @@ class Book(Page):
                   'license_url',)
 
     parent_page_types = ['books.BookIndex']
-    
+
     # we are overriding the save() method to go to CNX and fetch information with the CNX ID
     def save(self, *args, **kwargs):
         errors = super(Book, self).check(**kwargs)
