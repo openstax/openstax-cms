@@ -24,7 +24,8 @@ class Ally(models.Model):
         related_name='+'
     )
     heading = models.CharField(max_length=255)
-    description = RichTextField()
+    short_description = RichTextField()
+    long_description = RichTextField()
     link_url = models.URLField(blank=True, help_text="Call to Action Link")
     link_text = models.CharField(max_length=255, help_text="Call to Action Text")
 
