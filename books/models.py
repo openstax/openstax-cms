@@ -72,15 +72,17 @@ class StudentResources(models.Model):
         blank=True,
         related_name='+'
     )
+    link_text = models.CharField(max_length=255, help_text="Call to Action Text")
 
     api_fields = ('resource', 'link_external', 'link_page',
-                  'link_document', )
+                  'link_document', 'link_text', )
 
     panels = [
         SnippetChooserPanel('resource', Resource),
         FieldPanel('link_external'),
         PageChooserPanel('link_page'),
         DocumentChooserPanel('link_document'),
+        FieldPanel('link_text'),
     ]
 
 
@@ -104,15 +106,17 @@ class FacultyResources(models.Model):
         blank=True,
         related_name='+'
     )
+    link_text = models.CharField(max_length=255, help_text="Call to Action Text")
 
     api_fields = ('resource', 'link_external', 'link_page',
-                  'link_document', )
+                  'link_document', 'link_text', )
 
     panels = [
         SnippetChooserPanel('resource', Resource),
         FieldPanel('link_external'),
         PageChooserPanel('link_page'),
         DocumentChooserPanel('link_document'),
+        FieldPanel('link_text'),
     ]
     
 
@@ -198,6 +202,7 @@ class Book(Page):
 
     subject_name = property(get_subject_name)
     updated = models.DateTimeField(auto_now=True)
+    is_ap = models.BooleanField(default=False)
     short_description = RichTextField(blank=True, help_text="Description shown on Subject page.")
     description = RichTextField(blank=True, help_text="Description shown on Book Detail page.")
     # we have to change this to a document upload to support SVGs - see
@@ -218,6 +223,7 @@ class Book(Page):
     content_panels = Page.content_panels + [
         FieldPanel('cnx_id'),
         SnippetChooserPanel('subject', Subject),
+        FieldPanel('is_ap'),
         FieldPanel('description', classname="full"),
         DocumentChooserPanel('cover'),
         InlinePanel('book_quotes', label="Quotes"),
@@ -234,6 +240,7 @@ class Book(Page):
                   'title',
                   'cnx_id',
                   'subject_name',
+                  'is_ap',
                   'description',
                   'cover',
                   'book_quotes',
