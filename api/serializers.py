@@ -20,13 +20,15 @@ class UserSerializer(UserDetailsSerializer):
     groups = serializers.StringRelatedField(many=True)
     
     class Meta(UserDetailsSerializer.Meta):
-        fields = ('first_name', 
+        fields = ('username',
+                  'first_name',
                   'last_name', 
                   'email', 
                   'is_staff', 
                   'is_superuser',
                   'groups')
-        read_only_fields = ('first_name', 
+        read_only_fields = ('username',
+                            'first_name',
                             'last_name', 
                             'email', 
                             'is_staff', 
