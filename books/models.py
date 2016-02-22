@@ -72,15 +72,17 @@ class StudentResources(models.Model):
         blank=True,
         related_name='+'
     )
+    link_text = models.CharField(max_length=255, help_text="Call to Action Text")
 
     api_fields = ('resource', 'link_external', 'link_page',
-                  'link_document', )
+                  'link_document', 'link_text', )
 
     panels = [
         SnippetChooserPanel('resource', Resource),
         FieldPanel('link_external'),
         PageChooserPanel('link_page'),
         DocumentChooserPanel('link_document'),
+        FieldPanel('link_text'),
     ]
 
 
@@ -104,15 +106,17 @@ class FacultyResources(models.Model):
         blank=True,
         related_name='+'
     )
+    link_text = models.CharField(max_length=255, help_text="Call to Action Text")
 
     api_fields = ('resource', 'link_external', 'link_page',
-                  'link_document', )
+                  'link_document', 'link_text', )
 
     panels = [
         SnippetChooserPanel('resource', Resource),
         FieldPanel('link_external'),
         PageChooserPanel('link_page'),
         DocumentChooserPanel('link_document'),
+        FieldPanel('link_text'),
     ]
     
 
