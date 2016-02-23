@@ -6,7 +6,7 @@ from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.utils.translation import ugettext_lazy as _
 
-from wagtail.wagtailcore.models import Page, Orderable
+from wagtail.wagtailcore.models import Page, Orderable, Site
 from wagtail.wagtailcore.fields import RichTextField
 from wagtail.wagtailadmin.edit_handlers import (FieldPanel,
                                                 InlinePanel,
@@ -205,7 +205,6 @@ class Book(Page):
     is_ap = models.BooleanField(default=False)
     short_description = RichTextField(blank=True, help_text="Description shown on Subject page.")
     description = RichTextField(blank=True, help_text="Description shown on Book Detail page.")
-    # we have to change this to a document upload to support SVGs - see
     cover = models.ForeignKey(
         'wagtaildocs.Document',
         null=True,
@@ -213,6 +212,15 @@ class Book(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+
+    def get_cover_url(self):
+        site = Site.objects.get(is_default_site=True)
+        if site.port == 80:
+            return "http://{}{}".format(site.hostname, self.cover.url)
+        else:
+            return "http://{}:{}{}".format(site.hostname, site.port, self.cover.url)
+
+    cover_url = property(get_cover_url)
     publish_date = models.DateField(blank=True, null=True, editable=False)
     isbn_10 = models.IntegerField(blank=True, null=True)
     isbn_13 = models.CharField(max_length=255, blank=True, null=True)
@@ -242,7 +250,7 @@ class Book(Page):
                   'subject_name',
                   'is_ap',
                   'description',
-                  'cover',
+                  'cover_url',
                   'book_quotes',
                   'book_allies',
                   'book_student_resources',
