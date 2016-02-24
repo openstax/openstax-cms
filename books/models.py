@@ -1,17 +1,14 @@
-import urllib, json, dateutil.parser, requests
-from lxml import html
+import urllib
+import json
 
 from django.db import models
 from django.conf import settings
-from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext_lazy as _
 
 from wagtail.wagtailcore.models import Page, Orderable, Site
 from wagtail.wagtailcore.fields import RichTextField
 from wagtail.wagtailadmin.edit_handlers import (FieldPanel,
                                                 InlinePanel,
                                                 PageChooserPanel)
-from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 from wagtail.wagtailsnippets.edit_handlers import SnippetChooserPanel
 from wagtail.wagtaildocs.edit_handlers import DocumentChooserPanel
 from wagtail.wagtailsnippets.models import register_snippet
@@ -118,7 +115,7 @@ class FacultyResources(models.Model):
         DocumentChooserPanel('link_document'),
         FieldPanel('link_text'),
     ]
-    
+
 
 class Authors(models.Model):
     name = models.CharField(max_length=255) 
@@ -170,7 +167,6 @@ class Subject(models.Model):
     
     def __str__(self):
         return self.name
-    
 
 register_snippet(Subject)
 
@@ -189,8 +185,8 @@ class BookFacultyResources(Orderable, FacultyResources):
 
 class BookAllies(Orderable, BookAlly):
     book_ally = ParentalKey('books.Book', related_name='book_allies')
-              
-    
+
+
 class Book(Page):
     created = models.DateTimeField(auto_now_add=True)
     cnx_id = models.CharField(max_length=255, help_text="This is used to pull relevant information from CNX.")
@@ -237,12 +233,12 @@ class Book(Page):
         InlinePanel('book_quotes', label="Quotes"),
         InlinePanel('book_allies', label="Allies"),
         InlinePanel('book_student_resources', label="Student Resources"),
-        InlinePanel('book_faculty_resources', label="Faculty Resources"),
+        InlinePanel('book_faculty_resources', label="Instructor Resources"),
         InlinePanel('book_contributing_authors', label="Contributing Authors"),
         FieldPanel('isbn_10'),
         FieldPanel('isbn_13'),
     ]
-    
+
     api_fields = ('created',
                   'updated',
                   'title',
