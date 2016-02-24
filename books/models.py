@@ -237,7 +237,7 @@ class Book(Page):
         InlinePanel('book_quotes', label="Quotes"),
         InlinePanel('book_allies', label="Allies"),
         InlinePanel('book_student_resources', label="Student Resources"),
-        InlinePanel('book_faculty_resources', label="Faculty Resources"),
+        InlinePanel('book_faculty_resources', label="Instructor Resources"),
         InlinePanel('book_contributing_authors', label="Contributing Authors"),
         FieldPanel('isbn_10'),
         FieldPanel('isbn_13'),
