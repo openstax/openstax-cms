@@ -1,17 +1,14 @@
-import urllib, json, dateutil.parser, requests
-from lxml import html
+import urllib
+import json
 
 from django.db import models
 from django.conf import settings
-from django.core.exceptions import ValidationError
-from django.utils.translation import ugettext_lazy as _
 
 from wagtail.wagtailcore.models import Page, Orderable, Site
 from wagtail.wagtailcore.fields import RichTextField
 from wagtail.wagtailadmin.edit_handlers import (FieldPanel,
                                                 InlinePanel,
                                                 PageChooserPanel)
-from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 from wagtail.wagtailsnippets.edit_handlers import SnippetChooserPanel
 from wagtail.wagtaildocs.edit_handlers import DocumentChooserPanel
 from wagtail.wagtailsnippets.models import register_snippet
