@@ -92,6 +92,7 @@ SECRET_KEY = 'wq21wtjo3@d_qfjvd-#td!%7gfy2updj2z+nev^k$iy%=m4_tr'
 
 
 MIDDLEWARE_CLASSES = [
+    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -101,6 +102,8 @@ MIDDLEWARE_CLASSES = [
     'wagtail.wagtailcore.middleware.SiteMiddleware',
     'wagtail.wagtailredirects.middleware.RedirectMiddleware',
 ]
+
+CORS_ORIGIN_REGEX_WHITELIST = ('^(https?://)?(\w+\.)?openstax\.org$', )
 
 from django.conf import global_settings
 TEMPLATES = [
@@ -145,6 +148,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
     'rest_auth',
+    'corsheaders',
     #custom
     'admin_templates', #this overrides the admin templates
     'pages',
