@@ -115,7 +115,7 @@ class FacultyResources(models.Model):
         DocumentChooserPanel('link_document'),
         FieldPanel('link_text'),
     ]
-    
+
 
 class Authors(models.Model):
     name = models.CharField(max_length=255) 
@@ -167,7 +167,6 @@ class Subject(models.Model):
     
     def __str__(self):
         return self.name
-    
 
 register_snippet(Subject)
 
@@ -186,8 +185,8 @@ class BookFacultyResources(Orderable, FacultyResources):
 
 class BookAllies(Orderable, BookAlly):
     book_ally = ParentalKey('books.Book', related_name='book_allies')
-              
-    
+
+
 class Book(Page):
     created = models.DateTimeField(auto_now_add=True)
     cnx_id = models.CharField(max_length=255, help_text="This is used to pull relevant information from CNX.")
@@ -239,7 +238,7 @@ class Book(Page):
         FieldPanel('isbn_10'),
         FieldPanel('isbn_13'),
     ]
-    
+
     api_fields = ('created',
                   'updated',
                   'title',
