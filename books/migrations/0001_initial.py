@@ -97,7 +97,7 @@ class Migration(migrations.Migration):
             ],
         ),
         migrations.CreateModel(
-            name='Resource',
+            name='FacultyResource',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('heading', models.CharField(max_length=255)),
@@ -179,7 +179,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='studentresources',
             name='resource',
-            field=models.ForeignKey(help_text='Manage resources through snippets.', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to='books.Resource'),
+            field=models.ForeignKey(help_text='Manage resources through snippets.', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to='books.FacultyResource'),
         ),
         migrations.AddField(
             model_name='facultyresources',
@@ -194,7 +194,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='facultyresources',
             name='resource',
-            field=models.ForeignKey(help_text='Manage resources through snippets.', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to='books.Resource'),
+            field=models.ForeignKey(help_text='Manage resources through snippets.', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to='books.FacultyResource'),
         ),
         migrations.AddField(
             model_name='bookally',
