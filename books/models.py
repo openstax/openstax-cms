@@ -49,6 +49,23 @@ class FacultyResource(models.Model):
 register_snippet(FacultyResource)
 
 
+class StudentResource(models.Model):
+    heading = models.CharField(max_length=255)
+    description = RichTextField()
+
+    api_fields = ('heading', 'description', )
+
+    panels = [
+        FieldPanel('heading'),
+        FieldPanel('description'),
+    ]
+
+    def __str__(self):
+        return self.heading
+
+register_snippet(StudentResource)
+
+
 class FacultyResources(models.Model):
     resource = models.ForeignKey(
         FacultyResource,
@@ -76,6 +93,40 @@ class FacultyResources(models.Model):
 
     panels = [
         SnippetChooserPanel('resource', FacultyResource),
+        FieldPanel('link_external'),
+        PageChooserPanel('link_page'),
+        DocumentChooserPanel('link_document'),
+        FieldPanel('link_text'),
+    ]
+
+
+class StudentResources(models.Model):
+    resource = models.ForeignKey(
+        StudentResource,
+        null=True,
+        help_text="Manage resources through snippets.",
+        related_name='+'
+    )
+    link_external = models.URLField("External link", blank=True)
+    link_page = models.ForeignKey(
+        'wagtailcore.Page',
+        null=True,
+        blank=True,
+        related_name='+'
+    )
+    link_document = models.ForeignKey(
+        'wagtaildocs.Document',
+        null=True,
+        blank=True,
+        related_name='+'
+    )
+    link_text = models.CharField(max_length=255, help_text="Call to Action Text")
+
+    api_fields = ('resource', 'link_external', 'link_page',
+                  'link_document', 'link_text', )
+
+    panels = [
+        SnippetChooserPanel('resource', StudentResource),
         FieldPanel('link_external'),
         PageChooserPanel('link_page'),
         DocumentChooserPanel('link_document'),
@@ -145,6 +196,10 @@ class BookFacultyResources(Orderable, FacultyResources):
     book_faculty_resource = ParentalKey('books.Book', related_name='book_faculty_resources')
 
 
+class BookStudentResources(Orderable, StudentResources):
+    book_student_resource = ParentalKey('books.Book', related_name='book_student_resources')
+
+
 class BookAllies(Orderable, BookAlly):
     book_ally = ParentalKey('books.Book', related_name='book_allies')
 
@@ -194,6 +249,7 @@ class Book(Page):
         DocumentChooserPanel('cover'),
         InlinePanel('book_quotes', label="Quotes"),
         InlinePanel('book_allies', label="Allies"),
+        InlinePanel('book_student_resources', label="Student Resources"),
         InlinePanel('book_faculty_resources', label="Instructor Resources"),
         InlinePanel('book_contributing_authors', label="Contributing Authors"),
         FieldPanel('isbn_10'),
@@ -210,6 +266,7 @@ class Book(Page):
                   'cover_url',
                   'book_quotes',
                   'book_allies',
+                  'book_student_resources',
                   'book_faculty_resources',
                   'book_contributing_authors',
                   'publish_date',
