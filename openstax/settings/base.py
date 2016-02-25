@@ -103,7 +103,7 @@ MIDDLEWARE_CLASSES = [
     'wagtail.wagtailredirects.middleware.RedirectMiddleware',
 ]
 
-CORS_ORIGIN_REGEX_WHITELIST = ('^(https?://)?(\w+\.)?openstax\.org$', )
+CORS_ORIGIN_REGEX_WHITELIST = ('^(.*\.)?openstax\.org$', )
 
 from django.conf import global_settings
 TEMPLATES = [
