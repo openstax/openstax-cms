@@ -1,6 +1,5 @@
 from django.db import models
 from django import forms
-from django.http import JsonResponse
 
 from wagtail.wagtailcore.models import Page, Orderable
 from wagtail.wagtailcore.fields import RichTextField, StreamField
@@ -12,12 +11,8 @@ from wagtail.wagtailadmin.edit_handlers import (FieldPanel,
                                                 PageChooserPanel)
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 from wagtail.wagtaildocs.edit_handlers import DocumentChooserPanel
-from wagtail.wagtailsnippets.models import register_snippet
-from wagtail.wagtailsearch import index
-
-from wagtail.wagtailcore.blocks import TextBlock, ChooserBlock, StructBlock, ListBlock, FieldBlock, CharBlock, RichTextBlock, PageChooserBlock, RawHTMLBlock
+from wagtail.wagtailcore.blocks import StructBlock, FieldBlock, RawHTMLBlock
 from wagtail.wagtailimages.blocks import ImageChooserBlock
-from wagtail.wagtaildocs.blocks import DocumentChooserBlock
 
 from modelcluster.fields import ParentalKey
 
@@ -101,6 +96,7 @@ class CarouselItem(LinkFields):
 # NOTE: Consider joining Funders, StrategicAdvisors, and OpenStaxTeam under
 # the same superclass in future code updates.
 
+
 class Funders(LinkFields):
     name = models.CharField(max_length=255, help_text="Funder Name")
     image = models.ForeignKey(
@@ -119,6 +115,8 @@ class Funders(LinkFields):
         ImageChooserPanel('image'),
         FieldPanel('description'),
     ]
+
+
 class StrategicAdvisors(LinkFields):
     name = models.CharField(max_length=255, help_text="Strategic Advisor Name")
     image = models.ForeignKey(
@@ -137,6 +135,8 @@ class StrategicAdvisors(LinkFields):
         ImageChooserPanel('image'),
         FieldPanel('description'),
     ]
+
+
 class OpenStaxTeam(LinkFields):
     name = models.CharField(max_length=255, help_text="Team Member Name")
     image = models.ForeignKey(
@@ -171,7 +171,7 @@ class Allies(LinkFields):
         FieldPanel('link_url'),
         FieldPanel('link_text'),
     ]
-    
+
 
 class Quote(models.Model):
     IMAGE_ALIGNMENT_CHOICES = (
@@ -213,8 +213,8 @@ class Quote(models.Model):
 
 class HomePageQuotes(Orderable, Quote):
     quote = ParentalKey('pages.HomePage', related_name='homepage_quotes')
-    
-    
+
+
 # Home Page
 class HomePage(Page):   
     header_2_text = RichTextField()
@@ -299,8 +299,8 @@ class HomePage(Page):
 
 class HigherEducationAllies(Orderable, Allies):
     page = ParentalKey('pages.HigherEducation', related_name='higher_education_allies')
-    
-    
+
+
 class HigherEducation(Page):
     intro_heading = models.CharField(max_length=255)
     intro_description = RichTextField()
@@ -415,11 +415,10 @@ class K12(Page):
     parent_page_types = ['pages.HomePage']
 
 
-
 class ProductsAllies(Orderable, Allies):
     page = ParentalKey('pages.Products', related_name='products_allies')
-    
-    
+
+
 class Products(Page):
     intro_heading = models.CharField(max_length=255)
     intro_description = RichTextField()
@@ -513,10 +512,14 @@ class ContactUs(Page):
 class AboutUsFunders(Orderable, Funders):
     page = ParentalKey('pages.AboutUs', related_name='funders')
 
+
 class AboutUsStrategicAdvisors(Orderable, StrategicAdvisors):
-    page = ParentalKey('pages.AboutUs', related_name='strategic_advisors')   
+    page = ParentalKey('pages.AboutUs', related_name='strategic_advisors')
+
+
 class AboutUsOpenStaxTeam(Orderable, OpenStaxTeam):
-    page = ParentalKey('pages.AboutUs', related_name='openstax_team')   
+    page = ParentalKey('pages.AboutUs', related_name='openstax_team')
+
 
 class AboutUs(Page):
     who_we_are = RichTextField()
@@ -581,6 +584,7 @@ class GeneralPage(Page):
         
     ]
 
+
 class Give(Page):
     touchnet_form = RawHTMLBlock()
 
@@ -644,6 +648,3 @@ class AdoptionForm(Page):
     ]
     
     parent_page_types = ['pages.HomePage']
-
-
-#class GeneralHTMLPage(Page): #this will be used for confirmations/forms from sales force, these won't be editable
