@@ -241,6 +241,22 @@ class Book(Page):
     license_name = models.CharField(max_length=255, blank=True, null=True, editable=False)
     license_version = models.CharField(max_length=255, blank=True, null=True, editable=False)
     license_url = models.CharField(max_length=255, blank=True, null=True, editable=False)
+    high_resolution_pdf = models.ForeignKey(
+        'wagtaildocs.Document',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    low_resolution_pdf = models.ForeignKey(
+        'wagtaildocs.Document',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    ibook_link = models.URLField(blank=True, help_text="Link to iBook")
+    webview_link = models.URLField(blank=True, help_text="Link to CNX Webview book")
 
     content_panels = Page.content_panels + [
         FieldPanel('cnx_id'),
@@ -255,6 +271,10 @@ class Book(Page):
         InlinePanel('book_contributing_authors', label="Contributing Authors"),
         FieldPanel('isbn_10'),
         FieldPanel('isbn_13'),
+        DocumentChooserPanel('high_resolution_pdf'),
+        DocumentChooserPanel('low_resolution_pdf'),
+        FieldPanel('ibook_link'),
+        FieldPanel('webview_link'),
     ]
 
     api_fields = ('created',
@@ -275,7 +295,11 @@ class Book(Page):
                   'isbn_13',
                   'license_name',
                   'license_version',
-                  'license_url',)
+                  'license_url',
+                  'high_resolution_pdf',
+                  'low_resolution_pdf',
+                  'ibook_link',
+                  'webview_link',)
 
     parent_page_types = ['books.BookIndex']
 
