@@ -7,6 +7,6 @@
 
 {% block furniture %}
 {{ block.super }}
-<a href="{% url 'social:begin' 'openstax' %}" class="btn">Login with accounts</a>
+<a href="{% url 'social:begin' 'openstax' %}?next=/admin" class="btn">Login with accounts</a>
 {% endblock %}
 
