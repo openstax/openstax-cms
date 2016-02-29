@@ -1,7 +1,0 @@
-<form action="{% url 'auth' %}" method="post" >
-{% csrf_token %}
-<input type="submit" name="connect" value="Login using Openstax Accounts OAuth2 Provider">
-{% if next %}
-<input type="hidden" name="next" value="{{ next }}" />
-{% endif %}
-</form>
