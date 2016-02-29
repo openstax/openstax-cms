@@ -80,7 +80,6 @@ STATIC_URL = '/static/'
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
     'compressor.finders.CompressorFinder',
 ]
 
@@ -90,6 +89,7 @@ STATICFILES_FINDERS = [
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'wq21wtjo3@d_qfjvd-#td!%7gfy2updj2z+nev^k$iy%=m4_tr'
 
+CORS_ORIGIN_REGEX_WHITELIST = ('^(.*\.)?openstax\.org$', )
 
 MIDDLEWARE_CLASSES = [
     'corsheaders.middleware.CorsMiddleware',
@@ -103,9 +103,23 @@ MIDDLEWARE_CLASSES = [
     'wagtail.wagtailredirects.middleware.RedirectMiddleware',
 ]
 
-CORS_ORIGIN_REGEX_WHITELIST = ('^(.*\.)?openstax\.org$', )
+AUTHENTICATION_BACKENDS = (
+    'accounts.backend.OpenStax',
+    'django.contrib.auth.backends.ModelBackend',
+)
 
-from django.conf import global_settings
+SOCIAL_AUTH_PIPELINE = (
+    'social.pipeline.social_auth.social_details',
+    'social.pipeline.social_auth.social_uid',
+    'social.pipeline.social_auth.auth_allowed',
+    'social.pipeline.social_auth.social_user',
+    'social.pipeline.user.create_user',
+    'accounts.pipelines.save_profile',
+    'social.pipeline.social_auth.associate_user',
+    'social.pipeline.social_auth.load_extra_data',
+    'social.pipeline.user.user_details',
+)
+
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -120,6 +134,8 @@ TEMPLATES = [
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
                 'django.core.context_processors.request',
+                'social.apps.django_app.context_processors.backends',
+                'social.apps.django_app.context_processors.login_redirect',
             ],
             'builtins': [
                 'overextends.templatetags.overextends_tags',
@@ -149,12 +165,14 @@ INSTALLED_APPS = (
     'rest_framework.authtoken',
     'rest_auth',
     'corsheaders',
+    'social.apps.django_app.default',
     #custom
     'admin_templates', #this overrides the admin templates
     'pages',
     'books',
     'news',
     'allies',
+    'accounts',
     #wagtail
     'wagtail.wagtailcore',
     'wagtail.wagtailadmin',
@@ -168,21 +186,7 @@ INSTALLED_APPS = (
     'wagtail.wagtailforms',
     'wagtail.wagtailsites',
     'wagtail.contrib.wagtailapi',
-
-    # Needed for accounts OAuth2 Authentication
-    'accounts',
-    'social.apps.django_app.default',
-
 )
-
-# Add wagtail.contrib.wagtailsearchpromotions to INSTALLED_APPS
-# if we're on Wagtail 1.1 or later.
-# NB this is a quick-and-dirty version check that won't work with
-# full generality (double-digit versions, alpha/beta releases)
-from wagtail.wagtailcore import __version__
-if __version__.split('.') > ['1', '0']:
-    INSTALLED_APPS = list(INSTALLED_APPS) + ['wagtail.contrib.wagtailsearchpromotions']
-
 
 EMAIL_SUBJECT_PREFIX = '[openstax] '
 
@@ -228,26 +232,3 @@ WAGTAIL_SITE_NAME = 'openstax'
 
 #used in page.models to retrieve book information
 CNX_ARCHIVE_URL = 'http://archive.cnx.org'
-
-##################################
-#        ACCOUNTS SETTINGS       #
-##################################
-
-ACC_APP_LOGIN_URL = '/admin/login'
-ACC_APP_LOGOUT_URL = '/admin/login'
-ACC_APP_PROFILE_URL = '/admin'
-
-ACCOUNTS_LOGIN_URL = None
-AUTHORIZATION_URL = None
-ACCESS_TOKEN_URL = None 
-USER_QUERY = None 
-
-SOCIAL_AUTH_OPENSTAX_KEY = None 
-SOCIAL_AUTH_OPENSTAX_SECRET = None
- 
-AUTHENTICATION_BACKENDS = (
-    'accounts.backend.OpenStaxOAuth2',
-    'django.contrib.auth.backends.ModelBackend',
-)
-
-

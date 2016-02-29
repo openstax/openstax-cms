@@ -7,10 +7,6 @@
 
 {% block furniture %}
 {{ block.super }}
-    {% if user.is_authenticated %}
-        {% include "logout.html" %}
-    {% else %}
-        {% include "oauth_login.html" %}
-    {% endif %}
+<a href="{% url 'social:begin' 'openstax' %}?next=/admin" class="btn">Login with accounts</a>
 {% endblock %}
 

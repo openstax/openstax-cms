@@ -22,15 +22,13 @@ class UserSerializer(UserDetailsSerializer):
     class Meta(UserDetailsSerializer.Meta):
         fields = ('username',
                   'first_name',
-                  'last_name', 
-                  'email', 
+                  'last_name',
                   'is_staff', 
                   'is_superuser',
                   'groups')
         read_only_fields = ('username',
                             'first_name',
                             'last_name', 
-                            'email', 
                             'is_staff', 
                             'is_superuser',
                             'groups')
