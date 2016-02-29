@@ -20,8 +20,6 @@ class OpenStax(BaseOAuth2):
     ]
 
     def get_user_details(self, response):
-        print('get user details')
-        print(response)
         """Return user details from openstax account's"""
         return {'username': response.get('username'),
                 'first_name':response.get('first_name'),
@@ -30,12 +28,10 @@ class OpenStax(BaseOAuth2):
 
     def user_data(self, access_token, *args, **kwargs):
         """Loads user data from service"""
-        print('user data')
         url = self.USER_QUERY + urlencode({
             'access_token': access_token
         })
         try:
-            print(json.loads(self.urlopen(url)))
             return json.loads(self.urlopen(url))
         except ValueError:
             return None
