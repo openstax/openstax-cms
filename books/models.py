@@ -248,6 +248,15 @@ class Book(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+
+    def get_high_res_pdf_url(self):
+        site = Site.objects.get(is_default_site=True)
+        if site.port == 80:
+            return "http://{}{}".format(site.hostname, self.high_resolution_pdf.url)
+        else:
+            return "http://{}:{}{}".format(site.hostname, site.port, self.high_resolution_pdf.url)
+
+    high_resolution_pdf_url = property(get_high_res_pdf_url)
     low_resolution_pdf = models.ForeignKey(
         'wagtaildocs.Document',
         null=True,
@@ -255,6 +264,15 @@ class Book(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+
+    def get_low_res_pdf_url(self):
+        site = Site.objects.get(is_default_site=True)
+        if site.port == 80:
+            return "http://{}{}".format(site.hostname, self.low_resolution_pdf.url)
+        else:
+            return "http://{}:{}{}".format(site.hostname, site.port, self.low_resolution_pdf.url)
+
+    low_resolution_pdf_url = property(get_low_res_pdf_url)
     ibook_link = models.URLField(blank=True, help_text="Link to iBook")
     webview_link = models.URLField(blank=True, help_text="Link to CNX Webview book")
 
@@ -279,6 +297,7 @@ class Book(Page):
 
     api_fields = ('created',
                   'updated',
+                  'slug',
                   'title',
                   'cnx_id',
                   'subject_name',
@@ -296,8 +315,8 @@ class Book(Page):
                   'license_name',
                   'license_version',
                   'license_url',
-                  'high_resolution_pdf',
-                  'low_resolution_pdf',
+                  'high_resolution_pdf_url',
+                  'low_resolution_pdf_url',
                   'ibook_link',
                   'webview_link',)
 
