@@ -275,6 +275,7 @@ class Book(Page):
     low_resolution_pdf_url = property(get_low_res_pdf_url)
     ibook_link = models.URLField(blank=True, help_text="Link to iBook")
     webview_link = models.URLField(blank=True, help_text="Link to CNX Webview book")
+    concept_coach_link = models.URLField(blank=True, help_text="Link to Concept Coach")
 
     content_panels = Page.content_panels + [
         FieldPanel('cnx_id'),
@@ -293,6 +294,7 @@ class Book(Page):
         DocumentChooserPanel('low_resolution_pdf'),
         FieldPanel('ibook_link'),
         FieldPanel('webview_link'),
+        FieldPanel('concept_coach_link'),
     ]
 
     api_fields = ('created',
@@ -318,7 +320,8 @@ class Book(Page):
                   'high_resolution_pdf_url',
                   'low_resolution_pdf_url',
                   'ibook_link',
-                  'webview_link',)
+                  'webview_link',
+                  'concept_coach_link',)
 
     parent_page_types = ['books.BookIndex']
 
