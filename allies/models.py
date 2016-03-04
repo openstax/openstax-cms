@@ -16,7 +16,7 @@ class Ally(models.Model):
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
-        related_name='+'
+        related_name='logo'
     )
     heading = models.CharField(max_length=255)
     short_description = RichTextField()
