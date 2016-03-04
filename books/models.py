@@ -162,10 +162,28 @@ class BookAlly(models.Model):
         on_delete=models.SET_NULL,
         related_name='allies_ally'
     )
+
+    def get_ally_heading(self):
+        return self.ally.heading
+    ally_heading = property(get_ally_heading)
+
+    def get_ally_short_description(self):
+        return self.ally.short_description
+    ally_short_description = property(get_ally_short_description)
+
+    def get_ally_logo(self):
+        site = Site.objects.get(is_default_site=True)
+        if site.port == 80:
+            return "http://{}/api/v0/images/{}".format(site.hostname, self.ally.logo.id)
+        else:
+            return "http://{}:{}/api/v0/images/{}".format(site.hostname, site.port, self.ally.logo.id)
+    ally_logo = property(get_ally_logo)
+
     book_link_url = models.URLField(blank=True, help_text="Call to Action Link")
     book_link_text = models.CharField(max_length=255, help_text="Call to Action Text")
 
-    api_fields = ('ally', 'book_link_url', 'book_link_text', )
+    api_fields = ('ally_heading', 'ally_short_description', 'ally_logo', 'book_link_url',
+                  'book_link_text', )
 
     panels = [
         SnippetChooserPanel('ally'),
