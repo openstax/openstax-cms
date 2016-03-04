@@ -166,6 +166,7 @@ INSTALLED_APPS = (
     'rest_auth',
     'corsheaders',
     'social.apps.django_app.default',
+    'storages',
     #custom
     'admin_templates', #this overrides the admin templates
     'pages',
