@@ -1,7 +1,24 @@
 from rest_framework import serializers
 from rest_auth.serializers import UserDetailsSerializer
 from wagtail.wagtailimages.models import Image
+from wagtail.wagtailcore.models import Page
+from wagtail.wagtaildocs.models import Document
 
+
+class DocumentSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Document
+        fields = ('id',
+                  'title',
+                  'file',
+                  )
+class PageSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Page
+        fields = ('id',
+                  'title',
+                  'url',
+                  )
 
 class ImageSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
