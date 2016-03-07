@@ -5,8 +5,10 @@ from __future__ import unicode_literals
 from django.db import migrations
 from django.contrib.auth.models import Group
 
-def add_faculty_group(*args,**kwargs):
-    Group.objects.create(name='Faculty') 
+
+def add_faculty_group(*args, **kwargs):
+    Group.objects.create(name='Faculty')
+
 
 class Migration(migrations.Migration):
 

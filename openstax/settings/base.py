@@ -226,7 +226,7 @@ LOGGING = {
             'class': 'logging.FileHandler',
             'filename': 'server.log',
             'formatter': 'simple'
-        },        
+        },
     },
     'loggers': {
         'django.request': {
