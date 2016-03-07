@@ -174,6 +174,7 @@ INSTALLED_APPS = (
     'news',
     'allies',
     'accounts',
+    'snippets',
     #wagtail
     'wagtail.wagtailcore',
     'wagtail.wagtailadmin',
