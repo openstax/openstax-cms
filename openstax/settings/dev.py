@@ -20,7 +20,12 @@ SOCIAL_AUTH_OPENSTAX_SECRET = '40035a7f2a7948b33ffce370af3918d692b958a6cc195e8b5
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/admin/'
 SOCIAL_AUTH_LOGIN_URL = '/'
 
+LOGGING['handlers']['file']['filename']='dev.log' 
+
+# Disable Python Social Auth Warnings
+LOGGING['disable_existing_loggers']=True
 try:
     from .local import *
 except ImportError:
     pass
+

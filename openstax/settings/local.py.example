@@ -26,3 +26,8 @@ SECRET_KEY = 'enter-a-long-unguessable-string-here'
 # DEBUG_TOOLBAR_CONFIG = {
 #     'INTERCEPT_REDIRECTS': False,
 # }
+
+SALESFORCE = { 'username' : '',
+               'password' : '',
+               'security_token' : '' } 
+
