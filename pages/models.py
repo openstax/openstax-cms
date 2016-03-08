@@ -294,6 +294,7 @@ class HomePage(Page):
         'pages.AdoptionForm',
         'books.BookIndex',
         'news.NewsIndex',
+        'allies.Ally',
         ]
 
 

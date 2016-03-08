@@ -1,12 +1,21 @@
 from django.db import models
 
+from wagtail.wagtailcore.models import Page
 from wagtail.wagtailcore.fields import RichTextField
-from wagtail.wagtailadmin.edit_handlers import FieldPanel, MultiFieldPanel
+from wagtail.wagtailadmin.edit_handlers import FieldPanel, MultiFieldPanel, InlinePanel
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
-from wagtail.wagtailsnippets.models import register_snippet
+
+from modelcluster.fields import ParentalKey
+
+from snippets.models import Subject
 
 
-class Ally(models.Model):
+class AllySubject(models.Model):
+    subject = models.ForeignKey(Subject)
+    ally = ParentalKey('Ally', related_name='ally_subjects')
+
+
+class Ally(Page):
     online_homework = models.BooleanField(default=False)
     adaptive_courseware = models.BooleanField(default=False)
     customization_tools = models.BooleanField(default=False)
@@ -24,10 +33,11 @@ class Ally(models.Model):
     link_url = models.URLField(blank=True, help_text="Call to Action Link")
     link_text = models.CharField(max_length=255, help_text="Call to Action Text")
 
-    api_fields = ('online_homework', 'adaptive_courseware', 'customization_tools', 'logo', 'heading',
+    api_fields = ('online_homework', 'adaptive_courseware', 'customization_tools', 'subjects',
+                  'logo', 'heading',
                   'short_description', 'long_description' )
 
-    panels = [
+    content_panels = Page.content_panels + [
         MultiFieldPanel(
         [
           FieldPanel('online_homework'),
@@ -36,13 +46,9 @@ class Ally(models.Model):
         ],
           heading="Categories",
         ),
+        InlinePanel('ally_subjects', label="Subjects"),
         ImageChooserPanel('logo'),
         FieldPanel('heading'),
         FieldPanel('short_description'),
         FieldPanel('long_description'),
     ]
-
-    def __str__(self):
-        return self.heading
-
-register_snippet(Ally)

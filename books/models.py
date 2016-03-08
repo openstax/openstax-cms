@@ -12,10 +12,11 @@ from wagtail.wagtailadmin.edit_handlers import (FieldPanel,
                                                 PageChooserPanel)
 from wagtail.wagtailsnippets.edit_handlers import SnippetChooserPanel
 from wagtail.wagtaildocs.edit_handlers import DocumentChooserPanel
-from wagtail.wagtailsnippets.models import register_snippet
+
 
 from modelcluster.fields import ParentalKey
 
+from snippets.models import Subject, FacultyResource, StudentResource
 from allies.models import Ally
 
 
@@ -31,40 +32,6 @@ class Quotes(models.Model):
         FieldPanel('quote_author'),
         FieldPanel('quote_author_school'),
     ]
-
-
-class FacultyResource(models.Model):
-    heading = models.CharField(max_length=255)
-    description = RichTextField()
-
-    api_fields = ('heading', 'description', )
-
-    panels = [
-        FieldPanel('heading'),
-        FieldPanel('description'),
-    ]
-
-    def __str__(self):
-        return self.heading
-
-register_snippet(FacultyResource)
-
-
-class StudentResource(models.Model):
-    heading = models.CharField(max_length=255)
-    description = RichTextField()
-
-    api_fields = ('heading', 'description', )
-
-    panels = [
-        FieldPanel('heading'),
-        FieldPanel('description'),
-    ]
-
-    def __str__(self):
-        return self.heading
-
-register_snippet(StudentResource)
 
 
 class FacultyResources(models.Model):
@@ -190,21 +157,6 @@ class BookAlly(models.Model):
         FieldPanel('book_link_url'),
         FieldPanel('book_link_text'),
     ]
-
-
-class Subject(models.Model):
-    name = models.CharField(max_length=255)
-    
-    api_fields = ('name', )
-    
-    panels = [
-        FieldPanel('name'),
-    ]
-    
-    def __str__(self):
-        return self.name
-
-register_snippet(Subject)
 
 
 class BookQuotes(Orderable, Quotes):
