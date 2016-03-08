@@ -1,21 +1,21 @@
 language: python
 python:
-  - "3.5"
+- '3.5'
 addons:
-  postgresql: "9.4"
+  postgresql: '9.4'
 before_install:
-  - pip install coverage
-  - pip install coveralls
+- openssl aes-256-cbc -K $encrypted_025c1544cb17_key -iv $encrypted_025c1544cb17_iv
+  -in openstax/settings/local.py.travis -out openstax/settings/local.py -d
+- pip install coverage
+- pip install coveralls
 install:
-  - pip install -r requirements/dev.txt
+- pip install -r requirements/dev.txt
 before_script:
-  - createdb -U postgres openstax
-  - python manage.py migrate
+- createdb -U postgres openstax
 script:
-  # same as 'python manage.py test' but with a coverage wrapper
-  - coverage run manage.py test
+- coverage run manage.py test --liveserver=localhost:8001 --verbosity=2 --settings=openstax.settings.dev
 after_success:
-  - coveralls
+- coveralls
 notifications:
   email: false
 sudo: false
