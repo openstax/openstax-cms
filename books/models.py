@@ -246,6 +246,12 @@ class Book(Page):
     ibook_link = models.URLField(blank=True, help_text="Link to iBook")
     webview_link = models.URLField(blank=True, help_text="Link to CNX Webview book")
     concept_coach_link = models.URLField(blank=True, help_text="Link to Concept Coach")
+    bookshare_link = models.URLField(blank=True, help_text="Link to Bookshare resources")
+    amazon_link = models.URLField(blank=True, help_text="Link to Amazon")
+    amazon_price = models.DecimalField(default=0.00, max_digits=6, decimal_places=2)
+    amazon_blurb = RichTextField(blank=True)
+    bookstore_link = models.URLField(blank=True, help_text="Link to Bookstore")
+    bookstore_blurb = RichTextField(blank=True)
 
     content_panels = Page.content_panels + [
         FieldPanel('cnx_id'),
@@ -265,6 +271,12 @@ class Book(Page):
         FieldPanel('ibook_link'),
         FieldPanel('webview_link'),
         FieldPanel('concept_coach_link'),
+        FieldPanel('bookshare_link'),
+        FieldPanel('amazon_link'),
+        FieldPanel('amazon_price'),
+        FieldPanel('amazon_blurb'),
+        FieldPanel('bookstore_link'),
+        FieldPanel('bookstore_blurb'),
     ]
 
     api_fields = ('created',
@@ -291,7 +303,13 @@ class Book(Page):
                   'low_resolution_pdf_url',
                   'ibook_link',
                   'webview_link',
-                  'concept_coach_link',)
+                  'concept_coach_link',
+                  'bookshare_link',
+                  'amazon_link',
+                  'amazon_price',
+                  'amazon_blurb',
+                  'bookstore_link',
+                  'bookstore_blurb',)
 
     parent_page_types = ['books.BookIndex']
 
