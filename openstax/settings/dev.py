@@ -25,6 +25,8 @@ SOCIAL_AUTH_SANITIZE_REDIRECTS = False
 
 # Disable Python Social Auth Warnings
 LOGGING['disable_existing_loggers'] = True
+
+INSTALLED_APPS = INSTALLED_APPS+["sslserver"]
 try:
     from .local import *
 except ImportError:
