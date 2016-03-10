@@ -13,15 +13,16 @@ from wagtail.tests.utils import WagtailPageTests
 exempt_urls = ['http://localhost:8001/admin/',
                'http://localhost:8001/',
                'http://localhost:8001/django-admin/',
-]
+               ]
 not_exempt_urls = ['http://localhost:8001/api',
                    'http://localhost:8001/api/',
                    'http://localhost:8001/api/user',
-]
-HTTP_TEST_HOST='localhost:8001'
-class sslConnections(LiveServerTestCase,WagtailPageTests):
-    GUI = False
+                   ]
+HTTP_TEST_HOST = 'localhost:8001'
 
+
+class sslConnections(LiveServerTestCase, WagtailPageTests):
+    GUI = False
 
     def test_exempt_patterns(self):
         exempt_patterns = settings.SECURE_REDIRECT_EXEMPT
@@ -29,7 +30,7 @@ class sslConnections(LiveServerTestCase,WagtailPageTests):
             MATCH_FOUND = False
             for pattern in exempt_patterns:
                 prog = re.compile(pattern)
-            
+
                 if prog.match(url):
                     MATCH_FOUND = True
                     break
@@ -43,9 +44,9 @@ class sslConnections(LiveServerTestCase,WagtailPageTests):
                 prog = re.compile(pattern)
                 if prog.fullmatch(url):
                     fail_message = "\n url '{0}' match pattern '{1}':"\
-                                   "\n{2}".format(url,pattern,str(prog.match(url)))
-                    self.fail(fail_message);
-
+                                   "\n{2}".format(
+                                       url, pattern, str(prog.match(url)))
+                    self.fail(fail_message)
 
     def setUp(self):
         super(WagtailPageTests, self).setUp()
@@ -69,8 +70,7 @@ class sslConnections(LiveServerTestCase,WagtailPageTests):
             response = self.client.get(url,
                                        follow=False,
                                        HTTP_HOST=HTTP_TEST_HOST)
-            self.assertEqual(response.status_code,200)
-   
+            self.assertEqual(response.status_code, 200)
 
     def test_protected_urls(self):
 
@@ -78,7 +78,7 @@ class sslConnections(LiveServerTestCase,WagtailPageTests):
             response = self.client.get(url,
                                        follow=False,
                                        HTTP_HOST=HTTP_TEST_HOST)
-            self.assertEqual(response.status_code,301)
-            self.assertIn('https',response.url)
+            self.assertEqual(response.status_code, 301)
+            self.assertIn('https', response.url)
 
 
