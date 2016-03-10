@@ -141,9 +141,10 @@ class BookAlly(models.Model):
     def get_ally_logo(self):
         site = Site.objects.get(is_default_site=True)
         if site.port == 80:
-            return "http://{}/api/v0/images/{}".format(site.hostname, self.ally.logo.id)
+            return "https://{}/api/v0/images/{}".format(site.hostname, self.ally.logo.id)
         else:
-            return "http://{}:{}/api/v0/images/{}".format(site.hostname, site.port, self.ally.logo.id)
+            return "https://{}:{}/api/v0/images/{}".format(site.hostname, site.port,
+                                                           self.ally.logo.id)
     ally_logo = property(get_ally_logo)
 
     book_link_url = models.URLField(blank=True, help_text="Call to Action Link")
