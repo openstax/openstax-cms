@@ -17,7 +17,7 @@ class UserView(viewsets.ModelViewSet):
         # assuming only social auth is openstax accounts for now
         if not user.groups.filter(name="Faculty").exists() and hasattr(user, 'social_auth') and user.social_auth.exists():
             accounts_id = user.social_auth.values()[0]['uid']
-            with Salesforce(**settings.SALESFORCE) as sf:
+            with Salesforce() as sf:
                 status = sf.faculty_status(accounts_id)
             if status == u'Confirmed':
                 faculty_group = Group.objects.get_by_natural_key('Faculty')

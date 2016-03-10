@@ -75,7 +75,10 @@ class Integration(LiveServerTestCase, WagtailPageTests):
         super(LiveServerTestCase, self).tearDown()
 
 
-class SalesforceTest(unittest.TestCase):
+class SalesforceTest(LiveServerTestCase,WagtailPageTests):
+    def setUp(self):
+        super(WagtailPageTests, self).setUp()
+        super(LiveServerTestCase, self).setUp()
 
     def test_login(self):
         sf = SimpleSalesforce(**settings.SALESFORCE)
@@ -89,22 +92,22 @@ class SalesforceTest(unittest.TestCase):
             contact_info['records'][0]['Id'], u'003U000001erXyqIAE')
 
     def test_faculty_confirmed(self):
-        with Salesforce(**settings.SALESFORCE) as sf:
+        with Salesforce() as sf:
             status = sf.faculty_status(0)
             self.assertEqual(status, u'Confirmed')
 
     def test_faculty_unknown(self):
-        with Salesforce(**settings.SALESFORCE) as sf:
+        with Salesforce() as sf:
             status = sf.faculty_status(1)
             self.assertIsNone(status)
 
     def test_faculty_pending(self):
-        with Salesforce(**settings.SALESFORCE) as sf:
+        with Salesforce() as sf:
             status = sf.faculty_status(2)
             self.assertEqual(status, u'Pending')
 
     def test_faculty_rejected(self):
-        with Salesforce(**settings.SALESFORCE) as sf:
+        with Salesforce() as sf:
             status = sf.faculty_status(3)
             self.assertEqual(status, u'Rejected')
 
@@ -116,7 +119,7 @@ class SalesforceTest(unittest.TestCase):
             else:
                 last_message = None
         with self.assertRaises(RuntimeError):
-            with Salesforce(**settings.SALESFORCE) as sf:
+            with Salesforce() as sf:
                 raise RuntimeError("test context manager error handling")
         with open(settings.LOGGING['handlers']['file']['filename'], 'r') as f:
             lines = f.readlines()
@@ -124,15 +127,27 @@ class SalesforceTest(unittest.TestCase):
         self.assertNotEqual(last_message, new_message)
         self.assertIn("test context manager error handling", new_message)
 
-        with Salesforce(username=settings.SALESFORCE['username'],
-                        password=settings.SALESFORCE['password'],
-                        session_id=''):
+    @override_settings(SALESFORCE={})
+    def test_context_manager_handle_init_errors(self):
+        with open(settings.LOGGING['handlers']['file']['filename'], 'r') as f:
+            lines = f.readlines()
+            if lines:
+                last_message = lines[-1]
+            else:
+                last_message = None
+
+        with Salesforce():
             pass
-        last_message = new_message
+
         with open(settings.LOGGING['handlers']['file']['filename'], 'r') as f:
             lines = f.readlines()
             new_message = lines[-1]
         self.assertNotEqual(last_message, new_message)
         self.assertIn(
             'You must provide login information or an instance and token', new_message)
+        responce=self.client.get('/api/user/',follow=True, secure=True)
+        self.assertEqual(responce.status_code,200)
+    def tearDown(self):
+        super(WagtailPageTests, self).tearDown()
+        super(LiveServerTestCase, self).tearDown()
 
