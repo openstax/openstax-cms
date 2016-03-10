@@ -92,7 +92,6 @@ SECRET_KEY = 'wq21wtjo3@d_qfjvd-#td!%7gfy2updj2z+nev^k$iy%=m4_tr'
 CORS_ORIGIN_REGEX_WHITELIST = ('^(.*\.)?openstax\.org$', )
 
 MIDDLEWARE_CLASSES = [
-    'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -150,7 +149,7 @@ ROOT_URLCONF = 'openstax.urls'
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'openstax.wsgi.application'
 
-INSTALLED_APPS = [
+INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -189,7 +188,7 @@ INSTALLED_APPS = [
     'wagtail.wagtailforms',
     'wagtail.wagtailsites',
     'wagtail.contrib.wagtailapi',
-]
+)
 
 EMAIL_SUBJECT_PREFIX = '[openstax] '
 
@@ -252,9 +251,3 @@ WAGTAIL_SITE_NAME = 'openstax'
 
 #used in page.models to retrieve book information
 CNX_ARCHIVE_URL = 'http://archive.cnx.org'
-
-SECURE_SSL_REDIRECT = True
-
-SECURE_REDIRECT_EXEMPT = [
-    r'^(?!api)',  # If url contains 'api' then it is not exempt, otherwise the url is exempt
-]

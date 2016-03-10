@@ -1,3 +1,2 @@
 -r base.txt
 selenium
-django-sslserver==0.19
