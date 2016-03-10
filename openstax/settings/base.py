@@ -92,6 +92,7 @@ SECRET_KEY = 'wq21wtjo3@d_qfjvd-#td!%7gfy2updj2z+nev^k$iy%=m4_tr'
 CORS_ORIGIN_REGEX_WHITELIST = ('^(.*\.)?openstax\.org$', )
 
 MIDDLEWARE_CLASSES = [
+    'django.middleware.security.SecurityMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -101,6 +102,7 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'wagtail.wagtailcore.middleware.SiteMiddleware',
     'wagtail.wagtailredirects.middleware.RedirectMiddleware',
+
 ]
 
 AUTHENTICATION_BACKENDS = (
@@ -251,3 +253,9 @@ WAGTAIL_SITE_NAME = 'openstax'
 
 #used in page.models to retrieve book information
 CNX_ARCHIVE_URL = 'http://archive.cnx.org'
+
+SECURE_SSL_REDIRECT = True
+
+SECURE_REDIRECT_EXEMPT = [
+    r'^(?!api)',  # all api urls are not exempt
+]
