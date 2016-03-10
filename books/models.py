@@ -153,7 +153,7 @@ class BookAlly(models.Model):
                   'book_link_text', )
 
     panels = [
-        SnippetChooserPanel('ally'),
+        FieldPanel('ally'),
         FieldPanel('book_link_url'),
         FieldPanel('book_link_text'),
     ]
