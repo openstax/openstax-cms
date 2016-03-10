@@ -8,9 +8,9 @@ logger = logging.getLogger('accounts.salesforce')
 
 class Salesforce(SimpleSalesforce, ContextDecorator):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self):
         try:
-            super(Salesforce, self).__init__(*args, **kwargs)
+            super(Salesforce, self).__init__(**settings.SALESFORCE)
         except:
             self.__exit__(*sys.exc_info())
 
