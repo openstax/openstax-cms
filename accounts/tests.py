@@ -59,22 +59,15 @@ class Integration(LiveServerTestCase, WagtailPageTests):
         self.assertFalse(user.is_superuser)
         self.assertFalse(user.is_staff)
         self.assertTrue(user.is_active)
-
-        self.client.force_login(user)
-        response = self.client.get(
-            '/api/user/?format=json', follow=True, secure=True)
-        groups = response.json()[0]['groups']
-        self.assertNotIn('Faculty', groups)
+        self.driver.get('http://localhost:8001/api/user/?format=json')
+        self.assertNotIn("Faculty", self.driver.page_source)
 
     def test_faculty_verification(self):
         USERNAME = 'openstax_cms_faculty_tester'
         PASSWORD = 'openstax_cms_faculty_tester'
         user = self.target(USERNAME, PASSWORD)
-        self.client.force_login(user)
-        response = self.client.get(
-            '/api/user/?format=json', follow=True, secure=True)
-        groups = response.json()[0]['groups']
-        self.assertIn('Faculty', groups)
+        self.driver.get('http://localhost:8001/api/user/?format=json')
+        self.assertTrue(user.groups.filter(name="Faculty").exists())
 
     def tearDown(self):
         self.driver.close()

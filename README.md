@@ -19,11 +19,9 @@ With PostgreSQL running (and configured to allow you to connect as the 'postgres
     ./manage.py createsuperuser
     ./manage.py runserver
 
-### Development
+### Testing
 
-Run tests with ``./manage.py test --liveserver=localhost:8001 --settings=openstax.settings.dev``
-
-Start a development server with ``./manage.py runsslserver localhost:8001 --settings openstax.settings.dev``.   **IMPORTANT:** The ``runsslserver`` argument is the same as django's normal ``runserver`` command, but allows for ``https`` connections in a dev enviroment. The ``https`` connections are only for development perposes, you should not assume the connections are actually secure. 
+Run with ``./manage.py test``
 
 ### SQLite support
 
