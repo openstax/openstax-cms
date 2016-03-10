@@ -256,5 +256,5 @@ CNX_ARCHIVE_URL = 'http://archive.cnx.org'
 SECURE_SSL_REDIRECT = True
 
 SECURE_REDIRECT_EXEMPT = [
-    r'^(?!api)',  # all api urls are not exempt
+    r'^(?!api)',  # If url contains 'api' then it is not exempt, otherwise the url is exempt
 ]
