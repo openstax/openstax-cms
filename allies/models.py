@@ -1,6 +1,6 @@
 from django.db import models
 
-from wagtail.wagtailcore.models import Page
+from wagtail.wagtailcore.models import Page, Site
 from wagtail.wagtailcore.fields import RichTextField
 from wagtail.wagtailadmin.edit_handlers import FieldPanel, MultiFieldPanel, InlinePanel
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
@@ -13,6 +13,9 @@ from snippets.models import Subject
 class AllySubject(models.Model):
     subject = models.ForeignKey(Subject)
     ally = ParentalKey('Ally', related_name='ally_subjects')
+
+    def get_subject_name(self):
+        return self.subject.name
 
 
 class Ally(Page):
@@ -27,14 +30,35 @@ class Ally(Page):
         on_delete=models.SET_NULL,
         related_name='logo'
     )
+
+    def get_ally_logo(self):
+        site = Site.objects.get(is_default_site=True)
+        if site.port == 80:
+            return "https://{}/api/v0/images/{}".format(site.hostname, self.ally.logo.id)
+        else:
+            return "https://{}:{}/api/v0/images/{}".format(site.hostname, site.port,
+                                                           self.ally.logo.id)
+    ally_logo = property(get_ally_logo)
+
     heading = models.CharField(max_length=255)
     short_description = RichTextField()
     long_description = RichTextField()
     link_url = models.URLField(blank=True, help_text="Call to Action Link")
     link_text = models.CharField(max_length=255, help_text="Call to Action Text")
 
-    api_fields = ('online_homework', 'adaptive_courseware', 'customization_tools', 'subjects',
-                  'logo', 'heading',
+    # a method to reverse retrieve the subject names, prevents multiple calls from Webview
+    # /api/v1/pages/?type=allies.Ally&fields=title,short_description,ally_logo,heading,ally_subject_list
+    def ally_subject_list(self):
+        subjects = AllySubject.objects.filter(ally=self)
+        subject_names = []
+        for subject in subjects:
+            subject_names.append(subject.subject.name)
+        return subject_names
+    property(ally_subject_list)
+
+    api_fields = ('online_homework', 'adaptive_courseware', 'customization_tools',
+                  'ally_subject_list',
+                  'ally_logo', 'heading',
                   'short_description', 'long_description' )
 
     content_panels = Page.content_panels + [

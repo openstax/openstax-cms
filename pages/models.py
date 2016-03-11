@@ -618,6 +618,14 @@ class Adopters(Page):
 class EcosystemAllies(Page):
     classroom_text = RichTextField()
 
+    api_fields = (
+        'title',
+        'classroom_text',
+        'slug',
+        'seo_title',
+        'search_description',
+    )
+
     content_panels = [
         FieldPanel('title', classname="full title"),
         FieldPanel('classroom_text'),
