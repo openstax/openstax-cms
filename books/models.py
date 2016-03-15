@@ -5,6 +5,8 @@ import dateutil.parser
 from django.db import models
 from django.conf import settings
 
+from jsonfield import JSONField
+
 from wagtail.wagtailcore.models import Page, Orderable, Site
 from wagtail.wagtailcore.fields import RichTextField
 from wagtail.wagtailadmin.edit_handlers import (FieldPanel,
@@ -253,6 +255,7 @@ class Book(Page):
     amazon_blurb = RichTextField(blank=True)
     bookstore_link = models.URLField(blank=True, help_text="Link to Bookstore")
     bookstore_blurb = RichTextField(blank=True)
+    table_of_contents = JSONField(editable=False, blank=True)
 
     content_panels = Page.content_panels + [
         FieldPanel('cnx_id'),
@@ -310,7 +313,8 @@ class Book(Page):
                   'amazon_price',
                   'amazon_blurb',
                   'bookstore_link',
-                  'bookstore_blurb',)
+                  'bookstore_blurb',
+                  'table_of_contents', )
 
     parent_page_types = ['books.BookIndex']
 
