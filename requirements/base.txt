@@ -13,6 +13,7 @@ django-treebeard==3.0
 django-storages==1.4
 djangorestframework==3.3.2
 html5lib==0.9999999
+jsonfield==1.0.3
 libsass==0.8.2
 lxml==3.5.0
 Pillow==3.1.0
