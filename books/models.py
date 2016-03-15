@@ -1,6 +1,7 @@
 import urllib
 import json
 import dateutil.parser
+import collections
 
 from django.db import models
 from django.conf import settings
@@ -255,7 +256,7 @@ class Book(Page):
     amazon_blurb = RichTextField(blank=True)
     bookstore_link = models.URLField(blank=True, help_text="Link to Bookstore")
     bookstore_blurb = RichTextField(blank=True)
-    table_of_contents = JSONField(editable=False, blank=True)
+    table_of_contents = JSONField(editable=False, blank=True, load_kwargs={'object_pairs_hook': collections.OrderedDict})
 
     content_panels = Page.content_panels + [
         FieldPanel('cnx_id'),
