@@ -4,8 +4,7 @@ import dateutil.parser
 
 from django.db import models
 from django.conf import settings
-
-from jsonfield import JSONField
+from django.contrib.postgres.fields import JSONField
 
 from wagtail.wagtailcore.models import Page, Orderable, Site
 from wagtail.wagtailcore.fields import RichTextField
