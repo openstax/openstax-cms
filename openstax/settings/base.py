@@ -91,6 +91,19 @@ SECRET_KEY = 'wq21wtjo3@d_qfjvd-#td!%7gfy2updj2z+nev^k$iy%=m4_tr'
 
 CORS_ORIGIN_REGEX_WHITELIST = ('^(.*\.)?openstax\.org$', '^localhost\:\d+$', )
 
+CORS_ALLOW_HEADERS = (
+    'x-requested-with',
+    'content-type',
+    'accept',
+    'accept-encoding',
+    'origin',
+    'authorization',
+    'x-csrftoken'
+)
+CORS_EXPOSE_HEADERS = (
+    'Access-Control-Allow-Origin: *',
+)
+
 MIDDLEWARE_CLASSES = [
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
