@@ -12,7 +12,7 @@ ADMINS = (
 
 # Default to dummy email backend. Configure dev/production/local backend
 # as per https://docs.djangoproject.com/en/dev/topics/email/#email-backends
-EMAIL_BACKEND = 'django.core.mail.backends.dummy.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 DATABASES = {
     'default': {
@@ -169,6 +169,7 @@ INSTALLED_APPS = (
     'rest_auth',
     'social.apps.django_app.default',
     'storages',
+    'django_ses',
     #custom
     'admin_templates', #this overrides the admin templates
     'pages',
@@ -178,6 +179,7 @@ INSTALLED_APPS = (
     'accounts',
     'snippets',
     'salesforce',
+    'mail',
     #wagtail
     'wagtail.wagtailcore',
     'wagtail.wagtailadmin',
