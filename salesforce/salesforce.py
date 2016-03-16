@@ -8,11 +8,13 @@ logger = logging.getLogger('accounts.salesforce')
 
 class Salesforce(SimpleSalesforce, ContextDecorator):
 
-    def __init__(self):
+    def __init__(self,*args,**kwargs):
         try:
             super(Salesforce, self).__init__(**settings.SALESFORCE)
-        except:
-            self.__exit__(*sys.exc_info())
+        except AttributeError:
+            super(Salesforce, self).__init__(*args,**kwargs)
+        except TypeError:
+            raise RuntimeError("salesforce init failed")
 
     def __enter__(self):
         return self
