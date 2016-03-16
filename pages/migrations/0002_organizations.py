@@ -18,12 +18,15 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Organizations',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(
+                    auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('salesforce_id', models.CharField(max_length=255)),
                 ('organization_name', models.CharField(max_length=255)),
-                ('description', wagtail.wagtailcore.fields.RichTextField(null=True)),
+                ('description',
+                 wagtail.wagtailcore.fields.RichTextField(null=True)),
                 ('website', models.URLField(max_length=255, null=True)),
-                ('page', modelcluster.fields.ParentalKey(on_delete=django.db.models.deletion.CASCADE, related_name='organizations', to='pages.Adopters')),
+                ('page', modelcluster.fields.ParentalKey(
+                    on_delete=django.db.models.deletion.CASCADE, related_name='organizations', to='pages.Adopters')),
             ],
         ),
     ]

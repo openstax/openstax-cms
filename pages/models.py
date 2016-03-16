@@ -604,15 +604,13 @@ class Give(Page):
     parent_page_types = ['pages.HomePage']
 
 
-
-
 class Adopters(Page):
     classroom_text = RichTextField()
 
     api_fields = ('title',
                   'organizations',
                   'classroom_text',
-    )
+        )
 
     content_panels =  [
         FieldPanel('title', classname="full title"),
@@ -626,13 +624,13 @@ class Organizations(models.Model):
     salesforce_id = models.CharField(max_length=255)
     organization_name = models.CharField(max_length=255)
     description = RichTextField(null=True)
-    website = models.URLField(max_length=255,null=True)
+    website = models.URLField(max_length=255, null=True)
 
-    page = ParentalKey(Adopters, 
+    page = ParentalKey(Adopters,
                        on_delete=models.CASCADE,
                        related_name='organizations')
 
-    api_fields = ('organization_name','description','website')
+    api_fields = ('organization_name', 'description', 'website')
 
     panels = [
         FieldPanel('organization_name'),
