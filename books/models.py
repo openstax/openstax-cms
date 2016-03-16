@@ -247,6 +247,22 @@ class Book(Page):
             return "http://{}:{}{}".format(site.hostname, site.port, self.low_resolution_pdf.url)
 
     low_resolution_pdf_url = property(get_low_res_pdf_url)
+    student_handbook = models.ForeignKey(
+        'wagtaildocs.Document',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    def get_student_handbook_url(self):
+        site = Site.objects.get(is_default_site=True)
+        if site.port == 80:
+            return "http://{}{}".format(site.hostname, self.student_handbook.url)
+        else:
+            return "http://{}:{}{}".format(site.hostname, site.port, self.student_handbook.url)
+
+    student_handbook_url = property(get_student_handbook_url)
     ibook_link = models.URLField(blank=True, help_text="Link to iBook")
     webview_link = models.URLField(blank=True, help_text="Link to CNX Webview book")
     concept_coach_link = models.URLField(blank=True, help_text="Link to Concept Coach")
@@ -273,6 +289,7 @@ class Book(Page):
         FieldPanel('isbn_13'),
         DocumentChooserPanel('high_resolution_pdf'),
         DocumentChooserPanel('low_resolution_pdf'),
+        DocumentChooserPanel('student_handbook'),
         FieldPanel('ibook_link'),
         FieldPanel('webview_link'),
         FieldPanel('concept_coach_link'),
@@ -306,6 +323,7 @@ class Book(Page):
                   'license_url',
                   'high_resolution_pdf_url',
                   'low_resolution_pdf_url',
+                  'student_handbook_url',
                   'ibook_link',
                   'webview_link',
                   'concept_coach_link',
