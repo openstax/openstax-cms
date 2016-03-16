@@ -604,15 +604,45 @@ class Give(Page):
     parent_page_types = ['pages.HomePage']
 
 
+
+
 class Adopters(Page):
     classroom_text = RichTextField()
 
-    content_panels = [
+    api_fields = ('title',
+                  'organizations',
+                  'classroom_text',
+    )
+
+    content_panels =  [
         FieldPanel('title', classname="full title"),
         FieldPanel('classroom_text'),
     ]
     
     parent_page_types = ['pages.HomePage']
+
+
+class Organizations(models.Model):
+    salesforce_id = models.CharField(max_length=255)
+    organization_name = models.CharField(max_length=255)
+    description = RichTextField(null=True)
+    website = models.URLField(max_length=255,null=True)
+
+    page = ParentalKey(Adopters, 
+                       on_delete=models.CASCADE,
+                       related_name='organizations')
+
+    api_fields = ('organization_name','description','website')
+
+    panels = [
+        FieldPanel('organization_name'),
+        FieldPanel('description'),
+        FieldPanel('website'),
+    ]
+
+    def __str__(self):
+        return self.organization_name
+
 
 
 class EcosystemAllies(Page):
