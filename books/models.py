@@ -1,9 +1,12 @@
 import urllib
 import json
 import dateutil.parser
+import collections
 
 from django.db import models
 from django.conf import settings
+
+from jsonfield import JSONField
 
 from wagtail.wagtailcore.models import Page, Orderable, Site
 from wagtail.wagtailcore.fields import RichTextField
@@ -253,6 +256,7 @@ class Book(Page):
     amazon_blurb = RichTextField(blank=True)
     bookstore_link = models.URLField(blank=True, help_text="Link to Bookstore")
     bookstore_blurb = RichTextField(blank=True)
+    table_of_contents = JSONField(editable=False, blank=True, load_kwargs={'object_pairs_hook': collections.OrderedDict})
 
     content_panels = Page.content_panels + [
         FieldPanel('cnx_id'),
@@ -310,7 +314,8 @@ class Book(Page):
                   'amazon_price',
                   'amazon_blurb',
                   'bookstore_link',
-                  'bookstore_blurb',)
+                  'bookstore_blurb',
+                  'table_of_contents', )
 
     parent_page_types = ['books.BookIndex']
 
@@ -325,6 +330,8 @@ class Book(Page):
         self.license_url = result['license']['url']
         
         self.publish_date = dateutil.parser.parse(result['created'], dayfirst=True).date()
+
+        self.table_of_contents = result['tree']
         
         return super(Book, self).save(*args, **kwargs)
 
