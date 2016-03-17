@@ -621,7 +621,7 @@ class Adopters(Page):
 
 
 class Organizations(models.Model):
-    salesforce_id = models.CharField(max_length=255)
+    salesforce_id = models.CharField(max_length=255, editable=False)
     organization_name = models.CharField(max_length=255)
     description = RichTextField(null=True)
     website = models.URLField(max_length=255, null=True)
