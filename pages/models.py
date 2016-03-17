@@ -289,7 +289,7 @@ class HomePage(Page):
         'pages.ContactUs',
         'pages.AboutUs',
         'pages.Give',
-        'pages.AdoptersPages',
+        'pages.Adopters',
         'pages.EcosystemAllies',
         'pages.AdoptionForm',
         'books.BookIndex',
@@ -604,7 +604,7 @@ class Give(Page):
     parent_page_types = ['pages.HomePage']
 
 
-class AdoptersPages(Page):
+class Adopters(Page):
     classroom_text = RichTextField()
 
     api_fields = ('title',

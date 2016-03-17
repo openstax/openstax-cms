@@ -1,6 +1,6 @@
 from django.db import models
 from modelcluster.fields import ParentalKey
-from pages.models import AdoptersPages
+from pages.models import Adopters
 from wagtail.wagtailcore.fields import RichTextField
 from wagtail.wagtailadmin.edit_handlers import FieldPanel
 # Create your models here.
@@ -11,7 +11,7 @@ class Adopter(models.Model):
     description = RichTextField(null=True)
     website = models.URLField(max_length=255, null=True)
 
-    page = ParentalKey(AdoptersPages,
+    page = ParentalKey(Adopters,
                        on_delete=models.CASCADE,
                        related_name='organizations')
 
