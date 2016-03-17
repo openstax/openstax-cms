@@ -620,26 +620,6 @@ class AdoptersPages(Page):
     parent_page_types = ['pages.HomePage']
 
 
-class Adopters(models.Model):
-    salesforce_id = models.CharField(max_length=255, editable=False)
-    name = models.CharField(max_length=255)
-    description = RichTextField(null=True)
-    website = models.URLField(max_length=255, null=True)
-
-    page = ParentalKey(AdoptersPages,
-                       on_delete=models.CASCADE,
-                       related_name='organizations')
-
-    api_fields = ('name', 'description', 'website')
-
-    panels = [
-        FieldPanel('name'),
-        FieldPanel('description'),
-        FieldPanel('website'),
-    ]
-
-    def __str__(self):
-        return self.name
 
 
 

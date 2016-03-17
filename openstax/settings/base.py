@@ -200,6 +200,7 @@ INSTALLED_APPS = (
     'allies',
     'accounts',
     'snippets',
+    'adopters',
     #wagtail
     'wagtail.wagtailcore',
     'wagtail.wagtailadmin',

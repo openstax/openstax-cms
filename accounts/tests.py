@@ -152,7 +152,7 @@ class SalesforceTest(LiveServerTestCase,WagtailPageTests):
 
     @unittest.skip("need to create an adopter page first")
     def test_update_adopters_command(self):
-        from pages.models import Adopters
+        from adopters.models import Adopters
         out = StringIO()
         call_command('update_adopters', '0', stdout=out)
 

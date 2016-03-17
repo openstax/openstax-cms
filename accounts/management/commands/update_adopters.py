@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from accounts.salesforce import Salesforce
-from pages.models import Adopters
+from adopters.models import Adopters
 
 
 class Command(BaseCommand):
