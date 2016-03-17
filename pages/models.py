@@ -620,7 +620,7 @@ class AdoptersPages(Page):
     parent_page_types = ['pages.HomePage']
 
 
-class Organizations(models.Model):
+class Adopters(models.Model):
     salesforce_id = models.CharField(max_length=255, editable=False)
     name = models.CharField(max_length=255)
     description = RichTextField(null=True)

@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from accounts.salesforce import Salesforce
-from pages.models import Organizations
+from pages.models import Adopters
 
 
 class Command(BaseCommand):
@@ -13,12 +13,12 @@ class Command(BaseCommand):
         with Salesforce() as sf:
             salesforce_adopters_list = sf.adopters()
             for salesforce_adopter in salesforce_adopters_list:
-                # FIXME: Organizations.objects.get_or_create
-                adopter, created = Organizations.objects.get_or_create(salesforce_id=salesforce_adopter['Id'],
-                                                                      name=salesforce_adopter['Name'],
-                                                                      description=salesforce_adopter['Description'],
-                                                                      website=salesforce_adopter['Website'],
-                                                                      page_id=options['page_id'],)
+                # FIXME: Adopters.objects.get_or_create
+                adopter, created = Adopters.objects.get_or_create(salesforce_id=salesforce_adopter['Id'],
+                                                                  name=salesforce_adopter['Name'],
+                                                                  description=salesforce_adopter['Description'],
+                                                                  website=salesforce_adopter['Website'],
+                                                                  page_id=options['page_id'],)
                 adopter.save() 
         success = self.style.SUCCESS("Successfully updated adopters")
         self.stdout.write(success)
