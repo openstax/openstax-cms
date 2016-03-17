@@ -622,7 +622,7 @@ class Adopters(Page):
 
 class Organizations(models.Model):
     salesforce_id = models.CharField(max_length=255, editable=False)
-    organization_name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255)
     description = RichTextField(null=True)
     website = models.URLField(max_length=255, null=True)
 
@@ -630,16 +630,16 @@ class Organizations(models.Model):
                        on_delete=models.CASCADE,
                        related_name='organizations')
 
-    api_fields = ('organization_name', 'description', 'website')
+    api_fields = ('name', 'description', 'website')
 
     panels = [
-        FieldPanel('organization_name'),
+        FieldPanel('name'),
         FieldPanel('description'),
         FieldPanel('website'),
     ]
 
     def __str__(self):
-        return self.organization_name
+        return self.name
 
 
 

@@ -14,15 +14,11 @@ class Command(BaseCommand):
             salesforce_adopters_list = sf.adopters()
             for salesforce_adopter in salesforce_adopters_list:
                 # FIXME: Organizations.objects.get_or_create
-                if not Organizations.objects.filter(salesforce_id=salesforce_adopter['Id']):
-                    new_cms_adopter = Organizations(salesforce_id=salesforce_adopter['Id'],
-                                                    organization_name=salesforce_adopter[
-                                                        'Name'],
-                                                    description=salesforce_adopter[
-                                                        'Description'],
-                                                    website=salesforce_adopter[
-                                                        'Website'],
-                                                    page_id=options['page_id'],)
-                    new_cms_adopter.save()
+                adopter, created = Organizations.objects.get_or_create(salesforce_id=salesforce_adopter['Id'],
+                                                                      name=salesforce_adopter['Name'],
+                                                                      description=salesforce_adopter['Description'],
+                                                                      website=salesforce_adopter['Website'],
+                                                                      page_id=options['page_id'],)
+                adopter.save() 
         success = self.style.SUCCESS("Successfully updated adopters")
         self.stdout.write(success)
