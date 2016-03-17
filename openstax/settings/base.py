@@ -200,6 +200,7 @@ INSTALLED_APPS = (
     'allies',
     'accounts',
     'snippets',
+    'salesforce',
     #wagtail
     'wagtail.wagtailcore',
     'wagtail.wagtailadmin',
