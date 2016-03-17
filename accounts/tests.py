@@ -129,8 +129,6 @@ class SalesforceTest(LiveServerTestCase,WagtailPageTests):
         self.assertIn("test context manager error handling", new_message)
 
 
-
-
     @override_settings(SALESFORCE={})
     def test_context_manager_handle_init_errors(self):
         with open(settings.LOGGING['handlers']['file']['filename'], 'r') as f:
