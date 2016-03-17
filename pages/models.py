@@ -620,9 +620,6 @@ class Adopters(Page):
     parent_page_types = ['pages.HomePage']
 
 
-
-
-
 class EcosystemAllies(Page):
     classroom_text = RichTextField()
 
