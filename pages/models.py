@@ -289,7 +289,7 @@ class HomePage(Page):
         'pages.ContactUs',
         'pages.AboutUs',
         'pages.Give',
-        'pages.Adopters',
+        'pages.AdoptersPages',
         'pages.EcosystemAllies',
         'pages.AdoptionForm',
         'books.BookIndex',
@@ -604,7 +604,7 @@ class Give(Page):
     parent_page_types = ['pages.HomePage']
 
 
-class Adopters(Page):
+class AdoptersPages(Page):
     classroom_text = RichTextField()
 
     api_fields = ('title',
@@ -626,7 +626,7 @@ class Organizations(models.Model):
     description = RichTextField(null=True)
     website = models.URLField(max_length=255, null=True)
 
-    page = ParentalKey(Adopters,
+    page = ParentalKey(AdoptersPages,
                        on_delete=models.CASCADE,
                        related_name='organizations')
 
