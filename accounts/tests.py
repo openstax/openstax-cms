@@ -16,8 +16,7 @@ import os
 from django.test import TestCase, override_settings
 from django.contrib.auth.models import Group
 import logging
-from django.core.management import call_command
-from django.utils.six import StringIO
+
 
 # class Integration(LiveServerTestCase, WagtailPageTests):
 #     serialized_rollback = True
@@ -128,7 +127,6 @@ class SalesforceTest(LiveServerTestCase,WagtailPageTests):
         self.assertNotEqual(last_message, new_message)
         self.assertIn("test context manager error handling", new_message)
 
-
     @override_settings(SALESFORCE={})
     def test_context_manager_handle_init_errors(self):
         with open(settings.LOGGING['handlers']['file']['filename'], 'r') as f:
@@ -149,23 +147,6 @@ class SalesforceTest(LiveServerTestCase,WagtailPageTests):
             'You must provide login information or an instance and token', new_message)
         responce=self.client.get('/api/user/',follow=True, secure=True)
         self.assertEqual(responce.status_code,200)
-
-    @unittest.skip("need to create an adopter page first")
-    def test_update_adopters_command(self):
-        from adopters.models import Adopter
-        out = StringIO()
-        call_command('update_adopters', '0', stdout=out)
-
-        self.assertIn('Successful', out.getvalue())
-        self.assertGreater(Adopter.objects.count(), 1000)
-        adopters_objects = Adopter.objects.filter(
-            name='Rice University')
-        self.assertEqual(len(adopters_objects), 1)
-        adopter = adopters_objects[0]
-        self.assertEqual(adopter.salesforce_id, '001U0000006sxdAIAQ')
-
-
-
     def tearDown(self):
         super(WagtailPageTests, self).tearDown()
         super(LiveServerTestCase, self).tearDown()
