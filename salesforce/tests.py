@@ -79,6 +79,17 @@ class SalesforceTest(LiveServerTestCase,WagtailPageTests):
             'You must provide login information or an instance and token', new_message)
         responce=self.client.get('/api/user/',follow=True, secure=True)
         self.assertEqual(responce.status_code,200)
+
+    def test_adopters(self):
+        with Salesforce() as sf:
+            adopters = sf.adopters()
+        self.assertIsInstance(adopters,list)
+        self.assertGreater(len(adopters),1)
+        self.assertIn('Id',adopters[0].keys())
+        self.assertIn('Name',adopters[0].keys())
+        self.assertIn('Description',adopters[0].keys())
+        self.assertIn('Website',adopters[0].keys())
+
     def tearDown(self):
         super(WagtailPageTests, self).tearDown()
         super(LiveServerTestCase, self).tearDown()
