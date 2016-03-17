@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from accounts.salesforce import Salesforce
-from adopters.models import Adopters
+from adopters.models import Adopter
 
 
 class Command(BaseCommand):
@@ -13,7 +13,7 @@ class Command(BaseCommand):
         with Salesforce() as sf:
             salesforce_adopters_list = sf.adopters()
             for salesforce_adopter in salesforce_adopters_list:
-                adopter, created = Adopters.objects.get_or_create(salesforce_id=salesforce_adopter['Id'],
+                adopter, created = Adopter.objects.get_or_create(salesforce_id=salesforce_adopter['Id'],
                                                                   name=salesforce_adopter['Name'],
                                                                   description=salesforce_adopter['Description'],
                                                                   website=salesforce_adopter['Website'],

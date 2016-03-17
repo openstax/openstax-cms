@@ -5,7 +5,7 @@ from wagtail.wagtailcore.fields import RichTextField
 from wagtail.wagtailadmin.edit_handlers import FieldPanel
 # Create your models here.
 
-class Adopters(models.Model):
+class Adopter(models.Model):
     salesforce_id = models.CharField(max_length=255, editable=False)
     name = models.CharField(max_length=255)
     description = RichTextField(null=True)

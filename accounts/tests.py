@@ -152,13 +152,13 @@ class SalesforceTest(LiveServerTestCase,WagtailPageTests):
 
     @unittest.skip("need to create an adopter page first")
     def test_update_adopters_command(self):
-        from adopters.models import Adopters
+        from adopters.models import Adopter
         out = StringIO()
         call_command('update_adopters', '0', stdout=out)
 
         self.assertIn('Successful', out.getvalue())
-        self.assertGreater(Adopters.objects.count(), 1000)
-        adopters_objects = Adopters.objects.filter(
+        self.assertGreater(Adopter.objects.count(), 1000)
+        adopters_objects = Adopter.objects.filter(
             name='Rice University')
         self.assertEqual(len(adopters_objects), 1)
         adopter = adopters_objects[0]
