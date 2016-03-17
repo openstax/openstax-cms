@@ -13,7 +13,6 @@ class Command(BaseCommand):
         with Salesforce() as sf:
             salesforce_adopters_list = sf.adopters()
             for salesforce_adopter in salesforce_adopters_list:
-                # FIXME: Adopters.objects.get_or_create
                 adopter, created = Adopters.objects.get_or_create(salesforce_id=salesforce_adopter['Id'],
                                                                   name=salesforce_adopter['Name'],
                                                                   description=salesforce_adopter['Description'],
