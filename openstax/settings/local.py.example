@@ -28,6 +28,6 @@ SECRET_KEY = 'enter-a-long-unguessable-string-here'
 # }
 
 SALESFORCE = { 'username' : '',
-               'password' : '',
+               'password' : '', # password might need to be concatinated with security_token
                'security_token' : '' } 
 
