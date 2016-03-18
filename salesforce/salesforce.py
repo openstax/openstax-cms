@@ -26,10 +26,10 @@ class Salesforce(SimpleSalesforce, ContextDecorator):
         return False
 
     def faculty_status(self, accounts_id):
-        sql_command = "SELECT Faculty_Verified__c FROM Contact WHERE Accounts_ID__c = '{0}'".format(
+        command = "SELECT Faculty_Verified__c FROM Contact WHERE Accounts_ID__c = '{0}'".format(
             accounts_id)
 
-        contact_info = self.query(sql_command)
+        contact_info = self.query(command)
         # each accounts key should be unique
         if contact_info['totalSize'] == 1:
             status = contact_info['records'][0]['Faculty_Verified__c']
