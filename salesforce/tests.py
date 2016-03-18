@@ -7,7 +7,7 @@ from django.test import TestCase, override_settings
 from django.core.management import call_command
 from django.utils.six import StringIO
 from salesforce.models import Adopter
-
+import unittest
 from django.conf import settings
 
 class SalesforceTest(LiveServerTestCase,WagtailPageTests):
