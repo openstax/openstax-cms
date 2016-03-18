@@ -4,8 +4,27 @@ from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
 from django.core.management import call_command
 import json
 from django.utils.six import StringIO
-
+from django.contrib.auth.models import User
 class SalesforceAPI(TestCase):
+    def test_user_faculty_group(self):
+        user = User.objects.create_user('john', 
+                                        'lennon@thebeatles.com',
+                                        'johnpassword')
+        user.save() 
+        self.client.force_login(user)
+        response = self.client.get('/api/user/')
+        self.assertEqual(response.status_code, 200)
+        response_list = json.loads(response.content.decode(response.charset))
+        expected_user_info = {'is_superuser': False, 
+                               'username': 'john', 
+                               'first_name': '', 
+                               'groups': [], 
+                               'last_name': '', 
+                               'is_staff': False}
+        returned_user_info = response_list[0]
+        self.assertDictEqual(expected_user_info,returned_user_info)
+
+
     def test_adopters(self):
         # Test No adopters
         response = self.client.get('/api/adopters/')

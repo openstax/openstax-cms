@@ -64,24 +64,9 @@ class SalesforceTest(LiveServerTestCase,WagtailPageTests):
 
     @override_settings(SALESFORCE={})
     def test_context_manager_handle_init_errors(self):
-        with open(settings.LOGGING['handlers']['file']['filename'], 'r') as f:
-            lines = f.readlines()
-            if lines:
-                last_message = lines[-1]
-            else:
-                last_message = None
+        with self.assertRaises(RuntimeError):
+            Salesforce()
 
-        with Salesforce():
-            pass
-
-        with open(settings.LOGGING['handlers']['file']['filename'], 'r') as f:
-            lines = f.readlines()
-            new_message = lines[-1]
-        self.assertNotEqual(last_message, new_message)
-        self.assertIn(
-            'You must provide login information or an instance and token', new_message)
-        responce=self.client.get('/api/user/',follow=True, secure=True)
-        self.assertEqual(responce.status_code,200)
 
     def test_adopters(self):
         with Salesforce() as sf:
