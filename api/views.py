@@ -1,10 +1,16 @@
 from rest_framework import viewsets
 from django.contrib.auth.models import User
-from .serializers import ImageSerializer, UserSerializer
+from .serializers import ImageSerializer, UserSerializer, AdopterSerializer
 from wagtail.wagtailimages.models import Image
 from salesforce.salesforce import Salesforce
 from django.contrib.auth.models import Group
 from django.conf import settings
+from salesforce.models import Adopter
+
+class AdopterViewSet(viewsets.ModelViewSet):
+    queryset = Adopter.objects.all()
+    serializer_class = AdopterSerializer
+
 
 class ImageViewSet(viewsets.ModelViewSet):
     queryset = Image.objects.all()

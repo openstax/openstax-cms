@@ -1,6 +1,34 @@
 from django.test import TestCase
 from wagtail.tests.utils import WagtailTestUtils
 from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
+from django.core.management import call_command
+import json
+from django.utils.six import StringIO
+
+class SalesforceAPI(TestCase):
+    def test_adopters(self):
+        # Test No adopters
+        response = self.client.get('/api/adopters/')
+        self.assertEqual(response.status_code, 200)
+        response_list = eval(response.content.decode(response.charset))
+        self.assertIsInstance(response_list, list)
+        self.assertEqual(response_list, [])
+       
+        # Test with adopters
+        out = StringIO()
+        call_command('update_adopters', stdout=out)
+        response = self.client.get('/api/adopters/')
+        self.assertEqual(response.status_code, 200)
+        response_list = json.loads(response.content.decode(response.charset))
+        self.assertIsInstance(response_list, list)
+        self.assertGreater(len(response_list),1)
+        response_item = response_list[0]
+        self.assertIsInstance(response_item, dict)
+        expected_set = {'description', 'website', 'name'}
+        returned_set = set(response_item.keys())
+        self.assertSetEqual(expected_set,returned_set)
+        names = [ adopter['name'] for adopter in response_list ]
+        self.assertIn('Rice University',names)          
 
 
 class ImageAPI(TestCase, WagtailTestUtils):
