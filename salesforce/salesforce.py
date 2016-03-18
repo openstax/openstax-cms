@@ -24,7 +24,7 @@ class Salesforce(SimpleSalesforce, ContextDecorator):
             (exc_type, exc, exc_tb) = exc
             error_type = exc_type.__name__
             error_message = str(exc)
-            logger.error("{0}('{1}')".format(error_type, error_message))
+#            logger.error("{0}('{1}')".format(error_type, error_message))
         return False
 
     def faculty_status(self, accounts_id):
