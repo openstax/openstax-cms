@@ -1,6 +1,14 @@
 from rest_framework import serializers
 from rest_auth.serializers import UserDetailsSerializer
 from wagtail.wagtailimages.models import Image
+from salesforce.models import Adopter
+
+class AdopterSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Adopter
+        fields = ('name',
+                  'description',
+                  'website',)
 
 
 class ImageSerializer(serializers.HyperlinkedModelSerializer):
