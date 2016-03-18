@@ -6,7 +6,7 @@ from .views import ImageViewSet, UserView, AdopterViewSet
 router = routers.DefaultRouter()
 router.register(r'v0/images', ImageViewSet)
 router.register(r'user', UserView, 'user')
-router.register(r'salesforce/adopters', AdopterViewSet)
+router.register(r'adopters', AdopterViewSet)
 
 urlpatterns = [
     url(r'^', include(router.urls)),

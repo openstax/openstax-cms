@@ -8,7 +8,7 @@ from django.utils.six import StringIO
 class SalesforceAPI(TestCase):
     def test_adopters(self):
         # Test No adopters
-        response = self.client.get('/api/salesforce/adopters/')
+        response = self.client.get('/api/adopters/')
         self.assertEqual(response.status_code, 200)
         response_list = eval(response.content.decode(response.charset))
         self.assertIsInstance(response_list, list)
@@ -17,7 +17,7 @@ class SalesforceAPI(TestCase):
         # Test with adopters
         out = StringIO()
         call_command('update_adopters', stdout=out)
-        response = self.client.get('/api/salesforce/adopters/')
+        response = self.client.get('/api/adopters/')
         self.assertEqual(response.status_code, 200)
         response_list = json.loads(response.content.decode(response.charset))
         self.assertIsInstance(response_list, list)
