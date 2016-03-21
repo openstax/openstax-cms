@@ -89,26 +89,7 @@ STATICFILES_FINDERS = [
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'wq21wtjo3@d_qfjvd-#td!%7gfy2updj2z+nev^k$iy%=m4_tr'
 
-CORS_ORIGIN_REGEX_WHITELIST = ('^(.*\.)?openstax\.org$', '^localhost\:\d+$', )
-
-CORS_ALLOW_HEADERS = (
-    'x-requested-with',
-    'content-type',
-    'accept',
-    'accept-encoding',
-    'origin',
-    'authorization',
-    'x-csrftoken',
-    'dnt',
-    'keep-alive',
-    'user-agent',
-    'x-requested-with',
-    'if-modified-since',
-    'cache-control',
-)
-
 MIDDLEWARE_CLASSES = [
-    'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -186,7 +167,6 @@ INSTALLED_APPS = (
     'rest_framework',
     'rest_framework.authtoken',
     'rest_auth',
-    'corsheaders',
     'social.apps.django_app.default',
     'storages',
     #custom
