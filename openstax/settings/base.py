@@ -106,9 +106,6 @@ CORS_ALLOW_HEADERS = (
     'if-modified-since',
     'cache-control',
 )
-CORS_EXPOSE_HEADERS = (
-    'Access-Control-Allow-Origin: *',
-)
 
 MIDDLEWARE_CLASSES = [
     'corsheaders.middleware.CorsMiddleware',
