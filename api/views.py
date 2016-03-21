@@ -32,6 +32,6 @@ class UserView(viewsets.ModelViewSet):
                     faculty_group = Group.objects.get_by_natural_key('Faculty')
                     user.groups.add(faculty_group)
                     user.save()
-        return [user]
+        return User.objects.filter(pk=user.pk)
 
 
