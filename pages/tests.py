@@ -1,5 +1,6 @@
 from django.test import TestCase
 from wagtail.tests.utils import WagtailTestUtils
+from wagtail.wagtailredirects.models import Redirect
 
 
 class TestPages(TestCase, WagtailTestUtils):
@@ -10,6 +11,15 @@ class TestPages(TestCase, WagtailTestUtils):
     def test_homepage_return_correct_page(self):
         response = self.client.get('/')
         self.assertEqual(response.status_code, 200)
+
+    def test_osc_redirect_link_migrations(self):
+        self.assertEqual(Redirect.objects.count(), 2029)
+        redirect = Redirect.objects.first()
+        start_link = redirect.old_path  # redirect field name is misleading
+        redirect_link = redirect.link
+        response = self.client.get(start_link)
+        self.assertEqual(response.status_code, 301)
+        self.assertEqual(response.url, redirect_link)
 
 
 class AdminPages(TestCase, WagtailTestUtils):
@@ -53,5 +63,5 @@ class AdminPages(TestCase, WagtailTestUtils):
     def test_admin_search(self):
         response = self.client.get('/admin/pages/search/?q=openstax')
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Sorry, no pages match',response.content)
+        self.assertIn(b'Sorry, no pages match', response.content)
 
