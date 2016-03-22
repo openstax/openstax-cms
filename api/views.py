@@ -21,17 +21,17 @@ class UserView(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
         # assuming only social auth is openstax accounts for now
-        if user.groups.filter(name="Faculty").exists():
-            pass
-        elif hasattr(user, 'social_auth'):
-            if user.social_auth.exists():
-                accounts_id = user.social_auth.values()[0]['uid']
-                with Salesforce() as sf:
-                    status = sf.faculty_status(accounts_id)
-                if status == u'Confirmed':
-                    faculty_group = Group.objects.get_by_natural_key('Faculty')
-                    user.groups.add(faculty_group)
-                    user.save()
+#        if user.groups.filter(name="Faculty").exists():
+#            pass
+#        elif hasattr(user, 'social_auth'):
+#            if user.social_auth.exists():
+#                accounts_id = user.social_auth.values()[0]['uid']
+#                with Salesforce() as sf:
+#                    status = sf.faculty_status(accounts_id)
+#                if status == u'Confirmed':
+#                    faculty_group = Group.objects.get_by_natural_key('Faculty')
+#                    user.groups.add(faculty_group)
+#                    user.save()
         return User.objects.filter(pk=user.pk)
 
 
