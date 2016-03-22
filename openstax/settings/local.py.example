@@ -27,6 +27,8 @@ SECRET_KEY = 'enter-a-long-unguessable-string-here'
 #     'INTERCEPT_REDIRECTS': False,
 # }
 
+SESSION_COOKIE_DOMAIN = None # For admin login on localhost
+
 SALESFORCE = { 'username' : '',
                'password' : '', # password might need to be concatinated with security_token e.g. 'mypass1231' 
                'security_token' : '' } 
