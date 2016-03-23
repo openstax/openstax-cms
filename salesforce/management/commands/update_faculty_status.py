@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.models import Group
 from django.contrib.auth.models import User, Group
 
+
 class Command(BaseCommand):
     help = "Add user to faculty group if confirmed by salesforce"
 
@@ -13,12 +14,12 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         with Salesforce() as sf:
-            user = User.objects.get(pk=options['cms_id']) 
+            user = User.objects.get(pk=options['cms_id'])
             status = sf.faculty_status(options['accounts_id'])
             if status == u'Confirmed':
                 faculty_group = Group.objects.get_by_natural_key('Faculty')
                 user.groups.add(faculty_group)
-                user.save() 
+                user.save()
         responce = self.style.SUCCESS("Successfully updated adopters")
         self.stdout.write(responce)
 

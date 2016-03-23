@@ -22,7 +22,7 @@ class ImageViewSet(viewsets.ModelViewSet):
 class UserView(viewsets.ModelViewSet):
     serializer_class = UserSerializer    
     def get_queryset(self):
-        user = self.request.user 
+        user = self.request.user
         # assuming only social auth is openstax accounts for now
         if user.groups.filter(name="Faculty").exists():
             pass
@@ -32,9 +32,10 @@ class UserView(viewsets.ModelViewSet):
                 cms_id = str(user.pk)
                 try:
                     out = StringIO()
-                    call_command('update_faculty_status',cms_id,accounts_id, stdout=out)
+                    call_command(
+                        'update_faculty_status', cms_id, accounts_id, stdout=out)
                 except:
-                    pass                   
+                    pass
         return User.objects.filter(pk=user.pk)
 
 
