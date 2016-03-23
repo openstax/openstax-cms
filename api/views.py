@@ -6,6 +6,9 @@ from salesforce.salesforce import Salesforce
 from django.contrib.auth.models import Group
 from django.conf import settings
 from salesforce.models import Adopter
+from django.utils.six import StringIO
+from django.core.management import call_command
+
 
 class AdopterViewSet(viewsets.ModelViewSet):
     queryset = Adopter.objects.all()
@@ -19,19 +22,19 @@ class ImageViewSet(viewsets.ModelViewSet):
 class UserView(viewsets.ModelViewSet):
     serializer_class = UserSerializer    
     def get_queryset(self):
-        user = self.request.user
+        user = self.request.user 
         # assuming only social auth is openstax accounts for now
-#        if user.groups.filter(name="Faculty").exists():
-#            pass
-#        elif hasattr(user, 'social_auth'):
-#            if user.social_auth.exists():
-#                accounts_id = user.social_auth.values()[0]['uid']
-#                with Salesforce() as sf:
-#                    status = sf.faculty_status(accounts_id)
-#                if status == u'Confirmed':
-#                    faculty_group = Group.objects.get_by_natural_key('Faculty')
-#                    user.groups.add(faculty_group)
-#                    user.save()
+        if user.groups.filter(name="Faculty").exists():
+            pass
+        elif hasattr(user, 'social_auth'):
+            if user.social_auth.exists():
+                accounts_id = user.social_auth.values()[0]['uid']
+                cms_id = user.pk
+                try:
+                    out = StringIO()
+                    call_command('update_faculty_status',cms_id,accounts_id, stdout=out)
+                except:
+                    pass                   
         return User.objects.filter(pk=user.pk)
 
 
