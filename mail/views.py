@@ -1,4 +1,4 @@
-from django.http import JsonResponse
+from django.shortcuts import redirect
 from django.core.mail import send_mail
 
 from rest_framework.decorators import api_view
@@ -14,14 +14,6 @@ def send_contact_message(request):
         subject = request.POST.get("subject", "")
         message_body = request.POST.get("message_body", "")
 
-        try:
-            mail = send_mail(subject, message_body, from_string, to_address)
-            data = {
-                'sent': mail,
-            }
-        except:
-            data = {
-                'sent': 0,
-            }
+        send_mail(subject, message_body, from_string, to_address)
 
-        return JsonResponse(data)
+        return redirect('/contact-thank-you')
