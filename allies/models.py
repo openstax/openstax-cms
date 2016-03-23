@@ -1,6 +1,6 @@
 from django.db import models
 
-from wagtail.wagtailcore.models import Page, Site
+from wagtail.wagtailcore.models import Page
 from wagtail.wagtailcore.fields import RichTextField
 from wagtail.wagtailadmin.edit_handlers import FieldPanel, MultiFieldPanel, InlinePanel
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
@@ -8,6 +8,8 @@ from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 from modelcluster.fields import ParentalKey
 
 from snippets.models import Subject
+
+from openstax.functions import build_image_url
 
 
 class AllySubject(models.Model):
@@ -32,12 +34,7 @@ class Ally(Page):
     )
 
     def get_ally_logo(self):
-        site = Site.objects.get(is_default_site=True)
-        if site.port == 80:
-            return "https://{}/api/v0/images/{}".format(site.hostname, self.ally.logo.id)
-        else:
-            return "https://{}:{}/api/v0/images/{}".format(site.hostname, site.port,
-                                                           self.ally.logo.id)
+        return build_image_url(self.ally.logo)
     ally_logo = property(get_ally_logo)
 
     heading = models.CharField(max_length=255)
