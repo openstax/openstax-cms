@@ -1,4 +1,4 @@
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from salesforce.salesforce import Salesforce
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group

@@ -1,19 +1,10 @@
-from django.test import TestCase
 from django.test import LiveServerTestCase
 from wagtail.tests.utils import WagtailPageTests
 from selenium import webdriver
-from selenium.webdriver.common.keys import Keys
-from selenium.common.exceptions import NoSuchElementException, WebDriverException
-from django.conf import settings
 from django.contrib.auth.models import User
-from django.contrib.auth import models
-from django.core.exceptions import ObjectDoesNotExist
-import unittest
 import shutil
 import os
-from django.test import TestCase, override_settings
-from django.contrib.auth.models import Group
-import logging
+from django.test import override_settings
 from django.core.management import call_command
 from django.utils.six import StringIO
 from django.contrib.auth.models import User

@@ -1,9 +1,8 @@
-from django.test import TestCase
 from django.test import LiveServerTestCase
 from wagtail.tests.utils import WagtailPageTests
 from simple_salesforce import Salesforce as SimpleSalesforce
 from .salesforce import Salesforce
-from django.test import TestCase, override_settings
+from django.test import override_settings
 from django.core.management import call_command
 from django.utils.six import StringIO
 from salesforce.models import Adopter
@@ -97,7 +96,7 @@ class SalesforceTest(LiveServerTestCase,WagtailPageTests):
         out = StringIO()
         call_command('update_adopters', stdout=out)
         self.assertIn("Success", out.getvalue())      
-        adopters = Adopter.objects.all()
+        Adopter.objects.all()
         self.assertTrue(Adopter.objects.filter(name='Rice University').exists())
 
     def test_update_faculty_status_command(self):
@@ -131,7 +130,7 @@ class SalesforceTest(LiveServerTestCase,WagtailPageTests):
         self.assertIn("Success", out.getvalue())
         test_user = User.objects.filter(username=user_details['username'])[0]
         self.assertTrue(test_user.groups.filter(name='Faculty').exists())
-        faculty_group = Group.objects.get_by_natural_key('Faculty')
+        Group.objects.get_by_natural_key('Faculty')
 
     def test_context_manager_session(self):
         from django.contrib.sessions.backends.db import SessionStore

@@ -1,4 +1,4 @@
-from django.core.management.base import BaseCommand, CommandError
+from django.core.management.base import BaseCommand
 from salesforce.salesforce import Salesforce
 from django.contrib.auth.models import User
 from django.contrib.auth.models import Group
@@ -10,7 +10,7 @@ class Command(BaseCommand):
     help = "Add user to faculty group if confirmed by salesforce for all users"
 
     def handle(self, *args, **options):
-        users = SocialAuthStorage.user.objects.all()
+        SocialAuthStorage.user.objects.all()
         with Salesforce() as sf:
             contact_list = sf.faculty_status()
             for contact in contact_list:

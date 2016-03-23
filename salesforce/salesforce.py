@@ -1,9 +1,7 @@
 from simple_salesforce import Salesforce as SimpleSalesforce
 from django.conf import settings
 from contextlib import ContextDecorator
-import sys
 from django.contrib.sessions.backends.db import SessionStore
-from importlib import import_module
 from django.conf import settings
 
 
