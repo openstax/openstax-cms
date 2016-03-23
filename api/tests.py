@@ -9,12 +9,14 @@ import unittest
 from accounts.utils import create_user
 from wagtail.tests.utils import WagtailPageTests
 import time
-class SalesforceAPI(LiveServerTestCase,WagtailPageTests):
+
+
+class SalesforceAPI(LiveServerTestCase, WagtailPageTests):
     serialized_rollback = True
 
     def setUp(self):
-        super(LiveServerTestCase,self).setUp()
-        super(WagtailPageTests,self).setUp()
+        super(LiveServerTestCase, self).setUp()
+        super(WagtailPageTests, self).setUp()
         [user.delete() for user in User.objects.all()]
 
     def test_user_faculty_group(self):
@@ -41,7 +43,7 @@ class SalesforceAPI(LiveServerTestCase,WagtailPageTests):
                      'first_name': 'first_name',
                      'uid': 0}
 
-        result=create_user(**test_user)
+        result = create_user(**test_user)
         new_user = result['user']
         self.client.force_login(new_user)
         self.client.get('/api/user/')
@@ -50,13 +52,13 @@ class SalesforceAPI(LiveServerTestCase,WagtailPageTests):
         self.assertEqual(response.status_code, 200)
         response_list = json.loads(response.content.decode(response.charset))
         expected_user_info = {'is_superuser': False,
-                               'username': 'username',
-                               'first_name': 'first_name',
-                               'groups': ['Faculty'],
-                               'last_name': 'last_name',
-                               'is_staff': False}
-        returned_user_info=response_list[0]
-        self.assertDictEqual(expected_user_info,returned_user_info)
+                              'username': 'username',
+                              'first_name': 'first_name',
+                              'groups': ['Faculty'],
+                              'last_name': 'last_name',
+                              'is_staff': False}
+        returned_user_info = response_list[0]
+        self.assertDictEqual(expected_user_info, returned_user_info)
 
 
     def test_adopters(self):
@@ -84,8 +86,8 @@ class SalesforceAPI(LiveServerTestCase,WagtailPageTests):
         self.assertIn('Rice University',names)          
 
     def tearDown(self):
-        super(WagtailPageTests,self).setUp()
-        super(LiveServerTestCase,self).setUp()
+        super(WagtailPageTests, self).setUp()
+        super(LiveServerTestCase, self).setUp()
 
 class ImageAPI(TestCase, WagtailTestUtils):
 
