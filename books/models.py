@@ -6,7 +6,7 @@ from django.db import models
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 
-from wagtail.wagtailcore.models import Page, Orderable, Site
+from wagtail.wagtailcore.models import Page, Orderable
 from wagtail.wagtailcore.fields import RichTextField
 from wagtail.wagtailadmin.edit_handlers import (FieldPanel,
                                                 InlinePanel,
@@ -17,7 +17,7 @@ from wagtail.wagtaildocs.edit_handlers import DocumentChooserPanel
 
 from modelcluster.fields import ParentalKey
 
-from openstax.functions import build_document_url
+from openstax.functions import build_document_url, build_image_url
 
 from snippets.models import Subject, FacultyResource, StudentResource
 from allies.models import Ally
@@ -142,12 +142,7 @@ class BookAlly(models.Model):
     ally_short_description = property(get_ally_short_description)
 
     def get_ally_logo(self):
-        site = Site.objects.get(is_default_site=True)
-        if site.port == 80:
-            return "https://{}/api/v0/images/{}".format(site.hostname, self.ally.logo.id)
-        else:
-            return "https://{}:{}/api/v0/images/{}".format(site.hostname, site.port,
-                                                           self.ally.logo.id)
+        return build_image_url(self.ally.logo)
     ally_logo = property(get_ally_logo)
 
     book_link_url = models.URLField(blank=True, help_text="Call to Action Link")
