@@ -89,9 +89,6 @@ STATICFILES_FINDERS = [
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'wq21wtjo3@d_qfjvd-#td!%7gfy2updj2z+nev^k$iy%=m4_tr'
 
-# This setting allows for cross domain sessions
-SESSION_COOKIE_DOMAIN = '.openstax.org'
-
 MIDDLEWARE_CLASSES = [
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
