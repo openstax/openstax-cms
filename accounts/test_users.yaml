@@ -1,0 +1,37 @@
+---
+- id: 0
+  email: user@test.com
+  encrypted_password: XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  reset_password_token: 
+  reset_password_sent_at: 
+  remember_created_at: 
+  sign_in_count: 80
+  current_sign_in_at: 2015-06-15 22:37:59.000000000 Z
+  last_sign_in_at: 2015-04-20 17:32:40.000000000 Z
+  current_sign_in_ip: 75.142.234.127
+  last_sign_in_ip: 75.142.228.82
+  confirmation_token: 
+  confirmed_at: 2011-11-21 16:42:00.000000000 Z
+  confirmation_sent_at: 2011-11-21 16:40:15.000000000 Z
+  created_at: 2011-11-21 16:40:15.000000000 Z
+  updated_at: 2015-06-15 22:37:59.000000000 Z
+  first_name: first_name
+  last_name: last_name
+  is_administrator: true
+  is_manager: true
+  stated_role: Other
+  org: 
+  zipcode: 
+  discipline: ''
+  is_staff: true
+  is_sme: false
+  is_errata_point_person: false
+  textbook_title: 
+  faculty_only_access: 
+  college_website_url: 
+  institutional_email_address: 
+  num_students_per_semester: 
+  department: 
+  address: 
+  phone_number:
+  username: username
