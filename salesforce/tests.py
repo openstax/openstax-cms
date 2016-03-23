@@ -9,7 +9,19 @@ from django.utils.six import StringIO
 from salesforce.models import Adopter
 import unittest
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, Group
+from accounts.utils import create_user
+TEST_PIPELINE = (
+    'social.pipeline.social_auth.social_details',
+    'social.pipeline.social_auth.social_uid',
+    'social.pipeline.social_auth.auth_allowed',
+    'social.pipeline.social_auth.social_user',
+    'social.pipeline.user.create_user',
+    'accounts.pipelines.save_profile',
+    'social.pipeline.social_auth.associate_user',
+    'social.pipeline.social_auth.load_extra_data',
+    'social.pipeline.user.user_details',
+)
 
 class SalesforceTest(LiveServerTestCase,WagtailPageTests):
     def setUp(self):
@@ -89,16 +101,55 @@ class SalesforceTest(LiveServerTestCase,WagtailPageTests):
         self.assertTrue(Adopter.objects.filter(name='Rice University').exists())
 
     def test_update_faculty_status_command(self):
-        user = User.objects.create_user('test_user',
-                                        'username@domain.com',
-                                        'password')
-        user.save()
+        test_user = {'last_name': 'last_name',    
+                     'username': 'username', 
+                     'full_name': None, 
+                     'first_name': 'first_name',
+                     'uid': 0} 
+        result = create_user(**test_user)
+        returned_user = result['user']
         out = StringIO()
-        cms_id = str(user.pk)
-        self.assertFalse(user.groups.filter(name='Faculty').exists())
-        call_command('update_faculty_status',cms_id,'0', stdout=out)
+        cms_id = str(returned_user.pk)
+        self.assertFalse(returned_user.groups.filter(name='Faculty').exists())
+        call_command('update_faculty_status',cms_id,test_user['uid'], stdout=out)
         self.assertIn("Success", out.getvalue())
-        self.assertTrue(user.groups.filter(name='Faculty').exists())
+        self.assertTrue(returned_user.groups.filter(name='Faculty').exists())
+
+    def test_update_faculty_status_all_command(self):
+        from accounts.utils import create_user
+        user_details = {'last_name': 'Hart', 
+                        'username': 'openstax_cms_faculty_tester', 
+                        'full_name': None, 
+                        'first_name': 'Richard',
+                        'uid': 16207}
+        result = create_user(**user_details)
+        test_user = result['user']
+        self.assertFalse(test_user.groups.filter(name='Faculty').exists())
+        out = StringIO()
+        call_command('update_faculty_status_all', stdout=out)
+        self.assertIn("Success", out.getvalue())
+        test_user = User.objects.filter(username = user_details['username'])[0]
+        self.assertTrue(test_user.groups.filter(name='Faculty').exists())
+        faculty_group = Group.objects.get_by_natural_key('Faculty')
+
+    def test_context_manager_session(self):
+        from django.contrib.sessions.backends.db import SessionStore
+        with Salesforce() as sf:
+            returned_session_id = sf.session_id
+        sesson_store = SessionStore(Salesforce._default_session_key)
+        self.assertIn('sf_instance',sesson_store.keys())
+        for i in range(0,5):
+            with Salesforce() as sf:
+                expected_session_id = returned_session_id
+                returned_session_id = sf.session_id
+                self.assertEqual(expected_session_id,returned_session_id)
+
+        original_session = Salesforce._default_session_key
+        with self.assertRaises(RuntimeError):
+            with Salesforce() as sf:
+                raise RuntimeError
+        self.assertNotEqual(original_session,Salesforce._default_session_key)
+
 
     def tearDown(self):
         super(WagtailPageTests, self).tearDown()

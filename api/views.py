@@ -28,8 +28,8 @@ class UserView(viewsets.ModelViewSet):
             pass
         elif hasattr(user, 'social_auth'):
             if user.social_auth.exists():
-                accounts_id = user.social_auth.values()[0]['uid']
-                cms_id = user.pk
+                accounts_id = str(user.social_auth.values()[0]['uid'])
+                cms_id = str(user.pk)
                 try:
                     out = StringIO()
                     call_command('update_faculty_status',cms_id,accounts_id, stdout=out)
