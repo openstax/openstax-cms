@@ -1,5 +1,3 @@
-import json
-
 from django.test import TestCase, Client
 
 
@@ -13,4 +11,4 @@ class MailTest(TestCase):
                                                              'from_address': 'noreply@openstax.org',
                                                              'subject': 'Test Subject',
                                                              'message_body': 'This is a test.'})
-        self.assertEqual(json.loads(response.content.decode('utf8')), {'sent': 1})
+        self.assertRedirects(response, '/contact-thank-you', target_status_code=301)
