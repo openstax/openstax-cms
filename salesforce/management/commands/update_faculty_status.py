@@ -9,11 +9,11 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('cms_id', type=int)
-        parser.add_argument('accounts_id', type=int)  
+        parser.add_argument('accounts_id', type=int)
 
     def handle(self, *args, **options):
-        user = User.objects.get(pk=options['cms_id']) 
         with Salesforce() as sf:
+            user = User.objects.get(pk=options['cms_id']) 
             status = sf.faculty_status(options['accounts_id'])
             if status == u'Confirmed':
                 faculty_group = Group.objects.get_by_natural_key('Faculty')
