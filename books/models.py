@@ -202,9 +202,9 @@ class Book(Page):
     def get_cover_url(self):
         site = Site.objects.get(is_default_site=True)
         if site.port == 80:
-            return "https://{}{}".format(site.hostname, self.cover.url)
+            return "{}{}".format(settings.MEDIA_URL, self.cover.url)
         else:
-            return "https://{}:{}{}".format(site.hostname, site.port, self.cover.url)
+            return "http://{}:{}{}".format(site.hostname, site.port, self.high_resolution_pdf.url)
 
     cover_url = property(get_cover_url)
     publish_date = models.DateField(blank=True, null=True, editable=False)
@@ -224,9 +224,9 @@ class Book(Page):
     def get_high_res_pdf_url(self):
         site = Site.objects.get(is_default_site=True)
         if site.port == 80:
-            return "https://{}{}".format(site.hostname, self.high_resolution_pdf.url)
+            return "{}{}".format(settings.MEDIA_URL, self.high_resolution_pdf.url)
         else:
-            return "https://{}:{}{}".format(site.hostname, site.port, self.high_resolution_pdf.url)
+            return "http://{}:{}{}".format(site.hostname, site.port, self.high_resolution_pdf.url)
 
     high_resolution_pdf_url = property(get_high_res_pdf_url)
     low_resolution_pdf = models.ForeignKey(
@@ -240,9 +240,9 @@ class Book(Page):
     def get_low_res_pdf_url(self):
         site = Site.objects.get(is_default_site=True)
         if site.port == 80:
-            return "https://{}{}".format(site.hostname, self.low_resolution_pdf.url)
+            return "{}{}".format(settings.MEDIA_URL, self.low_resolution_pdf.url)
         else:
-            return "https://{}:{}{}".format(site.hostname, site.port, self.low_resolution_pdf.url)
+            return "http://{}:{}{}".format(site.hostname, site.port, self.low_resolution_pdf.url)
 
     low_resolution_pdf_url = property(get_low_res_pdf_url)
     student_handbook = models.ForeignKey(
@@ -256,9 +256,9 @@ class Book(Page):
     def get_student_handbook_url(self):
         site = Site.objects.get(is_default_site=True)
         if site.port == 80:
-            return "https://{}{}".format(site.hostname, self.student_handbook.url)
+            return "{}{}".format(settings.MEDIA_URL, self.student_handbook.url)
         else:
-            return "https://{}:{}{}".format(site.hostname, site.port, self.student_handbook.url)
+            return "http://{}{}".format(settings.MEDIA_URL, self.cover.url)
 
     student_handbook_url = property(get_student_handbook_url)
     ibook_link = models.URLField(blank=True, help_text="Link to iBook")
