@@ -9,8 +9,8 @@ from django.utils.six import StringIO
 from salesforce.models import Adopter
 import unittest
 from django.conf import settings
+from django.contrib.auth.models import User
 
-@unittest.skip("tests will fail while Salesforce users are updated")
 class SalesforceTest(LiveServerTestCase,WagtailPageTests):
     def setUp(self):
         super(WagtailPageTests, self).setUp()
@@ -87,6 +87,18 @@ class SalesforceTest(LiveServerTestCase,WagtailPageTests):
         self.assertIn("Success", out.getvalue())      
         adopters = Adopter.objects.all()
         self.assertTrue(Adopter.objects.filter(name='Rice University').exists())
+
+    def test_update_faculty_status_command(self):
+        user = User.objects.create_user('test_user',
+                                        'username@domain.com',
+                                        'password')
+        user.save()
+        out = StringIO()
+        cms_id = str(user.pk)
+        self.assertFalse(user.groups.filter(name='Faculty').exists())
+        call_command('update_faculty_status',cms_id,'0', stdout=out)
+        self.assertIn("Success", out.getvalue())
+        self.assertTrue(user.groups.filter(name='Faculty').exists())
 
     def tearDown(self):
         super(WagtailPageTests, self).tearDown()
