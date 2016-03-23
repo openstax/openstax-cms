@@ -16,7 +16,6 @@ urlpatterns = [
 
     url(r'^admin/', include(wagtailadmin_urls)),
     url(r'^accounts/', include('accounts.urls')),
-    url(r'^mail/', include('mail.urls')),
     url(r'^documents/', include(wagtaildocs_urls)),
     url(r'^images/', include(wagtailimages_urls)),
 
