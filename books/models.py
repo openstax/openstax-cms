@@ -17,6 +17,8 @@ from wagtail.wagtaildocs.edit_handlers import DocumentChooserPanel
 
 from modelcluster.fields import ParentalKey
 
+from openstax.functions import build_document_url
+
 from snippets.models import Subject, FacultyResource, StudentResource
 from allies.models import Ally
 
@@ -200,11 +202,7 @@ class Book(Page):
     )
 
     def get_cover_url(self):
-        site = Site.objects.get(is_default_site=True)
-        if site.port == 80:
-            return "{}{}".format(settings.MEDIA_URL, self.cover.url)
-        else:
-            return "http://{}:{}{}".format(site.hostname, site.port, self.high_resolution_pdf.url)
+        return build_document_url(self.cover.url)
 
     cover_url = property(get_cover_url)
     publish_date = models.DateField(blank=True, null=True, editable=False)
@@ -222,11 +220,7 @@ class Book(Page):
     )
 
     def get_high_res_pdf_url(self):
-        site = Site.objects.get(is_default_site=True)
-        if site.port == 80:
-            return "{}{}".format(settings.MEDIA_URL, self.high_resolution_pdf.url)
-        else:
-            return "http://{}:{}{}".format(site.hostname, site.port, self.high_resolution_pdf.url)
+        return build_document_url(self.high_resolution_pdf.url)
 
     high_resolution_pdf_url = property(get_high_res_pdf_url)
     low_resolution_pdf = models.ForeignKey(
@@ -238,11 +232,7 @@ class Book(Page):
     )
 
     def get_low_res_pdf_url(self):
-        site = Site.objects.get(is_default_site=True)
-        if site.port == 80:
-            return "{}{}".format(settings.MEDIA_URL, self.low_resolution_pdf.url)
-        else:
-            return "http://{}:{}{}".format(site.hostname, site.port, self.low_resolution_pdf.url)
+        return build_document_url(self.low_resolution_pdf.url)
 
     low_resolution_pdf_url = property(get_low_res_pdf_url)
     student_handbook = models.ForeignKey(
@@ -254,11 +244,7 @@ class Book(Page):
     )
 
     def get_student_handbook_url(self):
-        site = Site.objects.get(is_default_site=True)
-        if site.port == 80:
-            return "{}{}".format(settings.MEDIA_URL, self.student_handbook.url)
-        else:
-            return "http://{}{}".format(settings.MEDIA_URL, self.cover.url)
+        return build_document_url(self.student_handbook.url)
 
     student_handbook_url = property(get_student_handbook_url)
     ibook_link = models.URLField(blank=True, help_text="Link to iBook")
