@@ -20,7 +20,7 @@ def send_contact_message(request):
         email = EmailMessage(subject,
                              message_body,
                              'noreply@openstax.org',
-                             ["mwharrison@rice.edu"],
+                             to_address,
                              reply_to=[from_string])
         email.send(fail_silently=False)
 
