@@ -15,25 +15,15 @@ def send_contact_message(request):
         from_string = '{} <{}>'.format(from_name, from_address)
         subject = request.POST.get("subject", "")
         message_body = request.POST.get("message_body", "")
-        csrf_token = request.POST.get("csrfmiddlewaretoken", "")
 
         email = EmailMessage(subject,
                              message_body,
                              'noreply@openstax.org',
                              to_address,
                              reply_to=[from_string])
-        email.send(fail_silently=False)
+        email.send()
 
-        #return redirect('/contact-thank-you')
-        data = {'subject': subject,
-                'message_body': message_body,
-                'to_address': to_address,
-                'reply_to': [from_string],
-                'from_address': 'noreply@openstax.org',
-                'csrf_token': csrf_token,
-                }
-
-        return JsonResponse(data)
+        return redirect('/contact-thank-you')
     # if this is not posting a message, let's send the csfr token back
     else:
         csrf_token = csrf.get_token(request)
