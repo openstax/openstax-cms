@@ -1,10 +1,12 @@
 from django.shortcuts import redirect
+from django.http import JsonResponse
 from django.core.mail import send_mail
+from django.middleware import csrf
 
 from rest_framework.decorators import api_view
 
 
-@api_view(['POST'])
+@api_view(['POST', 'GET'])
 def send_contact_message(request):
     if request.method == 'POST':
         to_address = request.POST.get("to_address", "").split(',')
@@ -17,3 +19,9 @@ def send_contact_message(request):
         send_mail(subject, message_body, from_string, to_address)
 
         return redirect('/contact-thank-you')
+    # if this is not posting a message, let's send the csfr token back
+    else:
+        csrf_token = csrf.get_token(request)
+        data = {'csrf': csrf_token}
+
+        return JsonResponse(data)
