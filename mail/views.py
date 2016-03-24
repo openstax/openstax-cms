@@ -22,6 +22,6 @@ def send_contact_message(request):
     # if this is not posting a message, let's send the csfr token back
     else:
         csrf_token = csrf.get_token(request)
-        data = {'csrf': csrf_token}
+        data = {'csrf_token': csrf_token}
 
         return JsonResponse(data)
