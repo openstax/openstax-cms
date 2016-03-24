@@ -1,6 +1,6 @@
 from django.shortcuts import redirect
 from django.http import JsonResponse
-from django.core.mail import send_mail
+from django.core.mail import EmailMessage
 from django.middleware import csrf
 
 from rest_framework.decorators import api_view
@@ -16,7 +16,12 @@ def send_contact_message(request):
         subject = request.POST.get("subject", "")
         message_body = request.POST.get("message_body", "")
 
-        send_mail(subject, message_body, from_string, to_address)
+        email = EmailMessage(subject,
+                             message_body,
+                             'noreply@openstax.org',
+                             to_address,
+                             reply_to=[from_string])
+        email.send()
 
         return redirect('/contact-thank-you')
     # if this is not posting a message, let's send the csfr token back
