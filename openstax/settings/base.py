@@ -119,6 +119,14 @@ SOCIAL_AUTH_PIPELINE = (
 
 )
 
+IMPORT_USER_PIPELINE = (
+    'social.pipeline.social_auth.social_user',
+    'social.pipeline.user.create_user',
+    'accounts.pipelines.save_profile',
+    'social.pipeline.social_auth.associate_user',
+    'social.pipeline.user.user_details',
+) 
+
 # this should probably be in local.py, since it will change on a per server basis
 NEW_USER_REDIRECT = 'https://localhost:8001/new-user/'
 
