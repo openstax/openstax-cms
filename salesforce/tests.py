@@ -42,22 +42,22 @@ class SalesforceTest(LiveServerTestCase,WagtailPageTests):
     def test_faculty_confirmed(self):
         with Salesforce() as sf:
             status = sf.faculty_status(0)
-            self.assertEqual(status, u'Confirmed')
+            self.assertEqual(status, ['0'])
 
     def test_faculty_unknown(self):
         with Salesforce() as sf:
             status = sf.faculty_status(1)
-            self.assertIsNone(status)
+            self.assertEqual(status,[])
 
     def test_faculty_pending(self):
         with Salesforce() as sf:
             status = sf.faculty_status(2)
-            self.assertEqual(status, u'Pending')
+            self.assertEqual(status, [])
 
     def test_faculty_rejected(self):
         with Salesforce() as sf:
             status = sf.faculty_status(3)
-            self.assertEqual(status, u'Rejected')
+            self.assertEqual(status, [])
 
     @unittest.skip("logs need to be configured")
     def test_context_manager(self):

@@ -13,32 +13,21 @@ class Command(BaseCommand):
         parser.add_argument('--all', action='store_true', default=False)
     def handle(self, *args, **options):
         if options['all']:
-            users = SocialAuthStorage.user.objects.all()
-            with Salesforce() as sf:
-                contact_list = sf.faculty_status()
-                for contact in contact_list:
-                    account_id = contact['Accounts_ID__c']
-                    social_user = SocialAuthStorage.user.objects.filter(
-                        uid=account_id)
-                    if social_user:
-                        user = User.objects.get(pk=social_user[0].user_id)
-                        faculty_group = Group.objects.get_by_natural_key('Faculty')
-                        user.groups.add(faculty_group)
-                        user.save()
-                        faculty_group.save()
-
+            accounts_id = None
         else:
             social_user = SocialAuthStorage.user.objects.filter(user_id = options['cms_id'])
-            if social_user:
-                with Salesforce() as sf:
-                    accounts_id=social_user[0].uid
+            accounts_id=social_user[0].uid
+        with Salesforce() as sf:
+            faculty_list = sf.faculty_status(accounts_id)
+            for account_id in faculty_list:
+                social_user = SocialAuthStorage.user.objects.filter(uid=account_id)
+                if social_user:
                     cms_id = social_user[0].user_id
-                    status = sf.faculty_status(accounts_id)
-                    if status == u'Confirmed':
-                        user=User.objects.get(pk = cms_id)
-                        faculty_group = Group.objects.get_by_natural_key('Faculty')
-                        user.groups.add(faculty_group)
-                        user.save()
+                    user = User.objects.get(pk=cms_id)
+                    faculty_group = Group.objects.get_by_natural_key('Faculty')
+                    user.groups.add(faculty_group)
+                    user.save()
+                    faculty_group.save()
         responce = self.style.SUCCESS("Successfully updated user faculty status")
         self.stdout.write(responce)
 
