@@ -42,22 +42,22 @@ class SalesforceTest(LiveServerTestCase,WagtailPageTests):
     def test_faculty_confirmed(self):
         with Salesforce() as sf:
             status = sf.faculty_status(0)
-            self.assertEqual(status, u'Confirmed')
+            self.assertEqual(status, ['0'])
 
     def test_faculty_unknown(self):
         with Salesforce() as sf:
             status = sf.faculty_status(1)
-            self.assertIsNone(status)
+            self.assertEqual(status,[])
 
     def test_faculty_pending(self):
         with Salesforce() as sf:
             status = sf.faculty_status(2)
-            self.assertEqual(status, u'Pending')
+            self.assertEqual(status, [])
 
     def test_faculty_rejected(self):
         with Salesforce() as sf:
             status = sf.faculty_status(3)
-            self.assertEqual(status, u'Rejected')
+            self.assertEqual(status, [])
 
     @unittest.skip("logs need to be configured")
     def test_context_manager(self):
@@ -112,7 +112,7 @@ class SalesforceTest(LiveServerTestCase,WagtailPageTests):
         cms_id = str(returned_user.pk)
         self.assertFalse(returned_user.groups.filter(name='Faculty').exists())
         call_command(
-            'update_faculty_status', cms_id, test_user['uid'], stdout=out)
+            'update_faculty_status', cms_id, stdout=out)
         self.assertIn("Success", out.getvalue())
         self.assertTrue(returned_user.groups.filter(name='Faculty').exists())
 
@@ -127,7 +127,7 @@ class SalesforceTest(LiveServerTestCase,WagtailPageTests):
         test_user = result['user']
         self.assertFalse(test_user.groups.filter(name='Faculty').exists())
         out = StringIO()
-        call_command('update_faculty_status_all', stdout=out)
+        call_command('update_faculty_status','--all', stdout=out)
         self.assertIn("Success", out.getvalue())
         test_user = User.objects.filter(username=user_details['username'])[0]
         self.assertTrue(test_user.groups.filter(name='Faculty').exists())

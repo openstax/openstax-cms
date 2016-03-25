@@ -23,19 +23,11 @@ class UserView(viewsets.ModelViewSet):
     serializer_class = UserSerializer    
     def get_queryset(self):
         user = self.request.user
-        # assuming only social auth is openstax accounts for now
-        if user.groups.filter(name="Faculty").exists():
+        try:
+            out = StringIO()
+            call_command('update_faculty_status', str(user.pk), stdout=out)
+        except:
             pass
-        elif hasattr(user, 'social_auth'):
-            if user.social_auth.exists():
-                accounts_id = str(user.social_auth.values()[0]['uid'])
-                cms_id = str(user.pk)
-                try:
-                    out = StringIO()
-                    call_command(
-                        'update_faculty_status', cms_id, accounts_id, stdout=out)
-                except:
-                    pass
-        return User.objects.filter(pk=user.pk)
+        return [user]
 
 
