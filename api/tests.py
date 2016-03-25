@@ -5,7 +5,6 @@ from django.core.management import call_command
 import json
 from django.utils.six import StringIO
 from django.contrib.auth.models import User
-import unittest
 from accounts.utils import create_user
 from wagtail.tests.utils import WagtailPageTests
 import time
