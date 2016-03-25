@@ -23,6 +23,6 @@ class Command(BaseCommand):
                     user.groups.add(faculty_group)
                     user.save()
                     faculty_group.save()
-        responce = self.style.SUCCESS("Successfully updated adopters")
+        responce = self.style.SUCCESS("Successfully updated all users' faculty status")
         self.stdout.write(responce)
 

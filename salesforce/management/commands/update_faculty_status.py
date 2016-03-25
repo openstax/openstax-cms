@@ -20,6 +20,6 @@ class Command(BaseCommand):
                 faculty_group = Group.objects.get_by_natural_key('Faculty')
                 user.groups.add(faculty_group)
                 user.save()
-        responce = self.style.SUCCESS("Successfully updated adopters")
+        responce = self.style.SUCCESS("Successfully updated user faculty status")
         self.stdout.write(responce)
 
