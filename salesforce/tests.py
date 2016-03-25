@@ -112,7 +112,7 @@ class SalesforceTest(LiveServerTestCase,WagtailPageTests):
         cms_id = str(returned_user.pk)
         self.assertFalse(returned_user.groups.filter(name='Faculty').exists())
         call_command(
-            'update_faculty_status', cms_id, test_user['uid'], stdout=out)
+            'update_faculty_status', cms_id, stdout=out)
         self.assertIn("Success", out.getvalue())
         self.assertTrue(returned_user.groups.filter(name='Faculty').exists())
 
