@@ -9,13 +9,13 @@ class Command(BaseCommand):
     help = "Add user to faculty group if confirmed by salesforce"
 
     def add_arguments(self, parser):
-        parser.add_argument('cms_id', nargs='?', type=int,default=None)
+        parser.add_argument('user_id', nargs='?', type=int,default=None)
         parser.add_argument('--all', action='store_true', default=False)
     def handle(self, *args, **options):
         if options['all']:
             accounts_id = None
         else:
-            social_user = SocialAuthStorage.user.objects.filter(user_id = options['cms_id'])
+            social_user = SocialAuthStorage.user.objects.filter(user_id = options['user_id'])
             accounts_id=social_user[0].uid
         with Salesforce() as sf:
             faculty_list = sf.faculty_status(accounts_id)
