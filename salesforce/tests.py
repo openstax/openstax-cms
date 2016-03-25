@@ -127,7 +127,7 @@ class SalesforceTest(LiveServerTestCase,WagtailPageTests):
         test_user = result['user']
         self.assertFalse(test_user.groups.filter(name='Faculty').exists())
         out = StringIO()
-        call_command('update_faculty_status_all', stdout=out)
+        call_command('update_faculty_status','--all', stdout=out)
         self.assertIn("Success", out.getvalue())
         test_user = User.objects.filter(username=user_details['username'])[0]
         self.assertTrue(test_user.groups.filter(name='Faculty').exists())
