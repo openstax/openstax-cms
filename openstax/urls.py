@@ -18,11 +18,11 @@ urlpatterns = [
     url(r'^accounts/', include('accounts.urls')),
     url(r'^documents/', include(wagtaildocs_urls)),
     url(r'^images/', include(wagtailimages_urls)),
-    
+
     url(r'^api/mail/', include('mail.urls')),
     url(r'^api/', include(wagtailapi_urls)),
     url(r'^api/', include(api_urls)),
-    
+
     # For anything not caught by a more specific rule above, hand over to
     # Wagtail's serving mechanism
     url(r'', include(wagtail_urls)),
@@ -36,5 +36,6 @@ if settings.DEBUG:
     urlpatterns += staticfiles_urlpatterns()
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += [
-        url(r'^favicon\.ico$', RedirectView.as_view(url=settings.STATIC_URL + 'pages/images/favicon.ico'))
+        url(r'^favicon\.ico$', RedirectView.as_view(
+            url=settings.STATIC_URL + 'pages/images/favicon.ico'))
     ]

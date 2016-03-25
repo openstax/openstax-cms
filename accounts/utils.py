@@ -8,6 +8,6 @@ def create_user(**user_details):
     strategy = DjangoStrategy(DjangoStorage)
     openstax = OpenStax(strategy=strategy)
     result = openstax.run_pipeline(pipeline=settings.IMPORT_USER_PIPELINE,
-                                   details=user_details, 
+                                   details=user_details,
                                    uid=user_details['uid'])
     return result

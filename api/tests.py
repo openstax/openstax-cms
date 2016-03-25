@@ -19,22 +19,22 @@ class SalesforceAPI(LiveServerTestCase, WagtailPageTests):
         [user.delete() for user in User.objects.all()]
 
     def test_user_faculty_group(self):
-        user = User.objects.create_user('john', 
+        user = User.objects.create_user('john',
                                         'lennon@thebeatles.com',
                                         'johnpassword')
-        user.save() 
+        user.save()
         self.client.force_login(user)
         response = self.client.get('/api/user/')
         self.assertEqual(response.status_code, 200)
         response_list = json.loads(response.content.decode(response.charset))
-        expected_user_info = {'is_superuser': False, 
-                               'username': 'john', 
-                               'first_name': '', 
-                               'groups': [], 
-                               'last_name': '', 
-                               'is_staff': False}
+        expected_user_info = {'is_superuser': False,
+                              'username': 'john',
+                              'first_name': '',
+                              'groups': [],
+                              'last_name': '',
+                              'is_staff': False}
         returned_user_info = response_list[0]
-        self.assertDictEqual(expected_user_info,returned_user_info)
+        self.assertDictEqual(expected_user_info, returned_user_info)
 
         test_user = {'last_name': 'last_name',
                      'username': 'username',
@@ -59,7 +59,6 @@ class SalesforceAPI(LiveServerTestCase, WagtailPageTests):
         returned_user_info = response_list[0]
         self.assertDictEqual(expected_user_info, returned_user_info)
 
-
     def test_adopters(self):
         # Test No adopters
         response = self.client.get('/api/adopters/')
@@ -67,7 +66,7 @@ class SalesforceAPI(LiveServerTestCase, WagtailPageTests):
         response_list = eval(response.content.decode(response.charset))
         self.assertIsInstance(response_list, list)
         self.assertEqual(response_list, [])
-       
+
         # Test with adopters
         out = StringIO()
         call_command('update_adopters', stdout=out)
@@ -75,18 +74,19 @@ class SalesforceAPI(LiveServerTestCase, WagtailPageTests):
         self.assertEqual(response.status_code, 200)
         response_list = json.loads(response.content.decode(response.charset))
         self.assertIsInstance(response_list, list)
-        self.assertGreater(len(response_list),1)
+        self.assertGreater(len(response_list), 1)
         response_item = response_list[0]
         self.assertIsInstance(response_item, dict)
         expected_set = {'description', 'website', 'name'}
         returned_set = set(response_item.keys())
-        self.assertSetEqual(expected_set,returned_set)
-        names = [ adopter['name'] for adopter in response_list ]
-        self.assertIn('Rice University',names)          
+        self.assertSetEqual(expected_set, returned_set)
+        names = [adopter['name'] for adopter in response_list]
+        self.assertIn('Rice University', names)
 
     def tearDown(self):
         super(WagtailPageTests, self).setUp()
         super(LiveServerTestCase, self).setUp()
+
 
 class ImageAPI(TestCase, WagtailTestUtils):
 

@@ -12,11 +12,11 @@ class NewsIndex(Page):
     content_panels = Page.content_panels + [
         FieldPanel('intro', classname="full")
     ]
-    
+
     api_fields = (
         'intro',
     )
-    
+
     subpage_types = ['news.NewsArticle']
     parent_page_types = ['pages.HomePage']
 
@@ -36,5 +36,5 @@ class NewsArticle(Page):
         FieldPanel('intro'),
         FieldPanel('body', classname="full")
     ]
-    
+
     parent_page_types = ['news.NewsIndex']

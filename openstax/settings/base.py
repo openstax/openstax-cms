@@ -125,9 +125,10 @@ IMPORT_USER_PIPELINE = (
     'accounts.pipelines.save_profile',
     'social.pipeline.social_auth.associate_user',
     'social.pipeline.user.user_details',
-) 
+)
 
-# this should probably be in local.py, since it will change on a per server basis
+# this should probably be in local.py, since it will change on a per
+# server basis
 NEW_USER_REDIRECT = 'https://localhost:8001/new-user/'
 
 TEMPLATES = [
@@ -167,7 +168,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.postgres',
     'django.contrib.admin',
-    #contrib
+    # contrib
     'compressor',
     'taggit',
     'modelcluster',
@@ -178,8 +179,8 @@ INSTALLED_APPS = (
     'social.apps.django_app.default',
     'storages',
     'django_ses',
-    #custom
-    'admin_templates', #this overrides the admin templates
+    # custom
+    'admin_templates',  # this overrides the admin templates
     'pages',
     'books',
     'news',
@@ -188,7 +189,7 @@ INSTALLED_APPS = (
     'snippets',
     'salesforce',
     'mail',
-    #wagtail
+    # wagtail
     'wagtail.wagtailcore',
     'wagtail.wagtailadmin',
     'wagtail.wagtaildocs',
@@ -262,5 +263,5 @@ LOGGING = {
 # WAGTAIL SETTINGS
 WAGTAIL_SITE_NAME = 'openstax'
 
-#used in page.models to retrieve book information
+# used in page.models to retrieve book information
 CNX_ARCHIVE_URL = 'http://archive.cnx.org'

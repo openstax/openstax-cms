@@ -7,11 +7,12 @@ from social.backends.oauth import BaseOAuth2
 
 
 class OpenStax(BaseOAuth2):
+
     """openstax OAuth authentication backend"""
     name = 'openstax'
     ID_KEY = 'id'
-    AUTHORIZATION_URL = settings.AUTHORIZATION_URL 
-    ACCESS_TOKEN_URL = settings.ACCESS_TOKEN_URL 
+    AUTHORIZATION_URL = settings.AUTHORIZATION_URL
+    ACCESS_TOKEN_URL = settings.ACCESS_TOKEN_URL
     USER_QUERY = settings.USER_QUERY
     REQUEST_TOKEN_METHOD = 'POST'
     ACCESS_TOKEN_METHOD = 'POST'
@@ -22,8 +23,8 @@ class OpenStax(BaseOAuth2):
     def get_user_details(self, response):
         """Return user details from openstax account's"""
         return {'username': response.get('username'),
-                'first_name':response.get('first_name'),
-                'last_name':response.get('last_name'),
+                'first_name': response.get('first_name'),
+                'last_name': response.get('last_name'),
                 'full_name': response.get('full_name'), }
 
     def user_data(self, access_token, *args, **kwargs):

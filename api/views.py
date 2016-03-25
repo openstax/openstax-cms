@@ -15,8 +15,10 @@ class ImageViewSet(viewsets.ModelViewSet):
     queryset = Image.objects.all()
     serializer_class = ImageSerializer
 
+
 class UserView(viewsets.ModelViewSet):
-    serializer_class = UserSerializer    
+    serializer_class = UserSerializer
+
     def get_queryset(self):
         user = self.request.user
         try:

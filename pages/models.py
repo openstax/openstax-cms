@@ -18,11 +18,13 @@ from modelcluster.fields import ParentalKey
 
 
 class ImageFormatChoiceBlock(FieldBlock):
-    field = forms.ChoiceField(choices=(('left','Wrap left'),('right','Wrap right'),('mid','Mid width'),('full','Full width'),))
+    field = forms.ChoiceField(choices=(
+        ('left', 'Wrap left'), ('right', 'Wrap right'), ('mid', 'Mid width'), ('full', 'Full width'),))
 
 
 class HTMLAlignmentChoiceBlock(FieldBlock):
-    field = forms.ChoiceField(choices=(('normal','Normal'),('full','Full width'),))
+    field = forms.ChoiceField(
+        choices=(('normal', 'Normal'), ('full', 'Full width'),))
 
 
 class ImageBlock(StructBlock):
@@ -107,9 +109,9 @@ class Funders(LinkFields):
         related_name='+'
     )
     description = RichTextField()
-    
+
     api_fields = ('name', 'image', 'description', )
-    
+
     panels = [
         FieldPanel('name'),
         ImageChooserPanel('image'),
@@ -127,9 +129,9 @@ class StrategicAdvisors(LinkFields):
         related_name='+'
     )
     description = RichTextField()
-    
+
     api_fields = ('name', 'image', 'description', )
-    
+
     panels = [
         FieldPanel('name'),
         ImageChooserPanel('image'),
@@ -147,9 +149,9 @@ class OpenStaxTeam(LinkFields):
         related_name='+'
     )
     description = RichTextField()
-    
+
     api_fields = ('name', 'image', 'description', )
-    
+
     panels = [
         FieldPanel('name'),
         ImageChooserPanel('image'),
@@ -158,13 +160,14 @@ class OpenStaxTeam(LinkFields):
 
 
 class Allies(LinkFields):
-    heading = models.CharField(max_length=255) 
+    heading = models.CharField(max_length=255)
     description = RichTextField()
     link_url = models.URLField(blank=True, help_text="Call to Action Link")
-    link_text = models.CharField(max_length=255, help_text="Call to Action Text")
-    
+    link_text = models.CharField(
+        max_length=255, help_text="Call to Action Text")
+
     api_fields = ('heading', 'description', 'link_url', 'link_text', )
-    
+
     panels = [
         FieldPanel('heading'),
         FieldPanel('description'),
@@ -188,20 +191,20 @@ class Quote(models.Model):
         related_name='+'
     )
     quote_image_alignment = models.CharField(max_length=1,
-                                      choices=IMAGE_ALIGNMENT_CHOICES,
-                                      blank=True,
-                                      null=True)
+                                             choices=IMAGE_ALIGNMENT_CHOICES,
+                                             blank=True,
+                                             null=True)
     quote_link = models.URLField(blank=True, null=True)
     quote_link_text = models.CharField(max_length=255, blank=True, null=True)
-    
+
     api_fields = (
-        'quote_text', 
-        'quote_image', 
-        'quote_image_alignment', 
-        'quote_link', 
-        'quote_link_text', 
+        'quote_text',
+        'quote_image',
+        'quote_image_alignment',
+        'quote_link',
+        'quote_link_text',
     )
-    
+
     panels = [
         FieldPanel('quote_text'),
         ImageChooserPanel('quote_image'),
@@ -216,7 +219,7 @@ class HomePageQuotes(Orderable, Quote):
 
 
 # Home Page
-class HomePage(Page):   
+class HomePage(Page):
     header_2_text = RichTextField()
     higher_ed_heading = models.CharField(max_length=255)
     higher_ed_description = RichTextField()
@@ -230,7 +233,7 @@ class HomePage(Page):
     adopter_description = RichTextField()
     adopter_cta_link = models.URLField(blank=True)
     adopter_cta_text = models.CharField(max_length=255)
-    
+
     api_fields = (
         'title',
         'homepage_quotes',
@@ -250,7 +253,7 @@ class HomePage(Page):
         'slug',
         'seo_title',
         'search_description',)
-    
+
     class Meta:
         verbose_name = "Home Page"
 
@@ -271,18 +274,19 @@ class HomePage(Page):
         FieldPanel('adopter_cta_link'),
         FieldPanel('adopter_cta_text'),
     ]
-    
+
     promote_panels = [
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        
+
     ]
-        
+
     # we are controlling what types of pages are allowed under a homepage
-    # if a new page type is created, it needs to be added here to show up in the admin
+    # if a new page type is created, it needs to be added here to show up in
+    # the admin
     subpage_types = [
-        'pages.HigherEducation', 
+        'pages.HigherEducation',
         'pages.K12',
         'pages.Products',
         'pages.Research',
@@ -295,11 +299,12 @@ class HomePage(Page):
         'books.BookIndex',
         'news.NewsIndex',
         'allies.Ally',
-        ]
+    ]
 
 
 class HigherEducationAllies(Orderable, Allies):
-    page = ParentalKey('pages.HigherEducation', related_name='higher_education_allies')
+    page = ParentalKey(
+        'pages.HigherEducation', related_name='higher_education_allies')
 
 
 class HigherEducation(Page):
@@ -320,26 +325,26 @@ class HigherEducation(Page):
     allies_description = RichTextField()
 
     api_fields = (
-        'intro_heading', 
-        'intro_description', 
-        'get_started_heading', 
-        'get_started_step_1_description', 
-        'get_started_step_2_description', 
-        'get_started_step_3_description', 
-        'get_started_step_4_description', 
-        'our_books_heading', 
-        'our_books_description', 
-        'our_impact_heading', 
-        'our_impact_description', 
-        'cnx_heading', 
-        'cnx_description', 
-        'allies_heading', 
-        'allies_description',  
+        'intro_heading',
+        'intro_description',
+        'get_started_heading',
+        'get_started_step_1_description',
+        'get_started_step_2_description',
+        'get_started_step_3_description',
+        'get_started_step_4_description',
+        'our_books_heading',
+        'our_books_description',
+        'our_impact_heading',
+        'our_impact_description',
+        'cnx_heading',
+        'cnx_description',
+        'allies_heading',
+        'allies_description',
         'higher_education_allies',
-        'slug', 
-        'seo_title', 
+        'slug',
+        'seo_title',
         'search_description',)
-    
+
     content_panels = [
         FieldPanel('title', classname="full title"),
         FieldPanel('intro_heading'),
@@ -359,14 +364,14 @@ class HigherEducation(Page):
         FieldPanel('allies_description'),
         InlinePanel('higher_education_allies', label="Allies"),
     ]
-    
+
     promote_panels = [
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        
+
     ]
-    
+
     parent_page_types = ['pages.HomePage']
 
 
@@ -379,19 +384,19 @@ class K12(Page):
     cnx_description = RichTextField()
     allies_heading = models.CharField(max_length=255)
     allies_description = RichTextField()
-    
+
     api_fields = (
-        'k12_heading', 
-        'k12_description', 
-        'tutor_heading', 
-        'tutor_description', 
-        'cnx_heading', 
-        'cnx_description', 
-        'allies_heading', 
-        'allies_description', 
-        'slug', 
-        'seo_title', 
-        'search_description', 
+        'k12_heading',
+        'k12_description',
+        'tutor_heading',
+        'tutor_description',
+        'cnx_heading',
+        'cnx_description',
+        'allies_heading',
+        'allies_description',
+        'slug',
+        'seo_title',
+        'search_description',
     )
 
     content_panels = [
@@ -405,14 +410,14 @@ class K12(Page):
         FieldPanel('allies_heading'),
         FieldPanel('allies_description'),
     ]
-    
+
     promote_panels = [
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        
+
     ]
-    
+
     parent_page_types = ['pages.HomePage']
 
 
@@ -431,22 +436,22 @@ class Products(Page):
     cnx_description = RichTextField()
     allies_heading = models.CharField(max_length=255)
     allies_description = RichTextField()
-    
+
     api_fields = (
-        'intro_heading', 
-        'intro_description', 
-        'tutor_heading', 
-        'tutor_description', 
-        'concept_coach_heading', 
-        'concept_coach_description', 
-        'cnx_heading', 
-        'cnx_description', 
-        'allies_heading', 
+        'intro_heading',
+        'intro_description',
+        'tutor_heading',
+        'tutor_description',
+        'concept_coach_heading',
+        'concept_coach_description',
+        'cnx_heading',
+        'cnx_description',
+        'allies_heading',
         'allies_description',
-        'products_allies',  
-        'slug', 
-        'seo_title', 
-        'search_description', 
+        'products_allies',
+        'slug',
+        'seo_title',
+        'search_description',
     )
 
     content_panels = [
@@ -463,14 +468,14 @@ class Products(Page):
         FieldPanel('allies_description'),
         InlinePanel('products_allies', label="Allies"),
     ]
-    
+
     promote_panels = [
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        
+
     ]
-    
+
     parent_page_types = ['pages.HomePage']
 
 
@@ -481,14 +486,14 @@ class Research(Page):
         FieldPanel('title', classname="full title"),
         FieldPanel('classroom_text'),
     ]
-    
+
     promote_panels = [
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        
+
     ]
-    
+
     parent_page_types = ['pages.HomePage']
 
 
@@ -499,14 +504,14 @@ class ContactUs(Page):
         FieldPanel('title', classname="full title"),
         FieldPanel('classroom_text'),
     ]
-    
+
     promote_panels = [
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        
+
     ]
-    
+
     parent_page_types = ['pages.HomePage']
 
 
@@ -528,9 +533,9 @@ class AboutUs(Page):
     strategic_advisors_intro = RichTextField()
     openstax_team_intro = RichTextField()
     api_fields = (
-        'who_we_are', 
-        'funder_intro', 
-        'funders', 
+        'who_we_are',
+        'funder_intro',
+        'funders',
         'strategic_advisors_intro',
         'strategic_advisors',
         'openstax_team_intro',
@@ -538,7 +543,7 @@ class AboutUs(Page):
         'slug',
         'seo_title',
         'search_description',)
-    
+
     content_panels = [
         FieldPanel('title', classname="full title"),
         FieldPanel('who_we_are'),
@@ -549,14 +554,14 @@ class AboutUs(Page):
         FieldPanel('openstax_team_intro'),
         InlinePanel('openstax_team', label="OpenStax Team"),
     ]
-    
+
     promote_panels = [
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        
+
     ]
-    
+
     parent_page_types = ['pages.HomePage']
 
 
@@ -567,22 +572,22 @@ class GeneralPage(Page):
         ('image', ImageChooserBlock()),
         ('html', RawHTMLBlock()),
     ])
-    
+
     api_fields = (
         'title',
         'body',
     )
-    
+
     content_panels = [
         FieldPanel('title'),
         StreamFieldPanel('body'),
     ]
-    
+
     promote_panels = [
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        
+
     ]
 
 
@@ -591,16 +596,16 @@ class Give(Page):
 
     content_panels = [
         FieldPanel('title', classname="full title"),
-        #FieldPanel('touchnet_form'),
+        # FieldPanel('touchnet_form'),
     ]
-    
+
     promote_panels = [
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        
+
     ]
-    
+
     parent_page_types = ['pages.HomePage']
 
 
@@ -611,7 +616,7 @@ class Adopters(Page):
         FieldPanel('title', classname="full title"),
         FieldPanel('classroom_text'),
     ]
-    
+
     parent_page_types = ['pages.HomePage']
 
 
@@ -630,14 +635,14 @@ class EcosystemAllies(Page):
         FieldPanel('title', classname="full title"),
         FieldPanel('classroom_text'),
     ]
-    
+
     promote_panels = [
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        
+
     ]
-    
+
     parent_page_types = ['pages.HomePage']
 
 
@@ -648,12 +653,12 @@ class AdoptionForm(Page):
         FieldPanel('title', classname="full title"),
         FieldPanel('classroom_text'),
     ]
-    
+
     promote_panels = [
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        
+
     ]
-    
+
     parent_page_types = ['pages.HomePage']
