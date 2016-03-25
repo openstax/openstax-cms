@@ -10,7 +10,7 @@ class Command(BaseCommand):
         with Salesforce() as sf:
             sf_adopters = sf.adopters()
             for sf_adopter in sf_adopters:
-                adopter, created = Adopter.objects.get_or_create(
+                adopter, created = Adopter.objects.update_or_create(
                                                        sales_id=sf_adopter['Id'],
                                                        name=sf_adopter['Name'],
                                                        description=sf_adopter['Description'],
