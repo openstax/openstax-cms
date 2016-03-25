@@ -21,7 +21,7 @@ With PostgreSQL running (and configured to allow you to connect as the 'postgres
 
 ### Testing
 
-Run with ``./manage.py test``
+Run with ``./manage.py test --liveserver=localhost:8001 --settings=openstax.settings.dev``
 
 ### SQLite support
 
