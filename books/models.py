@@ -57,7 +57,8 @@ class FacultyResources(models.Model):
         blank=True,
         related_name='+'
     )
-    link_text = models.CharField(max_length=255, help_text="Call to Action Text")
+    link_text = models.CharField(
+        max_length=255, help_text="Call to Action Text")
 
     api_fields = ('resource', 'link_external', 'link_page',
                   'link_document', 'link_text', )
@@ -91,7 +92,8 @@ class StudentResources(models.Model):
         blank=True,
         related_name='+'
     )
-    link_text = models.CharField(max_length=255, help_text="Call to Action Text")
+    link_text = models.CharField(
+        max_length=255, help_text="Call to Action Text")
 
     api_fields = ('resource', 'link_external', 'link_page',
                   'link_document', 'link_text', )
@@ -106,15 +108,17 @@ class StudentResources(models.Model):
 
 
 class Authors(models.Model):
-    name = models.CharField(max_length=255) 
-    university = models.CharField(max_length=255, null=True, blank=True) 
-    country = models.CharField(max_length=255, null=True, blank=True) 
+    name = models.CharField(max_length=255)
+    university = models.CharField(max_length=255, null=True, blank=True)
+    country = models.CharField(max_length=255, null=True, blank=True)
     senior_author = models.BooleanField(default=False)
     display_at_top = models.BooleanField(default=False)
-    book = ParentalKey('books.Book', related_name='book_contributing_authors', null=True, blank=True)
-    
-    api_fields = ('name', 'university', 'country', 'senior_author', 'display_at_top', )
-    
+    book = ParentalKey(
+        'books.Book', related_name='book_contributing_authors', null=True, blank=True)
+
+    api_fields = (
+        'name', 'university', 'country', 'senior_author', 'display_at_top', )
+
     panels = [
         FieldPanel('name'),
         FieldPanel('university'),
@@ -145,8 +149,10 @@ class BookAlly(models.Model):
         return build_image_url(self.ally.logo)
     ally_logo = property(get_ally_logo)
 
-    book_link_url = models.URLField(blank=True, help_text="Call to Action Link")
-    book_link_text = models.CharField(max_length=255, help_text="Call to Action Text")
+    book_link_url = models.URLField(
+        blank=True, help_text="Call to Action Link")
+    book_link_text = models.CharField(
+        max_length=255, help_text="Call to Action Text")
 
     api_fields = ('ally_heading', 'ally_short_description', 'ally_logo', 'book_link_url',
                   'book_link_text', )
@@ -163,11 +169,13 @@ class BookQuotes(Orderable, Quotes):
 
 
 class BookFacultyResources(Orderable, FacultyResources):
-    book_faculty_resource = ParentalKey('books.Book', related_name='book_faculty_resources')
+    book_faculty_resource = ParentalKey(
+        'books.Book', related_name='book_faculty_resources')
 
 
 class BookStudentResources(Orderable, StudentResources):
-    book_student_resource = ParentalKey('books.Book', related_name='book_student_resources')
+    book_student_resource = ParentalKey(
+        'books.Book', related_name='book_student_resources')
 
 
 class BookAllies(Orderable, BookAlly):
@@ -176,7 +184,8 @@ class BookAllies(Orderable, BookAlly):
 
 class Book(Page):
     created = models.DateTimeField(auto_now_add=True)
-    cnx_id = models.CharField(max_length=255, help_text="This is used to pull relevant information from CNX.")
+    cnx_id = models.CharField(
+        max_length=255, help_text="This is used to pull relevant information from CNX.")
     subject = models.ForeignKey(Subject, on_delete=models.SET_NULL,
                                 null=True, related_name='+')
 
@@ -186,8 +195,10 @@ class Book(Page):
     subject_name = property(get_subject_name)
     updated = models.DateTimeField(auto_now=True)
     is_ap = models.BooleanField(default=False)
-    short_description = RichTextField(blank=True, help_text="Description shown on Subject page.")
-    description = RichTextField(blank=True, help_text="Description shown on Book Detail page.")
+    short_description = RichTextField(
+        blank=True, help_text="Description shown on Subject page.")
+    description = RichTextField(
+        blank=True, help_text="Description shown on Book Detail page.")
     cover = models.ForeignKey(
         'wagtaildocs.Document',
         null=True,
@@ -203,9 +214,12 @@ class Book(Page):
     publish_date = models.DateField(blank=True, null=True, editable=False)
     isbn_10 = models.IntegerField(blank=True, null=True)
     isbn_13 = models.CharField(max_length=255, blank=True, null=True)
-    license_name = models.CharField(max_length=255, blank=True, null=True, editable=False)
-    license_version = models.CharField(max_length=255, blank=True, null=True, editable=False)
-    license_url = models.CharField(max_length=255, blank=True, null=True, editable=False)
+    license_name = models.CharField(
+        max_length=255, blank=True, null=True, editable=False)
+    license_version = models.CharField(
+        max_length=255, blank=True, null=True, editable=False)
+    license_url = models.CharField(
+        max_length=255, blank=True, null=True, editable=False)
     high_resolution_pdf = models.ForeignKey(
         'wagtaildocs.Document',
         null=True,
@@ -243,15 +257,20 @@ class Book(Page):
 
     student_handbook_url = property(get_student_handbook_url)
     ibook_link = models.URLField(blank=True, help_text="Link to iBook")
-    webview_link = models.URLField(blank=True, help_text="Link to CNX Webview book")
-    concept_coach_link = models.URLField(blank=True, help_text="Link to Concept Coach")
-    bookshare_link = models.URLField(blank=True, help_text="Link to Bookshare resources")
+    webview_link = models.URLField(
+        blank=True, help_text="Link to CNX Webview book")
+    concept_coach_link = models.URLField(
+        blank=True, help_text="Link to Concept Coach")
+    bookshare_link = models.URLField(
+        blank=True, help_text="Link to Bookshare resources")
     amazon_link = models.URLField(blank=True, help_text="Link to Amazon")
-    amazon_price = models.DecimalField(default=0.00, max_digits=6, decimal_places=2)
+    amazon_price = models.DecimalField(
+        default=0.00, max_digits=6, decimal_places=2)
     amazon_blurb = RichTextField(blank=True)
     bookstore_link = models.URLField(blank=True, help_text="Link to Bookstore")
     bookstore_blurb = RichTextField(blank=True)
-    errata_link = models.URLField(blank=True, help_text="Link to openstaxcollege.org errata")
+    errata_link = models.URLField(
+        blank=True, help_text="Link to openstaxcollege.org errata")
     table_of_contents = JSONField(editable=False, blank=True)
 
     content_panels = Page.content_panels + [
@@ -319,34 +338,42 @@ class Book(Page):
 
     parent_page_types = ['books.BookIndex']
 
-    # we are overriding the save() method to go to CNX and fetch information with the CNX ID
+    # we are overriding the save() method to go to CNX and fetch information
+    # with the CNX ID
     def save(self, *args, **kwargs):
-        url = '{}/contents/{}.json'.format(settings.CNX_ARCHIVE_URL, self.cnx_id)
+        url = '{}/contents/{}.json'.format(
+            settings.CNX_ARCHIVE_URL, self.cnx_id)
         response = urllib.request.urlopen(url).read()
         result = json.loads(response.decode('utf-8'))
-        
+
         self.license_name = result['license']['name']
         self.license_version = result['license']['version']
         self.license_url = result['license']['url']
-        
-        self.publish_date = dateutil.parser.parse(result['created'], dayfirst=True).date()
+
+        self.publish_date = dateutil.parser.parse(
+            result['created'], dayfirst=True).date()
 
         self.table_of_contents = result['tree']
-        
+
         return super(Book, self).save(*args, **kwargs)
 
 
 class BookIndex(Page):
     page_description = RichTextField()
-    dev_standards_heading = models.CharField(max_length=255, blank=True, null=True)
-    dev_standard_1_heading = models.CharField(max_length=255, blank=True, null=True)
+    dev_standards_heading = models.CharField(
+        max_length=255, blank=True, null=True)
+    dev_standard_1_heading = models.CharField(
+        max_length=255, blank=True, null=True)
     dev_standard_1_description = RichTextField()
-    dev_standard_2_heading = models.CharField(max_length=255, blank=True, null=True)
+    dev_standard_2_heading = models.CharField(
+        max_length=255, blank=True, null=True)
     dev_standard_2_description = RichTextField()
-    dev_standard_3_heading = models.CharField(max_length=255, blank=True, null=True)
+    dev_standard_3_heading = models.CharField(
+        max_length=255, blank=True, null=True)
     dev_standard_3_description = RichTextField()
-    subject_list_heading = models.CharField(max_length=255, blank=True, null=True)
-    
+    subject_list_heading = models.CharField(
+        max_length=255, blank=True, null=True)
+
     content_panels = Page.content_panels + [
         FieldPanel('page_description'),
         FieldPanel('dev_standards_heading'),
@@ -358,7 +385,7 @@ class BookIndex(Page):
         FieldPanel('dev_standard_3_description'),
         FieldPanel('subject_list_heading'),
     ]
-    
+
     api_fields = (
         'title',
         'page_description',
@@ -371,6 +398,6 @@ class BookIndex(Page):
         'dev_standard_3_description',
         'subject_list_heading',
     )
-    
+
     parent_page_types = ['pages.HomePage']
     subpage_types = ['books.Book']

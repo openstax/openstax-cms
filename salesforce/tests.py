@@ -1,9 +1,8 @@
-from django.test import TestCase
 from django.test import LiveServerTestCase
 from wagtail.tests.utils import WagtailPageTests
 from simple_salesforce import Salesforce as SimpleSalesforce
 from .salesforce import Salesforce
-from django.test import TestCase, override_settings
+from django.test import override_settings
 from django.core.management import call_command
 from django.utils.six import StringIO
 from salesforce.models import Adopter
@@ -23,7 +22,9 @@ TEST_PIPELINE = (
     'social.pipeline.user.user_details',
 )
 
-class SalesforceTest(LiveServerTestCase,WagtailPageTests):
+
+class SalesforceTest(LiveServerTestCase, WagtailPageTests):
+
     def setUp(self):
         super(WagtailPageTests, self).setUp()
         super(LiveServerTestCase, self).setUp()
@@ -47,7 +48,7 @@ class SalesforceTest(LiveServerTestCase,WagtailPageTests):
     def test_faculty_unknown(self):
         with Salesforce() as sf:
             status = sf.faculty_status(1)
-            self.assertEqual(status,[])
+            self.assertEqual(status, [])
 
     def test_faculty_pending(self):
         with Salesforce() as sf:
@@ -82,23 +83,23 @@ class SalesforceTest(LiveServerTestCase,WagtailPageTests):
         with self.assertRaises(RuntimeError):
             Salesforce()
 
-
     def test_adopters(self):
         with Salesforce() as sf:
             adopters = sf.adopters()
-        self.assertIsInstance(adopters,list)
-        self.assertGreater(len(adopters),1)
-        self.assertIn('Id',adopters[0].keys())
-        self.assertIn('Name',adopters[0].keys())
-        self.assertIn('Description',adopters[0].keys())
-        self.assertIn('Website',adopters[0].keys())
+        self.assertIsInstance(adopters, list)
+        self.assertGreater(len(adopters), 1)
+        self.assertIn('Id', adopters[0].keys())
+        self.assertIn('Name', adopters[0].keys())
+        self.assertIn('Description', adopters[0].keys())
+        self.assertIn('Website', adopters[0].keys())
 
     def test_update_adopters_command(self):
         out = StringIO()
         call_command('update_adopters', stdout=out)
-        self.assertIn("Success", out.getvalue())      
-        adopters = Adopter.objects.all()
-        self.assertTrue(Adopter.objects.filter(name='Rice University').exists())
+        self.assertIn("Success", out.getvalue())
+        Adopter.objects.all()
+        self.assertTrue(
+            Adopter.objects.filter(name='Rice University').exists())
 
     def test_update_faculty_status_command(self):
         test_user = {'last_name': 'last_name',
@@ -127,11 +128,10 @@ class SalesforceTest(LiveServerTestCase,WagtailPageTests):
         test_user = result['user']
         self.assertFalse(test_user.groups.filter(name='Faculty').exists())
         out = StringIO()
-        call_command('update_faculty_status','--all', stdout=out)
+        call_command('update_faculty_status', '--all', stdout=out)
         self.assertIn("Success", out.getvalue())
         test_user = User.objects.filter(username=user_details['username'])[0]
         self.assertTrue(test_user.groups.filter(name='Faculty').exists())
-        faculty_group = Group.objects.get_by_natural_key('Faculty')
 
     def test_context_manager_session(self):
         from django.contrib.sessions.backends.db import SessionStore
@@ -150,7 +150,6 @@ class SalesforceTest(LiveServerTestCase,WagtailPageTests):
             with Salesforce() as sf:
                 raise RuntimeError
         self.assertNotEqual(original_session, Salesforce._default_session_key)
-
 
     def tearDown(self):
         super(WagtailPageTests, self).tearDown()

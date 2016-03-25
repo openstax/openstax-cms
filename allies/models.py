@@ -41,7 +41,8 @@ class Ally(Page):
     short_description = RichTextField()
     long_description = RichTextField()
     link_url = models.URLField(blank=True, help_text="Call to Action Link")
-    link_text = models.CharField(max_length=255, help_text="Call to Action Text")
+    link_text = models.CharField(
+        max_length=255, help_text="Call to Action Text")
 
     # a method to reverse retrieve the subject names, prevents multiple calls from Webview
     # /api/v1/pages/?type=allies.Ally&fields=title,short_description,ally_logo,heading,ally_subject_list
@@ -56,16 +57,16 @@ class Ally(Page):
     api_fields = ('online_homework', 'adaptive_courseware', 'customization_tools',
                   'ally_subject_list',
                   'ally_logo', 'heading',
-                  'short_description', 'long_description' )
+                  'short_description', 'long_description')
 
     content_panels = Page.content_panels + [
         MultiFieldPanel(
-        [
-          FieldPanel('online_homework'),
-          FieldPanel('adaptive_courseware'),
-          FieldPanel('customization_tools'),
-        ],
-          heading="Categories",
+            [
+                FieldPanel('online_homework'),
+                FieldPanel('adaptive_courseware'),
+                FieldPanel('customization_tools'),
+            ],
+            heading="Categories",
         ),
         InlinePanel('ally_subjects', label="Subjects"),
         ImageChooserPanel('logo'),

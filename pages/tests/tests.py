@@ -53,5 +53,5 @@ class AdminPages(TestCase, WagtailTestUtils):
     def test_admin_search(self):
         response = self.client.get('/admin/pages/search/?q=openstax')
         self.assertEqual(response.status_code, 200)
-        self.assertIn(b'Sorry, no pages match',response.content)
+        self.assertIn(b'Sorry, no pages match', response.content)
 
