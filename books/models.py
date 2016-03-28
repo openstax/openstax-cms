@@ -270,7 +270,9 @@ class Book(Page):
     bookstore_link = models.URLField(blank=True, help_text="Link to Bookstore")
     bookstore_blurb = RichTextField(blank=True)
     errata_link = models.URLField(
-        blank=True, help_text="Link to openstaxcollege.org errata")
+        blank=True, help_text="Link to view openstaxcollege.org errata")
+    errata_corrections_link = models.URLField(
+        blank=True, help_text="Link errata corrections")
     table_of_contents = JSONField(editable=False, blank=True)
 
     content_panels = Page.content_panels + [
@@ -299,6 +301,7 @@ class Book(Page):
         FieldPanel('bookstore_link'),
         FieldPanel('bookstore_blurb'),
         FieldPanel('errata_link'),
+        FieldPanel('errata_corrections_link'),
     ]
 
     api_fields = ('created',
@@ -334,6 +337,7 @@ class Book(Page):
                   'bookstore_link',
                   'bookstore_blurb',
                   'errata_link',
+                  'errata_corrections_link',
                   'table_of_contents', )
 
     parent_page_types = ['books.BookIndex']
