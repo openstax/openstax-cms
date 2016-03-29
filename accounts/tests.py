@@ -51,13 +51,13 @@ class Utilities(LiveServerTestCase, WagtailPageTests):
         self.assertNotIn(user_details['username'], usernames)
 
         # create user
-        result = create_user(**user_details)
+        returned_user = create_user(**user_details)
 
         # check the returned result
         self.assertTrue(
             User.objects.filter(username=user_details['username']).exists())
         # User.objects.get(username=user_details['username'])
-        returned_user = result['user']
+
         self.assertTrue(returned_user.social_auth.exists())
         social_user = returned_user.social_auth.first()
         self.assertEqual(social_user.uid, str(user_details['uid']))

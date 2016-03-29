@@ -8,9 +8,10 @@ from django.contrib.auth.models import User
 from accounts.utils import create_user
 from wagtail.tests.utils import WagtailPageTests
 import time
+from api.serializers import UserSerializer
 
 
-class SalesforceAPI(LiveServerTestCase, WagtailPageTests):
+class UserAPI(LiveServerTestCase, WagtailPageTests):
     serialized_rollback = True
 
     def setUp(self):
@@ -18,6 +19,37 @@ class SalesforceAPI(LiveServerTestCase, WagtailPageTests):
         super(WagtailPageTests, self).setUp()
         [user.delete() for user in User.objects.all()]
 
+    def test_anonymous_user_fields(self):
+        response = self.client.get('/api/user/?format=json')
+        user_list = json.loads(response.content.decode(response.charset))
+        self.assertEqual(len(user_list), 1)
+        user_dict = user_list[0]
+        returned_set = set(user_dict.keys())
+        expected_set = set(
+            ['username', 'accounts_id', 'is_superuser', 'groups', 'is_staff'])
+        self.assertSetEqual(expected_set, returned_set)
+
+    def test_logged_in_user_fields(self):
+        test_user = {'last_name': 'last_name',
+                     'username': 'username',
+                     'full_name': None,
+                     'first_name': 'first_name',
+                     'uid': '0'}
+
+        new_user = create_user(**test_user)
+
+        self.client.force_login(new_user)
+        response = self.client.get('/api/user/?format=json')
+        user_list = json.loads(response.content.decode(response.charset))
+        self.assertEqual(len(user_list), 1)
+        user_dict = user_list[0]
+        returned_set = set(user_dict.keys())
+        expected_set = set(UserSerializer.Meta.fields)
+        self.assertSetEqual(expected_set, returned_set)
+        self.assertEqual(user_dict['accounts_id'], test_user['uid'])
+        self.assertEqual(user_dict['username'], test_user['username'])
+        self.assertEqual(user_dict['first_name'], test_user['first_name'])
+        self.assertEqual(user_dict['last_name'], test_user['last_name'])
     def test_user_faculty_group(self):
         user = User.objects.create_user('john',
                                         'lennon@thebeatles.com',
@@ -32,7 +64,8 @@ class SalesforceAPI(LiveServerTestCase, WagtailPageTests):
                               'first_name': '',
                               'groups': [],
                               'last_name': '',
-                              'is_staff': False}
+                              'is_staff': False,
+                              'accounts_id': None}
         returned_user_info = response_list[0]
         self.assertDictEqual(expected_user_info, returned_user_info)
 
@@ -40,10 +73,10 @@ class SalesforceAPI(LiveServerTestCase, WagtailPageTests):
                      'username': 'username',
                      'full_name': None,
                      'first_name': 'first_name',
-                     'uid': 0}
+                     'uid': '0'}
 
-        result = create_user(**test_user)
-        new_user = result['user']
+        new_user = create_user(**test_user)
+
         self.client.force_login(new_user)
         self.client.get('/api/user/')
         time.sleep(1)
@@ -55,7 +88,8 @@ class SalesforceAPI(LiveServerTestCase, WagtailPageTests):
                               'first_name': 'first_name',
                               'groups': ['Faculty'],
                               'last_name': 'last_name',
-                              'is_staff': False}
+                              'is_staff': False,
+                              'accounts_id': '0'}
         returned_user_info = response_list[0]
         self.assertDictEqual(expected_user_info, returned_user_info)
 
