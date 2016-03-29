@@ -125,8 +125,8 @@ IMPORT_USER_PIPELINE = (
     'social.pipeline.user.user_details',
 )
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
-SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/finish-profile/'
-SOCIAL_AUTH_NEW_ASSOCIATION_REDIRECT_URL = '/finish-profile/'
+SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/finish-profile'
+SOCIAL_AUTH_NEW_ASSOCIATION_REDIRECT_URL = '/finish-profile'
 
 
 TEMPLATES = [
