@@ -36,8 +36,8 @@ class UserAPI(LiveServerTestCase, WagtailPageTests):
                      'first_name': 'first_name',
                      'uid': '0'}
 
-        result = create_user(**test_user)
-        new_user = result['user']
+        new_user = create_user(**test_user)
+
         self.client.force_login(new_user)
         response = self.client.get('/api/user/?format=json')
         user_list = json.loads(response.content.decode(response.charset))
@@ -75,8 +75,8 @@ class UserAPI(LiveServerTestCase, WagtailPageTests):
                      'first_name': 'first_name',
                      'uid': '0'}
 
-        result = create_user(**test_user)
-        new_user = result['user']
+        new_user = create_user(**test_user)
+
         self.client.force_login(new_user)
         self.client.get('/api/user/')
         time.sleep(1)

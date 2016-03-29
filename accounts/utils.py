@@ -10,4 +10,5 @@ def create_user(**user_details):
     result = openstax.run_pipeline(pipeline=settings.IMPORT_USER_PIPELINE,
                                    details=user_details,
                                    uid=user_details['uid'])
-    return result
+    user = result['user']
+    return user

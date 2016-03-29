@@ -107,8 +107,8 @@ class SalesforceTest(LiveServerTestCase, WagtailPageTests):
                      'full_name': None,
                      'first_name': 'first_name',
                      'uid': 0}
-        result = create_user(**test_user)
-        returned_user = result['user']
+        returned_user = create_user(**test_user)
+
         out = StringIO()
         cms_id = str(returned_user.pk)
         self.assertFalse(returned_user.groups.filter(name='Faculty').exists())
@@ -124,8 +124,8 @@ class SalesforceTest(LiveServerTestCase, WagtailPageTests):
                         'full_name': None,
                         'first_name': 'Richard',
                         'uid': 16207}
-        result = create_user(**user_details)
-        test_user = result['user']
+        test_user = create_user(**user_details)
+
         self.assertFalse(test_user.groups.filter(name='Faculty').exists())
         out = StringIO()
         call_command('update_faculty_status', '--all', stdout=out)
