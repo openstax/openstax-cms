@@ -82,6 +82,7 @@ class Utilities(LiveServerTestCase, WagtailPageTests):
 
     def test_import_command(self):
         out = StringIO()
+        # check yaml format
         self.assertFalse(User.objects.filter(username='username').exists())
         call_command('import_users', 'accounts/test_users.yaml', stdout=out)
         self.assertTrue(User.objects.filter(username='username').exists())
@@ -97,6 +98,37 @@ class Utilities(LiveServerTestCase, WagtailPageTests):
                          'first_name': 'first_name',
                          'uid': '0'}
         self.assertEqual(expected_user, returned_user)
+
+        # check csv format
+        self.assertFalse(User.objects.filter(username='username_1').exists())
+        call_command('import_users', 'accounts/test_users.csv', stdout=out)
+        self.assertTrue(User.objects.filter(username='username_1').exists())
+        new_user = User.objects.get(username='username_1')
+        provider = new_user.social_auth.first()
+        accounts_id = provider.uid
+        returned_user = {'last_name': new_user.last_name,
+                         'username': new_user.username,
+                         'first_name': new_user.first_name,
+                         'uid': accounts_id}
+        expected_user = {'username': 'username_1',
+                         'last_name': 'last_name_1',
+                         'first_name': 'first_name_1',
+                         'uid': '1'}
+        self.assertEqual(expected_user, returned_user)
+
+        new_user = User.objects.get(username='username_2')
+        provider = new_user.social_auth.first()
+        accounts_id = provider.uid
+        returned_user = {'last_name': new_user.last_name,
+                         'username': new_user.username,
+                         'first_name': new_user.first_name,
+                         'uid': accounts_id}
+        expected_user = {'username': 'username_2',
+                         'last_name': 'last_name_2',
+                         'first_name': 'first_name_2',
+                         'uid': '2'}
+        self.assertEqual(expected_user, returned_user)
+
 
     def tearDown(self):
         super(WagtailPageTests, self).tearDown()
