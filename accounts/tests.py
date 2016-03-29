@@ -136,7 +136,7 @@ class Integration(LiveServerTestCase, WagtailPageTests):
         sign_in_button = driver.find_element_by_class_name("standard")
         sign_in_button.click()
         self.assertEqual(
-            driver.current_url, 'http://localhost:8001/admin/login/?next=/admin/')
+            driver.current_url, 'http://localhost:8001/finish-profile/?next=/admin/')
         self.assertTrue(User.objects.filter(username=username).exists())
         return User.objects.get(username=username)
 
