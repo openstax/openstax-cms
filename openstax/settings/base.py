@@ -115,8 +115,6 @@ SOCIAL_AUTH_PIPELINE = (
     'social.pipeline.social_auth.associate_user',
     'social.pipeline.social_auth.load_extra_data',
     'social.pipeline.user.user_details',
-    'accounts.pipelines.new_user_redirect',
-
 )
 
 IMPORT_USER_PIPELINE = (
@@ -126,10 +124,10 @@ IMPORT_USER_PIPELINE = (
     'social.pipeline.social_auth.associate_user',
     'social.pipeline.user.user_details',
 )
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
+SOCIAL_AUTH_NEW_USER_REDIRECT_URL = '/finish-profile/'
+SOCIAL_AUTH_NEW_ASSOCIATION_REDIRECT_URL = '/finish-profile/'
 
-# this should probably be in local.py, since it will change on a per
-# server basis
-NEW_USER_REDIRECT = 'https://localhost:8001/new-user/'
 
 TEMPLATES = [
     {

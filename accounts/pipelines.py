@@ -8,8 +8,3 @@ def save_profile(user, *args, **kwargs):
     if user:
         user.email = '{}@openstax.org'.format(user.username)
         user.save()
-
-
-def new_user_redirect(backend, user, response, *args, **kwargs):
-    if(kwargs['new_association']):
-        return redirect(settings.NEW_USER_REDIRECT)
