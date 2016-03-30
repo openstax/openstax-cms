@@ -2,7 +2,7 @@ from rest_framework import serializers
 from rest_auth.serializers import UserDetailsSerializer
 from wagtail.wagtailimages.models import Image
 from salesforce.models import Adopter
-from social.apps.django_app.default.models import DjangoStorage as SocialAuthStorage
+
 
 class AdopterSerializer(serializers.HyperlinkedModelSerializer):
 
@@ -23,7 +23,6 @@ class ImageSerializer(serializers.HyperlinkedModelSerializer):
                   'height',
                   'width',
                   'created_at',
-                  #'url',
                   )
 
 

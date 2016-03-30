@@ -41,9 +41,6 @@ class Ally(Page):
     heading = models.CharField(max_length=255)
     short_description = RichTextField()
     long_description = RichTextField()
-    link_url = models.URLField(blank=True, help_text="Call to Action Link")
-    link_text = models.CharField(
-        max_length=255, help_text="Call to Action Text")
 
     # a method to reverse retrieve the subject names, prevents multiple calls from Webview
     # /api/v1/pages/?type=allies.Ally&fields=title,short_description,ally_logo,heading,ally_subject_list
