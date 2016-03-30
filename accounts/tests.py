@@ -39,11 +39,8 @@ class Utilities(LiveServerTestCase, WagtailPageTests):
         # check user doesnt exist
         if User.objects.filter(username=user_details['username']).exists():
             User.objects.filter(username=user_details['username'])[0].delete()
-        cursor = connection.cursor()
-        cursor.execute("SELECT username FROM auth_user")
-        db_users = cursor.fetchall()
-        usernames = [username for (username,) in db_users]
 
+        usernames = User.objects.all()
         self.assertNotIn(user_details['username'], usernames)
 
         # create user
@@ -52,7 +49,6 @@ class Utilities(LiveServerTestCase, WagtailPageTests):
         # check the returned result
         self.assertTrue(
             User.objects.filter(username=user_details['username']).exists())
-        # User.objects.get(username=user_details['username'])
 
         self.assertTrue(returned_user.social_auth.exists())
         social_user = returned_user.social_auth.first()
@@ -60,20 +56,19 @@ class Utilities(LiveServerTestCase, WagtailPageTests):
         self.assertEqual(social_user.user.username, user_details['username'])
 
         # make sure changes are reflected in database
-        cursor = connection.cursor()
-        cursor.execute("SELECT username, last_name, first_name FROM auth_user")
-        django_users = cursor.fetchall()
-        returned_users = [set(user) for user in django_users]
-        expected_user = set([user_details['username'],
-                             user_details['last_name'],
-                             user_details['first_name'], ])
+        returned_users = User.objects.values('username', 'last_name', 'first_name')
+        expected_user = {'last_name': user_details['last_name'],
+                         'first_name': user_details['first_name'],
+                         'username': user_details['username']
+                         }
         self.assertIn(expected_user, returned_users)
-        cursor.execute(
-            "SELECT provider, uid, user_id FROM social_auth_usersocialauth")
-        ostax_acc_users = cursor.fetchall()
-        returned_users = [set(user) for user in ostax_acc_users]
-        expected_user = set(
-            ['openstax', str(user_details['uid']), returned_user.pk])
+
+        returned_users = UserSocialAuth.objects.values('provider', 'uid', 'user_id')
+
+        expected_user = {'user_id': returned_user.pk,
+                         'provider': 'openstax',
+                         'uid': str(user_details['uid'])
+                         }
         self.assertIn(expected_user, returned_users)
 
     def test_import_command(self):
@@ -124,7 +119,6 @@ class Utilities(LiveServerTestCase, WagtailPageTests):
                          'first_name': 'first_name_2',
                          'uid': '2'}
         self.assertEqual(expected_user, returned_user)
-
 
     def tearDown(self):
         super(WagtailPageTests, self).tearDown()
@@ -183,6 +177,4 @@ class Integration(LiveServerTestCase, WagtailPageTests):
         self.driver.close()
         super(WagtailPageTests, self).tearDown()
         super(LiveServerTestCase, self).tearDown()
-
-
 
