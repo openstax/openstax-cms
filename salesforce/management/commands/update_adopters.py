@@ -8,7 +8,10 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         with Salesforce() as sf:
-            sf_adopters = sf.adopters()
+            command = "SELECT Id, Name, Description, Website FROM Account "\
+                          "WHERE Number_of_Adoptions__c > 0"
+            response = sf.query_all(command)
+            sf_adopters = response['records']
             for sf_adopter in sf_adopters:
                 adopter, created = Adopter.objects.update_or_create(
                     sales_id=sf_adopter['Id'],
