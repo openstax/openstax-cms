@@ -1,7 +1,7 @@
 import json
 
-from django.test import TestCase, Client
 from django.middleware import csrf
+from django.test import Client, TestCase
 
 
 class MailTest(TestCase):

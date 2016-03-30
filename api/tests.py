@@ -1,13 +1,14 @@
-from django.test import LiveServerTestCase, TestCase
-from wagtail.tests.utils import WagtailTestUtils
-from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
-from django.core.management import call_command
 import json
-from django.utils.six import StringIO
-from django.contrib.auth.models import User
-from accounts.utils import create_user
-from wagtail.tests.utils import WagtailPageTests
 import time
+
+from django.contrib.auth.models import User
+from django.core.management import call_command
+from django.test import LiveServerTestCase, TestCase
+from django.utils.six import StringIO
+from wagtail.tests.utils import WagtailPageTests, WagtailTestUtils
+from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
+
+from accounts.utils import create_user
 from api.serializers import UserSerializer
 
 
@@ -186,5 +187,4 @@ class ImageAPI(TestCase, WagtailTestUtils):
         self.assertEqual(response_dict['meta']['total_count'], 1)
         returned_title = response_dict['images'][0]['title']
         self.assertEqual(expected_title, returned_title)
-
 

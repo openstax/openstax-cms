@@ -1,26 +1,21 @@
-import urllib
 import json
-import dateutil.parser
+import urllib
 
-from django.db import models
+import dateutil.parser
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField
-
-from wagtail.wagtailcore.models import Page, Orderable
-from wagtail.wagtailcore.fields import RichTextField
-from wagtail.wagtailadmin.edit_handlers import (FieldPanel,
-                                                InlinePanel,
-                                                PageChooserPanel)
-from wagtail.wagtailsnippets.edit_handlers import SnippetChooserPanel
-from wagtail.wagtaildocs.edit_handlers import DocumentChooserPanel
-
-
+from django.db import models
 from modelcluster.fields import ParentalKey
+from wagtail.wagtailadmin.edit_handlers import (FieldPanel, InlinePanel,
+                                                PageChooserPanel)
+from wagtail.wagtailcore.fields import RichTextField
+from wagtail.wagtailcore.models import Orderable, Page
+from wagtail.wagtaildocs.edit_handlers import DocumentChooserPanel
+from wagtail.wagtailsnippets.edit_handlers import SnippetChooserPanel
 
-from openstax.functions import build_document_url, build_image_url
-
-from snippets.models import Subject, FacultyResource, StudentResource
 from allies.models import Ally
+from openstax.functions import build_document_url, build_image_url
+from snippets.models import FacultyResource, StudentResource, Subject
 
 
 class Quotes(models.Model):

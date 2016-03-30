@@ -1,14 +1,15 @@
-from django.test import LiveServerTestCase
-from wagtail.tests.utils import WagtailPageTests
-from selenium import webdriver
-from django.contrib.auth.models import User
-import shutil
 import os
-from django.test import override_settings
-from django.core.management import call_command
-from django.utils.six import StringIO
-from django.contrib.auth.models import User
+import shutil
 
+from django.contrib.auth.models import User
+from django.core.management import call_command
+from django.test import LiveServerTestCase, override_settings
+from django.utils.six import StringIO
+from selenium import webdriver
+from social.apps.django_app.default.models import UserSocialAuth
+from wagtail.tests.utils import WagtailPageTests
+
+from .utils import create_user
 
 TEST_PIPELINE = (
     'social.pipeline.social_auth.social_details',
@@ -21,11 +22,6 @@ TEST_PIPELINE = (
     'social.pipeline.social_auth.load_extra_data',
     'social.pipeline.user.user_details',
 )
-
-from .utils import create_user
-from django.contrib.auth.models import User
-from django.db import connection
-
 
 class Utilities(LiveServerTestCase, WagtailPageTests):
     serialized_rollback = True

@@ -1,10 +1,13 @@
-from rest_framework import viewsets
-from .serializers import ImageSerializer, UserSerializer, AdopterSerializer
-from wagtail.wagtailimages.models import Image
-from salesforce.models import Adopter
-from django.utils.six import StringIO
 from django.core.management import call_command
-from social.apps.django_app.default.models import DjangoStorage as SocialAuthStorage
+from django.utils.six import StringIO
+from rest_framework import viewsets
+from salesforce.models import Adopter
+from social.apps.django_app.default.models import \
+    DjangoStorage as SocialAuthStorage
+from wagtail.wagtailimages.models import Image
+
+from .serializers import AdopterSerializer, ImageSerializer, UserSerializer
+
 
 class AdopterViewSet(viewsets.ModelViewSet):
     queryset = Adopter.objects.all()
@@ -35,5 +38,4 @@ class UserView(viewsets.ModelViewSet):
             pass
 
         return [user]
-
 

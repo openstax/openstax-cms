@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
-from salesforce.salesforce import Salesforce
 from salesforce.models import Adopter
+from salesforce.salesforce import Salesforce
 
 
 class Command(BaseCommand):

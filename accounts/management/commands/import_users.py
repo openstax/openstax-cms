@@ -1,8 +1,11 @@
-from django.core.management.base import BaseCommand
-from accounts.utils import create_user
-import yaml
 import csv
 import os
+
+from django.core.management.base import BaseCommand
+
+import yaml
+from accounts.utils import create_user
+
 
 class Command(BaseCommand):
     help = "import users from a .yaml or .csv file"
