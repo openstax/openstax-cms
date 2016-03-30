@@ -45,23 +45,31 @@ class SalesforceTest(LiveServerTestCase, WagtailPageTests):
 
     def test_faculty_confirmed(self):
         with Salesforce() as sf:
-            status = sf.faculty_status(0)
-            self.assertEqual(status, ['0'])
+            command = "SELECT Faculty_Verified__c FROM Contact WHERE Accounts_ID__c = '0'"
+            response = sf.query(command)
+            status = response['records'][0]['Faculty_Verified__c']
+            self.assertEqual(status, u'Confirmed')
 
     def test_faculty_unknown(self):
         with Salesforce() as sf:
-            status = sf.faculty_status(1)
-            self.assertEqual(status, [])
+            command = "SELECT Faculty_Verified__c FROM Contact WHERE Accounts_ID__c = '1'"
+            response = sf.query(command)
+            status = response['records'][0]['Faculty_Verified__c']
+            self.assertIsNone(status)
 
     def test_faculty_pending(self):
         with Salesforce() as sf:
-            status = sf.faculty_status(2)
-            self.assertEqual(status, [])
+            command = "SELECT Faculty_Verified__c FROM Contact WHERE Accounts_ID__c = '2'"
+            response = sf.query(command)
+            status = response['records'][0]['Faculty_Verified__c']
+            self.assertEqual(status, u'Pending')
 
     def test_faculty_rejected(self):
         with Salesforce() as sf:
-            status = sf.faculty_status(3)
-            self.assertEqual(status, [])
+            command = "SELECT Faculty_Verified__c FROM Contact WHERE Accounts_ID__c = '3'"
+            response = sf.query(command)
+            status = response['records'][0]['Faculty_Verified__c']
+            self.assertEqual(status, u'Rejected')
 
     @unittest.skip("logs need to be configured")
     def test_context_manager(self):
@@ -85,16 +93,6 @@ class SalesforceTest(LiveServerTestCase, WagtailPageTests):
     def test_context_manager_handle_init_errors(self):
         with self.assertRaises(RuntimeError):
             Salesforce()
-
-    def test_adopters(self):
-        with Salesforce() as sf:
-            adopters = sf.adopters()
-        self.assertIsInstance(adopters, list)
-        self.assertGreater(len(adopters), 1)
-        self.assertIn('Id', adopters[0].keys())
-        self.assertIn('Name', adopters[0].keys())
-        self.assertIn('Description', adopters[0].keys())
-        self.assertIn('Website', adopters[0].keys())
 
     def test_update_adopters_command(self):
         out = StringIO()
