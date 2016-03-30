@@ -1,15 +1,13 @@
 from django.db import models
-
-from wagtail.wagtailcore.models import Page
+from modelcluster.fields import ParentalKey
+from wagtail.wagtailadmin.edit_handlers import (FieldPanel, InlinePanel,
+                                                MultiFieldPanel)
 from wagtail.wagtailcore.fields import RichTextField
-from wagtail.wagtailadmin.edit_handlers import FieldPanel, MultiFieldPanel, InlinePanel
+from wagtail.wagtailcore.models import Page
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 
-from modelcluster.fields import ParentalKey
-
-from snippets.models import Subject
-
 from openstax.functions import build_image_url
+from snippets.models import Subject
 
 
 class AllySubject(models.Model):

@@ -1,7 +1,7 @@
-from rest_framework import serializers
 from rest_auth.serializers import UserDetailsSerializer
-from wagtail.wagtailimages.models import Image
+from rest_framework import serializers
 from salesforce.models import Adopter
+from wagtail.wagtailimages.models import Image
 
 
 class AdopterSerializer(serializers.HyperlinkedModelSerializer):

@@ -1,8 +1,7 @@
-from django.shortcuts import redirect
-from django.http import JsonResponse
 from django.core.mail import EmailMessage
+from django.http import JsonResponse
 from django.middleware import csrf
-
+from django.shortcuts import redirect
 from rest_framework.decorators import api_view
 
 

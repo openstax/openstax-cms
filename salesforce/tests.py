@@ -1,15 +1,18 @@
-from django.test import LiveServerTestCase
-from wagtail.tests.utils import WagtailPageTests
-from simple_salesforce import Salesforce as SimpleSalesforce
-from .salesforce import Salesforce
-from django.test import override_settings
+import unittest
+
+from django.conf import settings
+from django.contrib.auth.models import Group, User
 from django.core.management import call_command
+from django.test import LiveServerTestCase, override_settings
 from django.utils.six import StringIO
 from salesforce.models import Adopter
-import unittest
-from django.conf import settings
-from django.contrib.auth.models import User, Group
+from simple_salesforce import Salesforce as SimpleSalesforce
+from wagtail.tests.utils import WagtailPageTests
+
 from accounts.utils import create_user
+
+from .salesforce import Salesforce
+
 TEST_PIPELINE = (
     'social.pipeline.social_auth.social_details',
     'social.pipeline.social_auth.social_uid',

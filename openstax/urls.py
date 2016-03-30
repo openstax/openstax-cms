@@ -1,13 +1,12 @@
+from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
-from django.conf import settings
 from django.contrib import admin
-
-from wagtail.wagtailadmin import urls as wagtailadmin_urls
-from wagtail.wagtailimages import urls as wagtailimages_urls
-from wagtail.wagtaildocs import urls as wagtaildocs_urls
-from wagtail.wagtailcore import urls as wagtail_urls
 from wagtail.contrib.wagtailapi import urls as wagtailapi_urls
+from wagtail.wagtailadmin import urls as wagtailadmin_urls
+from wagtail.wagtailcore import urls as wagtail_urls
+from wagtail.wagtaildocs import urls as wagtaildocs_urls
+from wagtail.wagtailimages import urls as wagtailimages_urls
 
 from api import urls as api_urls
 

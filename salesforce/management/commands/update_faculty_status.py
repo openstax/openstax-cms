@@ -1,9 +1,8 @@
+from django.contrib.auth.models import Group, User
 from django.core.management.base import BaseCommand
 from salesforce.salesforce import Salesforce
-from django.contrib.auth.models import User
-from django.contrib.auth.models import Group
-from django.contrib.auth.models import User, Group
-from social.apps.django_app.default.models import DjangoStorage as SocialAuthStorage
+from social.apps.django_app.default.models import \
+    DjangoStorage as SocialAuthStorage
 
 
 class Command(BaseCommand):

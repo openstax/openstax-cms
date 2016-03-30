@@ -1,6 +1,6 @@
 import json
-from urllib.request import urlopen
 from urllib.parse import urlencode
+from urllib.request import urlopen
 
 from django.conf import settings
 from social.backends.oauth import BaseOAuth2

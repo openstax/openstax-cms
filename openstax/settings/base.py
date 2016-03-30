@@ -1,6 +1,7 @@
 # Django settings for openstax project.
 
 import os
+
 PROJECT_ROOT = os.path.join(os.path.dirname(__file__), '..', '..')
 BASE_DIR = PROJECT_ROOT
 

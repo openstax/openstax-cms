@@ -1,20 +1,17 @@
-from django.db import models
 from django import forms
-
-from wagtail.wagtailcore.models import Page, Orderable
-from wagtail.wagtailcore.fields import RichTextField, StreamField
-from wagtail.wagtailcore import blocks
-from wagtail.wagtailadmin.edit_handlers import (FieldPanel,
-                                                StreamFieldPanel,
-                                                InlinePanel,
-                                                MultiFieldPanel,
-                                                PageChooserPanel)
-from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
-from wagtail.wagtaildocs.edit_handlers import DocumentChooserPanel
-from wagtail.wagtailcore.blocks import StructBlock, FieldBlock, RawHTMLBlock
-from wagtail.wagtailimages.blocks import ImageChooserBlock
-
+from django.db import models
 from modelcluster.fields import ParentalKey
+from wagtail.wagtailadmin.edit_handlers import (FieldPanel, InlinePanel,
+                                                MultiFieldPanel,
+                                                PageChooserPanel,
+                                                StreamFieldPanel)
+from wagtail.wagtailcore import blocks
+from wagtail.wagtailcore.blocks import FieldBlock, RawHTMLBlock, StructBlock
+from wagtail.wagtailcore.fields import RichTextField, StreamField
+from wagtail.wagtailcore.models import Orderable, Page
+from wagtail.wagtaildocs.edit_handlers import DocumentChooserPanel
+from wagtail.wagtailimages.blocks import ImageChooserBlock
+from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 
 
 class ImageFormatChoiceBlock(FieldBlock):

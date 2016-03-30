@@ -1,7 +1,7 @@
 from django.conf.urls import include, url
 from rest_framework import routers
-from .views import ImageViewSet, UserView, AdopterViewSet
 
+from .views import AdopterViewSet, ImageViewSet, UserView
 
 router = routers.DefaultRouter()
 router.register(r'v0/images', ImageViewSet)
