@@ -13,12 +13,15 @@ class Command(BaseCommand):
             response = sf.query_all(command)
             sf_adopters = response['records']
             for sf_adopter in sf_adopters:
+
                 adopter, created = Adopter.objects.update_or_create(
                     sales_id=sf_adopter['Id'],
-                    name=sf_adopter['Name'],
-                    description=sf_adopter['Description'],
-                    website=sf_adopter['Website'],)
-                adopter.save()
-            responce = self.style.SUCCESS("Successfully updated adopters")
-        self.stdout.write(responce)
+                    defaults={'name': sf_adopter['Name'],
+                              'description': sf_adopter['Description'],
+                              'website': sf_adopter['Website'],
+                              },
+                )
 
+                adopter.save()
+            response = self.style.SUCCESS("Successfully updated adopters")
+        self.stdout.write(response)
