@@ -52,11 +52,17 @@ class FacultyResources(models.Model):
         blank=True,
         related_name='+'
     )
+
+    def get_link_document(self):
+        return build_document_url(self.link_document.url)
+
+    link_document_url = property(get_link_document)
+
     link_text = models.CharField(
         max_length=255, help_text="Call to Action Text")
 
     api_fields = ('resource', 'link_external', 'link_page',
-                  'link_document', 'link_text', )
+                  'link_document_url', 'link_text', )
 
     panels = [
         SnippetChooserPanel('resource', FacultyResource),
@@ -87,11 +93,16 @@ class StudentResources(models.Model):
         blank=True,
         related_name='+'
     )
+
+    def get_link_document(self):
+        return build_document_url(self.link_document.url)
+    link_document_url = property(get_link_document)
+
     link_text = models.CharField(
         max_length=255, help_text="Call to Action Text")
 
     api_fields = ('resource', 'link_external', 'link_page',
-                  'link_document', 'link_text', )
+                  'link_document_url', 'link_text', )
 
     panels = [
         SnippetChooserPanel('resource', StudentResource),
