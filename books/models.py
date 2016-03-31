@@ -39,6 +39,13 @@ class FacultyResources(models.Model):
         help_text="Manage resources through snippets.",
         related_name='+'
     )
+
+    def get_resource_description(self):
+        return self.resource.description
+
+    resource_description = property(get_resource_description)
+
+
     link_external = models.URLField("External link", blank=True)
     link_page = models.ForeignKey(
         'wagtailcore.Page',
@@ -61,7 +68,7 @@ class FacultyResources(models.Model):
     link_text = models.CharField(
         max_length=255, help_text="Call to Action Text")
 
-    api_fields = ('resource', 'link_external', 'link_page',
+    api_fields = ('resource', 'resource_description', 'link_external', 'link_page',
                   'link_document_url', 'link_text', )
 
     panels = [
@@ -80,6 +87,11 @@ class StudentResources(models.Model):
         help_text="Manage resources through snippets.",
         related_name='+'
     )
+
+    def get_resource_description(self):
+        return self.resource.description
+    resource_description = property(get_resource_description)
+
     link_external = models.URLField("External link", blank=True)
     link_page = models.ForeignKey(
         'wagtailcore.Page',
@@ -101,7 +113,8 @@ class StudentResources(models.Model):
     link_text = models.CharField(
         max_length=255, help_text="Call to Action Text")
 
-    api_fields = ('resource', 'link_external', 'link_page',
+    api_fields = ('resource', 'resource_description',
+                  'link_external', 'link_page',
                   'link_document_url', 'link_text', )
 
     panels = [
