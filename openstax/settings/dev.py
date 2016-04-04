@@ -11,12 +11,12 @@ BASE_URL = 'http://localhost:8000'
 #        OPENSTAX ACCOUNTS SETTINGS       #
 ###########################################
 
-AUTHORIZATION_URL = 'https://accounts-qa.openstax.org/oauth/authorize'
-ACCESS_TOKEN_URL = 'https://accounts-qa.openstax.org/oauth/token'
-USER_QUERY = 'https://accounts-qa.openstax.org/api/user?'
+AUTHORIZATION_URL = 'https://accounts-dev.openstax.org/oauth/authorize'
+ACCESS_TOKEN_URL = 'https://accounts-dev.openstax.org/oauth/token'
+USER_QUERY = 'https://accounts-dev.openstax.org/api/user?'
 
-SOCIAL_AUTH_OPENSTAX_KEY = '0a3c6b8c21091873805181b4b2a42cdbabeec6f6871332b817f59fac37033537'
-SOCIAL_AUTH_OPENSTAX_SECRET = '40035a7f2a7948b33ffce370af3918d692b958a6cc195e8b57b1fbe621a88157'
+SOCIAL_AUTH_OPENSTAX_KEY = '5deb24ba03f289fae3ceba10f21a5c75449db827bb675440c27244413399ab9b'
+SOCIAL_AUTH_OPENSTAX_SECRET = '61c881b26f3eac336d2bf5f4f2314a948b6aee2acc396f0a3200074c64af7203'
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'http://os-webview-dev.openstax.org'
 SOCIAL_AUTH_SANITIZE_REDIRECTS = False
 
