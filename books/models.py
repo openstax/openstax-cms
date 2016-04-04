@@ -60,6 +60,10 @@ class FacultyResources(models.Model):
         related_name='+'
     )
 
+    def get_resource_heading(self):
+        return self.resource.heading
+    resource_heading = property(get_resource_heading)
+
     def get_link_document(self):
         return build_document_url(self.link_document.url)
     link_document_url = property(get_link_document)
@@ -71,7 +75,7 @@ class FacultyResources(models.Model):
     link_text = models.CharField(
         max_length=255, help_text="Call to Action Text")
 
-    api_fields = ('resource', 'resource_description', 
+    api_fields = ('resource_heading', 'resource_description',
                   'link_external', 'link_page',
                   'link_document_url', 'link_document_title', 'link_text', )
 
@@ -91,6 +95,10 @@ class StudentResources(models.Model):
         help_text="Manage resources through snippets.",
         related_name='+'
     )
+
+    def get_resource_heading(self):
+        return self.resource.heading
+    resource_heading = property(get_resource_heading)
 
     def get_resource_description(self):
         return self.resource.description
@@ -121,7 +129,7 @@ class StudentResources(models.Model):
     link_text = models.CharField(
         max_length=255, help_text="Call to Action Text")
 
-    api_fields = ('resource', 'resource_description',
+    api_fields = ('resource_heading', 'resource_description',
                   'link_external', 'link_page',
                   'link_document_url', 'link_document_title', 'link_text', )
 
