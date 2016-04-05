@@ -8,11 +8,10 @@ BASE_DIR = PROJECT_ROOT
 DEBUG = True
 
 ADMINS = (
-    # ('Michael Harrison', 'mwharrison@rice.edu'),
+    ('Michael Harrison', 'mwharrison@rice.edu'),
 )
 
 # Default to dummy email backend. Configure dev/production/local backend
-# as per https://docs.djangoproject.com/en/dev/topics/email/#email-backends
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 DATABASES = {
@@ -22,22 +21,11 @@ DATABASES = {
     }
 }
 
-# Hosts/domain names that are valid for this site; required if DEBUG is False
-# See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = []
-
-# Local time zone for this installation. Choices can be found here:
-# http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
-# although not all choices may be available on all operating systems.
-# On Unix systems, a value of None will cause Django to use the same
-# timezone as the operating system.
-# If running in a Windows environment this must be set to the same as your
-# system time zone.
+# Local time zone for this installation.
 TIME_ZONE = 'America/Chicago'
 
-# Language code for this installation. All choices can be found here:
-# http://www.i18nguy.com/unicode/language-identifiers.html
-LANGUAGE_CODE = 'en-gb'
+# Language code for this installation.
+LANGUAGE_CODE = 'en-us'
 
 SITE_ID = 1
 
@@ -159,7 +147,7 @@ ROOT_URLCONF = 'openstax.urls'
 # Python dotted path to the WSGI application used by Django's runserver.
 WSGI_APPLICATION = 'openstax.wsgi.application'
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -201,7 +189,7 @@ INSTALLED_APPS = (
     'wagtail.wagtailforms',
     'wagtail.wagtailsites',
     'wagtail.contrib.wagtailapi',
-)
+]
 
 EMAIL_SUBJECT_PREFIX = '[openstax] '
 
