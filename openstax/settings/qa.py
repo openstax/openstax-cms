@@ -1,22 +1,11 @@
 from .base import *
 
-DEBUG = True
-
-# Allows you to test sending mail, output is logged to the console
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
-
-# Disable Python Social Auth Warnings
-LOGGING['disable_existing_loggers'] = True
-
-# Development specific packages
-INSTALLED_APPS += [
-    'debug_toolbar',
-]
+DEBUG = False
 
 # Cloudfront static file settings
 DEFAULT_FILE_STORAGE = 'storages.S3Storage.S3Storage'
 AWS_STORAGE_BUCKET_NAME = 'openstax-assets'
-AWS_STORAGE_DIR = 'oscms-dev'
+AWS_STORAGE_DIR = 'oscms-qa'
 AWS_S3_CUSTOM_DOMAIN = 'd3bxy9euw4e147.cloudfront.net'
 # S3 static file storage using custom backend
 STATICFILES_LOCATION = '{}/static'.format(AWS_STORAGE_DIR)
@@ -31,4 +20,3 @@ try:
     from .local import *
 except ImportError:
     pass
-
