@@ -1,6 +1,7 @@
 from .base import *
 
 DEBUG = False
+ALLOWED_HOSTS = ['.openstax.org']
 
 # Cloudfront static file settings
 DEFAULT_FILE_STORAGE = 'storages.S3Storage.S3Storage'
