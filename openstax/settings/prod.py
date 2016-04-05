@@ -1,15 +1,7 @@
 from .base import *
 
 DEBUG = False
-ALLOWED_HOSTS = ['openstax.org']
-
-# Use the cached template loader
-TEMPLATE_LOADERS = (
-    ('django.template.loaders.cached.Loader', (
-        'django.template.loaders.filesystem.Loader',
-        'django.template.loaders.app_directories.Loader',
-    )),
-)
+ALLOWED_HOSTS = ['.openstax.org']
 
 # Cloudfront static file settings
 DEFAULT_FILE_STORAGE = 'storages.S3Storage.S3Storage'
