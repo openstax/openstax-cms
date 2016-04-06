@@ -26,7 +26,7 @@ urlpatterns = [
     # Wagtail's serving mechanism
     url(r'', include(wagtail_urls)),
 ]
-
+handler404 = 'openstax.views.handle_page_not_found_404'
 
 if settings.DEBUG:
     from django.contrib.staticfiles.urls import staticfiles_urlpatterns
