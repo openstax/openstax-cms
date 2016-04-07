@@ -24,17 +24,30 @@ class Ally(Page):
     customization_tools = models.BooleanField(default=False)
     is_ap = models.BooleanField(default=False)
 
-    logo = models.ForeignKey(
+    logo_color = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
-        related_name='logo'
+        related_name='logo_color'
     )
 
     def get_ally_logo(self):
-        return build_image_url(self.ally.logo)
-    ally_logo = property(get_ally_logo)
+        return build_image_url(self.ally.logo_color)
+    ally_color_logo = property(get_ally_logo)
+
+    logo_bw = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='logo_bw'
+    )
+
+    def get_ally_logo(self):
+        return build_image_url(self.ally.logo_bw)
+
+    ally_bw_logo = property(get_ally_logo)
 
     heading = models.CharField(max_length=255)
     short_description = RichTextField()
@@ -52,7 +65,7 @@ class Ally(Page):
 
     api_fields = ('online_homework', 'adaptive_courseware', 'customization_tools',
                   'ally_subject_list', 'is_ap',
-                  'ally_logo', 'heading',
+                  'ally_color_logo', 'ally_bw_logo', 'heading',
                   'short_description', 'long_description')
 
     content_panels = Page.content_panels + [
@@ -66,7 +79,8 @@ class Ally(Page):
         ),
         InlinePanel('ally_subjects', label="Subjects"),
         FieldPanel('is_ap'),
-        ImageChooserPanel('logo'),
+        ImageChooserPanel('logo_color'),
+        ImageChooserPanel('logo_bw'),
         FieldPanel('heading'),
         FieldPanel('short_description'),
         FieldPanel('long_description'),
