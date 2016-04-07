@@ -249,6 +249,8 @@ class Book(Page):
     publish_date = models.DateField(blank=True, null=True, editable=False)
     isbn_10 = models.IntegerField(blank=True, null=True)
     isbn_13 = models.CharField(max_length=255, blank=True, null=True)
+    license_text = RichTextField(
+        blank=True, null=True, help_text="Text blurb that describes the license.")
     license_name = models.CharField(
         max_length=255, blank=True, null=True, editable=False)
     license_version = models.CharField(
@@ -323,6 +325,7 @@ class Book(Page):
         InlinePanel('book_contributing_authors', label="Contributing Authors"),
         FieldPanel('isbn_10'),
         FieldPanel('isbn_13'),
+        FieldPanel('license_text'),
         DocumentChooserPanel('high_resolution_pdf'),
         DocumentChooserPanel('low_resolution_pdf'),
         DocumentChooserPanel('student_handbook'),
@@ -356,6 +359,7 @@ class Book(Page):
                   'publish_date',
                   'isbn_10',
                   'isbn_13',
+                  'license_text',
                   'license_name',
                   'license_version',
                   'license_url',
