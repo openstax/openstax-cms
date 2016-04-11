@@ -180,16 +180,16 @@ class BookAlly(models.Model):
         return self.ally.short_description
     ally_short_description = property(get_ally_short_description)
 
-    def get_ally_logo(self):
-        return build_image_url(self.ally.logo)
-    ally_logo = property(get_ally_logo)
+    def get_ally_logo_color(self):
+        return build_image_url(self.ally.logo_color)
+    ally_logo_color = property(get_ally_logo_color)
 
     book_link_url = models.URLField(
         blank=True, help_text="Call to Action Link")
     book_link_text = models.CharField(
         max_length=255, help_text="Call to Action Text")
 
-    api_fields = ('ally_heading', 'ally_short_description', 'ally_logo', 'book_link_url',
+    api_fields = ('ally_heading', 'ally_short_description', 'ally_logo_color', 'book_link_url',
                   'book_link_text', )
 
     panels = [
