@@ -1,12 +1,20 @@
-{% extends "wagtailadmin/login.html" %}
-{% load static from staticfiles %}
+{% extends "wagtailadmin/admin_base.html" %}
+{% load compress static i18n %}
+{% block titletag %}{% trans "Sign in" %}{% endblock %}
+{% block bodyclass %}login{% endblock %}
 
-{% block branding_login %}
-    <img src="{% static 'images/openstax.png' %}" alt="Openstax" width="80" /> Login to OpenstaxCMS
+{% block extra_css %}
+    {{ block.super }}
+
+    {% compress css %}
+        <link rel="stylesheet" href="{% static 'wagtailadmin/css/layouts/login.css' %}" type="text/css" />
+    {% endcompress %}
 {% endblock %}
 
 {% block furniture %}
-{{ block.super }}
-<a href="{% url 'social:begin' 'openstax' %}?next=/admin" class="btn">Login with accounts</a>
-{% endblock %}
+    <div class="content-wrapper">
+        <h1><img src="{% static 'images/openstax.png' %}" alt="Openstax" width="80" /> OpenstaxCMS</h1>
 
+        <a href="{% url 'social:begin' 'openstax' %}?next=/admin" class="button">Login</a>
+    </div>
+{% endblock %}
