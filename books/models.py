@@ -220,7 +220,8 @@ class BookAllies(Orderable, BookAlly):
 class Book(Page):
     created = models.DateTimeField(auto_now_add=True)
     cnx_id = models.CharField(
-        max_length=255, help_text="This is used to pull relevant information from CNX.")
+        max_length=255, help_text="This is used to pull relevant information from CNX.",
+        blank=True, null=True)
     subject = models.ForeignKey(Subject, on_delete=models.SET_NULL,
                                 null=True, related_name='+')
 
@@ -387,19 +388,20 @@ class Book(Page):
     # we are overriding the save() method to go to CNX and fetch information
     # with the CNX ID
     def save(self, *args, **kwargs):
-        url = '{}/contents/{}.json'.format(
-            settings.CNX_ARCHIVE_URL, self.cnx_id)
-        response = urllib.request.urlopen(url).read()
-        result = json.loads(response.decode('utf-8'))
+        if self.cnx_id:
+            url = '{}/contents/{}.json'.format(
+                settings.CNX_ARCHIVE_URL, self.cnx_id)
+            response = urllib.request.urlopen(url).read()
+            result = json.loads(response.decode('utf-8'))
 
-        self.license_name = result['license']['name']
-        self.license_version = result['license']['version']
-        self.license_url = result['license']['url']
+            self.license_name = result['license']['name']
+            self.license_version = result['license']['version']
+            self.license_url = result['license']['url']
 
-        self.publish_date = dateutil.parser.parse(
-            result['created'], dayfirst=True).date()
+            self.publish_date = dateutil.parser.parse(
+                result['created'], dayfirst=True).date()
 
-        self.table_of_contents = result['tree']
+            self.table_of_contents = result['tree']
 
         return super(Book, self).save(*args, **kwargs)
 
