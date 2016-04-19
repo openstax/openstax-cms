@@ -50,6 +50,7 @@ class SalesforceTest(LiveServerTestCase, WagtailPageTests):
             status = response['records'][0]['Faculty_Verified__c']
             self.assertEqual(status, u'Confirmed')
 
+    @unittest.skip("why are we testing for unknown?")
     def test_faculty_unknown(self):
         with Salesforce() as sf:
             command = "SELECT Faculty_Verified__c FROM Contact WHERE Accounts_ID__c = '1'"
