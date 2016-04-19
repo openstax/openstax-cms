@@ -294,6 +294,7 @@ class Book(Page):
 
     student_handbook_url = property(get_student_handbook_url)
     ibook_link = models.URLField(blank=True, help_text="Link to iBook")
+    ibook_link_volume_2 = models.URLField(blank=True, help_text="Link to secondary iBook")
     webview_link = models.URLField(
         blank=True, help_text="Link to CNX Webview book")
     concept_coach_link = models.URLField(
@@ -330,6 +331,7 @@ class Book(Page):
         DocumentChooserPanel('low_resolution_pdf'),
         DocumentChooserPanel('student_handbook'),
         FieldPanel('ibook_link'),
+        FieldPanel('ibook_link_volume_2'),
         FieldPanel('webview_link'),
         FieldPanel('concept_coach_link'),
         FieldPanel('bookshare_link'),
@@ -367,6 +369,7 @@ class Book(Page):
                   'low_resolution_pdf_url',
                   'student_handbook_url',
                   'ibook_link',
+                  'ibook_link_volume_2',
                   'webview_link',
                   'concept_coach_link',
                   'bookshare_link',
