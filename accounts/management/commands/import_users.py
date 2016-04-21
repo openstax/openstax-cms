@@ -39,6 +39,6 @@ class Command(BaseCommand):
                                     'first_name': accounts_user['first_name'],
                                     'uid': accounts_user['id']}
                 create_user(**new_user_details)
-            responce = self.style.SUCCESS("Import Sucessful")
-        self.stdout.write(responce)
+            response = self.style.SUCCESS("Import Successful")
+        self.stdout.write(response)
 
