@@ -312,7 +312,7 @@ class Book(Page):
         blank=True, help_text="Link to view openstaxcollege.org errata")
     errata_corrections_link = models.URLField(
         blank=True, help_text="Link errata corrections")
-    table_of_contents = JSONField(editable=False, blank=True)
+    table_of_contents = JSONField(editable=False, blank=True, null=True)
 
     content_panels = Page.content_panels + [
         FieldPanel('cnx_id'),
