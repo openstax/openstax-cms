@@ -51,6 +51,7 @@ class UserAPI(LiveServerTestCase, WagtailPageTests):
         self.assertEqual(user_dict['username'], test_user['username'])
         self.assertEqual(user_dict['first_name'], test_user['first_name'])
         self.assertEqual(user_dict['last_name'], test_user['last_name'])
+
     def test_user_faculty_group(self):
         user = User.objects.create_user('john',
                                         'lennon@thebeatles.com',
@@ -87,7 +88,7 @@ class UserAPI(LiveServerTestCase, WagtailPageTests):
         expected_user_info = {'is_superuser': False,
                               'username': 'username',
                               'first_name': 'first_name',
-                              'groups': ['Faculty'],
+                              'groups': [],
                               'last_name': 'last_name',
                               'is_staff': False,
                               'accounts_id': '0'}
