@@ -31,7 +31,7 @@ USER_QUERY = 'https://accounts.openstax.org/api/user?'
 ####
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'https://openstax.org'
 SOCIAL_AUTH_SANITIZE_REDIRECTS = False
-OPENSTAX_ACCOUNTS_LOGOUT_URL = 'https://accountsopenstax.org/signout'
+OPENSTAX_ACCOUNTS_LOGOUT_URL = 'https://accounts.openstax.org/signout'
 
 try:
     from .local import *
