@@ -88,7 +88,7 @@ class UserAPI(LiveServerTestCase, WagtailPageTests):
         expected_user_info = {'is_superuser': False,
                               'username': 'username',
                               'first_name': 'first_name',
-                              'groups': [],
+                              'groups': ['Faculty'],
                               'last_name': 'last_name',
                               'is_staff': False,
                               'accounts_id': '0'}
