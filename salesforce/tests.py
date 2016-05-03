@@ -103,7 +103,6 @@ class SalesforceTest(LiveServerTestCase, WagtailPageTests):
         self.assertTrue(
             Adopter.objects.filter(name='Rice University').exists())
 
-    @unittest.skip("conflicting with management command")
     def test_update_faculty_status_command(self):
         test_user = {'last_name': 'last_name',
                      'username': 'username',
@@ -120,7 +119,6 @@ class SalesforceTest(LiveServerTestCase, WagtailPageTests):
         self.assertIn("Success", out.getvalue())
         self.assertTrue(returned_user.groups.filter(name='Faculty').exists())
 
-    @unittest.skip("conflicting with management command")
     def test_update_faculty_status_all_command(self):
         from accounts.utils import create_user
         user_details = {'last_name': 'Hart',
