@@ -495,11 +495,17 @@ class Research(Page):
 
 
 class ContactUs(Page):
-    classroom_text = RichTextField()
+    tagline = models.CharField(max_length=255)
+    mailing_header = models.CharField(max_length=255)
+    mailing_address = RichTextField()
+    phone_number = models.CharField(max_length=255)
 
     content_panels = [
         FieldPanel('title', classname="full title"),
-        FieldPanel('classroom_text'),
+        FieldPanel('tagline'),
+        FieldPanel('mailing_header'),
+        FieldPanel('mailing_address'),
+        FieldPanel('phone_number'),
     ]
 
     promote_panels = [
@@ -508,6 +514,17 @@ class ContactUs(Page):
         FieldPanel('search_description'),
 
     ]
+
+    api_fields = (
+        'title',
+        'tagline',
+        'mailing_header',
+        'mailing_address',
+        'phone_number',
+        'slug',
+        'seo_title',
+        'search_description',
+    )
 
     parent_page_types = ['pages.HomePage']
 
