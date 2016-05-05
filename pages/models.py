@@ -307,37 +307,76 @@ class HigherEducationAllies(Orderable, Allies):
 class HigherEducation(Page):
     intro_heading = models.CharField(max_length=255)
     intro_description = RichTextField()
+
     get_started_heading = models.CharField(max_length=255)
+
+    get_started_step_1_heading = models.CharField(max_length=255)
     get_started_step_1_description = RichTextField()
+    get_started_step_1_cta = models.CharField(max_length=255)
+
+    get_started_step_2_heading = models.CharField(max_length=255)
     get_started_step_2_description = RichTextField()
+    get_started_step_2_cta = models.CharField(max_length=255)
+
+    get_started_step_3_heading = models.CharField(max_length=255)
     get_started_step_3_description = RichTextField()
-    get_started_step_4_description = RichTextField()
-    our_books_heading = models.CharField(max_length=255)
-    our_books_description = RichTextField()
-    our_impact_heading = models.CharField(max_length=255)
-    our_impact_description = RichTextField()
-    cnx_heading = models.CharField(max_length=255)
-    cnx_description = RichTextField()
-    allies_heading = models.CharField(max_length=255)
-    allies_description = RichTextField()
+    get_started_step_3_cta = models.CharField(max_length=255)
+
+    adopt_heading = models.CharField(max_length=255)
+    adopt_description = RichTextField()
+    adopt_cta = models.CharField(max_length=255)
+
+    box_1_heading = models.CharField(max_length=255)
+    box_1_description = RichTextField()
+    box_1_cta = models.CharField(max_length=255)
+
+    box_2_heading = models.CharField(max_length=255)
+    box_2_description = RichTextField()
+    box_2_cta = models.CharField(max_length=255)
+
+    box_3_heading = models.CharField(max_length=255)
+    box_3_description = RichTextField()
+    box_3_cta = models.CharField(max_length=255)
+
+    box_4_heading = models.CharField(max_length=255)
+    box_4_description = RichTextField()
+    box_4_cta = models.CharField(max_length=255)
+
+    box_5_heading = models.CharField(max_length=255)
+    box_5_description = RichTextField()
+    box_5_cta = models.CharField(max_length=255)
 
     api_fields = (
         'intro_heading',
         'intro_description',
         'get_started_heading',
+        'get_started_step_1_heading',
         'get_started_step_1_description',
+        'get_started_step_1_cta',
+        'get_started_step_2_heading',
         'get_started_step_2_description',
+        'get_started_step_2_cta',
+        'get_started_step_3_heading',
         'get_started_step_3_description',
-        'get_started_step_4_description',
-        'our_books_heading',
-        'our_books_description',
-        'our_impact_heading',
-        'our_impact_description',
-        'cnx_heading',
-        'cnx_description',
-        'allies_heading',
-        'allies_description',
-        'higher_education_allies',
+        'get_started_step_3_cta',
+        'adopt_heading',
+        'adopt_description',
+        'adopt_cta',
+        'box_1_heading',
+        'box_1_description',
+        'box_1_cta',
+        'box_2_heading',
+        'box_2_description',
+        'box_2_cta',
+        'box_3_heading',
+        'box_3_description',
+        'box_3_cta',
+        'box_4_heading',
+        'box_4_description',
+        'box_4_cta',
+        'box_5_heading',
+        'box_5_description',
+        'box_5_cta',
         'slug',
         'seo_title',
         'search_description',)
@@ -347,19 +386,33 @@ class HigherEducation(Page):
         FieldPanel('intro_heading'),
         FieldPanel('intro_description'),
         FieldPanel('get_started_heading'),
+        FieldPanel('get_started_step_1_heading'),
         FieldPanel('get_started_step_1_description'),
+        FieldPanel('get_started_step_1_cta'),
+        FieldPanel('get_started_step_2_heading'),
         FieldPanel('get_started_step_2_description'),
+        FieldPanel('get_started_step_2_cta'),
+        FieldPanel('get_started_step_3_heading'),
         FieldPanel('get_started_step_3_description'),
-        FieldPanel('get_started_step_4_description'),
-        FieldPanel('our_books_heading'),
-        FieldPanel('our_books_description'),
-        FieldPanel('our_impact_heading'),
-        FieldPanel('our_impact_description'),
-        FieldPanel('cnx_heading'),
-        FieldPanel('cnx_description'),
-        FieldPanel('allies_heading'),
-        FieldPanel('allies_description'),
-        InlinePanel('higher_education_allies', label="Allies"),
+        FieldPanel('get_started_step_3_cta'),
+        FieldPanel('adopt_heading'),
+        FieldPanel('adopt_description'),
+        FieldPanel('adopt_cta'),
+        FieldPanel('box_1_heading'),
+        FieldPanel('box_1_description'),
+        FieldPanel('box_1_cta'),
+        FieldPanel('box_2_heading'),
+        FieldPanel('box_2_description'),
+        FieldPanel('box_2_cta'),
+        FieldPanel('box_3_heading'),
+        FieldPanel('box_3_description'),
+        FieldPanel('box_3_cta'),
+        FieldPanel('box_4_heading'),
+        FieldPanel('box_4_description'),
+        FieldPanel('box_4_cta'),
+        FieldPanel('box_5_heading'),
+        FieldPanel('box_5_description'),
+        FieldPanel('box_5_cta'),
     ]
 
     promote_panels = [
