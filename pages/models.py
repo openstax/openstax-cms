@@ -373,24 +373,32 @@ class HigherEducation(Page):
 
 
 class K12(Page):
-    k12_heading = models.CharField(max_length=255)
-    k12_description = RichTextField()
-    tutor_heading = models.CharField(max_length=255)
-    tutor_description = RichTextField()
-    cnx_heading = models.CharField(max_length=255)
-    cnx_description = RichTextField()
-    allies_heading = models.CharField(max_length=255)
-    allies_description = RichTextField()
+    heading = models.CharField(max_length=255)
+    description = RichTextField()
+    box_1_heading = models.CharField(max_length=255)
+    box_1_description = RichTextField()
+    box_2_heading = models.CharField(max_length=255)
+    box_2_description = RichTextField()
+    box_3_heading = models.CharField(max_length=255)
+    box_3_description = RichTextField()
+    box_4_heading = models.CharField(max_length=255)
+    box_4_description = RichTextField()
+    box_5_heading = models.CharField(max_length=255)
+    box_5_description = RichTextField()
 
     api_fields = (
-        'k12_heading',
-        'k12_description',
-        'tutor_heading',
-        'tutor_description',
-        'cnx_heading',
-        'cnx_description',
-        'allies_heading',
-        'allies_description',
+        'heading',
+        'description',
+        'box_1_heading',
+        'box_1_description',
+        'box_2_heading',
+        'box_2_description',
+        'box_3_heading',
+        'box_3_description',
+        'box_4_heading',
+        'box_4_description',
+        'box_5_heading',
+        'box_5_description',
         'slug',
         'seo_title',
         'search_description',
@@ -398,14 +406,18 @@ class K12(Page):
 
     content_panels = [
         FieldPanel('title', classname="full title"),
-        FieldPanel('k12_heading'),
-        FieldPanel('k12_description'),
-        FieldPanel('tutor_heading'),
-        FieldPanel('tutor_description'),
-        FieldPanel('cnx_heading'),
-        FieldPanel('cnx_description'),
-        FieldPanel('allies_heading'),
-        FieldPanel('allies_description'),
+        FieldPanel('heading'),
+        FieldPanel('description'),
+        FieldPanel('box_1_heading'),
+        FieldPanel('box_1_description'),
+        FieldPanel('box_2_heading'),
+        FieldPanel('box_2_description'),
+        FieldPanel('box_3_heading'),
+        FieldPanel('box_3_description'),
+        FieldPanel('box_4_heading'),
+        FieldPanel('box_4_description'),
+        FieldPanel('box_5_heading'),
+        FieldPanel('box_5_description'),
     ]
 
     promote_panels = [
