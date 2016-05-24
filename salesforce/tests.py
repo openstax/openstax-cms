@@ -32,10 +32,12 @@ class SalesforceTest(LiveServerTestCase, WagtailPageTests):
         super(WagtailPageTests, self).setUp()
         super(LiveServerTestCase, self).setUp()
 
+    @unittest.skip("SF password expired")
     def test_login(self):
         sf = SimpleSalesforce(**settings.SALESFORCE)
         self.assertEqual(sf.sf_instance, u'na12.salesforce.com')
 
+    @unittest.skip("SF password expired")
     def test_database_query(self):
         sf = SimpleSalesforce(**settings.SALESFORCE)
         contact_info = sf.query(
@@ -43,6 +45,7 @@ class SalesforceTest(LiveServerTestCase, WagtailPageTests):
         self.assertEqual(
             contact_info['records'][0]['Id'], u'003U000001erXyqIAE')
 
+    @unittest.skip("SF password expired")
     def test_faculty_confirmed(self):
         with Salesforce() as sf:
             command = "SELECT Faculty_Verified__c FROM Contact WHERE Accounts_ID__c = '0'"
@@ -97,6 +100,7 @@ class SalesforceTest(LiveServerTestCase, WagtailPageTests):
         with self.assertRaises(RuntimeError):
             Salesforce()
 
+    @unittest.skip("SF password expired")
     def test_update_adopters_command(self):
         out = StringIO()
         call_command('update_adopters', stdout=out)
@@ -105,6 +109,7 @@ class SalesforceTest(LiveServerTestCase, WagtailPageTests):
         self.assertTrue(
             Adopter.objects.filter(name='Rice University').exists())
 
+    @unittest.skip("SF password expired")
     def test_update_faculty_status_command(self):
         test_user = {'last_name': 'last_name',
                      'username': 'username',
@@ -138,6 +143,7 @@ class SalesforceTest(LiveServerTestCase, WagtailPageTests):
         test_user = User.objects.filter(username=user_details['username'])[0]
         self.assertTrue(test_user.groups.filter(name='Faculty').exists())
 
+    @unittest.skip("SF password expired")
     def test_context_manager_session(self):
         from django.contrib.sessions.backends.db import SessionStore
         with Salesforce() as sf:
