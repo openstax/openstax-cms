@@ -326,65 +326,51 @@ class HigherEducation(Page):
     adopt_description = RichTextField()
     adopt_cta = models.CharField(max_length=255)
 
-    box_1_heading = models.CharField(max_length=255)
-    box_1_image = models.ForeignKey(
+    row_1_box_1_heading = models.CharField(max_length=255)
+    row_1_box_1_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
         related_name='+'
     )
-    box_1_description = RichTextField()
-    box_1_cta = models.CharField(max_length=255)
-    box_1_link = models.URLField(blank=True, null=True)
+    row_1_box_1_description = RichTextField()
+    row_1_box_1_cta = models.CharField(max_length=255)
+    row_1_box_1_link = models.URLField(blank=True, null=True)
 
-    box_2_heading = models.CharField(max_length=255)
-    box_2_image = models.ForeignKey(
+    row_1_box_2_heading = models.CharField(max_length=255)
+    row_1_box_2_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
         related_name='+'
     )
-    box_2_description = RichTextField()
-    box_2_cta = models.CharField(max_length=255)
-    box_2_link = models.URLField(blank=True, null=True)
+    row_1_box_2_description = RichTextField()
+    row_1_box_2_cta = models.CharField(max_length=255)
+    row_1_box_2_link = models.URLField(blank=True, null=True)
 
-    box_3_heading = models.CharField(max_length=255)
-    box_3_image = models.ForeignKey(
+    row_1_box_3_heading = models.CharField(max_length=255)
+    row_1_box_3_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
         related_name='+'
     )
-    box_3_description = RichTextField()
-    box_3_cta = models.CharField(max_length=255)
-    box_3_link = models.URLField(blank=True, null=True)
+    row_1_box_3_description = RichTextField()
+    row_1_box_3_cta = models.CharField(max_length=255)
+    row_1_box_3_link = models.URLField(blank=True, null=True)
 
-    box_4_heading = models.CharField(max_length=255)
-    box_4_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-    box_4_description = RichTextField()
-    box_4_cta = models.CharField(max_length=255)
-    box_4_link = models.URLField(blank=True, null=True)
+    row_2_box_1_heading = models.CharField(max_length=255)
+    row_2_box_1_description = RichTextField()
+    row_2_box_1_cta = models.CharField(max_length=255)
+    row_2_box_1_link = models.URLField(blank=True, null=True)
 
-    box_5_heading = models.CharField(max_length=255)
-    box_5_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-    box_5_description = RichTextField()
-    box_5_cta = models.CharField(max_length=255)
-    box_5_link = models.URLField(blank=True, null=True)
+    row_2_box_2_heading = models.CharField(max_length=255)
+    row_2_box_2_description = RichTextField()
+    row_2_box_2_cta = models.CharField(max_length=255)
+    row_2_box_2_link = models.URLField(blank=True, null=True)
 
     api_fields = (
         'intro_heading',
@@ -402,31 +388,29 @@ class HigherEducation(Page):
         'adopt_heading',
         'adopt_description',
         'adopt_cta',
-        'box_1_heading',
-        'box_1_image',
-        'box_1_description',
-        'box_1_cta',
-        'box_1_link',
-        'box_2_heading',
-        'box_2_image',
-        'box_2_description',
-        'box_2_cta',
-        'box_2_link',
-        'box_3_heading',
-        'box_3_image',
-        'box_3_description',
-        'box_3_cta',
-        'box_3_link',
-        'box_4_heading',
-        'box_4_image',
-        'box_4_description',
-        'box_4_cta',
-        'box_4_link',
-        'box_5_heading',
-        'box_5_image',
-        'box_5_description',
-        'box_5_cta',
-        'box_5_link',
+        'row_1_box_1_heading',
+        'row_1_box_1_image',
+        'row_1_box_1_description',
+        'row_1_box_1_cta',
+        'row_1_box_1_link',
+        'row_1_box_2_heading',
+        'row_1_box_2_image',
+        'row_1_box_2_description',
+        'row_1_box_2_cta',
+        'row_1_box_2_link',
+        'row_1_box_3_heading',
+        'row_1_box_3_image',
+        'row_1_box_3_description',
+        'row_1_box_3_cta',
+        'row_1_box_3_link',
+        'row_2_box_1_heading',
+        'row_2_box_1_description',
+        'row_2_box_1_cta',
+        'row_2_box_1_link',
+        'row_2_box_2_heading',
+        'row_2_box_2_description',
+        'row_2_box_2_cta',
+        'row_2_box_2_link',
         'slug',
         'seo_title',
         'search_description',)
@@ -448,31 +432,29 @@ class HigherEducation(Page):
         FieldPanel('adopt_heading'),
         FieldPanel('adopt_description'),
         FieldPanel('adopt_cta'),
-        FieldPanel('box_1_heading'),
-        ImageChooserPanel('box_1_image'),
-        FieldPanel('box_1_description'),
-        FieldPanel('box_1_cta'),
-        FieldPanel('box_1_link'),
-        FieldPanel('box_2_heading'),
-        ImageChooserPanel('box_2_image'),
-        FieldPanel('box_2_description'),
-        FieldPanel('box_2_cta'),
-        FieldPanel('box_2_link'),
-        FieldPanel('box_3_heading'),
-        ImageChooserPanel('box_3_image'),
-        FieldPanel('box_3_description'),
-        FieldPanel('box_3_cta'),
-        FieldPanel('box_3_link'),
-        FieldPanel('box_4_heading'),
-        ImageChooserPanel('box_4_image'),
-        FieldPanel('box_4_description'),
-        FieldPanel('box_4_cta'),
-        FieldPanel('box_4_link'),
-        FieldPanel('box_5_heading'),
-        ImageChooserPanel('box_5_image'),
-        FieldPanel('box_5_description'),
-        FieldPanel('box_5_cta'),
-        FieldPanel('box_5_link'),
+        FieldPanel('row_1_box_1_heading'),
+        ImageChooserPanel('row_1_box_1_image'),
+        FieldPanel('row_1_box_1_description'),
+        FieldPanel('row_1_box_1_cta'),
+        FieldPanel('row_1_box_1_link'),
+        FieldPanel('row_1_box_2_heading'),
+        ImageChooserPanel('row_1_box_2_image'),
+        FieldPanel('row_1_box_2_description'),
+        FieldPanel('row_1_box_2_cta'),
+        FieldPanel('row_1_box_2_link'),
+        FieldPanel('row_1_box_3_heading'),
+        ImageChooserPanel('row_1_box_3_image'),
+        FieldPanel('row_1_box_3_description'),
+        FieldPanel('row_1_box_3_cta'),
+        FieldPanel('row_1_box_3_link'),
+        FieldPanel('row_2_box_1_heading'),
+        FieldPanel('row_2_box_1_description'),
+        FieldPanel('row_2_box_1_cta'),
+        FieldPanel('row_2_box_1_link'),
+        FieldPanel('row_2_box_2_heading'),
+        FieldPanel('row_2_box_2_description'),
+        FieldPanel('row_2_box_2_cta'),
+        FieldPanel('row_2_box_2_link'),
     ]
 
     promote_panels = [
