@@ -305,8 +305,53 @@ class HigherEducationAllies(Orderable, Allies):
 
 
 class HigherEducation(Page):
+    ALIGNMENT_CHOICES = (
+        (u'L', u'Left'),
+        (u'C', u'Center'),
+        (u'R', u'Right'),
+    )
+
     intro_heading = models.CharField(max_length=255)
     intro_description = RichTextField()
+
+    row_0_box_1_content = RichTextField(blank=True, null=True)
+    row_0_box_1_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    row_0_box_1_image_alignment = models.CharField(max_length=1, choices=ALIGNMENT_CHOICES,
+                                                   blank=True, null=True)
+    row_0_box_1_cta = models.CharField(max_length=255, blank=True, null=True)
+    row_0_box_1_link = models.URLField(blank=True, null=True)
+
+    row_0_box_2_content = RichTextField(blank=True, null=True)
+    row_0_box_2_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    row_0_box_2_image_alignment = models.CharField(max_length=1, choices=ALIGNMENT_CHOICES,
+                                                   blank=True, null=True)
+    row_0_box_2_cta = models.CharField(max_length=255, blank=True, null=True)
+    row_0_box_2_link = models.URLField(blank=True, null=True)
+
+    row_0_box_3_content = RichTextField(blank=True, null=True)
+    row_0_box_3_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    row_0_box_3_image_alignment = models.CharField(max_length=1, choices=ALIGNMENT_CHOICES,
+                                                   blank=True, null=True)
+    row_0_box_3_cta = models.CharField(max_length=255, blank=True, null=True)
+    row_0_box_3_link = models.URLField(blank=True, null=True)
 
     get_started_heading = models.CharField(max_length=255)
 
@@ -419,6 +464,18 @@ class HigherEducation(Page):
         FieldPanel('title', classname="full title"),
         FieldPanel('intro_heading'),
         FieldPanel('intro_description'),
+        FieldPanel('row_0_box_1_content'),
+        ImageChooserPanel('row_0_box_1_image'),
+        FieldPanel('row_0_box_1_image_alignment'),
+        FieldPanel('row_0_box_1_link'),
+        FieldPanel('row_0_box_2_content'),
+        ImageChooserPanel('row_0_box_2_image'),
+        FieldPanel('row_0_box_2_image_alignment'),
+        FieldPanel('row_0_box_2_link'),
+        FieldPanel('row_0_box_3_content'),
+        ImageChooserPanel('row_0_box_3_image'),
+        FieldPanel('row_0_box_3_image_alignment'),
+        FieldPanel('row_0_box_3_link'),
         FieldPanel('get_started_heading'),
         FieldPanel('get_started_step_1_heading'),
         FieldPanel('get_started_step_1_description'),
