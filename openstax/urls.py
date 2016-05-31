@@ -7,6 +7,7 @@ from wagtail.wagtailadmin import urls as wagtailadmin_urls
 from wagtail.wagtailcore import urls as wagtail_urls
 from wagtail.wagtaildocs import urls as wagtaildocs_urls
 from wagtail.wagtailimages import urls as wagtailimages_urls
+from news.search import search
 
 from api import urls as api_urls
 
@@ -21,6 +22,7 @@ urlpatterns = [
     url(r'^api/mail/', include('mail.urls')),
     url(r'^api/', include(wagtailapi_urls)),
     url(r'^api/', include(api_urls)),
+    url(r'^search/$', search, name='search'),
 
     # For anything not caught by a more specific rule above, hand over to
     # Wagtail's serving mechanism
