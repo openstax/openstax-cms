@@ -22,7 +22,7 @@ urlpatterns = [
     url(r'^api/mail/', include('mail.urls')),
     url(r'^api/', include(wagtailapi_urls)),
     url(r'^api/', include(api_urls)),
-    url(r'^search/$', search, name='search'),
+    url(r'^api/search/$', search, name='search'),
 
     # For anything not caught by a more specific rule above, hand over to
     # Wagtail's serving mechanism
