@@ -9,7 +9,7 @@ from news.models import NewsArticle
 def normalize_query(query_string,
                     findterms=re.compile(r'"([^"]+)"|(\S+)').findall,
                     normspace=re.compile(r'\s{2,}').sub):
-    ''' Splits the query string in invidual keywords, getting rid of unecessary spaces
+    ''' Splits the query string in individual keywords, getting rid of unnecessary spaces
         and grouping quoted words together.
         Example:
         
@@ -17,7 +17,14 @@ def normalize_query(query_string,
         ['some', 'random', 'words', 'with quotes', 'and', 'spaces']
     
     '''
-    return [normspace(' ', (t[0] or t[1]).strip()) for t in findterms(query_string)] 
+
+    # Remove common stopwords from the search query
+    stopwords = ['of', 'is', 'a', 'at', 'is', 'the']
+    querywords = query_string.split()
+    resultwords = [word for word in querywords if word.lower() not in stopwords]
+    result = ' '.join(resultwords)
+
+    return [normspace(' ', (t[0] or t[1]).strip()) for t in findterms(result)]
 
 
 def get_query(query_string, search_fields):
