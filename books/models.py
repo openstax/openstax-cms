@@ -284,9 +284,8 @@ class Book(Page):
     low_resolution_pdf_url = property(get_low_res_pdf_url)
     student_handbook = models.ForeignKey(
         'wagtaildocs.Document',
-        null=True,
-        blank=True,
         on_delete=models.SET_NULL,
+        null=True,
         related_name='+'
     )
 
