@@ -87,6 +87,7 @@ MIDDLEWARE_CLASSES = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'wagtail.wagtailcore.middleware.SiteMiddleware',
     'wagtail.wagtailredirects.middleware.RedirectMiddleware',
+    'better500s.middleware.Better500s',
 ]
 
 AUTHENTICATION_BACKENDS = (
@@ -166,6 +167,7 @@ INSTALLED_APPS = [
     'social.apps.django_app.default',
     'storages',
     'django_ses',
+    'better500s',
     # custom
     'admin_templates',  # this overrides the admin templates
     'pages',
@@ -245,6 +247,12 @@ LOGGING = {
         },
     },
 }
+
+# Better 500 error logging settings
+BETTER_500_LOG_DIR = os.path.join(PROJECT_ROOT, 'logs', 'better_500')
+BETTER_500_FROM_EMAIL = "no-reply@openstax.org"
+BETTER_500_TO_EMAILS = ["mwharrison@rice.edu",]
+BETTER_500_UNCAUGHT_DIR = "Uncaught Logs"
 
 
 # WAGTAIL SETTINGS
