@@ -1,4 +1,4 @@
-Openstax CMS
+OpenStax CMS
 =======================
 
 Built using [Wagtail CMS](http://wagtail.io).
