@@ -50,6 +50,7 @@ class NewsArticle(Page):
     date = models.DateField("Post date")
     heading = models.CharField(max_length=250)
     subheading = models.CharField(max_length=250)
+    author = models.CharField(max_length=250)
     image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -71,6 +72,7 @@ class NewsArticle(Page):
         FieldPanel('date'),
         FieldPanel('heading'),
         FieldPanel('subheading'),
+        FieldPanel('author'),
         ImageChooserPanel('image'),
         FieldPanel('tags'),
         FieldPanel('body', classname="full"),
@@ -81,6 +83,7 @@ class NewsArticle(Page):
         'date',
         'heading',
         'subheading',
+        'author',
         'image',
         'tags',
         'body',
