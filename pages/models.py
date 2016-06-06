@@ -115,7 +115,7 @@ class StrategicAdvisors(LinkFields):
 
     panels = [
         FieldPanel('name'),
-        ImageChooserPanel('advisor_image'),
+        ImageChooserPanel('image'),
         FieldPanel('description'),
     ]
 
