@@ -92,29 +92,6 @@ class CarouselItem(LinkFields):
     class Meta:
         abstract = True
 
-# NOTE: Consider joining Funders, StrategicAdvisors, and OpenStaxTeam under
-# the same superclass in future code updates.
-
-
-class Funders(LinkFields):
-    name = models.CharField(max_length=255, help_text="Funder Name")
-    image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-    description = RichTextField()
-
-    api_fields = ('name', 'image', 'description', )
-
-    panels = [
-        FieldPanel('name'),
-        ImageChooserPanel('image'),
-        FieldPanel('description'),
-    ]
-
 
 class StrategicAdvisors(LinkFields):
     name = models.CharField(max_length=255, help_text="Strategic Advisor Name")
@@ -154,6 +131,51 @@ class OpenStaxTeam(LinkFields):
         ImageChooserPanel('image'),
         FieldPanel('description'),
     ]
+
+
+class AboutUsStrategicAdvisors(Orderable, StrategicAdvisors):
+    page = ParentalKey('pages.AboutUs', related_name='strategic_advisors')
+
+
+class AboutUsOpenStaxTeam(Orderable, OpenStaxTeam):
+    page = ParentalKey('pages.AboutUs', related_name='openstax_team')
+
+
+class AboutUs(Page):
+    tagline = models.CharField(max_length=255)
+    intro_heading = models.CharField(max_length=255)
+    intro_paragraph = RichTextField()
+    our_team_heading = models.CharField(max_length=255)
+
+    api_fields = (
+        'tagline',
+        'intro_heading',
+        'intro_paragraph',
+        'our_team_heading',
+        'openstax_team',
+        'strategic_advisors',
+        'slug',
+        'seo_title',
+        'search_description',)
+
+    content_panels = [
+        FieldPanel('title', classname="full title"),
+        FieldPanel('tagline'),
+        FieldPanel('intro_heading'),
+        FieldPanel('intro_paragraph'),
+        FieldPanel('our_team_heading'),
+        InlinePanel('openstax_team', label="OpenStax Team"),
+        InlinePanel('strategic_advisors', label="Strategic Advisors"),
+    ]
+
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+
+    ]
+
+    parent_page_types = ['pages.HomePage']
 
 
 class Allies(LinkFields):
@@ -706,56 +728,6 @@ class ContactUs(Page):
         'seo_title',
         'search_description',
     )
-
-    parent_page_types = ['pages.HomePage']
-
-
-class AboutUsFunders(Orderable, Funders):
-    page = ParentalKey('pages.AboutUs', related_name='funders')
-
-
-class AboutUsStrategicAdvisors(Orderable, StrategicAdvisors):
-    page = ParentalKey('pages.AboutUs', related_name='strategic_advisors')
-
-
-class AboutUsOpenStaxTeam(Orderable, OpenStaxTeam):
-    page = ParentalKey('pages.AboutUs', related_name='openstax_team')
-
-
-class AboutUs(Page):
-    who_we_are = RichTextField()
-    funder_intro = RichTextField()
-    strategic_advisors_intro = RichTextField()
-    openstax_team_intro = RichTextField()
-    api_fields = (
-        'who_we_are',
-        'funder_intro',
-        'funders',
-        'strategic_advisors_intro',
-        'strategic_advisors',
-        'openstax_team_intro',
-        'openstax_team'
-        'slug',
-        'seo_title',
-        'search_description',)
-
-    content_panels = [
-        FieldPanel('title', classname="full title"),
-        FieldPanel('who_we_are'),
-        FieldPanel('funder_intro'),
-        InlinePanel('funders', label="Funders"),
-        FieldPanel('strategic_advisors_intro'),
-        InlinePanel('strategic_advisors', label="Strategic Advisors"),
-        FieldPanel('openstax_team_intro'),
-        InlinePanel('openstax_team', label="OpenStax Team"),
-    ]
-
-    promote_panels = [
-        FieldPanel('slug'),
-        FieldPanel('seo_title'),
-        FieldPanel('search_description'),
-
-    ]
 
     parent_page_types = ['pages.HomePage']
 
