@@ -12,6 +12,7 @@ from wagtail.wagtailcore.models import Orderable, Page
 from wagtail.wagtaildocs.edit_handlers import DocumentChooserPanel
 from wagtail.wagtailimages.blocks import ImageChooserBlock
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
+from openstax.functions import build_image_url
 
 
 class ImageFormatChoiceBlock(FieldBlock):
@@ -102,13 +103,19 @@ class StrategicAdvisors(LinkFields):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+
+    def get_advisor_image(self):
+        return build_image_url(self.image)
+
+    advisor_image = property(get_advisor_image)
+
     description = RichTextField()
 
-    api_fields = ('name', 'image', 'description', )
+    api_fields = ('name', 'advisor_image', 'description', )
 
     panels = [
         FieldPanel('name'),
-        ImageChooserPanel('image'),
+        ImageChooserPanel('advisor_image'),
         FieldPanel('description'),
     ]
 
@@ -122,13 +129,20 @@ class OpenStaxTeam(LinkFields):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+
+    def get_team_member_image(self):
+        return build_image_url(self.image)
+    team_member_image = property(get_team_member_image)
+
+    position = models.CharField(max_length=255)
     description = RichTextField()
 
-    api_fields = ('name', 'image', 'description', )
+    api_fields = ('name', 'team_member_image', 'position', 'description', )
 
     panels = [
         FieldPanel('name'),
         ImageChooserPanel('image'),
+        FieldPanel('position'),
         FieldPanel('description'),
     ]
 
