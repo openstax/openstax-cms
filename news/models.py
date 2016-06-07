@@ -61,7 +61,7 @@ class NewsArticle(Page):
     )
 
     def get_article_image(self):
-        return build_image_url(self.get_article_image)
+        return build_image_url(self.image)
     article_image = property(get_article_image)
 
     tags = ClusterTaggableManager(through=NewsArticleTag, blank=True)
