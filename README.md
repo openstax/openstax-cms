@@ -5,6 +5,7 @@ Built using [Wagtail CMS](http://wagtail.io).
 
 ### Dependencies
 * [PostgreSQL](http://www.postgresql.org)
+* [Python](https://www.python.org/) >= 3.4
 * [PIP](https://github.com/pypa/pip) >=8.0.0
 
 ### Installation
