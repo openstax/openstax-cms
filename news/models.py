@@ -10,6 +10,7 @@ from wagtail.wagtaildocs.edit_handlers import DocumentChooserPanel
 from modelcluster.fields import ParentalKey
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from taggit.models import TaggedItemBase
+from openstax.functions import build_image_url
 
 
 class NewsIndex(Page):
@@ -58,6 +59,11 @@ class NewsArticle(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+
+    def get_article_image(self):
+        return build_image_url(self.get_article_image)
+    article_image = property(get_article_image)
+
     tags = ClusterTaggableManager(through=NewsArticleTag, blank=True)
     body = RichTextField(blank=True)
     pin_to_top = models.BooleanField(default=False)
@@ -84,7 +90,7 @@ class NewsArticle(Page):
         'heading',
         'subheading',
         'author',
-        'image',
+        'article_image',
         'tags',
         'body',
         'pin_to_top',
