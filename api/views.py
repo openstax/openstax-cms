@@ -2,6 +2,7 @@ from django.core.management import call_command
 from django.utils.six import StringIO
 from rest_framework import viewsets
 from salesforce.models import Adopter
+from salesforce.functions import check_if_faculty_pending
 from social.apps.django_app.default.models import \
     DjangoStorage as SocialAuthStorage
 from wagtail.wagtailimages.models import Image
@@ -36,6 +37,9 @@ class UserView(viewsets.ModelViewSet):
             call_command('update_faculty_status', str(user.pk), stdout=out)
         except:
             pass
+
+        # check if there is a record in salesforce for this user - if so, they are pending verification
+        user.pending_verification = check_if_faculty_pending(user.pk)
 
         return [user]
 
