@@ -37,6 +37,9 @@ class NewsIndex(Page):
         'intro',
         'press_kit',
         'articles',
+        'slug',
+        'seo_title',
+        'search_description',
     )
 
     subpage_types = ['news.NewsArticle']
@@ -94,6 +97,9 @@ class NewsArticle(Page):
         'tags',
         'body',
         'pin_to_top',
+        'slug',
+        'seo_title',
+        'search_description',
     )
 
     parent_page_types = ['news.NewsIndex']
