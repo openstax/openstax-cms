@@ -78,6 +78,9 @@ def search(request):
             'author': result.author,
             'pin_to_top': result.pin_to_top,
             'tags': list(result.tags.names()),
+            'slug': result.slug,
+            'seo_title': result.seo_title,
+            'search_description': result.search_description,
         })
 
     return JsonResponse(search_results_json, safe=False)
