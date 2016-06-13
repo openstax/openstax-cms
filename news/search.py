@@ -52,6 +52,13 @@ def get_query(query_string, search_fields):
 def search(request):
     query_string = ''
     found_entries = None
+    #filter by tags
+    if ('tag' in request.GET) and request.GET['tag'].strip():
+        query_string = request.GET['tag']
+
+        found_entries = NewsArticle.objects.filter(tags__name__in=[query_string]).order_by('-date').distinct()
+
+    #search by keyword
     if ('q' in request.GET) and request.GET['q'].strip():
         query_string = request.GET['q']
 
@@ -62,12 +69,15 @@ def search(request):
 
     search_results_json = []
     for result in found_entries:
-        result_specific = result.specific
-
-        search_results_json.append(dict(
-            (attr, getattr(result_specific, attr))
-            for attr in ['title', 'heading', 'subheading', 'body', 'id', 'pin_to_top']
-            if hasattr(result_specific, attr)
-        ))
+        search_results_json.append({
+            'id': result.id,
+            'title': result.title,
+            'heading': result.heading,
+            'subheading': result.subheading,
+            'body': result.body,
+            'author': result.author,
+            'pin_to_top': result.pin_to_top,
+            'tags': list(result.tags.names()),
+        })
 
     return JsonResponse(search_results_json, safe=False)
