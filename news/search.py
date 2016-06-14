@@ -74,7 +74,7 @@ def search(request):
             'title': result.title,
             'heading': result.heading,
             'subheading': result.subheading,
-            'body': result.body,
+            'article_image': result.article_image,
             'author': result.author,
             'pin_to_top': result.pin_to_top,
             'tags': list(result.tags.names()),
