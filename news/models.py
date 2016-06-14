@@ -1,16 +1,99 @@
 from django.db import models
+from django import forms
 
-from wagtail.wagtailadmin.edit_handlers import FieldPanel
-from wagtail.wagtailcore.fields import RichTextField
 from wagtail.wagtailcore.models import Page
-from wagtail.wagtailsearch import index
+from wagtail.wagtailcore.fields import RichTextField, StreamField
+from wagtail.wagtailadmin.edit_handlers import FieldPanel, PageChooserPanel, StreamFieldPanel
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 from wagtail.wagtaildocs.edit_handlers import DocumentChooserPanel
+from wagtail.wagtailsearch import index
+
+from wagtail.wagtailcore.blocks import TextBlock, StructBlock, StreamBlock, FieldBlock, CharBlock, RichTextBlock, RawHTMLBlock
+from wagtail.wagtailimages.blocks import ImageChooserBlock
+from wagtail.wagtaildocs.blocks import DocumentChooserBlock
 
 from modelcluster.fields import ParentalKey
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from taggit.models import TaggedItemBase
 from openstax.functions import build_image_url
+
+
+class PullQuoteBlock(StructBlock):
+    quote = TextBlock("quote title")
+    attribution = CharBlock()
+
+    class Meta:
+        icon = "openquote"
+
+
+class ImageFormatChoiceBlock(FieldBlock):
+    field = forms.ChoiceField(choices=(
+        ('left', 'Wrap left'), ('right', 'Wrap right'), ('mid', 'Mid width'), ('full', 'Full width'),
+    ))
+
+
+class HTMLAlignmentChoiceBlock(FieldBlock):
+    field = forms.ChoiceField(choices=(
+        ('normal', 'Normal'), ('full', 'Full width'),
+    ))
+
+
+class ImageBlock(StructBlock):
+    image = ImageChooserBlock()
+    caption = RichTextBlock()
+    alignment = ImageFormatChoiceBlock()
+
+
+class AlignedHTMLBlock(StructBlock):
+    html = RawHTMLBlock()
+    alignment = HTMLAlignmentChoiceBlock()
+
+    class Meta:
+        icon = "code"
+
+
+class BlogStreamBlock(StreamBlock):
+    paragraph = RichTextBlock(icon="pilcrow")
+    aligned_image = ImageBlock(label="Aligned image", icon="image")
+    pullquote = PullQuoteBlock()
+    aligned_html = AlignedHTMLBlock(icon="code", label='Raw HTML')
+    document = DocumentChooserBlock(icon="doc-full-inverse")
+
+
+# A couple of abstract classes that contain commonly used fields
+
+class LinkFields(models.Model):
+    link_external = models.URLField("External link", blank=True)
+    link_page = models.ForeignKey(
+        'wagtailcore.Page',
+        null=True,
+        blank=True,
+        related_name='+'
+    )
+    link_document = models.ForeignKey(
+        'wagtaildocs.Document',
+        null=True,
+        blank=True,
+        related_name='+'
+    )
+
+    @property
+    def link(self):
+        if self.link_page:
+            return self.link_page.url
+        elif self.link_document:
+            return self.link_document.url
+        else:
+            return self.link_external
+
+    panels = [
+        FieldPanel('link_external'),
+        PageChooserPanel('link_page'),
+        DocumentChooserPanel('link_document'),
+    ]
+
+    class Meta:
+        abstract = True
 
 
 class NewsIndex(Page):
@@ -55,7 +138,7 @@ class NewsArticle(Page):
     heading = models.CharField(max_length=250)
     subheading = models.CharField(max_length=250)
     author = models.CharField(max_length=250)
-    image = models.ForeignKey(
+    featured_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
         blank=True,
@@ -64,11 +147,14 @@ class NewsArticle(Page):
     )
 
     def get_article_image(self):
-        return build_image_url(self.image)
+        return build_image_url(self.featured_image)
     article_image = property(get_article_image)
 
     tags = ClusterTaggableManager(through=NewsArticleTag, blank=True)
     body = RichTextField(blank=True)
+
+    body = StreamField(BlogStreamBlock())
+
     pin_to_top = models.BooleanField(default=False)
 
     search_fields = Page.search_fields + (
@@ -82,9 +168,9 @@ class NewsArticle(Page):
         FieldPanel('heading'),
         FieldPanel('subheading'),
         FieldPanel('author'),
-        ImageChooserPanel('image'),
+        ImageChooserPanel('featured_image'),
         FieldPanel('tags'),
-        FieldPanel('body', classname="full"),
+        StreamFieldPanel('body'),
         FieldPanel('pin_to_top'),
     ]
 
