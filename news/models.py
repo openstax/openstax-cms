@@ -6,6 +6,7 @@ from wagtail.wagtailcore.fields import RichTextField, StreamField
 from wagtail.wagtailadmin.edit_handlers import FieldPanel, PageChooserPanel, StreamFieldPanel
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 from wagtail.wagtaildocs.edit_handlers import DocumentChooserPanel
+from wagtail.wagtailembeds.blocks import EmbedBlock
 from wagtail.wagtailsearch import index
 
 from wagtail.wagtailcore.blocks import TextBlock, StructBlock, StreamBlock, FieldBlock, CharBlock, RichTextBlock, RawHTMLBlock
@@ -58,6 +59,7 @@ class BlogStreamBlock(StreamBlock):
     pullquote = PullQuoteBlock()
     aligned_html = AlignedHTMLBlock(icon="code", label='Raw HTML')
     document = DocumentChooserBlock(icon="doc-full-inverse")
+    embed = EmbedBlock(icon="media", label="Embed Media URL")
 
 
 # A couple of abstract classes that contain commonly used fields
