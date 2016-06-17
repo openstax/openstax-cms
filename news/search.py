@@ -62,7 +62,7 @@ def search(request):
     if ('q' in request.GET) and request.GET['q'].strip():
         query_string = request.GET['q']
 
-        entry_query = get_query(query_string, ['title', 'body', 'heading', 'subheading',
+        entry_query = get_query(query_string, ['title', 'body', 'subheading',
                                                'tags__name'])
 
         found_entries = NewsArticle.objects.filter(entry_query).order_by('-date').distinct()
@@ -72,7 +72,6 @@ def search(request):
         search_results_json.append({
             'id': result.id,
             'title': result.title,
-            'heading': result.heading,
             'subheading': result.subheading,
             'article_image': result.article_image,
             'author': result.author,
