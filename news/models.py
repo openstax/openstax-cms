@@ -138,7 +138,7 @@ class NewsArticleTag(TaggedItemBase):
 class NewsArticle(Page):
     date = models.DateField("Post date")
     heading = models.CharField(max_length=250)
-    subheading = models.CharField(max_length=250)
+    subheading = models.CharField(max_length=250, blank=True, null=True)
     author = models.CharField(max_length=250)
     featured_image = models.ForeignKey(
         'wagtailimages.Image',
