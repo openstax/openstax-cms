@@ -322,6 +322,7 @@ class HomePage(Page):
         'pages.HigherEducation',
         'pages.ContactUs',
         'pages.AboutUs',
+        'pages.GeneralPage',
         'pages.Adopters',
         'pages.EcosystemAllies',
         'books.BookIndex',
@@ -765,6 +766,8 @@ class GeneralPage(Page):
         FieldPanel('search_description'),
 
     ]
+
+    parent_page_types = ['pages.HomePage']
 
 
 class Give(Page):
