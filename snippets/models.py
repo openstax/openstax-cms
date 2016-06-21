@@ -51,3 +51,20 @@ class StudentResource(models.Model):
         return self.heading
 
 register_snippet(StudentResource)
+
+
+class CommunityResource(models.Model):
+    heading = models.CharField(max_length=255)
+    description = RichTextField()
+
+    api_fields = ('heading', 'description', )
+
+    panels = [
+        FieldPanel('heading'),
+        FieldPanel('description'),
+    ]
+
+    def __str__(self):
+        return self.heading
+
+register_snippet(FacultyResource)
