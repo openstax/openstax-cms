@@ -320,15 +320,10 @@ class HomePage(Page):
     # the admin
     subpage_types = [
         'pages.HigherEducation',
-        'pages.K12',
-        'pages.Products',
-        'pages.Research',
         'pages.ContactUs',
         'pages.AboutUs',
-        'pages.Give',
         'pages.Adopters',
         'pages.EcosystemAllies',
-        'pages.AdoptionForm',
         'books.BookIndex',
         'news.NewsIndex',
         'allies.Ally',
