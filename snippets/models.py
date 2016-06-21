@@ -67,4 +67,4 @@ class CommunityResource(models.Model):
     def __str__(self):
         return self.heading
 
-register_snippet(FacultyResource)
+register_snippet(CommunityResource)
