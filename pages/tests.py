@@ -9,6 +9,7 @@ from pages.models import (HomePage,
                           ContactUs,
                           AboutUs,
                           Give,
+                          GeneralPage,
                           AdoptionForm,
                           Adopters,
                           EcosystemAllies)
@@ -52,13 +53,9 @@ class HomePageTests(WagtailPageTests):
     def test_allowed_subpages(self):
         self.assertAllowedSubpageTypes(HomePage, {
             HigherEducation,
-            K12,
-            Products,
-            Research,
             ContactUs,
             AboutUs,
-            Give,
-            AdoptionForm,
+            GeneralPage,
             Adopters,
             EcosystemAllies,
             Ally,
