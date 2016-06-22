@@ -320,15 +320,11 @@ class HomePage(Page):
     # the admin
     subpage_types = [
         'pages.HigherEducation',
-        'pages.K12',
-        'pages.Products',
-        'pages.Research',
         'pages.ContactUs',
         'pages.AboutUs',
-        'pages.Give',
+        'pages.GeneralPage',
         'pages.Adopters',
         'pages.EcosystemAllies',
-        'pages.AdoptionForm',
         'books.BookIndex',
         'news.NewsIndex',
         'allies.Ally',
@@ -770,6 +766,8 @@ class GeneralPage(Page):
         FieldPanel('search_description'),
 
     ]
+
+    parent_page_types = ['pages.HomePage']
 
 
 class Give(Page):
