@@ -15,7 +15,7 @@ from wagtail.wagtailsnippets.edit_handlers import SnippetChooserPanel
 
 from allies.models import Ally
 from openstax.functions import build_document_url, build_image_url
-from snippets.models import FacultyResource, StudentResource, CommunityResource, Subject
+from snippets.models import FacultyResource, StudentResource, Subject
 
 
 class Quotes(models.Model):
@@ -142,40 +142,6 @@ class StudentResources(models.Model):
     ]
 
 
-class CommunityResources(models.Model):
-    resource = models.ForeignKey(
-        CommunityResource,
-        null=True,
-        help_text="Manage resources through snippets.",
-        related_name='+'
-    )
-
-    def get_resource_description(self):
-        return self.resource.description
-
-    resource_description = property(get_resource_description)
-
-    def get_resource_heading(self):
-        return self.resource.heading
-
-    resource_heading = property(get_resource_heading)
-
-    link_external = models.URLField("External link", blank=True)
-
-
-    link_text = models.CharField(
-        max_length=255, help_text="Call to Action Text")
-
-    api_fields = ('resource_heading', 'resource_description',
-                  'link_external', 'link_text', )
-
-    panels = [
-        SnippetChooserPanel('resource', CommunityResource),
-        FieldPanel('link_external'),
-        FieldPanel('link_text'),
-    ]
-
-
 class Authors(models.Model):
     name = models.CharField(max_length=255)
     university = models.CharField(max_length=255, null=True, blank=True)
@@ -245,11 +211,6 @@ class BookFacultyResources(Orderable, FacultyResources):
 class BookStudentResources(Orderable, StudentResources):
     book_student_resource = ParentalKey(
         'books.Book', related_name='book_student_resources')
-
-
-class BookCommunityResources(Orderable, CommunityResources):
-    book_community_resource = ParentalKey(
-        'books.Book', related_name='book_community_resources')
 
 
 class BookAllies(Orderable, BookAlly):
@@ -332,6 +293,9 @@ class Book(Page):
         return build_document_url(self.student_handbook.url)
 
     student_handbook_url = property(get_student_handbook_url)
+    community_resource_url = models.URLField(blank=True)
+    community_resource_cta = models.CharField(max_length=255, blank=True, null=True)
+
     ibook_link = models.URLField(blank=True, help_text="Link to iBook")
     ibook_link_volume_2 = models.URLField(blank=True, help_text="Link to secondary iBook")
     webview_link = models.URLField(
@@ -362,7 +326,6 @@ class Book(Page):
         InlinePanel('book_allies', label="Allies"),
         InlinePanel('book_student_resources', label="Student Resources"),
         InlinePanel('book_faculty_resources', label="Instructor Resources"),
-        InlinePanel('book_community_resources', label="Community Resources"),
         InlinePanel('book_contributing_authors', label="Contributing Authors"),
         FieldPanel('isbn_10'),
         FieldPanel('isbn_13'),
@@ -370,6 +333,8 @@ class Book(Page):
         DocumentChooserPanel('high_resolution_pdf'),
         DocumentChooserPanel('low_resolution_pdf'),
         DocumentChooserPanel('student_handbook'),
+        FieldPanel('community_resource_url'),
+        FieldPanel('community_resource_cta'),
         FieldPanel('ibook_link'),
         FieldPanel('ibook_link_volume_2'),
         FieldPanel('webview_link'),
@@ -397,7 +362,6 @@ class Book(Page):
                   'book_allies',
                   'book_student_resources',
                   'book_faculty_resources',
-                  'book_community_resources',
                   'book_contributing_authors',
                   'publish_date',
                   'isbn_10',
@@ -409,6 +373,8 @@ class Book(Page):
                   'high_resolution_pdf_url',
                   'low_resolution_pdf_url',
                   'student_handbook_url',
+                  'community_resource_url',
+                  'community_resource_cta',
                   'ibook_link',
                   'ibook_link_volume_2',
                   'webview_link',
