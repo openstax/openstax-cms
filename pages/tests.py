@@ -31,19 +31,19 @@ class HomePageTests(WagtailPageTests):
         root_page = Page.objects.get(title="Root")
         homepage = HomePage(title="Hello World",
                             slug="hello-world",
-                            header_2_text="Header Text",
-                            higher_ed_heading="Higher Ed Heading",
-                            higher_ed_description="Higher Ed Description",
-                            k12_heading="K12 Heading",
-                            k12_description="K12 Description",
-                            give_heading="Give Heading",
-                            give_description="Give Description",
-                            give_cta_link="http://giving.rice.edu",
-                            give_cta_text="Give CTA",
-                            adopter_heading="Adopter Heading",
-                            adopter_description="Adopter Description",
-                            adopter_cta_link="http://example.rice.edu",
-                            adopter_cta_text="Adopter CTA"
+                            row_1_box_1_line_1="Test",
+                            row_1_box_1_line_2="Test",
+                            row_1_box_1_line_3="Test",
+                            row_2_box_1_heading="Test",
+                            row_2_box_1_description="Test",
+                            row_2_box_2_heading="Test",
+                            row_2_box_2_description="Test",
+                            row_3_box_1_heading="Test",
+                            row_3_box_1_description="Test",
+                            row_3_box_1_cta="Test",
+                            row_4_box_1_heading="Test",
+                            row_4_box_1_description="Test",
+                            row_4_box_1_cta="Test"
                             )
         root_page.add_child(instance=homepage)
 
