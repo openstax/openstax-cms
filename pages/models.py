@@ -292,19 +292,39 @@ class HomePage(Page):
                                                    blank=True, null=True)
     row_0_box_3_cta = models.CharField(max_length=255, blank=True, null=True)
     row_0_box_3_link = models.URLField(blank=True, null=True)
+
     row_1_box_1_line_1 = models.CharField(max_length=255)
     row_1_box_1_line_2 = models.CharField(max_length=255)
     row_1_box_1_line_3 = models.CharField(max_length=255)
+
     row_2_box_1_heading = models.CharField(max_length=255)
     row_2_box_1_description = models.CharField(max_length=255)
     row_2_box_2_heading = models.CharField(max_length=255)
     row_2_box_2_description = models.CharField(max_length=255)
+
     row_3_box_1_heading = models.CharField(max_length=255)
     row_3_box_1_description = models.CharField(max_length=255)
+    row_3_box_1_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
     row_3_box_1_cta = models.CharField(max_length=255)
+    row_3_box_1_link = models.URLField(blank=True, null=True)
+
     row_4_box_1_heading = models.CharField(max_length=255)
     row_4_box_1_description = models.CharField(max_length=255)
+    row_4_box_1_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
     row_4_box_1_cta = models.CharField(max_length=255)
+    row_4_box_1_link = models.URLField(blank=True, null=True)
 
     api_fields = (
         'title',
@@ -332,10 +352,14 @@ class HomePage(Page):
         'row_2_box_2_description',
         'row_3_box_1_heading',
         'row_3_box_1_description',
+        'row_3_box_1_image',
         'row_3_box_1_cta',
+        'row_3_box_1_link',
         'row_4_box_1_heading',
         'row_4_box_1_description',
+        'row_4_box_1_image',
         'row_4_box_1_cta',
+        'row_4_box_1_link',
         'slug',
         'seo_title',
         'search_description',)
@@ -369,10 +393,14 @@ class HomePage(Page):
         FieldPanel('row_2_box_2_description'),
         FieldPanel('row_3_box_1_heading'),
         FieldPanel('row_3_box_1_description'),
+        ImageChooserPanel('row_3_box_1_image'),
         FieldPanel('row_3_box_1_cta'),
+        FieldPanel('row_3_box_1_link'),
         FieldPanel('row_4_box_1_heading'),
         FieldPanel('row_4_box_1_description'),
+        ImageChooserPanel('row_4_box_1_image'),
         FieldPanel('row_4_box_1_cta'),
+        FieldPanel('row_4_box_1_link'),
     ]
 
     promote_panels = [
