@@ -211,11 +211,12 @@ class Allies(LinkFields):
 
 class Quote(models.Model):
     IMAGE_ALIGNMENT_CHOICES = (
-        ('L', 'Left Aligned'),
-        ('R', 'Right Aligned'),
-        ('F', 'Full Width'),
+        ('L', 'left'),
+        ('R', 'right'),
+        ('F', 'full'),
     )
     quote_text = RichTextField()
+
     quote_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -223,6 +224,11 @@ class Quote(models.Model):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+
+    def get_quote_image(self):
+        return build_image_url(self.quote_image)
+    quote_image_url = property(get_quote_image)
+
     quote_image_alignment = models.CharField(max_length=1,
                                              choices=IMAGE_ALIGNMENT_CHOICES,
                                              blank=True,
@@ -232,8 +238,8 @@ class Quote(models.Model):
 
     api_fields = (
         'quote_text',
-        'quote_image',
-        'quote_image_alignment',
+        'quote_image_url',
+        'get_quote_image_alignment_display',
         'quote_link',
         'quote_link_text',
     )
@@ -262,6 +268,11 @@ class HomePage(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+
+    def get_row_0_box_1_image(self):
+        return build_image_url(self.row_0_box_1_image)
+    row_0_box_1_image_url = property(get_row_0_box_1_image)
+
     row_0_box_1_image_alignment = models.CharField(max_length=1, choices=ALIGNMENT_CHOICES,
                                                    blank=True, null=True)
     row_0_box_1_cta = models.CharField(max_length=255, blank=True, null=True)
@@ -275,6 +286,11 @@ class HomePage(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+
+    def get_row_0_box_2_image(self):
+        return build_image_url(self.row_0_box_2_image)
+    row_0_box_2_image_url = property(get_row_0_box_2_image)
+
     row_0_box_2_image_alignment = models.CharField(max_length=1, choices=ALIGNMENT_CHOICES,
                                                    blank=True, null=True)
     row_0_box_2_cta = models.CharField(max_length=255, blank=True, null=True)
@@ -288,6 +304,11 @@ class HomePage(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+
+    def get_row_0_box_3_image(self):
+        return build_image_url(self.row_0_box_3_image)
+    row_0_box_3_image_url = property(get_row_0_box_3_image)
+
     row_0_box_3_image_alignment = models.CharField(max_length=1, choices=ALIGNMENT_CHOICES,
                                                    blank=True, null=True)
     row_0_box_3_cta = models.CharField(max_length=255, blank=True, null=True)
@@ -311,6 +332,11 @@ class HomePage(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+
+    def get_row_3_box_1_image(self):
+        return build_image_url(self.row_3_box_1_image)
+    row_3_box_1_image_url = property(get_row_3_box_1_image)
+
     row_3_box_1_cta = models.CharField(max_length=255)
     row_3_box_1_link = models.URLField(blank=True, null=True)
 
@@ -323,24 +349,29 @@ class HomePage(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+
+    def get_row_4_box_1_image(self):
+        return build_image_url(self.row_4_box_1_image)
+    row_4_box_1_image_url = property(get_row_4_box_1_image)
+
     row_4_box_1_cta = models.CharField(max_length=255)
     row_4_box_1_link = models.URLField(blank=True, null=True)
 
     api_fields = (
         'title',
         'row_0_box_1_content',
-        'row_0_box_1_image',
-        'row_0_box_1_image_alignment',
+        'row_0_box_1_image_url',
+        'get_row_0_box_1_image_alignment_display',
         'row_0_box_1_cta',
         'row_0_box_1_link',
         'row_0_box_2_content',
-        'row_0_box_2_image',
-        'row_0_box_2_image_alignment',
+        'row_0_box_2_image_url',
+        'get_row_0_box_2_image_alignment_display',
         'row_0_box_2_cta',
         'row_0_box_2_link',
         'row_0_box_3_content',
-        'row_0_box_3_image',
-        'row_0_box_3_image_alignment',
+        'row_0_box_3_image_url',
+        'get_row_0_box_3_image_alignment_display',
         'row_0_box_3_cta',
         'row_0_box_3_link',
         'row_1_box_1_line_1',
@@ -352,12 +383,12 @@ class HomePage(Page):
         'row_2_box_2_description',
         'row_3_box_1_heading',
         'row_3_box_1_description',
-        'row_3_box_1_image',
+        'row_3_box_1_image_url',
         'row_3_box_1_cta',
         'row_3_box_1_link',
         'row_4_box_1_heading',
         'row_4_box_1_description',
-        'row_4_box_1_image',
+        'row_4_box_1_image_url',
         'row_4_box_1_cta',
         'row_4_box_1_link',
         'slug',
@@ -433,8 +464,8 @@ class HigherEducationAllies(Orderable, Allies):
 
 class HigherEducation(Page):
     ALIGNMENT_CHOICES = (
-        (u'L', u'Left'),
-        (u'R', u'Right'),
+        (u'L', u'left'),
+        (u'R', u'right'),
     )
 
     intro_heading = models.CharField(max_length=255)
@@ -448,6 +479,11 @@ class HigherEducation(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+
+    def get_row_0_box_1_image(self):
+        return build_image_url(self.row_0_box_1_image)
+    row_0_box_1_image_url = property(get_row_0_box_1_image)
+
     row_0_box_1_image_alignment = models.CharField(max_length=1, choices=ALIGNMENT_CHOICES,
                                                    blank=True, null=True)
     row_0_box_1_cta = models.CharField(max_length=255, blank=True, null=True)
@@ -461,6 +497,11 @@ class HigherEducation(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+
+    def get_row_0_box_2_image(self):
+        return build_image_url(self.row_0_box_2_image)
+    row_0_box_2_image_url = property(get_row_0_box_2_image)
+
     row_0_box_2_image_alignment = models.CharField(max_length=1, choices=ALIGNMENT_CHOICES,
                                                    blank=True, null=True)
     row_0_box_2_cta = models.CharField(max_length=255, blank=True, null=True)
@@ -474,6 +515,11 @@ class HigherEducation(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+
+    def get_row_0_box_3_image(self):
+        return build_image_url(self.row_0_box_3_image)
+    row_0_box_3_image_url = property(get_row_0_box_3_image)
+
     row_0_box_3_image_alignment = models.CharField(max_length=1, choices=ALIGNMENT_CHOICES,
                                                    blank=True, null=True)
     row_0_box_3_cta = models.CharField(max_length=255, blank=True, null=True)
@@ -505,6 +551,12 @@ class HigherEducation(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+
+    def get_row_1_box_1_image(self):
+        return build_image_url(self.row_1_box_1_image)
+
+    row_1_box_1_image_url = property(get_row_1_box_1_image)
+
     row_1_box_1_description = RichTextField()
     row_1_box_1_cta = models.CharField(max_length=255)
     row_1_box_1_link = models.URLField(blank=True, null=True)
@@ -517,6 +569,12 @@ class HigherEducation(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+
+    def get_row_1_box_2_image(self):
+        return build_image_url(self.row_1_box_2_image)
+
+    row_1_box_2_image_url = property(get_row_1_box_2_image)
+
     row_1_box_2_description = RichTextField()
     row_1_box_2_cta = models.CharField(max_length=255)
     row_1_box_2_link = models.URLField(blank=True, null=True)
@@ -529,6 +587,12 @@ class HigherEducation(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+
+    def get_row_1_box_3_image(self):
+        return build_image_url(self.row_1_box_3_image)
+
+    row_1_box_3_image_url = property(get_row_1_box_3_image)
+
     row_1_box_3_description = RichTextField()
     row_1_box_3_cta = models.CharField(max_length=255)
     row_1_box_3_link = models.URLField(blank=True, null=True)
@@ -547,18 +611,18 @@ class HigherEducation(Page):
         'intro_heading',
         'intro_description',
         'row_0_box_1_content',
-        'row_0_box_1_image',
-        'row_0_box_1_image_alignment',
+        'row_0_box_1_image_url',
+        'get_row_0_box_1_image_alignment_display',
         'row_0_box_1_cta',
         'row_0_box_1_link',
         'row_0_box_2_content',
-        'row_0_box_2_image',
-        'row_0_box_2_image_alignment',
+        'row_0_box_2_image_url',
+        'get_row_0_box_2_image_alignment_display',
         'row_0_box_2_cta',
         'row_0_box_2_link',
         'row_0_box_3_content',
-        'row_0_box_3_image',
-        'row_0_box_3_image_alignment',
+        'row_0_box_3_image_url',
+        'get_row_0_box_3_image_alignment_display',
         'row_0_box_3_cta',
         'row_0_box_3_link',
         'get_started_heading',
@@ -575,17 +639,17 @@ class HigherEducation(Page):
         'adopt_description',
         'adopt_cta',
         'row_1_box_1_heading',
-        'row_1_box_1_image',
+        'row_1_box_1_image_url',
         'row_1_box_1_description',
         'row_1_box_1_cta',
         'row_1_box_1_link',
         'row_1_box_2_heading',
-        'row_1_box_2_image',
+        'row_1_box_2_image_url',
         'row_1_box_2_description',
         'row_1_box_2_cta',
         'row_1_box_2_link',
         'row_1_box_3_heading',
-        'row_1_box_3_image',
+        'row_1_box_3_image_url',
         'row_1_box_3_description',
         'row_1_box_3_cta',
         'row_1_box_3_link',
