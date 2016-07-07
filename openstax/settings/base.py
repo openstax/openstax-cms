@@ -250,7 +250,7 @@ LOGGING = {
 # WAGTAIL SETTINGS
 WAGTAIL_SITE_NAME = 'openstax'
 # Wagtail API number of results
-WAGTAILAPI_LIMIT_MAX = 50
+WAGTAILAPI_LIMIT_MAX = 250
 
 # used in page.models to retrieve book information
 CNX_ARCHIVE_URL = 'http://archive.cnx.org'
