@@ -323,8 +323,8 @@ class HomePage(Page):
     row_2_box_2_heading = models.CharField(max_length=255)
     row_2_box_2_description = models.CharField(max_length=255)
 
-    row_3_box_1_heading = models.CharField(max_length=255)
-    row_3_box_1_description = models.CharField(max_length=255)
+    row_3_box_1_heading = models.CharField(max_length=255, blank=True, null=True)
+    row_3_box_1_description = models.CharField(max_length=255, blank=True, null=True)
     row_3_box_1_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -337,11 +337,11 @@ class HomePage(Page):
         return build_image_url(self.row_3_box_1_image)
     row_3_box_1_image_url = property(get_row_3_box_1_image)
 
-    row_3_box_1_cta = models.CharField(max_length=255)
+    row_3_box_1_cta = models.CharField(max_length=255, blank=True, null=True)
     row_3_box_1_link = models.URLField(blank=True, null=True)
 
-    row_4_box_1_heading = models.CharField(max_length=255)
-    row_4_box_1_description = models.CharField(max_length=255)
+    row_4_box_1_heading = models.CharField(max_length=255, blank=True, null=True)
+    row_4_box_1_description = models.CharField(max_length=255, blank=True, null=True)
     row_4_box_1_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -354,8 +354,25 @@ class HomePage(Page):
         return build_image_url(self.row_4_box_1_image)
     row_4_box_1_image_url = property(get_row_4_box_1_image)
 
-    row_4_box_1_cta = models.CharField(max_length=255)
+    row_4_box_1_cta = models.CharField(max_length=255, blank=True, null=True)
     row_4_box_1_link = models.URLField(blank=True, null=True)
+
+    row_5_box_1_heading = models.CharField(max_length=255, blank=True, null=True)
+    row_5_box_1_description = models.CharField(max_length=255, blank=True, null=True)
+    row_5_box_1_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    def get_row_5_box_1_image(self):
+        return build_image_url(self.row_5_box_1_image)
+    row_5_box_1_image_url = property(get_row_5_box_1_image)
+
+    row_5_box_1_cta = models.CharField(max_length=255, blank=True, null=True)
+    row_5_box_1_link = models.URLField(blank=True, null=True)
 
     api_fields = (
         'title',
@@ -391,6 +408,11 @@ class HomePage(Page):
         'row_4_box_1_image_url',
         'row_4_box_1_cta',
         'row_4_box_1_link',
+        'row_5_box_1_heading',
+        'row_5_box_1_description',
+        'row_5_box_1_image_url',
+        'row_5_box_1_cta',
+        'row_5_box_1_link',
         'slug',
         'seo_title',
         'search_description',)
@@ -432,6 +454,11 @@ class HomePage(Page):
         ImageChooserPanel('row_4_box_1_image'),
         FieldPanel('row_4_box_1_cta'),
         FieldPanel('row_4_box_1_link'),
+        FieldPanel('row_5_box_1_heading'),
+        FieldPanel('row_5_box_1_description'),
+        ImageChooserPanel('row_5_box_1_image'),
+        FieldPanel('row_5_box_1_cta'),
+        FieldPanel('row_5_box_1_link'),
     ]
 
     promote_panels = [
