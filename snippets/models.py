@@ -21,7 +21,7 @@ register_snippet(Subject)
 
 class FacultyResource(models.Model):
     heading = models.CharField(max_length=255)
-    description = RichTextField()
+    description = RichTextField(blank=True, null=True)
 
     api_fields = ('heading', 'description', )
 
@@ -38,7 +38,7 @@ register_snippet(FacultyResource)
 
 class StudentResource(models.Model):
     heading = models.CharField(max_length=255)
-    description = RichTextField()
+    description = RichTextField(blank=True, null=True)
 
     api_fields = ('heading', 'description', )
 
