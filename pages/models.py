@@ -1,11 +1,15 @@
+import json
 from django import forms
 from django.db import models
+from django.http.response import JsonResponse, HttpResponse
+from django.http import Http404
 from modelcluster.fields import ParentalKey
 from wagtail.wagtailadmin.edit_handlers import (FieldPanel, InlinePanel,
                                                 MultiFieldPanel,
                                                 PageChooserPanel,
                                                 StreamFieldPanel)
 from wagtail.wagtailcore import blocks
+from wagtail.wagtailcore.url_routing import RouteResult
 from wagtail.wagtailcore.blocks import FieldBlock, RawHTMLBlock, StructBlock
 from wagtail.wagtailcore.fields import RichTextField, StreamField
 from wagtail.wagtailcore.models import Orderable, Page
@@ -146,6 +150,42 @@ class OpenStaxTeam(LinkFields):
         FieldPanel('description'),
     ]
 
+
+class PersonBlock(blocks.StructBlock):
+    name = blocks.CharBlock(required=True)
+    position = blocks.CharBlock(required=True)
+    photo = ImageBlock()
+    biography = blocks.RichTextBlock()
+
+    class Meta:
+        icon = 'user'
+
+
+class ContentListBlock(blocks.StructBlock):
+    heading = blocks.CharBlock(required=True)
+    description = blocks.RichTextBlock()
+    cta = blocks.CharBlock(required=False)
+    link = blocks.URLBlock(required=False)
+
+    class Meta:
+        icon = 'list-ol'
+
+
+class ContentBlock(blocks.StructBlock):
+    heading = blocks.CharBlock(required=False)
+    image = ImageBlock(required=False)
+    description = blocks.RichTextBlock(required=False)
+    cta = blocks.CharBlock(required=False)
+    link = blocks.URLBlock(required=False)
+    hidden = blocks.BooleanBlock(required=False)
+
+    class Meta:
+        icon = 'placeholder'
+
+
+class QuoteBlock(blocks.StructBlock):
+    quote = blocks.CharBlock()
+    author = blocks.CharBlock()
 
 class AboutUsStrategicAdvisors(Orderable, StrategicAdvisors):
     page = ParentalKey('pages.AboutUs', related_name='strategic_advisors')
@@ -581,7 +621,6 @@ class HigherEducation(Page):
 
     def get_row_1_box_1_image(self):
         return build_image_url(self.row_1_box_1_image)
-
     row_1_box_1_image_url = property(get_row_1_box_1_image)
 
     row_1_box_1_description = RichTextField()
@@ -599,7 +638,6 @@ class HigherEducation(Page):
 
     def get_row_1_box_2_image(self):
         return build_image_url(self.row_1_box_2_image)
-
     row_1_box_2_image_url = property(get_row_1_box_2_image)
 
     row_1_box_2_description = RichTextField()
@@ -617,7 +655,6 @@ class HigherEducation(Page):
 
     def get_row_1_box_3_image(self):
         return build_image_url(self.row_1_box_3_image)
-
     row_1_box_3_image_url = property(get_row_1_box_3_image)
 
     row_1_box_3_description = RichTextField()
@@ -931,14 +968,27 @@ class ContactUs(Page):
 class GeneralPage(Page):
     body = StreamField([
         ('heading', blocks.CharBlock(classname="full title")),
+        ('tagline', blocks.CharBlock(classname="full title")),
         ('paragraph', blocks.RichTextBlock()),
         ('image', ImageChooserBlock()),
         ('html', RawHTMLBlock()),
+        ('person', PersonBlock()),
+        ('content_row', blocks.StreamBlock(
+            [
+                ('content_block', ContentBlock()),
+                ('quote_block', QuoteBlock()),
+            ],
+            icon='form'
+        )),
+        ('list', ContentListBlock()),
     ])
 
     api_fields = (
         'title',
         'body',
+        'slug',
+        'seo_title',
+        'search_description',
     )
 
     content_panels = [
@@ -954,6 +1004,16 @@ class GeneralPage(Page):
     ]
 
     parent_page_types = ['pages.HomePage']
+
+    def serve(self, request, *args, **kwargs):
+        data = {
+            'title': self.title,
+            'slug': self.slug,
+            'seo_title': self.seo_title,
+            'search_description': self.search_description,
+            'body': json.dump(self.body),
+        }
+        return JsonResponse(data)
 
 
 class Give(Page):
