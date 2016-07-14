@@ -35,7 +35,6 @@ def page_detail(request, slug):
     """
     try:
         page = GeneralPage.objects.get(slug=slug)
-        print(page.title)
         serializer = GeneralPageSerializer(page)
         return JSONResponse(serializer.data)
     except Page.DoesNotExist:

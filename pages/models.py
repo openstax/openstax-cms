@@ -187,6 +187,7 @@ class QuoteBlock(blocks.StructBlock):
     quote = blocks.CharBlock()
     author = blocks.CharBlock()
 
+
 class AboutUsStrategicAdvisors(Orderable, StrategicAdvisors):
     page = ParentalKey('pages.AboutUs', related_name='strategic_advisors')
 
@@ -516,7 +517,6 @@ class HomePage(Page):
         'pages.ContactUs',
         'pages.AboutUs',
         'pages.GeneralPage',
-        'pages.Adopters',
         'pages.EcosystemAllies',
         'books.BookIndex',
         'news.NewsIndex',
@@ -796,139 +796,6 @@ class HigherEducation(Page):
     parent_page_types = ['pages.HomePage']
 
 
-class K12(Page):
-    heading = models.CharField(max_length=255)
-    description = RichTextField()
-    box_1_heading = models.CharField(max_length=255)
-    box_1_description = RichTextField()
-    box_2_heading = models.CharField(max_length=255)
-    box_2_description = RichTextField()
-    box_3_heading = models.CharField(max_length=255)
-    box_3_description = RichTextField()
-    box_4_heading = models.CharField(max_length=255)
-    box_4_description = RichTextField()
-    box_5_heading = models.CharField(max_length=255)
-    box_5_description = RichTextField()
-
-    api_fields = (
-        'heading',
-        'description',
-        'box_1_heading',
-        'box_1_description',
-        'box_2_heading',
-        'box_2_description',
-        'box_3_heading',
-        'box_3_description',
-        'box_4_heading',
-        'box_4_description',
-        'box_5_heading',
-        'box_5_description',
-        'slug',
-        'seo_title',
-        'search_description',
-    )
-
-    content_panels = [
-        FieldPanel('title', classname="full title"),
-        FieldPanel('heading'),
-        FieldPanel('description'),
-        FieldPanel('box_1_heading'),
-        FieldPanel('box_1_description'),
-        FieldPanel('box_2_heading'),
-        FieldPanel('box_2_description'),
-        FieldPanel('box_3_heading'),
-        FieldPanel('box_3_description'),
-        FieldPanel('box_4_heading'),
-        FieldPanel('box_4_description'),
-        FieldPanel('box_5_heading'),
-        FieldPanel('box_5_description'),
-    ]
-
-    promote_panels = [
-        FieldPanel('slug'),
-        FieldPanel('seo_title'),
-        FieldPanel('search_description'),
-
-    ]
-
-    parent_page_types = ['pages.HomePage']
-
-
-class ProductsAllies(Orderable, Allies):
-    page = ParentalKey('pages.Products', related_name='products_allies')
-
-
-class Products(Page):
-    intro_heading = models.CharField(max_length=255)
-    intro_description = RichTextField()
-    tutor_heading = models.CharField(max_length=255)
-    tutor_description = RichTextField()
-    concept_coach_heading = models.CharField(max_length=255)
-    concept_coach_description = RichTextField()
-    cnx_heading = models.CharField(max_length=255)
-    cnx_description = RichTextField()
-    allies_heading = models.CharField(max_length=255)
-    allies_description = RichTextField()
-
-    api_fields = (
-        'intro_heading',
-        'intro_description',
-        'tutor_heading',
-        'tutor_description',
-        'concept_coach_heading',
-        'concept_coach_description',
-        'cnx_heading',
-        'cnx_description',
-        'allies_heading',
-        'allies_description',
-        'products_allies',
-        'slug',
-        'seo_title',
-        'search_description',
-    )
-
-    content_panels = [
-        FieldPanel('title', classname="full title"),
-        FieldPanel('intro_heading'),
-        FieldPanel('intro_description'),
-        FieldPanel('tutor_heading'),
-        FieldPanel('tutor_description'),
-        FieldPanel('concept_coach_heading'),
-        FieldPanel('concept_coach_description'),
-        FieldPanel('cnx_heading'),
-        FieldPanel('cnx_description'),
-        FieldPanel('allies_heading'),
-        FieldPanel('allies_description'),
-        InlinePanel('products_allies', label="Allies"),
-    ]
-
-    promote_panels = [
-        FieldPanel('slug'),
-        FieldPanel('seo_title'),
-        FieldPanel('search_description'),
-
-    ]
-
-    parent_page_types = ['pages.HomePage']
-
-
-class Research(Page):
-    classroom_text = RichTextField()
-
-    content_panels = [
-        FieldPanel('title', classname="full title"),
-        FieldPanel('classroom_text'),
-    ]
-
-    promote_panels = [
-        FieldPanel('slug'),
-        FieldPanel('seo_title'),
-        FieldPanel('search_description'),
-
-    ]
-
-    parent_page_types = ['pages.HomePage']
-
 
 class ContactUs(Page):
     tagline = models.CharField(max_length=255)
@@ -1013,36 +880,8 @@ class GeneralPage(Page):
             'search_description': self.search_description,
             'body': json.dump(self.body),
         }
+
         return JsonResponse(data)
-
-
-class Give(Page):
-    touchnet_form = RawHTMLBlock()
-
-    content_panels = [
-        FieldPanel('title', classname="full title"),
-        # FieldPanel('touchnet_form'),
-    ]
-
-    promote_panels = [
-        FieldPanel('slug'),
-        FieldPanel('seo_title'),
-        FieldPanel('search_description'),
-
-    ]
-
-    parent_page_types = ['pages.HomePage']
-
-
-class Adopters(Page):
-    classroom_text = RichTextField()
-
-    content_panels = [
-        FieldPanel('title', classname="full title"),
-        FieldPanel('classroom_text'),
-    ]
-
-    parent_page_types = ['pages.HomePage']
 
 
 class EcosystemAllies(Page):
@@ -1055,24 +894,6 @@ class EcosystemAllies(Page):
         'seo_title',
         'search_description',
     )
-
-    content_panels = [
-        FieldPanel('title', classname="full title"),
-        FieldPanel('classroom_text'),
-    ]
-
-    promote_panels = [
-        FieldPanel('slug'),
-        FieldPanel('seo_title'),
-        FieldPanel('search_description'),
-
-    ]
-
-    parent_page_types = ['pages.HomePage']
-
-
-class AdoptionForm(Page):
-    classroom_text = RichTextField()
 
     content_panels = [
         FieldPanel('title', classname="full title"),
