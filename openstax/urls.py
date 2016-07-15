@@ -23,6 +23,7 @@ urlpatterns = [
     url(r'^api/', include(wagtailapi_urls)),
     url(r'^api/', include(api_urls)),
     url(r'^api/search/$', search, name='search'),
+    url(r'^api/pages/', include('pages.urls')),
 
     # For anything not caught by a more specific rule above, hand over to
     # Wagtail's serving mechanism
