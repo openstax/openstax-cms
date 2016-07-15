@@ -50,7 +50,6 @@ class HomePageTests(WagtailPageTests):
             ContactUs,
             AboutUs,
             GeneralPage,
-            Adopters,
             EcosystemAllies,
             Ally,
             NewsIndex,
