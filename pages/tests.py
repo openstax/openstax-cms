@@ -3,15 +3,9 @@ from wagtail.tests.utils import WagtailTestUtils, WagtailPageTests
 from wagtail.wagtailcore.models import Page
 from pages.models import (HomePage,
                           HigherEducation,
-                          K12,
-                          Products,
-                          Research,
                           ContactUs,
                           AboutUs,
-                          Give,
                           GeneralPage,
-                          AdoptionForm,
-                          Adopters,
                           EcosystemAllies)
 from allies.models import Ally
 from news.models import NewsIndex
