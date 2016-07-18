@@ -30,7 +30,7 @@ class HTMLAlignmentChoiceBlock(FieldBlock):
 
 
 class ImageBlock(StructBlock):
-    image = ImageChooserBlock()
+    image = ImageChooserBlock(required=False)
     alignment = ImageFormatChoiceBlock()
 
 
