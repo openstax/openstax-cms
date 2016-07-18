@@ -834,20 +834,20 @@ class ContactUs(Page):
 
 class GeneralPage(Page):
     body = StreamField([
-        ('heading', blocks.CharBlock(classname="full title")),
-        ('tagline', blocks.CharBlock(classname="full title")),
-        ('paragraph', blocks.RichTextBlock()),
-        ('image', ImageChooserBlock()),
-        ('html', RawHTMLBlock()),
-        ('person', PersonBlock()),
         ('content_row', blocks.StreamBlock(
             [
+                ('heading', blocks.CharBlock(classname="full title")),
+                ('tagline', blocks.CharBlock(classname="full title")),
+                ('paragraph', blocks.RichTextBlock()),
+                ('image', ImageChooserBlock()),
                 ('content_block', ContentBlock()),
                 ('quote_block', QuoteBlock()),
+                ('person', PersonBlock()),
+                ('html', RawHTMLBlock()),
+                ('list', ContentListBlock()),
             ],
             icon='form'
         )),
-        ('list', ContentListBlock()),
     ])
 
     api_fields = (
@@ -870,7 +870,6 @@ class GeneralPage(Page):
 
     ]
 
-    parent_page_types = ['pages.HomePage']
 
     def serve(self, request, *args, **kwargs):
         data = {
