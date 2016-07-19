@@ -1,20 +1,19 @@
 import json
 from django import forms
 from django.db import models
-from django.http.response import JsonResponse, HttpResponse
-from django.http import Http404
+from django.http.response import JsonResponse
 from modelcluster.fields import ParentalKey
 from wagtail.wagtailadmin.edit_handlers import (FieldPanel, InlinePanel,
                                                 MultiFieldPanel,
                                                 PageChooserPanel,
                                                 StreamFieldPanel)
 from wagtail.wagtailcore import blocks
-from wagtail.wagtailcore.url_routing import RouteResult
 from wagtail.wagtailcore.blocks import FieldBlock, RawHTMLBlock, StructBlock
 from wagtail.wagtailcore.fields import RichTextField, StreamField
 from wagtail.wagtailcore.models import Orderable, Page
 from wagtail.wagtaildocs.edit_handlers import DocumentChooserPanel
 from wagtail.wagtailimages.blocks import ImageChooserBlock
+from wagtail.wagtailembeds.blocks import EmbedBlock
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 from openstax.functions import build_image_url
 
@@ -161,31 +160,24 @@ class PersonBlock(blocks.StructBlock):
         icon = 'user'
 
 
-class ContentListBlock(blocks.StructBlock):
-    heading = blocks.CharBlock(required=True)
-    description = blocks.RichTextBlock()
-    cta = blocks.CharBlock(required=False)
-    link = blocks.URLBlock(required=False)
-
-    class Meta:
-        icon = 'list-ol'
-
-
-class ContentBlock(blocks.StructBlock):
-    heading = blocks.CharBlock(required=False)
-    image = ImageBlock(required=False)
-    description = blocks.RichTextBlock(required=False)
-    cta = blocks.CharBlock(required=False)
-    link = blocks.URLBlock(required=False)
-    hidden = blocks.BooleanBlock(required=False)
-
-    class Meta:
-        icon = 'placeholder'
-
-
 class QuoteBlock(blocks.StructBlock):
     quote = blocks.CharBlock()
     author = blocks.CharBlock()
+
+
+class ColumnBlock(blocks.StructBlock):
+    column = blocks.StreamBlock([
+        ('heading', blocks.CharBlock(classname="full title")),
+        ('paragraph', blocks.RichTextBlock()),
+        ('image', ImageBlock()),
+        ('embedded_video', EmbedBlock()),
+        ('cta', blocks.CharBlock()),
+        ('link', blocks.URLBlock()),
+        ('quote', QuoteBlock()),
+    ], icon='placeholder', label='Column content')
+
+    class Meta:
+        icon = 'placeholder'
 
 
 class AboutUsStrategicAdvisors(Orderable, StrategicAdvisors):
@@ -834,20 +826,17 @@ class ContactUs(Page):
 
 class GeneralPage(Page):
     body = StreamField([
-        ('content_row', blocks.StreamBlock(
-            [
-                ('heading', blocks.CharBlock(classname="full title")),
-                ('tagline', blocks.CharBlock(classname="full title")),
-                ('paragraph', blocks.RichTextBlock()),
-                ('image', ImageChooserBlock()),
-                ('content_block', ContentBlock()),
-                ('quote_block', QuoteBlock()),
-                ('person', PersonBlock()),
-                ('html', RawHTMLBlock()),
-                ('list', ContentListBlock()),
+        ('heading', blocks.CharBlock(classname="full title")),
+        ('tagline', blocks.CharBlock(classname="full title")),
+        ('paragraph', blocks.RichTextBlock()),
+        ('image', ImageChooserBlock()),
+        ('multicolumn', blocks.StreamBlock([
+            ('column', ColumnBlock()),
             ],
-            icon='form'
+            icon='placeholder'
         )),
+        ('person', PersonBlock()),
+        ('html', RawHTMLBlock()),
     ])
 
     api_fields = (
@@ -870,14 +859,13 @@ class GeneralPage(Page):
 
     ]
 
-
     def serve(self, request, *args, **kwargs):
         data = {
             'title': self.title,
             'slug': self.slug,
             'seo_title': self.seo_title,
             'search_description': self.search_description,
-            'body': json.dump(self.body),
+            'body': self.body,
         }
 
         return JsonResponse(data)
