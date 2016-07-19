@@ -7,8 +7,9 @@ from django.contrib.postgres.fields import JSONField
 from django.db import models
 from modelcluster.fields import ParentalKey
 from wagtail.wagtailadmin.edit_handlers import (FieldPanel, InlinePanel,
-                                                PageChooserPanel)
-from wagtail.wagtailcore.fields import RichTextField
+                                                PageChooserPanel, StreamFieldPanel)
+from wagtail.wagtailcore import blocks
+from wagtail.wagtailcore.fields import RichTextField, StreamField
 from wagtail.wagtailcore.models import Orderable, Page
 from wagtail.wagtaildocs.edit_handlers import DocumentChooserPanel
 from wagtail.wagtailsnippets.edit_handlers import SnippetChooserPanel
@@ -163,6 +164,17 @@ class Authors(models.Model):
     ]
 
 
+class AuthorBlock(blocks.StructBlock):
+        name = blocks.CharBlock(required=True)
+        university = blocks.CharBlock(required=False)
+        country = blocks.CharBlock(required=False)
+        senior_author = blocks.BooleanBlock(required=False)
+        display_at_top = blocks.BooleanBlock(required=False)
+
+        class Meta:
+            icon = 'user'
+
+
 class BookAlly(models.Model):
     ally = models.ForeignKey(
         Ally,
@@ -248,6 +260,9 @@ class Book(Page):
 
     cover_url = property(get_cover_url)
     publish_date = models.DateField(blank=True, null=True, editable=False)
+    authors = StreamField([
+        ('author', AuthorBlock()),
+    ], blank=True, null=True)
     isbn_10 = models.IntegerField(blank=True, null=True)
     isbn_13 = models.CharField(max_length=255, blank=True, null=True)
     license_text = RichTextField(
@@ -327,6 +342,7 @@ class Book(Page):
         InlinePanel('book_student_resources', label="Student Resources"),
         InlinePanel('book_faculty_resources', label="Instructor Resources"),
         InlinePanel('book_contributing_authors', label="Contributing Authors"),
+        StreamFieldPanel('authors'),
         FieldPanel('isbn_10'),
         FieldPanel('isbn_13'),
         FieldPanel('license_text'),
@@ -364,6 +380,7 @@ class Book(Page):
                   'book_faculty_resources',
                   'book_contributing_authors',
                   'publish_date',
+                  'authors',
                   'isbn_10',
                   'isbn_13',
                   'license_text',
