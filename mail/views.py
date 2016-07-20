@@ -1,3 +1,5 @@
+import logging
+
 from django.core.mail import EmailMessage
 from django.http import JsonResponse, Http404
 from django.middleware import csrf
@@ -38,7 +40,7 @@ def send_contact_message(request):
                                  reply_to=[from_string])
             email.send()
         except KeyError:
-            pass
+            logging.error("EMAIL FAILED TO SEND: subject:{}")
 
         return redirect('/contact-thank-you')
     # if this is not posting a message, let's send the csfr token back
