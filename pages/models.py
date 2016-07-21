@@ -180,6 +180,36 @@ class ColumnBlock(blocks.StructBlock):
         icon = 'placeholder'
 
 
+class ThreeColumnBlock(blocks.StructBlock):
+    left_column = blocks.StructBlock([
+        ('heading', blocks.CharBlock(classname="full title", required=False)),
+        ('content', blocks.RichTextBlock(required=False)),
+        ('image', ImageBlock(required=False)),
+        ('cta', blocks.CharBlock(required=False)),
+        ('link', blocks.URLBlock(required=False)),
+    ], icon='arrow-left', label='Left column content')
+
+    center_column = blocks.StructBlock([
+        ('heading', blocks.CharBlock(classname="full title", required=False)),
+        ('content', blocks.RichTextBlock(required=False)),
+        ('image', ImageBlock(required=False)),
+        ('cta', blocks.CharBlock(required=False)),
+        ('link', blocks.URLBlock(required=False)),
+    ], icon='up-left', label='Center column content')
+
+    right_column = blocks.StructBlock([
+        ('heading', blocks.CharBlock(classname="full title", required=False)),
+        ('content', blocks.RichTextBlock(required=False)),
+        ('image', ImageBlock(required=False)),
+        ('cta', blocks.CharBlock(required=False)),
+        ('link', blocks.URLBlock(required=False)),
+    ], icon='arrow-right', label='Right column content')
+
+    class Meta:
+        icon = 'placeholder'
+        label = 'Three Columns'
+
+
 class AboutUsStrategicAdvisors(Orderable, StrategicAdvisors):
     page = ParentalKey('pages.AboutUs', related_name='strategic_advisors')
 
@@ -292,6 +322,12 @@ class HomePage(Page):
         (u'L', u'Left'),
         (u'R', u'Right'),
     )
+
+    row_1 = StreamField([('columns', ThreeColumnBlock())], blank=True)
+    row_2 = StreamField([('columns', ThreeColumnBlock())], blank=True)
+    row_3 = StreamField([('columns', ThreeColumnBlock())], blank=True)
+    row_4 = StreamField([('columns', ThreeColumnBlock())], blank=True)
+    row_5 = StreamField([('columns', ThreeColumnBlock())], blank=True)
 
     row_0_box_1_content = RichTextField(blank=True, null=True)
     row_0_box_1_image = models.ForeignKey(
@@ -409,6 +445,11 @@ class HomePage(Page):
 
     api_fields = (
         'title',
+        'row_1',
+        'row_2',
+        'row_3',
+        'row_4',
+        'row_5',
         'row_0_box_1_content',
         'row_0_box_1_image_url',
         'get_row_0_box_1_image_alignment_display',
@@ -455,6 +496,11 @@ class HomePage(Page):
 
     content_panels = [
         FieldPanel('title', classname="full title"),
+        StreamFieldPanel('row_1'),
+        StreamFieldPanel('row_2'),
+        StreamFieldPanel('row_3'),
+        StreamFieldPanel('row_4'),
+        StreamFieldPanel('row_5'),
         FieldPanel('row_0_box_1_content'),
         ImageChooserPanel('row_0_box_1_image'),
         FieldPanel('row_0_box_1_image_alignment'),
