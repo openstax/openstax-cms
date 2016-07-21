@@ -166,48 +166,14 @@ class QuoteBlock(blocks.StructBlock):
 
 
 class ColumnBlock(blocks.StructBlock):
-    column = blocks.StreamBlock([
-        ('heading', blocks.CharBlock(classname="full title")),
-        ('paragraph', blocks.RichTextBlock()),
-        ('image', ImageBlock()),
-        ('embedded_video', EmbedBlock()),
-        ('cta', blocks.CharBlock()),
-        ('link', blocks.URLBlock()),
-        ('quote', QuoteBlock()),
-    ], icon='placeholder', label='Column content')
+    heading = blocks.CharBlock(required=False)
+    content = blocks.RichTextBlock(required=False)
+    image = ImageBlock(required=False)
+    cta = blocks.CharBlock(required=False)
+    link = blocks.URLBlock(required=False)
 
     class Meta:
         icon = 'placeholder'
-
-
-class ThreeColumnBlock(blocks.StructBlock):
-    left_column = blocks.StructBlock([
-        ('heading', blocks.CharBlock(classname="full title", required=False)),
-        ('content', blocks.RichTextBlock(required=False)),
-        ('image', ImageBlock(required=False)),
-        ('cta', blocks.CharBlock(required=False)),
-        ('link', blocks.URLBlock(required=False)),
-    ], icon='arrow-left', label='Left column content')
-
-    center_column = blocks.StructBlock([
-        ('heading', blocks.CharBlock(classname="full title", required=False)),
-        ('content', blocks.RichTextBlock(required=False)),
-        ('image', ImageBlock(required=False)),
-        ('cta', blocks.CharBlock(required=False)),
-        ('link', blocks.URLBlock(required=False)),
-    ], icon='up-left', label='Center column content')
-
-    right_column = blocks.StructBlock([
-        ('heading', blocks.CharBlock(classname="full title", required=False)),
-        ('content', blocks.RichTextBlock(required=False)),
-        ('image', ImageBlock(required=False)),
-        ('cta', blocks.CharBlock(required=False)),
-        ('link', blocks.URLBlock(required=False)),
-    ], icon='arrow-right', label='Right column content')
-
-    class Meta:
-        icon = 'placeholder'
-        label = 'Three Columns'
 
 
 class AboutUsStrategicAdvisors(Orderable, StrategicAdvisors):
@@ -323,11 +289,31 @@ class HomePage(Page):
         (u'R', u'Right'),
     )
 
-    row_1 = StreamField([('columns', ThreeColumnBlock())], blank=True)
-    row_2 = StreamField([('columns', ThreeColumnBlock())], blank=True)
-    row_3 = StreamField([('columns', ThreeColumnBlock())], blank=True)
-    row_4 = StreamField([('columns', ThreeColumnBlock())], blank=True)
-    row_5 = StreamField([('columns', ThreeColumnBlock())], blank=True)
+    row_1 = StreamField([
+        ('multicolumn', blocks.StreamBlock([
+            ('column', ColumnBlock()),
+        ]))
+    ])
+    row_2 = StreamField([
+        ('multicolumn', blocks.StreamBlock([
+            ('column', ColumnBlock()),
+        ]))
+    ])
+    row_3 = StreamField([
+        ('multicolumn', blocks.StreamBlock([
+            ('column', ColumnBlock()),
+        ]))
+    ])
+    row_4 = StreamField([
+        ('multicolumn', blocks.StreamBlock([
+            ('column', ColumnBlock()),
+        ]))
+    ])
+    row_5 = StreamField([
+        ('multicolumn', blocks.StreamBlock([
+            ('column', ColumnBlock()),
+        ]))
+    ])
 
     row_0_box_1_content = RichTextField(blank=True, null=True)
     row_0_box_1_image = models.ForeignKey(
