@@ -35,7 +35,7 @@ def send_contact_message(request):
             to_address = emails[subject].split(',')
             email = EmailMessage(subject,
                                  message_body,
-                                 'noreply@openstax.org',
+                                 from_address,
                                  to_address,
                                  reply_to=[from_string])
             email.send()
