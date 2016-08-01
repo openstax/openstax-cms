@@ -13,6 +13,7 @@ from wagtail.wagtailcore.fields import RichTextField, StreamField
 from wagtail.wagtailcore.models import Orderable, Page
 from wagtail.wagtaildocs.edit_handlers import DocumentChooserPanel
 from wagtail.wagtailimages.blocks import ImageChooserBlock
+from wagtail.wagtaildocs.blocks import DocumentChooserBlock
 from wagtail.wagtailembeds.blocks import EmbedBlock
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 from openstax.functions import build_image_url
@@ -169,6 +170,7 @@ class ColumnBlock(blocks.StructBlock):
     heading = blocks.CharBlock(required=False)
     content = blocks.RichTextBlock(required=False)
     image = ImageBlock(required=False)
+    document = DocumentChooserBlock(required=False)
     cta = blocks.CharBlock(required=False)
     link = blocks.URLBlock(required=False)
 
@@ -625,7 +627,6 @@ class HigherEducation(Page):
     ]
 
     parent_page_types = ['pages.HomePage']
-
 
 
 class ContactUs(Page):
