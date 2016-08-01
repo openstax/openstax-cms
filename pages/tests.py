@@ -25,19 +25,6 @@ class HomePageTests(WagtailPageTests):
         root_page = Page.objects.get(title="Root")
         homepage = HomePage(title="Hello World",
                             slug="hello-world",
-                            row_1_box_1_line_1="Test",
-                            row_1_box_1_line_2="Test",
-                            row_1_box_1_line_3="Test",
-                            row_2_box_1_heading="Test",
-                            row_2_box_1_description="Test",
-                            row_2_box_2_heading="Test",
-                            row_2_box_2_description="Test",
-                            row_3_box_1_heading="Test",
-                            row_3_box_1_description="Test",
-                            row_3_box_1_cta="Test",
-                            row_4_box_1_heading="Test",
-                            row_4_box_1_description="Test",
-                            row_4_box_1_cta="Test"
                             )
         root_page.add_child(instance=homepage)
 
