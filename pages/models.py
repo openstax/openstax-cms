@@ -113,7 +113,7 @@ class StrategicAdvisors(LinkFields):
 
     advisor_image = property(get_advisor_image)
 
-    description = RichTextField()
+    description = models.TextField()
 
     api_fields = ('name', 'advisor_image', 'description', )
 
@@ -139,7 +139,7 @@ class OpenStaxTeam(LinkFields):
     team_member_image = property(get_team_member_image)
 
     position = models.CharField(max_length=255)
-    description = RichTextField()
+    description = models.TextField()
 
     api_fields = ('name', 'team_member_image', 'position', 'description', )
 
@@ -155,7 +155,7 @@ class PersonBlock(blocks.StructBlock):
     name = blocks.CharBlock(required=True)
     position = blocks.CharBlock(required=True)
     photo = ImageBlock()
-    biography = blocks.RichTextBlock()
+    biography = models.TextField()
 
     class Meta:
         icon = 'user'
