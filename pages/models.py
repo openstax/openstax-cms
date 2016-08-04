@@ -401,147 +401,10 @@ class HigherEducation(Page):
         ]))
     ])
 
-    ALIGNMENT_CHOICES = (
-        (u'L', u'left'),
-        (u'R', u'right'),
-    )
-
-    row_0_box_1_content = RichTextField(blank=True, null=True)
-    row_0_box_1_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-
-    def get_row_0_box_1_image(self):
-        return build_image_url(self.row_0_box_1_image)
-    row_0_box_1_image_url = property(get_row_0_box_1_image)
-
-    row_0_box_1_image_alignment = models.CharField(max_length=1, choices=ALIGNMENT_CHOICES,
-                                                   blank=True, null=True)
-    row_0_box_1_cta = models.CharField(max_length=255, blank=True, null=True)
-    row_0_box_1_link = models.URLField(blank=True, null=True)
-
-    row_0_box_2_content = RichTextField(blank=True, null=True)
-    row_0_box_2_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-
-    def get_row_0_box_2_image(self):
-        return build_image_url(self.row_0_box_2_image)
-    row_0_box_2_image_url = property(get_row_0_box_2_image)
-
-    row_0_box_2_image_alignment = models.CharField(max_length=1, choices=ALIGNMENT_CHOICES,
-                                                   blank=True, null=True)
-    row_0_box_2_cta = models.CharField(max_length=255, blank=True, null=True)
-    row_0_box_2_link = models.URLField(blank=True, null=True)
-
-    row_0_box_3_content = RichTextField(blank=True, null=True)
-    row_0_box_3_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-
-    def get_row_0_box_3_image(self):
-        return build_image_url(self.row_0_box_3_image)
-    row_0_box_3_image_url = property(get_row_0_box_3_image)
-
-    row_0_box_3_image_alignment = models.CharField(max_length=1, choices=ALIGNMENT_CHOICES,
-                                                   blank=True, null=True)
-    row_0_box_3_cta = models.CharField(max_length=255, blank=True, null=True)
-    row_0_box_3_link = models.URLField(blank=True, null=True)
-
-
-
-    row_1_box_1_heading = models.CharField(max_length=255)
-    row_1_box_1_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-
-    def get_row_1_box_1_image(self):
-        return build_image_url(self.row_1_box_1_image)
-    row_1_box_1_image_url = property(get_row_1_box_1_image)
-
-    row_1_box_1_description = RichTextField()
-    row_1_box_1_cta = models.CharField(max_length=255)
-    row_1_box_1_link = models.URLField(blank=True, null=True)
-
-    row_1_box_2_heading = models.CharField(max_length=255)
-    row_1_box_2_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-
-    def get_row_1_box_2_image(self):
-        return build_image_url(self.row_1_box_2_image)
-    row_1_box_2_image_url = property(get_row_1_box_2_image)
-
-    row_1_box_2_description = RichTextField()
-    row_1_box_2_cta = models.CharField(max_length=255)
-    row_1_box_2_link = models.URLField(blank=True, null=True)
-
-    row_1_box_3_heading = models.CharField(max_length=255)
-    row_1_box_3_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-
-    def get_row_1_box_3_image(self):
-        return build_image_url(self.row_1_box_3_image)
-    row_1_box_3_image_url = property(get_row_1_box_3_image)
-
-    row_1_box_3_description = RichTextField()
-    row_1_box_3_cta = models.CharField(max_length=255)
-    row_1_box_3_link = models.URLField(blank=True, null=True)
-
-    row_2_box_1_heading = models.CharField(max_length=255)
-    row_2_box_1_description = RichTextField()
-    row_2_box_1_cta = models.CharField(max_length=255)
-    row_2_box_1_link = models.URLField(blank=True, null=True)
-
-    row_2_box_2_heading = models.CharField(max_length=255)
-    row_2_box_2_description = RichTextField()
-    row_2_box_2_cta = models.CharField(max_length=255)
-    row_2_box_2_link = models.URLField(blank=True, null=True)
-
     api_fields = (
         'intro_heading',
         'intro_description',
         'row_1',
-        'row_0_box_1_content',
-        'row_0_box_1_image_url',
-        'get_row_0_box_1_image_alignment_display',
-        'row_0_box_1_cta',
-        'row_0_box_1_link',
-        'row_0_box_2_content',
-        'row_0_box_2_image_url',
-        'get_row_0_box_2_image_alignment_display',
-        'row_0_box_2_cta',
-        'row_0_box_2_link',
-        'row_0_box_3_content',
-        'row_0_box_3_image_url',
-        'get_row_0_box_3_image_alignment_display',
-        'row_0_box_3_cta',
-        'row_0_box_3_link',
         'get_started_heading',
         'get_started_step_1_heading',
         'get_started_step_1_description',
@@ -557,29 +420,6 @@ class HigherEducation(Page):
         'adopt_cta',
         'row_2',
         'row_3',
-        'row_1_box_1_heading',
-        'row_1_box_1_image_url',
-        'row_1_box_1_description',
-        'row_1_box_1_cta',
-        'row_1_box_1_link',
-        'row_1_box_2_heading',
-        'row_1_box_2_image_url',
-        'row_1_box_2_description',
-        'row_1_box_2_cta',
-        'row_1_box_2_link',
-        'row_1_box_3_heading',
-        'row_1_box_3_image_url',
-        'row_1_box_3_description',
-        'row_1_box_3_cta',
-        'row_1_box_3_link',
-        'row_2_box_1_heading',
-        'row_2_box_1_description',
-        'row_2_box_1_cta',
-        'row_2_box_1_link',
-        'row_2_box_2_heading',
-        'row_2_box_2_description',
-        'row_2_box_2_cta',
-        'row_2_box_2_link',
         'slug',
         'seo_title',
         'search_description',)
@@ -589,21 +429,6 @@ class HigherEducation(Page):
         FieldPanel('intro_heading'),
         FieldPanel('intro_description'),
         StreamFieldPanel('row_1'),
-        FieldPanel('row_0_box_1_content'),
-        ImageChooserPanel('row_0_box_1_image'),
-        FieldPanel('row_0_box_1_image_alignment'),
-        FieldPanel('row_0_box_1_cta'),
-        FieldPanel('row_0_box_1_link'),
-        FieldPanel('row_0_box_2_content'),
-        ImageChooserPanel('row_0_box_2_image'),
-        FieldPanel('row_0_box_2_image_alignment'),
-        FieldPanel('row_0_box_2_cta'),
-        FieldPanel('row_0_box_2_link'),
-        FieldPanel('row_0_box_3_content'),
-        ImageChooserPanel('row_0_box_3_image'),
-        FieldPanel('row_0_box_3_image_alignment'),
-        FieldPanel('row_0_box_3_cta'),
-        FieldPanel('row_0_box_3_link'),
         FieldPanel('get_started_heading'),
         FieldPanel('get_started_step_1_heading'),
         FieldPanel('get_started_step_1_description'),
@@ -619,29 +444,6 @@ class HigherEducation(Page):
         FieldPanel('adopt_cta'),
         StreamFieldPanel('row_2'),
         StreamFieldPanel('row_3'),
-        FieldPanel('row_1_box_1_heading'),
-        ImageChooserPanel('row_1_box_1_image'),
-        FieldPanel('row_1_box_1_description'),
-        FieldPanel('row_1_box_1_cta'),
-        FieldPanel('row_1_box_1_link'),
-        FieldPanel('row_1_box_2_heading'),
-        ImageChooserPanel('row_1_box_2_image'),
-        FieldPanel('row_1_box_2_description'),
-        FieldPanel('row_1_box_2_cta'),
-        FieldPanel('row_1_box_2_link'),
-        FieldPanel('row_1_box_3_heading'),
-        ImageChooserPanel('row_1_box_3_image'),
-        FieldPanel('row_1_box_3_description'),
-        FieldPanel('row_1_box_3_cta'),
-        FieldPanel('row_1_box_3_link'),
-        FieldPanel('row_2_box_1_heading'),
-        FieldPanel('row_2_box_1_description'),
-        FieldPanel('row_2_box_1_cta'),
-        FieldPanel('row_2_box_1_link'),
-        FieldPanel('row_2_box_2_heading'),
-        FieldPanel('row_2_box_2_description'),
-        FieldPanel('row_2_box_2_cta'),
-        FieldPanel('row_2_box_2_link'),
     ]
 
     promote_panels = [
