@@ -363,13 +363,48 @@ class HigherEducationAllies(Orderable, Allies):
 
 
 class HigherEducation(Page):
+    intro_heading = models.CharField(max_length=255)
+    intro_description = RichTextField()
+
+    row_1 = StreamField([
+        ('multicolumn', blocks.StreamBlock([
+            ('column', ColumnBlock()),
+        ]))
+    ])
+
+    get_started_heading = models.CharField(max_length=255)
+
+    get_started_step_1_heading = models.CharField(max_length=255)
+    get_started_step_1_description = RichTextField()
+    get_started_step_1_cta = models.CharField(max_length=255)
+
+    get_started_step_2_heading = models.CharField(max_length=255)
+    get_started_step_2_description = RichTextField()
+    get_started_step_2_cta = models.CharField(max_length=255)
+
+    get_started_step_3_heading = models.CharField(max_length=255)
+    get_started_step_3_description = RichTextField()
+    get_started_step_3_cta = models.CharField(max_length=255)
+
+    adopt_heading = models.CharField(max_length=255)
+    adopt_description = RichTextField()
+    adopt_cta = models.CharField(max_length=255)
+
+    row_2 = StreamField([
+        ('multicolumn', blocks.StreamBlock([
+            ('column', ColumnBlock()),
+        ]))
+    ])
+    row_3 = StreamField([
+        ('multicolumn', blocks.StreamBlock([
+            ('column', ColumnBlock()),
+        ]))
+    ])
+
     ALIGNMENT_CHOICES = (
         (u'L', u'left'),
         (u'R', u'right'),
     )
-
-    intro_heading = models.CharField(max_length=255)
-    intro_description = RichTextField()
 
     row_0_box_1_content = RichTextField(blank=True, null=True)
     row_0_box_1_image = models.ForeignKey(
@@ -425,23 +460,7 @@ class HigherEducation(Page):
     row_0_box_3_cta = models.CharField(max_length=255, blank=True, null=True)
     row_0_box_3_link = models.URLField(blank=True, null=True)
 
-    get_started_heading = models.CharField(max_length=255)
 
-    get_started_step_1_heading = models.CharField(max_length=255)
-    get_started_step_1_description = RichTextField()
-    get_started_step_1_cta = models.CharField(max_length=255)
-
-    get_started_step_2_heading = models.CharField(max_length=255)
-    get_started_step_2_description = RichTextField()
-    get_started_step_2_cta = models.CharField(max_length=255)
-
-    get_started_step_3_heading = models.CharField(max_length=255)
-    get_started_step_3_description = RichTextField()
-    get_started_step_3_cta = models.CharField(max_length=255)
-
-    adopt_heading = models.CharField(max_length=255)
-    adopt_description = RichTextField()
-    adopt_cta = models.CharField(max_length=255)
 
     row_1_box_1_heading = models.CharField(max_length=255)
     row_1_box_1_image = models.ForeignKey(
@@ -507,6 +526,7 @@ class HigherEducation(Page):
     api_fields = (
         'intro_heading',
         'intro_description',
+        'row_1',
         'row_0_box_1_content',
         'row_0_box_1_image_url',
         'get_row_0_box_1_image_alignment_display',
@@ -535,6 +555,8 @@ class HigherEducation(Page):
         'adopt_heading',
         'adopt_description',
         'adopt_cta',
+        'row_2',
+        'row_3',
         'row_1_box_1_heading',
         'row_1_box_1_image_url',
         'row_1_box_1_description',
@@ -566,6 +588,7 @@ class HigherEducation(Page):
         FieldPanel('title', classname="full title"),
         FieldPanel('intro_heading'),
         FieldPanel('intro_description'),
+        StreamFieldPanel('row_1'),
         FieldPanel('row_0_box_1_content'),
         ImageChooserPanel('row_0_box_1_image'),
         FieldPanel('row_0_box_1_image_alignment'),
@@ -594,6 +617,8 @@ class HigherEducation(Page):
         FieldPanel('adopt_heading'),
         FieldPanel('adopt_description'),
         FieldPanel('adopt_cta'),
+        StreamFieldPanel('row_2'),
+        StreamFieldPanel('row_3'),
         FieldPanel('row_1_box_1_heading'),
         ImageChooserPanel('row_1_box_1_image'),
         FieldPanel('row_1_box_1_description'),
