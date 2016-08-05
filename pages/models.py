@@ -76,28 +76,6 @@ class LinkFields(models.Model):
         abstract = True
 
 
-class CarouselItem(LinkFields):
-    image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-    embed_url = models.URLField("Embed URL", blank=True)
-    caption = models.CharField(max_length=255, blank=True)
-
-    panels = [
-        ImageChooserPanel('image'),
-        FieldPanel('embed_url'),
-        FieldPanel('caption'),
-        MultiFieldPanel(LinkFields.panels, "Link"),
-    ]
-
-    class Meta:
-        abstract = True
-
-
 class StrategicAdvisors(LinkFields):
     name = models.CharField(max_length=255, help_text="Strategic Advisor Name")
     image = models.ForeignKey(
