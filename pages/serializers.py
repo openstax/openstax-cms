@@ -1,9 +1,24 @@
 from rest_framework import serializers
+from rest_framework.fields import Field
 
 from pages.models import HomePage, HigherEducation, GeneralPage, ContactUs
 
 
+class StreamField(Field):
+    """
+    This is copying how Wagtail handles StreamFields, otherwise the JSON is output as strings instead of dicts.
+    """
+    def to_representation(self, value):
+        return value.stream_block.get_prep_value(value)
+
+
 class HomePageSerializer(serializers.ModelSerializer):
+    row_1 = StreamField()
+    row_2 = StreamField()
+    row_3 = StreamField()
+    row_4 = StreamField()
+    row_5 = StreamField()
+    
     class Meta:
         model = HomePage
         fields = ('id',
@@ -20,6 +35,10 @@ class HomePageSerializer(serializers.ModelSerializer):
 
 
 class HigherEducationSerializer(serializers.ModelSerializer):
+    row_1 = StreamField()
+    row_2 = StreamField()
+    row_3 = StreamField()
+
     class Meta:
         model = HigherEducation
         fields = ('id',
