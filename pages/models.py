@@ -76,7 +76,7 @@ class LinkFields(models.Model):
         abstract = True
 
 
-class StrategicAdvisors(LinkFields):
+class StrategicAdvisors(models.Model):
     name = models.CharField(max_length=255, help_text="Strategic Advisor Name")
     image = models.ForeignKey(
         'wagtailimages.Image',
@@ -102,7 +102,7 @@ class StrategicAdvisors(LinkFields):
     ]
 
 
-class OpenStaxTeam(LinkFields):
+class OpenStaxTeam(models.Model):
     name = models.CharField(max_length=255, help_text="Team Member Name")
     image = models.ForeignKey(
         'wagtailimages.Image',
@@ -167,7 +167,7 @@ class AboutUsOpenStaxTeam(Orderable, OpenStaxTeam):
 class AboutUs(Page):
     tagline = models.CharField(max_length=255)
     intro_heading = models.CharField(max_length=255)
-    intro_paragraph = RichTextField()
+    intro_paragraph = models.TextField()
     our_team_heading = models.CharField(max_length=255)
 
     api_fields = (
