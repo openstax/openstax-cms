@@ -1,10 +1,8 @@
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
-from .models import GeneralPage
-from .serializers import HomePageSerializer, HigherEducationSerializer, GeneralPageSerializer
-from wagtail.wagtailcore.models import Page
-from .models import HomePage, HigherEducation
+from .models import GeneralPage, HomePage, HigherEducation, AboutUs
+from .serializers import HomePageSerializer, HigherEducationSerializer, GeneralPageSerializer, AboutUsSerializer
 
 
 class JSONResponse(HttpResponse):
@@ -20,7 +18,7 @@ class JSONResponse(HttpResponse):
 @csrf_exempt
 def page_detail(request, slug):
     """
-    Retrieve, update or delete a pages JSON.
+    Retrieve a pages JSON by slug.
     """
     page_found = True
 
@@ -43,6 +41,13 @@ def page_detail(request, slug):
         serializer = GeneralPageSerializer(page)
         return JSONResponse(serializer.data)
     except GeneralPage.DoesNotExist:
+        page_found = False
+
+    try:
+        page = AboutUs.objects.get(slug=slug)
+        serializer = AboutUsSerializer(page)
+        return JSONResponse(serializer.data)
+    except AboutUs.DoesNotExist:
         page_found = False
 
     if not page_found:
