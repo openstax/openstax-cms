@@ -1,20 +1,16 @@
-import json
 from django import forms
 from django.db import models
 from django.http.response import JsonResponse
 from modelcluster.fields import ParentalKey
-from wagtail.wagtailadmin.edit_handlers import (FieldPanel, InlinePanel,
-                                                MultiFieldPanel,
-                                                PageChooserPanel,
+from wagtail.wagtailadmin.edit_handlers import (FieldPanel,
+                                                InlinePanel,
                                                 StreamFieldPanel)
 from wagtail.wagtailcore import blocks
 from wagtail.wagtailcore.blocks import FieldBlock, RawHTMLBlock, StructBlock
 from wagtail.wagtailcore.fields import RichTextField, StreamField
 from wagtail.wagtailcore.models import Orderable, Page
-from wagtail.wagtaildocs.edit_handlers import DocumentChooserPanel
 from wagtail.wagtailimages.blocks import ImageChooserBlock
 from wagtail.wagtaildocs.blocks import DocumentChooserBlock
-from wagtail.wagtailembeds.blocks import EmbedBlock
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 from openstax.functions import build_image_url
 
@@ -40,40 +36,6 @@ class AlignedHTMLBlock(StructBlock):
 
     class Meta:
         icon = "code"
-
-
-class LinkFields(models.Model):
-    link_external = models.URLField("External link", blank=True)
-    link_page = models.ForeignKey(
-        'wagtailcore.Page',
-        null=True,
-        blank=True,
-        related_name='+'
-    )
-    link_document = models.ForeignKey(
-        'wagtaildocs.Document',
-        null=True,
-        blank=True,
-        related_name='+'
-    )
-
-    @property
-    def link(self):
-        if self.link_page:
-            return self.link_page.url
-        elif self.link_document:
-            return self.link_document.url
-        else:
-            return self.link_external
-
-    panels = [
-        FieldPanel('link_external'),
-        PageChooserPanel('link_page'),
-        DocumentChooserPanel('link_document'),
-    ]
-
-    class Meta:
-        abstract = True
 
 
 class StrategicAdvisors(models.Model):
@@ -201,23 +163,6 @@ class AboutUs(Page):
     parent_page_types = ['pages.HomePage']
 
 
-class Allies(LinkFields):
-    heading = models.CharField(max_length=255)
-    description = RichTextField()
-    link_url = models.URLField(blank=True, help_text="Call to Action Link")
-    link_text = models.CharField(
-        max_length=255, help_text="Call to Action Text")
-
-    api_fields = ('heading', 'description', 'link_url', 'link_text', )
-
-    panels = [
-        FieldPanel('heading'),
-        FieldPanel('description'),
-        FieldPanel('link_url'),
-        FieldPanel('link_text'),
-    ]
-
-
 class Quote(models.Model):
     IMAGE_ALIGNMENT_CHOICES = (
         ('L', 'left'),
@@ -333,11 +278,6 @@ class HomePage(Page):
         'news.NewsIndex',
         'allies.Ally',
     ]
-
-
-class HigherEducationAllies(Orderable, Allies):
-    page = ParentalKey(
-        'pages.HigherEducation', related_name='higher_education_allies')
 
 
 class HigherEducation(Page):
