@@ -1,4 +1,4 @@
-from pages.models import HomePage, HigherEducation, GeneralPage, ContactUs, AboutUs
+from .models import HomePage, HigherEducation, GeneralPage, ContactUs, AboutUs
 
 from wagtail.contrib.wagtailapi.serializers import PageSerializer
 
