@@ -72,3 +72,18 @@ class ContactUsSerializer(PageSerializer):
                   'seo_title',
                   'search_description',
                   )
+
+
+class AboutUsSerializer(PageSerializer):
+    class Meta:
+        model = AboutUs
+        fields = ('tagline',
+                  'intro_heading',
+                  'intro_paragraph',
+                  'our_team_heading',
+                  'openstax_team',
+                  'strategic_advisors',
+                  'slug',
+                  'seo_title',
+                  'search_description',
+                  )
