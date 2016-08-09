@@ -91,21 +91,6 @@ class OpenStaxTeam(models.Model):
     ]
 
 
-class PersonBlock(blocks.StructBlock):
-    name = blocks.CharBlock(required=True)
-    position = blocks.CharBlock(required=True)
-    photo = ImageBlock()
-    biography = models.TextField()
-
-    class Meta:
-        icon = 'user'
-
-
-class QuoteBlock(blocks.StructBlock):
-    quote = blocks.CharBlock()
-    author = blocks.CharBlock()
-
-
 class ColumnBlock(blocks.StructBlock):
     heading = blocks.CharBlock(required=False)
     content = blocks.RichTextBlock(required=False)
@@ -420,7 +405,6 @@ class GeneralPage(Page):
             ],
             icon='placeholder'
         )),
-        ('person', PersonBlock()),
         ('html', RawHTMLBlock()),
     ])
 
