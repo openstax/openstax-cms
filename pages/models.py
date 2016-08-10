@@ -91,21 +91,6 @@ class OpenStaxTeam(models.Model):
     ]
 
 
-class PersonBlock(blocks.StructBlock):
-    name = blocks.CharBlock(required=True)
-    position = blocks.CharBlock(required=True)
-    photo = ImageBlock()
-    biography = models.TextField()
-
-    class Meta:
-        icon = 'user'
-
-
-class QuoteBlock(blocks.StructBlock):
-    quote = blocks.CharBlock()
-    author = blocks.CharBlock()
-
-
 class ColumnBlock(blocks.StructBlock):
     heading = blocks.CharBlock(required=False)
     content = blocks.RichTextBlock(required=False)
@@ -210,29 +195,19 @@ class Quote(models.Model):
 # Home Page
 class HomePage(Page):
     row_1 = StreamField([
-        ('multicolumn', blocks.StreamBlock([
-            ('column', ColumnBlock()),
-        ]))
+        ('column', ColumnBlock()),
     ])
     row_2 = StreamField([
-        ('multicolumn', blocks.StreamBlock([
-            ('column', ColumnBlock()),
-        ]))
+        ('column', ColumnBlock()),
     ])
     row_3 = StreamField([
-        ('multicolumn', blocks.StreamBlock([
-            ('column', ColumnBlock()),
-        ]))
+        ('column', ColumnBlock()),
     ])
     row_4 = StreamField([
-        ('multicolumn', blocks.StreamBlock([
-            ('column', ColumnBlock()),
-        ]))
+        ('column', ColumnBlock()),
     ])
     row_5 = StreamField([
-        ('multicolumn', blocks.StreamBlock([
-            ('column', ColumnBlock()),
-        ]))
+        ('column', ColumnBlock()),
     ])
 
     api_fields = (
@@ -285,9 +260,7 @@ class HigherEducation(Page):
     intro_description = RichTextField()
 
     row_1 = StreamField([
-        ('multicolumn', blocks.StreamBlock([
-            ('column', ColumnBlock()),
-        ]))
+        ('column', ColumnBlock()),
     ])
 
     get_started_heading = models.CharField(max_length=255)
@@ -309,14 +282,10 @@ class HigherEducation(Page):
     adopt_cta = models.CharField(max_length=255)
 
     row_2 = StreamField([
-        ('multicolumn', blocks.StreamBlock([
-            ('column', ColumnBlock()),
-        ]))
+        ('column', ColumnBlock()),
     ])
     row_3 = StreamField([
-        ('multicolumn', blocks.StreamBlock([
-            ('column', ColumnBlock()),
-        ]))
+        ('column', ColumnBlock()),
     ])
 
     api_fields = (
@@ -420,7 +389,6 @@ class GeneralPage(Page):
             ],
             icon='placeholder'
         )),
-        ('person', PersonBlock()),
         ('html', RawHTMLBlock()),
     ])
 
