@@ -29,6 +29,7 @@ def send_contact_message(request):
             'Foundation': 'richb@rice.edu, dcwill@rice.edu, mka2@rice.edu',
             'OpenStax Partners': 'info@openstax.org',
             'Website': 'info@openstax.org',
+            'Bulk Order': 'rej2@rice.edu',
         }
 
         try:
