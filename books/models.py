@@ -443,6 +443,19 @@ class BookIndex(Page):
     subject_list_heading = models.CharField(
         max_length=255, blank=True, null=True)
 
+    @property
+    def books(self):
+        books = Book.objects.all()
+        book_data = {}
+        for book in books:
+            book_data[book.slug] = {
+                'title': book.title,
+                'subject': book.subject.name,
+                'is_ap': book.is_ap,
+                'cover_url': book.cover_url,
+            }
+        return book_data
+
     content_panels = Page.content_panels + [
         FieldPanel('page_description'),
         FieldPanel('dev_standards_heading'),
@@ -466,6 +479,7 @@ class BookIndex(Page):
         'dev_standard_3_heading',
         'dev_standard_3_description',
         'subject_list_heading',
+        'books'
     )
 
     parent_page_types = ['pages.HomePage']
