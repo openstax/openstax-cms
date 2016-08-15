@@ -16,19 +16,9 @@ def send_contact_message(request):
         subject = request.POST.get("subject", "")
         message_body = request.POST.get("message_body", "")
 
+        # Add subject: to_address to this dict to add a new email address.
+        # Subject will map to the email being sent to to prevent misuse of our email server.
         emails = {
-            'General OpenStax Question': 'info@openstax.org',
-            'Adopting OpenStax Textbooks':  'info@openstax.org',
-            'Concept Coach Question': 'ccsupport@openstax.org',
-            'I\'m interested in piloting OpenStax Tutor': 'tutorpilot@openstax.org',
-            'OpenStax Tutor Question': 'tutorsupport@openstax.org',
-            'CNX Question': 'cnx@cnx.org',
-            'Donations': 'info@openstax.org',
-            'College/University Partnerships': 'info@openstax.org',
-            'Media Inquiries': 'info@openstax.org',
-            'Foundation': 'richb@rice.edu, dcwill@rice.edu, mka2@rice.edu',
-            'OpenStax Partners': 'info@openstax.org',
-            'Website': 'info@openstax.org',
             'Bulk Order': 'rej2@rice.edu',
         }
 

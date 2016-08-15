@@ -257,7 +257,7 @@ class HomePage(Page):
 
 class HigherEducation(Page):
     intro_heading = models.CharField(max_length=255)
-    intro_description = RichTextField()
+    intro_description = models.TextField()
 
     row_1 = StreamField([
         ('column', ColumnBlock()),
@@ -266,19 +266,19 @@ class HigherEducation(Page):
     get_started_heading = models.CharField(max_length=255)
 
     get_started_step_1_heading = models.CharField(max_length=255)
-    get_started_step_1_description = RichTextField()
+    get_started_step_1_description = models.TextField()
     get_started_step_1_cta = models.CharField(max_length=255)
 
     get_started_step_2_heading = models.CharField(max_length=255)
-    get_started_step_2_description = RichTextField()
+    get_started_step_2_description = models.TextField()
     get_started_step_2_cta = models.CharField(max_length=255)
 
     get_started_step_3_heading = models.CharField(max_length=255)
-    get_started_step_3_description = RichTextField()
+    get_started_step_3_description = models.TextField()
     get_started_step_3_cta = models.CharField(max_length=255)
 
     adopt_heading = models.CharField(max_length=255)
-    adopt_description = RichTextField()
+    adopt_description = models.TextField()
     adopt_cta = models.CharField(max_length=255)
 
     row_2 = StreamField([
@@ -425,11 +425,11 @@ class GeneralPage(Page):
 
 
 class EcosystemAllies(Page):
-    classroom_text = RichTextField()
+    page_description = models.TextField()
 
     api_fields = (
         'title',
-        'classroom_text',
+        'page_description',
         'slug',
         'seo_title',
         'search_description',
@@ -437,7 +437,7 @@ class EcosystemAllies(Page):
 
     content_panels = [
         FieldPanel('title', classname="full title"),
-        FieldPanel('classroom_text'),
+        FieldPanel('page_description'),
     ]
 
     promote_panels = [

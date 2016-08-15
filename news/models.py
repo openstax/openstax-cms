@@ -62,42 +62,6 @@ class BlogStreamBlock(StreamBlock):
     embed = EmbedBlock(icon="media", label="Embed Media URL")
 
 
-# A couple of abstract classes that contain commonly used fields
-
-class LinkFields(models.Model):
-    link_external = models.URLField("External link", blank=True)
-    link_page = models.ForeignKey(
-        'wagtailcore.Page',
-        null=True,
-        blank=True,
-        related_name='+'
-    )
-    link_document = models.ForeignKey(
-        'wagtaildocs.Document',
-        null=True,
-        blank=True,
-        related_name='+'
-    )
-
-    @property
-    def link(self):
-        if self.link_page:
-            return self.link_page.url
-        elif self.link_document:
-            return self.link_document.url
-        else:
-            return self.link_external
-
-    panels = [
-        FieldPanel('link_external'),
-        PageChooserPanel('link_page'),
-        DocumentChooserPanel('link_document'),
-    ]
-
-    class Meta:
-        abstract = True
-
-
 class NewsIndex(Page):
     intro = RichTextField(blank=True)
     press_kit = models.ForeignKey(
@@ -110,7 +74,7 @@ class NewsIndex(Page):
 
     def articles(self):
         articles = NewsArticle.objects.live().child_of(self)
-        result_list = list(articles.values('id', 'heading', 'subheading', 'date', 'pin_to_top', ))
+        result_list = list(articles.values('subheading', 'date', 'pin_to_top', 'slug', ))
         return result_list
 
     content_panels = Page.content_panels + [
