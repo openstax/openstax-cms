@@ -1,8 +1,8 @@
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
-from .models import GeneralPage, HomePage, HigherEducation, AboutUs
-from .serializers import HomePageSerializer, HigherEducationSerializer, GeneralPageSerializer, AboutUsSerializer
+from .models import GeneralPage, HomePage, HigherEducation, AboutUs, EcosystemAllies, ContactUs
+from .serializers import HomePageSerializer, HigherEducationSerializer, GeneralPageSerializer, AboutUsSerializer, EcosystemAlliesSerializer, ContactUsSerializer
 
 
 class JSONResponse(HttpResponse):
@@ -48,6 +48,20 @@ def page_detail(request, slug):
         serializer = AboutUsSerializer(page)
         return JSONResponse(serializer.data)
     except AboutUs.DoesNotExist:
+        page_found = False
+
+    try:
+        page = EcosystemAllies.objects.get(slug=slug)
+        serializer = EcosystemAlliesSerializer(page)
+        return JSONResponse(serializer.data)
+    except EcosystemAllies.DoesNotExist:
+        page_found = False
+
+    try:
+        page = ContactUs.objects.get(slug=slug)
+        serializer = ContactUsSerializer(page)
+        return JSONResponse(serializer.data)
+    except ContactUs.DoesNotExist:
         page_found = False
 
     if not page_found:
