@@ -37,9 +37,3 @@ class EcosystemAlliesSerializer(PageSerializer):
     class Meta:
         model = EcosystemAllies
         fields = EcosystemAllies.api_fields
-
-
-class ContactUsSerializer(PageSerializer):
-    class Meta:
-        model = ContactUs
-        fields = ContactUs.api_fields
