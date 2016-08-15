@@ -243,8 +243,6 @@ class Book(Page):
     subject_name = property(get_subject_name)
     updated = models.DateTimeField(auto_now=True)
     is_ap = models.BooleanField(default=False)
-    short_description = RichTextField(
-        blank=True, help_text="Description shown on Subject page.")
     description = RichTextField(
         blank=True, help_text="Description shown on Book Detail page.")
     cover = models.ForeignKey(
@@ -265,7 +263,7 @@ class Book(Page):
     ], blank=True, null=True)
     isbn_10 = models.IntegerField(blank=True, null=True)
     isbn_13 = models.CharField(max_length=255, blank=True, null=True)
-    license_text = RichTextField(
+    license_text = models.TextField(
         blank=True, null=True, help_text="Text blurb that describes the license.")
     license_name = models.CharField(
         max_length=255, blank=True, null=True, editable=False)
@@ -322,9 +320,9 @@ class Book(Page):
     amazon_link = models.URLField(blank=True, help_text="Link to Amazon")
     amazon_price = models.DecimalField(
         default=0.00, max_digits=6, decimal_places=2)
-    amazon_blurb = RichTextField(blank=True)
+    amazon_blurb = models.TextField(blank=True)
     bookstore_link = models.URLField(blank=True, help_text="Link to Bookstore")
-    bookstore_blurb = RichTextField(blank=True)
+    bookstore_blurb = models.TextField(blank=True)
     errata_link = models.URLField(
         blank=True, help_text="Link to view openstaxcollege.org errata")
     errata_corrections_link = models.URLField(
@@ -430,7 +428,7 @@ class Book(Page):
 
 
 class BookIndex(Page):
-    page_description = RichTextField()
+    page_description = models.TextField()
     dev_standards_heading = models.CharField(
         max_length=255, blank=True, null=True)
     dev_standard_1_heading = models.CharField(
