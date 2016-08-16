@@ -14,6 +14,8 @@ from wagtail.wagtaildocs.blocks import DocumentChooserBlock
 from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 from openstax.functions import build_image_url
 
+from allies.models import Ally
+
 
 class ImageFormatChoiceBlock(FieldBlock):
     field = forms.ChoiceField(choices=(
@@ -427,9 +429,26 @@ class GeneralPage(Page):
 class EcosystemAllies(Page):
     page_description = models.TextField()
 
+    @property
+    def allies(self):
+        allies = Ally.objects.all()
+        ally_data = {}
+        for ally in allies:
+            ally_data[ally.slug] = {
+                'title': ally.title,
+                'subjects': ally.ally_subject_list(),
+                'short_description': ally.short_description,
+                'long_description': ally.long_description,
+                'heading': ally.heading,
+                'is_ap': ally.is_ap,
+                'ally_bw_logo': ally.ally_bw_logo,
+            }
+        return ally_data
+
     api_fields = (
         'title',
         'page_description',
+        'allies',
         'slug',
         'seo_title',
         'search_description',
