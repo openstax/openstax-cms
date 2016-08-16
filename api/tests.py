@@ -138,7 +138,7 @@ class ImageAPI(TestCase, WagtailTestUtils):
         self.login()
 
     def test_api_v0_no_images(self):
-        response = self.client.get('/api/v0/images/')
+        response = self.client.get('/api/images/')
         self.assertEqual(response.status_code, 200)
         response_list = eval(response.content.decode(response.charset))
         self.assertIsInstance(response_list, list)
@@ -153,7 +153,7 @@ class ImageAPI(TestCase, WagtailTestUtils):
         self.assertEqual(response_dict['images'], [])
 
     def test_api_v0_single_image(self):
-        response = self.client.get('/api/v0/images/')
+        response = self.client.get('/api/images/')
         self.assertEqual(response.status_code, 200)
         response_list = eval(response.content.decode(response.charset))
         self.assertIsInstance(response_list, list)
