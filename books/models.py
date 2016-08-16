@@ -280,7 +280,10 @@ class Book(Page):
     )
 
     def get_high_res_pdf_url(self):
-        return build_document_url(self.high_resolution_pdf.url)
+        if self.high_resolution_pdf:
+            return build_document_url(self.high_resolution_pdf.url)
+        else:
+            return None
 
     high_resolution_pdf_url = property(get_high_res_pdf_url)
     low_resolution_pdf = models.ForeignKey(
@@ -292,7 +295,10 @@ class Book(Page):
     )
 
     def get_low_res_pdf_url(self):
-        return build_document_url(self.low_resolution_pdf.url)
+        if self.low_resolution_pdf:
+            return build_document_url(self.low_resolution_pdf.url)
+        else:
+            return None
 
     low_resolution_pdf_url = property(get_low_res_pdf_url)
     student_handbook = models.ForeignKey(
@@ -453,6 +459,18 @@ class BookIndex(Page):
                 'subject': book.subject.name,
                 'is_ap': book.is_ap,
                 'cover_url': book.cover_url,
+                'high_resolution_pdf_url': book.high_resolution_pdf_url,
+                'low_resolution_pdf_url': book.low_resolution_pdf_url,
+                'ibook_link': book.ibook_link,
+                'ibook_link_volume_2': book.ibook_link_volume_2,
+                'webview_link': book.webview_link,
+                'concept_coach_link': book.concept_coach_link,
+                'bookshare_link': book.bookshare_link,
+                'amazon_link': book.amazon_link,
+                'amazon_price': book.amazon_price,
+                'amazon_blurb': book.amazon_blurb,
+                'bookstore_link': book.bookstore_link,
+                'bookstore_blurb': book.bookstore_blurb,
             }
         return book_data
 
