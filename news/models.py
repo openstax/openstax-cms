@@ -72,10 +72,20 @@ class NewsIndex(Page):
         related_name='+'
     )
 
+    @property
     def articles(self):
         articles = NewsArticle.objects.live().child_of(self)
-        result_list = list(articles.values('subheading', 'date', 'pin_to_top', 'slug', ))
-        return result_list
+        article_data = {}
+        for article in articles:
+            article_data['news/{}'.format(article.slug)] = {
+                'date': article.date,
+                'subheading': article.subheading,
+                'pin_to_top': article.pin_to_top,
+                'article_image': article.article_image,
+                'author': article.author,
+                'tags': [tag.name for tag in article.tags.all()],
+            }
+        return article_data
 
     content_panels = Page.content_panels + [
         FieldPanel('intro', classname="full"),
