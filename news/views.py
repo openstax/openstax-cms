@@ -18,7 +18,6 @@ class JSONResponse(HttpResponse):
 @csrf_exempt
 def news_index(request):
     page = NewsIndex.objects.all()[0]
-    books = NewsArticle.objects.all()
     serializer = NewsIndexSerializer(page)
     return JSONResponse(serializer.data)
 
