@@ -1,12 +1,14 @@
 import logging
 
 from django.core.mail import EmailMessage
-from django.http import JsonResponse, Http404
+from django.http import JsonResponse
 from django.middleware import csrf
+from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import redirect
 from rest_framework.decorators import api_view
 
 
+@csrf_exempt
 @api_view(['POST', 'GET'])
 def send_contact_message(request):
     if request.method == 'POST':
