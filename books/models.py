@@ -454,7 +454,7 @@ class BookIndex(Page):
         books = Book.objects.all()
         book_data = {}
         for book in books:
-            book_data['book/{}'.format(book.slug)] = {
+            book_data['books/{}'.format(book.slug)] = {
                 'title': book.title,
                 'subject': book.subject.name,
                 'is_ap': book.is_ap,
