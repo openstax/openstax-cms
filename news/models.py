@@ -150,6 +150,7 @@ class NewsArticle(Page):
 
     api_fields = (
         'date',
+        'title',
         'subheading',
         'author',
         'article_image',
