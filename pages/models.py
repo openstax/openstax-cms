@@ -251,6 +251,7 @@ class HomePage(Page):
         'pages.AboutUs',
         'pages.GeneralPage',
         'pages.EcosystemAllies',
+        'pages.FoundationSupport',
         'books.BookIndex',
         'news.NewsIndex',
         'allies.Ally',
@@ -457,6 +458,62 @@ class EcosystemAllies(Page):
     content_panels = [
         FieldPanel('title', classname="full title"),
         FieldPanel('page_description'),
+    ]
+
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+
+    ]
+
+    parent_page_types = ['pages.HomePage']
+
+
+class Funder(models.Model):
+    title = models.CharField(max_length=250)
+    logo = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    def get_funder_logo(self):
+        return build_image_url(self.logo)
+    funder_logo = property(get_funder_logo)
+    description = models.TextField()
+
+    api_fields = ('title', 'funder_logo', 'description')
+
+    panels = [
+        FieldPanel('title'),
+        ImageChooserPanel('logo'),
+        FieldPanel('description'),
+    ]
+
+
+class FoundationSupportFunders(Orderable, Funder):
+    page = ParentalKey('pages.FoundationSupport', related_name='funders')
+
+
+class FoundationSupport(Page):
+    page_description = models.TextField()
+
+    api_fields = (
+        'title',
+        'page_description',
+        'funders',
+        'slug',
+        'seo_title',
+        'search_description',
+    )
+
+    content_panels = [
+        FieldPanel('title', classname="full title"),
+        FieldPanel('page_description'),
+        InlinePanel('funders', label="Funders"),
     ]
 
     promote_panels = [
