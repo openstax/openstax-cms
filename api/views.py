@@ -38,6 +38,9 @@ class UserView(viewsets.ModelViewSet):
 
 def user_salesforce_update(request):
     user = request.user
+    pending_verification = False
+    salesforce_faculty_verified_failed = False
+    salesforce_verification_pending_failed = False
 
     # get user account ID
     try:
@@ -51,13 +54,13 @@ def user_salesforce_update(request):
         out = StringIO()
         call_command('update_faculty_status', str(user.pk), stdout=out)
     except:
-        pass
+        salesforce_faculty_verified_failed = True
 
     # check if there is a record in SF for this user - if so, they are pending verification
     try:
         pending_verification = check_if_faculty_pending(user.pk)
     except:
-        pending_verification = False
+        salesforce_verification_pending_failed = True
 
     return JsonResponse({
         'username': user.username,
@@ -68,6 +71,8 @@ def user_salesforce_update(request):
         'groups': list(user.groups.values_list('name', flat=True)),
         'accounts_id': user.accounts_id,
         'pending_verification': pending_verification,
+        'salesforce_faculty_verified_failed': salesforce_faculty_verified_failed,
+        'salesforce_verification_pending_failed': salesforce_verification_pending_failed,
     })
 
 
