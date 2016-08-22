@@ -8,8 +8,6 @@ from social.apps.django_app.default.models import \
     DjangoStorage as SocialAuthStorage
 from wagtail.wagtailimages.models import Image
 
-from accounts.models import UserPendingVerification
-
 from .serializers import AdopterSerializer, ImageSerializer, UserSerializer
 
 
@@ -40,7 +38,6 @@ class UserView(viewsets.ModelViewSet):
 
 def user_salesforce_update(request):
     user = request.user
-    pending_verification = False
 
     # get user account ID
     try:
@@ -58,14 +55,10 @@ def user_salesforce_update(request):
 
     # check if there is a record in SF for this user - if so, they are pending verification
     try:
-        pending_verification = UserPendingVerification.objects.get(user=user, pending_verification=True).exists()
-    except UserPendingVerification.DoesNotExist:
-        if check_if_faculty_pending(user.pk):
-            UserPendingVerification.objects.create(user=user, pending_verification=True)
-            pending_verification = True
+        pending_verification = check_if_faculty_pending(user.pk)
+    except:
+        pending_verification = False
 
-    # redirect to the user api
-    # return redirect('/api/user/')
     return JsonResponse({
         'username': user.username,
         'first_name': user.first_name,
