@@ -29,7 +29,6 @@ class ImageSerializer(serializers.HyperlinkedModelSerializer):
 class UserSerializer(UserDetailsSerializer):
     groups = serializers.StringRelatedField(many=True)
     accounts_id = serializers.CharField(required=True, allow_blank=True)
-    pending_verification = serializers.BooleanField()
 
     class Meta(UserDetailsSerializer.Meta):
         fields = ('username',
@@ -38,14 +37,12 @@ class UserSerializer(UserDetailsSerializer):
                   'is_staff',
                   'is_superuser',
                   'groups',
-                  'accounts_id',
-                  'pending_verification',)
+                  'accounts_id',)
         read_only_fields = ('username',
                             'first_name',
                             'last_name',
                             'is_staff',
                             'is_superuser',
                             'groups',
-                            'accounts_id',
-                            'pending_verification',)
+                            'accounts_id',)
 
