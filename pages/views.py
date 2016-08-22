@@ -1,8 +1,20 @@
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.renderers import JSONRenderer
-from .models import GeneralPage, HomePage, HigherEducation, AboutUs, EcosystemAllies, ContactUs
-from .serializers import HomePageSerializer, HigherEducationSerializer, GeneralPageSerializer, AboutUsSerializer, EcosystemAlliesSerializer, ContactUsSerializer
+from .models import (GeneralPage,
+                     HomePage,
+                     HigherEducation,
+                     AboutUs,
+                     EcosystemAllies,
+                     ContactUs,
+                     FoundationSupport)
+from .serializers import (HomePageSerializer,
+                          HigherEducationSerializer,
+                          GeneralPageSerializer,
+                          AboutUsSerializer,
+                          EcosystemAlliesSerializer,
+                          ContactUsSerializer,
+                          FoundationSupportSerializer)
 
 
 class JSONResponse(HttpResponse):
@@ -24,6 +36,10 @@ def page_detail(request, slug):
 
     try:
         page = HomePage.objects.get(slug=slug)
+        for column in page.row_1:
+            for name, block in column.value.bound_blocks.items():
+                if name == 'image':
+                    print(block.value)
         serializer = HomePageSerializer(page)
         return JSONResponse(serializer.data)
     except HomePage.DoesNotExist:
@@ -62,6 +78,13 @@ def page_detail(request, slug):
         serializer = ContactUsSerializer(page)
         return JSONResponse(serializer.data)
     except ContactUs.DoesNotExist:
+        page_found = False
+
+    try:
+        page = FoundationSupport.objects.get(slug=slug)
+        serializer = FoundationSupportSerializer(page)
+        return JSONResponse(serializer.data)
+    except FoundationSupport.DoesNotExist:
         page_found = False
 
     if not page_found:
