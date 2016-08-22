@@ -1,7 +1,6 @@
 from django.core.management import call_command
 from django.utils.six import StringIO
-
-from django.shortcuts import redirect
+from django.http import JsonResponse
 from rest_framework import viewsets
 from salesforce.models import Adopter
 from salesforce.functions import check_if_faculty_pending
@@ -36,31 +35,46 @@ class UserView(viewsets.ModelViewSet):
         except:
             user.accounts_id = None
 
-        try:
-            pending_verification = UserPendingVerification.objects.get(user=user)
-            if pending_verification:
-                user.pending_verification = True
-        except (UserPendingVerification.DoesNotExist, TypeError) as e: #TypeError catches when it's an anon user
-            user.pending_verification = False
-
         return [user]
 
 
-def sf_update(request):
+def user_salesforce_update(request):
     user = request.user
+    pending_verification = False
 
+    # get user account ID
+    try:
+        social_auth = SocialAuthStorage.user.get_social_auth_for_user(user)
+        user.accounts_id = social_auth[0].uid
+    except:
+        user.accounts_id = None
+
+    # check if user is faculty_verified in SF
     try:
         out = StringIO()
         call_command('update_faculty_status', str(user.pk), stdout=out)
     except:
         pass
 
-    # check if there is a record in salesforce for this user - if so, they are pending verification
+    # check if there is a record in SF for this user - if so, they are pending verification
     try:
-        _ = UserPendingVerification.objects.get(user=user, pending_verification=True)
+        pending_verification = UserPendingVerification.objects.get(user=user, pending_verification=True).exists()
     except UserPendingVerification.DoesNotExist:
         if check_if_faculty_pending(user.pk):
             UserPendingVerification.objects.create(user=user, pending_verification=True)
-        return redirect('/api/user/')
+            pending_verification = True
+
+    # redirect to the user api
+    # return redirect('/api/user/')
+    return JsonResponse({
+        'username': user.username,
+        'first_name': user.first_name,
+        'last_name': user.last_name,
+        'is_staff': user.is_staff,
+        'is_superuser': user.is_superuser,
+        'groups': list(user.groups.values_list('name', flat=True)),
+        'accounts_id': user.accounts_id,
+        'pending_verification': pending_verification,
+    })
 
 
