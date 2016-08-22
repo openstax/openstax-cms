@@ -1,3 +1,6 @@
+from django.core.management import call_command
+from django.utils.six import StringIO
+
 from django.shortcuts import redirect
 from rest_framework import viewsets
 from salesforce.models import Adopter
@@ -43,8 +46,14 @@ class UserView(viewsets.ModelViewSet):
         return [user]
 
 
-def check_pending(request):
+def sf_update(request):
     user = request.user
+
+    try:
+        out = StringIO()
+        call_command('update_faculty_status', str(user.pk), stdout=out)
+    except:
+        pass
 
     # check if there is a record in salesforce for this user - if so, they are pending verification
     try:
