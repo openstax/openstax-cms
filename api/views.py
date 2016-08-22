@@ -26,5 +26,11 @@ class UserView(viewsets.ModelViewSet):
     def get_queryset(self):
         user = self.request.user
 
+        try:
+            social_auth = SocialAuthStorage.user.get_social_auth_for_user(user)
+            user.accounts_id = social_auth[0].uid
+        except:
+            user.accounts_id = None
+
         return [user]
 
