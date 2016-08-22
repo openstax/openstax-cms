@@ -32,14 +32,5 @@ class UserView(viewsets.ModelViewSet):
         except:
             user.accounts_id = None
 
-        try:
-            out = StringIO()
-            call_command('update_faculty_status', str(user.pk), stdout=out)
-        except:
-            pass
-
-        # check if there is a record in salesforce for this user - if so, they are pending verification
-        user.pending_verification = check_if_faculty_pending(user.pk)
-
         return [user]
 
