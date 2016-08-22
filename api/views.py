@@ -1,11 +1,15 @@
 from django.core.management import call_command
 from django.utils.six import StringIO
+
+from django.shortcuts import redirect
 from rest_framework import viewsets
 from salesforce.models import Adopter
 from salesforce.functions import check_if_faculty_pending
 from social.apps.django_app.default.models import \
     DjangoStorage as SocialAuthStorage
 from wagtail.wagtailimages.models import Image
+
+from accounts.models import UserPendingVerification
 
 from .serializers import AdopterSerializer, ImageSerializer, UserSerializer
 
@@ -32,5 +36,31 @@ class UserView(viewsets.ModelViewSet):
         except:
             user.accounts_id = None
 
+        try:
+            pending_verification = UserPendingVerification.objects.get(user=user)
+            if pending_verification:
+                user.pending_verification = True
+        except (UserPendingVerification.DoesNotExist, TypeError) as e: #TypeError catches when it's an anon user
+            user.pending_verification = False
+
         return [user]
+
+
+def sf_update(request):
+    user = request.user
+
+    try:
+        out = StringIO()
+        call_command('update_faculty_status', str(user.pk), stdout=out)
+    except:
+        pass
+
+    # check if there is a record in salesforce for this user - if so, they are pending verification
+    try:
+        _ = UserPendingVerification.objects.get(user=user, pending_verification=True)
+    except UserPendingVerification.DoesNotExist:
+        if check_if_faculty_pending(user.pk):
+            UserPendingVerification.objects.create(user=user, pending_verification=True)
+        return redirect('/api/user/')
+
 
