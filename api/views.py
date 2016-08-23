@@ -59,20 +59,18 @@ def user_salesforce_update(request):
     # check if there is a record in SF for this user - if so, they are pending verification
     try:
         pending_verification = check_if_faculty_pending(user.pk)
+        return JsonResponse({
+            'username': user.username,
+            'first_name': user.first_name,
+            'last_name': user.last_name,
+            'is_staff': user.is_staff,
+            'is_superuser': user.is_superuser,
+            'groups': list(user.groups.values_list('name', flat=True)),
+            'accounts_id': user.accounts_id,
+            'pending_verification': pending_verification,
+            'salesforce_faculty_verified_failed': salesforce_faculty_verified_failed,
+            'salesforce_verification_pending_failed': salesforce_verification_pending_failed,
+        })
+
     except:
-        salesforce_verification_pending_failed = True
-
-    return JsonResponse({
-        'username': user.username,
-        'first_name': user.first_name,
-        'last_name': user.last_name,
-        'is_staff': user.is_staff,
-        'is_superuser': user.is_superuser,
-        'groups': list(user.groups.values_list('name', flat=True)),
-        'accounts_id': user.accounts_id,
-        'pending_verification': pending_verification,
-        'salesforce_faculty_verified_failed': salesforce_faculty_verified_failed,
-        'salesforce_verification_pending_failed': salesforce_verification_pending_failed,
-    })
-
-
+        return JsonResponse({})
