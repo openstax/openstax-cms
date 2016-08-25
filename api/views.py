@@ -41,7 +41,15 @@ def user_api(request):
             'accounts_id': user.accounts_id,
         })
     except:
-        return JsonResponse({})
+        return JsonResponse({
+            'username': None,
+            'first_name': None,
+            'last_name': None,
+            'is_staff': False,
+            'is_superuser': False,
+            'groups': [],
+            'accounts_id': None,
+        })
 
 
 def user_salesforce_update(request):
