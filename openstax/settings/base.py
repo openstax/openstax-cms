@@ -210,6 +210,9 @@ LOGGING = {
         }
     },
     'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
         'simple': {
             'format': '%(levelname)s %(asctime)s %(module)s %(message)s'
         },
@@ -232,6 +235,7 @@ LOGGING = {
             'handlers': ['file'],
             'level': 'ERROR',
             'propagate': True,
+            'formatter': 'verbose',
         },
         'accounts.salesforce': {
             'handlers': ['file'],
