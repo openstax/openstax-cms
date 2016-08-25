@@ -42,9 +42,9 @@ def user_api(request):
         })
     except:
         return JsonResponse({
-            'username': None,
-            'first_name': None,
-            'last_name': None,
+            'username': '',
+            'first_name': '',
+            'last_name': '',
             'is_staff': False,
             'is_superuser': False,
             'groups': [],
