@@ -7,10 +7,6 @@ BASE_DIR = PROJECT_ROOT
 
 DEBUG = True
 
-ADMINS = (
-    ('Michael Harrison', 'mwharrison@rice.edu'),
-)
-
 # Default to dummy email backend. Configure dev/production/local backend
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
@@ -233,7 +229,7 @@ LOGGING = {
     },
     'loggers': {
         'django.request': {
-            'handlers': ['mail_admins'],
+            'handlers': ['file'],
             'level': 'ERROR',
             'propagate': True,
         },
