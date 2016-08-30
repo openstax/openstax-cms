@@ -485,13 +485,15 @@ class Funder(models.Model):
         return build_image_url(self.logo)
     funder_logo = property(get_funder_logo)
     description = models.TextField()
+    link = models.URLField()
 
-    api_fields = ('title', 'funder_logo', 'description')
+    api_fields = ('title', 'funder_logo', 'description', 'link')
 
     panels = [
         FieldPanel('title'),
         ImageChooserPanel('logo'),
         FieldPanel('description'),
+        FieldPanel('link'),
     ]
 
 
