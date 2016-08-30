@@ -111,6 +111,7 @@ class NewsArticleTag(TaggedItemBase):
 
 class NewsArticle(Page):
     date = models.DateField("Post date")
+    heading = models.CharField(max_length=250, help_text="Heading displayed on website")
     subheading = models.CharField(max_length=250, blank=True, null=True)
     author = models.CharField(max_length=250)
     featured_image = models.ForeignKey(
@@ -140,6 +141,8 @@ class NewsArticle(Page):
 
     content_panels = Page.content_panels + [
         FieldPanel('date'),
+        FieldPanel('title'),
+        FieldPanel('heading'),
         FieldPanel('subheading'),
         FieldPanel('author'),
         ImageChooserPanel('featured_image'),
@@ -151,6 +154,7 @@ class NewsArticle(Page):
     api_fields = (
         'date',
         'title',
+        'heading',
         'subheading',
         'author',
         'article_image',
