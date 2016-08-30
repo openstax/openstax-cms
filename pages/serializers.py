@@ -1,5 +1,11 @@
-from .models import HomePage, HigherEducation, GeneralPage, ContactUs, AboutUs, EcosystemAllies, FoundationSupport
-
+from .models import (HomePage,
+                     HigherEducation,
+                     GeneralPage,
+                     ContactUs,
+                     AboutUs,
+                     EcosystemAllies,
+                     FoundationSupport,
+                     OurImpact)
 from wagtail.contrib.wagtailapi.serializers import PageSerializer
 
 
@@ -43,3 +49,9 @@ class FoundationSupportSerializer(PageSerializer):
     class Meta:
         model = FoundationSupport
         fields = FoundationSupport.api_fields
+
+
+class OurImpactSerializer(PageSerializer):
+    class Meta:
+        model = OurImpact
+        fields = OurImpact.api_fields

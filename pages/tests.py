@@ -7,7 +7,8 @@ from pages.models import (HomePage,
                           AboutUs,
                           GeneralPage,
                           EcosystemAllies,
-                          FoundationSupport)
+                          FoundationSupport,
+                          OurImpact)
 from allies.models import Ally
 from news.models import NewsIndex
 from books.models import BookIndex
@@ -43,6 +44,7 @@ class HomePageTests(WagtailPageTests):
             NewsIndex,
             BookIndex,
             FoundationSupport,
+            OurImpact,
         })
 
 
