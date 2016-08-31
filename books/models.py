@@ -413,7 +413,7 @@ class Book(Page):
     parent_page_types = ['books.BookIndex']
 
     def get_slug(self):
-        return 'book/{}'.format(self.slug)
+        return 'books/{}'.format(self.slug)
 
     # we are overriding the save() method to go to CNX and fetch information
     # with the CNX ID
