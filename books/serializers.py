@@ -15,6 +15,8 @@ class BookIndexSerializer(PageSerializer):
 
 
 class BookSerializer(PageSerializer):
+    slug = serializers.SlugField(source='get_slug')
+
     class Meta:
         model = Book
         fields = Book.api_fields
