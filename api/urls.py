@@ -1,10 +1,11 @@
 from django.conf.urls import include, url
 from rest_framework import routers
 
-from .views import AdopterViewSet, ImageViewSet, user_salesforce_update, user_api
+from .views import AdopterViewSet, ImageViewSet, DocumentViewSet, user_salesforce_update, user_api
 
 router = routers.DefaultRouter()
 router.register(r'images', ImageViewSet)
+router.register(r'documents', DocumentViewSet)
 router.register(r'adopters', AdopterViewSet)
 
 urlpatterns = [

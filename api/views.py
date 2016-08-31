@@ -7,8 +7,9 @@ from salesforce.functions import check_if_faculty_pending
 from social.apps.django_app.default.models import \
     DjangoStorage as SocialAuthStorage
 from wagtail.wagtailimages.models import Image
+from wagtail.wagtaildocs.models import Document
 
-from .serializers import AdopterSerializer, ImageSerializer
+from .serializers import AdopterSerializer, ImageSerializer, DocumentSerializer
 
 
 class AdopterViewSet(viewsets.ModelViewSet):
@@ -19,6 +20,11 @@ class AdopterViewSet(viewsets.ModelViewSet):
 class ImageViewSet(viewsets.ModelViewSet):
     queryset = Image.objects.all()
     serializer_class = ImageSerializer
+
+
+class DocumentViewSet(viewsets.ModelViewSet):
+    queryset = Document.objects.all()
+    serializer_class = DocumentSerializer
 
 
 def user_api(request):
