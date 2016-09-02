@@ -261,7 +261,7 @@ class Book(Page):
     authors = StreamField([
         ('author', AuthorBlock()),
     ], blank=True, null=True)
-    isbn_10 = models.IntegerField(blank=True, null=True)
+    isbn_10 = models.CharField(max_length=255, blank=True, null=True)
     isbn_13 = models.CharField(max_length=255, blank=True, null=True)
     license_text = models.TextField(
         blank=True, null=True, help_text="Text blurb that describes the license.")
