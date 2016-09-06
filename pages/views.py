@@ -8,7 +8,8 @@ from .models import (GeneralPage,
                      EcosystemAllies,
                      ContactUs,
                      FoundationSupport,
-                     OurImpact)
+                     OurImpact,
+                     Give)
 from .serializers import (HomePageSerializer,
                           HigherEducationSerializer,
                           GeneralPageSerializer,
@@ -16,7 +17,8 @@ from .serializers import (HomePageSerializer,
                           EcosystemAlliesSerializer,
                           ContactUsSerializer,
                           FoundationSupportSerializer,
-                          OurImpactSerializer)
+                          OurImpactSerializer,
+                          GiveSerializer)
 
 
 class JSONResponse(HttpResponse):
@@ -94,6 +96,13 @@ def page_detail(request, slug):
         serializer = OurImpactSerializer(page)
         return JSONResponse(serializer.data)
     except OurImpact.DoesNotExist:
+        page_found = False
+
+    try:
+        page = Give.objects.get(slug=slug)
+        serializer = GiveSerializer(page)
+        return JSONResponse(serializer.data)
+    except Give.DoesNotExist:
         page_found = False
 
     if not page_found:

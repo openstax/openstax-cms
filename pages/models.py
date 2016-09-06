@@ -253,6 +253,7 @@ class HomePage(Page):
         'pages.EcosystemAllies',
         'pages.FoundationSupport',
         'pages.OurImpact',
+        'pages.Give',
         'books.BookIndex',
         'news.NewsIndex',
         'allies.Ally',
@@ -579,6 +580,66 @@ class OurImpact(Page):
         FieldPanel('intro_description'),
         StreamFieldPanel('row_1'),
         InlinePanel('institutions', label="Institutions"),
+    ]
+
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+    ]
+
+    parent_page_types = ['pages.HomePage']
+
+
+class Give(Page):
+    intro_heading = models.CharField(max_length=255)
+    intro_description = models.TextField()
+    other_payment_methods_heading = models.CharField(max_length=255)
+    payment_method_1_heading = models.CharField(max_length=255)
+    payment_method_1_content = RichTextField()
+    payment_method_2_heading = models.CharField(max_length=255)
+    payment_method_2_content = RichTextField()
+    payment_method_3_heading = models.CharField(max_length=255)
+    payment_method_3_content = RichTextField()
+    payment_method_4_heading = models.CharField(max_length=255)
+    payment_method_4_content = RichTextField()
+    give_cta = models.CharField(max_length=255)
+    give_cta_link = models.URLField()
+
+    api_fields = (
+        'intro_heading',
+        'intro_description',
+        'other_payment_methods_heading',
+        'payment_method_1_heading',
+        'payment_method_1_content',
+        'payment_method_2_heading',
+        'payment_method_2_content',
+        'payment_method_3_heading',
+        'payment_method_3_content',
+        'payment_method_4_heading',
+        'payment_method_4_content',
+        'give_cta',
+        'give_cta_link',
+        'slug',
+        'seo_title',
+        'search_description',
+    )
+
+    content_panels = [
+        FieldPanel('title', classname='full title'),
+        FieldPanel('intro_heading'),
+        FieldPanel('intro_description'),
+        FieldPanel('other_payment_methods_heading'),
+        FieldPanel('payment_method_1_heading'),
+        FieldPanel('payment_method_1_content'),
+        FieldPanel('payment_method_2_heading'),
+        FieldPanel('payment_method_2_content'),
+        FieldPanel('payment_method_3_heading'),
+        FieldPanel('payment_method_3_content'),
+        FieldPanel('payment_method_4_heading'),
+        FieldPanel('payment_method_4_content'),
+        FieldPanel('give_cta'),
+        FieldPanel('give_cta_link'),
     ]
 
     promote_panels = [
