@@ -540,18 +540,16 @@ class Institutions(models.Model):
     def get_institution_logo(self):
         return build_image_url(self.logo)
     institution_logo = property(get_institution_logo)
-    link = models.URLField()
 
-    api_fields = ('title', 'institution_logo', 'link')
+    api_fields = ('title', 'institution_logo')
 
     panels = [
         FieldPanel('title'),
         ImageChooserPanel('logo'),
-        FieldPanel('link'),
     ]
 
 
-class OurImpactInstitutions(Orderable, Funder):
+class OurImpactInstitutions(Orderable, Institutions):
     page = ParentalKey('pages.OurImpact', related_name='institutions')
 
 
