@@ -6,7 +6,8 @@ from .models import (HomePage,
                      EcosystemAllies,
                      FoundationSupport,
                      OurImpact,
-                     Give)
+                     Give,
+                     TermsOfService)
 from wagtail.contrib.wagtailapi.serializers import PageSerializer
 
 
@@ -62,3 +63,9 @@ class GiveSerializer(PageSerializer):
     class Meta:
         model = Give
         fields = Give.api_fields
+
+
+class TermsOfServiceSerializer(PageSerializer):
+    class Meta:
+        model = TermsOfService
+        fields = TermsOfService.api_fields
