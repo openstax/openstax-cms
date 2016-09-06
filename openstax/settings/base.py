@@ -189,6 +189,7 @@ INSTALLED_APPS = [
     'wagtail.wagtailforms',
     'wagtail.wagtailsites',
     'wagtail.contrib.wagtailapi',
+    'wagtail.contrib.settings',
 ]
 
 EMAIL_SUBJECT_PREFIX = '[openstax] '
