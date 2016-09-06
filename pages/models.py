@@ -254,6 +254,7 @@ class HomePage(Page):
         'pages.FoundationSupport',
         'pages.OurImpact',
         'pages.Give',
+        'pages.TermsOfService',
         'books.BookIndex',
         'news.NewsIndex',
         'allies.Ally',
@@ -638,6 +639,30 @@ class Give(Page):
         FieldPanel('payment_method_4_content'),
         FieldPanel('give_cta'),
         FieldPanel('give_cta_link'),
+    ]
+
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+    ]
+
+    parent_page_types = ['pages.HomePage']
+
+
+class TermsOfService(Page):
+    intro_heading = models.CharField(max_length=255)
+    terms_of_service_content = RichTextField()
+
+    api_fields = (
+        'intro_heading',
+        'terms_of_service_content',
+    )
+
+    content_panels = [
+        FieldPanel('title', classname='full title'),
+        FieldPanel('intro_heading'),
+        FieldPanel('terms_of_service_content'),
     ]
 
     promote_panels = [
