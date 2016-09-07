@@ -176,6 +176,7 @@ INSTALLED_APPS = [
     'snippets',
     'salesforce',
     'mail',
+    'global_settings',
     # wagtail
     'wagtail.wagtailcore',
     'wagtail.wagtailadmin',
@@ -189,6 +190,7 @@ INSTALLED_APPS = [
     'wagtail.wagtailforms',
     'wagtail.wagtailsites',
     'wagtail.contrib.wagtailapi',
+    'wagtail.contrib.settings',
 ]
 
 EMAIL_SUBJECT_PREFIX = '[openstax] '
