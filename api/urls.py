@@ -1,6 +1,5 @@
 from django.conf.urls import include, url
 from rest_framework import routers
-
 from .views import AdopterViewSet, ImageViewSet, DocumentViewSet, user_salesforce_update, user_api, sticky_note
 
 router = routers.DefaultRouter()
