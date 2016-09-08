@@ -3,7 +3,7 @@ from django.utils.six import StringIO
 from django.http import JsonResponse
 from rest_framework import viewsets
 from salesforce.models import Adopter
-from salesforce.functions import check_if_faculty_pending
+from salesforce.functions import check_if_faculty_pending, update_faculty_status
 from social.apps.django_app.default.models import \
     DjangoStorage as SocialAuthStorage
 from wagtail.wagtailimages.models import Image
@@ -72,8 +72,7 @@ def user_salesforce_update(request):
 
     # check if user is faculty_verified in SF
     try:
-        out = StringIO()
-        call_command('update_faculty_status', str(user.pk), stdout=out)
+        verification_status = update_faculty_status(user.pk)
     except:
         salesforce_faculty_verified_failed = True
 
