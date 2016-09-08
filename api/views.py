@@ -6,6 +6,7 @@ from salesforce.models import Adopter
 from salesforce.functions import check_if_faculty_pending, update_faculty_status
 from social.apps.django_app.default.models import \
     DjangoStorage as SocialAuthStorage
+from global_settings.models import StickyNote
 from wagtail.wagtailimages.models import Image
 from wagtail.wagtaildocs.models import Document
 
@@ -94,3 +95,14 @@ def user_salesforce_update(request):
 
     except:
         return JsonResponse({})
+
+
+def sticky_note(request):
+    sticky_note = StickyNote.for_site(request.site)
+
+    return JsonResponse({
+        'show': sticky_note.show,
+        'expires': sticky_note.expires,
+        'header': sticky_note.header,
+        'content': sticky_note.content,
+    })
