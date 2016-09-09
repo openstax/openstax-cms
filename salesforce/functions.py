@@ -37,7 +37,9 @@ def update_faculty_status(user_id):
 
             try:
                 record = response['records'][0]['OS_Accounts_ID__c']
-                faculty_group.user_set.add(user)
+                if record:
+                    faculty_group.user_set.add(user)
+                    user.save()
                 return True
             except IndexError:
                 return False
