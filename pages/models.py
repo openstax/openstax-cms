@@ -255,6 +255,7 @@ class HomePage(Page):
         'pages.OurImpact',
         'pages.Give',
         'pages.TermsOfService',
+        'pages.AP',
         'books.BookIndex',
         'news.NewsIndex',
         'allies.Ally',
@@ -663,6 +664,42 @@ class TermsOfService(Page):
         FieldPanel('title', classname='full title'),
         FieldPanel('intro_heading'),
         FieldPanel('terms_of_service_content'),
+    ]
+
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+    ]
+
+    parent_page_types = ['pages.HomePage']
+
+
+class AP(Page):
+    intro_heading = models.CharField(max_length=255)
+    intro_description = models.TextField()
+
+    row_1 = StreamField([
+        ('column', ColumnBlock()),
+    ])
+
+    row_2 = StreamField([
+        ('column', ColumnBlock()),
+    ])
+
+    api_fields = (
+        'intro_heading',
+        'intro_description',
+        'row_1',
+        'row_2',
+    )
+
+    content_panels = [
+        FieldPanel('title', classname="full title"),
+        FieldPanel('intro_heading'),
+        FieldPanel('intro_description'),
+        StreamFieldPanel('row_1'),
+        StreamFieldPanel('row_2'),
     ]
 
     promote_panels = [
