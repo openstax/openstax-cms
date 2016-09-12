@@ -7,7 +7,8 @@ from .models import (HomePage,
                      FoundationSupport,
                      OurImpact,
                      Give,
-                     TermsOfService)
+                     TermsOfService,
+                     AP)
 from wagtail.contrib.wagtailapi.serializers import PageSerializer
 
 
@@ -69,3 +70,9 @@ class TermsOfServiceSerializer(PageSerializer):
     class Meta:
         model = TermsOfService
         fields = TermsOfService.api_fields
+
+
+class APSerializer(PageSerializer):
+    class Meta:
+        model = AP
+        fields = AP.api_fields
