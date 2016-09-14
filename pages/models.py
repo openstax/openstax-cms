@@ -537,7 +537,8 @@ class Institutions(models.Model):
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
-        related_name='+'
+        related_name='+',
+        help_text='Image should be 340px wide, horizontal images are ideal'
     )
 
     def get_institution_logo(self):

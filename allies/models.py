@@ -29,7 +29,8 @@ class Ally(Page):
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
-        related_name='logo_color'
+        related_name='logo_color',
+        help_text="Image should be 460px wide"
     )
 
     def get_ally_logo(self):
@@ -41,7 +42,8 @@ class Ally(Page):
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
-        related_name='logo_bw'
+        related_name='logo_bw',
+        help_text="Image should be 340px wide, grayscale"
     )
 
     def get_ally_logo(self):
