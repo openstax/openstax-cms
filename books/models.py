@@ -81,7 +81,7 @@ class FacultyResources(models.Model):
                   'link_document_url', 'link_document_title', 'link_text', )
 
     panels = [
-        SnippetChooserPanel('resource', FacultyResource),
+        SnippetChooserPanel('resource'),
         FieldPanel('link_external'),
         PageChooserPanel('link_page'),
         DocumentChooserPanel('link_document'),
@@ -135,7 +135,7 @@ class StudentResources(models.Model):
                   'link_document_url', 'link_document_title', 'link_text', )
 
     panels = [
-        SnippetChooserPanel('resource', StudentResource),
+        SnippetChooserPanel('resource'),
         FieldPanel('link_external'),
         PageChooserPanel('link_page'),
         DocumentChooserPanel('link_document'),
@@ -337,7 +337,7 @@ class Book(Page):
 
     content_panels = Page.content_panels + [
         FieldPanel('cnx_id'),
-        SnippetChooserPanel('subject', Subject),
+        SnippetChooserPanel('subject'),
         FieldPanel('is_ap'),
         FieldPanel('description', classname="full"),
         DocumentChooserPanel('cover'),

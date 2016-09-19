@@ -133,11 +133,10 @@ class NewsArticle(Page):
 
     pin_to_top = models.BooleanField(default=False)
 
-    search_fields = Page.search_fields + (
-        index.SearchField('intro'),
+    search_fields = Page.search_fields + [
         index.SearchField('body'),
         index.SearchField('tags'),
-    )
+    ]
 
     content_panels = Page.content_panels + [
         FieldPanel('date'),
