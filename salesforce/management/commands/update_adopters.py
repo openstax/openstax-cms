@@ -9,7 +9,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         with Salesforce() as sf:
             command = "SELECT Id, Name, Description, Website FROM Account "\
-                          "WHERE Number_of_Adoptions__c > 0"
+                          "WHERE Number_of_Adoptions__c > 0 and Id != '001U0000011KxWa'"
             response = sf.query_all(command)
             sf_adopters = response['records']
             for sf_adopter in sf_adopters:
