@@ -13,7 +13,8 @@ class Command(BaseCommand):
             response = sf.query_all(command)
             sf_adopters = response['records']
 
-            Adopter.objects.all().delete()
+            if sf_adopters:
+                Adopter.objects.all().delete()
 
             for sf_adopter in sf_adopters:
 
