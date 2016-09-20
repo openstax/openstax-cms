@@ -27,6 +27,13 @@ class DocumentViewSet(viewsets.ModelViewSet):
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer
 
+    def get_queryset(self):
+        queryset = Document.objects.all()
+        search = self.request.query_params.get('search', None)
+        if search is not None:
+            queryset = queryset.filter(title__icontains=search)
+        return queryset
+
 
 def user_api(request):
     user = request.user
