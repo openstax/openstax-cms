@@ -12,6 +12,9 @@ class Command(BaseCommand):
                           "WHERE Number_of_Adoptions__c > 0 and Id != '001U0000011KxWa'"
             response = sf.query_all(command)
             sf_adopters = response['records']
+
+            Adopter.objects.all().delete()
+
             for sf_adopter in sf_adopters:
 
                 adopter, created = Adopter.objects.update_or_create(
