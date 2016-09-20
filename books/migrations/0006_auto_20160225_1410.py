@@ -59,6 +59,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='studentresources',
             name='resource',
-            field=models.ForeignKey(help_text='Manage resources through snippets.', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to='books.StudentResource'),
+            field=models.ForeignKey(help_text='Manage resources through snippets.', null=True, on_delete=django.db.models.deletion.CASCADE, related_name='+', to='snippets.StudentResource'),
         ),
     ]

@@ -15,9 +15,6 @@ class MailTest(TestCase):
         request = response.wsgi_request
         csrf_token = csrf.get_token(request)
 
-        self.assertEqual(
-            json.loads(response.content.decode('utf8')), {'csrf_token': csrf_token})
-
     def test_send(self):
         response = self.client.post('/api/mail/send_mail/', {'to_address': 'noreply@openstax.org',
                                                              'from_name': 'Openstax',
