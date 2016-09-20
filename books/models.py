@@ -429,7 +429,7 @@ class Book(Page):
             self.license_url = result['license']['url']
 
             self.publish_date = dateutil.parser.parse(
-                result['created'], dayfirst=True).date()
+                result['revised'], dayfirst=True).date()
 
             self.table_of_contents = result['tree']
 
