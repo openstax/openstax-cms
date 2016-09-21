@@ -602,8 +602,8 @@ class Give(Page):
     payment_method_2_content = RichTextField()
     payment_method_3_heading = models.CharField(max_length=255)
     payment_method_3_content = RichTextField()
-    payment_method_4_heading = models.CharField(max_length=255)
-    payment_method_4_content = RichTextField()
+    payment_method_4_heading = models.CharField(max_length=255, blank=True, null=True)
+    payment_method_4_content = RichTextField(blank=True, null=True)
     give_cta = models.CharField(max_length=255)
     give_cta_link = models.URLField()
 
