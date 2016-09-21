@@ -463,6 +463,7 @@ class BookIndex(Page):
                 'title': book.title,
                 'subject': book.subject.name,
                 'is_ap': book.is_ap,
+                'coming_soon': book.coming_soon,
                 'cover_url': book.cover_url,
                 'high_resolution_pdf_url': book.high_resolution_pdf_url,
                 'low_resolution_pdf_url': book.low_resolution_pdf_url,
