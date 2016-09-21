@@ -314,7 +314,7 @@ class Book(Page):
     student_handbook_url = property(get_student_handbook_url)
     community_resource_url = models.URLField(blank=True)
     community_resource_cta = models.CharField(max_length=255, blank=True, null=True)
-
+    coming_soon = models.BooleanField(default=False)
     ibook_link = models.URLField(blank=True, help_text="Link to iBook")
     ibook_link_volume_2 = models.URLField(blank=True, help_text="Link to secondary iBook")
     webview_link = models.URLField(
@@ -355,6 +355,7 @@ class Book(Page):
         DocumentChooserPanel('student_handbook'),
         FieldPanel('community_resource_url'),
         FieldPanel('community_resource_cta'),
+        FieldPanel('coming_soon'),
         FieldPanel('ibook_link'),
         FieldPanel('ibook_link_volume_2'),
         FieldPanel('webview_link'),
@@ -396,6 +397,7 @@ class Book(Page):
                   'student_handbook_url',
                   'community_resource_url',
                   'community_resource_cta',
+                  'coming_soon',
                   'ibook_link',
                   'ibook_link_volume_2',
                   'webview_link',
