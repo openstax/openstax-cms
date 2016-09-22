@@ -11,7 +11,8 @@ from .models import (GeneralPage,
                      OurImpact,
                      Give,
                      TermsOfService,
-                     AP)
+                     AP,
+                     FAQ)
 from .serializers import (HomePageSerializer,
                           HigherEducationSerializer,
                           GeneralPageSerializer,
@@ -22,7 +23,8 @@ from .serializers import (HomePageSerializer,
                           OurImpactSerializer,
                           GiveSerializer,
                           TermsOfServiceSerializer,
-                          APSerializer)
+                          APSerializer,
+                          FAQSerializer)
 
 
 class JSONResponse(HttpResponse):
@@ -121,6 +123,13 @@ def page_detail(request, slug):
         serializer = APSerializer(page)
         return JSONResponse(serializer.data)
     except AP.DoesNotExist:
+        page_found = False
+
+    try:
+        page = FAQ.objects.get(slug=slug)
+        serializer = FAQSerializer(page)
+        return JSONResponse(serializer.data)
+    except FAQ.DoesNotExist:
         page_found = False
 
     if not page_found:

@@ -8,7 +8,8 @@ from .models import (HomePage,
                      OurImpact,
                      Give,
                      TermsOfService,
-                     AP)
+                     AP,
+                     FAQ)
 from wagtail.contrib.wagtailapi.serializers import PageSerializer
 
 
@@ -76,3 +77,9 @@ class APSerializer(PageSerializer):
     class Meta:
         model = AP
         fields = AP.api_fields
+
+
+class FAQSerializer(PageSerializer):
+    class Meta:
+        model = FAQ
+        fields = FAQ.api_fields
