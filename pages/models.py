@@ -105,6 +105,14 @@ class ColumnBlock(blocks.StructBlock):
         icon = 'placeholder'
 
 
+class FAQBlock(blocks.StructBlock):
+    question = blocks.RichTextBlock(required=True)
+    answer = blocks.RichTextBlock(required=True)
+
+    class Meta:
+        icon = 'placeholder'
+
+
 class AboutUsStrategicAdvisors(Orderable, StrategicAdvisors):
     page = ParentalKey('pages.AboutUs', related_name='strategic_advisors')
 
@@ -256,6 +264,7 @@ class HomePage(Page):
         'pages.Give',
         'pages.TermsOfService',
         'pages.AP',
+        'pages.FAQ',
         'books.BookIndex',
         'news.NewsIndex',
         'allies.Ally',
@@ -701,6 +710,36 @@ class AP(Page):
         FieldPanel('intro_description'),
         StreamFieldPanel('row_1'),
         StreamFieldPanel('row_2'),
+    ]
+
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+    ]
+
+    parent_page_types = ['pages.HomePage']
+
+
+class FAQ(Page):
+    intro_heading = models.CharField(max_length=255)
+    intro_description = models.TextField()
+
+    questions = StreamField([
+        ('question', FAQBlock()),
+    ])
+
+    api_fields = (
+        'intro_heading',
+        'intro_description',
+        'questions',
+    )
+
+    content_panels = [
+        FieldPanel('title', classname="full title"),
+        FieldPanel('intro_heading'),
+        FieldPanel('intro_description'),
+        StreamFieldPanel('questions'),
     ]
 
     promote_panels = [
