@@ -22,4 +22,4 @@ class MailTest(TestCase):
                                                              'subject': 'Test Subject',
                                                              'message_body': 'This is a test.'})
         self.assertRedirects(
-            response, '/contact-thank-you', target_status_code=301)
+            response, '/confirmation?contact', target_status_code=301)
