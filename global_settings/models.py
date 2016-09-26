@@ -6,7 +6,6 @@ from wagtail.contrib.settings.models import BaseSetting, register_setting
 class StickyNote(BaseSetting):
     show = models.BooleanField(default=False)
     expires = models.DateTimeField(null=True, blank=True)
-    header = models.CharField(max_length=255)
     content = models.CharField(max_length=255)
 
     class Meta:
