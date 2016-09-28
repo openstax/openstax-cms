@@ -666,8 +666,12 @@ class TermsOfService(Page):
     terms_of_service_content = RichTextField()
 
     api_fields = (
+        'title',
         'intro_heading',
         'terms_of_service_content',
+        'slug',
+        'seo_title',
+        'search_description',
     )
 
     content_panels = [
