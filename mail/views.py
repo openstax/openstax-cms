@@ -21,7 +21,7 @@ def send_contact_message(request):
         # Add subject: to_address to this dict to add a new email address.
         # Subject will map to the email being sent to to prevent misuse of our email server.
         emails = {
-            'Bulk Order': 'rej2@rice.edu',
+            'Bulk Order': 'Tory.Watterson@rice.edu',
         }
 
         try:
