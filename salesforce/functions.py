@@ -36,7 +36,7 @@ def update_faculty_status(user_id):
             response = sf.query(command)
 
             try:
-                record = response['records'][0]['OS_Accounts_ID__c']
+                record = response['records'][0]['Accounts_ID__c']
                 if record:
                     faculty_group.user_set.add(user)
                     user.save()
