@@ -79,6 +79,7 @@ class NewsIndex(Page):
         for article in articles:
             article_data['news/{}'.format(article.slug)] = {
                 'date': article.date,
+                'heading': article.heading,
                 'subheading': article.subheading,
                 'pin_to_top': article.pin_to_top,
                 'article_image': article.article_image,
