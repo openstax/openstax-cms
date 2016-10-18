@@ -120,7 +120,8 @@ class NewsArticle(Page):
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
-        related_name='+'
+        related_name='+',
+        help_text="Image should be 1200px x 600px"
     )
 
     def get_article_image(self):
