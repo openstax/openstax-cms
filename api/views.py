@@ -3,7 +3,7 @@ from django.utils.six import StringIO
 from django.http import JsonResponse
 from rest_framework import viewsets
 from salesforce.models import Adopter
-from salesforce.functions import check_if_faculty_pending, update_faculty_status
+from salesforce.functions import check_if_faculty_pending, update_faculty_status, check_if_email_used
 from social.apps.django_app.default.models import \
     DjangoStorage as SocialAuthStorage
 from global_settings.models import StickyNote
@@ -66,10 +66,25 @@ def user_api(request):
         })
 
 
+#def user_email_salesforce_check(request):
+#    email = request.email
+#    try:
+#        email_used = check_if_email_used(email)
+#        return JsonResponse({
+#            'email_previously_used': email_used,
+#
+#        })
+#
+#    except:
+#        return JsonResponse({})
+
+
 def user_salesforce_update(request):
     user = request.user
+    email = request.GET['email']
     salesforce_faculty_verified_failed = False
     salesforce_verification_pending_failed = False
+    salesforce_email_previously_used = False
 
     # get user account ID
     try:
@@ -87,6 +102,8 @@ def user_salesforce_update(request):
     # check if there is a record in SF for this user - if so, they are pending verification
     try:
         pending_verification = check_if_faculty_pending(user.pk)
+        if email:
+            salesforce_email_previously_used  = check_if_email_used(email)
         return JsonResponse({
             'username': user.username,
             'first_name': user.first_name,
@@ -98,9 +115,10 @@ def user_salesforce_update(request):
             'pending_verification': pending_verification,
             'salesforce_faculty_verified_failed': salesforce_faculty_verified_failed,
             'salesforce_verification_pending_failed': salesforce_verification_pending_failed,
+            'salesforce_email_previously_used': salesforce_email_previously_used,
         })
 
-    except:
+    except Exception:
         return JsonResponse({})
 
 
