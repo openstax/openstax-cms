@@ -23,6 +23,7 @@ class Ally(Page):
     adaptive_courseware = models.BooleanField(default=False)
     customization_tools = models.BooleanField(default=False)
     is_ap = models.BooleanField(default=False)
+    do_not_display = models.BooleanField(default=False)
 
     logo_color = models.ForeignKey(
         'wagtailimages.Image',
@@ -66,7 +67,7 @@ class Ally(Page):
     property(ally_subject_list)
 
     api_fields = ('online_homework', 'adaptive_courseware', 'customization_tools',
-                  'ally_subject_list', 'is_ap',
+                  'ally_subject_list', 'is_ap', 'do_not_display',
                   'ally_color_logo', 'ally_bw_logo', 'heading',
                   'short_description', 'long_description')
 
@@ -81,6 +82,7 @@ class Ally(Page):
         ),
         InlinePanel('ally_subjects', label="Subjects"),
         FieldPanel('is_ap'),
+        FieldPanel('do_not_display'),
         ImageChooserPanel('logo_color'),
         ImageChooserPanel('logo_bw'),
         FieldPanel('heading'),
