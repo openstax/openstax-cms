@@ -458,6 +458,7 @@ class EcosystemAllies(Page):
                 'long_description': ally.long_description,
                 'heading': ally.heading,
                 'is_ap': ally.is_ap,
+                'do_not_display': ally.do_not_display,
                 'ally_bw_logo': ally.ally_bw_logo,
             }
         return ally_data
