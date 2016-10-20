@@ -96,7 +96,7 @@ class OpenStaxTeam(models.Model):
 class ColumnBlock(blocks.StructBlock):
     heading = blocks.CharBlock(required=False)
     content = blocks.RichTextBlock(required=False)
-    image = ImageBlock(required=False)
+    image = ImageBlock(required=False, help_text='Callout boxes 940x400, Home page boxes 1464x640')
     document = DocumentChooserBlock(required=False)
     cta = blocks.CharBlock(required=False)
     link = blocks.URLBlock(required=False)
