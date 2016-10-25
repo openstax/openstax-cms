@@ -421,6 +421,21 @@ class Book(Page):
     # we are overriding the save() method to go to CNX and fetch information
     # with the CNX ID
     def save(self, *args, **kwargs):
+        # Temporary fix to migrate authors to the new orderable streamfields
+        authors = []
+        for author in self.book_contributing_authors.all():
+            author_json = {'type': 'author',
+                        'value': {
+                            'name': author.name,
+                            'university': author.university,
+                            'country': author.country,
+                            'senior_author': author.senior_author,
+                            'display_at_top': author.display_at_top,
+                        }}
+            authors.append(author_json)
+        if self.authors != json.dumps(authors):
+            self.authors = json.dumps(authors)
+
         if self.cnx_id:
             url = '{}/contents/{}.json'.format(
                 settings.CNX_ARCHIVE_URL, self.cnx_id)
