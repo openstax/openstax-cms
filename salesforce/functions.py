@@ -52,7 +52,7 @@ def check_if_email_used(institutional_email):
         try:
             #social_user = SocialAuthStorage.user.objects.filter(user_id=user_id)
             #accounts_id = social_user[0].uid
-            command = "SELECT OS_Accounts_ID__c FROM Lead WHERE Institutional_Email__c = '{}' AND Status != 'Converted'".format(institutional_email)
+            command = "SELECT OS_Accounts_ID__c FROM Lead WHERE Institutional_Email__c = '{}' AND LeadSource = 'OSC Faculty' AND Status != 'Converted'".format(institutional_email)
             response = sf.query(command)
 
             try:
