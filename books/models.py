@@ -257,7 +257,7 @@ class Book(Page):
         return build_document_url(self.cover.url)
 
     cover_url = property(get_cover_url)
-    publish_date = models.DateField(blank=True, null=True, editable=False)
+    publish_date = models.DateField(blank=True, null=True)
     authors = StreamField([
         ('author', AuthorBlock()),
     ], blank=True, null=True)
@@ -337,6 +337,7 @@ class Book(Page):
 
     content_panels = Page.content_panels + [
         FieldPanel('cnx_id'),
+        FieldPanel('publish_date'),
         SnippetChooserPanel('subject'),
         FieldPanel('is_ap'),
         FieldPanel('description', classname="full"),
@@ -429,9 +430,6 @@ class Book(Page):
             self.license_name = result['license']['name']
             self.license_version = result['license']['version']
             self.license_url = result['license']['url']
-
-            self.publish_date = dateutil.parser.parse(
-                result['revised'], dayfirst=True).date()
 
             self.table_of_contents = result['tree']
 
