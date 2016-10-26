@@ -12,7 +12,8 @@ from pages.models import (HomePage,
                           Give,
                           TermsOfService,
                           AP,
-                          FAQ)
+                          FAQ,
+                          Support)
 from allies.models import Ally
 from news.models import NewsIndex
 from books.models import BookIndex
@@ -53,6 +54,7 @@ class HomePageTests(WagtailPageTests):
             TermsOfService,
             AP,
             FAQ,
+            Support,
         })
 
 
