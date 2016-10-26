@@ -234,6 +234,8 @@ class Book(Page):
     cnx_id = models.CharField(
         max_length=255, help_text="This is used to pull relevant information from CNX.",
         blank=True, null=True)
+    salesforce_abbreviation = models.CharField(max_length=255, blank=True, null=True)
+    salesforce_name = models.CharField(max_length=255, blank=True, null=True)
     subject = models.ForeignKey(Subject, on_delete=models.SET_NULL,
                                 null=True, related_name='+')
 
@@ -337,6 +339,8 @@ class Book(Page):
 
     content_panels = Page.content_panels + [
         FieldPanel('cnx_id'),
+        FieldPanel('salesforce_abbreviation'),
+        FieldPanel('salesforce_name'),
         FieldPanel('publish_date'),
         SnippetChooserPanel('subject'),
         FieldPanel('is_ap'),
@@ -376,6 +380,8 @@ class Book(Page):
                   'slug',
                   'title',
                   'cnx_id',
+                  'salesforce_abbreviation',
+                  'salesforce_name',
                   'subject_name',
                   'is_ap',
                   'description',
@@ -490,6 +496,8 @@ class BookIndex(Page):
                 'amazon_blurb': book.amazon_blurb,
                 'bookstore_link': book.bookstore_link,
                 'bookstore_blurb': book.bookstore_blurb,
+                'salesforce_abbreviation': book.salesforce_abbreviation,
+                'salesforce_name': book.salesforce_name,
             }
         return book_data
 
