@@ -5,6 +5,7 @@ import dateutil.parser
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from django.db import models
+from django.forms import ValidationError
 from modelcluster.fields import ParentalKey
 from wagtail.wagtailadmin.edit_handlers import (FieldPanel, InlinePanel,
                                                 PageChooserPanel, StreamFieldPanel)
@@ -424,8 +425,28 @@ class Book(Page):
     def get_slug(self):
         return 'books/{}'.format(self.slug)
 
-    # we are overriding the save() method to go to CNX and fetch information
-    # with the CNX ID
+    def clean(self):
+        errors = {}
+
+        if self.cnx_id:
+            try:
+                url = '{}/contents/{}.json'.format(
+                    settings.CNX_ARCHIVE_URL, self.cnx_id)
+                response = urllib.request.urlopen(url).read()
+                result = json.loads(response.decode('utf-8'))
+
+                self.license_name = result['license']['name']
+                self.license_version = result['license']['version']
+                self.license_url = result['license']['url']
+
+                self.table_of_contents = result['tree']
+
+            except urllib.error.HTTPError as err:
+                errors.setdefault('cnx_id', []).append(err)
+
+        if errors:
+            raise ValidationError(errors)
+
     def save(self, *args, **kwargs):
         # Temporary fix to migrate authors to the new orderable streamfields
         authors = []
@@ -441,18 +462,6 @@ class Book(Page):
             authors.append(author_json)
         if self.authors != json.dumps(authors):
             self.authors = json.dumps(authors)
-
-        if self.cnx_id:
-            url = '{}/contents/{}.json'.format(
-                settings.CNX_ARCHIVE_URL, self.cnx_id)
-            response = urllib.request.urlopen(url).read()
-            result = json.loads(response.decode('utf-8'))
-
-            self.license_name = result['license']['name']
-            self.license_version = result['license']['version']
-            self.license_url = result['license']['url']
-
-            self.table_of_contents = result['tree']
 
         return super(Book, self).save(*args, **kwargs)
 
