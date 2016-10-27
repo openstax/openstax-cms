@@ -9,7 +9,7 @@ django-overextends==0.4.2
 django-rest-auth==0.6.0
 django-taggit==0.18.3
 django-treebeard==4.0.1
-django-storages==1.4
+django-storages==1.5.1
 djangorestframework==3.5.1
 html5lib==0.999999
 jsonfield==1.0.3

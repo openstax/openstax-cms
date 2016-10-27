@@ -29,5 +29,8 @@ SECRET_KEY = 'enter-a-long-unguessable-string-here'
 
 SALESFORCE = { 'username' : '',
                'password' : '', # password might need to be concatinated with security_token e.g. 'mypass1231' 
-               'security_token' : '' } 
+               'security_token' : '' }
+
+# locally, we want to use local storage for uploaded files
+DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 
