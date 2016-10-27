@@ -256,3 +256,9 @@ WAGTAILAPI_LIMIT_MAX = 250
 
 # used in page.models to retrieve book information
 CNX_ARCHIVE_URL = 'http://archive.cnx.org'
+
+
+try:
+    from local import *
+except ImportError:
+    pass
