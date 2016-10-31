@@ -7,6 +7,8 @@ from wagtail.wagtailadmin import urls as wagtailadmin_urls
 from wagtail.wagtailcore import urls as wagtail_urls
 from wagtail.wagtaildocs import urls as wagtaildocs_urls
 from wagtail.wagtailimages import urls as wagtailimages_urls
+from .api import api_router
+
 from news.search import search
 
 from api import urls as api_urls
@@ -23,6 +25,7 @@ urlpatterns = [
     url(r'^api/', include(wagtailapi_urls)),
     url(r'^api/', include(api_urls)),
     url(r'^api/search/$', search, name='search'),
+    url(r'^api/v2/', api_router.urls),
 
     url(r'^api/pages/', include('pages.urls')),
     url(r'^api/books/', include('books.urls')),
