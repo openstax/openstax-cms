@@ -190,6 +190,7 @@ INSTALLED_APPS = [
     'wagtail.wagtailforms',
     'wagtail.wagtailsites',
     'wagtail.contrib.wagtailapi',
+    'wagtail.api.v2',
     'wagtail.contrib.settings',
 ]
 
