@@ -190,7 +190,6 @@ INSTALLED_APPS = [
     'wagtail.wagtailforms',
     'wagtail.wagtailsites',
     'wagtail.contrib.wagtailapi',
-    'wagtail.api.v2',
     'wagtail.contrib.settings',
 ]
 
@@ -257,9 +256,3 @@ WAGTAILAPI_LIMIT_MAX = 250
 
 # used in page.models to retrieve book information
 CNX_ARCHIVE_URL = 'http://archive.cnx.org'
-
-
-try:
-    from local import *
-except ImportError:
-    pass

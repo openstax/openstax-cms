@@ -6,7 +6,6 @@ import dateutil.parser
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from django.db import models
-from django.forms import ValidationError
 from modelcluster.fields import ParentalKey
 from wagtail.wagtailadmin.edit_handlers import (FieldPanel, InlinePanel,
                                                 PageChooserPanel, StreamFieldPanel)
@@ -236,8 +235,6 @@ class Book(Page):
     cnx_id = models.CharField(
         max_length=255, help_text="This is used to pull relevant information from CNX.",
         blank=True, null=True)
-    salesforce_abbreviation = models.CharField(max_length=255, blank=True, null=True)
-    salesforce_name = models.CharField(max_length=255, blank=True, null=True)
     subject = models.ForeignKey(Subject, on_delete=models.SET_NULL,
                                 null=True, related_name='+')
 
@@ -261,7 +258,7 @@ class Book(Page):
         return build_document_url(self.cover.url)
 
     cover_url = property(get_cover_url)
-    publish_date = models.DateField(blank=True, null=True)
+    publish_date = models.DateField(blank=True, null=True, editable=False)
     authors = StreamField([
         ('author', AuthorBlock()),
     ], blank=True, null=True)
@@ -341,9 +338,6 @@ class Book(Page):
 
     content_panels = Page.content_panels + [
         FieldPanel('cnx_id'),
-        FieldPanel('salesforce_abbreviation'),
-        FieldPanel('salesforce_name'),
-        FieldPanel('publish_date'),
         SnippetChooserPanel('subject'),
         FieldPanel('is_ap'),
         FieldPanel('description', classname="full"),
@@ -381,8 +375,6 @@ class Book(Page):
                   'slug',
                   'title',
                   'cnx_id',
-                  'salesforce_abbreviation',
-                  'salesforce_name',
                   'subject_name',
                   'is_ap',
                   'description',
@@ -439,40 +431,23 @@ class Book(Page):
     def clean(self):
         errors = {}
 
-        if self.cnx_id:
-            try:
-                url = '{}/contents/{}.json'.format(
-                    settings.CNX_ARCHIVE_URL, self.cnx_id)
-                response = urllib.request.urlopen(url).read()
-                result = json.loads(response.decode('utf-8'))
-
-                self.license_name = result['license']['name']
-                self.license_version = result['license']['version']
-                self.license_url = result['license']['url']
-
-                self.table_of_contents = result['tree']
-
-            except urllib.error.HTTPError as err:
-                errors.setdefault('cnx_id', []).append(err)
-
-        if errors:
-            raise ValidationError(errors)
-
+    # we are overriding the save() method to go to CNX and fetch information
+    # with the CNX ID
     def save(self, *args, **kwargs):
-        # Temporary fix to migrate authors to the new orderable streamfields
-        authors = []
-        for author in self.book_contributing_authors.all():
-            author_json = {'type': 'author',
-                        'value': {
-                            'name': author.name,
-                            'university': author.university,
-                            'country': author.country,
-                            'senior_author': author.senior_author,
-                            'display_at_top': author.display_at_top,
-                        }}
-            authors.append(author_json)
-        if self.authors != json.dumps(authors):
-            self.authors = json.dumps(authors)
+        if self.cnx_id:
+            url = '{}/contents/{}.json'.format(
+                settings.CNX_ARCHIVE_URL, self.cnx_id)
+            response = urllib.request.urlopen(url).read()
+            result = json.loads(response.decode('utf-8'))
+
+            self.license_name = result['license']['name']
+            self.license_version = result['license']['version']
+            self.license_url = result['license']['url']
+
+            self.publish_date = dateutil.parser.parse(
+                result['revised'], dayfirst=True).date()
+
+            self.table_of_contents = result['tree']
 
         self.webview_link = 'https://cnx.org/contents/' + self.cnx_id
 
