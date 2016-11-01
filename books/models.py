@@ -1,3 +1,4 @@
+import re
 import json
 import urllib
 
@@ -425,6 +426,17 @@ class Book(Page):
     def get_slug(self):
         return 'books/{}'.format(self.slug)
 
+    def book_urls(self):
+        book_urls = []
+        for field in self.api_fields:
+            try:
+                url = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+', getattr(self, field))
+                if url:
+                    book_urls.append(url)
+            except(TypeError, AttributeError):
+                pass
+        return book_urls
+
     def clean(self):
         errors = {}
 
@@ -507,6 +519,7 @@ class BookIndex(Page):
                 'bookstore_blurb': book.bookstore_blurb,
                 'salesforce_abbreviation': book.salesforce_abbreviation,
                 'salesforce_name': book.salesforce_name,
+                'urls': book.book_urls(),
             }
         return book_data
 
