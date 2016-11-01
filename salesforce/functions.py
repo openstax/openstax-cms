@@ -45,3 +45,20 @@ def update_faculty_status(user_id):
                 return False
         except IndexError:
             return False
+
+
+def check_if_email_used(institutional_email):
+    with Salesforce() as sf:
+        try:
+            #social_user = SocialAuthStorage.user.objects.filter(user_id=user_id)
+            #accounts_id = social_user[0].uid
+            command = "SELECT OS_Accounts_ID__c FROM Lead WHERE Institutional_Email__c = '{}' AND LeadSource = 'OSC Faculty' AND Status != 'Converted'".format(institutional_email)
+            response = sf.query(command)
+
+            try:
+                record = response['records'][0]['OS_Accounts_ID__c']
+                return True
+            except IndexError:
+                return False
+        except IndexError:
+            return False

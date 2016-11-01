@@ -12,7 +12,6 @@ from .models import (HomePage,
                      FAQ,
                      Support,
                      GiveForm)
-
 from wagtail.contrib.wagtailapi.serializers import PageSerializer
 
 
