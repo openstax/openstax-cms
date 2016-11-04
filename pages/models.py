@@ -732,7 +732,7 @@ class AP(Page):
 
 class FAQ(Page):
     intro_heading = models.CharField(max_length=255)
-    intro_description = models.TextField()
+    intro_description = RichTextField()
 
     questions = StreamField([
         ('question', FAQBlock()),
