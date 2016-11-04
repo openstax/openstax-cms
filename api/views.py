@@ -81,7 +81,7 @@ def user_api(request):
 
 def user_salesforce_update(request):
     user = request.user
-    email = request.GET['email']
+    email = request.GET.get('email', None)
     salesforce_faculty_verified_failed = False
     salesforce_verification_pending_failed = False
     salesforce_email_previously_used = False
