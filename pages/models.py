@@ -108,6 +108,7 @@ class ColumnBlock(blocks.StructBlock):
 class FAQBlock(blocks.StructBlock):
     question = blocks.RichTextBlock(required=True)
     answer = blocks.RichTextBlock(required=True)
+    document = DocumentChooserBlock(required=False)
 
     class Meta:
         icon = 'placeholder'
