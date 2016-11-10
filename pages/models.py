@@ -107,6 +107,7 @@ class ColumnBlock(blocks.StructBlock):
 
 class FAQBlock(blocks.StructBlock):
     question = blocks.RichTextBlock(required=True)
+    slug = blocks.CharBlock(required=True)
     answer = blocks.RichTextBlock(required=True)
     document = DocumentChooserBlock(required=False)
 
