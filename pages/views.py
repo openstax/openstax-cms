@@ -13,7 +13,8 @@ from .models import (GeneralPage,
                      TermsOfService,
                      AP,
                      FAQ,
-                     Support)
+                     Support,
+                     GiveForm)
 from .serializers import (HomePageSerializer,
                           HigherEducationSerializer,
                           GeneralPageSerializer,
@@ -26,7 +27,8 @@ from .serializers import (HomePageSerializer,
                           TermsOfServiceSerializer,
                           APSerializer,
                           FAQSerializer,
-                          SupportSerializer)
+                          SupportSerializer,
+                          GiveFormSerializer)
 
 
 class JSONResponse(HttpResponse):
@@ -139,6 +141,13 @@ def page_detail(request, slug):
         serializer = SupportSerializer(page)
         return JSONResponse(serializer.data)
     except Support.DoesNotExist:
+        page_found = False
+
+    try:
+        page = GiveForm.objects.get(slug=slug)
+        serializer = GiveFormSerializer(page)
+        return JSONResponse(serializer.data)
+    except GiveForm.DoesNotExist:
         page_found = False
 
     if not page_found:

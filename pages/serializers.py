@@ -10,7 +10,8 @@ from .models import (HomePage,
                      TermsOfService,
                      AP,
                      FAQ,
-                     Support)
+                     Support,
+                     GiveForm)
 from wagtail.contrib.wagtailapi.serializers import PageSerializer
 
 
@@ -90,3 +91,9 @@ class SupportSerializer(PageSerializer):
     class Meta:
         model = Support
         fields = Support.api_fields
+
+
+class GiveFormSerializer(PageSerializer):
+    class Meta:
+        model = GiveForm
+        fields = GiveForm.api_fields
