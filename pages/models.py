@@ -271,6 +271,7 @@ class HomePage(Page):
         'pages.AP',
         'pages.FAQ',
         'pages.Support',
+        'pages.GiveForm',
         'books.BookIndex',
         'news.NewsIndex',
         'allies.Ally',
@@ -781,6 +782,31 @@ class Support(Page):
         FieldPanel('intro_heading'),
         FieldPanel('intro_description'),
         StreamFieldPanel('row_1'),
+    ]
+
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+    ]
+
+    parent_page_types = ['pages.HomePage']
+
+
+class GiveForm(Page):
+    page_description = models.TextField()
+
+    api_fields = (
+        'title',
+        'page_description',
+        'slug',
+        'seo_title',
+        'search_description',
+    )
+
+    content_panels = [
+        FieldPanel('title', classname="full title"),
+        FieldPanel('page_description'),
     ]
 
     promote_panels = [
