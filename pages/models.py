@@ -765,7 +765,7 @@ class FAQ(Page):
 
 class Support(Page):
     intro_heading = models.CharField(max_length=255)
-    intro_description = models.TextField()
+    intro_description = RichTextField()
 
     row_1 = StreamField([
         ('column', ColumnBlock()),
