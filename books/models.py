@@ -365,7 +365,6 @@ class Book(Page):
         FieldPanel('coming_soon'),
         FieldPanel('ibook_link'),
         FieldPanel('ibook_link_volume_2'),
-        FieldPanel('webview_link'),
         FieldPanel('concept_coach_link'),
         FieldPanel('bookshare_link'),
         FieldPanel('amazon_link'),
@@ -474,6 +473,8 @@ class Book(Page):
             authors.append(author_json)
         if self.authors != json.dumps(authors):
             self.authors = json.dumps(authors)
+
+        self.webview_link = 'https://cnx.org/contents/' + self.cnx_id
 
         return super(Book, self).save(*args, **kwargs)
 
