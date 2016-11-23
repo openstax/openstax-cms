@@ -13,6 +13,8 @@ from news.search import search
 
 from api import urls as api_urls
 
+admin.site.site_header = 'OpenStax'
+
 urlpatterns = [
     url(r'^django-admin/', include(admin.site.urls)),
 
