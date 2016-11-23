@@ -30,3 +30,5 @@ simple_salesforce==0.68.1
 # Django SES has not updated their Pypy release, so we need to install from Github
 git+https://github.com/django-ses/django-ses.git
 PyYAML==3.11
+unicodecsv==0.14.1
+Unidecode==0.4.19
