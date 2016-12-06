@@ -6,22 +6,22 @@ from wagtail.wagtailadmin.menu import MenuItem
 from books.models import Book
 
 
-NEW = 'N'
-EDITORIAL_REVIEW = 'R'
-APPROVED_FOR_PUBLISH = 'A'
-COMPLETED = 'C'
+NEW = 'New'
+EDITORIAL_REVIEW = 'Editorial Review'
+REVIEWED = 'Reviewed'
+COMPLETED = 'Completed'
 ERRATA_STATUS = (
     (NEW, 'New'),
     (EDITORIAL_REVIEW, 'Editorial Review'),
-    (APPROVED_FOR_PUBLISH, 'Approved For Publish'),
+    (REVIEWED, 'Reviewed'),
     (COMPLETED, 'Completed'),
 )
 
-DUPLICATE = 'D'
-NOT_AN_ERROR = 'N'
-WILL_NOT_FIX = 'W'
-PUBLISHED = 'P'
-MAJOR_BOOK_REVISION = 'M'
+DUPLICATE = 'Duplicate'
+NOT_AN_ERROR = 'Not An Error'
+WILL_NOT_FIX = 'Will Not Fix'
+PUBLISHED = 'Published'
+MAJOR_BOOK_REVISION = 'Major Book Revision'
 ERRATA_RESOLUTIONS = (
     (DUPLICATE, 'Duplicate'),
     (NOT_AN_ERROR, 'Not An Error'),
@@ -50,12 +50,12 @@ class Errata(models.Model):
     modified = models.DateTimeField(auto_now=True)
     book = models.ForeignKey(Book)
     status = models.CharField(
-        max_length=1,
+        max_length=100,
         choices=ERRATA_STATUS,
         default=NEW,
     )
     resolution = models.CharField(
-        max_length=1,
+        max_length=100,
         choices=ERRATA_RESOLUTIONS,
         blank=True,
         null=True,
