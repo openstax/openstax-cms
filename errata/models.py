@@ -68,7 +68,6 @@ class Errata(models.Model):
     internal_notes = models.TextField(blank=True, null=True)
     error_type = models.ForeignKey(ErrorType, blank=True, null=True, on_delete=models.PROTECT)
     resource = models.ManyToManyField(Resource)
-    supporting_documentation = models.FileField(upload_to='errata/', blank=True, null=True)
     submitter_email_address = models.EmailField(blank=True, null=True)
 
     def resources(self):
@@ -80,3 +79,13 @@ class Errata(models.Model):
 
     def __str__(self):
         return self.book.title
+
+
+class InternalDocumentation(models.Model):
+    errata = models.ForeignKey(Errata)
+    file = models.FileField(upload_to='errata/internal/')
+
+
+class ExternalDocumentation(models.Model):
+    errata = models.ForeignKey(Errata)
+    file = models.FileField(upload_to='errata/external/')

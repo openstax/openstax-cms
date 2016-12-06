@@ -8,7 +8,15 @@ from django.views.decorators.csrf import csrf_protect
 from django.http import HttpResponse
 from django.utils.encoding import smart_str
 
-from .models import Errata, Resource, ErrorType
+from .models import Errata, Resource, ErrorType, InternalDocumentation, ExternalDocumentation
+
+
+class InlineInternalImage(admin.TabularInline):
+    model = InternalDocumentation
+
+
+class InlineExternalImage(admin.TabularInline):
+    model = ExternalDocumentation
 
 
 class ErrataAdmin(admin.ModelAdmin):
@@ -31,6 +39,7 @@ class ErrataAdmin(admin.ModelAdmin):
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
     }
     actions = ['mark_in_review', 'mark_approved', 'mark_archived', 'export_as_csv']
+    inlines = [InlineInternalImage, InlineExternalImage]
 
     """Actions for the Django Admin list view"""
     def mark_in_review(self, request, queryset):
@@ -134,7 +143,6 @@ class ErrataAdmin(admin.ModelAdmin):
                            'internal_notes',
                            'error_type',
                            'resource',
-                           'supporting_documentation',
                            'submitter_email_address'] # fields to show on the actual form
             self.readonly_fields = ['created',
                                     'modified']
@@ -153,7 +161,6 @@ class ErrataAdmin(admin.ModelAdmin):
                            'internal_notes',
                            'error_type',
                            'resource',
-                           'supporting_documentation',
                            'submitter_email_address']
             self.readonly_fields = ['created',
                                     'modified',
