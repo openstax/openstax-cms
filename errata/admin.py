@@ -134,6 +134,7 @@ class ErrataAdmin(admin.ModelAdmin):
                            'internal_notes',
                            'error_type',
                            'resource',
+                           'supporting_documentation',
                            'submitter_email_address'] # fields to show on the actual form
             self.readonly_fields = ['created',
                                     'modified']
@@ -152,6 +153,7 @@ class ErrataAdmin(admin.ModelAdmin):
                            'internal_notes',
                            'error_type',
                            'resource',
+                           'supporting_documentation',
                            'submitter_email_address']
             self.readonly_fields = ['created',
                                     'modified',
