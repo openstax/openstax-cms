@@ -79,3 +79,13 @@ class Errata(models.Model):
 
     def __str__(self):
         return self.book.title
+
+
+class InternalDocumentation(models.Model):
+    errata = models.ForeignKey(Errata)
+    file = models.FileField(upload_to='errata/internal/')
+
+
+class ExternalDocumentation(models.Model):
+    errata = models.ForeignKey(Errata)
+    file = models.FileField(upload_to='errata/external/')
