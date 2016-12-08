@@ -7,6 +7,7 @@ from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.forms import ValidationError
+from django.utils.html import format_html, mark_safe
 from modelcluster.fields import ParentalKey
 from wagtail.wagtailadmin.edit_handlers import (FieldPanel, InlinePanel,
                                                 PageChooserPanel, StreamFieldPanel)
@@ -422,6 +423,13 @@ class Book(Page):
 
     parent_page_types = ['books.BookIndex']
 
+    @property
+    def book_title(self):
+        return format_html(
+            '{}',
+            mark_safe(self.book.title),
+        )
+
     def get_slug(self):
         return 'books/{}'.format(self.slug)
 
@@ -477,6 +485,9 @@ class Book(Page):
         self.webview_link = 'https://cnx.org/contents/' + self.cnx_id
 
         return super(Book, self).save(*args, **kwargs)
+
+    def __str__(self):
+        return self.book_title
 
 
 class BookIndex(Page):

@@ -7,6 +7,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from django.http import HttpResponse
 from django.utils.encoding import smart_str
+from django.utils.html import mark_safe
 
 from .models import Errata, Resource, ErrorType, InternalDocumentation, ExternalDocumentation
 
@@ -113,17 +114,20 @@ class ErrataAdmin(admin.ModelAdmin):
             extra_context['readonly'] = True
         return super(ErrataAdmin, self).change_view(request, object_id, extra_context=extra_context)
 
+    def _book_title(self, obj):
+        return mark_safe(obj.book.title)
+
     """Model permissions"""
     @method_decorator(csrf_protect)
     def changelist_view(self, request, extra_context=None):
         if request.user.is_superuser:
-            self.list_display = ['id', 'book', 'status', 'error_type', 'resources', 'resolution', 'archived'] # list of fields to show if user can't approve the post
-            self.list_display_links = ['book']
+            self.list_display = ['id', '_book_title', 'status', 'error_type', 'resources', 'resolution', 'archived'] # list of fields to show if user can't approve the post
+            self.list_display_links = ['_book_title']
             self.list_filter = ('book', 'status', 'created', 'modified', 'error_type', 'archived')
             self.editable = ['resolution']
         else:
-            self.list_display = ['id', 'book', 'status', 'error_type', 'resource', 'created', 'archived'] # list of fields to show if user can approve the post
-            self.list_display_links = ['book']
+            self.list_display = ['id', '_book_title', 'status', 'error_type', 'resource', 'created', 'archived'] # list of fields to show if user can approve the post
+            self.list_display_links = ['_book_title']
             self.list_filter = ('book', 'status', 'created', 'modified', 'error_type', 'archived')
         return super(ErrataAdmin, self).changelist_view(request, extra_context)
 
