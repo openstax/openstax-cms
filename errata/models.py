@@ -78,7 +78,7 @@ class Errata(models.Model):
         return MenuItem('Errata', '/django-admin/errata/errata', classnames='icon icon-openquote', order=10000)
 
     def __str__(self):
-        return self.book.title
+        return self.book.book_title
 
 
 class InternalDocumentation(models.Model):
