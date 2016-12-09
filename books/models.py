@@ -353,7 +353,8 @@ class Book(Page):
         InlinePanel('book_student_resources', label="Student Resources"),
         InlinePanel('book_faculty_resources', label="Instructor Resources"),
         InlinePanel('book_contributing_authors', label="Contributing Authors"),
-        StreamFieldPanel('authors'),
+        #Hide until we are pulling authors from CNX
+        #StreamFieldPanel('authors'),
         FieldPanel('isbn_10'),
         FieldPanel('isbn_13'),
         FieldPanel('license_text'),
