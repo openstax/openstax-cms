@@ -64,7 +64,7 @@ class ErrataAdmin(admin.ModelAdmin):
 
         writer = unicodecsv.writer(response, encoding='utf-8')
         writer.writerow([
-            smart_str("ID"),
+            smart_str("Errata ID"),
             smart_str("Created"),
             smart_str("Modified"),
             smart_str("Book"),
