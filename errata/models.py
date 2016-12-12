@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils.timezone import now
 
 from wagtail.wagtailcore import hooks
 from wagtail.wagtailadmin.menu import MenuItem
@@ -72,6 +73,11 @@ class Errata(models.Model):
 
     def resources(self):
         return ", ".join([r.name for r in self.resource.all()])
+
+    def save(self, *args, **kwargs):
+        if self.resolution:
+            self.resolution_date = now()
+        super(Errata, self).save(*args, **kwargs)
 
     @hooks.register('register_admin_menu_item')
     def register_errata_menu_item():
