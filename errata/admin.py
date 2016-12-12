@@ -38,26 +38,23 @@ class ErrataAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
     }
-    actions = ['mark_in_review', 'mark_approved', 'mark_archived', 'export_as_csv']
+    actions = ['mark_in_review', 'mark_reviewed', 'mark_archived', 'export_as_csv']
     inlines = [InlineInternalImage, InlineExternalImage]
 
     """Actions for the Django Admin list view"""
     def mark_in_review(self, request, queryset):
-        queryset.update(status='R')
-    mark_in_review.short_description = "Mark errata as In Review"
+        queryset.update(status='Editorial Review')
+    mark_in_review.short_description = "Mark errata as in-review"
 
-    def mark_approved(self, request, queryset):
-        queryset.update(status='A')
-    mark_approved.short_description = "Mark errata as Approved"
+    def mark_reviewed(self, request, queryset):
+        queryset.update(status='Reviewed')
+    mark_reviewed.short_description = "Mark errata as reviewed"
 
     def mark_archived(self, request, queryset):
         queryset.update(archived=True)
-    mark_archived.short_description = "Mark errata as Archived"
+    mark_archived.short_description = "Mark errata as archived"
 
     def export_as_csv(self, request, queryset):
-        # we should use this instead of retyping all the fields
-        #field_names = self.fields
-
         response = HttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename={}.csv'.format("file1")
 
@@ -98,7 +95,7 @@ class ErrataAdmin(admin.ModelAdmin):
                 smart_str(obj.submitter_email_address),
             ])
         return response
-    export_as_csv.short_description = "export as csv"
+    export_as_csv.short_description = "Export as CSV file"
 
     def get_actions(self, request):
         actions = super(ErrataAdmin, self).get_actions(request)
