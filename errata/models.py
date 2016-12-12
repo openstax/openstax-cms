@@ -61,7 +61,7 @@ class Errata(models.Model):
         null=True,
     )
     archived = models.BooleanField(default=False)
-    location = models.CharField(max_length=250, blank=True, null=True)
+    location = models.TextField(blank=True, null=True)
     detail = models.TextField()
     resolution_notes = models.TextField(blank=True, null=True)
     resolution_date = models.DateField(blank=True, null=True)
