@@ -86,6 +86,10 @@ class Errata(models.Model):
     def __str__(self):
         return self.book.book_title
 
+    class Meta:
+        verbose_name = "erratum"
+        verbose_name_plural = "erratum"
+
 
 class InternalDocumentation(models.Model):
     errata = models.ForeignKey(Errata)
