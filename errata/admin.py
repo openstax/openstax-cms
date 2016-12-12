@@ -35,7 +35,6 @@ class ErrataAdmin(admin.ModelAdmin):
               'error_type',
               'resource',
               'submitter_email_address']
-    radio_fields = {'book': admin.HORIZONTAL}
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
     }
