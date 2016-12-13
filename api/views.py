@@ -129,4 +129,6 @@ def sticky_note(request):
         'show': sticky_note.show,
         'expires': sticky_note.expires,
         'content': sticky_note.content,
+        'emergency_expires': sticky_note.emergency_expires,
+        'emergency_content': sticky_note.emergency_content,
     })
