@@ -35,6 +35,7 @@ class ErrataAdmin(admin.ModelAdmin):
               'error_type',
               'resource',
               'submitter_email_address']
+    search_fields = ('id', 'book__title', 'detail', )
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
     }
