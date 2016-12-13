@@ -13,6 +13,7 @@ from rest_framework.decorators import api_view
 def send_contact_message(request):
     if request.method == 'POST':
         from_name = request.POST.get("from_name", "")
+        from_name.replace(',', ' ')
         from_address = request.POST.get("from_address", "")
         from_string = '{} <{}>'.format(from_name, from_address)
         subject = request.POST.get("subject", "")
