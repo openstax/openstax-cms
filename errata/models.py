@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.timezone import now
+from django.template.defaultfilters import truncatewords
 
 from wagtail.wagtailcore import hooks
 from wagtail.wagtailadmin.menu import MenuItem
@@ -70,6 +71,10 @@ class Errata(models.Model):
     error_type = models.ForeignKey(ErrorType, blank=True, null=True, on_delete=models.PROTECT)
     resource = models.ManyToManyField(Resource)
     submitter_email_address = models.EmailField(blank=True, null=True)
+
+    @property
+    def short_detail(self):
+        return truncatewords(self.detail, 15)
 
     def resources(self):
         return ", ".join([r.name for r in self.resource.all()])
