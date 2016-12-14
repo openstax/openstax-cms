@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.timezone import now
 from django.template.defaultfilters import truncatewords
+from django.core.exceptions import ValidationError
 
 from wagtail.wagtailcore import hooks
 from wagtail.wagtailadmin.menu import MenuItem
@@ -78,6 +79,10 @@ class Errata(models.Model):
 
     def resources(self):
         return ", ".join([r.name for r in self.resource.all()])
+
+    def clean(self):
+        if self.status == 'Completed' and not self.resolution:
+            raise ValidationError({'resolution': 'Resolution is required if status is complete.'})
 
     def save(self, *args, **kwargs):
         if self.resolution:
