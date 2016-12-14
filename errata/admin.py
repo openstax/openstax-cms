@@ -21,6 +21,9 @@ class InlineExternalImage(admin.TabularInline):
 
 
 class ErrataAdmin(admin.ModelAdmin):
+    list_max_show_all = 10000
+    list_per_page = 200
+
     fields = ['created',
               'modified',
               'book',
