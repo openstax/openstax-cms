@@ -8,7 +8,12 @@ def logout(request):
     next = request.GET.get('next', '')
     auth_logout(request)
 
+    response = None
+
     if next:
-        return redirect('{}/?next={}'.format(settings.OPENSTAX_ACCOUNTS_LOGOUT_URL, next))
+        response = redirect('{}/?next={}'.format(settings.OPENSTAX_ACCOUNTS_LOGOUT_URL, next))
     else:
-        return redirect(settings.OPENSTAX_ACCOUNTS_LOGOUT_URL)
+        response = redirect(settings.OPENSTAX_ACCOUNTS_LOGOUT_URL)
+
+    response.delete_cookie('_accounts_session')
+    return response
