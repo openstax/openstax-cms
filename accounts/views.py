@@ -5,10 +5,10 @@ from django.conf import settings
 
 def logout(request):
     """Logs out user redirects if in request"""
-    redirect = request.GET.get('r', '')
+    r = request.GET.get('r', '')
     auth_logout(request)
 
-    if redirect:
-        return redirect('{}/?r={}'.format(settings.OPENSTAX_ACCOUNTS_LOGOUT_URL, redirect))
+    if r:
+        return redirect('{}/?r={}'.format(settings.OPENSTAX_ACCOUNTS_LOGOUT_URL, r))
     else:
         return redirect(settings.OPENSTAX_ACCOUNTS_LOGOUT_URL)
