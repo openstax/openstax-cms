@@ -6,3 +6,4 @@
 /Vagrantfile.local
 openstax/settings/local.py
 *.log
+/.idea
