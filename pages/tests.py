@@ -14,7 +14,9 @@ from pages.models import (HomePage,
                           AP,
                           FAQ,
                           Support,
-                          GiveForm)
+                          GiveForm,
+                          Accessibility,
+                          Licensing)
 from allies.models import Ally
 from news.models import NewsIndex
 from books.models import BookIndex
@@ -57,6 +59,8 @@ class HomePageTests(WagtailPageTests):
             FAQ,
             Support,
             GiveForm,
+            Accessibility,
+            Licensing,
         })
 
 
