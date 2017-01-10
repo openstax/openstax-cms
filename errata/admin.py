@@ -9,6 +9,8 @@ from django.http import HttpResponse
 from django.utils.encoding import smart_str
 from django.utils.html import mark_safe
 
+from extraadminfilters.filters import UnionFieldListFilter
+
 from .models import Errata, Resource, ErrorType, InternalDocumentation, ExternalDocumentation
 
 
@@ -123,14 +125,14 @@ class ErrataAdmin(admin.ModelAdmin):
         if request.user.is_superuser:
             self.list_display = ['id', '_book_title', 'short_detail', 'status', 'error_type', 'resources', 'resolution', 'archived'] # list of fields to show if user can't approve the post
             self.list_display_links = ['_book_title']
-            self.list_filter = ('book', 'status', 'created', 'modified', 'error_type', 'archived')
-            self.list_filter = ('book', 'status', 'created', 'modified', 'error_type', 'resolution', 'archived')
+            #self.list_filter = ('book', 'status', 'created', 'modified', 'error_type', 'archived')
+            self.list_filter = (('book', UnionFieldListFilter), 'status', 'created', 'modified', 'error_type', 'resolution', 'archived')
             self.editable = ['resolution']
         else:
             self.list_display = ['id', '_book_title', 'short_detail', 'status', 'error_type', 'resource', 'created', 'archived'] # list of fields to show if user can approve the post
             self.list_display_links = ['_book_title']
-            self.list_filter = ('book', 'status', 'created', 'modified', 'error_type', 'archived')
-            self.list_filter = ('book', 'status', 'created', 'modified', 'error_type', 'resolution', 'archived')
+            #self.list_filter = ('book', 'status', 'created', 'modified', 'error_type', 'archived')
+            self.list_filter = (('book', UnionFieldListFilter), 'status', 'created', 'modified', 'error_type', 'resolution', 'archived')
         return super(ErrataAdmin, self).changelist_view(request, extra_context)
 
     @method_decorator(csrf_protect)

@@ -176,6 +176,7 @@ INSTALLED_APPS = [
     'mail',
     'global_settings',
     'errata',
+    'extraadminfilters',
     # wagtail
     'wagtail.wagtailcore',
     'wagtail.wagtailadmin',
