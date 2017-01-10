@@ -14,7 +14,9 @@ from .models import (GeneralPage,
                      AP,
                      FAQ,
                      Support,
-                     GiveForm)
+                     GiveForm,
+                     Accessibility,
+                     Licensing)
 from .serializers import (HomePageSerializer,
                           HigherEducationSerializer,
                           GeneralPageSerializer,
@@ -28,7 +30,9 @@ from .serializers import (HomePageSerializer,
                           APSerializer,
                           FAQSerializer,
                           SupportSerializer,
-                          GiveFormSerializer)
+                          GiveFormSerializer,
+                          AccessibilitySerializer,
+                          LicensingSerializer)
 
 
 class JSONResponse(HttpResponse):
@@ -148,6 +152,20 @@ def page_detail(request, slug):
         serializer = GiveFormSerializer(page)
         return JSONResponse(serializer.data)
     except GiveForm.DoesNotExist:
+        page_found = False
+
+    try:
+        page = Accessibility.objects.get(slug=slug)
+        serializer = AccessibilitySerializer(page)
+        return JSONResponse(serializer.data)
+    except Accessibility.DoesNotExist:
+        page_found = False
+
+    try:
+        page = Licensing.objects.get(slug=slug)
+        serializer = LicensingSerializer(page)
+        return JSONResponse(serializer.data)
+    except Licensing.DoesNotExist:
         page_found = False
 
     if not page_found:

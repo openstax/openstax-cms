@@ -11,7 +11,9 @@ from .models import (HomePage,
                      AP,
                      FAQ,
                      Support,
-                     GiveForm)
+                     GiveForm,
+                     Accessibility,
+                     Licensing)
 from wagtail.contrib.wagtailapi.serializers import PageSerializer
 
 
@@ -97,3 +99,15 @@ class GiveFormSerializer(PageSerializer):
     class Meta:
         model = GiveForm
         fields = GiveForm.api_fields
+
+
+class AccessibilitySerializer(PageSerializer):
+    class Meta:
+        model = Accessibility
+        fields = Accessibility.api_fields
+
+
+class LicensingSerializer(PageSerializer):
+    class Meta:
+        model = Licensing
+        fields = Licensing.api_fields
