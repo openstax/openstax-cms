@@ -272,6 +272,8 @@ class HomePage(Page):
         'pages.FAQ',
         'pages.Support',
         'pages.GiveForm',
+        'pages.Accessibility',
+        'pages.Licensing',
         'books.BookIndex',
         'news.NewsIndex',
         'allies.Ally',
@@ -810,6 +812,62 @@ class GiveForm(Page):
     content_panels = [
         FieldPanel('title', classname="full title"),
         FieldPanel('page_description'),
+    ]
+
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+    ]
+
+    parent_page_types = ['pages.HomePage']
+
+
+class Accessibility(Page):
+    intro_heading = models.CharField(max_length=255)
+    accessibility_content = RichTextField()
+
+    api_fields = (
+        'title',
+        'intro_heading',
+        'accessibility_content',
+        'slug',
+        'seo_title',
+        'search_description',
+    )
+
+    content_panels = [
+        FieldPanel('title', classname='full title'),
+        FieldPanel('intro_heading'),
+        FieldPanel('accessibility_content'),
+    ]
+
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+    ]
+
+    parent_page_types = ['pages.HomePage']
+
+
+class Licensing(Page):
+    intro_heading = models.CharField(max_length=255)
+    licensing_content = RichTextField()
+
+    api_fields = (
+        'title',
+        'intro_heading',
+        'licensing_content',
+        'slug',
+        'seo_title',
+        'search_description',
+    )
+
+    content_panels = [
+        FieldPanel('title', classname='full title'),
+        FieldPanel('intro_heading'),
+        FieldPanel('licensing_content'),
     ]
 
     promote_panels = [
