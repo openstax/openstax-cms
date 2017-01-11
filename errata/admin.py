@@ -111,7 +111,7 @@ class ErrataAdmin(admin.ModelAdmin):
         return actions
 
     def change_view(self, request, object_id, extra_context=None):
-        if not request.user.is_superuser:
+        if not request.user.is_superuser or request.user.groups.filter(name__in=['Content Managers', 'Content Development Intern']).exists():
             extra_context = extra_context or {}
             extra_context['readonly'] = True
         return super(ErrataAdmin, self).change_view(request, object_id, extra_context=extra_context)
@@ -122,7 +122,7 @@ class ErrataAdmin(admin.ModelAdmin):
     """Model permissions"""
     @method_decorator(csrf_protect)
     def changelist_view(self, request, extra_context=None):
-        if request.user.is_superuser:
+        if request.user.is_superuser or request.user.groups.filter(name__in=['Content Managers', 'Content Development Intern']).exists():
             self.list_display = ['id', '_book_title', 'short_detail', 'status', 'error_type', 'resources', 'resolution', 'archived'] # list of fields to show if user can't approve the post
             self.list_display_links = ['_book_title']
             #self.list_filter = ('book', 'status', 'created', 'modified', 'error_type', 'archived')
