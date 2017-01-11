@@ -1,6 +1,7 @@
 from .base import *
 
 DEBUG = True
+ALLOWED_HOSTS = ['.openstax.org']
 
 # Allows you to test sending mail, output is logged to the console
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
