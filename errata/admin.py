@@ -39,6 +39,7 @@ class ErrataAdmin(admin.ModelAdmin):
               'internal_notes',
               'error_type',
               'resource',
+              'submitted_by',
               'submitter_email_address']
     search_fields = ('id', 'book__title', 'detail', )
     formfield_overrides = {
@@ -46,6 +47,7 @@ class ErrataAdmin(admin.ModelAdmin):
     }
     actions = ['mark_in_review', 'mark_reviewed', 'mark_archived', 'export_as_csv']
     inlines = [InlineInternalImage, InlineExternalImage]
+    raw_id_fields = ('submitted_by',)
 
     """Actions for the Django Admin list view"""
     def mark_in_review(self, request, queryset):
@@ -80,6 +82,7 @@ class ErrataAdmin(admin.ModelAdmin):
             smart_str("Internal Notes"),
             smart_str("Error Type"),
             smart_str("Resource"),
+            smart_str("Submitted By"),
             smart_str("Submitter E-mail Address"),
         ])
         for obj in queryset:
@@ -98,6 +101,7 @@ class ErrataAdmin(admin.ModelAdmin):
                 smart_str(obj.internal_notes),
                 smart_str(obj.error_type),
                 smart_str(obj.resource),
+                smart_str(obj.submitted_by),
                 smart_str(obj.submitter_email_address),
             ])
         return response
@@ -149,6 +153,7 @@ class ErrataAdmin(admin.ModelAdmin):
                            'internal_notes',
                            'error_type',
                            'resource',
+                           'submitted_by',
                            'submitter_email_address'] # fields to show on the actual form
             self.readonly_fields = ['created',
                                     'modified']
@@ -167,6 +172,7 @@ class ErrataAdmin(admin.ModelAdmin):
                            'internal_notes',
                            'error_type',
                            'resource',
+                           'submitted_by'
                            'submitter_email_address']
             self.readonly_fields = ['created',
                                     'modified',
@@ -181,6 +187,7 @@ class ErrataAdmin(admin.ModelAdmin):
                                     'internal_notes',
                                     'error_type',
                                     'resource',
+                                    'submitted_by',
                                     'submitter_email_address']
             self.save_as = False
 

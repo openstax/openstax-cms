@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.timezone import now
 from django.template.defaultfilters import truncatewords
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User
 
 from wagtail.wagtailcore import hooks
 from wagtail.wagtailadmin.menu import MenuItem
@@ -71,6 +72,7 @@ class Errata(models.Model):
     internal_notes = models.TextField(blank=True, null=True)
     error_type = models.ForeignKey(ErrorType, blank=True, null=True, on_delete=models.PROTECT)
     resource = models.ManyToManyField(Resource)
+    submitted_by = models.ForeignKey(User, blank=True, null=True)
     submitter_email_address = models.EmailField(blank=True, null=True)
 
     @property
