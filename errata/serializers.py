@@ -11,3 +11,7 @@ class ErrataSerializer(serializers.ModelSerializer):
     class Meta:
         model = Errata
         fields = '__all__'
+
+
+class ErrataListSerializer(serializers.ListSerializer):
+    child = ErrataSerializer()

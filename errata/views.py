@@ -2,7 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 from rest_framework.renderers import JSONRenderer
 from .models import Errata
-from .serializers import ErrataSerializer
+from .serializers import ErrataSerializer, ErrataListSerializer
 
 
 class JSONResponse(HttpResponse):
@@ -22,3 +22,9 @@ def errata_detail(request, id):
         return JSONResponse(serializer.data)
     except Errata.DoesNotExist:
         return HttpResponse(status=404)
+
+
+def errata_list(request):
+    queryset = Errata.objects.filter()
+    serializer = ErrataListSerializer(queryset)
+    return JSONResponse(serializer.data)
