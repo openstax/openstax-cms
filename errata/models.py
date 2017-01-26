@@ -24,13 +24,13 @@ ERRATA_STATUS = (
 DUPLICATE = 'Duplicate'
 NOT_AN_ERROR = 'Not An Error'
 WILL_NOT_FIX = 'Will Not Fix'
-PUBLISHED = 'Published'
+APPROVED = 'Approved'
 MAJOR_BOOK_REVISION = 'Major Book Revision'
 ERRATA_RESOLUTIONS = (
     (DUPLICATE, 'Duplicate'),
     (NOT_AN_ERROR, 'Not An Error'),
     (WILL_NOT_FIX, 'Will Not Fix'),
-    (PUBLISHED, 'Published'),
+    (APPROVED, 'Approved'),
     (MAJOR_BOOK_REVISION, 'Major Book Revision'),
 )
 
