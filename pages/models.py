@@ -126,15 +126,13 @@ class AboutUsOpenStaxTeam(Orderable, OpenStaxTeam):
 class AboutUs(Page):
     tagline = models.CharField(max_length=255)
     intro_heading = models.CharField(max_length=255)
-    intro_paragraph = models.TextField()
+    intro_paragraph = RichTextField()
     our_team_heading = models.CharField(max_length=255)
-    faq_link = models.CharField(max_length=255)
 
     api_fields = (
         'tagline',
         'intro_heading',
         'intro_paragraph',
-        'faq_link',
         'our_team_heading',
         'openstax_team',
         'strategic_advisors',
@@ -147,7 +145,6 @@ class AboutUs(Page):
         FieldPanel('tagline'),
         FieldPanel('intro_heading'),
         FieldPanel('intro_paragraph'),
-        FieldPanel('faq_link'),
         FieldPanel('our_team_heading'),
         InlinePanel('openstax_team', label="OpenStax Team"),
         InlinePanel('strategic_advisors', label="Strategic Advisors"),
