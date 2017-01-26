@@ -83,8 +83,8 @@ class Errata(models.Model):
         return ", ".join([r.name for r in self.resource.all()])
 
     def clean(self):
-        if self.status == 'Completed' and not self.resolution:
-            raise ValidationError({'resolution': 'Resolution is required if status is complete.'})
+        if self.status == 'Completed' or self.status == 'Reviewed' and not self.resolution:
+            raise ValidationError({'resolution': 'Resolution is required if status is completed or reviewed.'})
 
     def save(self, *args, **kwargs):
         if self.resolution:
