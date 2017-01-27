@@ -1,8 +1,13 @@
+import django_filters
 from django.http import HttpResponse
 from rest_framework.renderers import JSONRenderer
 from rest_framework.viewsets import ModelViewSet
+
+from rest_framework.filters import OrderingFilter
+from django_filters.rest_framework import DjangoFilterBackend, FilterSet
+
 from .models import Errata
-from .serializers import ErrataSerializer, ErratumSerializer
+from .serializers import ErrataSerializer
 
 
 class JSONResponse(HttpResponse):
@@ -15,18 +20,19 @@ class JSONResponse(HttpResponse):
         super(JSONResponse, self).__init__(content, **kwargs)
 
 
-def errata_detail(request, id):
-    try:
-        errata = Errata.objects.get(pk=id)
-        serializer = ErrataSerializer(errata)
-        return JSONResponse(serializer.data)
-    except Errata.DoesNotExist:
-        return HttpResponse(status=404)
+class ErrataFilter(FilterSet):
+    book_title = django_filters.CharFilter(name='book__title')
+    book_id = django_filters.CharFilter(name='book__id')
+
+    class Meta:
+        model = Errata
+        fields = ['book_title', 'book_id', 'archived']
 
 
-class ErratumView(ModelViewSet):
-    serializer_class = ErratumSerializer
-    http_method_names = ['get', 'head']
-
-    def get_queryset(self):
-        return Errata.objects.all()
+class ErrataView(ModelViewSet):
+    queryset = Errata.objects.all()
+    serializer_class = ErrataSerializer
+    http_method_names = ['get', 'post', 'head']
+    filter_backends = (DjangoFilterBackend, OrderingFilter)
+    filter_class = ErrataFilter
+    ordering_fields = ('id', 'resolution_date', 'created', 'modified', )
