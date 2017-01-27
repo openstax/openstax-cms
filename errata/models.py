@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.timezone import now
 from django.template.defaultfilters import truncatewords
 from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User
 
 from wagtail.wagtailcore import hooks
 from wagtail.wagtailadmin.menu import MenuItem
@@ -23,13 +24,13 @@ ERRATA_STATUS = (
 DUPLICATE = 'Duplicate'
 NOT_AN_ERROR = 'Not An Error'
 WILL_NOT_FIX = 'Will Not Fix'
-PUBLISHED = 'Published'
+APPROVED = 'Approved'
 MAJOR_BOOK_REVISION = 'Major Book Revision'
 ERRATA_RESOLUTIONS = (
     (DUPLICATE, 'Duplicate'),
     (NOT_AN_ERROR, 'Not An Error'),
     (WILL_NOT_FIX, 'Will Not Fix'),
-    (PUBLISHED, 'Published'),
+    (APPROVED, 'Approved'),
     (MAJOR_BOOK_REVISION, 'Major Book Revision'),
 )
 
@@ -71,6 +72,7 @@ class Errata(models.Model):
     internal_notes = models.TextField(blank=True, null=True)
     error_type = models.ForeignKey(ErrorType, blank=True, null=True, on_delete=models.PROTECT)
     resource = models.ManyToManyField(Resource)
+    submitted_by = models.ForeignKey(User, blank=True, null=True)
     submitter_email_address = models.EmailField(blank=True, null=True)
 
     @property
@@ -81,8 +83,8 @@ class Errata(models.Model):
         return ", ".join([r.name for r in self.resource.all()])
 
     def clean(self):
-        if self.status == 'Completed' and not self.resolution:
-            raise ValidationError({'resolution': 'Resolution is required if status is complete.'})
+        if self.status == 'Completed' or self.status == 'Reviewed' and not self.resolution:
+            raise ValidationError({'resolution': 'Resolution is required if status is completed or reviewed.'})
 
     def save(self, *args, **kwargs):
         if self.resolution:

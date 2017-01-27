@@ -1,8 +1,8 @@
 from django.http import HttpResponse
-from django.shortcuts import render
 from rest_framework.renderers import JSONRenderer
+from rest_framework.viewsets import ModelViewSet
 from .models import Errata
-from .serializers import ErrataSerializer, ErrataListSerializer
+from .serializers import ErrataSerializer, ErratumSerializer
 
 
 class JSONResponse(HttpResponse):
@@ -24,7 +24,9 @@ def errata_detail(request, id):
         return HttpResponse(status=404)
 
 
-def errata_list(request):
-    queryset = Errata.objects.filter()
-    serializer = ErrataListSerializer(queryset)
-    return JSONResponse(serializer.data)
+class ErratumView(ModelViewSet):
+    serializer_class = ErratumSerializer
+    http_method_names = ['get', 'head']
+
+    def get_queryset(self):
+        return Errata.objects.all()

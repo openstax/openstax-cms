@@ -13,5 +13,9 @@ class ErrataSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
 
-class ErrataListSerializer(serializers.ListSerializer):
-    child = ErrataSerializer()
+class ErratumSerializer(serializers.ModelSerializer):
+    erratum = ErrataSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = Errata
+        fields = '__all__'
