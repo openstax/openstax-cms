@@ -2,7 +2,7 @@ from django.http import HttpResponse
 from rest_framework.renderers import JSONRenderer
 from rest_framework.viewsets import ModelViewSet
 from .models import Errata
-from .serializers import ErrataSerializer, ErratumSerializer
+from .serializers import ErrataSerializer
 
 
 class JSONResponse(HttpResponse):
@@ -15,18 +15,9 @@ class JSONResponse(HttpResponse):
         super(JSONResponse, self).__init__(content, **kwargs)
 
 
-def errata_detail(request, id):
-    try:
-        errata = Errata.objects.get(pk=id)
-        serializer = ErrataSerializer(errata)
-        return JSONResponse(serializer.data)
-    except Errata.DoesNotExist:
-        return HttpResponse(status=404)
-
-
-class ErratumView(ModelViewSet):
-    serializer_class = ErratumSerializer
-    http_method_names = ['get', 'head']
+class ErrataView(ModelViewSet):
+    serializer_class = ErrataSerializer
+    http_method_names = ['get', 'post', 'head']
 
     def get_queryset(self):
         return Errata.objects.all()

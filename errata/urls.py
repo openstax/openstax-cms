@@ -1,10 +1,10 @@
-from django.conf.urls import url
+from django.conf.urls import include, url
 from rest_framework import routers
 from . import views
 
 router = routers.SimpleRouter()
-router.register(r'', views.ErratumView, base_name='erratum')
+router.register(r'', views.ErrataView, base_name='errata')
 
 urlpatterns = [
-    url(r'^(?P<id>\d+)/$', views.errata_detail),
-] + router.urls
+    url(r'^', include(router.urls)),
+]
