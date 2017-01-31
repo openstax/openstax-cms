@@ -82,6 +82,12 @@ class Errata(models.Model):
     def resources(self):
         return ", ".join([r.name for r in self.resource.all()])
 
+    def error_type_label(self):
+        if self.error_type:
+            return self.error_type.name
+        else:
+            return None
+
     def clean(self):
         if self.status == 'Completed' or self.status == 'Reviewed' and not self.resolution:
             raise ValidationError({'resolution': 'Resolution is required if status is completed or reviewed.'})
@@ -109,5 +115,5 @@ class InternalDocumentation(models.Model):
 
 
 class ExternalDocumentation(models.Model):
-    errata = models.ForeignKey(Errata)
+    errata = models.ForeignKey(Errata, related_name='external_documentation', on_delete=models.CASCADE)
     file = models.FileField(upload_to='errata/external/')
