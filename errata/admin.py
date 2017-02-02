@@ -127,7 +127,7 @@ class ErrataAdmin(admin.ModelAdmin):
     @method_decorator(csrf_protect)
     def changelist_view(self, request, extra_context=None):
         if request.user.is_superuser or request.user.groups.filter(name__in=['Content Managers', 'Content Development Intern']).exists():
-            self.list_display = ['id', '_book_title', 'short_detail', 'status', 'error_type', 'resources', 'resolution', 'archived'] # list of fields to show if user can't approve the post
+            self.list_display = ['id', '_book_title', 'short_detail', 'status', 'error_type', 'resource', 'resolution', 'archived'] # list of fields to show if user can't approve the post
             self.list_display_links = ['_book_title']
             self.list_filter = (('book', UnionFieldListFilter), 'status', 'created', 'modified', 'error_type', 'resolution', 'archived')
             self.editable = ['resolution']
