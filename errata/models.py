@@ -34,19 +34,37 @@ ERRATA_RESOLUTIONS = (
     (MAJOR_BOOK_REVISION, 'Major Book Revision'),
 )
 
+FACTUAL = 'Other Factual Inaccuracy in Content'
+PEDAGOGICAL = 'General/Pedagogical Suggestion or Question'
+CALCULATION = 'Incorrect Calculation or Solution'
+LINK = 'Broken Link'
+TYPO = 'Typo'
+OTHER = 'Other'
+ERRATA_ERROR_TYPES = (
+    (FACTUAL, 'Other Factual Inaccuracy in Content'),
+    (PEDAGOGICAL, 'General/Pedagogical Suggestion or Question'),
+    (CALCULATION, 'Incorrect Calculation or Solution'),
+    (LINK, 'Incorrect Calculation or Solution'),
+    (TYPO, 'Typo'),
+    (OTHER, 'Other'),
+)
 
-class Resource(models.Model):
-    name = models.CharField(max_length=250)
-
-    def __str__(self):
-        return self.name
-
-
-class ErrorType(models.Model):
-    name = models.CharField(max_length=250)
-
-    def __str__(self):
-        return self.name
+TEXTBOOK = 'Textbook'
+IBOOKS = 'iBooks version'
+INSTRUCTOR_SOLUTION = 'Instructor solution manual'
+STUDENT_SOLUTION = 'Student solution manual'
+TUTOR = 'Openstax Tutor'
+CONCEPT_COACH = 'Openstax Concept Coach'
+OTHER = 'Other'
+ERRATA_RESOURCES = (
+    (TEXTBOOK, 'Textbook'),
+    (IBOOKS, 'iBooks version'),
+    (INSTRUCTOR_SOLUTION, 'Instructor solution manual'),
+    (STUDENT_SOLUTION, 'Student solution manual'),
+    (TUTOR, 'Openstax Tutor'),
+    (CONCEPT_COACH, 'Openstax Concept Coach'),
+    (OTHER, 'Other'),
+)
 
 
 class Errata(models.Model):
@@ -70,23 +88,26 @@ class Errata(models.Model):
     resolution_notes = models.TextField(blank=True, null=True)
     resolution_date = models.DateField(blank=True, null=True)
     internal_notes = models.TextField(blank=True, null=True)
-    error_type = models.ForeignKey(ErrorType, blank=True, null=True, on_delete=models.PROTECT)
-    resource = models.ManyToManyField(Resource)
+    error_type = models.CharField(
+        max_length=100,
+        choices=ERRATA_ERROR_TYPES,
+        blank=True,
+        null=True
+    )
+    error_type_other = models.CharField(max_length=255, blank=True, null=True)
+    resource = models.CharField(
+        max_length=100,
+        choices=ERRATA_RESOURCES,
+        blank=True,
+        null=True
+    )
+    resource_other = models.CharField(max_length=255, blank=True, null=True)
     submitted_by = models.ForeignKey(User, blank=True, null=True)
     submitter_email_address = models.EmailField(blank=True, null=True)
 
     @property
     def short_detail(self):
         return truncatewords(self.detail, 15)
-
-    def resources(self):
-        return ", ".join([r.name for r in self.resource.all()])
-
-    def error_type_label(self):
-        if self.error_type:
-            return self.error_type.name
-        else:
-            return None
 
     def clean(self):
         if self.status == 'Completed' or self.status == 'Reviewed' and not self.resolution:
