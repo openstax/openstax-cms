@@ -27,6 +27,8 @@ class ErrataSerializer(serializers.ModelSerializer):
                   'short_detail',
                   'resolution_date',
                   'error_type',
+                  'error_type_other',
                   'resource',
+                  'resource_other',
                   'submitted_by',
                   'submitter_email_address',)

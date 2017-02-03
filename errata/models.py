@@ -37,14 +37,14 @@ ERRATA_RESOLUTIONS = (
 FACTUAL = 'Other Factual Inaccuracy in Content'
 PEDAGOGICAL = 'General/Pedagogical Suggestion or Question'
 CALCULATION = 'Incorrect Calculation or Solution'
-LINK = 'Broken Link'
+LINK = 'Broken link'
 TYPO = 'Typo'
 OTHER = 'Other'
 ERRATA_ERROR_TYPES = (
     (FACTUAL, 'Other Factual Inaccuracy in Content'),
     (PEDAGOGICAL, 'General/Pedagogical Suggestion or Question'),
     (CALCULATION, 'Incorrect Calculation or Solution'),
-    (LINK, 'Incorrect Calculation or Solution'),
+    (LINK, 'Broken link'),
     (TYPO, 'Typo'),
     (OTHER, 'Other'),
 )
@@ -53,8 +53,8 @@ TEXTBOOK = 'Textbook'
 IBOOKS = 'iBooks version'
 INSTRUCTOR_SOLUTION = 'Instructor solution manual'
 STUDENT_SOLUTION = 'Student solution manual'
-TUTOR = 'Openstax Tutor'
-CONCEPT_COACH = 'Openstax Concept Coach'
+TUTOR = 'OpenStax Tutor'
+CONCEPT_COACH = 'OpenStax Concept Coach'
 OTHER = 'Other'
 ERRATA_RESOURCES = (
     (TEXTBOOK, 'Textbook'),
