@@ -9,8 +9,6 @@ class ExternalDocumentationSerializer(serializers.ModelSerializer):
 
 
 class ErrataSerializer(serializers.ModelSerializer):
-    #external_documentation = ExternalDocumentationSerializer(many=True)
-    # Read-only fields
     resolution_date = serializers.DateField(read_only=True)
 
     class Meta:
@@ -31,4 +29,5 @@ class ErrataSerializer(serializers.ModelSerializer):
                   'resource',
                   'resource_other',
                   'submitted_by',
-                  'submitter_email_address',)
+                  'submitter_email_address',
+                  'file',)

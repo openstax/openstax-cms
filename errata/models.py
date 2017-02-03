@@ -104,6 +104,7 @@ class Errata(models.Model):
     resource_other = models.CharField(max_length=255, blank=True, null=True)
     submitted_by = models.ForeignKey(User, blank=True, null=True)
     submitter_email_address = models.EmailField(blank=True, null=True)
+    file = models.FileField(upload_to='errata/user_uploads', blank=True, null=True)
 
     @property
     def short_detail(self):
