@@ -2,12 +2,12 @@ import django_filters
 from django.http import HttpResponse
 from rest_framework.renderers import JSONRenderer
 from rest_framework.viewsets import ModelViewSet
-
+from rest_framework.parsers import MultiPartParser, FormParser, FileUploadParser
 from rest_framework.filters import OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet
 
-from .models import Errata
-from .serializers import ErrataSerializer
+from .models import Errata, ExternalDocumentation
+from .serializers import ErrataSerializer, ExternalDocumentationSerializer
 
 
 class JSONResponse(HttpResponse):

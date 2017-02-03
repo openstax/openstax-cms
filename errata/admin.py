@@ -40,7 +40,8 @@ class ErrataAdmin(admin.ModelAdmin):
               'error_type',
               'resource',
               'submitted_by',
-              'submitter_email_address']
+              'submitter_email_address',
+              'file']
     search_fields = ('id', 'book__title', 'detail', )
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
@@ -154,7 +155,8 @@ class ErrataAdmin(admin.ModelAdmin):
                            'error_type',
                            'resource',
                            'submitted_by',
-                           'submitter_email_address'] # fields to show on the actual form
+                           'submitter_email_address',
+                           'file'] # fields to show on the actual form
             self.readonly_fields = ['created',
                                     'modified']
             self.save_as = True
@@ -173,7 +175,8 @@ class ErrataAdmin(admin.ModelAdmin):
                            'error_type',
                            'resource',
                            'submitted_by'
-                           'submitter_email_address']
+                           'submitter_email_address',
+                           'file']
             self.readonly_fields = ['created',
                                     'modified',
                                     'book',
@@ -188,7 +191,8 @@ class ErrataAdmin(admin.ModelAdmin):
                                     'error_type',
                                     'resource',
                                     'submitted_by',
-                                    'submitter_email_address']
+                                    'submitter_email_address',
+                                    'file']
             self.save_as = False
 
         return super(ErrataAdmin, self).get_form(request, obj, **kwargs)
