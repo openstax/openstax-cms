@@ -1,11 +1,6 @@
-from .models import Errata, ExternalDocumentation
+from .models import Errata
 
 from rest_framework import serializers
-
-class ExternalDocumentationSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ExternalDocumentation
-        fields = ('file', )
 
 
 class ErrataSerializer(serializers.ModelSerializer):
@@ -30,4 +25,5 @@ class ErrataSerializer(serializers.ModelSerializer):
                   'resource_other',
                   'submitted_by',
                   'submitter_email_address',
-                  'file',)
+                  'file_1',
+                  'file_2')

@@ -11,15 +11,11 @@ from django.utils.html import mark_safe
 
 from extraadminfilters.filters import UnionFieldListFilter
 
-from .models import Errata, InternalDocumentation, ExternalDocumentation
+from .models import Errata, InternalDocumentation
 
 
 class InlineInternalImage(admin.TabularInline):
     model = InternalDocumentation
-
-
-class InlineExternalImage(admin.TabularInline):
-    model = ExternalDocumentation
 
 
 class ErrataAdmin(admin.ModelAdmin):
@@ -41,13 +37,14 @@ class ErrataAdmin(admin.ModelAdmin):
               'resource',
               'submitted_by',
               'submitter_email_address',
-              'file']
+              'file_1',
+              'file_2']
     search_fields = ('id', 'book__title', 'detail', )
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
     }
     actions = ['mark_in_review', 'mark_reviewed', 'mark_archived', 'export_as_csv']
-    inlines = [InlineInternalImage, InlineExternalImage]
+    inlines = [InlineInternalImage, ]
     raw_id_fields = ('submitted_by',)
 
     """Actions for the Django Admin list view"""
@@ -156,7 +153,8 @@ class ErrataAdmin(admin.ModelAdmin):
                            'resource',
                            'submitted_by',
                            'submitter_email_address',
-                           'file'] # fields to show on the actual form
+                           'file_1',
+                           'file_2'] # fields to show on the actual form
             self.readonly_fields = ['created',
                                     'modified']
             self.save_as = True
@@ -176,7 +174,8 @@ class ErrataAdmin(admin.ModelAdmin):
                            'resource',
                            'submitted_by'
                            'submitter_email_address',
-                           'file']
+                           'file_1',
+                           'file_2']
             self.readonly_fields = ['created',
                                     'modified',
                                     'book',
@@ -192,7 +191,8 @@ class ErrataAdmin(admin.ModelAdmin):
                                     'resource',
                                     'submitted_by',
                                     'submitter_email_address',
-                                    'file']
+                                    'file_1',
+                                    'file_2']
             self.save_as = False
 
         return super(ErrataAdmin, self).get_form(request, obj, **kwargs)

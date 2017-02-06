@@ -34,16 +34,16 @@ ERRATA_RESOLUTIONS = (
     (MAJOR_BOOK_REVISION, 'Major Book Revision'),
 )
 
-FACTUAL = 'Other Factual Inaccuracy in Content'
-PEDAGOGICAL = 'General/Pedagogical Suggestion or Question'
-CALCULATION = 'Incorrect Calculation or Solution'
+FACTUAL = 'Other factual inaccuracy in content'
+PEDAGOGICAL = 'General/pedagogical suggestion or question'
+CALCULATION = 'Incorrect calculation or solution'
 LINK = 'Broken link'
 TYPO = 'Typo'
 OTHER = 'Other'
 ERRATA_ERROR_TYPES = (
-    (FACTUAL, 'Other Factual Inaccuracy in Content'),
-    (PEDAGOGICAL, 'General/Pedagogical Suggestion or Question'),
-    (CALCULATION, 'Incorrect Calculation or Solution'),
+    (FACTUAL, 'Other factual inaccuracy in content'),
+    (PEDAGOGICAL, 'General/pedagogical suggestion or question'),
+    (CALCULATION, 'Incorrect calculation or solution'),
     (LINK, 'Broken link'),
     (TYPO, 'Typo'),
     (OTHER, 'Other'),
@@ -61,8 +61,8 @@ ERRATA_RESOURCES = (
     (IBOOKS, 'iBooks version'),
     (INSTRUCTOR_SOLUTION, 'Instructor solution manual'),
     (STUDENT_SOLUTION, 'Student solution manual'),
-    (TUTOR, 'Openstax Tutor'),
-    (CONCEPT_COACH, 'Openstax Concept Coach'),
+    (TUTOR, 'OpenStax Tutor'),
+    (CONCEPT_COACH, 'OpenStax Concept Coach'),
     (OTHER, 'Other'),
 )
 
@@ -104,7 +104,8 @@ class Errata(models.Model):
     resource_other = models.CharField(max_length=255, blank=True, null=True)
     submitted_by = models.ForeignKey(User, blank=True, null=True)
     submitter_email_address = models.EmailField(blank=True, null=True)
-    file = models.FileField(upload_to='errata/user_uploads', blank=True, null=True)
+    file_1 = models.FileField(upload_to='errata/user_uploads/1/', blank=True, null=True)
+    file_2 = models.FileField(upload_to='errata/user_uploads/2/', blank=True, null=True)
 
     @property
     def short_detail(self):
@@ -134,8 +135,3 @@ class Errata(models.Model):
 class InternalDocumentation(models.Model):
     errata = models.ForeignKey(Errata)
     file = models.FileField(upload_to='errata/internal/')
-
-
-class ExternalDocumentation(models.Model):
-    errata = models.ForeignKey(Errata, related_name='external_documentation', on_delete=models.CASCADE)
-    file = models.FileField(upload_to='errata/external/')
