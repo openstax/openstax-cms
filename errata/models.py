@@ -135,8 +135,3 @@ class Errata(models.Model):
 class InternalDocumentation(models.Model):
     errata = models.ForeignKey(Errata)
     file = models.FileField(upload_to='errata/internal/')
-
-
-class ExternalDocumentation(models.Model):
-    errata = models.ForeignKey(Errata, related_name='external_documentation', on_delete=models.CASCADE)
-    file = models.FileField(upload_to='errata/external/')

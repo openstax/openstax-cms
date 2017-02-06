@@ -11,15 +11,11 @@ from django.utils.html import mark_safe
 
 from extraadminfilters.filters import UnionFieldListFilter
 
-from .models import Errata, InternalDocumentation, ExternalDocumentation
+from .models import Errata, InternalDocumentation
 
 
 class InlineInternalImage(admin.TabularInline):
     model = InternalDocumentation
-
-
-class InlineExternalImage(admin.TabularInline):
-    model = ExternalDocumentation
 
 
 class ErrataAdmin(admin.ModelAdmin):
@@ -48,7 +44,7 @@ class ErrataAdmin(admin.ModelAdmin):
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
     }
     actions = ['mark_in_review', 'mark_reviewed', 'mark_archived', 'export_as_csv']
-    inlines = [InlineInternalImage, InlineExternalImage]
+    inlines = [InlineInternalImage, ]
     raw_id_fields = ('submitted_by',)
 
     """Actions for the Django Admin list view"""
