@@ -33,6 +33,9 @@ SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'https://openstax.org'
 SOCIAL_AUTH_SANITIZE_REDIRECTS = False
 OPENSTAX_ACCOUNTS_LOGOUT_URL = 'https://accounts.openstax.org/signout'
 
+# Server host (used to populate links in the email)
+HOST_LINK = 'https://openstax.org'
+
 try:
     from .local import *
 except ImportError:
