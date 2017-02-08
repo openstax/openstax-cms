@@ -1,13 +1,18 @@
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.utils.timezone import now
 from django.template.defaultfilters import truncatewords
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
 
 from wagtail.wagtailcore import hooks
 from wagtail.wagtailadmin.menu import MenuItem
 
 from books.models import Book
+from openstax import settings
 
 
 NEW = 'New'
@@ -112,12 +117,13 @@ class Errata(models.Model):
         return truncatewords(self.detail, 15)
 
     def clean(self):
-        if self.status == 'Completed' or self.status == 'Reviewed' and not self.resolution:
+        if self.status == 'Completed' and not self.resolution or self.status == 'Reviewed' and not self.resolution:
             raise ValidationError({'resolution': 'Resolution is required if status is completed or reviewed.'})
 
     def save(self, *args, **kwargs):
         if self.resolution:
             self.resolution_date = now()
+
         super(Errata, self).save(*args, **kwargs)
 
     @hooks.register('register_admin_menu_item')
@@ -130,6 +136,58 @@ class Errata(models.Model):
     class Meta:
         verbose_name = "erratum"
         verbose_name_plural = "erratum"
+
+@receiver(post_save, sender=Errata, dispatch_uid="send_status_update_email")
+def send_status_update_email(sender, instance, created, **kwargs):
+        send_email = False
+        if created:
+            subject = "We received your submission"
+            body = "Thanks for your help! Your errata submissions help keep OpenStax resources high quality and up to date."
+            send_email = True
+        elif instance.status == 'Reviewed' and instance.resolution == 'Will Not Fix':
+            subject = "We reviewed your erratum suggestion"
+            body = "Thanks again for your submission. Our reviewers have evaluated it and have determined there will be no change made."
+            send_email = True
+        elif instance.status == 'Reviewed' and instance.resolution == 'Approved':
+            subject = "We received your submission"
+            body = "Thanks again for your submission. Our reviewers have evaluated it and have determined that a change will be made. We will email you again when the appropriate resource has been updated."
+            send_email = True
+        elif instance.status == 'Completed':
+            subject = "Your correction is live"
+            body = "The correction you suggested has been incorporated into the appropriate OpenStax resource. Thanks for your help!"
+            send_email = True
+
+        if send_email:
+            if instance.submitter_email_address:
+                to = instance.submitter_email_address
+            else:
+                to = instance.submitted_by.email
+
+            errata_email_info = {
+                'subject': subject,
+                'body': body,
+                'status': instance.status,
+                'resolution': instance.resolution,
+                'created': created,
+                'id': instance.id,
+                'title': instance.book.title,
+                'source': instance.resource,
+                'error_type': instance.error_type,
+                'location': instance.location,
+                'description': instance.detail,
+                'date_submitted': instance.created,
+                'host': settings.HOST_LINK,
+            }
+            msg_plain = render_to_string('templates/email.txt', errata_email_info)
+            msg_html = render_to_string('templates/email.html', errata_email_info)
+
+            send_mail(
+                subject,
+                msg_plain,
+                'noreply@openstax.org',
+                [to],
+                html_message=msg_html,
+            )
 
 
 class InternalDocumentation(models.Model):
