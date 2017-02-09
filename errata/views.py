@@ -1,8 +1,10 @@
 import django_filters
 from django.http import HttpResponse
+from django.shortcuts import redirect
 from rest_framework.renderers import JSONRenderer
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.filters import OrderingFilter
+from rest_framework.response import Response
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet
 
 from .models import Errata
@@ -35,3 +37,13 @@ class ErrataView(ModelViewSet):
     filter_backends = (DjangoFilterBackend, OrderingFilter)
     filter_class = ErrataFilter
     ordering_fields = ('id', 'resolution_date', 'created', 'modified', )
+
+    def create(self, request, *args, **kwargs):
+        errata_record = Errata.objects.latest('created')
+
+        next = request.GET.get('next', '')
+        if next:
+            return redirect(next)
+        else:
+            serializer = self.get_serializer(errata_record)
+            return Response(serializer.data)
