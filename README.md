@@ -10,19 +10,23 @@ Built using [Wagtail CMS](http://wagtail.io).
 
 ### Installation
 
+Verify you have Python >= 3.4 installed with `python --version` or `python3 --version`.
+If not, you can install Python 3 by running `brew install python3`. If you don't have brew installed, see [Homebrew](http://brew.sh/).
+
+
 With PostgreSQL running (and configured to allow you to connect as the 'postgres' user - if not, you'll need to adjust the `createdb` line and the database settings in openstax/settings/base.py accordingly), run the following commands:
 
     git clone https://github.com/Connexions/openstax-cms.git
     cd openstax-cms
-    pip install -r requirements/dev.txt
+    pip3 install -r requirements/dev.txt
     createdb -U postgres openstax
-    ./manage.py migrate
-    ./manage.py createsuperuser
-    ./manage.py runserver
+    python3 manage.py migrate
+    python3 manage.py createsuperuser
+    python3 manage.py runserver
 
 ### Testing
 
-Run with ``./manage.py test --liveserver=localhost:8001 --settings=openstax.settings.dev``
+Run with ``python3 manage.py test --liveserver=localhost:8001 --settings=openstax.settings.dev``
 
 ### SQLite support
 
