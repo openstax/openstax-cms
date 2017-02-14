@@ -46,6 +46,8 @@ def user_api(request):
 
     try:
         return JsonResponse({
+            'id': user.pk,
+            'email': user.email,
             'username': user.username,
             'first_name': user.first_name,
             'last_name': user.last_name,
@@ -56,6 +58,8 @@ def user_api(request):
         })
     except:
         return JsonResponse({
+            'id': False,
+            'email': '',
             'username': '',
             'first_name': '',
             'last_name': '',
