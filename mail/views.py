@@ -36,7 +36,7 @@ def send_contact_message(request):
         except KeyError:
             logging.error("EMAIL FAILED TO SEND: subject:{}")
 
-        return redirect('/confirmation?contact')
+        return redirect('/confirmation/contact')
     # if this is not posting a message, let's send the csfr token back
     else:
         csrf_token = csrf.get_token(request)
