@@ -24,7 +24,6 @@ class OpenStax(BaseOAuth2):
         """Return user details from openstax account's"""
         contact_infos = response.get('contact_infos')
         email = contact_infos[0]['value']
-        print(email)
         return {'username': response.get('id'),
                 'email': email,
                 'first_name': response.get('first_name'),
