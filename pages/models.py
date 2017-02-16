@@ -293,7 +293,8 @@ class HigherEducation(Page):
 
     get_started_step_2_heading = models.CharField(max_length=255)
     get_started_step_2_description = models.TextField()
-    get_started_step_2_cta = models.CharField(max_length=255)
+    get_started_step_2_logged_in_cta = models.CharField(max_length=255)
+    get_started_step_2_logged_out_cta = models.CharField(max_length=255)
 
     get_started_step_3_heading = models.CharField(max_length=255)
     get_started_step_3_description = models.TextField()
@@ -320,7 +321,8 @@ class HigherEducation(Page):
         'get_started_step_1_cta',
         'get_started_step_2_heading',
         'get_started_step_2_description',
-        'get_started_step_2_cta',
+        'get_started_step_2_logged_in_cta',
+        'get_started_step_2_logged_out_cta',
         'get_started_step_3_heading',
         'get_started_step_3_description',
         'get_started_step_3_cta',
@@ -344,7 +346,8 @@ class HigherEducation(Page):
         FieldPanel('get_started_step_1_cta'),
         FieldPanel('get_started_step_2_heading'),
         FieldPanel('get_started_step_2_description'),
-        FieldPanel('get_started_step_2_cta'),
+        FieldPanel('get_started_step_2_logged_in_cta'),
+        FieldPanel('get_started_step_2_logged_out_cta'),
         FieldPanel('get_started_step_3_heading'),
         FieldPanel('get_started_step_3_description'),
         FieldPanel('get_started_step_3_cta'),
