@@ -369,7 +369,6 @@ class ContactUs(Page):
     tagline = models.CharField(max_length=255)
     mailing_header = models.CharField(max_length=255)
     mailing_address = RichTextField()
-    phone_number = models.CharField(max_length=255)
     customer_service = RichTextField()
 
     content_panels = [
@@ -377,7 +376,6 @@ class ContactUs(Page):
         FieldPanel('tagline'),
         FieldPanel('mailing_header'),
         FieldPanel('mailing_address'),
-        FieldPanel('phone_number'),
         FieldPanel('customer_service'),
     ]
 
@@ -393,7 +391,6 @@ class ContactUs(Page):
         'tagline',
         'mailing_header',
         'mailing_address',
-        'phone_number',
         'customer_service',
         'slug',
         'seo_title',
