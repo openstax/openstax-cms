@@ -70,19 +70,6 @@ def user_api(request):
         })
 
 
-#def user_email_salesforce_check(request):
-#    email = request.email
-#    try:
-#        email_used = check_if_email_used(email)
-#        return JsonResponse({
-#            'email_previously_used': email_used,
-#
-#        })
-#
-#    except:
-#        return JsonResponse({})
-
-
 def user_salesforce_update(request):
     user = request.user
     email = request.GET.get('email', None)
@@ -108,7 +95,13 @@ def user_salesforce_update(request):
         pending_verification = check_if_faculty_pending(user.pk)
         if email:
             salesforce_email_previously_used  = check_if_email_used(email)
-        return JsonResponse({
+
+    except Exception as err:
+        print(err)
+        pending_verification = str(err)
+        salesforce_email_previously_used = str(err)
+
+    return JsonResponse({
             'username': user.username,
             'first_name': user.first_name,
             'last_name': user.last_name,
@@ -121,9 +114,6 @@ def user_salesforce_update(request):
             'salesforce_verification_pending_failed': salesforce_verification_pending_failed,
             'salesforce_email_previously_used': salesforce_email_previously_used,
         })
-
-    except Exception:
-        return JsonResponse({})
 
 
 def sticky_note(request):
