@@ -71,6 +71,7 @@ def user_api(request):
 
 
 def user_salesforce_update(request):
+    print("sf update")
     user = request.user
     email = request.GET.get('email', None)
     salesforce_faculty_verified_failed = False
@@ -101,19 +102,22 @@ def user_salesforce_update(request):
         pending_verification = str(err)
         salesforce_email_previously_used = str(err)
 
-    return JsonResponse({
-            'username': user.username,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'is_staff': user.is_staff,
-            'is_superuser': user.is_superuser,
-            'groups': list(user.groups.values_list('name', flat=True)),
-            'accounts_id': user.accounts_id,
-            'pending_verification': pending_verification,
-            'salesforce_faculty_verified_failed': salesforce_faculty_verified_failed,
-            'salesforce_verification_pending_failed': salesforce_verification_pending_failed,
-            'salesforce_email_previously_used': salesforce_email_previously_used,
-        })
+    if user.is_authenticated():
+        return JsonResponse({
+                'username': user.username,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'is_staff': user.is_staff,
+                'is_superuser': user.is_superuser,
+                'groups': list(user.groups.values_list('name', flat=True)),
+                'accounts_id': user.accounts_id,
+                'pending_verification': pending_verification,
+                'salesforce_faculty_verified_failed': salesforce_faculty_verified_failed,
+                'salesforce_verification_pending_failed': salesforce_verification_pending_failed,
+                'salesforce_email_previously_used': salesforce_email_previously_used,
+            })
+    else:
+        return JsonResponse({})
 
 
 def sticky_note(request):
