@@ -70,20 +70,8 @@ def user_api(request):
         })
 
 
-#def user_email_salesforce_check(request):
-#    email = request.email
-#    try:
-#        email_used = check_if_email_used(email)
-#        return JsonResponse({
-#            'email_previously_used': email_used,
-#
-#        })
-#
-#    except:
-#        return JsonResponse({})
-
-
 def user_salesforce_update(request):
+    print("sf update")
     user = request.user
     email = request.GET.get('email', None)
     salesforce_faculty_verified_failed = False
@@ -108,21 +96,27 @@ def user_salesforce_update(request):
         pending_verification = check_if_faculty_pending(user.pk)
         if email:
             salesforce_email_previously_used  = check_if_email_used(email)
-        return JsonResponse({
-            'username': user.username,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'is_staff': user.is_staff,
-            'is_superuser': user.is_superuser,
-            'groups': list(user.groups.values_list('name', flat=True)),
-            'accounts_id': user.accounts_id,
-            'pending_verification': pending_verification,
-            'salesforce_faculty_verified_failed': salesforce_faculty_verified_failed,
-            'salesforce_verification_pending_failed': salesforce_verification_pending_failed,
-            'salesforce_email_previously_used': salesforce_email_previously_used,
-        })
 
-    except Exception:
+    except Exception as err:
+        print(err)
+        pending_verification = str(err)
+        salesforce_email_previously_used = str(err)
+
+    if user.is_authenticated():
+        return JsonResponse({
+                'username': user.username,
+                'first_name': user.first_name,
+                'last_name': user.last_name,
+                'is_staff': user.is_staff,
+                'is_superuser': user.is_superuser,
+                'groups': list(user.groups.values_list('name', flat=True)),
+                'accounts_id': user.accounts_id,
+                'pending_verification': pending_verification,
+                'salesforce_faculty_verified_failed': salesforce_faculty_verified_failed,
+                'salesforce_verification_pending_failed': salesforce_verification_pending_failed,
+                'salesforce_email_previously_used': salesforce_email_previously_used,
+            })
+    else:
         return JsonResponse({})
 
 
