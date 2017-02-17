@@ -1,2 +1,29 @@
+OpenStax
+openstax.org
+
 {{subject}}
+
 {{body}}
+
+{% if created %}
+Submission ID: {{ id }}
+Title: {{ title }}
+Source: {{ source }}
+Status: {{ status }}
+Error Type: {{ error_type }}
+Source: {{ source }}
+Description: {{ description }}
+Submitted: {{ date_submitted }}
+{% endif %}
+
+For more details, visit {{ host }}/errata/{{ id }}
+
+Access. The future of education.
+
+Sincerely,
+The OpenStax Team
+
+OpenStax
+6100 Main St
+MS-375
+Houston, Texas 77005
