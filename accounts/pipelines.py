@@ -7,6 +7,10 @@ def save_profile(user, *args, **kwargs):
 
 
 def update_email(user, response, *args, **kwargs):
-    user.email = response.get('contact_infos')[0]['value']
-    print(user.email)
+    contact_infos = response.get('contact_infos')
+
+    # grabbing the highest id in the email list to determine newest email
+    newest_email = max(contact_infos, key=lambda x:x['id'])
+
+    user.email = newest_email['value']
     user.save()
