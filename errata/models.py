@@ -157,12 +157,14 @@ def send_status_update_email(sender, instance, created, **kwargs):
             body = "The correction you suggested has been incorporated into the appropriate OpenStax resource. Thanks for your help!"
             send_email = True
 
-        if send_email:
-            if instance.submitter_email_address:
-                to = instance.submitter_email_address
-            else:
-                to = instance.submitted_by.email
+        if instance.submitter_email_address:
+            to = instance.submitter_email_address
+        elif instance.submitted_by:
+            to = instance.submitted_by.email
+        else:
+            send_email = False
 
+        if send_email:
             errata_email_info = {
                 'subject': subject,
                 'body': body,
