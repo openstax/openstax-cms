@@ -15,6 +15,13 @@ from books.models import Book
 from openstax import settings
 
 
+YES = 'Yes'
+NO = 'No'
+YES_NO_CHOICES = (
+    (YES, 'Yes'),
+    (NO, 'No'),
+)
+
 NEW = 'New'
 EDITORIAL_REVIEW = 'Editorial Review'
 REVIEWED = 'Reviewed'
@@ -76,6 +83,12 @@ class Errata(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     book = models.ForeignKey(Book)
+    is_assessment_errata = models.CharField(
+        max_length=100,
+        choices=YES_NO_CHOICES,
+        blank=True,
+        null=True,
+    )
     status = models.CharField(
         max_length=100,
         choices=ERRATA_STATUS,
