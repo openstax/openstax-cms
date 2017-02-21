@@ -39,7 +39,7 @@ class ErrataAdmin(admin.ModelAdmin):
               'submitter_email_address',
               'file_1',
               'file_2']
-    search_fields = ('id', 'book__title', 'detail', )
+    search_fields = ('id', 'book__title', 'detail', 'location', )
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
     }
@@ -125,12 +125,12 @@ class ErrataAdmin(admin.ModelAdmin):
     @method_decorator(csrf_protect)
     def changelist_view(self, request, extra_context=None):
         if request.user.is_superuser or request.user.groups.filter(name__in=['Content Managers', 'Content Development Intern']).exists():
-            self.list_display = ['id', '_book_title', 'short_detail', 'status', 'error_type', 'resource', 'resolution', 'archived'] # list of fields to show if user can't approve the post
+            self.list_display = ['id', '_book_title', 'short_detail', 'status', 'error_type', 'resource', 'location', 'resolution', 'archived'] # list of fields to show if user can't approve the post
             self.list_display_links = ['_book_title']
             self.list_filter = (('book', UnionFieldListFilter), 'status', 'created', 'modified', 'error_type', 'resolution', 'archived')
             self.editable = ['resolution']
         else:
-            self.list_display = ['id', '_book_title', 'short_detail', 'status', 'error_type', 'resource', 'created', 'archived'] # list of fields to show if user can approve the post
+            self.list_display = ['id', '_book_title', 'short_detail', 'status', 'error_type', 'resource', 'location', 'created', 'archived'] # list of fields to show if user can approve the post
             self.list_display_links = ['_book_title']
             self.list_filter = (('book', UnionFieldListFilter), 'status', 'created', 'modified', 'error_type', 'resolution', 'archived')
         return super(ErrataAdmin, self).changelist_view(request, extra_context)
