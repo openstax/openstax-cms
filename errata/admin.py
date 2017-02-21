@@ -25,6 +25,7 @@ class ErrataAdmin(admin.ModelAdmin):
     fields = ['created',
               'modified',
               'book',
+              'is_assessment_errata',
               'status',
               'resolution',
               'archived',
@@ -39,7 +40,7 @@ class ErrataAdmin(admin.ModelAdmin):
               'submitter_email_address',
               'file_1',
               'file_2']
-    search_fields = ('id', 'book__title', 'detail', )
+    search_fields = ('id', 'book__title', 'detail', 'location', )
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
     }
@@ -70,6 +71,7 @@ class ErrataAdmin(admin.ModelAdmin):
             smart_str("Created"),
             smart_str("Modified"),
             smart_str("Book"),
+            smart_str("Assessment"),
             smart_str("Status"),
             smart_str("Resolution"),
             smart_str("Archived"),
@@ -89,6 +91,7 @@ class ErrataAdmin(admin.ModelAdmin):
                 smart_str(obj.created),
                 smart_str(obj.modified),
                 smart_str(obj.book.title),
+                smart_str(obj.is_assessment_errata),
                 smart_str(obj.status),
                 smart_str(obj.resolution),
                 smart_str(obj.archived),
@@ -125,14 +128,14 @@ class ErrataAdmin(admin.ModelAdmin):
     @method_decorator(csrf_protect)
     def changelist_view(self, request, extra_context=None):
         if request.user.is_superuser or request.user.groups.filter(name__in=['Content Managers', 'Content Development Intern']).exists():
-            self.list_display = ['id', '_book_title', 'short_detail', 'status', 'error_type', 'resource', 'resolution', 'archived'] # list of fields to show if user can't approve the post
+            self.list_display = ['id', '_book_title', 'is_assessment_errata', 'short_detail', 'status', 'error_type', 'resource', 'location', 'resolution', 'archived'] # list of fields to show if user can't approve the post
             self.list_display_links = ['_book_title']
-            self.list_filter = (('book', UnionFieldListFilter), 'status', 'created', 'modified', 'error_type', 'resolution', 'archived')
+            self.list_filter = (('book', UnionFieldListFilter), 'status', 'created', 'modified', 'error_type', 'resolution', 'archived', 'resource')
             self.editable = ['resolution']
         else:
-            self.list_display = ['id', '_book_title', 'short_detail', 'status', 'error_type', 'resource', 'created', 'archived'] # list of fields to show if user can approve the post
+            self.list_display = ['id', '_book_title', 'is_assessment_errata', 'short_detail', 'status', 'error_type', 'resource', 'location', 'created', 'archived'] # list of fields to show if user can approve the post
             self.list_display_links = ['_book_title']
-            self.list_filter = (('book', UnionFieldListFilter), 'status', 'created', 'modified', 'error_type', 'resolution', 'archived')
+            self.list_filter = (('book', UnionFieldListFilter), 'status', 'created', 'modified', 'error_type', 'resolution', 'archived', 'resource')
         return super(ErrataAdmin, self).changelist_view(request, extra_context)
 
     @method_decorator(csrf_protect)
@@ -141,6 +144,7 @@ class ErrataAdmin(admin.ModelAdmin):
             self.fields = ['created',
                            'modified',
                            'book',
+                           'is_assessment_errata',
                            'status',
                            'resolution',
                            'archived',
@@ -162,6 +166,7 @@ class ErrataAdmin(admin.ModelAdmin):
             self.fields = ['created',
                            'modified',
                            'book',
+                           'is_assessment_errata',
                            'status',
                            'resolution',
                            'archived',
@@ -179,6 +184,7 @@ class ErrataAdmin(admin.ModelAdmin):
             self.readonly_fields = ['created',
                                     'modified',
                                     'book',
+                                    'is_assessment_errata',
                                     'status',
                                     'resolution',
                                     'archived',
