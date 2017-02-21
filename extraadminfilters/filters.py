@@ -1,6 +1,7 @@
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.admin.filters import FieldListFilter
 from django.db.models.fields import IntegerField, AutoField
+from django.db.models.fields.related import OneToOneField, ForeignKey
 
 
 class MultipleSelectFieldListFilter(FieldListFilter):
@@ -25,7 +26,7 @@ class MultipleSelectFieldListFilter(FieldListFilter):
         if value:
             values = value.split(',')
         # convert to integers if IntegerField
-        if type(self.field.rel.to._meta.pk) in [IntegerField, AutoField]:
+        if type(self.field.rel.to._meta.pk) in [IntegerField, AutoField, OneToOneField, ForeignKey]:
             values = [int(x) for x in values]
         return values
 
