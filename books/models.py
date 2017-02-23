@@ -1,6 +1,7 @@
 import re
 import json
 import urllib
+from collections import OrderedDict
 
 import dateutil.parser
 from django.conf import settings
@@ -509,8 +510,8 @@ class BookIndex(Page):
 
     @property
     def books(self):
-        books = Book.objects.all()
-        book_data = {}
+        books = Book.objects.all().order_by('path')
+        book_data = OrderedDict()
         for book in books:
             book_data['books/{}'.format(book.slug)] = {
                 'title': book.title,
