@@ -183,7 +183,7 @@ def send_status_update_email(sender, instance, created, **kwargs):
             errata_email_info = {
                 'subject': subject,
                 'body': body,
-                'status': instance.status,
+                'status': "In review",
                 'resolution': instance.resolution,
                 'created': created,
                 'id': instance.id,
