@@ -1,5 +1,5 @@
-from django.core.management import call_command
-from django.utils.six import StringIO
+import requests
+
 from django.http import JsonResponse
 from rest_framework import viewsets
 from salesforce.models import Adopter
@@ -72,11 +72,15 @@ def user_api(request):
 
 def user_salesforce_update(request):
     print("sf update")
+
+    r = requests.get('https://accounts-qa.openstax.org/api/user')
+
     user = request.user
     email = request.GET.get('email', None)
-    salesforce_faculty_verified_failed = False
-    salesforce_verification_pending_failed = False
-    salesforce_email_previously_used = False
+    salesforce_faculty_verified_failed = "Not Implemented"
+    salesforce_verification_pending_failed = "Not Implemented"
+    salesforce_email_previously_used = "Not Implemented"
+    pending_verification = "Not Implemented"
 
     # get user account ID
     try:
@@ -84,27 +88,28 @@ def user_salesforce_update(request):
         user.accounts_id = social_auth[0].uid
     except:
         user.accounts_id = None
-
-    # check if user is faculty_verified in SF
-    try:
-        verification_status = update_faculty_status(user.pk)
-    except:
-        salesforce_faculty_verified_failed = True
-
-    # check if there is a record in SF for this user - if so, they are pending verification
-    try:
-        pending_verification = check_if_faculty_pending(user.pk)
-        if email:
-            salesforce_email_previously_used  = check_if_email_used(email)
-
-    except Exception as err:
-        print(err)
-        pending_verification = str(err)
-        salesforce_email_previously_used = str(err)
+    #
+    # # check if user is faculty_verified in SF
+    # try:
+    #     verification_status = update_faculty_status(user.pk)
+    # except:
+    #     salesforce_faculty_verified_failed = True
+    #
+    # # check if there is a record in SF for this user - if so, they are pending verification
+    # try:
+    #     pending_verification = check_if_faculty_pending(user.pk)
+    #     if email:
+    #         salesforce_email_previously_used  = check_if_email_used(email)
+    #
+    # except Exception as err:
+    #     print(err)
+    #     pending_verification = str(err)
+    #     salesforce_email_previously_used = str(err)
 
     if user.is_authenticated():
         return JsonResponse({
                 'username': user.username,
+                'status_code': r.status_code,
                 'first_name': user.first_name,
                 'last_name': user.last_name,
                 'is_staff': user.is_staff,

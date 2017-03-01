@@ -21,7 +21,12 @@ def update_email(user, response, *args, **kwargs):
 
 def update_role(user, response, *args, **kwargs):
     self_reported_role = response.get('self_reported_role')
+    faculty_status = response.get('faculty_status')
 
     if self_reported_role == 'student':
         group, created = Group.objects.get_or_create(name=self_reported_role.title())
+        group.user_set.add(user)
+
+    if faculty_status == 'confirmed_faculty':
+        group, created = Group.objects.get_or_create(name='Faculty')
         group.user_set.add(user)
