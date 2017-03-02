@@ -1,5 +1,4 @@
 from django.http import JsonResponse
-from django.contrib.auth.models import Group
 from rest_framework import viewsets
 from salesforce.models import Adopter
 from salesforce.functions import check_if_faculty_pending, update_faculty_status, check_if_email_used
@@ -86,10 +85,9 @@ def user_salesforce_update(request):
     if not user.groups.filter(name='Faculty').exists() and user.is_authenticated():
         email = request.GET.get('email', None)
 
-
         # check if user is faculty_verified in SF
         try:
-            verification_status = update_faculty_status(user.pk)
+            update_faculty_status(user.pk)
         except:
             salesforce_faculty_verified_failed = True
 
