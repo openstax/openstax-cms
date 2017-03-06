@@ -1,9 +1,7 @@
 import re
 import json
 import urllib
-from collections import OrderedDict
 
-import dateutil.parser
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from django.db import models
@@ -11,7 +9,7 @@ from django.forms import ValidationError
 from django.utils.html import format_html, mark_safe
 from modelcluster.fields import ParentalKey
 from wagtail.wagtailadmin.edit_handlers import (FieldPanel, InlinePanel,
-                                                PageChooserPanel, StreamFieldPanel)
+                                                PageChooserPanel)
 from wagtail.wagtailcore import blocks
 from wagtail.wagtailcore.fields import RichTextField, StreamField
 from wagtail.wagtailcore.models import Orderable, Page
@@ -511,9 +509,10 @@ class BookIndex(Page):
     @property
     def books(self):
         books = Book.objects.all().order_by('path')
-        book_data = OrderedDict()
+        book_data = []
         for book in books:
-            book_data['books/{}'.format(book.slug)] = {
+            book_data.append({
+                'slug': 'books/{}'.format(book.slug),
                 'title': book.title,
                 'subject': book.subject.name,
                 'is_ap': book.is_ap,
@@ -534,7 +533,7 @@ class BookIndex(Page):
                 'salesforce_abbreviation': book.salesforce_abbreviation,
                 'salesforce_name': book.salesforce_name,
                 'urls': book.book_urls(),
-            }
+            })
         return book_data
 
     content_panels = Page.content_panels + [
