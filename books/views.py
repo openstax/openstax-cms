@@ -31,6 +31,12 @@ def book_detail(request, slug):
     try:
         page = Book.objects.get(slug=slug)
         serializer = BookSerializer(page)
+        if not request.user.groups.filter(name='Faculty').exists():
+            for resource in serializer.data['book_faculty_resources']:
+                try:
+                    resource['link_document_url'] = None
+                except KeyError:
+                    pass
         return JSONResponse(serializer.data)
     except Book.DoesNotExist:
         return HttpResponse(status=404)
