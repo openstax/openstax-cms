@@ -512,6 +512,7 @@ class BookIndex(Page):
         book_data = []
         for book in books:
             book_data.append({
+                'id': book.id,
                 'slug': 'books/{}'.format(book.slug),
                 'title': book.title,
                 'subject': book.subject.name,
