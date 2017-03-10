@@ -10,12 +10,15 @@ def save_profile(user, *args, **kwargs):
 
 
 def update_email(user, response, *args, **kwargs):
-    contact_infos = response.get('contact_infos')
+    try:
+        contact_infos = response.get('contact_infos')
 
-    # grabbing the highest id in the email list to determine newest email
-    newest_email = max(contact_infos, key=lambda x:x['id'])
+        # grabbing the highest id in the email list to determine newest email
+        newest_email = max(contact_infos, key=lambda x:x['id'])
 
-    user.email = newest_email['value']
+        user.email = newest_email['value']
+    except ValueError:
+        user.email = "none@openstax.org"
     user.save()
 
 
