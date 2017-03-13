@@ -179,6 +179,7 @@ INSTALLED_APPS = [
     'global_settings',
     'errata',
     'extraadminfilters',
+    'commerce',
     # wagtail
     'wagtail.wagtailcore',
     'wagtail.wagtailadmin',
@@ -275,6 +276,7 @@ CNX_ARCHIVE_URL = 'http://archive.cnx.org'
 # Server host (used to populate links in the email)
 HOST_LINK = 'https://openstax.org'
 
+GEOIP_PATH = os.path.join(BASE_DIR, 'geoip')
 
 try:
     from local import *

@@ -13,6 +13,8 @@ from news.search import search
 
 from api import urls as api_urls
 
+from commerce import urls as commerce_urls
+
 admin.site.site_header = 'OpenStax'
 
 urlpatterns = [
@@ -33,6 +35,8 @@ urlpatterns = [
     url(r'^api/books/', include('books.urls')),
     url(r'^api/news/', include('news.urls')),
     url(r'^api/errata/', include('errata.urls')),
+
+    url(r'^commerce/', include(commerce_urls)),
 
     # For anything not caught by a more specific rule above, hand over to
     # Wagtail's serving mechanism
