@@ -132,7 +132,7 @@ class Errata(models.Model):
     def clean(self):
         if self.status == 'Completed' and not self.resolution or self.status == 'Reviewed' and not self.resolution:
             raise ValidationError({'resolution': 'Resolution is required if status is completed or reviewed.'})
-        if self.status == 'Editorial Review' or self.status == 'Reviewed' or self.status == 'Completed' and not self.is_assessment_errata:
+        if (self.status == 'Editorial Review' or self.status == 'Reviewed' or self.status == 'Completed') and not self.is_assessment_errata:
             raise ValidationError({'is_assessment_errata': 'You must specify if this is an assessment errata.'})
 
     def save(self, *args, **kwargs):
