@@ -12,7 +12,7 @@ from wagtail.wagtailcore import hooks
 from wagtail.wagtailadmin.menu import MenuItem
 
 from books.models import Book
-from openstax import settings
+from django.conf import settings
 
 
 YES = 'Yes'
