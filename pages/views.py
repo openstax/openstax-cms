@@ -16,7 +16,8 @@ from .models import (GeneralPage,
                      Support,
                      GiveForm,
                      Accessibility,
-                     Licensing)
+                     Licensing,
+                     CompCopy)
 from .serializers import (HomePageSerializer,
                           HigherEducationSerializer,
                           GeneralPageSerializer,
@@ -32,7 +33,8 @@ from .serializers import (HomePageSerializer,
                           SupportSerializer,
                           GiveFormSerializer,
                           AccessibilitySerializer,
-                          LicensingSerializer)
+                          LicensingSerializer,
+                          CompCopySerializer)
 
 
 class JSONResponse(HttpResponse):
@@ -166,6 +168,16 @@ def page_detail(request, slug):
         serializer = LicensingSerializer(page)
         return JSONResponse(serializer.data)
     except Licensing.DoesNotExist:
+        page_found = False
+
+    if not page_found:
+        return HttpResponse(status=404)
+
+    try:
+        page = CompCopy.objects.get(slug=slug)
+        serializer = CompCopySerializer(page)
+        return JSONResponse(serializer.data)
+    except CompCopy.DoesNotExist:
         page_found = False
 
     if not page_found:
