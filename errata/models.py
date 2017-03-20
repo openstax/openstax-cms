@@ -139,6 +139,18 @@ class Errata(models.Model):
         if self.resolution:
             self.resolution_date = now()
 
+        # prefill resolution notes based on certain status and resolutions
+        if (self.status == "Reviewed" or self.status == "Completed") and (self.resolution == "Duplicate" or self.resolution == "Not An Error" or self.resolution == "Will Not Fix" or self.resolution == "Major Book Revision") and not self.resolution_notes:
+            self.resolution_notes = "This is a duplicate of another report for this book."
+        if self.resolution == "Not An Error" and not self.resolution_notes:
+            self.resolution_notes = "Our reviewers determined this was not an error."
+        if self.resolution == "Will Not Fix" and not self.resolution_notes:
+            self.resolution_notes = "Our reviewers determined the textbook meets scope, sequence, and accuracy requirements as is.  No change will be made."
+        if self.resolution == "Major Book Revision" and not self.resolution_notes:
+            self.resolution_notes = "Our reviewers determined this would require a significant book revision.  While we cannot make this change at this time, we will consider it for future editions of this book."
+        if (self.status == "Reviewed" or self.status == "Completed") and self.resolution == "Approved":
+            self.resolution_notes = "Our reviewers accepted this change."
+
         super(Errata, self).save(*args, **kwargs)
 
     @hooks.register('register_admin_menu_item')
