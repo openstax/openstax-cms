@@ -170,9 +170,6 @@ def page_detail(request, slug):
     except Licensing.DoesNotExist:
         page_found = False
 
-    if not page_found:
-        return HttpResponse(status=404)
-
     try:
         page = CompCopy.objects.get(slug=slug)
         serializer = CompCopySerializer(page)
