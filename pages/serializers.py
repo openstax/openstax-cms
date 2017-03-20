@@ -13,7 +13,8 @@ from .models import (HomePage,
                      Support,
                      GiveForm,
                      Accessibility,
-                     Licensing)
+                     Licensing,
+                     CompCopy)
 from wagtail.contrib.wagtailapi.serializers import PageSerializer
 
 
@@ -111,3 +112,9 @@ class LicensingSerializer(PageSerializer):
     class Meta:
         model = Licensing
         fields = Licensing.api_fields
+
+
+class CompCopySerializer(PageSerializer):
+    class Meta:
+        model = CompCopy
+        fields = CompCopy.api_fields
