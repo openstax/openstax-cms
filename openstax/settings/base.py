@@ -99,6 +99,7 @@ SOCIAL_AUTH_PIPELINE = (
     'social.pipeline.social_auth.social_uid',
     'social.pipeline.social_auth.auth_allowed',
     'social.pipeline.social_auth.social_user',
+    #'accounts.pipelines.social_user',
     'social.pipeline.user.create_user',
     'accounts.pipelines.save_profile',
     'accounts.pipelines.update_email',
@@ -274,7 +275,6 @@ CNX_ARCHIVE_URL = 'http://archive.cnx.org'
 
 # Server host (used to populate links in the email)
 HOST_LINK = 'https://openstax.org'
-
 
 try:
     from local import *

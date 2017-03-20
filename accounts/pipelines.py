@@ -1,5 +1,5 @@
 from django.contrib.auth.models import Group
-
+from social.apps.django_app.default.models import UserSocialAuth
 
 def save_profile(user, *args, **kwargs):
     # for now - setting email address to prevent issues, should update it
@@ -33,3 +33,21 @@ def update_role(user, response, *args, **kwargs):
     if faculty_status == 'confirmed_faculty':
         group, created = Group.objects.get_or_create(name='Faculty')
         group.user_set.add(user)
+
+
+def social_user(backend, uid, user=None, *args, **kwargs):
+    """Return UserSocialAuth account for backend/uid pair or None if it
+    doesn't exists.
+
+    CHANGE: Raise AuthAlreadyAssociated if UserSocialAuth entry belongs to another
+    user.
+    INSTEAD: Set new UserSocialAuth to user if associated before.
+    """
+    social_user = UserSocialAuth.get_social_auth(backend.name, uid)
+    if social_user:
+        if user and social_user.user != user:
+            social_user.user = user
+            social_user.save()
+        elif not user:
+            user = social_user.user
+    return {'social_user': social_user, 'user': user}
