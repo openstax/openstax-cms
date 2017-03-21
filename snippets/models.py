@@ -22,12 +22,14 @@ register_snippet(Subject)
 class FacultyResource(models.Model):
     heading = models.CharField(max_length=255)
     description = RichTextField(blank=True, null=True)
+    unlocked_resource = models.BooleanField(default=False)
 
-    api_fields = ('heading', 'description', )
+    api_fields = ('heading', 'description', 'unlocked_resource' )
 
     panels = [
         FieldPanel('heading'),
         FieldPanel('description'),
+        FieldPanel('unlocked_resource'),
     ]
 
     def __str__(self):
