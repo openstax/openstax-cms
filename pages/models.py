@@ -272,6 +272,8 @@ class HomePage(Page):
         'pages.Accessibility',
         'pages.Licensing',
         'pages.CompCopy',
+        'pages.AdoptForm',
+        'pages.InterestForm',
         'books.BookIndex',
         'news.NewsIndex',
         'allies.Ally',
@@ -878,6 +880,54 @@ class Licensing(Page):
 
 
 class CompCopy(Page):
+    intro_heading = models.CharField(max_length=255)
+    intro_description = RichTextField()
+
+    api_fields = (
+        'intro_heading',
+        'intro_description',
+    )
+
+    content_panels = [
+        FieldPanel('title', classname="full title"),
+        FieldPanel('intro_heading'),
+        FieldPanel('intro_description'),
+    ]
+
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+    ]
+
+    parent_page_types = ['pages.HomePage']
+
+
+class AdoptForm(Page):
+    intro_heading = models.CharField(max_length=255)
+    intro_description = RichTextField()
+
+    api_fields = (
+        'intro_heading',
+        'intro_description',
+    )
+
+    content_panels = [
+        FieldPanel('title', classname="full title"),
+        FieldPanel('intro_heading'),
+        FieldPanel('intro_description'),
+    ]
+
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+    ]
+
+    parent_page_types = ['pages.HomePage']
+
+
+class InterestForm(Page):
     intro_heading = models.CharField(max_length=255)
     intro_description = RichTextField()
 
