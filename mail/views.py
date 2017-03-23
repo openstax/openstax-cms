@@ -36,7 +36,11 @@ def send_contact_message(request):
         except KeyError:
             logging.error("EMAIL FAILED TO SEND: subject:{}")
 
-        return redirect('/confirmation/contact')
+        if subject == "Bulk Order": # if this is a bulk order, send them to a special confirmation page
+            return redirect('/confirmation/bulk-order')
+        else: #otherwise, send them to the contact confirmation page
+            return redirect('/confirmation/contact')
+
     # if this is not posting a message, let's send the csfr token back
     else:
         csrf_token = csrf.get_token(request)
