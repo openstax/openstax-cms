@@ -45,8 +45,11 @@ class FacultyResources(models.Model):
 
     def get_resource_description(self):
         return self.resource.description
-
     resource_description = property(get_resource_description)
+
+    def get_resource_unlocked(self):
+        return self.resource.unlocked_resource
+    resource_unlocked = property(get_resource_unlocked)
 
 
     link_external = models.URLField("External link", blank=True)
@@ -78,7 +81,7 @@ class FacultyResources(models.Model):
     link_text = models.CharField(
         max_length=255, help_text="Call to Action Text")
 
-    api_fields = ('resource_heading', 'resource_description',
+    api_fields = ('resource_heading', 'resource_description', 'resource_unlocked',
                   'link_external', 'link_page',
                   'link_document_url', 'link_document_title', 'link_text', )
 
