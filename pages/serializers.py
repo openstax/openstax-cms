@@ -14,7 +14,9 @@ from .models import (HomePage,
                      GiveForm,
                      Accessibility,
                      Licensing,
-                     CompCopy)
+                     CompCopy,
+                     AdoptForm,
+                     InterestForm)
 from wagtail.contrib.wagtailapi.serializers import PageSerializer
 
 
@@ -118,3 +120,15 @@ class CompCopySerializer(PageSerializer):
     class Meta:
         model = CompCopy
         fields = CompCopy.api_fields
+
+
+class AdoptFormSerializer(PageSerializer):
+    class Meta:
+        model = AdoptForm
+        fields = AdoptForm.api_fields
+
+
+class InterestFormSerializer(PageSerializer):
+    class Meta:
+        model = InterestForm
+        fields = InterestForm.api_fields
