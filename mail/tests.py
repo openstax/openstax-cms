@@ -23,3 +23,12 @@ class MailTest(TestCase):
                                                              'message_body': 'This is a test.'})
         self.assertRedirects(
             response, '/confirmation/contact', target_status_code=301)
+
+    def send_bulk_order_email(self):
+        response = self.client.post('/api/mail/send_mail/', {'to_address': 'noreply@openstax.org',
+                                                             'from_name': 'Openstax',
+                                                             'from_address': 'noreply@openstax.org',
+                                                             'subject': 'Bulk Order',
+                                                             'message_body': 'Send me a bulk order of books, please!'})
+        self.assertRedirects(
+            response, '/confirmation/bulk-order', target_status_code=301)
