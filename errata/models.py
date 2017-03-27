@@ -140,6 +140,8 @@ class Errata(models.Model):
             self.resolution_date = now()
 
         # prefill resolution notes based on certain status and resolutions
+        if self.resolution == "Duplicate" and not self.resolution_notes:
+            self.resolution_notes = "This is a duplicate of another report for this book."
         if self.resolution == "Not An Error" and not self.resolution_notes:
             self.resolution_notes = "Our reviewers determined this was not an error."
         if self.resolution == "Will Not Fix" and not self.resolution_notes:
