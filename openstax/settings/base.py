@@ -167,6 +167,7 @@ INSTALLED_APPS = [
     'social.apps.django_app.default',
     'storages',
     'django_ses',
+    'cachalot',
     # custom
     'admin_templates',  # this overrides the admin templates
     'pages',
