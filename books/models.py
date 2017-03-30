@@ -330,10 +330,12 @@ class Book(Page):
         blank=True, help_text="Link to Concept Coach")
     bookshare_link = models.URLField(
         blank=True, help_text="Link to Bookshare resources")
+    amazon_coming_soon = models.BooleanField(default=False)
     amazon_link = models.URLField(blank=True, help_text="Link to Amazon")
     amazon_price = models.DecimalField(
         default=0.00, max_digits=6, decimal_places=2)
     amazon_blurb = models.TextField(blank=True)
+    bookstore_coming_soon = models.BooleanField(default=False)
     bookstore_link = models.URLField(blank=True, help_text="Link to Bookstore")
     bookstore_blurb = models.TextField(blank=True)
     errata_link = models.URLField(
@@ -371,9 +373,11 @@ class Book(Page):
         FieldPanel('ibook_link_volume_2'),
         FieldPanel('concept_coach_link'),
         FieldPanel('bookshare_link'),
+        FieldPanel('amazon_coming_soon'),
         FieldPanel('amazon_link'),
         FieldPanel('amazon_price'),
         FieldPanel('amazon_blurb'),
+        FieldPanel('bookstore_coming_soon'),
         FieldPanel('bookstore_link'),
         FieldPanel('bookstore_blurb'),
         FieldPanel('errata_link'),
@@ -415,9 +419,11 @@ class Book(Page):
                   'webview_link',
                   'concept_coach_link',
                   'bookshare_link',
+                  'amazon_coming_soon',
                   'amazon_link',
                   'amazon_price',
                   'amazon_blurb',
+                  'bookstore_coming_soon',
                   'bookstore_link',
                   'bookstore_blurb',
                   'errata_link',
