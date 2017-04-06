@@ -14,7 +14,7 @@ class LatestEntriesFeed(Feed):
         return item.heading
 
     def item_description(self, item):
-        return item.body
+        return item.subheading
 
     def item_guid(self, item):
         return str(item.pk)
