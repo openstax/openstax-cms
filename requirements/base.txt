@@ -28,7 +28,9 @@ Unidecode==0.4.20
 wagtail==1.9
 wheel==0.24.0
 Willow==0.4
-python-social-auth==0.2.21
+python-social-auth==0.3.6
+social-auth-app-django==1.1.0
+social-auth-core==1.2.0
 simple_salesforce==0.68.1
 # Django SES has not updated their Pypy release, so we need to install from Github
 git+https://github.com/django-ses/django-ses.git
