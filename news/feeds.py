@@ -1,7 +1,9 @@
 from django.contrib.syndication.views import Feed
 from .models import NewsArticle
+from django.utils.feedgenerator import Atom1Feed
 
-class LatestEntriesFeed(Feed):
+
+class RssBlogFeed(Feed):
     title = "OpenStax Blog Feed"
     link = "/blog-feed/"
     description = "Updates and changes in the world of OpenStax"
@@ -20,3 +22,8 @@ class LatestEntriesFeed(Feed):
 
     def item_link(self, item):
         return '/blog/{}'.format(item.slug)
+
+
+class AtomBlogFeed(RssBlogFeed):
+    feed_type = Atom1Feed
+    subtitle = RssBlogFeed.description
