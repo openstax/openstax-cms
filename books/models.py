@@ -338,6 +338,7 @@ class Book(Page):
     bookstore_coming_soon = models.BooleanField(default=False)
     bookstore_link = models.URLField(blank=True, help_text="Link to Bookstore")
     bookstore_blurb = models.TextField(blank=True)
+    comp_copy_available = models.BooleanField(default=False)
     errata_link = models.URLField(
         blank=True, help_text="Link to view openstaxcollege.org errata")
     errata_corrections_link = models.URLField(
@@ -380,6 +381,7 @@ class Book(Page):
         FieldPanel('bookstore_coming_soon'),
         FieldPanel('bookstore_link'),
         FieldPanel('bookstore_blurb'),
+        FieldPanel('comp_copy_available'),
         FieldPanel('errata_link'),
         FieldPanel('errata_corrections_link'),
     ]
@@ -426,6 +428,7 @@ class Book(Page):
                   'bookstore_coming_soon',
                   'bookstore_link',
                   'bookstore_blurb',
+                  'comp_copy_available',
                   'errata_link',
                   'errata_corrections_link',
                   'table_of_contents', )
@@ -540,6 +543,7 @@ class BookIndex(Page):
                 'amazon_blurb': book.amazon_blurb,
                 'bookstore_link': book.bookstore_link,
                 'bookstore_blurb': book.bookstore_blurb,
+                'comp_copy_available': book.comp_copy_available,
                 'salesforce_abbreviation': book.salesforce_abbreviation,
                 'salesforce_name': book.salesforce_name,
                 'urls': book.book_urls(),
