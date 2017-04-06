@@ -10,7 +10,7 @@ from wagtail.wagtailimages import urls as wagtailimages_urls
 from .api import api_router
 
 from news.search import search
-from news.feeds import LatestEntriesFeed
+from news.feeds import RssBlogFeed, AtomBlogFeed
 
 from api import urls as api_urls
 
@@ -33,7 +33,8 @@ urlpatterns = [
     url(r'^api/pages/', include('pages.urls')),
     url(r'^api/books/', include('books.urls')),
     url(r'^api/news/', include('news.urls')),
-    url(r'^blog-feed/$', LatestEntriesFeed()),
+    url(r'^blog-feed/rss/$', RssBlogFeed()),
+    url(r'^blog-feed/atom/$', AtomBlogFeed()),
     url(r'^api/errata/', include('errata.urls')),
 
     # For anything not caught by a more specific rule above, hand over to
