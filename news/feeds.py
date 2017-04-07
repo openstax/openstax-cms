@@ -1,3 +1,4 @@
+import html2text
 from django.contrib.syndication.views import Feed
 from .models import NewsArticle
 from django.utils.feedgenerator import Atom1Feed
@@ -15,7 +16,9 @@ class RssBlogFeed(Feed):
         return item.heading
 
     def item_description(self, item):
-        return item.subheading
+        h = html2text.HTML2Text()
+        excerpt = h.handle(str(item.body)).split('\n\n')[0]
+        return excerpt + "..."
 
     def item_guid(self, item):
         return str(item.pk)
