@@ -10,7 +10,7 @@ class RssBlogFeed(Feed):
     description = "Updates and changes in the world of OpenStax"
 
     def items(self):
-        return NewsArticle.objects.order_by('date')[:5]
+        return NewsArticle.objects.order_by('-date')
 
     def item_heading(self, item):
         return item.heading
