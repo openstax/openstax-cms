@@ -1,3 +1,5 @@
+[![Dependency Status](https://gemnasium.com/badges/github.com/openstax/openstax-cms.svg)](https://gemnasium.com/github.com/openstax/openstax-cms)
+
 OpenStax CMS
 =======================
 
