@@ -31,6 +31,7 @@ urlpatterns = [
     url(r'^api/v2/', api_router.urls),
 
     url(r'^api/pages/', include('pages.urls')),
+    url(r'^api/snippets/', include('snippets.urls')),
     url(r'^api/books/', include('books.urls')),
     url(r'^api/news/', include('news.urls')),
     url(r'^blog-feed/rss/$', RssBlogFeed()),

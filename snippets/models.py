@@ -53,3 +53,18 @@ class StudentResource(models.Model):
         return self.heading
 
 register_snippet(StudentResource)
+
+
+class Role(models.Model):
+    name = models.CharField(max_length=255)
+
+    api_fields = ('name')
+
+    panels = [
+        FieldPanel('name'),
+    ]
+
+    def __str__(self):
+        return self.name
+
+register_snippet(Role)
