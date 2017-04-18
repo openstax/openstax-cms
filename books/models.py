@@ -338,7 +338,7 @@ class Book(Page):
     bookstore_coming_soon = models.BooleanField(default=False)
     bookstore_link = models.URLField(blank=True, help_text="Link to Bookstore")
     bookstore_blurb = models.TextField(blank=True)
-    comp_copy_available = models.BooleanField(default=False)
+    comp_copy_available = models.BooleanField(default=True)
     errata_link = models.URLField(
         blank=True, help_text="Link to view openstaxcollege.org errata")
     errata_corrections_link = models.URLField(
