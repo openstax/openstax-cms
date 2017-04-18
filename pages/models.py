@@ -591,6 +591,7 @@ class OurImpact(Page):
         'title',
         'intro_heading',
         'intro_description',
+        'row_1',
         'institutions',
         'slug',
         'seo_title',
