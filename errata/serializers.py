@@ -14,6 +14,8 @@ class ErrataSerializer(serializers.ModelSerializer):
                   'book',
                   'status',
                   'resolution',
+                  'reviewed_date',
+                  'corrected_date',
                   'archived',
                   'location',
                   'detail',

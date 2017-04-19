@@ -100,6 +100,8 @@ class Errata(models.Model):
         blank=True,
         null=True,
     )
+    reviewed_date = models.DateField(blank=True, null=True)
+    corrected_date = models.DateField(blank=True, null=True)
     archived = models.BooleanField(default=False)
     location = models.TextField(blank=True, null=True)
     detail = models.TextField()
@@ -136,8 +138,13 @@ class Errata(models.Model):
             raise ValidationError({'is_assessment_errata': 'You must specify if this is an assessment errata.'})
 
     def save(self, *args, **kwargs):
+        # update instance dates
         if self.resolution:
             self.resolution_date = now()
+        if self.status == "Editorial Review" or self.status == "Reviewed":
+            self.reviewed_date = now()
+        if self.status == "Completed" and self.resolution != "Will Not Fix":
+            self.corrected_date = now()
 
         # prefill resolution notes based on certain status and resolutions
         if self.resolution == "Duplicate" and not self.resolution_notes:
