@@ -7,10 +7,6 @@ BASE_DIR = PROJECT_ROOT
 
 DEBUG = True
 
-ADMINS = (
-    ('Michael Harrison', 'mwharrison@rice.edu'),
-)
-
 # Default to dummy email backend. Configure dev/production/local backend
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
@@ -234,6 +230,9 @@ LOGGING = {
         }
     },
     'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
+        },
         'simple': {
             'format': '%(levelname)s %(asctime)s %(module)s %(message)s'
         },
@@ -253,9 +252,10 @@ LOGGING = {
     },
     'loggers': {
         'django.request': {
-            'handlers': ['mail_admins'],
+            'handlers': ['file'],
             'level': 'ERROR',
             'propagate': True,
+            'formatter': 'verbose',
         },
         'accounts.salesforce': {
             'handlers': ['file'],
