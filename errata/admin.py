@@ -40,7 +40,13 @@ class ErrataAdmin(admin.ModelAdmin):
               'submitter_email_address',
               'file_1',
               'file_2']
-    search_fields = ('id', 'book__title', 'detail', 'location', )
+    search_fields = ('id',
+                     'book__title',
+                     'detail',
+                     'location',
+                     'submitted_by__first_name',
+                     'submitted_by__last_name',
+                     'submitted_by__email')
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
     }
