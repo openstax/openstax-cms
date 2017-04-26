@@ -10,7 +10,7 @@ def check_if_faculty_pending(user_id):
         try:
             social_user = SocialAuthStorage.user.objects.filter(user_id=user_id)
             accounts_id = social_user[0].uid
-            command = "SELECT OS_Accounts_ID__c FROM Lead WHERE OS_Accounts_ID__c = '{}' AND Status != 'Converted'".format(accounts_id)
+            command = "SELECT OS_Accounts_ID__c FROM Lead WHERE OS_Accounts_ID__c = '{}' AND Status != 'Converted' AND LeadSource = 'OSC Faculty'".format(accounts_id)
             response = sf.query(command)
 
             try:
