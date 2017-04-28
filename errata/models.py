@@ -178,7 +178,7 @@ def send_status_update_email(sender, instance, created, **kwargs):
             subject = "We received your submission"
             body = "Thanks for your help! Your errata submissions help keep OpenStax resources high quality and up to date."
             send_email = True
-        elif instance.status == 'Reviewed' and instance.resolution == 'Will Not Fix':
+        elif instance.status == 'Reviewed' or instance.status == 'Completed' and instance.resolution == 'Will Not Fix':
             subject = "We reviewed your erratum suggestion"
             body = "Thanks again for your submission. Our reviewers have evaluated it and have determined there will be no change made."
             send_email = True
