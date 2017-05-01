@@ -63,7 +63,7 @@ class Role(models.Model):
                   'salesforce_name')
 
     panels = [
-        FieldPanel('name'),
+        FieldPanel('display_name'),
         FieldPanel('salesforce_name'),
     ]
 
