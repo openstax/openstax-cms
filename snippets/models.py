@@ -56,12 +56,15 @@ register_snippet(StudentResource)
 
 
 class Role(models.Model):
-    name = models.CharField(max_length=255)
+    display_name = models.CharField(max_length=255)
+    salesforce_name = models.CharField(max_length=255)
 
-    api_fields = ('name')
+    api_fields = ('display_name',
+                  'salesforce_name')
 
     panels = [
         FieldPanel('name'),
+        FieldPanel('salesforce_name'),
     ]
 
     def __str__(self):
