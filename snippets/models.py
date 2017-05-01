@@ -68,6 +68,6 @@ class Role(models.Model):
     ]
 
     def __str__(self):
-        return self.name
+        return self.display_name
 
 register_snippet(Role)
