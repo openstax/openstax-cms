@@ -29,6 +29,7 @@ urlpatterns = [
     url(r'^api/', include(api_urls)),
     url(r'^api/search/$', search, name='search'),
     url(r'^api/v2/', api_router.urls),
+    url(r'^api/salesforce/', include('salesforce.urls')),
 
     url(r'^api/pages/', include('pages.urls')),
     url(r'^api/snippets/', include('snippets.urls')),
