@@ -29,6 +29,7 @@ class HTMLAlignmentChoiceBlock(FieldBlock):
 
 class ImageBlock(StructBlock):
     image = ImageChooserBlock(required=False)
+    alt_text = blocks.CharBlock(required=False)
     alignment = ImageFormatChoiceBlock()
 
 
