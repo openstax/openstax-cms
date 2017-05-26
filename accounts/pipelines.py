@@ -35,7 +35,7 @@ def update_role(user, response, *args, **kwargs):
         group, created = Group.objects.get_or_create(name='Faculty')
         group.user_set.add(user)
 
-        if applications and 'OpenStax Tutor' in [app['name'] for app in applications]:
+    if applications and 'OpenStax Tutor' in [app['name'] for app in applications]:
         group, created = Group.objects.get_or_create(name='Tutor')
         group.user_set.add(user)
 
