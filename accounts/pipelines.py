@@ -25,6 +25,7 @@ def update_email(user, response, *args, **kwargs):
 def update_role(user, response, *args, **kwargs):
     self_reported_role = response.get('self_reported_role')
     faculty_status = response.get('faculty_status')
+    applications = response.get('applications')
 
     if self_reported_role == 'student':
         group, created = Group.objects.get_or_create(name=self_reported_role.title())
@@ -32,6 +33,10 @@ def update_role(user, response, *args, **kwargs):
 
     if faculty_status == 'confirmed_faculty':
         group, created = Group.objects.get_or_create(name='Faculty')
+        group.user_set.add(user)
+
+    if applications and 'OpenStax Tutor' in applications.items():
+        group, created = Group.objects.get_or_create(name='Tutor')
         group.user_set.add(user)
 
 
