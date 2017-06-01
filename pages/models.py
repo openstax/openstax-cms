@@ -972,7 +972,6 @@ class Marketing(Page):
     #section 4
     section_4_heading = models.CharField(max_length=255)
     section_4_book_heading = models.CharField(max_length=255)
-    section_4_books = models.ManyToManyField(Book)
     #section 5
     section_5_heading = models.CharField(max_length=255)
     section_5_paragraph = RichTextField()
@@ -990,6 +989,36 @@ class Marketing(Page):
     section_7_cta_link_2 = models.URLField(blank=True, null=True)
     section_7_cta_blurb_2 = models.CharField(max_length=255, blank=True, null=True)
 
+    api_fields = (
+        'title',
+        'section_1_heading',
+        'section_1_subheading',
+        'section_1_paragraph',
+        'section_1_cta_link',
+        'section_1_cta_text',
+        'section_2_heading',
+        'section_2_subheading',
+        'section_2_paragraph',
+        'section_3_heading',
+        'section_3_paragraph',
+        'section_4_heading',
+        'section_4_book_heading',
+        'section_5_heading',
+        'section_5_paragraph',
+        'faqs',
+        'section_7_heading',
+        'section_7_subheading',
+        'section_7_cta_text_1',
+        'section_7_cta_link_1',
+        'section_7_cta_blurb_1',
+        'section_7_cta_text_2',
+        'section_7_cta_link_2',
+        'section_7_cta_blurb_2',
+        'slug',
+        'seo_title',
+        'search_description',
+    )
+
     content_panels = [
         FieldPanel('title', classname="full title"),
         FieldPanel('section_1_heading'),
@@ -1004,7 +1033,6 @@ class Marketing(Page):
         FieldPanel('section_3_paragraph'),
         FieldPanel('section_4_heading'),
         FieldPanel('section_4_book_heading'),
-        FieldPanel('section_4_books'),
         FieldPanel('section_5_heading'),
         FieldPanel('section_5_paragraph'),
         StreamFieldPanel('faqs'),
