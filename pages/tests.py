@@ -19,7 +19,8 @@ from pages.models import (HomePage,
                           Licensing,
                           CompCopy,
                           AdoptForm,
-                          InterestForm)
+                          InterestForm,
+                          Marketing)
 from allies.models import Ally
 from news.models import NewsIndex
 from books.models import BookIndex
@@ -67,6 +68,7 @@ class HomePageTests(WagtailPageTests):
             CompCopy,
             AdoptForm,
             InterestForm,
+            Marketing
         })
 
 
