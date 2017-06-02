@@ -15,6 +15,7 @@ from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
 from openstax.functions import build_image_url
 
 from allies.models import Ally
+from books.models import Book
 
 
 class ImageFormatChoiceBlock(FieldBlock):
@@ -275,6 +276,7 @@ class HomePage(Page):
         'pages.CompCopy',
         'pages.AdoptForm',
         'pages.InterestForm',
+        'pages.Marketing',
         'books.BookIndex',
         'news.NewsIndex',
         'allies.Ally',
@@ -942,6 +944,106 @@ class InterestForm(Page):
         FieldPanel('title', classname="full title"),
         FieldPanel('intro_heading'),
         FieldPanel('intro_description'),
+    ]
+
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+    ]
+
+    parent_page_types = ['pages.HomePage']
+
+
+class Marketing(Page):
+    #section 1
+    section_1_heading = models.CharField(max_length=255)
+    section_1_subheading = models.CharField(max_length=255)
+    section_1_paragraph = RichTextField()
+    section_1_cta_link = models.URLField()
+    section_1_cta_text = models.CharField(max_length=255)
+    #section 2
+    section_2_heading = models.CharField(max_length=255)
+    section_2_subheading = models.CharField(max_length=255)
+    section_2_paragraph = RichTextField()
+    #section 3
+    section_3_heading = models.CharField(max_length=255)
+    section_3_paragraph = RichTextField()
+    #section 4
+    section_4_heading = models.CharField(max_length=255)
+    section_4_book_heading = models.CharField(max_length=255)
+    #section 5
+    section_5_heading = models.CharField(max_length=255)
+    section_5_paragraph = RichTextField()
+    #section 6 - FAQs
+    faqs = StreamField([
+        ('faq', FAQBlock()),
+    ])
+    #section 7
+    section_7_heading = models.CharField(max_length=255)
+    section_7_subheading = models.CharField(max_length=255)
+    section_7_cta_text_1 = models.CharField(max_length=255)
+    section_7_cta_link_1 = models.URLField()
+    section_7_cta_blurb_1 = models.CharField(max_length=255)
+    section_7_cta_text_2 = models.CharField(max_length=255, blank=True, null=True)
+    section_7_cta_link_2 = models.URLField(blank=True, null=True)
+    section_7_cta_blurb_2 = models.CharField(max_length=255, blank=True, null=True)
+
+    api_fields = (
+        'title',
+        'section_1_heading',
+        'section_1_subheading',
+        'section_1_paragraph',
+        'section_1_cta_link',
+        'section_1_cta_text',
+        'section_2_heading',
+        'section_2_subheading',
+        'section_2_paragraph',
+        'section_3_heading',
+        'section_3_paragraph',
+        'section_4_heading',
+        'section_4_book_heading',
+        'section_5_heading',
+        'section_5_paragraph',
+        'faqs',
+        'section_7_heading',
+        'section_7_subheading',
+        'section_7_cta_text_1',
+        'section_7_cta_link_1',
+        'section_7_cta_blurb_1',
+        'section_7_cta_text_2',
+        'section_7_cta_link_2',
+        'section_7_cta_blurb_2',
+        'slug',
+        'seo_title',
+        'search_description',
+    )
+
+    content_panels = [
+        FieldPanel('title', classname="full title"),
+        FieldPanel('section_1_heading'),
+        FieldPanel('section_1_subheading'),
+        FieldPanel('section_1_paragraph'),
+        FieldPanel('section_1_cta_link'),
+        FieldPanel('section_1_cta_text'),
+        FieldPanel('section_2_heading'),
+        FieldPanel('section_2_subheading'),
+        FieldPanel('section_2_paragraph'),
+        FieldPanel('section_3_heading'),
+        FieldPanel('section_3_paragraph'),
+        FieldPanel('section_4_heading'),
+        FieldPanel('section_4_book_heading'),
+        FieldPanel('section_5_heading'),
+        FieldPanel('section_5_paragraph'),
+        StreamFieldPanel('faqs'),
+        FieldPanel('section_7_heading'),
+        FieldPanel('section_7_subheading'),
+        FieldPanel('section_7_cta_text_1'),
+        FieldPanel('section_7_cta_link_1'),
+        FieldPanel('section_7_cta_blurb_1'),
+        FieldPanel('section_7_cta_text_2'),
+        FieldPanel('section_7_cta_link_2'),
+        FieldPanel('section_7_cta_blurb_2'),
     ]
 
     promote_panels = [

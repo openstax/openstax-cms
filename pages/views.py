@@ -19,7 +19,8 @@ from .models import (GeneralPage,
                      Licensing,
                      CompCopy,
                      AdoptForm,
-                     InterestForm)
+                     InterestForm,
+                     Marketing)
 from .serializers import (HomePageSerializer,
                           HigherEducationSerializer,
                           GeneralPageSerializer,
@@ -38,7 +39,8 @@ from .serializers import (HomePageSerializer,
                           LicensingSerializer,
                           CompCopySerializer,
                           AdoptFormSerializer,
-                          InterestFormSerializer)
+                          InterestFormSerializer,
+                          MarketingSerializer)
 
 
 class JSONResponse(HttpResponse):
@@ -193,6 +195,13 @@ def page_detail(request, slug):
         serializer = InterestFormSerializer(page)
         return JSONResponse(serializer.data)
     except InterestForm.DoesNotExist:
+        page_found = False
+
+    try:
+        page = Marketing.objects.get(slug=slug)
+        serializer = MarketingSerializer(page)
+        return JSONResponse(serializer.data)
+    except Marketing.DoesNotExist:
         page_found = False
 
     if not page_found:

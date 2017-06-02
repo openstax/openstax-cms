@@ -16,7 +16,9 @@ from .models import (HomePage,
                      Licensing,
                      CompCopy,
                      AdoptForm,
-                     InterestForm)
+                     InterestForm,
+                     Marketing)
+
 from wagtail.contrib.wagtailapi.serializers import PageSerializer
 
 
@@ -132,3 +134,9 @@ class InterestFormSerializer(PageSerializer):
     class Meta:
         model = InterestForm
         fields = InterestForm.api_fields
+
+
+class MarketingSerializer(PageSerializer):
+    class Meta:
+        model = Marketing
+        fields = Marketing.api_fields
