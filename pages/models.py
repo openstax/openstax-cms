@@ -989,6 +989,19 @@ class Marketing(Page):
     section_7_cta_link_2 = models.URLField(blank=True, null=True)
     section_7_cta_blurb_2 = models.CharField(max_length=255, blank=True, null=True)
 
+    @property
+    def marketing_books(self):
+        books = Book.objects.filter(tutor_marketing_book=True).order_by('path')
+        book_data = []
+        for book in books:
+            book_data.append({
+                'id': book.id,
+                'slug': 'books/{}'.format(book.slug),
+                'title': book.title,
+                'cover_url': book.cover_url,
+            })
+        return book_data
+
     api_fields = (
         'title',
         'section_1_heading',
@@ -1003,6 +1016,7 @@ class Marketing(Page):
         'section_3_paragraph',
         'section_4_heading',
         'section_4_book_heading',
+        'marketing_books',
         'section_5_heading',
         'section_5_paragraph',
         'faqs',
