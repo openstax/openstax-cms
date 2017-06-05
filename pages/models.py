@@ -955,6 +955,24 @@ class InterestForm(Page):
     parent_page_types = ['pages.HomePage']
 
 
+class MarketingVideoLink(models.Model):
+    video_url = models.URLField()
+    video_blurb = models.CharField(max_length=255, null=True, blank=True)
+
+    api_fields = ('video_url',
+                  'video_blurb',)
+
+    panels = [
+        FieldPanel('video_url'),
+        FieldPanel('video_blurb'),
+    ]
+
+
+class MarketingVideos(Orderable, MarketingVideoLink):
+    marketing_video = ParentalKey(
+        'pages.Marketing', related_name='marketing_videos')
+
+
 class Marketing(Page):
     #section 1
     section_1_heading = models.CharField(max_length=255)
@@ -1014,6 +1032,7 @@ class Marketing(Page):
         'section_2_paragraph',
         'section_3_heading',
         'section_3_paragraph',
+        'marketing_videos',
         'section_4_heading',
         'section_4_book_heading',
         'marketing_books',
@@ -1045,6 +1064,7 @@ class Marketing(Page):
         FieldPanel('section_2_paragraph'),
         FieldPanel('section_3_heading'),
         FieldPanel('section_3_paragraph'),
+        InlinePanel('marketing_videos', label="Marketing Videos"),
         FieldPanel('section_4_heading'),
         FieldPanel('section_4_book_heading'),
         FieldPanel('section_5_heading'),
