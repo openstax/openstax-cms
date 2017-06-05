@@ -19,6 +19,8 @@ from .models import (HomePage,
                      InterestForm,
                      Marketing)
 
+from rest_framework import serializers
+
 from wagtail.contrib.wagtailapi.serializers import PageSerializer
 
 
@@ -137,6 +139,8 @@ class InterestFormSerializer(PageSerializer):
 
 
 class MarketingSerializer(PageSerializer):
+    marketing_books = serializers.ModelJSONField()
+
     class Meta:
         model = Marketing
         fields = Marketing.api_fields

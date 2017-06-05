@@ -344,6 +344,7 @@ class Book(Page):
     errata_corrections_link = models.URLField(
         blank=True, help_text="Link errata corrections")
     table_of_contents = JSONField(editable=False, blank=True, null=True)
+    tutor_marketing_book = models.BooleanField(default=False)
 
     content_panels = Page.content_panels + [
         FieldPanel('cnx_id'),
@@ -384,6 +385,7 @@ class Book(Page):
         FieldPanel('comp_copy_available'),
         FieldPanel('errata_link'),
         FieldPanel('errata_corrections_link'),
+        FieldPanel('tutor_marketing_book'),
     ]
 
     api_fields = ('created',
@@ -431,7 +433,8 @@ class Book(Page):
                   'comp_copy_available',
                   'errata_link',
                   'errata_corrections_link',
-                  'table_of_contents', )
+                  'table_of_contents',
+                  'tutor_marketing_book', )
 
     parent_page_types = ['books.BookIndex']
 
