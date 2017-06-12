@@ -973,6 +973,27 @@ class MarketingVideos(Orderable, MarketingVideoLink):
         'pages.Marketing', related_name='marketing_videos')
 
 
+class Resource(models.Model):
+    name = models.CharField(max_length=255)
+    available = models.BooleanField(default=False)
+    alternate_text = models.CharField(max_length=255, null=True, blank=True, help_text="If this has text, availability is ignored.")
+
+    api_fields = ('name',
+                  'available',
+                  'alternate_text')
+
+    panels = [
+        FieldPanel('name'),
+        FieldPanel('available'),
+        FieldPanel('alternate_text'),
+    ]
+
+
+class ResourceAvailability(Orderable, Resource):
+    marketing_video = ParentalKey(
+        'pages.Marketing', related_name='resource_availability')
+
+
 class Marketing(Page):
     #section 1
     section_1_heading = models.CharField(max_length=255)
@@ -1033,6 +1054,7 @@ class Marketing(Page):
         'section_3_heading',
         'section_3_paragraph',
         'marketing_videos',
+        'resource_availability',
         'section_4_heading',
         'section_4_book_heading',
         'marketing_books',
@@ -1065,6 +1087,7 @@ class Marketing(Page):
         FieldPanel('section_3_heading'),
         FieldPanel('section_3_paragraph'),
         InlinePanel('marketing_videos', label="Marketing Videos"),
+        InlinePanel('resource_availability', label="Resource Availability"),
         FieldPanel('section_4_heading'),
         FieldPanel('section_4_book_heading'),
         FieldPanel('section_5_heading'),
