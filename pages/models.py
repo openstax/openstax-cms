@@ -277,6 +277,7 @@ class HomePage(Page):
         'pages.AdoptForm',
         'pages.InterestForm',
         'pages.Marketing',
+        'pages.Technology',
         'books.BookIndex',
         'news.NewsIndex',
         'allies.Ally',
@@ -1107,6 +1108,63 @@ class Marketing(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
+    ]
+
+    parent_page_types = ['pages.HomePage']
+
+
+class Technology(Page):
+    intro_heading = models.CharField(max_length=255)
+    intro_description = models.TextField()
+
+    banner_cta = models.CharField(max_length=255)
+
+    select_tech_heading = models.CharField(max_length=255)
+    select_tech_step_1 = models.CharField(max_length=255)
+    select_tech_step_2 = models.CharField(max_length=255)
+    select_tech_step_3 = models.CharField(max_length=255)
+
+    new_frontier_heading = models.CharField(max_length=255)
+    new_frontier_subheading = models.CharField(max_length=255)
+    new_frontier_description = models.TextField()
+    new_frontier_cta_1 = models.CharField(max_length=255)
+    new_frontier_cta_2 = models.CharField(max_length=255)
+
+    api_fields = (
+        'intro_heading',
+        'intro_description',
+        'banner_cta',
+        'select_tech_heading',
+        'select_tech_step_1',
+        'select_tech_step_2',
+        'select_tech_step_3',
+        'new_frontier_heading',
+        'new_frontier_subheading',
+        'new_frontier_description',
+        'new_frontier_cta_1',
+        'new_frontier_cta_2',)
+
+    content_panels = [
+        FieldPanel('title', classname="full title"),
+        FieldPanel('intro_heading'),
+        FieldPanel('intro_description'),
+        FieldPanel('banner_cta'),
+        FieldPanel('select_tech_heading'),
+        FieldPanel('select_tech_step_1'),
+        FieldPanel('select_tech_step_2'),
+        FieldPanel('select_tech_step_3'),
+        FieldPanel('new_frontier_heading'),
+        FieldPanel('new_frontier_subheading'),
+        FieldPanel('new_frontier_description'),
+        FieldPanel('new_frontier_cta_1'),
+        FieldPanel('new_frontier_cta_2'),
+    ]
+
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+
     ]
 
     parent_page_types = ['pages.HomePage']

@@ -20,7 +20,8 @@ from .models import (GeneralPage,
                      CompCopy,
                      AdoptForm,
                      InterestForm,
-                     Marketing)
+                     Marketing,
+                     Technology)
 from .serializers import (HomePageSerializer,
                           HigherEducationSerializer,
                           GeneralPageSerializer,
@@ -40,7 +41,8 @@ from .serializers import (HomePageSerializer,
                           CompCopySerializer,
                           AdoptFormSerializer,
                           InterestFormSerializer,
-                          MarketingSerializer)
+                          MarketingSerializer,
+                          TechnologySerializer)
 
 
 class JSONResponse(HttpResponse):
@@ -202,6 +204,13 @@ def page_detail(request, slug):
         serializer = MarketingSerializer(page)
         return JSONResponse(serializer.data)
     except Marketing.DoesNotExist:
+        page_found = False
+
+    try:
+        page = Technology.objects.get(slug=slug)
+        serializer = TechnologySerializer(page)
+        return JSONResponse(serializer.data)
+    except Technology.DoesNotExist:
         page_found = False
 
     if not page_found:
