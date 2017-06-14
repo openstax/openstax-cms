@@ -1115,9 +1115,10 @@ class Marketing(Page):
 
 class Technology(Page):
     intro_heading = models.CharField(max_length=255)
-    intro_description = models.TextField()
+    intro_description = RichTextField()
 
     banner_cta = models.CharField(max_length=255)
+    banner_cta_link = models.URLField(blank=True, null=True)
 
     select_tech_heading = models.CharField(max_length=255)
     select_tech_step_1 = models.CharField(max_length=255)
@@ -1126,14 +1127,17 @@ class Technology(Page):
 
     new_frontier_heading = models.CharField(max_length=255)
     new_frontier_subheading = models.CharField(max_length=255)
-    new_frontier_description = models.TextField()
+    new_frontier_description = RichTextField()
     new_frontier_cta_1 = models.CharField(max_length=255)
+    new_frontier_cta_link_1 = models.URLField(blank=True, null=True)
     new_frontier_cta_2 = models.CharField(max_length=255)
+    new_frontier_cta_link_2 = models.URLField(blank=True, null=True)
 
     api_fields = (
         'intro_heading',
         'intro_description',
         'banner_cta',
+        'banner_cta_link',
         'select_tech_heading',
         'select_tech_step_1',
         'select_tech_step_2',
@@ -1142,13 +1146,16 @@ class Technology(Page):
         'new_frontier_subheading',
         'new_frontier_description',
         'new_frontier_cta_1',
-        'new_frontier_cta_2',)
+        'new_frontier_cta_link_1',
+        'new_frontier_cta_2',
+        'new_frontier_cta_link_2')
 
     content_panels = [
         FieldPanel('title', classname="full title"),
         FieldPanel('intro_heading'),
         FieldPanel('intro_description'),
         FieldPanel('banner_cta'),
+        FieldPanel('banner_cta_link'),
         FieldPanel('select_tech_heading'),
         FieldPanel('select_tech_step_1'),
         FieldPanel('select_tech_step_2'),
@@ -1157,7 +1164,9 @@ class Technology(Page):
         FieldPanel('new_frontier_subheading'),
         FieldPanel('new_frontier_description'),
         FieldPanel('new_frontier_cta_1'),
+        FieldPanel('new_frontier_cta_link_1'),
         FieldPanel('new_frontier_cta_2'),
+        FieldPanel('new_frontier_cta_link_2'),
     ]
 
     promote_panels = [
