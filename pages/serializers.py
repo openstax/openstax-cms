@@ -17,7 +17,8 @@ from .models import (HomePage,
                      CompCopy,
                      AdoptForm,
                      InterestForm,
-                     Marketing)
+                     Marketing,
+                     Technology)
 
 from rest_framework import serializers
 
@@ -144,3 +145,9 @@ class MarketingSerializer(PageSerializer):
     class Meta:
         model = Marketing
         fields = Marketing.api_fields
+
+
+class TechnologySerializer(PageSerializer):
+    class Meta:
+        model = Technology
+        fields = Technology.api_fields
