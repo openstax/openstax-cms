@@ -274,6 +274,8 @@ class Book(Page):
     digital_isbn_13 = models.CharField(max_length=255, blank=True, null=True)
     ibook_isbn_10 = models.CharField(max_length=255, blank=True, null=True)
     ibook_isbn_13 = models.CharField(max_length=255, blank=True, null=True)
+    ibook_volume_2_isbn_10 = models.CharField(max_length=255, blank=True, null=True)
+    ibook_volume_2_isbn_13 = models.CharField(max_length=255, blank=True, null=True)
     license_text = models.TextField(
         blank=True, null=True, help_text="Text blurb that describes the license.")
     license_name = models.CharField(
@@ -372,6 +374,8 @@ class Book(Page):
         FieldPanel('digital_isbn_13'),
         FieldPanel('ibook_isbn_10'),
         FieldPanel('ibook_isbn_13'),
+        FieldPanel('ibook_volume_2_isbn_10'),
+        FieldPanel('ibook_volume_2_isbn_13'),
         FieldPanel('license_text'),
         DocumentChooserPanel('high_resolution_pdf'),
         DocumentChooserPanel('low_resolution_pdf'),
@@ -420,6 +424,8 @@ class Book(Page):
                   'digital_isbn_13',
                   'ibook_isbn_10',
                   'ibook_isbn_13',
+                  'ibook_volume_2_isbn_10',
+                  'ibook_volume_2_isbn_13',
                   'license_text',
                   'license_name',
                   'license_version',
