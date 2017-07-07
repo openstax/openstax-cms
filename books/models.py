@@ -268,8 +268,12 @@ class Book(Page):
     authors = StreamField([
         ('author', AuthorBlock()),
     ], blank=True, null=True)
-    isbn_10 = models.CharField(max_length=255, blank=True, null=True)
-    isbn_13 = models.CharField(max_length=255, blank=True, null=True)
+    print_isbn_10 = models.CharField(max_length=255, blank=True, null=True)
+    print_isbn_13 = models.CharField(max_length=255, blank=True, null=True)
+    digital_isbn_10 = models.CharField(max_length=255, blank=True, null=True)
+    digital_isbn_13 = models.CharField(max_length=255, blank=True, null=True)
+    ibook_isbn_10 = models.CharField(max_length=255, blank=True, null=True)
+    ibook_isbn_13 = models.CharField(max_length=255, blank=True, null=True)
     license_text = models.TextField(
         blank=True, null=True, help_text="Text blurb that describes the license.")
     license_name = models.CharField(
@@ -362,8 +366,12 @@ class Book(Page):
         InlinePanel('book_contributing_authors', label="Contributing Authors"),
         #Hide until we are pulling authors from CNX
         #StreamFieldPanel('authors'),
-        FieldPanel('isbn_10'),
-        FieldPanel('isbn_13'),
+        FieldPanel('print_isbn_10'),
+        FieldPanel('print_isbn_13'),
+        FieldPanel('digital_isbn_10'),
+        FieldPanel('digital_isbn_13'),
+        FieldPanel('ibook_isbn_10'),
+        FieldPanel('ibook_isbn_13'),
         FieldPanel('license_text'),
         DocumentChooserPanel('high_resolution_pdf'),
         DocumentChooserPanel('low_resolution_pdf'),
@@ -406,8 +414,12 @@ class Book(Page):
                   'book_contributing_authors',
                   'publish_date',
                   'authors',
-                  'isbn_10',
-                  'isbn_13',
+                  'print_isbn_10',
+                  'print_isbn_13',
+                  'digital_isbn_10',
+                  'digital_isbn_13',
+                  'ibook_isbn_10',
+                  'ibook_isbn_13',
                   'license_text',
                   'license_name',
                   'license_version',
