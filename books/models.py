@@ -544,31 +544,34 @@ class BookIndex(Page):
         books = Book.objects.all().order_by('path')
         book_data = []
         for book in books:
-            book_data.append({
-                'id': book.id,
-                'slug': 'books/{}'.format(book.slug),
-                'title': book.title,
-                'subject': book.subject.name,
-                'is_ap': book.is_ap,
-                'coming_soon': book.coming_soon,
-                'cover_url': book.cover_url,
-                'high_resolution_pdf_url': book.high_resolution_pdf_url,
-                'low_resolution_pdf_url': book.low_resolution_pdf_url,
-                'ibook_link': book.ibook_link,
-                'ibook_link_volume_2': book.ibook_link_volume_2,
-                'webview_link': book.webview_link,
-                'concept_coach_link': book.concept_coach_link,
-                'bookshare_link': book.bookshare_link,
-                'amazon_link': book.amazon_link,
-                'amazon_price': book.amazon_price,
-                'amazon_blurb': book.amazon_blurb,
-                'bookstore_link': book.bookstore_link,
-                'bookstore_blurb': book.bookstore_blurb,
-                'comp_copy_available': book.comp_copy_available,
-                'salesforce_abbreviation': book.salesforce_abbreviation,
-                'salesforce_name': book.salesforce_name,
-                'urls': book.book_urls(),
-            })
+            try:
+                book_data.append({
+                    'id': book.id,
+                    'slug': 'books/{}'.format(book.slug),
+                    'title': book.title,
+                    'subject': book.subject.name,
+                    'is_ap': book.is_ap,
+                    'coming_soon': book.coming_soon,
+                    'cover_url': book.cover_url,
+                    'high_resolution_pdf_url': book.high_resolution_pdf_url,
+                    'low_resolution_pdf_url': book.low_resolution_pdf_url,
+                    'ibook_link': book.ibook_link,
+                    'ibook_link_volume_2': book.ibook_link_volume_2,
+                    'webview_link': book.webview_link,
+                    'concept_coach_link': book.concept_coach_link,
+                    'bookshare_link': book.bookshare_link,
+                    'amazon_link': book.amazon_link,
+                    'amazon_price': book.amazon_price,
+                    'amazon_blurb': book.amazon_blurb,
+                    'bookstore_link': book.bookstore_link,
+                    'bookstore_blurb': book.bookstore_blurb,
+                    'comp_copy_available': book.comp_copy_available,
+                    'salesforce_abbreviation': book.salesforce_abbreviation,
+                    'salesforce_name': book.salesforce_name,
+                    'urls': book.book_urls(),
+                })
+            except Exception as e:
+                print("Error: {}".format(e))
         return book_data
 
     content_panels = Page.content_panels + [
