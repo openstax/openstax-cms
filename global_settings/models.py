@@ -12,3 +12,16 @@ class StickyNote(BaseSetting):
 
     class Meta:
         verbose_name = 'Sticky Note'
+
+
+@register_setting(icon='collapse-down')
+class Footer(BaseSetting):
+    supporters = models.TextField()
+    copyright = models.TextField()
+    ap_statement = models.TextField()
+    facebook_link =models.URLField()
+    twitter_link = models.URLField()
+    linkedin_link = models.URLField()
+
+    class Meta:
+        verbose_name = 'Footer'

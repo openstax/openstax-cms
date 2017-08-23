@@ -4,7 +4,7 @@ from salesforce.models import Adopter
 from salesforce.functions import check_if_faculty_pending, update_faculty_status, check_if_email_used
 from social.apps.django_app.default.models import \
     DjangoStorage as SocialAuthStorage
-from global_settings.models import StickyNote
+from global_settings.models import StickyNote, Footer
 from wagtail.wagtailimages.models import Image
 from wagtail.wagtaildocs.models import Document
 
@@ -127,4 +127,17 @@ def sticky_note(request):
         'content': sticky_note.content,
         'emergency_expires': sticky_note.emergency_expires,
         'emergency_content': sticky_note.emergency_content,
+    })
+
+
+def footer(request):
+    footer = Footer.for_site(request.site)
+
+    return JsonResponse({
+        'supporters': footer.supporters,
+        'copyright': footer.copyright,
+        'ap_statement': footer.ap_statement,
+        'facebook_link': footer.facebook_link,
+        'twitter_link': footer.twitter_link,
+        'linkedin_link': footer.linkedin_link,
     })
