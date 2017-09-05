@@ -38,12 +38,14 @@ NOT_AN_ERROR = 'Not An Error'
 WILL_NOT_FIX = 'Will Not Fix'
 APPROVED = 'Approved'
 MAJOR_BOOK_REVISION = 'Major Book Revision'
+CUSTOMER_SUPPORT = 'Sent to Customer Support'
 ERRATA_RESOLUTIONS = (
     (DUPLICATE, 'Duplicate'),
     (NOT_AN_ERROR, 'Not An Error'),
     (WILL_NOT_FIX, 'Will Not Fix'),
     (APPROVED, 'Approved'),
     (MAJOR_BOOK_REVISION, 'Major Book Revision'),
+    (CUSTOMER_SUPPORT, 'Sent to Customer Support'),
 )
 
 FACTUAL = 'Other factual inaccuracy in content'
@@ -157,6 +159,8 @@ class Errata(models.Model):
             self.resolution_notes = "Our reviewers determined this would require a significant book revision.  While we cannot make this change at this time, we will consider it for future editions of this book."
         if (self.status == "Reviewed" or self.status == "Completed") and self.resolution == "Approved" and not self.resolution_notes:
             self.resolution_notes = "Our reviewers accepted this change."
+        if self.status == "Completed" and self.resolution == "Sent to Customer Support" and not self.resolution_notes:
+            self.resolution_notes = "Forwarded to customer support."
 
         super(Errata, self).save(*args, **kwargs)
 
@@ -174,6 +178,7 @@ class Errata(models.Model):
 @receiver(post_save, sender=Errata, dispatch_uid="send_status_update_email")
 def send_status_update_email(sender, instance, created, **kwargs):
         send_email = False
+        override_to = False
         if created:
             subject = "We received your submission"
             body = "Thanks for your help! Your errata submissions help keep OpenStax resources high quality and up to date."
@@ -190,13 +195,20 @@ def send_status_update_email(sender, instance, created, **kwargs):
             subject = "Your correction is live"
             body = "The correction you suggested has been incorporated into the appropriate OpenStax resource. Thanks for your help!"
             send_email = True
+        elif instance.status == 'Completed' and instance.resolution == 'Sent to Customer Support':
+            subject = "Errata report for Customer Support"
+            body = "An errata report has been submitted that requires customer support attention."
+            send_email = True
+            override_to = True
+            to = "support@openstax.org"
 
-        if instance.submitter_email_address:
-            to = instance.submitter_email_address
-        elif instance.submitted_by:
-            to = instance.submitted_by.email
-        else:
-            send_email = False
+        if not override_to:
+            if instance.submitter_email_address:
+                to = instance.submitter_email_address
+            elif instance.submitted_by:
+                to = instance.submitted_by.email
+            else:
+                send_email = False
 
         if send_email:
             errata_email_info = {
