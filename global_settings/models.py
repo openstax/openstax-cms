@@ -18,7 +18,7 @@ class StickyNote(BaseSetting):
 @register_setting(icon='collapse-down')
 class Footer(BaseSetting):
     supporters = models.TextField()
-    copyright = RichTextField()
+    copyright = models.TextField()
     ap_statement = models.TextField()
     facebook_link =models.URLField()
     twitter_link = models.URLField()
