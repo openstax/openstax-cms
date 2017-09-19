@@ -957,15 +957,30 @@ class InterestForm(Page):
 
 
 class MarketingVideoLink(models.Model):
-    video_url = models.URLField()
-    video_blurb = models.CharField(max_length=255, null=True, blank=True)
+    video_url = models.URLField(blank=True, null=True)
+    video_file = models.FileField(upload_to='marketing_videos', blank=True, null=True)
+    image_url = models.URLField(blank=True, null=True)
+    image_file = models.ForeignKey(
+        'wagtailimages.Image',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='+',
+    )
+    video_image_blurb = models.CharField(max_length=255, null=True, blank=True)
 
     api_fields = ('video_url',
-                  'video_blurb',)
+                  'video_file',
+                  'video_url',
+                  'image_file',
+                  'video_image_blurb',)
 
     panels = [
         FieldPanel('video_url'),
-        FieldPanel('video_blurb'),
+        FieldPanel('video_file'),
+        FieldPanel('image_url'),
+        ImageChooserPanel('image_file'),
+        FieldPanel('video_image_blurb'),
     ]
 
 
@@ -975,17 +990,26 @@ class MarketingVideos(Orderable, MarketingVideoLink):
 
 
 class Resource(models.Model):
-    name = models.CharField(max_length=255)
+    name = models.CharField(max_length=255, help_text="Resources should be added in pairs to display properly.")
     available = models.BooleanField(default=False)
+    available_image = models.ForeignKey(
+        'wagtailimages.Image',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='+',
+    )
     alternate_text = models.CharField(max_length=255, null=True, blank=True, help_text="If this has text, availability is ignored.")
 
     api_fields = ('name',
                   'available',
+                  'available_image',
                   'alternate_text')
 
     panels = [
         FieldPanel('name'),
         FieldPanel('available'),
+        ImageChooserPanel('available_image'),
         FieldPanel('alternate_text'),
     ]
 
@@ -996,6 +1020,10 @@ class ResourceAvailability(Orderable, Resource):
 
 
 class Marketing(Page):
+    #access tutor section
+    access_tagline = models.CharField(max_length=255)
+    access_button_cta = models.CharField(max_length=255)
+    access_button_link = models.URLField()
     #section 1
     section_1_heading = models.CharField(max_length=255)
     section_1_subheading = models.CharField(max_length=255)
@@ -1006,16 +1034,56 @@ class Marketing(Page):
     section_2_heading = models.CharField(max_length=255)
     section_2_subheading = models.CharField(max_length=255)
     section_2_paragraph = RichTextField()
+    icon_1_image = models.ForeignKey(
+        'wagtailimages.Image',
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='+',
+    )
+    icon_1_subheading = models.CharField(max_length=255)
+    icon_1_paragraph = models.CharField(max_length=255)
+    icon_2_image = models.ForeignKey(
+        'wagtailimages.Image',
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='+',
+    )
+    icon_2_subheading = models.CharField(max_length=255)
+    icon_2_paragraph = models.CharField(max_length=255)
+    icon_3_image = models.ForeignKey(
+        'wagtailimages.Image',
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='+',
+    )
+    icon_3_subheading = models.CharField(max_length=255)
+    icon_3_paragraph = models.CharField(max_length=255)
+    icon_4_image = models.ForeignKey(
+        'wagtailimages.Image',
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='+',
+    )
+    icon_4_subheading = models.CharField(max_length=255)
+    icon_4_paragraph = models.CharField(max_length=255)
     #section 3
     section_3_heading = models.CharField(max_length=255)
     section_3_paragraph = RichTextField()
     #section 4
     section_4_heading = models.CharField(max_length=255)
+    section_4_paragraph = RichTextField()
+    section_4_resource_fine_print = models.CharField(max_length=255)
     section_4_book_heading = models.CharField(max_length=255)
     #section 5
     section_5_heading = models.CharField(max_length=255)
     section_5_paragraph = RichTextField()
+    section_5_dollar_1_paragraph = models.CharField(max_length=255)
+    section_5_dollar_2_paragraph = models.CharField(max_length=255)
+    section_5_dollar_3_paragraph = models.CharField(max_length=255)
+    section_5_dollar_4_paragraph = models.CharField(max_length=255)
     #section 6 - FAQs
+    section_6_heading = models.CharField(max_length=255)
+    section_6_knowledge_base_copy = RichTextField()
     faqs = StreamField([
         ('faq', FAQBlock()),
     ])
@@ -1028,6 +1096,13 @@ class Marketing(Page):
     section_7_cta_text_2 = models.CharField(max_length=255, blank=True, null=True)
     section_7_cta_link_2 = models.URLField(blank=True, null=True)
     section_7_cta_blurb_2 = models.CharField(max_length=255, blank=True, null=True)
+    #floating footer
+    floating_footer_button_1_cta = models.CharField(max_length=255)
+    floating_footer_button_1_link = models.URLField()
+    floating_footer_button_1_caption = models.CharField(max_length=255)
+    floating_footer_button_2_cta = models.CharField(max_length=255)
+    floating_footer_button_2_link = models.URLField()
+    floating_footer_button_2_caption = models.CharField(max_length=255)
 
     @property
     def marketing_books(self):
@@ -1044,6 +1119,9 @@ class Marketing(Page):
 
     api_fields = (
         'title',
+        'access_tagline',
+        'access_button_cta',
+        'access_button_link'
         'section_1_heading',
         'section_1_subheading',
         'section_1_paragraph',
@@ -1052,15 +1130,35 @@ class Marketing(Page):
         'section_2_heading',
         'section_2_subheading',
         'section_2_paragraph',
+        'icon_1_image',
+        'icon_1_subheading',
+        'icon_1_paragraph',
+        'icon_2_image',
+        'icon_2_subheading',
+        'icon_2_paragraph',
+        'icon_3_image',
+        'icon_3_subheading',
+        'icon_3_paragraph',
+        'icon_4_image',
+        'icon_4_subheading',
+        'icon_4_paragraph',
         'section_3_heading',
         'section_3_paragraph',
         'marketing_videos',
         'resource_availability',
         'section_4_heading',
-        'section_4_book_heading',
+        'section_4_paragraph',
+        'section_4_resource_fine_print',
         'marketing_books',
+        'section_4_book_heading',
         'section_5_heading',
         'section_5_paragraph',
+        'section_5_dollar_1_paragraph',
+        'section_5_dollar_2_paragraph',
+        'section_5_dollar_3_paragraph',
+        'section_5_dollar_4_paragraph',
+        'section_6_heading',
+        'section_6_knowledge_base_copy',
         'faqs',
         'section_7_heading',
         'section_7_subheading',
@@ -1070,6 +1168,12 @@ class Marketing(Page):
         'section_7_cta_text_2',
         'section_7_cta_link_2',
         'section_7_cta_blurb_2',
+        'floating_footer_button_1_cta',
+        'floating_footer_button_1_link',
+        'floating_footer_button_1_caption',
+        'floating_footer_button_2_cta',
+        'floating_footer_button_2_link',
+        'floating_footer_button_2_caption',
         'slug',
         'seo_title',
         'search_description',
@@ -1077,6 +1181,11 @@ class Marketing(Page):
 
     content_panels = [
         FieldPanel('title', classname="full title"),
+        FieldPanel('access_tagline'),
+        FieldPanel('access_button_cta'),
+        FieldPanel('access_button_link'),
+        FieldPanel('section_1_heading'),
+        FieldPanel('section_1_heading'),
         FieldPanel('section_1_heading'),
         FieldPanel('section_1_subheading'),
         FieldPanel('section_1_paragraph'),
@@ -1085,14 +1194,34 @@ class Marketing(Page):
         FieldPanel('section_2_heading'),
         FieldPanel('section_2_subheading'),
         FieldPanel('section_2_paragraph'),
+        ImageChooserPanel('icon_1_image'),
+        FieldPanel('icon_1_subheading'),
+        FieldPanel('icon_1_paragraph'),
+        ImageChooserPanel('icon_2_image'),
+        FieldPanel('icon_2_subheading'),
+        FieldPanel('icon_2_paragraph'),
+        ImageChooserPanel('icon_3_image'),
+        FieldPanel('icon_3_subheading'),
+        FieldPanel('icon_3_paragraph'),
+        ImageChooserPanel('icon_4_image'),
+        FieldPanel('icon_4_subheading'),
+        FieldPanel('icon_4_paragraph'),
         FieldPanel('section_3_heading'),
         FieldPanel('section_3_paragraph'),
         InlinePanel('marketing_videos', label="Marketing Videos"),
-        InlinePanel('resource_availability', label="Resource Availability"),
         FieldPanel('section_4_heading'),
+        FieldPanel('section_4_paragraph'),
+        InlinePanel('resource_availability', label="Resource Availability"),
+        FieldPanel('section_4_resource_fine_print'),
         FieldPanel('section_4_book_heading'),
         FieldPanel('section_5_heading'),
         FieldPanel('section_5_paragraph'),
+        FieldPanel('section_5_dollar_1_paragraph'),
+        FieldPanel('section_5_dollar_2_paragraph'),
+        FieldPanel('section_5_dollar_3_paragraph'),
+        FieldPanel('section_5_dollar_4_paragraph'),
+        FieldPanel('section_6_heading'),
+        FieldPanel('section_6_knowledge_base_copy'),
         StreamFieldPanel('faqs'),
         FieldPanel('section_7_heading'),
         FieldPanel('section_7_subheading'),
@@ -1102,6 +1231,12 @@ class Marketing(Page):
         FieldPanel('section_7_cta_text_2'),
         FieldPanel('section_7_cta_link_2'),
         FieldPanel('section_7_cta_blurb_2'),
+        FieldPanel('floating_footer_button_1_cta'),
+        FieldPanel('floating_footer_button_1_link'),
+        FieldPanel('floating_footer_button_1_caption'),
+        FieldPanel('floating_footer_button_2_cta'),
+        FieldPanel('floating_footer_button_2_link'),
+        FieldPanel('floating_footer_button_2_caption'),
     ]
 
     promote_panels = [
