@@ -513,7 +513,7 @@ class Funder(models.Model):
     def get_funder_logo(self):
         return build_image_url(self.logo)
     funder_logo = property(get_funder_logo)
-    description = models.TextField()
+    description = models.TextField(blank=True, null=True)
 
     api_fields = ('title', 'funder_logo', 'description', )
 
