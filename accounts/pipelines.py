@@ -1,11 +1,19 @@
 from django.contrib.auth.models import Group
 from social.apps.django_app.default.models import UserSocialAuth
+from .functions import get_or_create_user_profile
 
-def save_profile(user, *args, **kwargs):
-    # for now - setting email address to prevent issues, should update it
-    # eventually
+
+def save_profile(user, response, *args, **kwargs):
     if user:
-        user.email = '{}@openstax.org'.format(user.username)
+        try:
+            contact_infos = response.get('contact_infos')
+
+            # grabbing the highest id in the email list to determine newest email
+            newest_email = max(contact_infos, key=lambda x:x['id'])
+
+            user.email = newest_email['value']
+        except ValueError:
+            user.email = '{}@openstax.org'.format(user.username)
         user.save()
 
 
@@ -40,19 +48,17 @@ def update_role(user, response, *args, **kwargs):
         group.user_set.add(user)
 
 
-def social_user(backend, uid, user=None, *args, **kwargs):
-    """Return UserSocialAuth account for backend/uid pair or None if it
-    doesn't exists.
+def update_accounts_profile(user, response, *args, **kwargs):
+    uuid = response.get('uuid')
+    profile = get_or_create_user_profile(user)
 
-    CHANGE: Raise AuthAlreadyAssociated if UserSocialAuth entry belongs to another
-    user.
-    INSTEAD: Set new UserSocialAuth to user if associated before.
-    """
-    social_user = UserSocialAuth.get_social_auth(backend.name, uid)
-    if social_user:
-        if user and social_user.user != user:
-            social_user.user = user
-            social_user.save()
-        elif not user:
-            user = social_user.user
-    return {'social_user': social_user, 'user': user}
+    profile.uuid = uuid
+    profile.save()
+
+
+def update_faculty_status(user, response, *args, **kwargs):
+    faculty_status = response.get('faculty_status')
+    profile = get_or_create_user_profile(user)
+
+    profile.faculty_status = faculty_status
+    profile.save()
