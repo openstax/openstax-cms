@@ -341,6 +341,7 @@ class Book(Page):
     amazon_price = models.DecimalField(
         default=0.00, max_digits=6, decimal_places=2)
     amazon_blurb = models.TextField(blank=True)
+    kindle_link = models.URLField(blank=True, help_text="Link to Kindle version")
     bookstore_coming_soon = models.BooleanField(default=False)
     bookstore_link = models.URLField(blank=True, help_text="Link to Bookstore")
     bookstore_blurb = models.TextField(blank=True)
@@ -391,6 +392,7 @@ class Book(Page):
         FieldPanel('amazon_link'),
         FieldPanel('amazon_price'),
         FieldPanel('amazon_blurb'),
+        FieldPanel('kindle_link'),
         FieldPanel('bookstore_coming_soon'),
         FieldPanel('bookstore_link'),
         FieldPanel('bookstore_blurb'),
@@ -445,6 +447,7 @@ class Book(Page):
                   'amazon_link',
                   'amazon_price',
                   'amazon_blurb',
+                  'kindle_link',
                   'bookstore_coming_soon',
                   'bookstore_link',
                   'bookstore_blurb',
