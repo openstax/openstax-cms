@@ -969,10 +969,14 @@ class MarketingVideoLink(models.Model):
     )
     video_image_blurb = models.CharField(max_length=255, null=True, blank=True)
 
+    def get_image(self):
+        return build_image_url(self.image_file)
+    image = property(get_image)
+
     api_fields = ('video_url',
                   'video_file',
-                  'video_url',
-                  'image_file',
+                  'image_url',
+                  'image',
                   'video_image_blurb',)
 
     panels = [
@@ -999,11 +1003,16 @@ class Resource(models.Model):
         blank=True,
         related_name='+',
     )
+
+    def get_available_image(self):
+        return build_image_url(self.available_image)
+    available_image_url = property(get_available_image)
+
     alternate_text = models.CharField(max_length=255, null=True, blank=True, help_text="If this has text, availability is ignored.")
 
     api_fields = ('name',
                   'available',
-                  'available_image',
+                  'available_image_url',
                   'alternate_text')
 
     panels = [
@@ -1040,6 +1049,11 @@ class Marketing(Page):
         null=True,
         related_name='+',
     )
+
+    def get_icon_1_image(self):
+        return build_image_url(self.icon_1_image)
+    icon_1_image_url = property(get_icon_1_image)
+
     icon_1_subheading = models.CharField(max_length=255)
     icon_1_paragraph = models.CharField(max_length=255)
     icon_2_image = models.ForeignKey(
@@ -1048,6 +1062,12 @@ class Marketing(Page):
         null=True,
         related_name='+',
     )
+
+    def get_icon_2_image(self):
+        return build_image_url(self.icon_2_image)
+    icon_2_image_url = property(get_icon_2_image)
+
+
     icon_2_subheading = models.CharField(max_length=255)
     icon_2_paragraph = models.CharField(max_length=255)
     icon_3_image = models.ForeignKey(
@@ -1056,6 +1076,11 @@ class Marketing(Page):
         null=True,
         related_name='+',
     )
+
+    def get_icon_3_image(self):
+        return build_image_url(self.icon_3_image)
+    icon_3_image_url = property(get_icon_3_image)
+
     icon_3_subheading = models.CharField(max_length=255)
     icon_3_paragraph = models.CharField(max_length=255)
     icon_4_image = models.ForeignKey(
@@ -1064,6 +1089,11 @@ class Marketing(Page):
         null=True,
         related_name='+',
     )
+
+    def get_icon_4_image(self):
+        return build_image_url(self.icon_4_image)
+    icon_4_image_url = property(get_icon_4_image)
+
     icon_4_subheading = models.CharField(max_length=255)
     icon_4_paragraph = models.CharField(max_length=255)
     #section 3
@@ -1121,7 +1151,7 @@ class Marketing(Page):
         'title',
         'access_tagline',
         'access_button_cta',
-        'access_button_link'
+        'access_button_link',
         'section_1_heading',
         'section_1_subheading',
         'section_1_paragraph',
@@ -1130,16 +1160,16 @@ class Marketing(Page):
         'section_2_heading',
         'section_2_subheading',
         'section_2_paragraph',
-        'icon_1_image',
+        'icon_1_image_url',
         'icon_1_subheading',
         'icon_1_paragraph',
-        'icon_2_image',
+        'icon_2_image_url',
         'icon_2_subheading',
         'icon_2_paragraph',
-        'icon_3_image',
+        'icon_3_image_url',
         'icon_3_subheading',
         'icon_3_paragraph',
-        'icon_4_image',
+        'icon_4_image_url',
         'icon_4_subheading',
         'icon_4_paragraph',
         'section_3_heading',
