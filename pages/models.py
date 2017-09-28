@@ -1056,43 +1056,16 @@ class Marketing(Page):
 
     icon_1_subheading = models.CharField(max_length=255)
     icon_1_paragraph = models.CharField(max_length=255)
-    icon_2_image = models.ForeignKey(
-        'wagtaildocs.Document',
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name='+',
-    )
 
-    def get_icon_2_image(self):
-        return build_document_url(self.icon_2_image)
-    icon_2_image_url = property(get_icon_2_image)
 
 
     icon_2_subheading = models.CharField(max_length=255)
     icon_2_paragraph = models.CharField(max_length=255)
-    icon_3_image = models.ForeignKey(
-        'wagtaildocs.Document',
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name='+',
-    )
 
-    def get_icon_3_image(self):
-        return build_document_url(self.icon_3_image)
-    icon_3_image_url = property(get_icon_3_image)
 
     icon_3_subheading = models.CharField(max_length=255)
     icon_3_paragraph = models.CharField(max_length=255)
-    icon_4_image = models.ForeignKey(
-        'wagtaildocs.Document',
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name='+',
-    )
 
-    def get_icon_4_image(self):
-        return build_document_url(self.icon_4_image)
-    icon_4_image_url = property(get_icon_4_image)
 
     icon_4_subheading = models.CharField(max_length=255)
     icon_4_paragraph = models.CharField(max_length=255)
@@ -1160,16 +1133,12 @@ class Marketing(Page):
         'section_2_heading',
         'section_2_subheading',
         'section_2_paragraph',
-        'icon_1_image_url',
         'icon_1_subheading',
         'icon_1_paragraph',
-        'icon_2_image_url',
         'icon_2_subheading',
         'icon_2_paragraph',
-        'icon_3_image_url',
         'icon_3_subheading',
         'icon_3_paragraph',
-        'icon_4_image_url',
         'icon_4_subheading',
         'icon_4_paragraph',
         'section_3_heading',
@@ -1224,16 +1193,12 @@ class Marketing(Page):
         FieldPanel('section_2_heading'),
         FieldPanel('section_2_subheading'),
         FieldPanel('section_2_paragraph'),
-        ImageChooserPanel('icon_1_image'),
         FieldPanel('icon_1_subheading'),
         FieldPanel('icon_1_paragraph'),
-        ImageChooserPanel('icon_2_image'),
         FieldPanel('icon_2_subheading'),
         FieldPanel('icon_2_paragraph'),
-        ImageChooserPanel('icon_3_image'),
         FieldPanel('icon_3_subheading'),
         FieldPanel('icon_3_paragraph'),
-        ImageChooserPanel('icon_4_image'),
         FieldPanel('icon_4_subheading'),
         FieldPanel('icon_4_paragraph'),
         FieldPanel('section_3_heading'),
