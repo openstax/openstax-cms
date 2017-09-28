@@ -975,7 +975,7 @@ class MarketingVideoLink(models.Model):
 
     api_fields = ('video_url',
                   'video_file',
-                  'video_url',
+                  'image_url',
                   'image',
                   'video_image_blurb',)
 
@@ -1163,13 +1163,13 @@ class Marketing(Page):
         'icon_1_image_url',
         'icon_1_subheading',
         'icon_1_paragraph',
-        'icon_2_image',
+        'icon_2_image_url',
         'icon_2_subheading',
         'icon_2_paragraph',
-        'icon_3_image',
+        'icon_3_image_url',
         'icon_3_subheading',
         'icon_3_paragraph',
-        'icon_4_image',
+        'icon_4_image_url',
         'icon_4_subheading',
         'icon_4_paragraph',
         'section_3_heading',
