@@ -1,0 +1,1734 @@
+-   model: pages.strategicadvisors
+    pk: 7
+    fields: {name: Susan Badger, image: null, description: 'A leader in the education
+            publishing industry, Susan Badger was the CEO of the teacher education
+            and development group at Pearson and served for many years as the CEO
+            for Thomson Higher Education. More recently, Susan founded a consulting
+            practice focused on building strategies for growth, innovation, and transformation
+            in the K20 education space.'}
+-   model: pages.strategicadvisors
+    pk: 8
+    fields: {name: C. Sidney Burrus, image: null, description: 'C. Sidney Burrus received
+            his PhD from Stanford, then joined the faculty at Rice University where
+            he is research professor in electrical and computer engineering and dean
+            emeritus of the School of Engineering. He and five colleagues have published
+            a book using Matlab to teach DSP. He has been part of Connexions (now
+            OpenStax) since its founding in 1999.'}
+-   model: pages.strategicadvisors
+    pk: 9
+    fields: {name: Eric C. Johnson, image: null, description: 'Eric C. Johnson has
+            four decades of experience developing resources for leading private research
+            universities. Past roles include corporate relations program director
+            at MIT, VP of development at Carnegie Mellon University, VP of resource
+            development at Rice University, and chief advancement officer of the National
+            Academies in Washington, D.C. He earned degrees at MIT and Case Western
+            Reserve University.'}
+-   model: pages.strategicadvisors
+    pk: 10
+    fields: {name: Robert Maxfield, image: null, description: 'Robert R. Maxfield is
+            president of the Maxfield Foundation, which he founded in 1986 to support
+            scientific research and education. Past roles include Rice University
+            trustee, venture partner with Kleiner, Perkins, Caulfield & Byers, consulting
+            professor of management science and engineering at Stanford, and cofounder
+            of ROLM Corporation. He earned degrees from Rice University and Stanford.'}
+-   model: pages.strategicadvisors
+    pk: 12
+    fields: {name: William N. Sick, image: null, description: 'Bill Sick is chairman
+            and CEO of BRI, a firm specializing in early-stage growth companies. He
+            has been chairman, founder or director of 11 early-stage companies, CEO
+            of American National Can, and executive VP at Texas Instruments. Bill
+            is a Santa Fe Institute trustee and was a trustee of Rice University,
+            where he received his engineering education.'}
+-   model: pages.openstaxteam
+    pk: 4
+    fields: {name: Jemel Agulto, image: null, position: Marketing and Communication
+            Specialist, description: 'Jemel is a marketing and communications specialist
+            at OpenStax focused on supporting all the marketing and communication
+            efforts of the organization. He has a bachelor''s degree in communications
+            from the University of Houston. While not at OpenStax, Jemel is taking
+            photographs and supporting his favorite sports teams.'}
+-   model: pages.openstaxteam
+    pk: 5
+    fields: {name: Mary Allen, image: null, position: Executive Assistant, description: Mary
+            Allen is the executive assistant to Daniel Williamson and David Harris
+            at OpenStax. She is a graduate of Rice University with a BA in English
+            and is currently completing her MFA in creative writing through the Bennington
+            College Writing Seminar's low-residency program.}
+-   model: pages.openstaxteam
+    pk: 6
+    fields: {name: Mike Arbelaez, image: null, position: Research Developer, description: 'As
+            a research developer, Mike is dedicated to advancing the research of learning.
+            Before OpenStax, Mike was a database administrator at Texas A&M University.
+            Mike is a veteran of the United States Navy. When Mike is not combining
+            Python code and cognitive psychology, he is spending time with his family.'}
+-   model: pages.openstaxteam
+    pk: 7
+    fields: {name: Richard Baraniuk, image: null, position: Director, description: 'Richard
+            Baraniuk is the Victor E. Cameron Professor of Electrical and Computer
+            Engineering at Rice University and the founder/director of OpenStax. In
+            1999, Dr. Baraniuk launched Connexions (now OpenStax CNX), one of the
+            world''s first largest "open education" platforms. He now works on enhancing
+            OpenStax textbooks with personalized learning features through his research
+            in machine learning.'}
+-   model: pages.openstaxteam
+    pk: 8
+    fields: {name: Sonya Bennett-Brandt, image: null, position: Marketing and Communications
+            Assistant, description: "Sonya Bennett-Brandt works as OpenStax\u2019s
+            marketing and communications assistant, involved primarily with our social
+            media and email presence. Originally from Houston, she is currently a
+            student at the the University of Chicago, studying English Language and
+            Literature."}
+-   model: pages.openstaxteam
+    pk: 9
+    fields: {name: Britney Blodget, image: null, position: Content Manager, description: 'Britney
+            is a content manager responsible for the final stages of textbook content
+            quality assurance. After attending Rice University, Britney began work
+            with Stage Stores, Inc. as lead content coordinator, helping to launch
+            and grow their e-commerce web platform. When not at OpenStax, Britney
+            can be found outdoors, with her cats, or eating.'}
+-   model: pages.openstaxteam
+    pk: 10
+    fields: {name: Kevin Burleigh, image: null, position: Senior Developer, description: 'Kevin
+            does backend development work for OpenStax Tutor. In past lives, he''s
+            developed diagnostic software for medical ultrasound machines, as well
+            as defense-related signal processing and geolocation software. Kevin has
+            a degree in electrical engineering and computer science from MIT.'}
+-   model: pages.openstaxteam
+    pk: 11
+    fields: {name: Beth Cassidy, image: null, position: Director of Finance and Operations,
+        description: 'Beth is the director of finance and operations at Openstax,
+            where she oversees accounting, finance, and business operations. Her role
+            entails oversight of all income and expense activity. Prior to joining
+            OpenStax, Beth worked at Blazek and Vetterling and Grant Thornton. She
+            has a BBA and MS in accountancy from the University of Houston.'}
+-   model: pages.openstaxteam
+    pk: 13
+    fields: {name: Larissa Chu, image: null, position: Content Manager, description: 'As
+            a content manager, Larissa is responsible for the final stages of textbook
+            content quality assurance. She graduated from the University of Texas
+            at Austin with a degree in East Asian languages & culture. When not at
+            OpenStax, Larissa watches Netflix and gets bullied by her cat, Pilot Jones.'}
+-   model: pages.openstaxteam
+    pk: 14
+    fields: {name: Alan Cooke, image: null, position: Customer Support Specialist, description: Has
+            a bachelor's degree in journalism from Southeastern Louisiana University.
+            Spends his time absorbing information related to a whole mess of topics
+            and applying that information in day-to-day life with varying degrees
+            of success. Vegetable eater. Aspiring code-knower. Will gladly talk for
+            extended periods of time about odd facts.}
+-   model: pages.openstaxteam
+    pk: 15
+    fields: {name: Jeff DiGiovanni, image: null, position: 'Assistant Director, Customer
+            Service', description: 'Jeff provides internal and external support for
+            the OpenStax resources and aims to help increase education, access, and
+            ease of use surrounding OER. He received his mass communication degree
+            from Louisiana State University in Baton Rouge.'}
+-   model: pages.openstaxteam
+    pk: 16
+    fields: {name: Maher El Aridi, image: null, position: UI Designer and Developer,
+        description: 'Maher specializes in designing and developing user-interface
+            products. At OpenStax, he now serves as UI designer and developer. His
+            previous work has been with various design studios and interactive marketing
+            agencies as lead designer and developer implementing modern design and
+            web standards. Outside of work, his passion lies with cooking, photography,
+            and the outdoors.'}
+-   model: pages.openstaxteam
+    pk: 17
+    fields: {name: Nicole Finkbeiner, image: null, position: 'Associate Director, Institutional
+            Relations', description: 'Nicole Finkbeiner is the associate director
+            of institutional relations, providing advice and support for institutions
+            implementing OER on their campuses. She worked in administration at community
+            colleges prior to joining OpenStax. When not promoting OER, Nicole works
+            on civil rights issues, hits the gym, and writes a marketing blog.'}
+-   model: pages.openstaxteam
+    pk: 18
+    fields: {name: Greg Fitch, image: null, position: QA Analyst, description: 'Greg
+            Fitch is a quality assurance analyst for the OpenStax Tutor team. He tests
+            the various Tutor systems for usability and functionality. Prior to joining
+            OpenStax, he supported the computer systems of various non-profit and
+            government organizations. He graduated from the University of Texas with
+            a focus on government and technology.'}
+-   model: pages.openstaxteam
+    pk: 19
+    fields: {name: Kathi Fletcher, image: null, position: Technical Director, description: 'Kathi
+            Fletcher leads development, research, and user experience at OpenStax.
+            Kathi''s experience includes promoting greater technical interoperability
+            between open educational resource (OER) platforms as a Shuttleworth Foundation
+            Fellow, helping run a software business, and teaching computer engineering
+            at Rice University. Kathi has a master''s degree in computer science.'}
+-   model: pages.openstaxteam
+    pk: 20
+    fields: {name: Derek Ford, image: null, position: Developer, description: 'Derek
+            is a software engineer and designer with a focus on agile software development,
+            as well as UI and UX design. At OpenStax, Derek is primarily responsible
+            for the visual development of OpenStax textbooks.'}
+-   model: pages.openstaxteam
+    pk: 21
+    fields: {name: Denver Greene, image: null, position: 'Assistant Director, Customer
+            Service', description: 'Denver is always swing dancing and board gaming.
+            He also likes to talk about science, politics, religion, and philosophy.
+            And how the oxford comma makes more sense. Denver graduated from Rice
+            University with a degree in psychology.'}
+-   model: pages.openstaxteam
+    pk: 22
+    fields: {name: Phil Grimaldi, image: null, position: Research Scientist, description: 'Phillip
+            Grimaldi received his PhD from Purdue University in 2014, where he studied
+            human learning and memory. He currently leads the research team at Rice
+            University''s OpenStax. His research at OpenStax aims to leverage cognitive
+            science and machine learning to personalize the learning experience and
+            improve student success.'}
+-   model: pages.openstaxteam
+    pk: 23
+    fields: {name: David Harris, image: null, position: Editor in Chief, description: 'David
+            is a University of Connecticut graduate and has held a range of leadership
+            positions in higher education publishing - most recently as president
+            of WebAssign. At OpenStax, David contributes to the team''s effort of
+            improving access to high-quality materials by working with authors, developers,
+            and by supporting our emerging ecosystem.'}
+-   model: pages.openstaxteam
+    pk: 24
+    fields: {name: Michael Harrison, image: null, position: Python Developer, description: 'Michael
+            is a Python developer for OpenStax. He joined OpenStax because he loves
+            education and open source software and technologies. Michael enjoys building
+            things with Python and Swift, as well as hacking on Pis and Arduinos.
+            In his spare time, you can find him boating or traveling.'}
+-   model: pages.openstaxteam
+    pk: 27
+    fields: {name: Chris Houston, image: null, position: Customer Support Specialist,
+        description: 'Chris is a customer support specialist responsible for assisting
+            faculty and students in the adoption and use of open educational resources.
+            After attending University of Houston and MediaTech Institute, Chris began
+            work with LJA Engineering as a junior network admin. When not at OpenStax,
+            Chris can be found mixing records or watching Duke basketball.'}
+-   model: pages.openstaxteam
+    pk: 28
+    fields: {name: Roy Johnson, image: null, position: JavaScript Developer, description: 'Roy
+            is a Rice graduate who spent his first 25 years out of college working
+            for a computer consulting company. He particularly enjoys working with
+            JavaScript, and is happy to do that every day at OpenStax.'}
+-   model: pages.openstaxteam
+    pk: 29
+    fields: {name: Kim Jones Davenport, image: null, position: Consultant, description: 'Kim
+            enjoys tackling hard problems and figuring out ways to improve our offerings.
+            As a Rice alum with degrees in policy studies and French, she has a knack
+            for listening to, evaluating, and synthesizing different perspectives.
+            Kim has an abiding love for her daughter, dim sum, and planning dinner
+            parties.'}
+-   model: pages.openstaxteam
+    pk: 31
+    fields: {name: Alana Lemay-Gibson, image: null, position: Project Manager, description: Alana
+            manages content-related projects at OpenStax. She also serves as a head
+            resident fellow at McMurtry College at Rice University. Alana has more
+            than 15 years experience in the software industry and higher education.
+            She has an M.Ed. with an emphasis in educational anthropology and a BA
+            in anthropology.}
+-   model: pages.openstaxteam
+    pk: 32
+    fields: {name: Fred Lindner, image: null, position: UX Visual Designer, description: 'Fred
+            takes boring beige interfaces and transforms them into gleaming experiences
+            that inspire envy. Prior to joining OpenStax, Fred worked with several
+            Houston area startups and was a participant in Rice University''s OwlsSpark
+            startup accelerator. He is a graduate of Stephen F. Austin State University
+            with a BA in art.'}
+-   model: pages.openstaxteam
+    pk: 34
+    fields: {name: Helene McCarron, image: null, position: Developer, description: Helene
+            McCarron is an OpenStax textbook template developer. She has several years
+            of web development experience and worked as a frontend developer for an
+            energy company based in Houston and as a lead developer for local web
+            agencies before joining the OpenStax team.}
+-   model: pages.openstaxteam
+    pk: 35
+    fields: {name: Micaela McGlone, image: null, position: Research Specialist, description: 'As
+            a research specialist on the OpenStax team, Micaela''s primary responsibilities
+            include coordinating the pilots of OpenStax Tutor courseware and preparing
+            proposals and documentation for institutional review boards. She is a
+            native of San Antonio, Texas (read: an avid Spurs fan) and a graduate
+            of Washington and Lee University.'}
+-   model: pages.openstaxteam
+    pk: 36
+    fields: {name: Michael Mulich, image: null, position: Consultant, description: 'Michael
+            Mulich is a consultant who has been working with OpenStax project for
+            over five years. He has a passion for providing open access to knowledge,
+            whether that is in the form of code, books or schematics. It''s his goal
+            to continue contributing to both open source and open education.'}
+-   model: pages.openstaxteam
+    pk: 37
+    fields: {name: Robert Newell, image: null, position: UX Analyst, description: 'Robert
+            conducts UX research and designs user interfaces. Previously, he led UX
+            efforts at UH Libraries and worked as an interaction designer and usability
+            engineer at Dell. Robert holds a BA in psychology with graduate degrees
+            in communications and information studies. He''s an avid runner, and he
+            acted professionally for over ten years.'}
+-   model: pages.openstaxteam
+    pk: 38
+    fields: {name: Dani Nicholson, image: null, position: 'Associate Director, Marketing
+            and Communications', description: 'Dani is a graduate of West Texas A&M
+            University and the University of North Texas. Before joining OpenStax,
+            she worked in communication and marketing at University of North Texas,
+            in Creative Solutions at CNBC Europe, and reported for local newspapers.
+            Dani oversees the communication components to all higher education-related
+            activities for OpenStax.'}
+-   model: pages.openstaxteam
+    pk: 41
+    fields: {name: Kajal Parekh, image: null, position: QA and Customer Support Manager,
+        description: "Kajal manages the Quality Assurance and Customer Support teams
+            at OpenStax. She strives to be true to the mission of OpenStax by providing
+            educational tools of highest quality. Kajal graduated from UC Santa Barbara
+            with a master\u2019s in ECE and has previously worked as an engineer at
+            Qualcomm and Weatherford."}
+-   model: pages.openstaxteam
+    pk: 42
+    fields: {name: Bruce Pike, image: null, position: Project Manager, description: 'Bruce
+            came to OpenStax from Halliburton where he served as a software project
+            manager and scrum master. He holds a master''s degree in engineering management.  He
+            is active in the Agile Leadership Network of Houston, plays the banjo,
+            and leads a choral group at his church.'}
+-   model: pages.openstaxteam
+    pk: 43
+    fields: {name: Courtney Raymond, image: 84, position: 'Assistant Director, Marketing
+            and Communications', description: 'Courtney is assistant director of marketing
+            and communications at OpenStax, focused on communications strategies around
+            what OpenStax offers higher ed and K-12. Her experience includes Austin
+            nonprofit work, marketing campaigns for New York theater, and digital
+            marketing in Houston. Courtney is a University of Texas and Columbia University
+            grad who loves to see musicals and travel.'}
+-   model: pages.openstaxteam
+    pk: 44
+    fields: {name: Ross Reedstrom, image: 119, position: Systems Engineer and Administrator,
+        description: 'Ross Reedstrom is the OpenStax systems engineer and administrator.
+            He has a BS in molecular biology from Yale University, and a PhD in cell
+            and molecular biology from University of Wisconsin - Madison. He''s been
+            a free and open source software user and advocate for almost two decades.'}
+-   model: pages.openstaxteam
+    pk: 45
+    fields: {name: Tim Reiland, image: 122, position: Accounting Specialist, description: "Timothy
+            assists with internal bookkeeping and accounting matters such as Concur
+            and accounts payable. Before joining OpenStax, he worked in Rice University\u2019s
+            Payroll Department for two years after graduating from Rice with a degree
+            in psychology. While he is not working, he spends time ballroom dancing,
+            homebrewing, and playing board games."}
+-   model: pages.openstaxteam
+    pk: 46
+    fields: {name: Zach Roehr, image: 124, position: Developer, description: 'Zach
+            Roehr is a developer focusing on creation and development of the templates
+            for OpenStax textbooks. Prior to working at OpenStax, he was an interactive
+            developer at marketing agencies and held various computer support roles.
+            He graduated from the University of Houston - Clear Lake with a Bachelor
+            of Science in computer information systems.'}
+-   model: pages.openstaxteam
+    pk: 47
+    fields: {name: Philip Schatz, image: 115, position: Senior Developer, description: 'Philip
+            joined OpenStax (then Connexions) in 2006 after receiving a bachelor''s
+            in mathematics and a master''s in programming languages at Purdue University.
+            When he is not scaling mountains to find Sasquatch, he designs and writes
+            the open source code to get textbooks into the hands of people everywhere.'}
+-   model: pages.openstaxteam
+    pk: 49
+    fields: {name: Amanda Shih, image: 76, position: Developer, description: 'Amanda
+            enjoys making things with code and believes in the power education has
+            to impact lives. Before joining OpenStax, she worked at a digital health
+            startup.'}
+-   model: pages.openstaxteam
+    pk: 50
+    fields: {name: Alina Slavik, image: 75, position: 'Assistant Director, Content
+            Development', description: 'Alina graduated from the University of Texas
+            at Austin with a degree in French and Italian. Prior to joining OpenStax,
+            Alina worked in fundraising and communications and as a tutor. When not
+            at OpenStax, Alina volunteers on Frame Dance Productions'' board and can
+            be found attending local art happenings.'}
+-   model: pages.openstaxteam
+    pk: 51
+    fields: {name: JP Slavinsky, image: null, position: Senior Developer, description: 'JP
+            Slavinsky is a software lead for OpenStax Tutor. A graduate of Rice and
+            Berkeley, JP worked previously in Silicon Valley in the field of signal
+            processing and also for several years managing technical research projects
+            at Rice. He joined OpenStax in 2010.'}
+-   model: pages.openstaxteam
+    pk: 52
+    fields: {name: Kerwin So, image: 103, position: QA Analyst, description: 'Kerwin
+            So brings over a decade of tech experience from companies including MINDBODY,
+            Kodak, and Schwab. His diverse professional background also includes nonprofits,
+            startups, academic libraries, and digital archives. Kerwin holds a BA
+            from UC Berkeley and a master''s in library and information science from
+            San Jose State University.'}
+-   model: pages.openstaxteam
+    pk: 53
+    fields: {name: Dante Soares, image: 87, position: Developer, description: Dante
+            Soares is an electrical and computer engineering graduate from Rice University
+            who works as a backend developer for OpenStax. He has participated in
+            the creation of OpenStax products such as OpenStax Tutor and Exercises
+            and is most comfortable developing code for the Ruby on Rails framework.}
+-   model: pages.openstaxteam
+    pk: 54
+    fields: {name: Ryan Stickney, image: 121, position: Content Manager, description: 'Ryan
+            holds bachelor''s degrees from Rice University (music and linguistics)
+            and a master''s from New England Conservatory. With OpenStax, Ryan oversees
+            the final stages of textbook quality assurance, using her expertise in
+            MathML and the Openstax CNX markup language. Outside of OpenStax she sings
+            with several professional groups, including the Houston Chamber Choir.'}
+-   model: pages.openstaxteam
+    pk: 55
+    fields: {name: Nathan Stitt, image: null, position: Consultant, description: 'After
+            writing his first GOTO on the Commodore64, Nathan was hooked on software
+            development. Prior to working on the OpenStax project, he has developed
+            for the healthcare industry and documentcloud.org. When not working at
+            OpenStax, you can find him programming cool LED lighting effects with
+            Arduino.'}
+-   model: pages.openstaxteam
+    pk: 58
+    fields: {name: Drew Waters, image: null, position: Machine Learning Scientist,
+        description: 'Drew received his PhD in electrical engineering in 2014 from
+            Rice University. He currently oversees the machine learning effort at
+            OpenStax, aiming to create a personalized learning experience by mining
+            interactions between students and educational content. Prior to working
+            for OpenStax, Drew was a communications systems analyst at L-3 Communications
+            in Salt Lake City.'}
+-   model: pages.openstaxteam
+    pk: 59
+    fields: {name: Tory Watterson, image: 123, position: 'Associate Director, Business
+            Operations', description: 'Tory Watterson is the associate director of
+            business operations, focusing on the day-to-day business and financial
+            operations of OpenStax. She has a BBA in accounting and more than 10 years''
+            experience in accounting. When not at OpenStax, Tory can be found at the
+            cinema or in the kitchen cooking clean and green meals for her family.'}
+-   model: pages.openstaxteam
+    pk: 60
+    fields: {name: Britt Weinstein, image: 80, position: Content Manager, description: 'As
+            a content manager, Britt verifies the final stages of textbook content
+            quality, primarily by providing copy editing services. Britt graduated
+            from the University of Texas with a degree in linguistics, focused on
+            Spanish and Portuguese. She enjoys playing tennis, learning about coffee,
+            and reading about the ocean.'}
+-   model: pages.openstaxteam
+    pk: 61
+    fields: {name: Daniel Williamson, image: 86, position: Managing Director, description: 'As
+            managing director, Daniel guides OpenStax in saving students across the
+            country millions of dollars. He has dedicated the past ten years of his
+            life to developing education startups from conception to culmination,
+            with specialties in open education, content development, ed-tech, consumer
+            intelligence, management, and quality assurance.'}
+-   model: pages.openstaxteam
+    pk: 62
+    fields: {name: Dennis Williamson, image: 89, position: Systems Administrator,
+        description: 'Dennis Williamson is a systems administrator for OpenStax CNX.
+            His experience has ranged from the US District Court to MIS director of
+            a casino to a large web hosting company and others with a wide variety
+            of hardware, operating systems, and application software.'}
+-   model: pages.openstaxteam
+    pk: 64
+    fields: {name: Ed Woodward, image: 92, position: Senior Development Manager, description: 'Ed
+            has bachelor''s and master''s degrees in music and a master''s in computer
+            science technology. Before joining OpenStax, he was a VP and application
+            architect at JPMorganChase. He has worked as a Java development team lead
+            for several firms. Prior to writing software, he was a music teacher.'}
+-   model: pages.openstaxteam
+    pk: 65
+    fields: {name: Norm Woody, image: 113, position: Project Manager, description: 'Norm
+            Woody spent a dozen years at Microsoft leading field projects, engagements,
+            and managing Fortune 100 technical contracts. Focused on emerging technology,
+            Norm has led a number of joint-development and global technology adoption
+            projects focused on performance improvements, expanding capabilities,
+            and innovative cost savings. Norm has degrees in physics and technical
+            communication.'}
+-   model: pages.openstaxteam
+    pk: 66
+    fields: {name: Jessica Fuquay, image: null, position: Executive Assistant, description: 'Jessica
+            is a Rice grad with a BA in visual arts. Before joining OpenStax, she
+            worked in administration at local art institutions such as the Contemporary
+            Arts Museum and as a K-12 teacher in HISD. Outside of OpenStax, you can
+            find her playing music or doting on her two cats.'}
+-   model: pages.aboutusstrategicadvisors
+    pk: 7
+    fields: {sort_order: 0, page: 90}
+-   model: pages.aboutusstrategicadvisors
+    pk: 8
+    fields: {sort_order: 1, page: 90}
+-   model: pages.aboutusstrategicadvisors
+    pk: 9
+    fields: {sort_order: 2, page: 90}
+-   model: pages.aboutusstrategicadvisors
+    pk: 10
+    fields: {sort_order: 3, page: 90}
+-   model: pages.aboutusstrategicadvisors
+    pk: 12
+    fields: {sort_order: 5, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 4
+    fields: {sort_order: 0, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 5
+    fields: {sort_order: 1, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 6
+    fields: {sort_order: 2, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 7
+    fields: {sort_order: 3, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 8
+    fields: {sort_order: 4, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 9
+    fields: {sort_order: 5, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 10
+    fields: {sort_order: 6, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 11
+    fields: {sort_order: 7, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 13
+    fields: {sort_order: 9, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 14
+    fields: {sort_order: 10, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 15
+    fields: {sort_order: 11, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 16
+    fields: {sort_order: 12, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 17
+    fields: {sort_order: 13, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 18
+    fields: {sort_order: 14, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 19
+    fields: {sort_order: 15, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 20
+    fields: {sort_order: 16, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 21
+    fields: {sort_order: 17, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 22
+    fields: {sort_order: 18, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 23
+    fields: {sort_order: 19, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 24
+    fields: {sort_order: 20, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 27
+    fields: {sort_order: 23, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 28
+    fields: {sort_order: 24, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 29
+    fields: {sort_order: 25, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 31
+    fields: {sort_order: 28, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 32
+    fields: {sort_order: 29, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 34
+    fields: {sort_order: 31, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 35
+    fields: {sort_order: 32, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 36
+    fields: {sort_order: 33, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 37
+    fields: {sort_order: 34, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 38
+    fields: {sort_order: 35, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 41
+    fields: {sort_order: 36, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 42
+    fields: {sort_order: 37, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 43
+    fields: {sort_order: 38, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 44
+    fields: {sort_order: 39, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 45
+    fields: {sort_order: 40, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 46
+    fields: {sort_order: 41, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 47
+    fields: {sort_order: 42, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 49
+    fields: {sort_order: 44, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 50
+    fields: {sort_order: 45, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 51
+    fields: {sort_order: 46, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 52
+    fields: {sort_order: 47, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 53
+    fields: {sort_order: 48, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 54
+    fields: {sort_order: 49, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 55
+    fields: {sort_order: 50, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 58
+    fields: {sort_order: 53, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 59
+    fields: {sort_order: 54, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 60
+    fields: {sort_order: 55, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 61
+    fields: {sort_order: 56, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 62
+    fields: {sort_order: 57, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 64
+    fields: {sort_order: 58, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 65
+    fields: {sort_order: 59, page: 90}
+-   model: pages.aboutusopenstaxteam
+    pk: 66
+    fields: {sort_order: 26, page: 90}
+-   model: pages.aboutus
+    pk: 90
+    fields: {tagline: Changing the world is a team effort, intro_heading: About Us,
+        intro_paragraph: "<p>OpenStax is a nonprofit based at Rice University, and
+            it\u2019s our mission to improve student access to education. Our first
+            openly licensed college textbook was published in 2012, and our library
+            since scaled to more than 20 books for college and AP courses used by
+            hundreds of thousands of students. Our adaptive learning technology, designed
+            to improve learning outcomes through personalized educational paths, is
+            being piloted in college courses across the country. Through our partnerships
+            with philanthropic foundations and our alliance with other educational
+            resource organizations, OpenStax is breaking down the most common barriers
+            to learning and empowering students and instructors to succeed.</p><p><a
+            href=\"https://d3bxy9euw4e147.cloudfront.net/oscms-prodcms/media/documents/Promoting_OER_as_Policy_Maker.pdf\">Learn
+            more about how state policy leaders can support initiatives like OpenStax
+            here</a>.<br/></p><p></p><p><a href=\"/support\">Visit our Support page</a>\_for
+            help using OpenStax textbooks, OpenStax CNX, OpenStax Tutor, or OpenStax
+            Concept Coach.\_</p><p>Looking for more information about the OpenStax
+            mission and organizational operations?\_<a href=\"/faq\">Visit our FAQ
+            page</a>.</p><p></p>", our_team_heading: Our Team}
+-   model: pages.homepage
+    pk: 29
+    fields: {row_1: '[{"type": "column", "value": {"image": {"alignment": "left",
+            "image": 59, "alt_text": ""}, "cta": "Subscribe", "document": null, "link":
+            "http://www2.openstax.org/l/218812/2016-10-04/lvk", "heading": "", "content":
+            "<p>Get OpenStax updates in your inbox! We\u2019ll let you know when we
+            make updates or release new textbooks.\u00a0</p>"}}, {"type": "column",
+            "value": {"image": {"alignment": "left", "image": null, "alt_text": ""},
+            "cta": "", "document": null, "link": "", "heading": "", "content": "<p>\"OpenStax
+            is amazing. Access to these high-quality textbooks is game-changing for
+            our students.\"</p><p><i>- Prof. Wendy Riggs, College of the Redwoods</i></p>"}},
+            {"type": "column", "value": {"image": {"alignment": "left", "image": null,
+            "alt_text": ""}, "cta": "Let us know", "document": null, "link": "https://oscms-dev.openstax.org/renew",
+            "heading": "", "content": "<p>Using OpenStax in your course again this
+            semester?</p>"}}]', row_2: '[{"type": "column", "value": {"image": {"alignment":
+            "left", "image": null, "alt_text": ""}, "cta": "", "document": null, "link":
+            "", "heading": "", "content": "<p>When it comes to education,</p><h3>there
+            should be no limits.</h3><p>Our high-quality educational tools give students
+            access to the learning materials they need to succeed, at little to no
+            cost. Because we don''t believe anything should come between students
+            and their future.</p>"}}, {"type": "column", "value": {"image": {"alignment":
+            "left", "image": null, "alt_text": ""}, "cta": "", "document": null, "link":
+            "http://openstax.org/subjects", "heading": "Books", "content": "<p>Free,
+            peer-reviewed college and AP\u00ae-aligned textbooks</p>"}}, {"type":
+            "column", "value": {"image": {"alignment": "left", "image": null, "alt_text":
+            ""}, "cta": "", "document": null, "link": "https://openstax.org/technology",
+            "heading": "Technology", "content": "<p>Low-cost learning technology integrated
+            with OpenStax content<br/></p>"}}]', row_3: '[]', row_4: '[{"type": "column",
+            "value": {"image": {"alignment": "left", "image": 125, "alt_text": ""},
+            "cta": "See our impact", "document": null, "link": "http://openstax.org/impact",
+            "heading": "Our Impact", "content": "<p>Prof. Wolchonok has saved students
+            $15,000 and opened doors for them to pursue health science careers by
+            adopting our free Anatomy and Physiology book.</p>"}}]', row_5: '[{"type":
+            "column", "value": {"image": {"alignment": "left", "image": null, "alt_text":
+            ""}, "cta": "View Partners", "document": null, "link": "http://openstax.org/partners",
+            "heading": "OpenStax Partners", "content": "<p>OpenStax partners have
+            united with us to increase access to high-quality learning materials.
+            Their low-cost tools integrate seamlessly with OpenStax books.</p>"}}]'}
+-   model: pages.highereducation
+    pk: 88
+    fields: {intro_heading: Free textbooks. High quality. No catch., intro_description: 'Some
+            of the most valuable investments don''t have a price tag. Neither do our
+            textbooks. Our free, high-quality textbooks and learning technology give
+            students the tools they need to succeed without having to weigh the cost.',
+        row_1: '[{"type": "column", "value": {"image": {"alignment": "left", "image":
+            null, "alt_text": null}, "cta": "", "document": null, "link": "", "heading":
+            "", "content": "<p>\"Openstax makes acquisition of a textbook a no cost,
+            one-click experience.\"</p><p>- Alexander Wathen, University of Houston
+            -Downtown</p>"}}, {"type": "column", "value": {"image": {"alignment":
+            "left", "image": 72, "alt_text": null}, "cta": "Subscribe", "document":
+            null, "link": "http://www2.openstax.org/l/218812/2016-10-04/lvk", "heading":
+            "", "content": "<p>Get OpenStax updates in your inbox! We\u2019ll let
+            you know when we make updates or release new textbooks.<br/></p>"}}]',
+        get_started_heading: Getting Started, get_started_step_1_heading: Review a
+            Textbook, get_started_step_1_description: The entire contents of our free
+            textbooks are available online. Review a book or chapter and see the quality
+            for yourself., get_started_step_1_cta: View Books, get_started_step_2_heading: Create
+            a Faculty Account, get_started_step_2_description: We provide additional
+            free instructor-only resources like test banks and solution manuals to
+            plan your course., get_started_step_2_logged_in_cta: You've Already Done
+            This!, get_started_step_2_logged_out_cta: Create Account, get_started_step_3_heading: Adopt
+            a Textbook, get_started_step_3_description: 'Access to our textbooks is
+            completely free. Let us know you''ve adopted, and share our URL with your
+            students! You can also recommend a book as an optional extra resource.',
+        get_started_step_3_cta: Adopt, adopt_heading: Adopt as an Institution, adopt_description: 'If
+            you are an administrator interested in driving adoptions of OpenStax textbooks
+            at your institution, we are here to support you!', adopt_cta: Contact
+            Us, row_2: '[{"type": "column", "value": {"image": {"alignment": "left",
+            "image": 58, "alt_text": null}, "cta": "Explore Our Subjects", "document":
+            null, "link": "http://openstax.org/subjects", "heading": "Our Books",
+            "content": "<p>All of our textbooks are peer-reviewed and absolutely free.
+            They meet standard scope and sequence requirements and come in web view,
+            PDF, iBooks, or a low cost print version.</p>"}}, {"type": "column", "value":
+            {"image": {"alignment": "left", "image": 59, "alt_text": null}, "cta":
+            "Donate", "document": null, "link": "https://openstax.org/give", "heading":
+            "Give", "content": "<p></p><p></p><p>Help us create more free, peer-reviewed
+            textbooks and keep our current textbooks up to date. </p>"}}, {"type":
+            "column", "value": {"image": {"alignment": "left", "image": 60, "alt_text":
+            null}, "cta": "Discover Free Content", "document": null, "link": "http://cnx.org",
+            "heading": "OpenStax CNX", "content": "<p>OpenStax CNX is an open library
+            of educational content where anyone can contribute. View, share, and add
+            material that you can remix and reuse for your course.</p>"}}]', row_3: '[{"type":
+            "column", "value": {"image": {"alignment": "left", "image": null, "alt_text":
+            null}, "cta": "See Our Impact", "document": null, "link": "http://openstax.org/impact",
+            "heading": "Our Impact", "content": "<p>Faculty at over 3,000 institutions
+            are opening doors for student success by adopting OpenStax.</p>"}}, {"type":
+            "column", "value": {"image": {"alignment": "left", "image": null, "alt_text":
+            null}, "cta": "View Partners", "document": null, "link": "http://openstax.org/partners",
+            "heading": "OpenStax Partners", "content": "<p>OpenStax partners have
+            united with us to increase access to high-quality learning materials.
+            Their low-cost tools integrate seamlessly with OpenStax books.</p>"}}]'}
+-   model: pages.contactus
+    pk: 84
+    fields: {tagline: 'If you have any questions or feedback, drop us a line!', mailing_header: Mailing
+            Address, mailing_address: '<h3>OpenStax</h3><p>Rice University</p><p>6100
+            Main St. MS 375</p><p>Houston, TX 77005</p>', customer_service: '<p><b>Need
+            help?</b><br/>Visit our <a href="/support">Support Center</a>.</p>'}
+-   model: pages.generalpage
+    pk: 98
+    fields: {body: '[{"type": "heading", "value": "A Heading"}, {"type": "paragraph",
+            "value": "<p>A paragraph.</p>"}, {"type": "image", "value": 60}, {"type":
+            "html", "value": "<!--  ----------------------------------------------------------------------  -->\r\n<!--  NOTE:
+            Please add the following <META> element to your page <HEAD>.      -->\r\n<!--  If
+            necessary, please modify the charset parameter to specify the        -->\r\n<!--  character
+            set of your HTML page.                                        -->\r\n<!--  ----------------------------------------------------------------------  -->\r\n\r\n<META
+            HTTP-EQUIV=\"Content-type\" CONTENT=\"text/html; charset=UTF-8\">\r\n\r\n<!--  ----------------------------------------------------------------------  -->\r\n<!--  NOTE:
+            Please add the following <FORM> element to your page.             -->\r\n<!--  ----------------------------------------------------------------------  -->\r\n\r\n<form
+            action=\"https://www.salesforce.com/servlet/servlet.WebToLead?encoding=UTF-8\"
+            method=\"POST\">\r\n\r\n<input type=hidden name=\"oid\" value=\"00DU0000000Kwch\">\r\n<input
+            type=hidden name=\"retURL\" value=\"http://\">\r\n\r\n<!--  ----------------------------------------------------------------------  -->\r\n<!--  NOTE:
+            These fields are optional debugging elements. Please uncomment    -->\r\n<!--  these
+            lines if you wish to test in debug mode.                          -->\r\n<!--  <input
+            type=\"hidden\" name=\"debug\" value=1>                              -->\r\n<!--  <input
+            type=\"hidden\" name=\"debugEmail\" value=\"denver@rice.edu\">         -->\r\n<!--  ----------------------------------------------------------------------  -->\r\n\r\n<label
+            for=\"first_name\">First Name</label><input  id=\"first_name\" maxlength=\"40\"
+            name=\"first_name\" size=\"20\" type=\"text\" /><br>\r\n\r\n<label for=\"last_name\">Last
+            Name</label><input  id=\"last_name\" maxlength=\"80\" name=\"last_name\"
+            size=\"20\" type=\"text\" /><br>\r\n\r\n<label for=\"email\">Email</label><input  id=\"email\"
+            maxlength=\"80\" name=\"email\" size=\"20\" type=\"text\" /><br>\r\n\r\n<label
+            for=\"company\">Company</label><input  id=\"company\" maxlength=\"40\"
+            name=\"company\" size=\"20\" type=\"text\" /><br>\r\n\r\n<label for=\"city\">City</label><input  id=\"city\"
+            maxlength=\"40\" name=\"city\" size=\"20\" type=\"text\" /><br>\r\n\r\n<label
+            for=\"state\">State/Province</label><input  id=\"state\" maxlength=\"20\"
+            name=\"state\" size=\"20\" type=\"text\" /><br>\r\n\r\n<label for=\"fax\">Fax</label><input  id=\"fax\"
+            maxlength=\"40\" name=\"fax\" size=\"20\" type=\"text\" /><br>\r\n\r\n<label
+            for=\"street\">Street</label><textarea name=\"street\"></textarea><br>\r\n\r\n<label
+            for=\"zip\">Zip</label><input  id=\"zip\" maxlength=\"20\" name=\"zip\"
+            size=\"20\" type=\"text\" /><br>\r\n\r\n<label for=\"country\">Country</label><input  id=\"country\"
+            maxlength=\"40\" name=\"country\" size=\"20\" type=\"text\" /><br>\r\n\r\n<label
+            for=\"description\">Description</label><textarea name=\"description\"></textarea><br>\r\n\r\n<label
+            for=\"lead_source\">Lead Source</label><select  id=\"lead_source\" name=\"lead_source\"><option
+            value=\"\">--None--</option><option value=\"OSC Faculty\">OSC Faculty</option>\r\n<option
+            value=\"Comp Request\">Comp Request</option>\r\n<option value=\"Partner\">Partner</option>\r\n<option
+            value=\"Conference\">Conference</option>\r\n<option value=\"OSC User\">OSC
+            User</option>\r\n<option value=\"Newsletter\">Newsletter</option>\r\n<option
+            value=\"Phone\">Phone</option>\r\n<option value=\"Customer Service Ticket\">Customer
+            Service Ticket</option>\r\n<option value=\"Adoption Form\">Adoption Form</option>\r\n<option
+            value=\"Interest Form\">Interest Form</option>\r\n<option value=\"Referral
+            Form\">Referral Form</option>\r\n<option value=\"Renewal Form\">Renewal
+            Form</option>\r\n<option value=\"Tutor Signup\">Tutor Signup</option>\r\n<option
+            value=\"Concept Coach Signup\">Concept Coach Signup</option>\r\n</select><br>\r\n\r\n<label
+            for=\"industry\">Industry</label><select  id=\"industry\" name=\"industry\"><option
+            value=\"\">--None--</option><option value=\"Online homework providers\">Online
+            homework providers</option>\r\n<option value=\"Not Needed\">Not Needed</option>\r\n<option
+            value=\"Courseware providers\">Courseware providers</option>\r\n<option
+            value=\"Print custom editions\">Print custom editions</option>\r\n</select><br>\r\n\r\n<label
+            for=\"rating\">Rating</label><select  id=\"rating\" name=\"rating\"><option
+            value=\"\">--None--</option><option value=\"Hot\">Hot</option>\r\n<option
+            value=\"Warm\">Warm</option>\r\n<option value=\"Cold\">Cold</option>\r\n</select><br>\r\n\r\n<input
+            type=\"submit\" name=\"submit\">\r\n\r\n</form>"}]'}
+-   model: pages.ecosystemallies
+    pk: 50
+    fields: {page_description: "OpenStax Partners are education technology companies
+            that use OpenStax textbook content to create additional products and services,
+            such as online homework or adaptive courseware. These partners give OpenStax
+            a mission support fee in return, allowing OpenStax to create and maintain
+            our library. OpenStax Partners give faculty and students the best of both
+            worlds \u2013 free, peer-reviewed, openly licensed textbooks and optional,
+            low-cost technology."}
+-   model: pages.funder
+    pk: 1
+    fields: {title: The Laura and John Arnold Foundation, logo: 126, description: 'Laura
+            and John Arnold Foundation (LJAF) actively seeks opportunities to invest
+            in organizations and thought leaders that have a sincere interest in implementing
+            fundamental changes that not only yield immediate gains, but also repair
+            broken systems for future generations. LJAF currently focuses its strategic
+            investments on education, criminal justice, research integrity, and public
+            accountability.'}
+-   model: pages.funder
+    pk: 2
+    fields: {title: The Bill & Melinda Gates Foundation, logo: 127, description: "Guided
+            by the belief that every life has equal value, the Bill & Melinda Gates
+            Foundation works to help all people lead healthy, productive lives. In
+            developing countries, it focuses on improving people\u2019s health with
+            vaccines and other life-saving tools and giving them the chance to lift
+            themselves out of hunger and extreme poverty. In the United States, it
+            seeks to significantly improve education so that all young people have
+            the opportunity to reach their full potential. Based in Seattle, Washington,
+            the foundation is led by CEO Jeff Raikes and Co-chair William H. Gates
+            Sr., under the direction of Bill and Melinda Gates and Warren Buffett."}
+-   model: pages.funder
+    pk: 3
+    fields: {title: The William and Flora Hewlett Foundation, logo: 128, description: 'The
+            William and Flora Hewlett Foundation has been making grants since 1967
+            to help solve social and environmental problems at home and around the
+            world. The Foundation concentrates its resources on activities in education,
+            the environment, global development and population, performing arts, and
+            philanthropy, and makes grants to support disadvantaged communities in
+            the San Francisco Bay Area.'}
+-   model: pages.funder
+    pk: 4
+    fields: {title: The Calvin K. Kazanjian Economics Foundation, logo: 129, description: 'Calvin
+            K. Kazanjian was the founder and president of Peter Paul (Almond Joy),
+            Inc. He firmly believed that the more people understood about basic economics
+            the happier and more prosperous they would be. Accordingly, he established
+            the Calvin K. Kazanjian Economics Foundation Inc, in 1949 as a philanthropic,
+            nonpolitical educational organization to support efforts that enhanced
+            economic understanding.'}
+-   model: pages.funder
+    pk: 5
+    fields: {title: The Maxfield Foundation, logo: 130, description: 'The Maxfield
+            Foundation supports projects with potential for high impact in science,
+            education, sustainability, and other areas of social importance.'}
+-   model: pages.funder
+    pk: 6
+    fields: {title: Rice University, logo: 133, description: "OpenStax is Rice University\u2019s
+            nonprofit education initiative. As a leading research university with
+            a distinctive commitment to undergraduate education, Rice University aspires
+            to pathbreaking research, unsurpassed teaching, and contributions to the
+            betterment of our world. It seeks to fulfill this mission by cultivating
+            a diverse community of learning and discovery that produces leaders across
+            the spectrum of human endeavor."}
+-   model: pages.funder
+    pk: 7
+    fields: {title: The Bill and Stephanie Sick Fund, logo: 131, description: 'The
+            Bill and Stephanie Sick Fund supports innovative projects in the areas
+            of Education, Art, Science and Engineering.'}
+-   model: pages.funder
+    pk: 8
+    fields: {title: The Michelson 20MM Foundation, logo: 132, description: 'Founded
+            by Dr. Gary K. Michelson, the Michelson 20MM Foundation supports and invests
+            in leading edge entrepreneurs, technologies, models, and initiatives with
+            the potential to improve postsecondary access, affordability, and student
+            success.'}
+-   model: pages.funder
+    pk: 10
+    fields: {title: The Foundation With No Logo or Description, logo: null, description: ''}
+-   model: pages.foundationsupportfunders
+    pk: 1
+    fields: {sort_order: 1, page: 101}
+-   model: pages.foundationsupportfunders
+    pk: 2
+    fields: {sort_order: 2, page: 101}
+-   model: pages.foundationsupportfunders
+    pk: 3
+    fields: {sort_order: 3, page: 101}
+-   model: pages.foundationsupportfunders
+    pk: 4
+    fields: {sort_order: 4, page: 101}
+-   model: pages.foundationsupportfunders
+    pk: 5
+    fields: {sort_order: 5, page: 101}
+-   model: pages.foundationsupportfunders
+    pk: 6
+    fields: {sort_order: 6, page: 101}
+-   model: pages.foundationsupportfunders
+    pk: 7
+    fields: {sort_order: 7, page: 101}
+-   model: pages.foundationsupportfunders
+    pk: 8
+    fields: {sort_order: 8, page: 101}
+-   model: pages.foundationsupportfunders
+    pk: 10
+    fields: {sort_order: 8, page: 101}
+-   model: pages.foundationsupport
+    pk: 101
+    fields: {page_description: OpenStax is supported by the generous funding of our
+            philanthropic sponsors. aaa}
+-   model: pages.institutions
+    pk: 1
+    fields: {title: Alamo Colleges, logo: 140}
+-   model: pages.institutions
+    pk: 2
+    fields: {title: College of the Canyons, logo: 143}
+-   model: pages.institutions
+    pk: 3
+    fields: {title: Lansing Community College, logo: 144}
+-   model: pages.institutions
+    pk: 4
+    fields: {title: Northern Essex Community College, logo: 141}
+-   model: pages.institutions
+    pk: 5
+    fields: {title: Pasadena City College, logo: 145}
+-   model: pages.institutions
+    pk: 6
+    fields: {title: South Florida State College, logo: 146}
+-   model: pages.institutions
+    pk: 7
+    fields: {title: Tulsa Community College, logo: 147}
+-   model: pages.institutions
+    pk: 8
+    fields: {title: University of Connecticut, logo: 148}
+-   model: pages.institutions
+    pk: 9
+    fields: {title: University of Arizona, logo: 149}
+-   model: pages.institutions
+    pk: 10
+    fields: {title: Utah State University, logo: 150}
+-   model: pages.institutions
+    pk: 11
+    fields: {title: Washington State University, logo: 142}
+-   model: pages.institutions
+    pk: 12
+    fields: {title: Auburn University, logo: 151}
+-   model: pages.institutions
+    pk: 13
+    fields: {title: BCcampus, logo: 152}
+-   model: pages.institutions
+    pk: 14
+    fields: {title: Central New Mexico Community College, logo: 153}
+-   model: pages.institutions
+    pk: 15
+    fields: {title: Grand Rapids Community College, logo: 154}
+-   model: pages.institutions
+    pk: 16
+    fields: {title: Maricopa Community Colleges, logo: 155}
+-   model: pages.institutions
+    pk: 17
+    fields: {title: Ohio State University, logo: 156}
+-   model: pages.institutions
+    pk: 18
+    fields: {title: Salt Lake Community College, logo: 157}
+-   model: pages.institutions
+    pk: 19
+    fields: {title: Tarrant County College, logo: 158}
+-   model: pages.institutions
+    pk: 20
+    fields: {title: UMass Amherst, logo: 159}
+-   model: pages.institutions
+    pk: 21
+    fields: {title: University of Idaho, logo: 162}
+-   model: pages.institutions
+    pk: 22
+    fields: {title: The University of Georgia, logo: 161}
+-   model: pages.institutions
+    pk: 23
+    fields: {title: The University of Oklahoma, logo: 163}
+-   model: pages.institutions
+    pk: 24
+    fields: {title: The University System of Georgia, logo: 160}
+-   model: pages.institutions
+    pk: 25
+    fields: {title: UTSA, logo: 164}
+-   model: pages.institutions
+    pk: 26
+    fields: {title: Virginia Tech, logo: 165}
+-   model: pages.ourimpactinstitutions
+    pk: 1
+    fields: {sort_order: 0, page: 102}
+-   model: pages.ourimpactinstitutions
+    pk: 2
+    fields: {sort_order: 1, page: 102}
+-   model: pages.ourimpactinstitutions
+    pk: 3
+    fields: {sort_order: 2, page: 102}
+-   model: pages.ourimpactinstitutions
+    pk: 4
+    fields: {sort_order: 3, page: 102}
+-   model: pages.ourimpactinstitutions
+    pk: 5
+    fields: {sort_order: 4, page: 102}
+-   model: pages.ourimpactinstitutions
+    pk: 6
+    fields: {sort_order: 5, page: 102}
+-   model: pages.ourimpactinstitutions
+    pk: 7
+    fields: {sort_order: 6, page: 102}
+-   model: pages.ourimpactinstitutions
+    pk: 8
+    fields: {sort_order: 7, page: 102}
+-   model: pages.ourimpactinstitutions
+    pk: 9
+    fields: {sort_order: 8, page: 102}
+-   model: pages.ourimpactinstitutions
+    pk: 10
+    fields: {sort_order: 9, page: 102}
+-   model: pages.ourimpactinstitutions
+    pk: 11
+    fields: {sort_order: 10, page: 102}
+-   model: pages.ourimpactinstitutions
+    pk: 12
+    fields: {sort_order: 11, page: 102}
+-   model: pages.ourimpactinstitutions
+    pk: 13
+    fields: {sort_order: 12, page: 102}
+-   model: pages.ourimpactinstitutions
+    pk: 14
+    fields: {sort_order: 13, page: 102}
+-   model: pages.ourimpactinstitutions
+    pk: 15
+    fields: {sort_order: 14, page: 102}
+-   model: pages.ourimpactinstitutions
+    pk: 16
+    fields: {sort_order: 15, page: 102}
+-   model: pages.ourimpactinstitutions
+    pk: 17
+    fields: {sort_order: 16, page: 102}
+-   model: pages.ourimpactinstitutions
+    pk: 18
+    fields: {sort_order: 17, page: 102}
+-   model: pages.ourimpactinstitutions
+    pk: 19
+    fields: {sort_order: 18, page: 102}
+-   model: pages.ourimpactinstitutions
+    pk: 20
+    fields: {sort_order: 19, page: 102}
+-   model: pages.ourimpactinstitutions
+    pk: 21
+    fields: {sort_order: 20, page: 102}
+-   model: pages.ourimpactinstitutions
+    pk: 22
+    fields: {sort_order: 21, page: 102}
+-   model: pages.ourimpactinstitutions
+    pk: 23
+    fields: {sort_order: 22, page: 102}
+-   model: pages.ourimpactinstitutions
+    pk: 24
+    fields: {sort_order: 23, page: 102}
+-   model: pages.ourimpactinstitutions
+    pk: 25
+    fields: {sort_order: 24, page: 102}
+-   model: pages.ourimpactinstitutions
+    pk: 26
+    fields: {sort_order: 25, page: 102}
+-   model: pages.ourimpact
+    pk: 102
+    fields: {intro_heading: We measure our success in access., intro_description: "Since
+            2012, OpenStax has saved students $66 million and counting by offering
+            free, peer-reviewed textbooks for the highest-enrollment college courses.
+            Meet the schools who\u2019ve adopted OpenStax and some of the students
+            who\u2019ve benefited from free access to the learning materials they
+            need to succeed.", row_1: '[{"type": "column", "value": {"image": {"alignment":
+            "left", "image": null, "alt_text": ""}, "cta": "Contact us to learn more",
+            "document": null, "link": "https://openstax.org/contact?subject=College/University%20Partnerships",
+            "heading": "Institutional Partner and Affiliate Schools", "content": "<p>Our
+            institutional partner and affiliate schools are forging institutional
+            initiatives to encourage adoptions of OpenStax and other open resources
+            to give students access to the learning materials they need to succeed.<br/></p>"}}]'}
+-   model: pages.give
+    pk: 104
+    fields: {intro_heading: Give to OpenStax, intro_description: 'Your donation helps
+            us create opportunities for students to have access to quality free and
+            low-cost educational materials. With your gift, we can create and revise
+            our free textbooks, finetune our adaptive learning tools, and spread the
+            word to more instructors and students. Your donation changes lives.xxx',
+        other_payment_methods_heading: Other Ways to Give, payment_method_1_heading: Check,
+        payment_method_1_content: '<p>If you would like to mail a check for your gift
+            to OpenStax, make checks out to OpenStax, Rice University.</p><h4>Mail
+            to:</h4>OpenStax P.O. Box 1892 MS375 Houston, TX 77251-1892', payment_method_2_heading: Matching
+            Gifts, payment_method_2_content: <p>Engage in your employer's matching
+            gift program to multiply your donation's impact.<br/></p>, payment_method_3_heading: Other
+            Donation Options, payment_method_3_content: '<p>We are here to assist
+            you with:</p><ul><li>Longterm appreciated securities</li><li>Gifts to
+            OpenStax in your will or revocable management trust</li><li>Qualified
+            charitable distributions from your IRA</li><li>Beneficiary designations
+            for your retirement plan or life insurance to benefit OpenStax</li><li>Charitable
+            gift annuities</li><li>Charitable trusts</li><li>Gifts of real estate,
+            business interests, closely held stock and personal property</li></ul>',
+        payment_method_4_heading: '', payment_method_4_content: '', give_cta: Contact
+            us for help with your gift, give_cta_link: 'https://oscms-qa.openstax.org/contact?subject=Donations'}
+-   model: pages.termsofservice
+    pk: 106
+    fields: {intro_heading: Terms of Use, terms_of_service_content: "<p>This user
+            agreement (this \u201CAgreement\u201D) from OpenStax describes the terms
+            and conditions on which you may use the OpenStax educational service and
+            content (collectively, the \u201CService\u201D). If you do not accept
+            and agree to be bound by the terms and conditions of this Agreement, you
+            may not access or use the Service.</p><p><br/></p><p>Your access or use
+            of the Service constitutes your acceptance of and agreement to be bound
+            by the terms and conditions of this Agreement, including, but not limited
+            to, any policies and procedures incorporated by reference. In addition,
+            your use of any particular part of the Service shall be subject to such
+            additional terms and conditions as may be posted from time to time.</p><p><br/></p><p>OpenStax
+            may amend this Agreement at any time by posting the amended terms on the
+            website, and such amended terms shall become effective 30 days after being
+            initially posted to the website. This Agreement may not otherwise be amended
+            except in writing signed by you and an authorized representative of OpenStax.</p><p><br/></p><p>Each
+            individual work in the Service is offered for license to you by the author
+            of that work on the terms and conditions set forth in the Creative Commons
+            license associated with that individual work. You are required under U.S.
+            copyright law, the equivalent laws of other countries, and international
+            treaties to respect the copyrights of those authors and to use their works
+            subject to the terms and conditions of their respective licenses and applicable
+            law. You may only copy, modify, distribute and otherwise use the works
+            in the Service in accordance with a license to do so or as may otherwise
+            be permitted under applicable law.</p><p><br/></p><p>All other content/information/imagery
+            in the Service (including logos, taglines, book covers, text copy, web
+            site design, etc; excluding textbook content and content licensed from
+            other entities) is Copyright Rice University All Rights Reserved.</p><p><br/></p><p>Neither
+            OpenStax nor Rice University undertakes any obligation to review or monitor
+            any content submitted to the Service and shall not have any responsibility
+            or liability in connection therewith. OpenStax and Rice University may
+            remove content if it is deemed appropriate to do so by OpenStax or Rice
+            University, in their sole discretion, including, but not limited to, to
+            comply with law or legal process, to respond to third party complaints,
+            to enforce the terms and conditions of use, or to protect OpenStax or
+            Rice University.</p><p><br/></p><p>THE SERVICE ARE PROVIDED ON AN \u201CAS
+            IS\u201D BASIS, WITHOUT ANY REPRESENTATIONS OR WARRANTIES OF ANY KIND,
+            EXPRESS, IMPLIED OR STATUTORY, INCLUDING, BUT NOT LIMITED TO, REPRESENTATIONS
+            AND WARRANTIES OF ACCURACY, COMPLETENESS, NON-INFRINGEMENT, MERCHANTABILITY
+            AND FITNESS FOR A PARTICULAR PURPOSE. YOUR USE OF THE SERVICE ARE ENTIRELY
+            AT YOUR OWN RISK.</p><p><br/></p><p>UNDER NO CIRCUMSTANCES AND UNDER NO
+            LEGAL THEORY, WHETHER IN TORT (INCLUDING NEGLIGENCE), CONTRACT, OR OTHERWISE,
+            SHALL OPENSTAX OR RICE UNIVERSITY, OR ITS TRUSTEES, OFFICERS, EMPLOYEES
+            AND REPRESENTATIVES, BE LIABLE TO YOU OR TO ANY THIRD PARTY FOR ANY DIRECT,
+            INDIRECT, INCIDENTAL, CONSEQUENTIAL, SPECIAL, EXEMPLARY OR PUNITIVE DAMAGES
+            OF ANY KIND DIRECTLY OR INDIRECTLY ARISING OUT OF OR IN CONNECTION WITH
+            THE OPERATION, MAINTENANCE, ACCESS OR USE OF THE SERVICE. This paragraph
+            shall survive any expiration or termination of this Agreement.</p><p><br/></p><p>OpenStax
+            and Rice University reserve the right at any time and from time to time,
+            in their sole discretion, to modify or discontinue, temporarily or permanently,
+            the Service with or without notice. OpenStax and Rice University, and
+            its trustees, officers, employees and representatives, shall not have
+            any responsibility or liability to you or to any third party in the event
+            of any such modification, suspension or discontinuance of the Service.</p><p><br/></p><p>This
+            Agreement shall be interpreted and enforced under the laws of the United
+            States and the State of Texas, without giving effect to its conflicts
+            or choice of law principles. You are responsible and liable for complying
+            with all applicable laws in connection with your access or use of the
+            Service. In the event a dispute arises related to this Agreement or your
+            access or use of the Service, you agree to submit to the jurisdiction
+            of the courts located in Harris County, Texas.</p><p><br/></p><p>IF YOU
+            BECOME A REGISTERED USER OF OPENSTAX, YOU AGREE TO INDEMNIFY, DEFEND AND
+            HOLD HARMLESS OPENSTAX AND RICE UNIVERSITY, AND ITS TRUSTEES, OFFICERS,
+            EMPLOYEES AND REPRESENTATIVES, FROM ANY AND ALL DEMANDS, CLAIMS, ACTIONS,
+            DAMAGES, LOSSES, LIABILITIES, COSTS AND EXPENSES, INCLUDING ATTORNEYS\u2019
+            FEES AND COURT COSTS, DIRECTLY OR INDIRECTLY ARISING OUT OF OR IN CONNECTION
+            WITH YOUR ACCESS OR USE OF THE SERVICE, YOUR SUBMISSION OF ANY CONTENT
+            TO THE SERVICE, OR YOUR VIOLATION OF ANY OF THE TERMS OR CONDITIONS OF
+            THIS AGREEMENT. This paragraph shall survive any expiration or termination
+            of this Agreement.</p>"}
+-   model: pages.ap
+    pk: 117
+    fields: {intro_heading: Access to Advance, intro_description: "Nothing should
+            hold students back from becoming who they want to be. So our College Board
+            framework-aligned books for AP\xAE courses are available online at all
+            times, always up to date. We believe access can unlock their futures.",
+        row_1: '[{"type": "column", "value": {"image": {"alignment": "left", "image":
+            58, "alt_text": null}, "cta": "EXPLORE OUR SUBJECTS", "document": null,
+            "link": "https://oscms-qa.openstax.org/subjects/ap", "heading": "Books
+            for AP\u00ae Courses", "content": "<p>Our college\u00ad level textbooks
+            for Advanced Placement\u00ae\u00a0courses are peer-reviewed, completely
+            free online, and will soon be available for a very low cost in print.</p>"}}]',
+        row_2: '[{"type": "column", "value": {"image": {"alignment": "full", "image":
+            null, "alt_text": null}, "cta": "View Partners", "document": null, "link":
+            "https://oscms-qa.openstax.org/partners/ap", "heading": "OpenStax Partners",
+            "content": "<p>OpenStax partners have united with us to increase access
+            to high-quality learning materials. Their low-cost tools integrate seamlessly
+            with our books for AP\u00ae\u00a0courses.</p>"}}]'}
+-   model: pages.faq
+    pk: 105
+    fields: {intro_heading: FAQ, intro_description: Frequently Asked Questions about
+            OpenStax, questions: '[{"type": "question", "value": {"question": "<p><b>Who
+            can use OpenStax textbooks?\u00a0</b></p>", "document": 202, "answer":
+            "<p>This is the answer text. Download the attached document for more information.</p>",
+            "slug": "who-can"}}, {"type": "question", "value": {"question": "<p><b>What
+            is OpenStax?</b><br/></p>", "document": null, "answer": "<p>OpenStax is
+            Rice University\u2019s non-profit education technology initiative. We
+            provide free, peer-reviewed textbooks that cover standard scope and sequence
+            requirements for introductory college and Advanced Placement courses.
+            We are also developing personalized digital courseware that incorporates
+            machine learning algorithms and principles from cognitive science to help
+            students and instructors improve their return on effort in the classroom.
+            With our college textbooks, we have saved 1.6 million students $155 million
+            since 2012 and will save 786,000 students $77 million in the 2016 - 2017
+            academic year alone. At least one of our titles is in use at 27% of colleges
+            and universities in the United States.\u00a0</p>", "slug": "what-is-openstax"}},
+            {"type": "question", "value": {"question": "<p><b>How does OpenStax make
+            any money or remain sustainable, considering you offer free textbooks?\u00a0</b></p>",
+            "document": null, "answer": "<p>OpenStax is part of Rice University and
+            we are also supported by the Laura and John Arnold Foundation, the\u00a0Bill
+            &amp; Melinda Gates Foundation, the William and Flora Hewlett Foundation,
+            The Calvin K. Kazanjian Economics Foundation, the Maxfield Foundation,
+            the Bill and Stephanie Sick Fund, the Michelson 20MM Foundation, Beneficus
+            Foundation, Art Ciocca, Lowenstein Foundation, David Park, and Brian Patterson.
+            Foundations give OpenStax the funding to create high quality, peer-reviewed
+            textbooks that have the same look and feel as traditional publisher texts.
+            We focus on providing a high-quality textbook that meets the scope and
+            sequence requirements for that course; however, we also understand that
+            faculty and students often need ancillary resources, such as online homework.
+            To meet that need, we have partnerships with for-profit companies that
+            provide these extra, optional resources that integrate with our textbooks.
+            These companies give us a mission support fee in return for using our
+            content, contributing to our sustainability. These mission support fees
+            also help OpenStax keep texts up to date. OpenStax has also received grant
+            funding for its burgeoning adaptive learning projects.\u00a0</p>", "slug":
+            "how-get-money"}}, {"type": "question", "value": {"question": "<p><b>How
+            did OpenStax get started?</b></p>", "document": null, "answer": "<p>OpenStax
+            was founded in 1999 by Richard Baraniuk, an electrical engineering professor
+            at Rice University. Originally named Connexions, now OpenStax CNX, is
+            an Open Educational Resource (OER) repository where faculty around the
+            world could publish, share, and remix educational materials. By 2008,
+            it became clear that simply providing a delivery platform for course materials
+            was not enough to increase access to educational materials for the majority
+            of students. After observing the upward trend of student debt and the
+            well-defined and staying nature of introductory college course materials,
+            OpenStax used grant support to create a line of free, peer- reviewed textbooks
+            that meet scope and sequence requirements for introductory courses, making
+            it easy for faculty to adopt ready-made high quality resources, and then
+            use them as is or adapt them to meet their course\u2019s needs. In 2014,
+            OpenStax received grant funding to begin developing personalized digital
+            courseware, which are currently in pilot.\u00a0</p>", "slug": "how-we-started"}},
+            {"type": "question", "value": {"question": "<p><b>Is there a difference
+            between other open source content and OpenStax texts? What is the difference
+            between OpenStax textbooks and a traditional publisher\u2019s textbooks
+            other than price?\u00a0</b></p>", "document": null, "answer": "<p>OpenStax
+            textbooks are different than many open educational resources (OER) in
+            that OpenStax textbooks are peer-reviewed, are written by experts, and
+            employ professional art programs. OpenStax textbooks are also regularly
+            reviewed and kept up to date. Our textbooks have the same look and feel
+            as textbooks that cost hundreds of dollars.\u00a0</p>", "slug": "differences"}},
+            {"type": "question", "value": {"question": "<p><b>What are your plans
+            when it comes to expansion (such as new books, etc.)\u00a0</b></p>", "document":
+            null, "answer": "<p>Our primary mission is to provide textbooks for 25
+            of the nation\u2019s highest enrolled introductory college courses, of
+            which we currently have 23 published. We are also beginning to publish
+            titles for Advanced Placement courses and three of those titles are currently
+            available online. Our next endeavor is adaptive learning courseware. You
+            can read more about that <a href=\"http://news.rice.edu/2014/09/30/openstax-takes-personalized-learning-to-college/\">here</a>.\u00a0</p>",
+            "slug": "plans"}}, {"type": "question", "value": {"question": "<p><b>How
+            do you create the textbooks?</b></p>", "document": null, "answer": "<p>We
+            hire a core team of authors who write the content with the help of our
+            editors. Then, the content is reviewed for accuracy and quality by a board
+            of reviewers. There are often well over 100 reviewers for each title because
+            quality is a top priority for OpenStax. Once the title is finished, our
+            system allows us to post PDFs and web views via our website, openstax.org.
+            These books are entirely free and don\u2019t require a login to access.
+            If you want an interactive version, there are iBooks versions available
+            for $4.99 on the iBookstore. Also, we offer hard cover, full color print
+            versions for essentially the cost to print \u2014 all of our titles are
+            $60 or less. If you would like more information about our technology,
+            please contact media@openstax.org.\u00a0</p>", "slug": "creating-textbooks"}},
+            {"type": "question", "value": {"question": "<p><b>What are the legalities
+            of professors customizing their textbooks and the cost of the printed
+            copy/selling it in the school bookstore?\u00a0</b></p>", "document": null,
+            "answer": "<p>All of our textbooks are openly licensed (all titles are
+            CC-BY, except for Calculus, which is CC-BY-NC-SA.) You can read more about
+            the license here: https://creativecommons.org/licenses/by/4.0/. This allows
+            faculty to customize and distribute their version of the textbooks for
+            free. Our textbooks meet the scope and sequence requirements for the course
+            they are designed for, so many faculty often use the book as is or simply
+            assign sections from the complete title. Hard copies of each textbook
+            are available via Amazon or campus bookstores for essentially the cost
+            to print the book, making even the hard copies much less expensive than
+            traditional textbooks.\u00a0</p>", "slug": "customization-legality"}},
+            {"type": "question", "value": {"question": "<p><b>OpenStax has 25 books
+            currently available on its website. Does OpenStax intend to expand its
+            collection into courses such as art, English, writing, and maybe extracurriculars?\u00a0</b></p>",
+            "document": null, "answer": "<p>Our goal is to provide textbooks for the
+            nation\u2019s highest enrolled introductory college courses and we have
+            25 published so far. We also have three Advanced Placement titles, Elementary
+            Algebra, Intermediate Algebra and Business Statistics texts are coming
+            soon. The two main factors we consider when deciding which books to publish
+            are 1) How many students are taking the course nationwide and 2) How expensive
+            are the existing textbooks for that course? Whether we expand into other
+            courses depends on whether those books provide an opportunity to significantly
+            drive down student costs. Certain textbooks, such as art and English,
+            present copyright restrictions that make it difficult to publish with
+            an open license and will likely not be part of the OpenStax library.\u00a0</p>",
+            "slug": "expansion-plans"}}, {"type": "question", "value": {"question":
+            "<p><b>How does OpenStax handle revisions and keeping content up to date?\u00a0</b></p>",
+            "document": null, "answer": "<p>OpenStax revises books when it is pedagogically
+            necessary. For example, the field of sociology often changes, so we released
+            a second edition of Introduction to Sociology in 2015 that includes developments
+            in the field. Smaller changes (likes typos) are updated regularly and
+            reflected in the web view. New PDFs and print versions with updated errata
+            are published online each June.\u00a0</p>", "slug": "updates"}}, {"type":
+            "question", "value": {"question": "<p><b>What''s next for OpenStax?\u00a0</b></p>",
+            "document": null, "answer": "<p>OpenStax is exploring new areas in which
+            to publish textbooks. OpenStax Tutor, OpenStax\u2019s digital courseware,
+            is in development.\u00a0</p>\n<p>Elementary Algebra, Intermediate Algebra
+            and Business Statistics texts are coming soon.\u00a0</p>", "slug": "whats-next"}},
+            {"type": "question", "value": {"question": "<p><b>Why does OpenStax sell
+            print copies?</b></p>", "document": null, "answer": "<p>Based on feedback
+            from instructors and students, OpenStax offers print versions of its textbooks
+            at low cost. OpenStax is committed to offering our free content in a way
+            that is most convenient for instructors and students, leading us to publish
+            our books via web view, PDF, print, and iBooks.\u00a0</p>", "slug": "why-we-sell"}}]'}
+-   model: pages.support
+    pk: 118
+    fields: {intro_heading: OpenStax Support, intro_description: "<p>Find answers
+            to your questions by clicking through your topic below.\_<br/>Looking
+            for more information about the OpenStax mission and operations? Visit
+            our <a href=\"/faq\">FAQ page</a>.<br/></p>", row_1: '[{"type": "column",
+            "value": {"image": {"alignment": "left", "image": null, "alt_text": null},
+            "cta": "Find Answers", "document": null, "link": "http://openstax.force.com/support?l=en_US&c=Products%3ACollege",
+            "heading": "OpenStax Textbooks", "content": "<p>Information on adopting
+            OpenStax books, using our additional resources, and more.</p>"}}, {"type":
+            "column", "value": {"image": {"alignment": "left", "image": null, "alt_text":
+            null}, "cta": "Find Answers", "document": null, "link": "http://openstax.force.com/support?l=en_US&c=Products%3ACNX",
+            "heading": "OpenStax CNX", "content": "<p>Help with using, contributing,
+            and remixing content from our open library.</p>"}}, {"type": "column",
+            "value": {"image": {"alignment": "left", "image": null, "alt_text": null},
+            "cta": "Find Answers", "document": null, "link": "http://openstax.force.com/support?l=en_US&c=Products%3ATutor",
+            "heading": "OpenStax Tutor", "content": "<p>Answers to your questions
+            about piloting, setting up, and using OpenStax Tutor courseware.</p>"}},
+            {"type": "column", "value": {"image": {"alignment": "left", "image": null,
+            "alt_text": null}, "cta": "Find answers", "document": null, "link": "http://openstax.force.com/support?l=en_US&c=Products%3AConcept_Coach",
+            "heading": "Concept Coach", "content": "<p>Resources on piloting, setting
+            up, and using our Concept Coach tool.</p>"}}]'}
+-   model: pages.accessibility
+    pk: 123
+    fields: {intro_heading: Accessibility, accessibility_content: "<h1>Accessibility</h1><p>At
+            OpenStax, we're committed to ensuring that our websites and learning materials
+            are as accessible as possible to the widest possible audience.</p><h2>Web
+            Accessibility</h2><p>Our goal is to ensure that all OpenStax websites
+            and the web view versions of our learning materials follow accessible
+            web design best practices, so that they will meet the W3C-WAI Web Content
+            Accessibility Guidelines (WCAG) 2.0 at Level A and Section 508 of the
+            Rehabilitation Act. The WCAG 2.0 guidelines explain ways to make web content
+            more accessible for people with disabilities and more user-friendly for
+            everyone.</p><h2>Our progress</h2><p>We're working hard to achieve our
+            goal of Level A accessibility, but we realize there are some areas that
+            still need improving. Our developers are actively working to resolve issues
+            that may hinder accessibility according to the guidelines we mentioned,
+            including the way we handle parsing, error identification, focus order,
+            use of color, and sensory characteristics.</p><h2>Feedback</h2><p>You
+            can help us to meet our accessibility goals by letting us know about your
+            experience using OpenStax by emailing us at\_<a href=\"mailto:support@openstax.org?Subject=Accessibility\">support@openstax.org</a>\_or
+            calling us at (713) 348-5012.</p><p>If you've encountered an accessibility
+            problem with one of our websites or the web view version of one of our
+            learning materials, please provide the following information:</p><ul><li>A
+            description of what happened.</li><li>Links to the web pages or the name
+            of the web view material(s).</li><li>The name of your browser (e.g. Firefox
+            37, Safari 7, Chrome 42, etc.). If possible, please also provide the version
+            number.</li><li>The name of your operating system (e.g. Windows 7, iOS
+            6, Android 4.4, etc.). If possible, please also provide the version number.</li><li>Any
+            assistive technology that you are using (e.g. JAWS, VoiceOver, Dragon,
+            etc.).</li></ul><p></p><h2>Interactive Simulations</h2><p>Some learning
+            materials include links to interactive simulations (e.g. PhET physics
+            simulations developed by the University of Colorado). While simulations
+            are more difficult to make accessible than more conventional static textbook
+            content, an effort to improve the accessibility of many PhET simulations
+            is underway. As with any OpenStax feature, your feedback about the accessibility
+            of the PhET simulations is welcome at:\_<a href=\"mailto:support@openstax.org?Subject=Accessibility\">support@openstax.org</a>.</p><h2>User-Contributed
+            Content</h2><p>In some cases, OpenStax websites include third-party user-contributed
+            content. In these cases, it is often not possible to ensure accessibility
+            of the submitted content. However, our goal is to continuously improve
+            the authoring tools provided by OpenStax for use by those third-parties,
+            in order to increase the likelihood that accessible content will be produced.</p>"}
+-   model: pages.licensing
+    pk: 124
+    fields: {intro_heading: License, licensing_content: "<h1>Legal</h1><h2>Frequently
+            asked IP (Intellectual Property) and legal questions</h2><p><h3>Why do
+            I have to agree to your license before I can publish my work?</h3><p>Our
+            goal is to provide and maintain a commons where individuals and communities
+            worldwide can create and freely share knowledge. The\_<a href=\"http://creativecommons.org/\">Creative
+            Commons</a><a href=\"http://creativecommons.org/licenses/by/4.0/\">Attribution
+            license</a>\_that you and every author must agree to enables the content
+            to be as reusable as possible. All the content is accessible to anyone
+            without restriction and any author can use that content, share it with
+            others, or create a derivative work that is customized and personalized
+            for their context.</p><p>The license also reduces everyone's risk, because
+            it clarifies what the legal uses of the materials are. Without a license,
+            everyone is forced to assume that the full protection of copyright law
+            applies to your work, even if you intend to share it, or wanted it to
+            be in the public domain. The license makes clear to lawyers and to other
+            readers that this is your intention.</p><h3>Why should I make my work
+            available under a Creative Commons Attribution license, instead of publishing
+            it with the full protection of copyright law?</h3><p>There are several
+            reasons. You might like the idea of others building upon your work, or
+            the notion of contributing to an intellectual commons. As the community
+            grows, you and other authors will have the satisfaction of helping develop
+            new ways to collaborate. Another reason is that you may want your writings
+            to be copied and shared, so your ideas can spread around the world. A
+            young author may want to encourage the unrestrained dissemination of his
+            or her works to help build a reputation. An established author might post
+            samples of his or her work to create an interest in works that are outside
+            of our repository. The Creative Commons license can help you implement
+            such strategies while you retain the ultimate control of your copyright.</p><h3>What
+            is Creative Commons?</h3><p>Creative Commons is a non-profit corporation
+            that promotes the creative licensing and re-using of intellectual works.
+            To quote from their Web site: \u201CCreative Commons is a new system,
+            built within current copyright law, that allows you to share your creations
+            with others and use music, movies, images, and text online that's been
+            marked with a Creative Commons license.\u201D</p><h3>Is the content copyrighted
+            and who owns the copyright?</h3><p>All material is copyrighted and the
+            author retains the copyright of his or her material. The material is also
+            licensed under the Creative Commons Attribution license. Under this license
+            the author gives others the freedom to copy, distribute, and display the
+            work, and to make derivative works, as long as they give the original
+            author credit. A link to a description of the Creative Commons Attribution
+            license appears at the bottom of every content page.</p><h3>How do authors
+            license their work in the content commons?</h3><p>Before you can create
+            a page or book, you must agree to the Creative Content Attribution license
+            that applies to all the content.</p><h3>Can I distribute or use my material
+            elsewhere?</h3><p>Yes. The Creative Commons license is \"non-exclusive\"--
+            which means that you are free to distribute your material under a different
+            license elsewhere, publish it for profit, or transform it without endangering
+            the version in our repository.</p><h3>How do I control what changes are
+            made to my pages?</h3><p>Only persons who have the maintainer role on
+            your page have permission to modify and publish an updated version of
+            your page. As the author of a page, you determine who has the maintainer
+            role on your page. The Creative Commons Attribution license does allow
+            another person to make an adaptation of any content published in our repository.
+            An adaptation is a derived copy of a page that is modified and published
+            as a new page under the new author's name. Your original page is not changed
+            and the adaptation contains a statement of attribution to you and a link
+            to your original page.</p><h3>But wait, I thought the license gave people
+            the right to make their own adaptations of my work?</h3><p>True, another
+            author can indeed make an adaptation of your work according to the license.
+            However, if you determine that someone has created an adaptation that
+            is incorrect, or contradictory with your own, or worse, is defamatory
+            or otherwise offensive, the license gives you the legal right to ask that
+            person to remove your name from the page -- but not to demand that he
+            or she change it as you wish. One way to avoid creation of such adaptations
+            is to invite these other authors into your workgroup and develop a dialog
+            with them as collaborators or co-authors.</p><h3>What prevents some dishonest
+            person from stealing my works and claiming it as theirs?</h3><p>Nothing
+            except the copyright law. The Creative Commons license is based on existing
+            copyright law and your works have the same legal protections and legal
+            standing as a copyrighted work that is published outside of our repository.
+            You may actually run less risk using our repository than simply putting
+            your work on your own Web page, because the license is clearly visible
+            and clearly explains the uses people may legally make of your work. Strictly
+            speaking, fraud and plagiarism are not the subject of copyright law, but
+            copyright law is a good first defense.</p><h3>Can people make money off
+            of my work?</h3><p>It is possible, but to be effective at all the license
+            we use must allow some \"commercial\" uses. Consider the situation in
+            which a printing service, such as a local printing service, offers to
+            print your work so that your students may have access to hard copies.
+            Without a license that allows commercial use, the service could not charge
+            a fee to recover their printing, binding, and handling costs.</p><h3>That's
+            fine, but what if some huge publisher decides to publish my work?</h3><p>If
+            a publisher wants to include your page in a book of collected materials,
+            they have that right according to the license, but remember that they
+            are required to list you as the author and copyright holder. Our experience
+            also suggests that most reputable publishers would want to re-negotiate
+            a new license with you in that case. Furthermore, if you seriously expect
+            to receive royalties from what you write, our repository is probably not
+            the right place for the work -- though it might be the right place to
+            experiment with an early version, or an alternative version.</p><h3>Does
+            the Creative Commons Attribution license affect fair use rights?</h3><p>No.
+            The license includes the statement: \"Nothing in this license is intended
+            to reduce, limit, or restrict any rights arising from fair use, first
+            sale, or other limitations on the exclusive rights of the copyright owner
+            under copyright law or other applicable laws.\" Fair use, the first sale
+            doctrine, and other such limitations apply whether a copyright holder
+            consents to them or not.</p><h3>What must I do if I want to include a
+            portion of an author's work in the repository in a work I am creating
+            outside of the repository?</h3><p>You must give attribution to the portion
+            of the original author's work that you include outside of our repository.
+            This attribution is as simple as clearly naming the original author and
+            identifying the portion of his or her work you are using. In addition
+            you must retain the copyright notice and provide the URI of the original
+            work.</p><h3>What must I do if I want to include another author's page
+            in a book that I am building?</h3><p>Simply add the page to your book.
+            Our software automatically includes the name of the original author in
+            your book, giving him or her the attribution that is required by the Creative
+            Commons license.</p><h3>Can I include material in my pages that was originally
+            published outside of the repository and copyrighted?</h3><p>This simple
+            question raises some complex legal points. It can best be answered by
+            the copyright holder or an intellectual property attorney. We can tell
+            you that any content you put into our repository is licensed under the
+            Creative Commons Attribution 4.0 License, which means anything you use
+            directly in your content must to be legally publishable under that license.
+            The University of Texas System has a\_<a href=\"http://copyright.lib.utexas.edu/\">Copyright
+            Crash Course</a>\_and a\_<a href=\"http://copyright.lib.utexas.edu/copypol2.html\">Copyright
+            Tutorial</a>\_that can provide you with general information about copyright
+            and reuse of copyrighted material. If you do obtain permission to use
+            copyrighted material in your pages, we recommend that you include a note
+            with the material that indicates who holds the copyright on the material.</p><h3>Does
+            \"fair use\" enable me to use copyrighted material in my pages?</h3><p>Maybe
+            yes, maybe no. There are many factors to consider before you can claim
+            \"fair use\" for your reuse of copyrighted material. This is another question
+            that can best be answered by the copyright holder or an intellectual property
+            attorney.</p><h3>What legal standing does the Creative Commons license
+            have outside of the United States?</h3><p>The Creative Commons license
+            was crafted to be enforceable in as many jurisdictions as possible. That
+            said, Creative Commons cannot account for every last nuance in the world's
+            various copyright laws, at their current level of resources. The Creative
+            Commons license does contain \"severability\" clauses -- meaning that,
+            if a certain provision is found to be unenforceable in a certain place,
+            that provision and only that provision drops out of the license, leaving
+            the rest of the agreement intact.</p></p>"}
+-   model: pages.compcopy
+    pk: 134
+    fields: {intro_heading: Request your complimentary iBooks download, intro_description: <p>Instructors
+            with a verified instructor account can request a complimentary iBooks
+            copy of their book.</p><p>OpenStax textbooks are free for students in
+            web view and PDF form and for $6.99 in the iBooks Store.</p>}
+-   model: pages.adoptform
+    pk: 132
+    fields: {intro_heading: Let us know you're using OpenStax, intro_description: "<p>Help
+            us continue to make high-quality educational materials accessible by letting
+            us know you've adopted! Our future grant funding is based on faculty adoptions
+            and the number of students we impact.</p><p>Not using OpenStax yet? Go
+            to our\_<a href=\"https://oscms-qa.openstax.org/interest\">interest form</a>\_and
+            we'll send you the information you need.</p>"}
+-   model: pages.interestform
+    pk: 133
+    fields: {intro_heading: 'Interested in learning more about OpenStax?', intro_description: "<p>Fill
+            out the form below, and we\u2019ll send you more information about giving
+            your students access to peer-reviewed college textbooks, free of cost.</p><p>Have
+            you already adopted an OpenStax textbook?\_<a href=\"https://oscms-qa.openstax.org/adoption\">Let
+            us know!</a></p>"}
+-   model: pages.marketingvideolink
+    pk: 1
+    fields: {video_url: '', video_file: '', image_url: '', image_file: 194, video_image_blurb: <b>The
+            dashboard</b> gives students an overview of their assignments and progress.}
+-   model: pages.marketingvideolink
+    pk: 2
+    fields: {video_url: '', video_file: '', image_url: '', image_file: 195, video_image_blurb: A
+            red clock icon shows which assignments were submitted late.}
+-   model: pages.marketingvideolink
+    pk: 3
+    fields: {video_url: '', video_file: '', image_url: '', image_file: 196, video_image_blurb: Past
+            due assignments are moved to the All Past Work tab.}
+-   model: pages.marketingvideos
+    pk: 1
+    fields: {sort_order: 0, marketing_video: 136}
+-   model: pages.marketingvideos
+    pk: 2
+    fields: {sort_order: 1, marketing_video: 136}
+-   model: pages.marketingvideos
+    pk: 3
+    fields: {sort_order: 2, marketing_video: 136}
+-   model: pages.resource
+    pk: 1
+    fields: {name: Integrated digital textbook, available: true, available_image: null,
+        alternate_text: ''}
+-   model: pages.resource
+    pk: 2
+    fields: {name: Student performance forecast, available: true, available_image: null,
+        alternate_text: ''}
+-   model: pages.resource
+    pk: 3
+    fields: {name: Video, available: true, available_image: null, alternate_text: ''}
+-   model: pages.resource
+    pk: 4
+    fields: {name: Full LMS Integration, available: false, available_image: null,
+        alternate_text: Coming fall 2018}
+-   model: pages.resource
+    pk: 7
+    fields: {name: Spaced practice review questions, available: true, available_image: null,
+        alternate_text: ''}
+-   model: pages.resource
+    pk: 9
+    fields: {name: Personalized questions, available: true, available_image: null,
+        alternate_text: ''}
+-   model: pages.resource
+    pk: 10
+    fields: {name: Ability to add own questions, available: false, available_image: null,
+        alternate_text: ''}
+-   model: pages.resource
+    pk: 11
+    fields: {name: Student performance analytics, available: true, available_image: null,
+        alternate_text: ''}
+-   model: pages.resource
+    pk: 12
+    fields: {name: Ability to exclude questions, available: true, available_image: null,
+        alternate_text: ''}
+-   model: pages.resource
+    pk: 13
+    fields: {name: Easy to build assignments, available: true, available_image: null,
+        alternate_text: ''}
+-   model: pages.resource
+    pk: 14
+    fields: {name: Open ended responses, available: false, available_image: null,
+        alternate_text: OpenStax Tutor Beta uses two-step questions}
+-   model: pages.resource
+    pk: 16
+    fields: {name: Low cost, available: true, available_image: null, alternate_text: ''}
+-   model: pages.resource
+    pk: 17
+    fields: {name: Permanent access to textbook content, available: true, available_image: null,
+        alternate_text: ''}
+-   model: pages.resource
+    pk: 18
+    fields: {name: Algorithmic question generation, available: false, available_image: null,
+        alternate_text: Available for for College Physics}
+-   model: pages.resource
+    pk: 19
+    fields: {name: Tutorials, available: false, available_image: null, alternate_text: Available
+            for for College Physics}
+-   model: pages.resource
+    pk: 20
+    fields: {name: Available for college courses, available: true, available_image: null,
+        alternate_text: ''}
+-   model: pages.resource
+    pk: 21
+    fields: {name: Available for high school courses, available: false, available_image: null,
+        alternate_text: ''}
+-   model: pages.resourceavailability
+    pk: 1
+    fields: {sort_order: 4, marketing_video: 136}
+-   model: pages.resourceavailability
+    pk: 2
+    fields: {sort_order: 11, marketing_video: 136}
+-   model: pages.resourceavailability
+    pk: 3
+    fields: {sort_order: 6, marketing_video: 136}
+-   model: pages.resourceavailability
+    pk: 4
+    fields: {sort_order: 9, marketing_video: 136}
+-   model: pages.resourceavailability
+    pk: 7
+    fields: {sort_order: 12, marketing_video: 136}
+-   model: pages.resourceavailability
+    pk: 9
+    fields: {sort_order: 2, marketing_video: 136}
+-   model: pages.resourceavailability
+    pk: 10
+    fields: {sort_order: 8, marketing_video: 136}
+-   model: pages.resourceavailability
+    pk: 11
+    fields: {sort_order: 14, marketing_video: 136}
+-   model: pages.resourceavailability
+    pk: 12
+    fields: {sort_order: 13, marketing_video: 136}
+-   model: pages.resourceavailability
+    pk: 13
+    fields: {sort_order: 1, marketing_video: 136}
+-   model: pages.resourceavailability
+    pk: 14
+    fields: {sort_order: 3, marketing_video: 136}
+-   model: pages.resourceavailability
+    pk: 16
+    fields: {sort_order: 0, marketing_video: 136}
+-   model: pages.resourceavailability
+    pk: 17
+    fields: {sort_order: 5, marketing_video: 136}
+-   model: pages.resourceavailability
+    pk: 18
+    fields: {sort_order: 7, marketing_video: 136}
+-   model: pages.resourceavailability
+    pk: 19
+    fields: {sort_order: 10, marketing_video: 136}
+-   model: pages.resourceavailability
+    pk: 20
+    fields: {sort_order: 15, marketing_video: 136}
+-   model: pages.resourceavailability
+    pk: 21
+    fields: {sort_order: 16, marketing_video: 136}
+-   model: pages.marketing
+    pk: 136
+    fields: {access_tagline: 'Using OpenStax Tutor Beta?', access_button_cta: Access
+            Your Course, access_button_link: 'https://tutor.openstax.org/dashboard',
+        section_1_heading: Discover a new frontier in education., section_1_subheading: "Improve
+            how your students learn with research-based technology \u2014 for only
+            $10.", section_1_paragraph: "<p>OpenStax Tutor Beta gives college students
+            the easy-to-use online courseware and learning tools they need to complete
+            their course the first time around. And it\u2019s all based on science.
+            Available for College Physics, Biology, and Introduction to Sociology
+            2e.<br/></p>", section_1_cta_link: 'https://openstax.org', section_1_cta_text: Learn
+            More, section_2_heading: High tech. Low cost. Improved learning., section_2_subheading: 'How
+            does OpenStax Tutor Beta work?', section_2_paragraph: "<p>Wish you could
+            work with every student, individually? With OpenStax Tutor Beta, you\u2019re
+            getting warmer. This low-cost, easy-to-use, professionally written, peer-reviewed,
+            and research-based tool is designed to help students learn and retain
+            information. OpenStax Tutor Beta uses OpenStax textbooks to deliver high-quality
+            content, simulations and videos, spaced practice, and immediate feedback.<br/></p>",
+        icon_1_image: 192, icon_1_subheading: Spaced practice, icon_1_paragraph: Helps
+            students remember what they previously learned, icon_2_image: 192, icon_2_subheading: Personalized
+            questions, icon_2_paragraph: Help students learn where they need it most,
+        icon_3_image: 192, icon_3_subheading: Two-step questions, icon_3_paragraph: Help
+            students study more effectively, icon_4_image: 192, icon_4_subheading: Low
+            cost, icon_4_paragraph: $10 per course saves students money, section_3_heading: See
+            what your students will see, section_3_paragraph: '<p>Check out these
+            short, helpful videos to understand what your students will see in terms
+            of your questions, reading assignments, and homework in OpenStax Tutor
+            Beta. Get a peek at our analytics and dashboard, too.<br/></p>', section_4_heading: Our
+            current features and future plans, section_4_paragraph: "Thousands of
+            students have piloted OpenStax Tutor Beta. Here are the features we\u2019ve
+            prioritized, and more are on the way. Have suggestions for future development?
+            Send us an email at info@openstaxtutor.org.", section_4_resource_fine_print: '*Available
+            for OpenStax Tutor Beta for College Physics', section_4_book_heading: 'OpenStax
+            Tutor Beta will be available this fall in College Physics, Biology, and
+            Introduction to Sociology 2e.', section_5_heading: $10 goes a lot farther
+            than it used to., section_5_paragraph: "<p>Generous grants from the Bill
+            &amp; Melinda Gates Foundation, the Laura and John Arnold Foundation,
+            and the Maxfield Foundation allowed us to create OpenStax Tutor Beta.
+            And since OpenStax Tutor Beta technology is so easy to use, we don\u2019t
+            need salespeople. We keep our costs low and provide OpenStax Tutor Beta
+            for $10 per student, per course, allowing us to support the tool and make
+            research-backed improvements.</p>", section_5_dollar_1_paragraph: Pays
+            for our engineers and researchers, section_5_dollar_2_paragraph: Pays
+            for authors to keep content current, section_5_dollar_3_paragraph: Pays
+            for our Support team, section_5_dollar_4_paragraph: Helps us keep the
+            lights on, section_6_heading: Frequently asked questions, section_6_knowledge_base_copy: Knowledge
+            base copy goes here., faqs: '[{"type": "faq", "value": {"question": "<p>How
+            much time does it take to set up OpenStax Tutor?</p>", "document": null,
+            "answer": "<p>10 minutes.</p>", "slug": "how-much-time-to-setup"}}, {"type":
+            "faq", "value": {"question": "<p>Does it work with my LMS?</p>", "document":
+            null, "answer": "<p>Yes.</p>", "slug": "does-it-work-with-my-lms"}}]',
+        section_7_heading: Pioneer a new way of teaching and learning, section_7_subheading: Learn
+            more about how your students can learn more., section_7_cta_text_1: Get
+            Started, section_7_cta_link_1: 'https://tutor.openstax.org/dashboard',
+        section_7_cta_blurb_1: to take a tour of OpenStax Tutor and view your preview
+            course., section_7_cta_text_2: Sign Up, section_7_cta_link_2: 'https://openstax.org',
+        section_7_cta_blurb_2: for a free OpenStax Tutor webinar to answer all your
+            questions., floating_footer_button_1_cta: Get Started, floating_footer_button_1_link: 'https://tutor.openstax.org/dashboard',
+        floating_footer_button_1_caption: Preview and create a course., floating_footer_button_2_cta: Join
+            A Webinar, floating_footer_button_2_link: 'https://openstax.org/blog/upcoming-openstax-webinars',
+        floating_footer_button_2_caption: Get advice from pioneers of the tool.}
+-   model: pages.technology
+    pk: 138
+    fields: {intro_heading: Technology, intro_description: "<p>In education, one size
+            rarely fits all. That\u2019s why we\u2019ve teamed up with our partners
+            to offer a variety of low-cost digital learning tools integrated with
+            OpenStax books. Now you can choose the tool that\u2019s best for your
+            course, at a price that\u2019s best for your students.</p><br/>", banner_cta: LEARN
+            MORE, banner_cta_link: '', select_tech_heading: Discover the resources
+            at your fingertips, select_tech_step_1: Choose your book, select_tech_step_2: View
+            free instructor resources, select_tech_step_3: View technology options,
+        new_frontier_heading: Discover a new frontier in education, new_frontier_subheading: "Improve
+            how your students learn with research-based technology \u2014 for only
+            $10.", new_frontier_description: "<p>OpenStax Tutor Beta gives college
+            students easy-to-use online courseware and learning tools they need to
+            complete their course the first time around. And it\u2019s all based on
+            science. Available for College Physics, Biology, and Introduction to Sociology
+            2e.</p>", new_frontier_cta_1: Learn more, new_frontier_cta_link_1: 'https://oscms-dev.openstax.org/openstax-tutor',
+        new_frontier_cta_2: Go to OpenStax Tutor, new_frontier_cta_link_2: 'https://tutor.openstax.org/dashboard'}

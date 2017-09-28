@@ -1,0 +1,2208 @@
+-   model: wagtailimages.image
+    pk: 1
+    fields: {collection: 1, title: example, file: original_images/comp_2.jpeg, width: 218,
+        height: 231, created_at: ! '2016-03-08 06:00:00+00:00', uploaded_by_user: null,
+        focal_point_x: 0, focal_point_y: 0, focal_point_width: 0, focal_point_height: 0,
+        file_size: 0}
+-   model: wagtailimages.image
+    pk: 2
+    fields: {collection: 1, title: Courseweaver, file: original_images/Courseweaver.png,
+        width: 460, height: 120, created_at: ! '2016-03-08 06:00:00+00:00', uploaded_by_user: null,
+        focal_point_x: 0, focal_point_y: 0, focal_point_width: 0, focal_point_height: 0,
+        file_size: 0}
+-   model: wagtailimages.image
+    pk: 3
+    fields: {collection: 1, title: Expert TA, file: original_images/ExpertTA.png,
+        width: 460, height: 120, created_at: ! '2016-03-08 06:00:00+00:00', uploaded_by_user: null,
+        focal_point_x: 0, focal_point_y: 0, focal_point_width: 0, focal_point_height: 0,
+        file_size: 0}
+-   model: wagtailimages.image
+    pk: 4
+    fields: {collection: 1, title: Lrnr, file: original_images/Lrnr.png, width: 460,
+        height: 120, created_at: ! '2016-03-08 06:00:00+00:00', uploaded_by_user: null,
+        focal_point_x: 0, focal_point_y: 0, focal_point_width: 0, focal_point_height: 0,
+        file_size: 0}
+-   model: wagtailimages.image
+    pk: 5
+    fields: {collection: 1, title: Memory Science, file: original_images/MemoryScience.png,
+        width: 460, height: 120, created_at: ! '2016-03-08 06:00:00+00:00', uploaded_by_user: null,
+        focal_point_x: 0, focal_point_y: 0, focal_point_width: 0, focal_point_height: 0,
+        file_size: 0}
+-   model: wagtailimages.image
+    pk: 6
+    fields: {collection: 1, title: Odigia, file: original_images/Odigia.png, width: 460,
+        height: 120, created_at: ! '2016-03-08 06:00:00+00:00', uploaded_by_user: null,
+        focal_point_x: 0, focal_point_y: 0, focal_point_width: 0, focal_point_height: 0,
+        file_size: 0}
+-   model: wagtailimages.image
+    pk: 7
+    fields: {collection: 1, title: Sapling Learning, file: original_images/Sapling.png,
+        width: 460, height: 120, created_at: ! '2016-03-08 06:00:00+00:00', uploaded_by_user: null,
+        focal_point_x: 0, focal_point_y: 0, focal_point_width: 0, focal_point_height: 0,
+        file_size: 0}
+-   model: wagtailimages.image
+    pk: 8
+    fields: {collection: 1, title: Top Hat, file: original_images/TopHat.png, width: 460,
+        height: 120, created_at: ! '2016-03-08 06:00:00+00:00', uploaded_by_user: null,
+        focal_point_x: 0, focal_point_y: 0, focal_point_width: 0, focal_point_height: 0,
+        file_size: 0}
+-   model: wagtailimages.image
+    pk: 9
+    fields: {collection: 1, title: WebAssign, file: original_images/WebAssign.png,
+        width: 460, height: 120, created_at: ! '2016-03-08 06:00:00+00:00', uploaded_by_user: null,
+        focal_point_x: 0, focal_point_y: 0, focal_point_width: 0, focal_point_height: 0,
+        file_size: 0}
+-   model: wagtailimages.image
+    pk: 10
+    fields: {collection: 1, title: Wiley, file: original_images/Wiley.png, width: 460,
+        height: 120, created_at: ! '2016-03-08 06:00:00+00:00', uploaded_by_user: null,
+        focal_point_x: 0, focal_point_y: 0, focal_point_width: 0, focal_point_height: 0,
+        file_size: 0}
+-   model: wagtailimages.image
+    pk: 11
+    fields: {collection: 1, title: XYZ Homework, file: original_images/XYZHomework.png,
+        width: 460, height: 120, created_at: ! '2016-03-08 06:00:00+00:00', uploaded_by_user: null,
+        focal_point_x: 0, focal_point_y: 0, focal_point_width: 0, focal_point_height: 0,
+        file_size: 0}
+-   model: wagtailimages.image
+    pk: 12
+    fields: {collection: 1, title: Connect For Education, file: original_images/ConnectforEducation.png,
+        width: 460, height: 120, created_at: ! '2016-03-08 06:00:00+00:00', uploaded_by_user: null,
+        focal_point_x: 0, focal_point_y: 0, focal_point_width: 0, focal_point_height: 0,
+        file_size: 0}
+-   model: wagtailimages.image
+    pk: 13
+    fields: {collection: 1, title: SimBio, file: original_images/logo-SimBio.png,
+        width: 600, height: 157, created_at: ! '2016-03-22 15:23:22.178140+00:00',
+        uploaded_by_user: null, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 14
+    fields: {collection: 1, title: Junction, file: original_images/logo-Junction.png,
+        width: 600, height: 115, created_at: ! '2016-03-22 15:23:57.960907+00:00',
+        uploaded_by_user: null, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 3048}
+-   model: wagtailimages.image
+    pk: 15
+    fields: {collection: 1, title: Sapling logo - grayscale, file: original_images/sapling.png,
+        width: 340, height: 67, created_at: ! '2016-04-11 16:34:26.362870+00:00',
+        uploaded_by_user: null, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 16
+    fields: {collection: 1, title: WebAssign logo - grayscale, file: original_images/webassign.png,
+        width: 340, height: 59, created_at: ! '2016-04-11 16:35:36.759020+00:00',
+        uploaded_by_user: null, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 17
+    fields: {collection: 1, title: Expert TA - grayscale, file: original_images/expert-ta.png,
+        width: 160, height: 177, created_at: ! '2016-04-11 16:36:06.913446+00:00',
+        uploaded_by_user: null, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 18
+    fields: {collection: 1, title: CogBooks logo - grayscale, file: original_images/cogbooks.png,
+        width: 340, height: 68, created_at: ! '2016-04-11 16:37:01.441159+00:00',
+        uploaded_by_user: null, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 19
+    fields: {collection: 1, title: XYZ Homework - grayscale, file: original_images/xyz.png,
+        width: 340, height: 57, created_at: ! '2016-04-11 16:39:30.770579+00:00',
+        uploaded_by_user: null, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 2141}
+-   model: wagtailimages.image
+    pk: 20
+    fields: {collection: 1, title: Top Hat - grayscale, file: original_images/top-hat.png,
+        width: 512, height: 136, created_at: ! '2016-04-11 16:40:16.350007+00:00',
+        uploaded_by_user: null, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 21
+    fields: {collection: 1, title: Odigia - grayscale, file: original_images/odigia.png,
+        width: 268, height: 86, created_at: ! '2016-04-11 16:41:12.618424+00:00',
+        uploaded_by_user: null, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 22
+    fields: {collection: 1, title: Memory Science - grayscale, file: original_images/memory-science.png,
+        width: 340, height: 84, created_at: ! '2016-04-11 16:42:46.180575+00:00',
+        uploaded_by_user: null, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 23
+    fields: {collection: 1, title: Lrnr - grayscale, file: original_images/lrnr.png,
+        width: 300, height: 105, created_at: ! '2016-04-11 16:46:21.378073+00:00',
+        uploaded_by_user: null, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 24
+    fields: {collection: 1, title: Junction - grayscale, file: original_images/junction.png,
+        width: 340, height: 65, created_at: ! '2016-04-11 16:47:17.654827+00:00',
+        uploaded_by_user: null, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 25
+    fields: {collection: 1, title: Wiley - grayscale, file: original_images/wiley.png,
+        width: 300, height: 63, created_at: ! '2016-04-11 16:47:57.720766+00:00',
+        uploaded_by_user: null, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 26
+    fields: {collection: 1, title: SimBio - grayscale, file: original_images/simbio.png,
+        width: 298, height: 78, created_at: ! '2016-04-11 16:49:01.752255+00:00',
+        uploaded_by_user: null, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 27
+    fields: {collection: 1, title: Courseweaver logo - grayscale, file: original_images/course-weaver.png,
+        width: 340, height: 140, created_at: ! '2016-04-11 16:49:58.008883+00:00',
+        uploaded_by_user: null, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 4007}
+-   model: wagtailimages.image
+    pk: 28
+    fields: {collection: 1, title: Connect For Education - grayscale, file: original_images/connect-for-education.png,
+        width: 340, height: 112, created_at: ! '2016-04-11 16:51:41.410114+00:00',
+        uploaded_by_user: null, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 3163}
+-   model: wagtailimages.image
+    pk: 29
+    fields: {collection: 1, title: cogbooks.png, file: original_images/cogbooks.png,
+        width: 340, height: 68, created_at: ! '2016-04-28 16:09:12.892552+00:00',
+        uploaded_by_user: 60494, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 2309}
+-   model: wagtailimages.image
+    pk: 30
+    fields: {collection: 1, title: connect-for-education.png, file: original_images/connect-for-education.png,
+        width: 340, height: 112, created_at: ! '2016-04-28 16:09:13.496650+00:00',
+        uploaded_by_user: 60494, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 3163}
+-   model: wagtailimages.image
+    pk: 31
+    fields: {collection: 1, title: course-weaver.png, file: original_images/course-weaver.png,
+        width: 340, height: 140, created_at: ! '2016-04-28 16:09:14.024994+00:00',
+        uploaded_by_user: 60494, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 4007}
+-   model: wagtailimages.image
+    pk: 32
+    fields: {collection: 1, title: expert-ta.png, file: original_images/expert-ta.png,
+        width: 140, height: 154, created_at: ! '2016-04-28 16:09:14.622680+00:00',
+        uploaded_by_user: 60494, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 1908}
+-   model: wagtailimages.image
+    pk: 33
+    fields: {collection: 1, title: junction.png, file: original_images/junction.png,
+        width: 340, height: 64, created_at: ! '2016-04-28 16:09:15.201381+00:00',
+        uploaded_by_user: 60494, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 1580}
+-   model: wagtailimages.image
+    pk: 34
+    fields: {collection: 1, title: lrnr.png, file: original_images/lrnr.png, width: 300,
+        height: 106, created_at: ! '2016-04-28 16:09:15.888929+00:00', uploaded_by_user: 60494,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: 1619}
+-   model: wagtailimages.image
+    pk: 35
+    fields: {collection: 1, title: memory-science.png, file: original_images/memory-science.png,
+        width: 340, height: 84, created_at: ! '2016-04-28 16:09:16.518456+00:00',
+        uploaded_by_user: 60494, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 3192}
+-   model: wagtailimages.image
+    pk: 36
+    fields: {collection: 1, title: odigia.png, file: original_images/odigia.png, width: 304,
+        height: 98, created_at: ! '2016-04-28 16:09:17.041699+00:00', uploaded_by_user: 60494,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: 2116}
+-   model: wagtailimages.image
+    pk: 37
+    fields: {collection: 1, title: sapling.png, file: original_images/sapling.png,
+        width: 340, height: 66, created_at: ! '2016-04-28 16:09:17.608461+00:00',
+        uploaded_by_user: 60494, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 2954}
+-   model: wagtailimages.image
+    pk: 38
+    fields: {collection: 1, title: simbio.png, file: original_images/simbio.png, width: 300,
+        height: 78, created_at: ! '2016-04-28 16:09:18.198151+00:00', uploaded_by_user: 60494,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: 1695}
+-   model: wagtailimages.image
+    pk: 39
+    fields: {collection: 1, title: top-hat.png, file: original_images/top-hat.png,
+        width: 340, height: 88, created_at: ! '2016-04-28 16:09:18.766854+00:00',
+        uploaded_by_user: 60494, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 2207}
+-   model: wagtailimages.image
+    pk: 40
+    fields: {collection: 1, title: webassign.png, file: original_images/webassign.png,
+        width: 340, height: 60, created_at: ! '2016-04-28 16:09:19.409115+00:00',
+        uploaded_by_user: 60494, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 2366}
+-   model: wagtailimages.image
+    pk: 41
+    fields: {collection: 1, title: wiley.png, file: original_images/wiley.png, width: 300,
+        height: 62, created_at: ! '2016-04-28 16:09:20.020269+00:00', uploaded_by_user: 60494,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: 1515}
+-   model: wagtailimages.image
+    pk: 42
+    fields: {collection: 1, title: xyz.png, file: original_images/xyz.png, width: 340,
+        height: 56, created_at: ! '2016-04-28 16:09:20.639245+00:00', uploaded_by_user: 60494,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: 2141}
+-   model: wagtailimages.image
+    pk: 43
+    fields: {collection: 1, title: auburn.png, file: original_images/auburn.png, width: 254,
+        height: 236, created_at: ! '2016-04-28 16:48:32.380003+00:00', uploaded_by_user: 60494,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: 3928}
+-   model: wagtailimages.image
+    pk: 44
+    fields: {collection: 1, title: bccampus.png, file: original_images/bccampus.png,
+        width: 320, height: 116, created_at: ! '2016-04-28 16:48:32.916785+00:00',
+        uploaded_by_user: 60494, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 4068}
+-   model: wagtailimages.image
+    pk: 45
+    fields: {collection: 1, title: cmn.png, file: original_images/cmn.png, width: 300,
+        height: 132, created_at: ! '2016-04-28 16:48:33.563299+00:00', uploaded_by_user: 60494,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: 3436}
+-   model: wagtailimages.image
+    pk: 46
+    fields: {collection: 1, title: georgia.png, file: original_images/georgia.png,
+        width: 340, height: 106, created_at: ! '2016-04-28 16:48:34.163623+00:00',
+        uploaded_by_user: 60494, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 2888}
+-   model: wagtailimages.image
+    pk: 47
+    fields: {collection: 1, title: grcc.png, file: original_images/grcc.png, width: 280,
+        height: 100, created_at: ! '2016-04-28 16:48:34.709156+00:00', uploaded_by_user: 60494,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: 2956}
+-   model: wagtailimages.image
+    pk: 48
+    fields: {collection: 1, title: idaho.png, file: original_images/idaho.png, width: 340,
+        height: 46, created_at: ! '2016-04-28 16:48:35.314830+00:00', uploaded_by_user: 60494,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: 1939}
+-   model: wagtailimages.image
+    pk: 49
+    fields: {collection: 1, title: maricopa.png, file: original_images/maricopa.png,
+        width: 340, height: 74, created_at: ! '2016-04-28 16:48:35.935490+00:00',
+        uploaded_by_user: 60494, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 3112}
+-   model: wagtailimages.image
+    pk: 50
+    fields: {collection: 1, title: oklahoma.png, file: original_images/oklahoma.png,
+        width: 340, height: 44, created_at: ! '2016-04-28 16:48:36.535177+00:00',
+        uploaded_by_user: 60494, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 1853}
+-   model: wagtailimages.image
+    pk: 51
+    fields: {collection: 1, title: osu.png, file: original_images/osu.png, width: 288,
+        height: 194, created_at: ! '2016-04-28 16:48:37.189268+00:00', uploaded_by_user: 60494,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: 2909}
+-   model: wagtailimages.image
+    pk: 52
+    fields: {collection: 1, title: slcc.png, file: original_images/slcc.png, width: 324,
+        height: 120, created_at: ! '2016-04-28 16:48:37.717732+00:00', uploaded_by_user: 60494,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: 4362}
+-   model: wagtailimages.image
+    pk: 53
+    fields: {collection: 1, title: tarrant.png, file: original_images/tarrant.png,
+        width: 252, height: 194, created_at: ! '2016-04-28 16:48:39.188036+00:00',
+        uploaded_by_user: 60494, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 4097}
+-   model: wagtailimages.image
+    pk: 54
+    fields: {collection: 1, title: ugsystem.png, file: original_images/ugsystem.png,
+        width: 198, height: 200, created_at: ! '2016-04-28 16:48:39.784488+00:00',
+        uploaded_by_user: 60494, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 3674}
+-   model: wagtailimages.image
+    pk: 55
+    fields: {collection: 1, title: umass.png, file: original_images/umass.png, width: 340,
+        height: 42, created_at: ! '2016-04-28 16:48:40.324996+00:00', uploaded_by_user: 60494,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: 2075}
+-   model: wagtailimages.image
+    pk: 56
+    fields: {collection: 1, title: utsa.png, file: original_images/utsa.png, width: 246,
+        height: 84, created_at: ! '2016-04-28 16:48:41.110978+00:00', uploaded_by_user: 60494,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: 1462}
+-   model: wagtailimages.image
+    pk: 57
+    fields: {collection: 1, title: vt.png, file: original_images/vt.png, width: 340,
+        height: 58, created_at: ! '2016-04-28 16:48:41.666803+00:00', uploaded_by_user: 60494,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: 2449}
+-   model: wagtailimages.image
+    pk: 58
+    fields: {collection: 1, title: Product box - Books image, file: original_images/Books.jpg,
+        width: 462, height: 236, created_at: ! '2016-05-27 18:47:38.769272+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 52550}
+-   model: wagtailimages.image
+    pk: 59
+    fields: {collection: 1, title: Product box - Concept Coach student image, file: original_images/Concept_Coach.jpg,
+        width: 746, height: 484, created_at: ! '2016-05-27 18:48:11.927968+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 32478}
+-   model: wagtailimages.image
+    pk: 60
+    fields: {collection: 1, title: Product box - CNX graphic, file: original_images/CNX.jpg,
+        width: 1038, height: 578, created_at: ! '2016-05-27 18:48:46.203044+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 52764}
+-   model: wagtailimages.image
+    pk: 61
+    fields: {collection: 1, title: Concept Coach logo, file: original_images/OpenStax_Concept_Coach_logo.png,
+        width: 933, height: 136, created_at: ! '2016-05-27 18:55:23.440427+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 17892}
+-   model: wagtailimages.image
+    pk: 62
+    fields: {collection: 1, title: Susan Badger, file: original_images/s-badger.png,
+        width: 170, height: 170, created_at: ! '2016-06-06 18:49:50.834979+00:00',
+        uploaded_by_user: 60490, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 63
+    fields: {collection: 1, title: C. Sidney Burrus, file: original_images/s-burrus.png,
+        width: 170, height: 170, created_at: ! '2016-06-06 18:50:41.488111+00:00',
+        uploaded_by_user: 60490, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 64
+    fields: {collection: 1, title: Eric C. Johnson, file: original_images/e-johnson.png,
+        width: 170, height: 170, created_at: ! '2016-06-06 18:51:22.515789+00:00',
+        uploaded_by_user: 60490, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 65
+    fields: {collection: 1, title: Robert Maxfield, file: original_images/r-maxfield.png,
+        width: 170, height: 170, created_at: ! '2016-06-06 18:51:55.180662+00:00',
+        uploaded_by_user: 60490, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 66
+    fields: {collection: 1, title: Stephan M. Schwanauer, file: original_images/s-schwanauer.png,
+        width: 170, height: 170, created_at: ! '2016-06-06 18:52:26.397685+00:00',
+        uploaded_by_user: 60490, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 67
+    fields: {collection: 1, title: William N. Sick, file: original_images/w-sick.png,
+        width: 170, height: 170, created_at: ! '2016-06-06 18:52:56.997436+00:00',
+        uploaded_by_user: 60490, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 71
+    fields: {collection: 1, title: openstax-releases-new-book, file: original_images/news-story-2016-05-26.png,
+        width: 1400, height: 600, created_at: ! '2016-06-06 20:49:31.715586+00:00',
+        uploaded_by_user: 60512, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 72
+    fields: {collection: 1, title: Concept Coach Students, file: original_images/CCstudentscrop.jpg,
+        width: 3480, height: 3850, created_at: ! '2016-06-23 20:00:02.215672+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 1290785}
+-   model: wagtailimages.image
+    pk: 73
+    fields: {collection: 1, title: Alan Cooke, file: original_images/Alan.png, width: 674,
+        height: 450, created_at: ! '2016-06-29 21:36:26.837326+00:00', uploaded_by_user: 60492,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: 89228}
+-   model: wagtailimages.image
+    pk: 74
+    fields: {collection: 1, title: Alana Lemay-Gibson, file: original_images/Alana.png,
+        width: 674, height: 450, created_at: ! '2016-06-29 21:36:28.207861+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 90709}
+-   model: wagtailimages.image
+    pk: 75
+    fields: {collection: 1, title: Alina Slavik, file: original_images/Alina.png,
+        width: 674, height: 450, created_at: ! '2016-06-29 21:36:29.177298+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 69910}
+-   model: wagtailimages.image
+    pk: 76
+    fields: {collection: 1, title: Amanda Shih, file: original_images/Amanda.png,
+        width: 674, height: 450, created_at: ! '2016-06-29 21:36:30.661570+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 273808}
+-   model: wagtailimages.image
+    pk: 78
+    fields: {collection: 1, title: Beth Cassidy, file: original_images/Beth.png, width: 674,
+        height: 450, created_at: ! '2016-06-29 21:36:32.203617+00:00', uploaded_by_user: 60492,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: 86541}
+-   model: wagtailimages.image
+    pk: 79
+    fields: {collection: 1, title: Britney Blodget, file: original_images/Britney.png,
+        width: 674, height: 450, created_at: ! '2016-06-29 21:36:33.043235+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 98302}
+-   model: wagtailimages.image
+    pk: 80
+    fields: {collection: 1, title: Britt Weinstein, file: original_images/Britt.png,
+        width: 674, height: 450, created_at: ! '2016-06-29 21:36:33.805671+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 73113}
+-   model: wagtailimages.image
+    pk: 81
+    fields: {collection: 1, title: Bruce Pike, file: original_images/Bruce.png, width: 674,
+        height: 450, created_at: ! '2016-06-29 21:36:34.625155+00:00', uploaded_by_user: 60492,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: 76910}
+-   model: wagtailimages.image
+    pk: 82
+    fields: {collection: 1, title: Chris Houston, file: original_images/Chris-H.png,
+        width: 674, height: 450, created_at: ! '2016-06-29 21:36:35.385261+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 75006}
+-   model: wagtailimages.image
+    pk: 83
+    fields: {collection: 1, title: Chris Nuber, file: original_images/Chris-N.png,
+        width: 674, height: 450, created_at: ! '2016-06-29 21:36:36.143824+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 85062}
+-   model: wagtailimages.image
+    pk: 84
+    fields: {collection: 1, title: Courtney Raymond, file: original_images/Courtney.png,
+        width: 674, height: 450, created_at: ! '2016-06-29 21:36:37.283887+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 267460}
+-   model: wagtailimages.image
+    pk: 85
+    fields: {collection: 1, title: Dani Nicholson, file: original_images/Dani.png,
+        width: 674, height: 450, created_at: ! '2016-06-29 21:36:38.166631+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 76623}
+-   model: wagtailimages.image
+    pk: 86
+    fields: {collection: 1, title: Daniel Williamson, file: original_images/Daniel.png,
+        width: 674, height: 450, created_at: ! '2016-06-29 21:36:38.936962+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 76280}
+-   model: wagtailimages.image
+    pk: 87
+    fields: {collection: 1, title: Dante Soares, file: original_images/Dante.png,
+        width: 674, height: 450, created_at: ! '2016-06-29 21:36:39.775574+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 73970}
+-   model: wagtailimages.image
+    pk: 88
+    fields: {collection: 1, title: David Harris, file: original_images/David.png,
+        width: 674, height: 450, created_at: ! '2016-06-29 21:36:40.524769+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 70925}
+-   model: wagtailimages.image
+    pk: 89
+    fields: {collection: 1, title: Dennis Williamson, file: original_images/Dennis.png,
+        width: 674, height: 450, created_at: ! '2016-06-29 21:36:41.805079+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 325530}
+-   model: wagtailimages.image
+    pk: 90
+    fields: {collection: 1, title: Denver Greene, file: original_images/Denver.png,
+        width: 674, height: 450, created_at: ! '2016-06-29 21:36:42.525556+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 71078}
+-   model: wagtailimages.image
+    pk: 91
+    fields: {collection: 1, title: Derek Ford, file: original_images/Derek.png, width: 674,
+        height: 450, created_at: ! '2016-06-29 21:36:43.447863+00:00', uploaded_by_user: 60492,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: 92858}
+-   model: wagtailimages.image
+    pk: 92
+    fields: {collection: 1, title: Ed Woodward, file: original_images/Ed.png, width: 674,
+        height: 450, created_at: ! '2016-06-29 21:36:44.091648+00:00', uploaded_by_user: 60492,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: 80506}
+-   model: wagtailimages.image
+    pk: 93
+    fields: {collection: 1, title: Fred Lindner, file: original_images/Fred.png, width: 674,
+        height: 450, created_at: ! '2016-06-29 21:36:44.753180+00:00', uploaded_by_user: 60492,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: 73262}
+-   model: wagtailimages.image
+    pk: 94
+    fields: {collection: 1, title: Greg Fitch, file: original_images/Greg.png, width: 674,
+        height: 450, created_at: ! '2016-06-29 21:36:45.453290+00:00', uploaded_by_user: 60492,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: 62330}
+-   model: wagtailimages.image
+    pk: 95
+    fields: {collection: 1, title: Heather Seeba, file: original_images/Heather.png,
+        width: 674, height: 450, created_at: ! '2016-06-29 21:36:46.398034+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 266401}
+-   model: wagtailimages.image
+    pk: 96
+    fields: {collection: 1, title: Helene McCarron, file: original_images/Helene.png,
+        width: 674, height: 450, created_at: ! '2016-06-29 21:36:47.086029+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 75729}
+-   model: wagtailimages.image
+    pk: 97
+    fields: {collection: 1, title: Jason Holmes, file: original_images/Jason.png,
+        width: 674, height: 450, created_at: ! '2016-06-29 21:36:48.027830+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 291528}
+-   model: wagtailimages.image
+    pk: 98
+    fields: {collection: 1, title: Jeff DiGiovanni, file: original_images/Jeff.png,
+        width: 674, height: 450, created_at: ! '2016-06-29 21:36:49.552593+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 69691}
+-   model: wagtailimages.image
+    pk: 100
+    fields: {collection: 1, title: Kajal Parekh, file: original_images/Kajal.png,
+        width: 674, height: 450, created_at: ! '2016-06-29 21:36:51.953327+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 82921}
+-   model: wagtailimages.image
+    pk: 101
+    fields: {collection: 1, title: Kathi Fletcher, file: original_images/Kathi.png,
+        width: 674, height: 450, created_at: ! '2016-06-29 21:36:52.802774+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 79842}
+-   model: wagtailimages.image
+    pk: 102
+    fields: {collection: 1, title: Kean Tonetti, file: original_images/Kean.png, width: 674,
+        height: 450, created_at: ! '2016-06-29 21:36:54.030772+00:00', uploaded_by_user: 60492,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: 251823}
+-   model: wagtailimages.image
+    pk: 103
+    fields: {collection: 1, title: Kerwin So, file: original_images/Kerwin.png, width: 674,
+        height: 450, created_at: ! '2016-06-29 21:36:54.741481+00:00', uploaded_by_user: 60492,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: 72116}
+-   model: wagtailimages.image
+    pk: 104
+    fields: {collection: 1, title: Kevin Burleigh, file: original_images/Kevin.png,
+        width: 674, height: 450, created_at: ! '2016-06-29 21:36:55.441984+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 69668}
+-   model: wagtailimages.image
+    pk: 105
+    fields: {collection: 1, title: Larissa Chu, file: original_images/Larissa.png,
+        width: 674, height: 450, created_at: ! '2016-06-29 21:36:56.408283+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 91995}
+-   model: wagtailimages.image
+    pk: 106
+    fields: {collection: 1, title: Linda Pallares, file: original_images/Linda.png,
+        width: 674, height: 450, created_at: ! '2016-06-29 21:36:57.119843+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 80833}
+-   model: wagtailimages.image
+    pk: 107
+    fields: {collection: 1, title: Maher El Aridi, file: original_images/Maher.png,
+        width: 674, height: 450, created_at: ! '2016-06-29 21:36:58.153468+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 236259}
+-   model: wagtailimages.image
+    pk: 109
+    fields: {collection: 1, title: Micaela McGlone, file: original_images/Micaela.png,
+        width: 674, height: 450, created_at: ! '2016-06-29 21:36:59.578143+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 74099}
+-   model: wagtailimages.image
+    pk: 110
+    fields: {collection: 1, title: Michael Harrison, file: original_images/Michael.png,
+        width: 674, height: 450, created_at: ! '2016-06-29 21:37:00.255779+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 69764}
+-   model: wagtailimages.image
+    pk: 112
+    fields: {collection: 1, title: Nicole Finkbeiner, file: original_images/Nicole.png,
+        width: 674, height: 450, created_at: ! '2016-06-29 21:37:01.731806+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 67733}
+-   model: wagtailimages.image
+    pk: 113
+    fields: {collection: 1, title: Norm Woody, file: original_images/Norm.png, width: 674,
+        height: 450, created_at: ! '2016-06-29 21:37:02.487526+00:00', uploaded_by_user: 60492,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: 93836}
+-   model: wagtailimages.image
+    pk: 114
+    fields: {collection: 1, title: Phil Grimaldi, file: original_images/Phil-G.png,
+        width: 674, height: 450, created_at: ! '2016-06-29 21:37:03.222701+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 72100}
+-   model: wagtailimages.image
+    pk: 115
+    fields: {collection: 1, title: Phil Schatz, file: original_images/Phil-S.png,
+        width: 674, height: 450, created_at: ! '2016-06-29 21:37:04.038382+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 74097}
+-   model: wagtailimages.image
+    pk: 116
+    fields: {collection: 1, title: Rich Hart, file: original_images/Rich.png, width: 674,
+        height: 450, created_at: ! '2016-06-29 21:37:04.737985+00:00', uploaded_by_user: 60492,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: 67371}
+-   model: wagtailimages.image
+    pk: 117
+    fields: {collection: 1, title: Richard Baraniuk, file: original_images/Richard.png,
+        width: 674, height: 450, created_at: ! '2016-06-29 21:37:05.442240+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 66221}
+-   model: wagtailimages.image
+    pk: 118
+    fields: {collection: 1, title: Robert Newell, file: original_images/Robert.png,
+        width: 674, height: 450, created_at: ! '2016-06-29 21:37:06.143635+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 67844}
+-   model: wagtailimages.image
+    pk: 119
+    fields: {collection: 1, title: Ross Reedstrom, file: original_images/Ross.png,
+        width: 674, height: 450, created_at: ! '2016-06-29 21:37:06.834944+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 68152}
+-   model: wagtailimages.image
+    pk: 120
+    fields: {collection: 1, title: Roy Johnson, file: original_images/Roy.png, width: 674,
+        height: 450, created_at: ! '2016-06-29 21:37:07.528108+00:00', uploaded_by_user: 60492,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: 58671}
+-   model: wagtailimages.image
+    pk: 121
+    fields: {collection: 1, title: Ryan Stickney, file: original_images/Ryan.png,
+        width: 674, height: 450, created_at: ! '2016-06-29 21:37:08.657990+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 258805}
+-   model: wagtailimages.image
+    pk: 122
+    fields: {collection: 1, title: Tim Reiland, file: original_images/Tim.png, width: 674,
+        height: 450, created_at: ! '2016-06-29 21:37:10.216333+00:00', uploaded_by_user: 60492,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: 72058}
+-   model: wagtailimages.image
+    pk: 123
+    fields: {collection: 1, title: Tory Watterson, file: original_images/Tory.png,
+        width: 674, height: 450, created_at: ! '2016-06-29 21:37:11.484274+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 88073}
+-   model: wagtailimages.image
+    pk: 124
+    fields: {collection: 1, title: Zach Roehr, file: original_images/Zach.png, width: 674,
+        height: 450, created_at: ! '2016-06-29 21:37:12.486451+00:00', uploaded_by_user: 60492,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: 69917}
+-   model: wagtailimages.image
+    pk: 125
+    fields: {collection: 1, title: Impact - Professor Wolchonok, file: original_images/ProfWolchonok.jpg,
+        width: 864, height: 1296, created_at: ! '2016-07-07 20:42:51.032860+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 361458}
+-   model: wagtailimages.image
+    pk: 126
+    fields: {collection: 1, title: Laura and John Arnold Foundation, file: original_images/ljaf_logo.png,
+        width: 480, height: 194, created_at: ! '2016-08-30 15:03:47.336913+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 127
+    fields: {collection: 1, title: Bill and Melinda Gates Foundation, file: original_images/gates-logo.jpg,
+        width: 2100, height: 420, created_at: ! '2016-08-30 15:04:07.472132+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 128
+    fields: {collection: 1, title: William and Flora Hewlett Foundation, file: original_images/Hewlett_Logo_RGB_full.jpeg,
+        width: 585, height: 226, created_at: ! '2016-08-30 20:12:55.930198+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 27645}
+-   model: wagtailimages.image
+    pk: 129
+    fields: {collection: 1, title: Calvin K. Kajanjian Economics Foundation, file: original_images/kazanjian-34ff555f2430202c73db70a6da768e23.png,
+        width: 241, height: 73, created_at: ! '2016-08-30 20:14:40.116129+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 7298}
+-   model: wagtailimages.image
+    pk: 130
+    fields: {collection: 1, title: Maxfield Foundation, file: original_images/maxfield_logo_v1_Color-d308863e7fe13d7fc320cd5659945e48.png,
+        width: 258, height: 87, created_at: ! '2016-08-30 20:19:42.250389+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 131
+    fields: {collection: 1, title: Bill & Stephanie Sick Fund, file: original_images/Sick_Fund_logo_copy.png,
+        width: 360, height: 216, created_at: ! '2016-08-30 20:21:13.672600+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 132
+    fields: {collection: 1, title: Michelson 20MM Foundation, file: original_images/Michelson20MMLogo-Black.jpg,
+        width: 800, height: 618, created_at: ! '2016-08-30 20:22:09.401384+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 133
+    fields: {collection: 1, title: Rice University, file: original_images/RiceLogo.png,
+        width: 640, height: 279, created_at: ! '2016-08-30 20:24:13.750384+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 134
+    fields: {collection: 1, title: Jemel Agulto, file: original_images/Jemel.png,
+        width: 674, height: 450, created_at: ! '2016-08-31 15:50:13.334526+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 135
+    fields: {collection: 1, title: Mary Allen, file: original_images/Mary.png, width: 674,
+        height: 450, created_at: ! '2016-08-31 15:50:41.016791+00:00', uploaded_by_user: 60492,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: null}
+-   model: wagtailimages.image
+    pk: 136
+    fields: {collection: 1, title: Mike Arbelaez, file: original_images/Mike.png,
+        width: 674, height: 450, created_at: ! '2016-08-31 15:51:13.523084+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 137
+    fields: {collection: 1, title: Jemel A, file: original_images/Jemel.png, width: 674,
+        height: 450, created_at: ! '2016-08-31 20:13:48.597941+00:00', uploaded_by_user: 60492,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: null}
+-   model: wagtailimages.image
+    pk: 138
+    fields: {collection: 1, title: Mary A, file: original_images/Mary.png, width: 674,
+        height: 450, created_at: ! '2016-08-31 20:14:15.412137+00:00', uploaded_by_user: 60492,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: null}
+-   model: wagtailimages.image
+    pk: 139
+    fields: {collection: 1, title: Mike A, file: original_images/Mike.png, width: 674,
+        height: 450, created_at: ! '2016-08-31 20:14:47.533419+00:00', uploaded_by_user: 60492,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: null}
+-   model: wagtailimages.image
+    pk: 140
+    fields: {collection: 1, title: Alamo Colleges, file: original_images/Alamo_Colleges_gray.png,
+        width: 340, height: 117, created_at: ! '2016-09-07 17:11:03.538048+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 141
+    fields: {collection: 1, title: Northern Essex Community College, file: original_images/Northern_Essex_Community_College_gray.png,
+        width: 340, height: 100, created_at: ! '2016-09-07 17:11:32.910419+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 10694}
+-   model: wagtailimages.image
+    pk: 142
+    fields: {collection: 1, title: Washington State University, file: original_images/Washington_State_University_gray.png,
+        width: 340, height: 95, created_at: ! '2016-09-07 17:11:33.503775+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 10599}
+-   model: wagtailimages.image
+    pk: 143
+    fields: {collection: 1, title: College of the Canyons, file: original_images/College_of_the_Canyons_gray.png,
+        width: 340, height: 162, created_at: ! '2016-09-07 17:11:34.042419+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 7480}
+-   model: wagtailimages.image
+    pk: 144
+    fields: {collection: 1, title: Lansing Community College, file: original_images/Lansing_Community_College_gray.png,
+        width: 339, height: 130, created_at: ! '2016-09-07 17:11:34.669260+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 14263}
+-   model: wagtailimages.image
+    pk: 145
+    fields: {collection: 1, title: Pasadena City College, file: original_images/Pasadena_City_College_gray.png,
+        width: 285, height: 190, created_at: ! '2016-09-07 17:11:35.192067+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 9942}
+-   model: wagtailimages.image
+    pk: 146
+    fields: {collection: 1, title: South Florida State College, file: original_images/South_Florida_State_College_gray.png,
+        width: 340, height: 105, created_at: ! '2016-09-07 17:11:35.727840+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 11405}
+-   model: wagtailimages.image
+    pk: 147
+    fields: {collection: 1, title: Tulsa Community College, file: original_images/Tulsa_Community_College_gray.png,
+        width: 340, height: 119, created_at: ! '2016-09-07 17:11:36.252892+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 9694}
+-   model: wagtailimages.image
+    pk: 148
+    fields: {collection: 1, title: University of Connecticut, file: original_images/UCONN_gray.png,
+        width: 340, height: 71, created_at: ! '2016-09-07 17:11:37.034073+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 3538}
+-   model: wagtailimages.image
+    pk: 149
+    fields: {collection: 1, title: University of Arizona, file: original_images/University_of_Arizona_gray.png,
+        width: 340, height: 81, created_at: ! '2016-09-07 17:11:37.628811+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 9996}
+-   model: wagtailimages.image
+    pk: 150
+    fields: {collection: 1, title: Utah State University, file: original_images/Utah_State_gray.png,
+        width: 340, height: 32, created_at: ! '2016-09-07 17:11:38.151632+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 4526}
+-   model: wagtailimages.image
+    pk: 151
+    fields: {collection: 1, title: Auburn, file: original_images/auburn.png, width: 254,
+        height: 236, created_at: ! '2016-09-07 17:21:50.575460+00:00', uploaded_by_user: 60492,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: 3832}
+-   model: wagtailimages.image
+    pk: 152
+    fields: {collection: 1, title: BC Campus, file: original_images/bccampus.png,
+        width: 320, height: 116, created_at: ! '2016-09-07 17:21:51.136608+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 3980}
+-   model: wagtailimages.image
+    pk: 153
+    fields: {collection: 1, title: Central New Mexico Community College, file: original_images/Central_New_Mexico_Community_College.png,
+        width: 300, height: 132, created_at: ! '2016-09-07 17:21:51.715291+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 3436}
+-   model: wagtailimages.image
+    pk: 154
+    fields: {collection: 1, title: Grand Rapids Community College, file: original_images/Grand_Rapids_Community_College.png,
+        width: 280, height: 100, created_at: ! '2016-09-07 17:21:52.256021+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 2909}
+-   model: wagtailimages.image
+    pk: 155
+    fields: {collection: 1, title: Maricopa Community Colleges, file: original_images/Maricopa_Community_Colleges.png,
+        width: 340, height: 74, created_at: ! '2016-09-07 17:21:52.830503+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 3051}
+-   model: wagtailimages.image
+    pk: 156
+    fields: {collection: 1, title: Ohio State, file: original_images/Ohio_State.png,
+        width: 288, height: 194, created_at: ! '2016-09-07 17:21:53.371569+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 2909}
+-   model: wagtailimages.image
+    pk: 157
+    fields: {collection: 1, title: Salt Lake Community College, file: original_images/Salt_Lake_Community_College.png,
+        width: 324, height: 120, created_at: ! '2016-09-07 17:21:54.019555+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 4299}
+-   model: wagtailimages.image
+    pk: 158
+    fields: {collection: 1, title: Tarrant County College, file: original_images/Tarrant_County_College.png,
+        width: 252, height: 194, created_at: ! '2016-09-07 17:21:54.698851+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 3994}
+-   model: wagtailimages.image
+    pk: 159
+    fields: {collection: 1, title: UMass Amherst, file: original_images/UMass_Amherst.png,
+        width: 340, height: 42, created_at: ! '2016-09-07 17:21:55.242790+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 2075}
+-   model: wagtailimages.image
+    pk: 160
+    fields: {collection: 1, title: University of Georgia System, file: original_images/University_of_Georgia_System.png,
+        width: 198, height: 200, created_at: ! '2016-09-07 17:21:55.795192+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 3532}
+-   model: wagtailimages.image
+    pk: 161
+    fields: {collection: 1, title: University of Georgia, file: original_images/University_of_Georgia.png,
+        width: 340, height: 106, created_at: ! '2016-09-07 17:21:56.352737+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 2810}
+-   model: wagtailimages.image
+    pk: 162
+    fields: {collection: 1, title: University of Idaho, file: original_images/University_of_Idaho.png,
+        width: 340, height: 46, created_at: ! '2016-09-07 17:21:56.926480+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 1910}
+-   model: wagtailimages.image
+    pk: 163
+    fields: {collection: 1, title: University of Oklahoma, file: original_images/University_of_Oklahoma.png,
+        width: 340, height: 44, created_at: ! '2016-09-07 17:21:57.485972+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 1788}
+-   model: wagtailimages.image
+    pk: 164
+    fields: {collection: 1, title: UTSA, file: original_images/utsa.png, width: 246,
+        height: 84, created_at: ! '2016-09-07 17:21:58.028232+00:00', uploaded_by_user: 60492,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: 1427}
+-   model: wagtailimages.image
+    pk: 165
+    fields: {collection: 1, title: Virginia Tech, file: original_images/Virginia_Tech.png,
+        width: 340, height: 58, created_at: ! '2016-09-07 17:21:58.579922+00:00',
+        uploaded_by_user: 60492, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 2415}
+-   model: wagtailimages.image
+    pk: 166
+    fields: {collection: 1, title: w-n-sick.png, file: original_images/w-n-sick.png,
+        width: 340, height: 340, created_at: ! '2016-09-13 17:57:15.788153+00:00',
+        uploaded_by_user: 60493, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 167
+    fields: {collection: 1, title: r-maxfield, file: original_images/r-maxfield.png,
+        width: 340, height: 340, created_at: ! '2016-09-13 18:04:29.982879+00:00',
+        uploaded_by_user: 60493, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 168
+    fields: {collection: 1, title: e-johnson, file: original_images/e-c-johnson.png,
+        width: 340, height: 340, created_at: ! '2016-09-13 18:04:55.310596+00:00',
+        uploaded_by_user: 60493, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 169
+    fields: {collection: 1, title: r-maxfield, file: original_images/r-maxfield.png,
+        width: 340, height: 340, created_at: ! '2016-09-13 18:05:13.252228+00:00',
+        uploaded_by_user: 60493, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 170
+    fields: {collection: 1, title: r-maxfield, file: original_images/r-maxfield_1.png,
+        width: 340, height: 340, created_at: ! '2016-09-13 18:05:47.834736+00:00',
+        uploaded_by_user: 60493, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 171
+    fields: {collection: 1, title: s-burrus, file: original_images/c-s-burrus.png,
+        width: 340, height: 340, created_at: ! '2016-09-13 18:06:07.233454+00:00',
+        uploaded_by_user: 60493, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 172
+    fields: {collection: 1, title: s-badger, file: original_images/s-badger.png, width: 340,
+        height: 340, created_at: ! '2016-09-13 18:06:23.827753+00:00', uploaded_by_user: 60493,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: null}
+-   model: wagtailimages.image
+    pk: 173
+    fields: {collection: 1, title: s-badger, file: original_images/s-badger_1.png,
+        width: 340, height: 340, created_at: ! '2016-09-13 18:06:54.943014+00:00',
+        uploaded_by_user: 60493, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 20595}
+-   model: wagtailimages.image
+    pk: 175
+    fields: {collection: 1, title: Britt, file: original_images/DSC_6509.jpg, width: 5704,
+        height: 3700, created_at: ! '2016-10-14 15:24:52.332916+00:00', uploaded_by_user: 60533,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: null}
+-   model: wagtailimages.image
+    pk: 176
+    fields: {collection: 1, title: Mayu, file: original_images/DSC_3232.jpg, width: 2280,
+        height: 1080, created_at: ! '2016-10-14 19:35:34.994944+00:00', uploaded_by_user: 60533,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: null}
+-   model: wagtailimages.image
+    pk: 177
+    fields: {collection: 1, title: OX Infographic 2016, file: original_images/Infographic---Complete.jpg,
+        width: 2448, height: 6740, created_at: ! '2016-10-14 19:41:51.905197+00:00',
+        uploaded_by_user: 60533, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 178
+    fields: {collection: 1, title: Rich B., file: original_images/richard.original.jpg,
+        width: 1650, height: 1100, created_at: ! '2016-10-14 19:43:25.364523+00:00',
+        uploaded_by_user: 60533, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 179
+    fields: {collection: 1, title: OX Infographics 2016 - Section 3, file: original_images/Infographic---Section-3.jpg,
+        width: 2448, height: 1684, created_at: ! '2016-10-14 19:45:09.235789+00:00',
+        uploaded_by_user: 60533, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 180
+    fields: {collection: 1, title: OER Commons, file: original_images/test.original.jpg,
+        width: 1104, height: 653, created_at: ! '2016-10-14 19:52:31.158383+00:00',
+        uploaded_by_user: 60533, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 181
+    fields: {collection: 1, title: OX Inforgraphic 2016 - Section 4, file: original_images/Infographic---Section-4.jpg,
+        width: 2448, height: 1760, created_at: ! '2016-10-14 19:54:44.455555+00:00',
+        uploaded_by_user: 60533, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 182
+    fields: {collection: 1, title: OX Textbooks, file: original_images/Turning_textbook_highlighting_into_time_well-sp.original.jpg,
+        width: 1650, height: 955, created_at: ! '2016-10-14 20:00:11.207234+00:00',
+        uploaded_by_user: 60533, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 183
+    fields: {collection: 1, title: Phil G., file: original_images/DSC_7544.jpg, width: 3303,
+        height: 2205, created_at: ! '2016-10-14 20:02:28.645804+00:00', uploaded_by_user: 60533,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: null}
+-   model: wagtailimages.image
+    pk: 184
+    fields: {collection: 1, title: "College Physics for AP\xAE Courses 3D", file: original_images/AP-Physics-3D.png,
+        width: 1000, height: 1000, created_at: ! '2016-10-14 20:09:20.768702+00:00',
+        uploaded_by_user: 60533, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 185
+    fields: {collection: 1, title: Chegg Study, file: original_images/logos_0002_CheggStudy.png,
+        width: 790, height: 156, created_at: ! '2016-10-28 17:41:49.567274+00:00',
+        uploaded_by_user: 60527, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 18484}
+-   model: wagtailimages.image
+    pk: 186
+    fields: {collection: 1, title: Chegg Tutors, file: original_images/logos_0001_cheggTutors.png,
+        width: 790, height: 156, created_at: ! '2016-10-28 17:42:17.909837+00:00',
+        uploaded_by_user: 60527, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 16441}
+-   model: wagtailimages.image
+    pk: 187
+    fields: {collection: 1, title: Dani blog, file: original_images/DSC_1229.jpg,
+        width: 5048, height: 3370, created_at: ! '2017-02-07 16:50:56.230048+00:00',
+        uploaded_by_user: 60560, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 188
+    fields: {collection: 1, title: Connect for Education, file: original_images/ConnectforEducation.png,
+        width: 460, height: 120, created_at: ! '2017-03-09 16:50:51.844315+00:00',
+        uploaded_by_user: 60560, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 189
+    fields: {collection: 1, title: Connect for Education grayscale, file: original_images/connect-for-education.png,
+        width: 340, height: 111, created_at: ! '2017-03-09 16:51:19.198786+00:00',
+        uploaded_by_user: 60560, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 190
+    fields: {collection: 1, title: eMath logo, file: original_images/emath.png, width: 300,
+        height: 128, created_at: ! '2017-03-09 16:55:25.588138+00:00', uploaded_by_user: 60560,
+        focal_point_x: null, focal_point_y: null, focal_point_width: null, focal_point_height: null,
+        file_size: 6013}
+-   model: wagtailimages.image
+    pk: 191
+    fields: {collection: 1, title: eMath grayscale, file: original_images/emath-1_gray.png,
+        width: 300, height: 123, created_at: ! '2017-03-09 16:55:46.665070+00:00',
+        uploaded_by_user: 60560, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 1729}
+-   model: wagtailimages.image
+    pk: 192
+    fields: {collection: 1, title: OpenStax Tutor logo, file: original_images/OXT_horizontal_460px.png,
+        width: 1917, height: 332, created_at: ! '2017-06-14 19:19:43.566926+00:00',
+        uploaded_by_user: 60560, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: 62255}
+-   model: wagtailimages.image
+    pk: 193
+    fields: {collection: 1, title: OpenStax Tutor gray, file: original_images/OXT_grayscale_460px.png,
+        width: 1917, height: 332, created_at: ! '2017-06-14 19:40:53.025329+00:00',
+        uploaded_by_user: 60560, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 194
+    fields: {collection: 1, title: 'Tutor Marketing: Dashboard', file: original_images/1-dashboard.png,
+        width: 2524, height: 1314, created_at: ! '2017-09-27 18:53:48.020942+00:00',
+        uploaded_by_user: 60554, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 195
+    fields: {collection: 1, title: 'Tutor marketing: clock', file: original_images/2-clock.png,
+        width: 2524, height: 1290, created_at: ! '2017-09-27 18:55:23.013394+00:00',
+        uploaded_by_user: 60554, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.image
+    pk: 196
+    fields: {collection: 1, title: 'Tutor marketing: Past Work', file: original_images/3-past-work.png,
+        width: 2526, height: 1302, created_at: ! '2017-09-27 18:56:03.635336+00:00',
+        uploaded_by_user: 60554, focal_point_x: null, focal_point_y: null, focal_point_width: null,
+        focal_point_height: null, file_size: null}
+-   model: wagtailimages.filter
+    pk: 1
+    fields: {spec: max-165x165}
+-   model: wagtailimages.filter
+    pk: 2
+    fields: {spec: original}
+-   model: wagtailimages.filter
+    pk: 3
+    fields: {spec: max-800x600}
+-   model: wagtailimages.filter
+    pk: 4
+    fields: {spec: width-800}
+-   model: wagtailimages.rendition
+    pk: 13
+    fields: {filter_spec: max-165x165, file: images/comp_2.max-165x165_tQlTrOj.jpg,
+        width: 155, height: 165, focal_point_key: '', image: 1}
+-   model: wagtailimages.rendition
+    pk: 14
+    fields: {filter_spec: max-165x165, file: images/Courseweaver.max-165x165_66ItVag.png,
+        width: 165, height: 43, focal_point_key: '', image: 2}
+-   model: wagtailimages.rendition
+    pk: 15
+    fields: {filter_spec: max-165x165, file: images/ExpertTA.max-165x165_8HEyZw5.png,
+        width: 165, height: 43, focal_point_key: '', image: 3}
+-   model: wagtailimages.rendition
+    pk: 16
+    fields: {filter_spec: max-165x165, file: images/Lrnr.max-165x165_wJi1lcc.png,
+        width: 165, height: 43, focal_point_key: '', image: 4}
+-   model: wagtailimages.rendition
+    pk: 17
+    fields: {filter_spec: max-165x165, file: images/MemoryScience.max-165x165_msm0iej.png,
+        width: 165, height: 43, focal_point_key: '', image: 5}
+-   model: wagtailimages.rendition
+    pk: 18
+    fields: {filter_spec: max-165x165, file: images/Odigia.max-165x165_WYZwbiH.png,
+        width: 165, height: 43, focal_point_key: '', image: 6}
+-   model: wagtailimages.rendition
+    pk: 19
+    fields: {filter_spec: max-165x165, file: images/Sapling.max-165x165_7qMfghD.png,
+        width: 165, height: 43, focal_point_key: '', image: 7}
+-   model: wagtailimages.rendition
+    pk: 20
+    fields: {filter_spec: max-165x165, file: images/TopHat.max-165x165_308qqyf.png,
+        width: 165, height: 43, focal_point_key: '', image: 8}
+-   model: wagtailimages.rendition
+    pk: 21
+    fields: {filter_spec: max-165x165, file: images/WebAssign.max-165x165_U3rUtga.png,
+        width: 165, height: 43, focal_point_key: '', image: 9}
+-   model: wagtailimages.rendition
+    pk: 22
+    fields: {filter_spec: max-165x165, file: images/Wiley.max-165x165_PfyRwLc.png,
+        width: 165, height: 43, focal_point_key: '', image: 10}
+-   model: wagtailimages.rendition
+    pk: 23
+    fields: {filter_spec: max-165x165, file: images/XYZHomework.max-165x165_0s3VNqz.png,
+        width: 165, height: 43, focal_point_key: '', image: 11}
+-   model: wagtailimages.rendition
+    pk: 24
+    fields: {filter_spec: max-165x165, file: images/ConnectforEducation.max-165x165_mq6KWy0.png,
+        width: 165, height: 43, focal_point_key: '', image: 12}
+-   model: wagtailimages.rendition
+    pk: 25
+    fields: {filter_spec: max-165x165, file: images/logo-SimBio.max-165x165.png, width: 165,
+        height: 43, focal_point_key: '', image: 13}
+-   model: wagtailimages.rendition
+    pk: 26
+    fields: {filter_spec: max-165x165, file: images/logo-Junction.max-165x165.png,
+        width: 165, height: 31, focal_point_key: '', image: 14}
+-   model: wagtailimages.rendition
+    pk: 27
+    fields: {filter_spec: original, file: images/Courseweaver.original.png, width: 460,
+        height: 120, focal_point_key: '', image: 2}
+-   model: wagtailimages.rendition
+    pk: 28
+    fields: {filter_spec: max-800x600, file: images/Courseweaver.max-800x600.png,
+        width: 460, height: 120, focal_point_key: '', image: 2}
+-   model: wagtailimages.rendition
+    pk: 29
+    fields: {filter_spec: original, file: images/logo-Junction.original.png, width: 600,
+        height: 115, focal_point_key: '', image: 14}
+-   model: wagtailimages.rendition
+    pk: 30
+    fields: {filter_spec: max-800x600, file: images/logo-Junction.max-800x600.png,
+        width: 600, height: 115, focal_point_key: '', image: 14}
+-   model: wagtailimages.rendition
+    pk: 31
+    fields: {filter_spec: original, file: images/comp_2.original.jpg, width: 218,
+        height: 231, focal_point_key: '', image: 1}
+-   model: wagtailimages.rendition
+    pk: 32
+    fields: {filter_spec: max-800x600, file: images/comp_2.max-800x600.jpg, width: 218,
+        height: 231, focal_point_key: '', image: 1}
+-   model: wagtailimages.rendition
+    pk: 33
+    fields: {filter_spec: max-165x165, file: images/sapling.max-165x165.png, width: 165,
+        height: 32, focal_point_key: '', image: 15}
+-   model: wagtailimages.rendition
+    pk: 34
+    fields: {filter_spec: max-165x165, file: images/webassign.max-165x165.png, width: 165,
+        height: 28, focal_point_key: '', image: 16}
+-   model: wagtailimages.rendition
+    pk: 35
+    fields: {filter_spec: max-165x165, file: images/expert-ta.max-165x165.png, width: 149,
+        height: 165, focal_point_key: '', image: 17}
+-   model: wagtailimages.rendition
+    pk: 36
+    fields: {filter_spec: max-165x165, file: images/cogbooks.max-165x165.png, width: 165,
+        height: 33, focal_point_key: '', image: 18}
+-   model: wagtailimages.rendition
+    pk: 37
+    fields: {filter_spec: max-165x165, file: images/xyz.max-165x165.png, width: 165,
+        height: 27, focal_point_key: '', image: 19}
+-   model: wagtailimages.rendition
+    pk: 38
+    fields: {filter_spec: max-165x165, file: images/top-hat.max-165x165.png, width: 165,
+        height: 43, focal_point_key: '', image: 20}
+-   model: wagtailimages.rendition
+    pk: 39
+    fields: {filter_spec: max-165x165, file: images/odigia.max-165x165.png, width: 165,
+        height: 52, focal_point_key: '', image: 21}
+-   model: wagtailimages.rendition
+    pk: 40
+    fields: {filter_spec: max-165x165, file: images/memory-science.max-165x165.png,
+        width: 165, height: 40, focal_point_key: '', image: 22}
+-   model: wagtailimages.rendition
+    pk: 41
+    fields: {filter_spec: max-165x165, file: images/lrnr.max-165x165.png, width: 165,
+        height: 57, focal_point_key: '', image: 23}
+-   model: wagtailimages.rendition
+    pk: 42
+    fields: {filter_spec: max-165x165, file: images/junction.max-165x165.png, width: 165,
+        height: 31, focal_point_key: '', image: 24}
+-   model: wagtailimages.rendition
+    pk: 43
+    fields: {filter_spec: max-165x165, file: images/wiley.max-165x165.png, width: 165,
+        height: 34, focal_point_key: '', image: 25}
+-   model: wagtailimages.rendition
+    pk: 44
+    fields: {filter_spec: max-165x165, file: images/simbio.max-165x165.png, width: 165,
+        height: 43, focal_point_key: '', image: 26}
+-   model: wagtailimages.rendition
+    pk: 45
+    fields: {filter_spec: max-165x165, file: images/course-weaver.max-165x165.png,
+        width: 165, height: 67, focal_point_key: '', image: 27}
+-   model: wagtailimages.rendition
+    pk: 52
+    fields: {filter_spec: max-165x165, file: images/connect-for-education.max-165x165.png,
+        width: 165, height: 54, focal_point_key: '', image: 28}
+-   model: wagtailimages.rendition
+    pk: 53
+    fields: {filter_spec: max-165x165, file: images/xyz.max-165x165.png, width: 165,
+        height: 27, focal_point_key: '', image: 42}
+-   model: wagtailimages.rendition
+    pk: 54
+    fields: {filter_spec: max-165x165, file: images/wiley.max-165x165.png, width: 165,
+        height: 34, focal_point_key: '', image: 41}
+-   model: wagtailimages.rendition
+    pk: 55
+    fields: {filter_spec: max-165x165, file: images/webassign.max-165x165.png, width: 165,
+        height: 29, focal_point_key: '', image: 40}
+-   model: wagtailimages.rendition
+    pk: 56
+    fields: {filter_spec: max-165x165, file: images/top-hat.max-165x165.png, width: 165,
+        height: 42, focal_point_key: '', image: 39}
+-   model: wagtailimages.rendition
+    pk: 57
+    fields: {filter_spec: max-165x165, file: images/simbio.max-165x165.png, width: 165,
+        height: 42, focal_point_key: '', image: 38}
+-   model: wagtailimages.rendition
+    pk: 58
+    fields: {filter_spec: max-165x165, file: images/sapling.max-165x165.png, width: 165,
+        height: 32, focal_point_key: '', image: 37}
+-   model: wagtailimages.rendition
+    pk: 59
+    fields: {filter_spec: max-165x165, file: images/odigia.max-165x165.png, width: 165,
+        height: 53, focal_point_key: '', image: 36}
+-   model: wagtailimages.rendition
+    pk: 60
+    fields: {filter_spec: max-165x165, file: images/memory-science.max-165x165.png,
+        width: 165, height: 40, focal_point_key: '', image: 35}
+-   model: wagtailimages.rendition
+    pk: 61
+    fields: {filter_spec: max-165x165, file: images/lrnr.max-165x165.png, width: 165,
+        height: 58, focal_point_key: '', image: 34}
+-   model: wagtailimages.rendition
+    pk: 62
+    fields: {filter_spec: max-165x165, file: images/junction.max-165x165.png, width: 165,
+        height: 31, focal_point_key: '', image: 33}
+-   model: wagtailimages.rendition
+    pk: 63
+    fields: {filter_spec: max-165x165, file: images/expert-ta.max-165x165.png, width: 140,
+        height: 154, focal_point_key: '', image: 32}
+-   model: wagtailimages.rendition
+    pk: 64
+    fields: {filter_spec: max-165x165, file: images/course-weaver.max-165x165.png,
+        width: 165, height: 67, focal_point_key: '', image: 31}
+-   model: wagtailimages.rendition
+    pk: 65
+    fields: {filter_spec: max-165x165, file: images/connect-for-education.max-165x165.png,
+        width: 165, height: 54, focal_point_key: '', image: 30}
+-   model: wagtailimages.rendition
+    pk: 66
+    fields: {filter_spec: max-165x165, file: images/cogbooks.max-165x165.png, width: 165,
+        height: 33, focal_point_key: '', image: 29}
+-   model: wagtailimages.rendition
+    pk: 67
+    fields: {filter_spec: original, file: images/connect-for-education.original.png,
+        width: 340, height: 112, focal_point_key: '', image: 30}
+-   model: wagtailimages.rendition
+    pk: 68
+    fields: {filter_spec: max-800x600, file: images/connect-for-education.max-800x600.png,
+        width: 340, height: 112, focal_point_key: '', image: 30}
+-   model: wagtailimages.rendition
+    pk: 69
+    fields: {filter_spec: original, file: images/odigia.original.png, width: 304,
+        height: 98, focal_point_key: '', image: 36}
+-   model: wagtailimages.rendition
+    pk: 70
+    fields: {filter_spec: max-800x600, file: images/odigia.max-800x600.png, width: 304,
+        height: 98, focal_point_key: '', image: 36}
+-   model: wagtailimages.rendition
+    pk: 71
+    fields: {filter_spec: original, file: images/top-hat.original.png, width: 340,
+        height: 88, focal_point_key: '', image: 39}
+-   model: wagtailimages.rendition
+    pk: 72
+    fields: {filter_spec: max-800x600, file: images/top-hat.max-800x600.png, width: 340,
+        height: 88, focal_point_key: '', image: 39}
+-   model: wagtailimages.rendition
+    pk: 73
+    fields: {filter_spec: original, file: images/xyz.original.png, width: 340, height: 56,
+        focal_point_key: '', image: 42}
+-   model: wagtailimages.rendition
+    pk: 74
+    fields: {filter_spec: max-800x600, file: images/xyz.max-800x600.png, width: 340,
+        height: 56, focal_point_key: '', image: 42}
+-   model: wagtailimages.rendition
+    pk: 75
+    fields: {filter_spec: original, file: images/xyz.original.png, width: 340, height: 56,
+        focal_point_key: '', image: 19}
+-   model: wagtailimages.rendition
+    pk: 76
+    fields: {filter_spec: max-800x600, file: images/xyz.max-800x600.png, width: 340,
+        height: 56, focal_point_key: '', image: 19}
+-   model: wagtailimages.rendition
+    pk: 77
+    fields: {filter_spec: original, file: images/course-weaver.original.png, width: 340,
+        height: 140, focal_point_key: '', image: 27}
+-   model: wagtailimages.rendition
+    pk: 78
+    fields: {filter_spec: max-800x600, file: images/course-weaver.max-800x600.png,
+        width: 340, height: 140, focal_point_key: '', image: 27}
+-   model: wagtailimages.rendition
+    pk: 79
+    fields: {filter_spec: original, file: images/lrnr.original.png, width: 300, height: 106,
+        focal_point_key: '', image: 34}
+-   model: wagtailimages.rendition
+    pk: 80
+    fields: {filter_spec: max-800x600, file: images/lrnr.max-800x600.png, width: 300,
+        height: 106, focal_point_key: '', image: 34}
+-   model: wagtailimages.rendition
+    pk: 81
+    fields: {filter_spec: max-165x165, file: images/vt.max-165x165.png, width: 165,
+        height: 28, focal_point_key: '', image: 57}
+-   model: wagtailimages.rendition
+    pk: 82
+    fields: {filter_spec: max-165x165, file: images/utsa.max-165x165.png, width: 165,
+        height: 56, focal_point_key: '', image: 56}
+-   model: wagtailimages.rendition
+    pk: 83
+    fields: {filter_spec: max-165x165, file: images/umass.max-165x165.png, width: 165,
+        height: 20, focal_point_key: '', image: 55}
+-   model: wagtailimages.rendition
+    pk: 84
+    fields: {filter_spec: max-165x165, file: images/ugsystem.max-165x165.png, width: 163,
+        height: 165, focal_point_key: '', image: 54}
+-   model: wagtailimages.rendition
+    pk: 85
+    fields: {filter_spec: max-165x165, file: images/tarrant.max-165x165.png, width: 165,
+        height: 127, focal_point_key: '', image: 53}
+-   model: wagtailimages.rendition
+    pk: 86
+    fields: {filter_spec: max-165x165, file: images/slcc.max-165x165.png, width: 165,
+        height: 61, focal_point_key: '', image: 52}
+-   model: wagtailimages.rendition
+    pk: 87
+    fields: {filter_spec: max-165x165, file: images/osu.max-165x165.png, width: 165,
+        height: 111, focal_point_key: '', image: 51}
+-   model: wagtailimages.rendition
+    pk: 88
+    fields: {filter_spec: max-165x165, file: images/oklahoma.max-165x165.png, width: 165,
+        height: 21, focal_point_key: '', image: 50}
+-   model: wagtailimages.rendition
+    pk: 89
+    fields: {filter_spec: max-165x165, file: images/maricopa.max-165x165.png, width: 165,
+        height: 35, focal_point_key: '', image: 49}
+-   model: wagtailimages.rendition
+    pk: 90
+    fields: {filter_spec: max-165x165, file: images/idaho.max-165x165.png, width: 165,
+        height: 22, focal_point_key: '', image: 48}
+-   model: wagtailimages.rendition
+    pk: 91
+    fields: {filter_spec: max-165x165, file: images/grcc.max-165x165.png, width: 165,
+        height: 58, focal_point_key: '', image: 47}
+-   model: wagtailimages.rendition
+    pk: 92
+    fields: {filter_spec: max-165x165, file: images/georgia.max-165x165.png, width: 165,
+        height: 51, focal_point_key: '', image: 46}
+-   model: wagtailimages.rendition
+    pk: 93
+    fields: {filter_spec: max-165x165, file: images/cmn.max-165x165.png, width: 165,
+        height: 72, focal_point_key: '', image: 45}
+-   model: wagtailimages.rendition
+    pk: 94
+    fields: {filter_spec: max-165x165, file: images/bccampus.max-165x165.png, width: 165,
+        height: 59, focal_point_key: '', image: 44}
+-   model: wagtailimages.rendition
+    pk: 95
+    fields: {filter_spec: max-165x165, file: images/auburn.max-165x165.png, width: 165,
+        height: 153, focal_point_key: '', image: 43}
+-   model: wagtailimages.rendition
+    pk: 96
+    fields: {filter_spec: original, file: images/utsa.original.png, width: 246, height: 84,
+        focal_point_key: '', image: 56}
+-   model: wagtailimages.rendition
+    pk: 97
+    fields: {filter_spec: max-800x600, file: images/utsa.max-800x600.png, width: 246,
+        height: 84, focal_point_key: '', image: 56}
+-   model: wagtailimages.rendition
+    pk: 98
+    fields: {filter_spec: original, file: images/umass.original.png, width: 340, height: 42,
+        focal_point_key: '', image: 55}
+-   model: wagtailimages.rendition
+    pk: 99
+    fields: {filter_spec: max-800x600, file: images/umass.max-800x600.png, width: 340,
+        height: 42, focal_point_key: '', image: 55}
+-   model: wagtailimages.rendition
+    pk: 100
+    fields: {filter_spec: original, file: images/wiley.original.png, width: 300, height: 62,
+        focal_point_key: '', image: 41}
+-   model: wagtailimages.rendition
+    pk: 101
+    fields: {filter_spec: max-800x600, file: images/wiley.max-800x600.png, width: 300,
+        height: 62, focal_point_key: '', image: 41}
+-   model: wagtailimages.rendition
+    pk: 102
+    fields: {filter_spec: original, file: images/bccampus.original.png, width: 320,
+        height: 116, focal_point_key: '', image: 44}
+-   model: wagtailimages.rendition
+    pk: 103
+    fields: {filter_spec: max-800x600, file: images/bccampus.max-800x600.png, width: 320,
+        height: 116, focal_point_key: '', image: 44}
+-   model: wagtailimages.rendition
+    pk: 104
+    fields: {filter_spec: original, file: images/webassign.original.png, width: 340,
+        height: 60, focal_point_key: '', image: 40}
+-   model: wagtailimages.rendition
+    pk: 105
+    fields: {filter_spec: max-800x600, file: images/webassign.max-800x600.png, width: 340,
+        height: 60, focal_point_key: '', image: 40}
+-   model: wagtailimages.rendition
+    pk: 106
+    fields: {filter_spec: original, file: images/auburn.original.png, width: 254,
+        height: 236, focal_point_key: '', image: 43}
+-   model: wagtailimages.rendition
+    pk: 107
+    fields: {filter_spec: max-800x600, file: images/auburn.max-800x600.png, width: 254,
+        height: 236, focal_point_key: '', image: 43}
+-   model: wagtailimages.rendition
+    pk: 108
+    fields: {filter_spec: original, file: images/vt.original.png, width: 340, height: 58,
+        focal_point_key: '', image: 57}
+-   model: wagtailimages.rendition
+    pk: 109
+    fields: {filter_spec: max-800x600, file: images/vt.max-800x600.png, width: 340,
+        height: 58, focal_point_key: '', image: 57}
+-   model: wagtailimages.rendition
+    pk: 110
+    fields: {filter_spec: original, file: images/tarrant.original.png, width: 252,
+        height: 194, focal_point_key: '', image: 53}
+-   model: wagtailimages.rendition
+    pk: 111
+    fields: {filter_spec: max-800x600, file: images/tarrant.max-800x600.png, width: 252,
+        height: 194, focal_point_key: '', image: 53}
+-   model: wagtailimages.rendition
+    pk: 112
+    fields: {filter_spec: original, file: images/osu.original.png, width: 288, height: 194,
+        focal_point_key: '', image: 51}
+-   model: wagtailimages.rendition
+    pk: 113
+    fields: {filter_spec: max-800x600, file: images/osu.max-800x600.png, width: 288,
+        height: 194, focal_point_key: '', image: 51}
+-   model: wagtailimages.rendition
+    pk: 114
+    fields: {filter_spec: max-165x165, file: images/Books.max-165x165.jpg, width: 165,
+        height: 84, focal_point_key: '', image: 58}
+-   model: wagtailimages.rendition
+    pk: 115
+    fields: {filter_spec: max-165x165, file: images/Concept_Coach.max-165x165.jpg,
+        width: 165, height: 107, focal_point_key: '', image: 59}
+-   model: wagtailimages.rendition
+    pk: 116
+    fields: {filter_spec: max-165x165, file: images/CNX.max-165x165.jpg, width: 165,
+        height: 91, focal_point_key: '', image: 60}
+-   model: wagtailimages.rendition
+    pk: 117
+    fields: {filter_spec: max-165x165, file: images/OpenStax_Concept_Coach_logo.max-165x165.png,
+        width: 165, height: 24, focal_point_key: '', image: 61}
+-   model: wagtailimages.rendition
+    pk: 118
+    fields: {filter_spec: original, file: images/OpenStax_Concept_Coach_logo.original.png,
+        width: 933, height: 136, focal_point_key: '', image: 61}
+-   model: wagtailimages.rendition
+    pk: 119
+    fields: {filter_spec: max-800x600, file: images/OpenStax_Concept_Coach_logo.max-800x600.png,
+        width: 800, height: 116, focal_point_key: '', image: 61}
+-   model: wagtailimages.rendition
+    pk: 120
+    fields: {filter_spec: original, file: images/CNX.original.jpg, width: 1038, height: 578,
+        focal_point_key: '', image: 60}
+-   model: wagtailimages.rendition
+    pk: 121
+    fields: {filter_spec: max-800x600, file: images/CNX.max-800x600.jpg, width: 800,
+        height: 445, focal_point_key: '', image: 60}
+-   model: wagtailimages.rendition
+    pk: 122
+    fields: {filter_spec: original, file: images/Concept_Coach.original.jpg, width: 746,
+        height: 484, focal_point_key: '', image: 59}
+-   model: wagtailimages.rendition
+    pk: 123
+    fields: {filter_spec: max-800x600, file: images/Concept_Coach.max-800x600.jpg,
+        width: 746, height: 484, focal_point_key: '', image: 59}
+-   model: wagtailimages.rendition
+    pk: 124
+    fields: {filter_spec: original, file: images/Books.original.jpg, width: 462, height: 236,
+        focal_point_key: '', image: 58}
+-   model: wagtailimages.rendition
+    pk: 125
+    fields: {filter_spec: max-800x600, file: images/Books.max-800x600.jpg, width: 462,
+        height: 236, focal_point_key: '', image: 58}
+-   model: wagtailimages.rendition
+    pk: 126
+    fields: {filter_spec: max-165x165, file: images/s-badger.max-165x165.png, width: 165,
+        height: 165, focal_point_key: '', image: 62}
+-   model: wagtailimages.rendition
+    pk: 127
+    fields: {filter_spec: max-165x165, file: images/s-burrus.max-165x165.png, width: 165,
+        height: 165, focal_point_key: '', image: 63}
+-   model: wagtailimages.rendition
+    pk: 128
+    fields: {filter_spec: max-165x165, file: images/e-johnson.max-165x165.png, width: 165,
+        height: 165, focal_point_key: '', image: 64}
+-   model: wagtailimages.rendition
+    pk: 129
+    fields: {filter_spec: max-165x165, file: images/r-maxfield.max-165x165.png, width: 165,
+        height: 165, focal_point_key: '', image: 65}
+-   model: wagtailimages.rendition
+    pk: 130
+    fields: {filter_spec: max-165x165, file: images/s-schwanauer.max-165x165.png,
+        width: 165, height: 165, focal_point_key: '', image: 66}
+-   model: wagtailimages.rendition
+    pk: 131
+    fields: {filter_spec: max-165x165, file: images/w-sick.max-165x165.png, width: 165,
+        height: 165, focal_point_key: '', image: 67}
+-   model: wagtailimages.rendition
+    pk: 135
+    fields: {filter_spec: max-165x165, file: images/news-story-2016-05-26.max-165x165.png,
+        width: 165, height: 70, focal_point_key: '', image: 71}
+-   model: wagtailimages.rendition
+    pk: 136
+    fields: {filter_spec: width-800, file: images/CNX.width-800.jpg, width: 800, height: 445,
+        focal_point_key: '', image: 60}
+-   model: wagtailimages.rendition
+    pk: 137
+    fields: {filter_spec: original, file: images/Odigia.original.png, width: 460,
+        height: 120, focal_point_key: '', image: 6}
+-   model: wagtailimages.rendition
+    pk: 138
+    fields: {filter_spec: max-800x600, file: images/Odigia.max-800x600.png, width: 460,
+        height: 120, focal_point_key: '', image: 6}
+-   model: wagtailimages.rendition
+    pk: 139
+    fields: {filter_spec: max-165x165, file: images/CCstudentscrop.max-165x165.jpg,
+        width: 149, height: 165, focal_point_key: '', image: 72}
+-   model: wagtailimages.rendition
+    pk: 144
+    fields: {filter_spec: max-165x165, file: images/Zach.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 124}
+-   model: wagtailimages.rendition
+    pk: 145
+    fields: {filter_spec: max-165x165, file: images/Tory.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 123}
+-   model: wagtailimages.rendition
+    pk: 146
+    fields: {filter_spec: max-165x165, file: images/Tim.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 122}
+-   model: wagtailimages.rendition
+    pk: 147
+    fields: {filter_spec: max-165x165, file: images/Ryan.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 121}
+-   model: wagtailimages.rendition
+    pk: 148
+    fields: {filter_spec: max-165x165, file: images/Roy.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 120}
+-   model: wagtailimages.rendition
+    pk: 149
+    fields: {filter_spec: max-165x165, file: images/Ross.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 119}
+-   model: wagtailimages.rendition
+    pk: 150
+    fields: {filter_spec: max-165x165, file: images/Robert.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 118}
+-   model: wagtailimages.rendition
+    pk: 151
+    fields: {filter_spec: max-165x165, file: images/Richard.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 117}
+-   model: wagtailimages.rendition
+    pk: 152
+    fields: {filter_spec: max-165x165, file: images/Rich.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 116}
+-   model: wagtailimages.rendition
+    pk: 153
+    fields: {filter_spec: max-165x165, file: images/Phil-S.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 115}
+-   model: wagtailimages.rendition
+    pk: 154
+    fields: {filter_spec: max-165x165, file: images/Phil-G.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 114}
+-   model: wagtailimages.rendition
+    pk: 155
+    fields: {filter_spec: max-165x165, file: images/Norm.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 113}
+-   model: wagtailimages.rendition
+    pk: 156
+    fields: {filter_spec: max-165x165, file: images/Britt.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 80}
+-   model: wagtailimages.rendition
+    pk: 157
+    fields: {filter_spec: max-165x165, file: images/Britney.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 79}
+-   model: wagtailimages.rendition
+    pk: 158
+    fields: {filter_spec: max-165x165, file: images/Kevin.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 104}
+-   model: wagtailimages.rendition
+    pk: 159
+    fields: {filter_spec: max-165x165, file: images/Beth.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 78}
+-   model: wagtailimages.rendition
+    pk: 160
+    fields: {filter_spec: max-165x165, file: images/Nicole.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 112}
+-   model: wagtailimages.rendition
+    pk: 161
+    fields: {filter_spec: max-165x165, file: images/Michael.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 110}
+-   model: wagtailimages.rendition
+    pk: 162
+    fields: {filter_spec: max-165x165, file: images/Micaela.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 109}
+-   model: wagtailimages.rendition
+    pk: 163
+    fields: {filter_spec: max-165x165, file: images/Maher.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 107}
+-   model: wagtailimages.rendition
+    pk: 164
+    fields: {filter_spec: max-165x165, file: images/Linda.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 106}
+-   model: wagtailimages.rendition
+    pk: 165
+    fields: {filter_spec: max-165x165, file: images/Larissa.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 105}
+-   model: wagtailimages.rendition
+    pk: 166
+    fields: {filter_spec: max-165x165, file: images/Kathi.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 101}
+-   model: wagtailimages.rendition
+    pk: 167
+    fields: {filter_spec: max-165x165, file: images/Alana.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 74}
+-   model: wagtailimages.rendition
+    pk: 168
+    fields: {filter_spec: max-165x165, file: images/Alan.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 73}
+-   model: wagtailimages.rendition
+    pk: 169
+    fields: {filter_spec: max-165x165, file: images/Jeff.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 98}
+-   model: wagtailimages.rendition
+    pk: 170
+    fields: {filter_spec: max-165x165, file: images/Jason.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 97}
+-   model: wagtailimages.rendition
+    pk: 171
+    fields: {filter_spec: max-165x165, file: images/Helene.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 96}
+-   model: wagtailimages.rendition
+    pk: 172
+    fields: {filter_spec: max-165x165, file: images/Dennis.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 89}
+-   model: wagtailimages.rendition
+    pk: 173
+    fields: {filter_spec: max-165x165, file: images/Daniel.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 86}
+-   model: wagtailimages.rendition
+    pk: 174
+    fields: {filter_spec: max-165x165, file: images/Courtney.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 84}
+-   model: wagtailimages.rendition
+    pk: 175
+    fields: {filter_spec: max-165x165, file: images/Greg.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 94}
+-   model: wagtailimages.rendition
+    pk: 176
+    fields: {filter_spec: max-165x165, file: images/Derek.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 91}
+-   model: wagtailimages.rendition
+    pk: 177
+    fields: {filter_spec: max-165x165, file: images/Fred.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 93}
+-   model: wagtailimages.rendition
+    pk: 178
+    fields: {filter_spec: max-165x165, file: images/Ed.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 92}
+-   model: wagtailimages.rendition
+    pk: 179
+    fields: {filter_spec: max-165x165, file: images/Denver.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 90}
+-   model: wagtailimages.rendition
+    pk: 180
+    fields: {filter_spec: max-165x165, file: images/David.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 88}
+-   model: wagtailimages.rendition
+    pk: 181
+    fields: {filter_spec: max-165x165, file: images/Chris-N.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 83}
+-   model: wagtailimages.rendition
+    pk: 182
+    fields: {filter_spec: max-165x165, file: images/Chris-H.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 82}
+-   model: wagtailimages.rendition
+    pk: 183
+    fields: {filter_spec: max-165x165, file: images/Kerwin.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 103}
+-   model: wagtailimages.rendition
+    pk: 184
+    fields: {filter_spec: max-165x165, file: images/Kean.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 102}
+-   model: wagtailimages.rendition
+    pk: 185
+    fields: {filter_spec: max-165x165, file: images/Kajal.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 100}
+-   model: wagtailimages.rendition
+    pk: 186
+    fields: {filter_spec: max-165x165, file: images/Bruce.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 81}
+-   model: wagtailimages.rendition
+    pk: 187
+    fields: {filter_spec: max-165x165, file: images/Alina.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 75}
+-   model: wagtailimages.rendition
+    pk: 188
+    fields: {filter_spec: max-165x165, file: images/Dani.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 85}
+-   model: wagtailimages.rendition
+    pk: 189
+    fields: {filter_spec: max-165x165, file: images/Heather.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 95}
+-   model: wagtailimages.rendition
+    pk: 190
+    fields: {filter_spec: max-165x165, file: images/Amanda.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 76}
+-   model: wagtailimages.rendition
+    pk: 191
+    fields: {filter_spec: max-165x165, file: images/Dante.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 87}
+-   model: wagtailimages.rendition
+    pk: 192
+    fields: {filter_spec: max-165x165, file: images/ProfWolchonok.max-165x165.jpg,
+        width: 110, height: 165, focal_point_key: '', image: 125}
+-   model: wagtailimages.rendition
+    pk: 193
+    fields: {filter_spec: original, file: images/CCstudentscrop.original.jpg, width: 3480,
+        height: 3850, focal_point_key: '', image: 72}
+-   model: wagtailimages.rendition
+    pk: 194
+    fields: {filter_spec: max-800x600, file: images/CCstudentscrop.max-800x600.jpg,
+        width: 542, height: 600, focal_point_key: '', image: 72}
+-   model: wagtailimages.rendition
+    pk: 195
+    fields: {filter_spec: max-165x165, file: images/ljaf_logo.max-165x165.png, width: 165,
+        height: 66, focal_point_key: '', image: 126}
+-   model: wagtailimages.rendition
+    pk: 196
+    fields: {filter_spec: max-165x165, file: images/gates-logo.max-165x165.jpg, width: 165,
+        height: 33, focal_point_key: '', image: 127}
+-   model: wagtailimages.rendition
+    pk: 198
+    fields: {filter_spec: max-165x165, file: images/kazanjian-34ff555f2430202c73db70a6da768e23.max-165x165.png,
+        width: 165, height: 49, focal_point_key: '', image: 129}
+-   model: wagtailimages.rendition
+    pk: 199
+    fields: {filter_spec: max-165x165, file: images/maxfield_logo_v1_Color-d308863e7fe13d7fc320c.max-165x165.png,
+        width: 165, height: 55, focal_point_key: '', image: 130}
+-   model: wagtailimages.rendition
+    pk: 200
+    fields: {filter_spec: max-165x165, file: images/Sick_Fund_logo_copy.max-165x165.png,
+        width: 165, height: 99, focal_point_key: '', image: 131}
+-   model: wagtailimages.rendition
+    pk: 201
+    fields: {filter_spec: max-165x165, file: images/Michelson20MMLogo-Black.max-165x165.jpg,
+        width: 165, height: 127, focal_point_key: '', image: 132}
+-   model: wagtailimages.rendition
+    pk: 202
+    fields: {filter_spec: max-165x165, file: images/RiceLogo.max-165x165.png, width: 165,
+        height: 71, focal_point_key: '', image: 133}
+-   model: wagtailimages.rendition
+    pk: 203
+    fields: {filter_spec: max-165x165, file: images/Jemel.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 134}
+-   model: wagtailimages.rendition
+    pk: 204
+    fields: {filter_spec: max-165x165, file: images/Mary.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 135}
+-   model: wagtailimages.rendition
+    pk: 205
+    fields: {filter_spec: max-165x165, file: images/Mike.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 136}
+-   model: wagtailimages.rendition
+    pk: 208
+    fields: {filter_spec: max-165x165, file: images/Jemel.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 137}
+-   model: wagtailimages.rendition
+    pk: 209
+    fields: {filter_spec: max-165x165, file: images/Mary.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 138}
+-   model: wagtailimages.rendition
+    pk: 210
+    fields: {filter_spec: max-165x165, file: images/Mike.max-165x165.png, width: 165,
+        height: 110, focal_point_key: '', image: 139}
+-   model: wagtailimages.rendition
+    pk: 211
+    fields: {filter_spec: max-165x165, file: images/Alamo_Colleges_gray.max-165x165.png,
+        width: 165, height: 56, focal_point_key: '', image: 140}
+-   model: wagtailimages.rendition
+    pk: 212
+    fields: {filter_spec: max-165x165, file: images/Utah_State_gray.max-165x165.png,
+        width: 165, height: 15, focal_point_key: '', image: 150}
+-   model: wagtailimages.rendition
+    pk: 213
+    fields: {filter_spec: max-165x165, file: images/University_of_Arizona_gray.max-165x165.png,
+        width: 165, height: 39, focal_point_key: '', image: 149}
+-   model: wagtailimages.rendition
+    pk: 214
+    fields: {filter_spec: max-165x165, file: images/UCONN_gray.max-165x165.png, width: 165,
+        height: 34, focal_point_key: '', image: 148}
+-   model: wagtailimages.rendition
+    pk: 215
+    fields: {filter_spec: max-165x165, file: images/Tulsa_Community_College_gray.max-165x165.png,
+        width: 165, height: 57, focal_point_key: '', image: 147}
+-   model: wagtailimages.rendition
+    pk: 216
+    fields: {filter_spec: max-165x165, file: images/South_Florida_State_College_gray.max-165x165.png,
+        width: 165, height: 50, focal_point_key: '', image: 146}
+-   model: wagtailimages.rendition
+    pk: 217
+    fields: {filter_spec: max-165x165, file: images/Pasadena_City_College_gray.max-165x165.png,
+        width: 165, height: 110, focal_point_key: '', image: 145}
+-   model: wagtailimages.rendition
+    pk: 218
+    fields: {filter_spec: max-165x165, file: images/Lansing_Community_College_gray.max-165x165.png,
+        width: 165, height: 63, focal_point_key: '', image: 144}
+-   model: wagtailimages.rendition
+    pk: 219
+    fields: {filter_spec: max-165x165, file: images/College_of_the_Canyons_gray.max-165x165.png,
+        width: 165, height: 78, focal_point_key: '', image: 143}
+-   model: wagtailimages.rendition
+    pk: 220
+    fields: {filter_spec: max-165x165, file: images/Washington_State_University_gray.max-165x165.png,
+        width: 165, height: 46, focal_point_key: '', image: 142}
+-   model: wagtailimages.rendition
+    pk: 221
+    fields: {filter_spec: max-165x165, file: images/Northern_Essex_Community_College_gray.max-165x165.png,
+        width: 165, height: 48, focal_point_key: '', image: 141}
+-   model: wagtailimages.rendition
+    pk: 222
+    fields: {filter_spec: original, file: images/Tulsa_Community_College_gray.original.png,
+        width: 340, height: 119, focal_point_key: '', image: 147}
+-   model: wagtailimages.rendition
+    pk: 223
+    fields: {filter_spec: max-800x600, file: images/Tulsa_Community_College_gray.max-800x600.png,
+        width: 340, height: 119, focal_point_key: '', image: 147}
+-   model: wagtailimages.rendition
+    pk: 224
+    fields: {filter_spec: original, file: images/South_Florida_State_College_gray.original.png,
+        width: 340, height: 105, focal_point_key: '', image: 146}
+-   model: wagtailimages.rendition
+    pk: 225
+    fields: {filter_spec: max-800x600, file: images/South_Florida_State_College_gray.max-800x600.png,
+        width: 340, height: 105, focal_point_key: '', image: 146}
+-   model: wagtailimages.rendition
+    pk: 226
+    fields: {filter_spec: original, file: images/Pasadena_City_College_gray.original.png,
+        width: 285, height: 190, focal_point_key: '', image: 145}
+-   model: wagtailimages.rendition
+    pk: 227
+    fields: {filter_spec: max-800x600, file: images/Pasadena_City_College_gray.max-800x600.png,
+        width: 285, height: 190, focal_point_key: '', image: 145}
+-   model: wagtailimages.rendition
+    pk: 228
+    fields: {filter_spec: original, file: images/Lansing_Community_College_gray.original.png,
+        width: 339, height: 130, focal_point_key: '', image: 144}
+-   model: wagtailimages.rendition
+    pk: 229
+    fields: {filter_spec: max-800x600, file: images/Lansing_Community_College_gray.max-800x600.png,
+        width: 339, height: 130, focal_point_key: '', image: 144}
+-   model: wagtailimages.rendition
+    pk: 230
+    fields: {filter_spec: original, file: images/College_of_the_Canyons_gray.original.png,
+        width: 340, height: 162, focal_point_key: '', image: 143}
+-   model: wagtailimages.rendition
+    pk: 231
+    fields: {filter_spec: max-800x600, file: images/College_of_the_Canyons_gray.max-800x600.png,
+        width: 340, height: 162, focal_point_key: '', image: 143}
+-   model: wagtailimages.rendition
+    pk: 232
+    fields: {filter_spec: original, file: images/Washington_State_University_gray.original.png,
+        width: 340, height: 95, focal_point_key: '', image: 142}
+-   model: wagtailimages.rendition
+    pk: 233
+    fields: {filter_spec: max-800x600, file: images/Washington_State_University_gray.max-800x600.png,
+        width: 340, height: 95, focal_point_key: '', image: 142}
+-   model: wagtailimages.rendition
+    pk: 234
+    fields: {filter_spec: original, file: images/Northern_Essex_Community_College_gray.original.png,
+        width: 340, height: 100, focal_point_key: '', image: 141}
+-   model: wagtailimages.rendition
+    pk: 235
+    fields: {filter_spec: max-800x600, file: images/Northern_Essex_Community_College_gray.max-800x600.png,
+        width: 340, height: 100, focal_point_key: '', image: 141}
+-   model: wagtailimages.rendition
+    pk: 236
+    fields: {filter_spec: max-165x165, file: images/Virginia_Tech.max-165x165.png,
+        width: 165, height: 28, focal_point_key: '', image: 165}
+-   model: wagtailimages.rendition
+    pk: 237
+    fields: {filter_spec: max-165x165, file: images/utsa.max-165x165.png, width: 165,
+        height: 56, focal_point_key: '', image: 164}
+-   model: wagtailimages.rendition
+    pk: 238
+    fields: {filter_spec: max-165x165, file: images/University_of_Oklahoma.max-165x165.png,
+        width: 165, height: 21, focal_point_key: '', image: 163}
+-   model: wagtailimages.rendition
+    pk: 239
+    fields: {filter_spec: max-165x165, file: images/University_of_Idaho.max-165x165.png,
+        width: 165, height: 22, focal_point_key: '', image: 162}
+-   model: wagtailimages.rendition
+    pk: 240
+    fields: {filter_spec: max-165x165, file: images/University_of_Georgia.max-165x165.png,
+        width: 165, height: 51, focal_point_key: '', image: 161}
+-   model: wagtailimages.rendition
+    pk: 241
+    fields: {filter_spec: max-165x165, file: images/University_of_Georgia_System.max-165x165.png,
+        width: 163, height: 165, focal_point_key: '', image: 160}
+-   model: wagtailimages.rendition
+    pk: 242
+    fields: {filter_spec: max-165x165, file: images/UMass_Amherst.max-165x165.png,
+        width: 165, height: 20, focal_point_key: '', image: 159}
+-   model: wagtailimages.rendition
+    pk: 243
+    fields: {filter_spec: max-165x165, file: images/Tarrant_County_College.max-165x165.png,
+        width: 165, height: 127, focal_point_key: '', image: 158}
+-   model: wagtailimages.rendition
+    pk: 244
+    fields: {filter_spec: max-165x165, file: images/Salt_Lake_Community_College.max-165x165.png,
+        width: 165, height: 61, focal_point_key: '', image: 157}
+-   model: wagtailimages.rendition
+    pk: 245
+    fields: {filter_spec: max-165x165, file: images/Ohio_State.max-165x165.png, width: 165,
+        height: 111, focal_point_key: '', image: 156}
+-   model: wagtailimages.rendition
+    pk: 246
+    fields: {filter_spec: max-165x165, file: images/Maricopa_Community_Colleges.max-165x165.png,
+        width: 165, height: 35, focal_point_key: '', image: 155}
+-   model: wagtailimages.rendition
+    pk: 247
+    fields: {filter_spec: max-165x165, file: images/Grand_Rapids_Community_College.max-165x165.png,
+        width: 165, height: 58, focal_point_key: '', image: 154}
+-   model: wagtailimages.rendition
+    pk: 248
+    fields: {filter_spec: max-165x165, file: images/Central_New_Mexico_Community_College.max-165x165.png,
+        width: 165, height: 72, focal_point_key: '', image: 153}
+-   model: wagtailimages.rendition
+    pk: 249
+    fields: {filter_spec: max-165x165, file: images/bccampus.max-165x165.png, width: 165,
+        height: 59, focal_point_key: '', image: 152}
+-   model: wagtailimages.rendition
+    pk: 250
+    fields: {filter_spec: max-165x165, file: images/auburn.max-165x165.png, width: 165,
+        height: 153, focal_point_key: '', image: 151}
+-   model: wagtailimages.rendition
+    pk: 251
+    fields: {filter_spec: max-165x165, file: images/w-n-sick.max-165x165.png, width: 165,
+        height: 165, focal_point_key: '', image: 166}
+-   model: wagtailimages.rendition
+    pk: 252
+    fields: {filter_spec: max-165x165, file: images/r-maxfield.max-165x165.png, width: 165,
+        height: 165, focal_point_key: '', image: 167}
+-   model: wagtailimages.rendition
+    pk: 253
+    fields: {filter_spec: max-165x165, file: images/e-c-johnson.max-165x165.png, width: 165,
+        height: 165, focal_point_key: '', image: 168}
+-   model: wagtailimages.rendition
+    pk: 254
+    fields: {filter_spec: max-165x165, file: images/r-maxfield.max-165x165.png, width: 165,
+        height: 165, focal_point_key: '', image: 169}
+-   model: wagtailimages.rendition
+    pk: 255
+    fields: {filter_spec: max-165x165, file: images/r-maxfield_1.max-165x165.png,
+        width: 165, height: 165, focal_point_key: '', image: 170}
+-   model: wagtailimages.rendition
+    pk: 256
+    fields: {filter_spec: max-165x165, file: images/c-s-burrus.max-165x165.png, width: 165,
+        height: 165, focal_point_key: '', image: 171}
+-   model: wagtailimages.rendition
+    pk: 257
+    fields: {filter_spec: max-165x165, file: images/s-badger.max-165x165.png, width: 165,
+        height: 165, focal_point_key: '', image: 172}
+-   model: wagtailimages.rendition
+    pk: 258
+    fields: {filter_spec: max-165x165, file: images/s-badger_1.max-165x165.png, width: 165,
+        height: 165, focal_point_key: '', image: 173}
+-   model: wagtailimages.rendition
+    pk: 260
+    fields: {filter_spec: max-165x165, file: images/DSC_6509.max-165x165.jpg, width: 165,
+        height: 107, focal_point_key: '', image: 175}
+-   model: wagtailimages.rendition
+    pk: 263
+    fields: {filter_spec: original, file: images/s-badger_1.original.png, width: 340,
+        height: 340, focal_point_key: '', image: 173}
+-   model: wagtailimages.rendition
+    pk: 264
+    fields: {filter_spec: max-800x600, file: images/s-badger_1.max-800x600.png, width: 340,
+        height: 340, focal_point_key: '', image: 173}
+-   model: wagtailimages.rendition
+    pk: 265
+    fields: {filter_spec: max-165x165, file: images/DSC_3232.max-165x165.jpg, width: 165,
+        height: 78, focal_point_key: '', image: 176}
+-   model: wagtailimages.rendition
+    pk: 266
+    fields: {filter_spec: max-165x165, file: images/Infographic---Complete.max-165x165.jpg,
+        width: 59, height: 165, focal_point_key: '', image: 177}
+-   model: wagtailimages.rendition
+    pk: 267
+    fields: {filter_spec: max-165x165, file: images/richard.original.max-165x165.jpg,
+        width: 165, height: 110, focal_point_key: '', image: 178}
+-   model: wagtailimages.rendition
+    pk: 268
+    fields: {filter_spec: max-165x165, file: images/Infographic---Section-3.max-165x165.jpg,
+        width: 165, height: 113, focal_point_key: '', image: 179}
+-   model: wagtailimages.rendition
+    pk: 269
+    fields: {filter_spec: max-165x165, file: images/test.original.max-165x165.jpg,
+        width: 165, height: 97, focal_point_key: '', image: 180}
+-   model: wagtailimages.rendition
+    pk: 270
+    fields: {filter_spec: max-165x165, file: images/Infographic---Section-4.max-165x165.jpg,
+        width: 165, height: 118, focal_point_key: '', image: 181}
+-   model: wagtailimages.rendition
+    pk: 271
+    fields: {filter_spec: max-165x165, file: images/Turning_textbook_highlighting_into_time_well.max-165x165.jpg,
+        width: 165, height: 95, focal_point_key: '', image: 182}
+-   model: wagtailimages.rendition
+    pk: 272
+    fields: {filter_spec: max-165x165, file: images/DSC_7544.max-165x165.jpg, width: 165,
+        height: 110, focal_point_key: '', image: 183}
+-   model: wagtailimages.rendition
+    pk: 273
+    fields: {filter_spec: max-165x165, file: images/AP-Physics-3D.max-165x165.png,
+        width: 165, height: 165, focal_point_key: '', image: 184}
+-   model: wagtailimages.rendition
+    pk: 274
+    fields: {filter_spec: max-165x165, file: images/logos_0002_CheggStudy.max-165x165.png,
+        width: 165, height: 32, focal_point_key: '', image: 185}
+-   model: wagtailimages.rendition
+    pk: 275
+    fields: {filter_spec: original, file: images/logos_0002_CheggStudy.original.png,
+        width: 790, height: 156, focal_point_key: '', image: 185}
+-   model: wagtailimages.rendition
+    pk: 276
+    fields: {filter_spec: max-800x600, file: images/logos_0002_CheggStudy.max-800x600.png,
+        width: 790, height: 156, focal_point_key: '', image: 185}
+-   model: wagtailimages.rendition
+    pk: 277
+    fields: {filter_spec: max-165x165, file: images/logos_0001_cheggTutors.max-165x165.png,
+        width: 165, height: 32, focal_point_key: '', image: 186}
+-   model: wagtailimages.rendition
+    pk: 278
+    fields: {filter_spec: original, file: images/ProfWolchonok.original.jpg, width: 864,
+        height: 1296, focal_point_key: '', image: 125}
+-   model: wagtailimages.rendition
+    pk: 279
+    fields: {filter_spec: max-800x600, file: images/ProfWolchonok.max-800x600.jpg,
+        width: 400, height: 600, focal_point_key: '', image: 125}
+-   model: wagtailimages.rendition
+    pk: 280
+    fields: {filter_spec: max-165x165, file: images/DSC_1229.max-165x165.jpg, width: 165,
+        height: 110, focal_point_key: '', image: 187}
+-   model: wagtailimages.rendition
+    pk: 281
+    fields: {filter_spec: max-165x165, file: images/ConnectforEducation.max-165x165.png,
+        width: 165, height: 43, focal_point_key: '', image: 188}
+-   model: wagtailimages.rendition
+    pk: 282
+    fields: {filter_spec: max-165x165, file: images/connect-for-education.max-165x165.png,
+        width: 165, height: 53, focal_point_key: '', image: 189}
+-   model: wagtailimages.rendition
+    pk: 283
+    fields: {filter_spec: max-165x165, file: images/emath.max-165x165.png, width: 165,
+        height: 70, focal_point_key: '', image: 190}
+-   model: wagtailimages.rendition
+    pk: 284
+    fields: {filter_spec: max-165x165, file: images/emath-1_gray.max-165x165.png,
+        width: 165, height: 67, focal_point_key: '', image: 191}
+-   model: wagtailimages.rendition
+    pk: 287
+    fields: {filter_spec: original, file: images/kazanjian-34ff555f2430202c73db70a6da768e23.original.png,
+        width: 241, height: 73, focal_point_key: '', image: 129}
+-   model: wagtailimages.rendition
+    pk: 288
+    fields: {filter_spec: max-800x600, file: images/kazanjian-34ff555f2430202c73db70a6da768e23.max-800x600.png,
+        width: 241, height: 73, focal_point_key: '', image: 129}
+-   model: wagtailimages.rendition
+    pk: 289
+    fields: {filter_spec: original, file: images/emath-1_gray.original.png, width: 300,
+        height: 123, focal_point_key: '', image: 191}
+-   model: wagtailimages.rendition
+    pk: 290
+    fields: {filter_spec: max-800x600, file: images/emath-1_gray.max-800x600.png,
+        width: 300, height: 123, focal_point_key: '', image: 191}
+-   model: wagtailimages.rendition
+    pk: 291
+    fields: {filter_spec: original, file: images/logos_0001_cheggTutors.original.png,
+        width: 790, height: 156, focal_point_key: '', image: 186}
+-   model: wagtailimages.rendition
+    pk: 292
+    fields: {filter_spec: max-800x600, file: images/logos_0001_cheggTutors.max-800x600.png,
+        width: 790, height: 156, focal_point_key: '', image: 186}
+-   model: wagtailimages.rendition
+    pk: 293
+    fields: {filter_spec: max-165x165, file: images/Hewlett_Logo_RGB_full.max-165x165.jpg,
+        width: 165, height: 63, focal_point_key: '', image: 128}
+-   model: wagtailimages.rendition
+    pk: 294
+    fields: {filter_spec: original, file: images/emath.original.png, width: 300, height: 128,
+        focal_point_key: '', image: 190}
+-   model: wagtailimages.rendition
+    pk: 295
+    fields: {filter_spec: max-800x600, file: images/emath.max-800x600.png, width: 300,
+        height: 128, focal_point_key: '', image: 190}
+-   model: wagtailimages.rendition
+    pk: 299
+    fields: {filter_spec: max-165x165, file: images/OXT_horizontal_460px.max-165x165.png,
+        width: 165, height: 28, focal_point_key: '', image: 192}
+-   model: wagtailimages.rendition
+    pk: 300
+    fields: {filter_spec: max-165x165, file: images/OXT_grayscale_460px.max-165x165.png,
+        width: 165, height: 28, focal_point_key: '', image: 193}
+-   model: wagtailimages.rendition
+    pk: 301
+    fields: {filter_spec: max-165x165, file: images/1-dashboard.max-165x165.png, width: 165,
+        height: 85, focal_point_key: '', image: 194}
+-   model: wagtailimages.rendition
+    pk: 302
+    fields: {filter_spec: max-165x165, file: images/2-clock.max-165x165.png, width: 165,
+        height: 84, focal_point_key: '', image: 195}
+-   model: wagtailimages.rendition
+    pk: 303
+    fields: {filter_spec: max-165x165, file: images/3-past-work.max-165x165.png, width: 165,
+        height: 85, focal_point_key: '', image: 196}
