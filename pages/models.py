@@ -1052,7 +1052,7 @@ class Marketing(Page):
     )
 
     def get_icon_1_image(self):
-        return build_document_url(self.icon_1_image)
+        return build_document_url(self.icon_1_image.url)
     icon_1_image_url = property(get_icon_1_image)
 
     icon_1_subheading = models.CharField(max_length=255)
@@ -1065,7 +1065,7 @@ class Marketing(Page):
     )
 
     def get_icon_2_image(self):
-        return build_document_url(self.icon_2_image)
+        return build_document_url(self.icon_2_image.url)
     icon_2_image_url = property(get_icon_2_image)
 
 
@@ -1079,7 +1079,7 @@ class Marketing(Page):
     )
 
     def get_icon_3_image(self):
-        return build_document_url(self.icon_3_image)
+        return build_document_url(self.icon_3_image.url)
     icon_3_image_url = property(get_icon_3_image)
 
     icon_3_subheading = models.CharField(max_length=255)
@@ -1092,7 +1092,7 @@ class Marketing(Page):
     )
 
     def get_icon_4_image(self):
-        return build_document_url(self.icon_4_image)
+        return build_document_url(self.icon_4_image.url)
     icon_4_image_url = property(get_icon_4_image)
 
     icon_4_subheading = models.CharField(max_length=255)
