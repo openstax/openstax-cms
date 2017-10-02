@@ -13,7 +13,7 @@ install:
 before_script:
 - createdb -U postgres openstax
 script:
-- coverage run manage.py test --liveserver=localhost:8001 --verbosity=2 --settings=openstax.settings.test
+- coverage run manage.py test --verbosity=2 --settings=openstax.settings.test
 after_success:
 - coveralls
 notifications:
