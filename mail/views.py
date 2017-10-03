@@ -7,6 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import redirect
 from rest_framework.decorators import api_view
 
+from global_settings.models import Mail
 
 @csrf_exempt
 @api_view(['POST', 'GET'])
@@ -21,9 +22,8 @@ def send_contact_message(request):
 
         # Add subject: to_address to this dict to add a new email address.
         # Subject will map to the email being sent to to prevent misuse of our email server.
-        emails = {
-            'Bulk Order': 'invoices@cnx.org',
-        }
+        mails = Mail.objects.all()
+        emails = {mail.subject: mail.to_address for mail in mails}
 
         try:
             to_address = emails[subject].split(',')
