@@ -28,6 +28,7 @@ AWS_SES_REGION_ENDPOINT = 'email.us-west-2.amazonaws.com'
 AUTHORIZATION_URL = 'https://accounts.openstax.org/oauth/authorize'
 ACCESS_TOKEN_URL = 'https://accounts.openstax.org/oauth/token'
 USER_QUERY = 'https://accounts.openstax.org/api/user?'
+USERS_QUERY = 'https://accounts.openstax.org/api/users?'
 ####
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'https://openstax.org'
 SOCIAL_AUTH_SANITIZE_REDIRECTS = False
