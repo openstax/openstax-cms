@@ -14,7 +14,11 @@ from .models import Profile
 
 
 def get_or_create_user_profile(user):
-    profile, created = Profile.objects.get_or_create(user=user)
+
+    try:
+        profile, created = Profile.objects.get_or_create(user=user)
+    except TypeError:
+        profile = None
 
     return profile
 
