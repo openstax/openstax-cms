@@ -37,8 +37,9 @@ def user_api(request):
     user = request.user
     profile = get_or_create_user_profile(user)
 
-    if not profile.uuid or profile.faculty_status == 'no_faculty_info' or profile.faculty_status == 'pending_faculty':
-        update_user_status(user)
+    if profile:
+        if not profile.uuid or profile.faculty_status == 'no_faculty_info' or profile.faculty_status == 'pending_faculty':
+            update_user_status(user)
 
     try:
         social_auth = SocialAuthStorage.user.get_social_auth_for_user(user)
