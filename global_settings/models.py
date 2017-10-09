@@ -1,5 +1,4 @@
 from django.db import models
-from wagtail.wagtailcore.fields import RichTextField
 from wagtail.contrib.settings.models import BaseSetting, register_setting
 
 
@@ -26,11 +25,3 @@ class Footer(BaseSetting):
 
     class Meta:
         verbose_name = 'Footer'
-
-@register_setting(icon='mail')
-class Mail(BaseSetting):
-    subject = models.CharField(max_length=255)
-    to_address = models.EmailField()
-
-    class Meta:
-        verbose_name = 'Mail Settings'

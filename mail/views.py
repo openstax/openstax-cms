@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import redirect
 from rest_framework.decorators import api_view
 
-from global_settings.models import Mail
+from .models import Mail
 
 @csrf_exempt
 @api_view(['POST', 'GET'])
