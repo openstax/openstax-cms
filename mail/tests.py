@@ -3,14 +3,18 @@ import json
 from django.middleware import csrf
 from django.test import Client, TestCase
 
-from global_settings.models import Mail
+from mail.models import Mail
 
 
 class MailTest(TestCase):
 
     def setUp(self):
-        Mail.objects.create(subject="Bulk Order", to_address="noreply@openstax.org", site_id=1)
+        Mail.objects.create(subject="Bulk Order", to_address="noreply@openstax.org")
         self.client = Client(HTTP_USER_AGENT='Mozilla/5.0')
+
+    def test_can_create_mail(self):
+        mail = Mail.objects.create(subject="Test Email", to_address="test@openstax.org")
+        self.assertEqual("Test Email", mail.subject)
 
     def test_get_csrf_token(self):
         # testing that csrf token is returned on GET request to mail api
