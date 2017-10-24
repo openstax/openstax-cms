@@ -48,8 +48,6 @@ def update_user_status(user):
     with urlopen(url) as url:
         data = json.loads(url.read().decode())
 
-        print(data)
-
         # update user profile with faculty status
         faculty_status = data['items'][0]['faculty_status']
         profile.faculty_status = faculty_status
