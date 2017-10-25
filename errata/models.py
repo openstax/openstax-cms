@@ -102,7 +102,7 @@ class Errata(models.Model):
         blank=True,
         null=True,
     )
-    reviewed_date = models.DateField(blank=True, null=True)
+    reviewed_date = models.DateField(blank=True, null=True, editable=False)
     corrected_date = models.DateField(blank=True, null=True)
     archived = models.BooleanField(default=False)
     location = models.TextField(blank=True, null=True)
