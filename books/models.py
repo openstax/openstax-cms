@@ -1,6 +1,7 @@
 import re
 import json
 import urllib
+import ssl
 
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField
@@ -20,6 +21,11 @@ from allies.models import Ally
 from openstax.functions import build_document_url, build_image_url
 from snippets.models import FacultyResource, StudentResource, Subject
 
+
+def cleanhtml(raw_html):
+    cleanr = re.compile('<.*?>')
+    cleantext = re.sub(cleanr, '', raw_html)
+    return cleantext
 
 class Quotes(models.Model):
     quote_text = RichTextField()
@@ -487,14 +493,19 @@ class Book(Page):
             try:
                 url = '{}/contents/{}.json'.format(
                     settings.CNX_ARCHIVE_URL, self.cnx_id)
-                response = urllib.request.urlopen(url).read()
+                context = ssl._create_unverified_context()
+                response = urllib.request.urlopen(url, context=context).read()
                 result = json.loads(response.decode('utf-8'))
 
                 self.license_name = result['license']['name']
                 self.license_version = result['license']['version']
                 self.license_url = result['license']['url']
 
-                self.table_of_contents = result['tree']
+                if result['collated']:
+                    htmlless_toc = cleanhtml(json.dumps(result['tree']))
+                    self.table_of_contents = json.loads(htmlless_toc)
+                else:
+                    self.table_of_contents = result['tree']
 
             except urllib.error.HTTPError as err:
                 errors.setdefault('cnx_id', []).append(err)
