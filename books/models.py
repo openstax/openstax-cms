@@ -24,10 +24,11 @@ from snippets.models import FacultyResource, StudentResource, Subject
 
 def cleanhtml(raw_html):
     remove_numbers = re.sub('<span class=\W*(os-number)\W*>.*?>', '', raw_html)
+    remove_dividers = re.sub('<span class=\W*(os-divider)\W*>.*?>', '', remove_numbers)
     cleanr = re.compile('<.*?>')
-    cleantext = re.sub(cleanr, '', remove_numbers)
-    print(cleantext)
+    cleantext = re.sub(cleanr, '', remove_dividers)
     return cleantext
+
 
 class Quotes(models.Model):
     quote_text = RichTextField()
