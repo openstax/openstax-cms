@@ -274,7 +274,7 @@ WAGTAIL_SITE_NAME = 'openstax'
 WAGTAILAPI_LIMIT_MAX = 250
 
 # used in page.models to retrieve book information
-CNX_ARCHIVE_URL = 'http://archive.cnx.org'
+CNX_ARCHIVE_URL = 'https://archive.cnx.org'
 
 # Server host (used to populate links in the email)
 HOST_LINK = 'https://openstax.org'
