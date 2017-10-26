@@ -9,6 +9,9 @@ class Profile(models.Model):
     uuid = models.UUIDField(blank=True, null=True)
     faculty_status = models.TextField(blank=True, null=True)
 
+    def __str__(self):
+        return self.user.email
+
 
 @receiver(post_save, sender=User)
 def create_user_profile(sender, instance, created, **kwargs):
