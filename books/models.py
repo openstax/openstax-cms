@@ -23,8 +23,10 @@ from snippets.models import FacultyResource, StudentResource, Subject
 
 
 def cleanhtml(raw_html):
+    remove_numbers = re.sub('<span class=\W*(os-number)\W*>.*?>', '', raw_html)
     cleanr = re.compile('<.*?>')
-    cleantext = re.sub(cleanr, '', raw_html)
+    cleantext = re.sub(cleanr, '', remove_numbers)
+    print(cleantext)
     return cleantext
 
 class Quotes(models.Model):
