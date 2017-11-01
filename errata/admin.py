@@ -28,6 +28,7 @@ class ErrataAdmin(admin.ModelAdmin):
               'is_assessment_errata',
               'status',
               'resolution',
+              'duplicate_id',
               'archived',
               'location',
               'detail',
@@ -52,7 +53,7 @@ class ErrataAdmin(admin.ModelAdmin):
     }
     actions = ['mark_in_review', 'mark_reviewed', 'mark_archived', 'export_as_csv']
     inlines = [InlineInternalImage, ]
-    raw_id_fields = ('submitted_by',)
+    raw_id_fields = ('submitted_by', 'duplicate_id')
 
     """Actions for the Django Admin list view"""
     def mark_in_review(self, request, queryset):
@@ -153,6 +154,7 @@ class ErrataAdmin(admin.ModelAdmin):
                            'is_assessment_errata',
                            'status',
                            'resolution',
+                           'duplicate_id',
                            'archived',
                            'location',
                            'detail',
@@ -175,6 +177,7 @@ class ErrataAdmin(admin.ModelAdmin):
                            'is_assessment_errata',
                            'status',
                            'resolution',
+                           'duplicate_id',
                            'archived',
                            'location',
                            'detail',
@@ -193,6 +196,7 @@ class ErrataAdmin(admin.ModelAdmin):
                                     'is_assessment_errata',
                                     'status',
                                     'resolution',
+                                    'duplicate_id',
                                     'archived',
                                     'location',
                                     'detail',
