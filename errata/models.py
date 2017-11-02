@@ -102,6 +102,7 @@ class Errata(models.Model):
         blank=True,
         null=True,
     )
+    duplicate_id = models.OneToOneField('self', related_name='duplicate_report', null=True, blank=True)
     reviewed_date = models.DateField(blank=True, null=True, editable=False)
     corrected_date = models.DateField(blank=True, null=True)
     archived = models.BooleanField(default=False)
@@ -138,6 +139,8 @@ class Errata(models.Model):
             raise ValidationError({'resolution': 'Resolution is required if status is completed or reviewed.'})
         if (self.status == 'Editorial Review' or self.status == 'Reviewed' or self.status == 'Completed') and not self.is_assessment_errata:
             raise ValidationError({'is_assessment_errata': 'You must specify if this is an assessment errata.'})
+        if (self.status == 'Completed') and (self.resolution == 'Duplicate'):
+            raise ValidationError({'duplicate_id': 'You must specify the duplicate report ID when resolution is marked duplicate.'})
 
     def save(self, *args, **kwargs):
         # update instance dates
