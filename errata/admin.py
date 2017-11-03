@@ -12,6 +12,7 @@ from django.utils.html import mark_safe
 from extraadminfilters.filters import UnionFieldListFilter
 
 from .models import Errata, InternalDocumentation
+from .forms import ErrataForm
 
 
 class InlineInternalImage(admin.TabularInline):
@@ -19,6 +20,7 @@ class InlineInternalImage(admin.TabularInline):
 
 
 class ErrataAdmin(admin.ModelAdmin):
+    form = ErrataForm
     list_max_show_all = 10000
     list_per_page = 200
 
