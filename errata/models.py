@@ -139,7 +139,7 @@ class Errata(models.Model):
             raise ValidationError({'resolution': 'Resolution is required if status is completed or reviewed.'})
         if (self.status == 'Editorial Review' or self.status == 'Reviewed' or self.status == 'Completed') and not self.is_assessment_errata:
             raise ValidationError({'is_assessment_errata': 'You must specify if this is an assessment errata.'})
-        if (self.status == 'Completed') and (self.resolution == 'Duplicate'):
+        if (self.status == 'Completed' and self.resolution == 'Duplicate') and not self.duplicate_id:
             raise ValidationError({'duplicate_id': 'You must specify the duplicate report ID when resolution is marked duplicate.'})
 
     def save(self, *args, **kwargs):
