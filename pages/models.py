@@ -279,6 +279,7 @@ class HomePage(Page):
         'pages.InterestForm',
         'pages.Marketing',
         'pages.Technology',
+        'pages.ErrataList',
         'books.BookIndex',
         'news.NewsIndex',
         'allies.Ally',
@@ -1340,6 +1341,21 @@ class Technology(Page):
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
 
+    ]
+
+    parent_page_types = ['pages.HomePage']
+
+
+class ErrataList(Page):
+    correction_schedule = RichTextField(features=['link', 'bold', 'italic', 'hr', 'ol', 'ul'])
+
+    api_fields = (
+        'correction_schedule',
+    )
+
+    content_panels = [
+        FieldPanel('title', classname="full title"),
+        FieldPanel('correction_schedule')
     ]
 
     parent_page_types = ['pages.HomePage']

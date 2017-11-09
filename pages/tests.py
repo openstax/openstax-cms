@@ -21,7 +21,8 @@ from pages.models import (HomePage,
                           AdoptForm,
                           InterestForm,
                           Marketing,
-                          Technology)
+                          Technology,
+                          ErrataList)
 from allies.models import Ally
 from news.models import NewsIndex
 from books.models import BookIndex
@@ -70,8 +71,25 @@ class HomePageTests(WagtailPageTests):
             AdoptForm,
             InterestForm,
             Marketing,
-            Technology
+            Technology,
+            ErrataList
         })
+
+
+class ErrataListTest(WagtailPageTests):
+
+    def test_can_create_errata_list_page(self):
+        root_page = Page.objects.get(title="Root")
+        homepage = HomePage(title="Hello World",
+                            slug="hello-world",
+                            )
+        root_page.add_child(instance=homepage)
+        errata_list_page = ErrataList(title="Errata List Template",
+                                      correction_schedule="Some sample correction schedule text.")
+        homepage.add_child(instance=errata_list_page)
+
+        retrieved_page = Page.objects.get(id=errata_list_page.id)
+        self.assertEqual(retrieved_page.title, "Errata List Template")
 
 
 class AdminPages(TestCase, WagtailTestUtils):
@@ -116,4 +134,3 @@ class AdminPages(TestCase, WagtailTestUtils):
         response = self.client.get('/admin/pages/search/?q=openstax')
         self.assertEqual(response.status_code, 200)
         self.assertIn(b'Sorry, no pages match', response.content)
-

@@ -21,7 +21,8 @@ from .models import (GeneralPage,
                      AdoptForm,
                      InterestForm,
                      Marketing,
-                     Technology)
+                     Technology,
+                     ErrataList)
 from .serializers import (HomePageSerializer,
                           HigherEducationSerializer,
                           GeneralPageSerializer,
@@ -42,7 +43,8 @@ from .serializers import (HomePageSerializer,
                           AdoptFormSerializer,
                           InterestFormSerializer,
                           MarketingSerializer,
-                          TechnologySerializer)
+                          TechnologySerializer,
+                          ErrataListSerializer)
 
 
 class JSONResponse(HttpResponse):
@@ -64,10 +66,6 @@ def page_detail(request, slug):
 
     try:
         page = HomePage.objects.get(slug=slug)
-        for column in page.row_1:
-            for name, block in column.value.bound_blocks.items():
-                if name == 'image':
-                    print(block.value)
         serializer = HomePageSerializer(page)
         return JSONResponse(serializer.data)
     except HomePage.DoesNotExist:
@@ -211,6 +209,13 @@ def page_detail(request, slug):
         serializer = TechnologySerializer(page)
         return JSONResponse(serializer.data)
     except Technology.DoesNotExist:
+        page_found = False
+
+    try:
+        page = ErrataList.objects.get(slug=slug)
+        serializer = ErrataListSerializer(page)
+        return JSONResponse(serializer.data)
+    except ErrataList.DoesNotExist:
         page_found = False
 
     if not page_found:
