@@ -18,7 +18,8 @@ from .models import (HomePage,
                      AdoptForm,
                      InterestForm,
                      Marketing,
-                     Technology)
+                     Technology,
+                     ErrataList)
 
 from rest_framework import serializers
 
@@ -151,3 +152,9 @@ class TechnologySerializer(PageSerializer):
     class Meta:
         model = Technology
         fields = Technology.api_fields
+
+
+class ErrataListSerializer(PageSerializer):
+    class Meta:
+        model = ErrataList
+        fields = ErrataList.api_fields
