@@ -188,7 +188,7 @@ class ErrataAdmin(admin.ModelAdmin):
                            'internal_notes',
                            'error_type',
                            'resource',
-                           'submitted_by'
+                           'submitted_by',
                            'submitter_email_address',
                            'file_1',
                            'file_2']
