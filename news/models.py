@@ -172,7 +172,6 @@ class NewsArticle(Page):
     def save(self, *args, **kwargs):
         if self.pin_to_top:
             current_pins = self.__class__.objects.filter(pin_to_top=True)
-            print(current_pins)
             for pin in current_pins:
                 if pin != self:
                     pin.pin_to_top = False
