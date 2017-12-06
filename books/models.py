@@ -532,7 +532,9 @@ class Book(Page):
         if self.authors != json.dumps(authors):
             self.authors = json.dumps(authors)
 
-        self.webview_link = 'https://cnx.org/contents/' + self.cnx_id
+        if self.cnx_id:
+            self.webview_link = 'https://cnx.org/contents/' + self.cnx_id
+
 
         return super(Book, self).save(*args, **kwargs)
 
