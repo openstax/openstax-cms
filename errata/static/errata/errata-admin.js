@@ -1,7 +1,8 @@
 (function($) {
+
     $(function() {
         var bookField = $('#id_book'),
-            is_assessment = $('#id_is_assessment_errata');
+            is_assessment = $('.field-is_assessment_errata');
 
         function toggleVerified(value) {
             var bookArray = [33, 32, 31, 47];
