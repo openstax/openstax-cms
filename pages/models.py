@@ -959,6 +959,7 @@ class InterestForm(Page):
 
 
 class MarketingVideoLink(models.Model):
+    video_title = models.CharField(max_length=255, blank=True, null=True)
     video_url = models.URLField(blank=True, null=True)
     video_file = models.FileField(upload_to='marketing_videos', blank=True, null=True)
     image_url = models.URLField(blank=True, null=True)
@@ -975,13 +976,15 @@ class MarketingVideoLink(models.Model):
         return build_image_url(self.image_file)
     image = property(get_image)
 
-    api_fields = ('video_url',
+    api_fields = ('video_title',
+                  'video_url',
                   'video_file',
                   'image_url',
                   'image',
                   'video_image_blurb',)
 
     panels = [
+        FieldPanel('video_title'),
         FieldPanel('video_url'),
         FieldPanel('video_file'),
         FieldPanel('image_url'),
@@ -1031,17 +1034,19 @@ class ResourceAvailability(Orderable, Resource):
 
 
 class Marketing(Page):
+    #hover box text
+    pop_up_text = RichTextField()
     #access tutor section
     access_tagline = models.CharField(max_length=255)
     access_button_cta = models.CharField(max_length=255)
     access_button_link = models.URLField()
-    #section 1
+    #section 1 - discover header
     section_1_heading = models.CharField(max_length=255)
     section_1_subheading = models.CharField(max_length=255)
     section_1_paragraph = RichTextField()
     section_1_cta_link = models.URLField()
     section_1_cta_text = models.CharField(max_length=255)
-    #section 2
+    #section 2 - how does it work?
     section_2_heading = models.CharField(max_length=255)
     section_2_subheading = models.CharField(max_length=255)
     section_2_paragraph = RichTextField()
@@ -1098,28 +1103,35 @@ class Marketing(Page):
 
     icon_4_subheading = models.CharField(max_length=255)
     icon_4_paragraph = models.CharField(max_length=255)
-    #section 3
+    #section 3 - what your students will see
     section_3_heading = models.CharField(max_length=255)
     section_3_paragraph = RichTextField()
-    #section 4
+    #marketing videos orderable resource
+    #section 4 - current features and plans
+    #resource availability via orderable resource
     section_4_heading = models.CharField(max_length=255)
     section_4_paragraph = RichTextField()
     section_4_resource_fine_print = models.CharField(max_length=255)
     section_4_book_heading = models.CharField(max_length=255)
-    #section 5
+    section_4_coming_soon_heading = models.CharField(max_length=255)
+    section_4_coming_soon_text = RichTextField()
+    #section 5 - $10
     section_5_heading = models.CharField(max_length=255)
     section_5_paragraph = RichTextField()
     section_5_dollar_1_paragraph = models.CharField(max_length=255)
     section_5_dollar_2_paragraph = models.CharField(max_length=255)
     section_5_dollar_3_paragraph = models.CharField(max_length=255)
     section_5_dollar_4_paragraph = models.CharField(max_length=255)
+    #science
+    section_5_science_heading = models.CharField(max_length=255)
+    section_5_science_paragraph = RichTextField()
     #section 6 - FAQs
     section_6_heading = models.CharField(max_length=255)
     section_6_knowledge_base_copy = RichTextField()
     faqs = StreamField([
         ('faq', FAQBlock()),
     ])
-    #section 7
+    #section 7 - a new way of teaching
     section_7_heading = models.CharField(max_length=255)
     section_7_subheading = models.CharField(max_length=255)
     section_7_cta_text_1 = models.CharField(max_length=255)
@@ -1151,6 +1163,7 @@ class Marketing(Page):
 
     api_fields = (
         'title',
+        'pop_up_text',
         'access_tagline',
         'access_button_cta',
         'access_button_link',
@@ -1183,12 +1196,16 @@ class Marketing(Page):
         'section_4_resource_fine_print',
         'marketing_books',
         'section_4_book_heading',
+        'section_4_coming_soon_heading',
+        'section_4_coming_soon_text',
         'section_5_heading',
         'section_5_paragraph',
         'section_5_dollar_1_paragraph',
         'section_5_dollar_2_paragraph',
         'section_5_dollar_3_paragraph',
         'section_5_dollar_4_paragraph',
+        'section_5_science_heading',
+        'section_5_science_paragraph',
         'section_6_heading',
         'section_6_knowledge_base_copy',
         'faqs',
@@ -1213,6 +1230,7 @@ class Marketing(Page):
 
     content_panels = [
         FieldPanel('title', classname="full title"),
+        FieldPanel('pop_up_text'),
         FieldPanel('access_tagline'),
         FieldPanel('access_button_cta'),
         FieldPanel('access_button_link'),
@@ -1246,12 +1264,16 @@ class Marketing(Page):
         InlinePanel('resource_availability', label="Resource Availability"),
         FieldPanel('section_4_resource_fine_print'),
         FieldPanel('section_4_book_heading'),
+        FieldPanel('section_4_coming_soon_heading'),
+        FieldPanel('section_4_coming_soon_text'),
         FieldPanel('section_5_heading'),
         FieldPanel('section_5_paragraph'),
         FieldPanel('section_5_dollar_1_paragraph'),
         FieldPanel('section_5_dollar_2_paragraph'),
         FieldPanel('section_5_dollar_3_paragraph'),
         FieldPanel('section_5_dollar_4_paragraph'),
+        FieldPanel('section_5_science_heading'),
+        FieldPanel('section_5_science_paragraph'),
         FieldPanel('section_6_heading'),
         FieldPanel('section_6_knowledge_base_copy'),
         StreamFieldPanel('faqs'),
