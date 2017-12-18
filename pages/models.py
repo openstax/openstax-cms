@@ -1118,10 +1118,6 @@ class Marketing(Page):
     #section 5 - $10
     section_5_heading = models.CharField(max_length=255)
     section_5_paragraph = RichTextField()
-    section_5_dollar_1_paragraph = models.CharField(max_length=255)
-    section_5_dollar_2_paragraph = models.CharField(max_length=255)
-    section_5_dollar_3_paragraph = models.CharField(max_length=255)
-    section_5_dollar_4_paragraph = models.CharField(max_length=255)
     #science
     section_5_science_heading = models.CharField(max_length=255)
     section_5_science_paragraph = RichTextField()
@@ -1200,10 +1196,6 @@ class Marketing(Page):
         'section_4_coming_soon_text',
         'section_5_heading',
         'section_5_paragraph',
-        'section_5_dollar_1_paragraph',
-        'section_5_dollar_2_paragraph',
-        'section_5_dollar_3_paragraph',
-        'section_5_dollar_4_paragraph',
         'section_5_science_heading',
         'section_5_science_paragraph',
         'section_6_heading',
@@ -1268,10 +1260,6 @@ class Marketing(Page):
         FieldPanel('section_4_coming_soon_text'),
         FieldPanel('section_5_heading'),
         FieldPanel('section_5_paragraph'),
-        FieldPanel('section_5_dollar_1_paragraph'),
-        FieldPanel('section_5_dollar_2_paragraph'),
-        FieldPanel('section_5_dollar_3_paragraph'),
-        FieldPanel('section_5_dollar_4_paragraph'),
         FieldPanel('section_5_science_heading'),
         FieldPanel('section_5_science_paragraph'),
         FieldPanel('section_6_heading'),
