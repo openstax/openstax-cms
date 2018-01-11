@@ -577,6 +577,7 @@ class BookIndex(Page):
                     'webview_link': book.webview_link,
                     'concept_coach_link': book.concept_coach_link,
                     'bookshare_link': book.bookshare_link,
+                    'kindle_link': book.kindle_link,
                     'amazon_coming_soon': book.amazon_coming_soon,
                     'amazon_link': book.amazon_link,
                     'amazon_price': book.amazon_price,
