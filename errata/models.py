@@ -69,6 +69,7 @@ INSTRUCTOR_SOLUTION = 'Instructor solution manual'
 STUDENT_SOLUTION = 'Student solution manual'
 TUTOR = 'OpenStax Tutor'
 CONCEPT_COACH = 'OpenStax Concept Coach'
+KINDLE = 'Kindle'
 OTHER = 'Other'
 ERRATA_RESOURCES = (
     (TEXTBOOK, 'Textbook'),
@@ -77,6 +78,7 @@ ERRATA_RESOURCES = (
     (STUDENT_SOLUTION, 'Student solution manual'),
     (TUTOR, 'OpenStax Tutor'),
     (CONCEPT_COACH, 'OpenStax Concept Coach'),
+    (KINDLE, 'Kindle'),
     (OTHER, 'Other'),
 )
 
