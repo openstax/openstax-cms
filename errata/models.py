@@ -148,7 +148,7 @@ class Errata(models.Model):
         # update instance dates
         if self.resolution:
             self.resolution_date = now()
-        if self.status == "Editorial Review" or self.status == "Reviewed":
+        if self.status == "Reviewed":
             self.reviewed_date = now()
         if self.status == "Completed" and self.resolution != "Will Not Fix":
             self.corrected_date = now()
