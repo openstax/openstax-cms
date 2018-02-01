@@ -280,6 +280,7 @@ class HomePage(Page):
         'pages.Marketing',
         'pages.Technology',
         'pages.ErrataList',
+        'pages.PrivacyPolicy',
         'books.BookIndex',
         'news.NewsIndex',
         'allies.Ally',
@@ -1366,6 +1367,33 @@ class ErrataList(Page):
     content_panels = [
         FieldPanel('title', classname="full title"),
         FieldPanel('correction_schedule')
+    ]
+
+    parent_page_types = ['pages.HomePage']
+
+class PrivacyPolicy(Page):
+    intro_heading = models.CharField(max_length=255)
+    privacy_content = RichTextField()
+
+    api_fields = (
+        'title',
+        'intro_heading',
+        'privacy_content',
+        'slug',
+        'seo_title',
+        'search_description',
+    )
+
+    content_panels = [
+        FieldPanel('title', classname='full title'),
+        FieldPanel('intro_heading'),
+        FieldPanel('privacy_content'),
+    ]
+
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
     ]
 
     parent_page_types = ['pages.HomePage']

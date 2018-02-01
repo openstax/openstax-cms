@@ -19,7 +19,8 @@ from .models import (HomePage,
                      InterestForm,
                      Marketing,
                      Technology,
-                     ErrataList)
+                     ErrataList,
+                     PrivacyPolicy)
 
 from rest_framework import serializers
 
@@ -158,3 +159,8 @@ class ErrataListSerializer(PageSerializer):
     class Meta:
         model = ErrataList
         fields = ErrataList.api_fields
+
+class PrivacyPolicySerializer(PageSerializer):
+    class Meta:
+        model = PrivacyPolicy
+        fields = PrivacyPolicy.api_fields

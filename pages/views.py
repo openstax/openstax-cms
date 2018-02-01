@@ -22,7 +22,8 @@ from .models import (GeneralPage,
                      InterestForm,
                      Marketing,
                      Technology,
-                     ErrataList)
+                     ErrataList,
+                     PrivacyPolicy)
 from .serializers import (HomePageSerializer,
                           HigherEducationSerializer,
                           GeneralPageSerializer,
@@ -44,7 +45,8 @@ from .serializers import (HomePageSerializer,
                           InterestFormSerializer,
                           MarketingSerializer,
                           TechnologySerializer,
-                          ErrataListSerializer)
+                          ErrataListSerializer,
+                          PrivacyPolicySerializer)
 
 
 class JSONResponse(HttpResponse):
@@ -216,6 +218,13 @@ def page_detail(request, slug):
         serializer = ErrataListSerializer(page)
         return JSONResponse(serializer.data)
     except ErrataList.DoesNotExist:
+        page_found = False
+
+    try:
+        page = PrivacyPolicy.objects.get(slug=slug)
+        serializer = PrivacyPolicySerializer(page)
+        return JSONResponse(serializer.data)
+    except PrivacyPolicy.DoesNotExist:
         page_found = False
 
     if not page_found:
