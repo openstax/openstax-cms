@@ -50,14 +50,14 @@ ERRATA_RESOLUTIONS = (
 
 FACTUAL = 'Other factual inaccuracy in content'
 PEDAGOGICAL = 'General/pedagogical suggestion or question'
-CALCULATION = 'Incorrect calculation or solution'
+CALCULATION = 'Incorrect answer, calculation, or solution'
 LINK = 'Broken link'
 TYPO = 'Typo'
 OTHER = 'Other'
 ERRATA_ERROR_TYPES = (
     (FACTUAL, 'Other factual inaccuracy in content'),
     (PEDAGOGICAL, 'General/pedagogical suggestion or question'),
-    (CALCULATION, 'Incorrect calculation or solution'),
+    (CALCULATION, 'Incorrect answer, calculation, or solution'),
     (LINK, 'Broken link'),
     (TYPO, 'Typo'),
     (OTHER, 'Other'),
