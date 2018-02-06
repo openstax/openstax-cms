@@ -1,4 +1,5 @@
 import re
+import html
 import json
 import urllib
 import ssl
@@ -26,7 +27,7 @@ def cleanhtml(raw_html):
     remove_numbers = re.sub('<span class=\W*(os-number)\W*>.*?>', '', raw_html)
     remove_dividers = re.sub('<span class=\W*(os-divider)\W*>.*?>', '', remove_numbers)
     cleanr = re.compile('<.*?>')
-    cleantext = re.sub(cleanr, '', remove_dividers)
+    cleantext = html.unescape(re.sub(cleanr, '', remove_dividers))
     return cleantext
 
 
