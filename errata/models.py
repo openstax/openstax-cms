@@ -165,7 +165,7 @@ class Errata(models.Model):
         if (self.status == "Reviewed" or self.status == "Completed") and self.resolution == "Approved" and not self.resolution_notes:
             self.resolution_notes = "Our reviewers accepted this change."
         if self.status == "Completed" and self.resolution == "Sent to Customer Support" and not self.resolution_notes:
-            self.resolution_notes = "Forwarded to customer support."
+            self.resolution_notes = "Thank you for this feedback. Your report has been escalated to our Support team. A member of the Support team will contact you with further details."
 
         super(Errata, self).save(*args, **kwargs)
 
