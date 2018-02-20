@@ -24,7 +24,8 @@ class ErrataAdmin(admin.ModelAdmin):
     list_max_show_all = 10000
     list_per_page = 200
 
-    fields = ['created',
+    fields = ['id',
+              'created',
               'modified',
               'book',
               'is_assessment_errata',
@@ -150,7 +151,8 @@ class ErrataAdmin(admin.ModelAdmin):
     @method_decorator(csrf_protect)
     def get_form(self, request, obj=None, **kwargs):
         if request.user.is_superuser or request.user.groups.filter(name__in=['Content Managers', 'Content Development Intern']).exists():
-            self.fields = ['created',
+            self.fields = ['id',
+                           'created',
                            'modified',
                            'book',
                            'is_assessment_errata',
@@ -169,11 +171,13 @@ class ErrataAdmin(admin.ModelAdmin):
                            'submitter_email_address',
                            'file_1',
                            'file_2'] # fields to show on the actual form
-            self.readonly_fields = ['created',
+            self.readonly_fields = ['id',
+                                    'created',
                                     'modified']
             self.save_as = True
         else:
-            self.fields = ['created',
+            self.fields = ['id',
+                           'created',
                            'modified',
                            'book',
                            'is_assessment_errata',
@@ -192,7 +196,8 @@ class ErrataAdmin(admin.ModelAdmin):
                            'submitter_email_address',
                            'file_1',
                            'file_2']
-            self.readonly_fields = ['created',
+            self.readonly_fields = ['id',
+                                    'created',
                                     'modified',
                                     'book',
                                     'is_assessment_errata',
