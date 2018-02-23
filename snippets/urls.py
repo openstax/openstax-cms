@@ -3,8 +3,7 @@ from rest_framework import routers
 from . import views
 
 router = routers.SimpleRouter()
-router.register(r'', views.RoleViewSet)
+router.register(r'roles', views.RoleViewSet, base_name='roles')
+router.register(r'version', views.VersionViewSet, base_name='version')
+urlpatterns = router.urls
 
-urlpatterns = [
-    url(r'^roles/', include(router.urls)),
-]
