@@ -73,3 +73,20 @@ class Role(models.Model):
         return self.display_name
 
 register_snippet(Role)
+
+
+class Version(models.Model):
+    version = models.CharField(max_length=50)
+    created = models.DateTimeField(auto_now_add=True)
+
+    api_fields = ('version',
+                  'created')
+
+    panels = [
+        FieldPanel('version'),
+    ]
+
+    def __str__(self):
+        return self.version
+
+register_snippet(Version)
