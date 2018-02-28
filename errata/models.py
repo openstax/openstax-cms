@@ -93,6 +93,7 @@ class Errata(models.Model):
         blank=True,
         null=True,
     )
+    assessment_id = models.CharField(max_length=255, null=True, blank=True)
     status = models.CharField(
         max_length=100,
         choices=ERRATA_STATUS,
