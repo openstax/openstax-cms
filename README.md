@@ -36,7 +36,7 @@ SQLite is supported as an alternative to PostgreSQL - update the `DATABASES` set
 in openstax/settings/base.py to use `'django.db.backends.sqlite3'` and set `NAME` to be the full path of your database file, as you would with a regular Django project.
 
 ### API Endpoints
-`/api/v2` - Wagtails API. This serves things like pages, images, and documents.
+`/api/v2` - Wagtails API. This serves things like pages, images, and documents - except when it doesn't, see below for exceptions.
 
 `/api/v2/pages` (mostly used with `/api/v2/pages/?slug=[slug]`) returns the `detail_url` for the page content.
  
