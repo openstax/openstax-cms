@@ -38,13 +38,13 @@ in openstax/settings/base.py to use `'django.db.backends.sqlite3'` and set `NAME
 ### API Endpoints
 `/api/v2` - Wagtails API. This serves things like pages, images, and documents - except when it doesn't, see below for exceptions.
 
-`/api/v2/pages` (mostly used with `/api/v2/pages/?slug=[slug]`) returns the `detail_url` for the page content.
+`/api/v2/pages` (mostly used with `/api/v2/pages/?slug=[slug]`) returns the `detail_url` for the page content. You can also call `/api/v2/pages` and get a list of all pages with thier `detail_url` and `slug`.
  
  `/api/snippets/roles` - Returns list of available roles for a user. This lives in the `snippets` directory.
  
- `/api/sticky` - Returns the text for the sticky note. Lives in the `/api/` directory.
+ `/api/sticky` - Returns the text for the sticky note. Lives in the `api` directory.
  
- `/api/footer` - Returns the text for the footer. Lives in the `/api` directory.
+ `/api/footer` - Returns the text for the footer. Lives in the `api` directory.
  
  `/api/errata/[id]` - Returns details for a piece of Errata
  
