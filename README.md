@@ -58,6 +58,15 @@ in openstax/settings/base.py to use `'django.db.backends.sqlite3'` and set `NAME
  
  `/api/user` - Returns information from accounts, cms, and salesforce about the user. This lives in the `api` directory.
  
+ ##### Deprecated API Endpoints (March 1, 2018 - planned removal on August 1, 2018)
+ These endpoints are being deprecated. Until the FE code is updated, they will redirect to the Wagtail API v2 endpoint (`/api/v2/pages`)
+ 
+ `/api/books` - [Deprecated] - Returns a list of books, with their slug and some information needed to render the subjects page. This is being deprecated and you should now use `/api/v2/pages/?slug=subjects`.
+ 
+ `/api/books/[slug]` - [Deprecated] - Returns details about a book. This is being deprecated and you should now use `/api/v2/pages/?slug=[book-slug]` and follow the `detail_url` or `/api/v2/pages/[book_id]` (if known).
+ 
  `/api/news` - [Deprecated] - Returns the content of the news pages and a list of articles. This is being deprecated and you should now use `/api/v2/pages/?slug=openstax-news`.
+ 
+ `/api/news/[slug]` - [Deprecated] - Returns the content of a news article. This is being deprecated and you should now use `/api/v2/pages/?slug=[news-article=slug]` and follow the `details_url` or `/api/v2/pages/[article_id]` (if known).
  
  `/api/pages` - [Deprecated] - Returns a page based on slug, eg. `/api/pages/openstax-homepage`. This is being deprecated and you should now use `/api/v2/pages/?slug=openstax-homepage`.

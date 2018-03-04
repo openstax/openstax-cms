@@ -3,9 +3,9 @@
 from __future__ import unicode_literals
 
 from django.db import migrations
-import wagtail.wagtailcore.blocks
-import wagtail.wagtailcore.fields
-import wagtail.wagtaildocs.blocks
+import wagtail.core.blocks
+import wagtail.core.fields
+import wagtail.documents.blocks
 
 
 class Migration(migrations.Migration):
@@ -18,6 +18,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='faq',
             name='questions',
-            field=wagtail.wagtailcore.fields.StreamField((('question', wagtail.wagtailcore.blocks.StructBlock((('question', wagtail.wagtailcore.blocks.RichTextBlock(required=True)), ('slug', wagtail.wagtailcore.blocks.CharBlock(required=True)), ('answer', wagtail.wagtailcore.blocks.RichTextBlock(required=True)), ('document', wagtail.wagtaildocs.blocks.DocumentChooserBlock(required=False))))),)),
+            field=wagtail.core.fields.StreamField((('question', wagtail.core.blocks.StructBlock((('question', wagtail.core.blocks.RichTextBlock(required=True)), ('slug', wagtail.core.blocks.CharBlock(required=True)), ('answer', wagtail.core.blocks.RichTextBlock(required=True)), ('document', wagtail.documents.blocks.DocumentChooserBlock(required=False))))),)),
         ),
     ]

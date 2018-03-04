@@ -4,8 +4,8 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 import django.db.models.deletion
-import wagtail.wagtailcore.blocks
-import wagtail.wagtailcore.fields
+import wagtail.core.blocks
+import wagtail.core.fields
 
 
 class Migration(migrations.Migration):
@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
                 ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.Page')),
                 ('intro_heading', models.CharField(max_length=255)),
                 ('intro_description', models.TextField()),
-                ('questions', wagtail.wagtailcore.fields.StreamField((('question', wagtail.wagtailcore.blocks.StructBlock((('question', wagtail.wagtailcore.blocks.RichTextBlock(required=True)), ('answer', wagtail.wagtailcore.blocks.RichTextBlock(required=True))))),))),
+                ('questions', wagtail.core.fields.StreamField((('question', wagtail.core.blocks.StructBlock((('question', wagtail.core.blocks.RichTextBlock(required=True)), ('answer', wagtail.core.blocks.RichTextBlock(required=True))))),))),
             ],
             options={
                 'abstract': False,

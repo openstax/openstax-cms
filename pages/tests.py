@@ -1,6 +1,6 @@
 from django.test import TestCase
 from wagtail.tests.utils import WagtailTestUtils, WagtailPageTests
-from wagtail.wagtailcore.models import Page
+from wagtail.core.models import Page
 from pages.models import (HomePage,
                           HigherEducation,
                           ContactUs,

@@ -1,5 +1,5 @@
 from django.conf import settings
-from wagtail.wagtailcore.models import Site
+from wagtail.core.models import Site
 
 
 def build_document_url(url):

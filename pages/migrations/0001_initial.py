@@ -5,9 +5,9 @@ from __future__ import unicode_literals
 from django.db import migrations, models
 import django.db.models.deletion
 import modelcluster.fields
-import wagtail.wagtailcore.blocks
-import wagtail.wagtailcore.fields
-import wagtail.wagtailimages.blocks
+import wagtail.core.blocks
+import wagtail.core.fields
+import wagtail.images.blocks
 
 
 class Migration(migrations.Migration):
@@ -25,10 +25,10 @@ class Migration(migrations.Migration):
             name='AboutUs',
             fields=[
                 ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.Page')),
-                ('who_we_are', wagtail.wagtailcore.fields.RichTextField()),
-                ('funder_intro', wagtail.wagtailcore.fields.RichTextField()),
-                ('strategic_advisors_intro', wagtail.wagtailcore.fields.RichTextField()),
-                ('openstax_team_intro', wagtail.wagtailcore.fields.RichTextField()),
+                ('who_we_are', wagtail.core.fields.RichTextField()),
+                ('funder_intro', wagtail.core.fields.RichTextField()),
+                ('strategic_advisors_intro', wagtail.core.fields.RichTextField()),
+                ('openstax_team_intro', wagtail.core.fields.RichTextField()),
             ],
             options={
                 'abstract': False,
@@ -39,7 +39,7 @@ class Migration(migrations.Migration):
             name='Adopters',
             fields=[
                 ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.Page')),
-                ('classroom_text', wagtail.wagtailcore.fields.RichTextField()),
+                ('classroom_text', wagtail.core.fields.RichTextField()),
             ],
             options={
                 'abstract': False,
@@ -50,7 +50,7 @@ class Migration(migrations.Migration):
             name='AdoptionForm',
             fields=[
                 ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.Page')),
-                ('classroom_text', wagtail.wagtailcore.fields.RichTextField()),
+                ('classroom_text', wagtail.core.fields.RichTextField()),
             ],
             options={
                 'abstract': False,
@@ -63,7 +63,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('link_external', models.URLField(blank=True, verbose_name='External link')),
                 ('heading', models.CharField(max_length=255)),
-                ('description', wagtail.wagtailcore.fields.RichTextField()),
+                ('description', wagtail.core.fields.RichTextField()),
                 ('link_url', models.URLField(blank=True, help_text='Call to Action Link')),
                 ('link_text', models.CharField(help_text='Call to Action Text', max_length=255)),
             ],
@@ -75,7 +75,7 @@ class Migration(migrations.Migration):
             name='ContactUs',
             fields=[
                 ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.Page')),
-                ('classroom_text', wagtail.wagtailcore.fields.RichTextField()),
+                ('classroom_text', wagtail.core.fields.RichTextField()),
             ],
             options={
                 'abstract': False,
@@ -86,7 +86,7 @@ class Migration(migrations.Migration):
             name='EcosystemAllies',
             fields=[
                 ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.Page')),
-                ('classroom_text', wagtail.wagtailcore.fields.RichTextField()),
+                ('classroom_text', wagtail.core.fields.RichTextField()),
             ],
             options={
                 'abstract': False,
@@ -99,7 +99,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('link_external', models.URLField(blank=True, verbose_name='External link')),
                 ('name', models.CharField(help_text='Funder Name', max_length=255)),
-                ('description', wagtail.wagtailcore.fields.RichTextField()),
+                ('description', wagtail.core.fields.RichTextField()),
             ],
             options={
                 'abstract': False,
@@ -109,7 +109,7 @@ class Migration(migrations.Migration):
             name='GeneralPage',
             fields=[
                 ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.Page')),
-                ('body', wagtail.wagtailcore.fields.StreamField((('heading', wagtail.wagtailcore.blocks.CharBlock(classname='full title')), ('paragraph', wagtail.wagtailcore.blocks.RichTextBlock()), ('image', wagtail.wagtailimages.blocks.ImageChooserBlock()), ('html', wagtail.wagtailcore.blocks.RawHTMLBlock())))),
+                ('body', wagtail.core.fields.StreamField((('heading', wagtail.core.blocks.CharBlock(classname='full title')), ('paragraph', wagtail.core.blocks.RichTextBlock()), ('image', wagtail.images.blocks.ImageChooserBlock()), ('html', wagtail.core.blocks.RawHTMLBlock())))),
             ],
             options={
                 'abstract': False,
@@ -131,20 +131,20 @@ class Migration(migrations.Migration):
             fields=[
                 ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.Page')),
                 ('intro_heading', models.CharField(max_length=255)),
-                ('intro_description', wagtail.wagtailcore.fields.RichTextField()),
+                ('intro_description', wagtail.core.fields.RichTextField()),
                 ('get_started_heading', models.CharField(max_length=255)),
-                ('get_started_step_1_description', wagtail.wagtailcore.fields.RichTextField()),
-                ('get_started_step_2_description', wagtail.wagtailcore.fields.RichTextField()),
-                ('get_started_step_3_description', wagtail.wagtailcore.fields.RichTextField()),
-                ('get_started_step_4_description', wagtail.wagtailcore.fields.RichTextField()),
+                ('get_started_step_1_description', wagtail.core.fields.RichTextField()),
+                ('get_started_step_2_description', wagtail.core.fields.RichTextField()),
+                ('get_started_step_3_description', wagtail.core.fields.RichTextField()),
+                ('get_started_step_4_description', wagtail.core.fields.RichTextField()),
                 ('our_books_heading', models.CharField(max_length=255)),
-                ('our_books_description', wagtail.wagtailcore.fields.RichTextField()),
+                ('our_books_description', wagtail.core.fields.RichTextField()),
                 ('our_impact_heading', models.CharField(max_length=255)),
-                ('our_impact_description', wagtail.wagtailcore.fields.RichTextField()),
+                ('our_impact_description', wagtail.core.fields.RichTextField()),
                 ('cnx_heading', models.CharField(max_length=255)),
-                ('cnx_description', wagtail.wagtailcore.fields.RichTextField()),
+                ('cnx_description', wagtail.core.fields.RichTextField()),
                 ('allies_heading', models.CharField(max_length=255)),
-                ('allies_description', wagtail.wagtailcore.fields.RichTextField()),
+                ('allies_description', wagtail.core.fields.RichTextField()),
             ],
             options={
                 'abstract': False,
@@ -155,17 +155,17 @@ class Migration(migrations.Migration):
             name='HomePage',
             fields=[
                 ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.Page')),
-                ('header_2_text', wagtail.wagtailcore.fields.RichTextField()),
+                ('header_2_text', wagtail.core.fields.RichTextField()),
                 ('higher_ed_heading', models.CharField(max_length=255)),
-                ('higher_ed_description', wagtail.wagtailcore.fields.RichTextField()),
+                ('higher_ed_description', wagtail.core.fields.RichTextField()),
                 ('k12_heading', models.CharField(max_length=255)),
-                ('k12_description', wagtail.wagtailcore.fields.RichTextField()),
+                ('k12_description', wagtail.core.fields.RichTextField()),
                 ('give_heading', models.CharField(max_length=255)),
-                ('give_description', wagtail.wagtailcore.fields.RichTextField()),
+                ('give_description', wagtail.core.fields.RichTextField()),
                 ('give_cta_link', models.URLField(blank=True)),
                 ('give_cta_text', models.CharField(max_length=255)),
                 ('adopter_heading', models.CharField(max_length=255)),
-                ('adopter_description', wagtail.wagtailcore.fields.RichTextField()),
+                ('adopter_description', wagtail.core.fields.RichTextField()),
                 ('adopter_cta_link', models.URLField(blank=True)),
                 ('adopter_cta_text', models.CharField(max_length=255)),
             ],
@@ -179,13 +179,13 @@ class Migration(migrations.Migration):
             fields=[
                 ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.Page')),
                 ('k12_heading', models.CharField(max_length=255)),
-                ('k12_description', wagtail.wagtailcore.fields.RichTextField()),
+                ('k12_description', wagtail.core.fields.RichTextField()),
                 ('tutor_heading', models.CharField(max_length=255)),
-                ('tutor_description', wagtail.wagtailcore.fields.RichTextField()),
+                ('tutor_description', wagtail.core.fields.RichTextField()),
                 ('cnx_heading', models.CharField(max_length=255)),
-                ('cnx_description', wagtail.wagtailcore.fields.RichTextField()),
+                ('cnx_description', wagtail.core.fields.RichTextField()),
                 ('allies_heading', models.CharField(max_length=255)),
-                ('allies_description', wagtail.wagtailcore.fields.RichTextField()),
+                ('allies_description', wagtail.core.fields.RichTextField()),
             ],
             options={
                 'abstract': False,
@@ -198,7 +198,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('link_external', models.URLField(blank=True, verbose_name='External link')),
                 ('name', models.CharField(help_text='Team Member Name', max_length=255)),
-                ('description', wagtail.wagtailcore.fields.RichTextField()),
+                ('description', wagtail.core.fields.RichTextField()),
             ],
             options={
                 'abstract': False,
@@ -209,15 +209,15 @@ class Migration(migrations.Migration):
             fields=[
                 ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.Page')),
                 ('intro_heading', models.CharField(max_length=255)),
-                ('intro_description', wagtail.wagtailcore.fields.RichTextField()),
+                ('intro_description', wagtail.core.fields.RichTextField()),
                 ('tutor_heading', models.CharField(max_length=255)),
-                ('tutor_description', wagtail.wagtailcore.fields.RichTextField()),
+                ('tutor_description', wagtail.core.fields.RichTextField()),
                 ('concept_coach_heading', models.CharField(max_length=255)),
-                ('concept_coach_description', wagtail.wagtailcore.fields.RichTextField()),
+                ('concept_coach_description', wagtail.core.fields.RichTextField()),
                 ('cnx_heading', models.CharField(max_length=255)),
-                ('cnx_description', wagtail.wagtailcore.fields.RichTextField()),
+                ('cnx_description', wagtail.core.fields.RichTextField()),
                 ('allies_heading', models.CharField(max_length=255)),
-                ('allies_description', wagtail.wagtailcore.fields.RichTextField()),
+                ('allies_description', wagtail.core.fields.RichTextField()),
             ],
             options={
                 'abstract': False,
@@ -228,7 +228,7 @@ class Migration(migrations.Migration):
             name='Quote',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('quote_text', wagtail.wagtailcore.fields.RichTextField()),
+                ('quote_text', wagtail.core.fields.RichTextField()),
                 ('quote_image_alignment', models.CharField(blank=True, choices=[('L', 'Left Aligned'), ('R', 'Right Aligned'), ('F', 'Full Width')], max_length=1, null=True)),
                 ('quote_link', models.URLField(blank=True, null=True)),
                 ('quote_link_text', models.CharField(blank=True, max_length=255, null=True)),
@@ -238,7 +238,7 @@ class Migration(migrations.Migration):
             name='Research',
             fields=[
                 ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.Page')),
-                ('classroom_text', wagtail.wagtailcore.fields.RichTextField()),
+                ('classroom_text', wagtail.core.fields.RichTextField()),
             ],
             options={
                 'abstract': False,
@@ -251,7 +251,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('link_external', models.URLField(blank=True, verbose_name='External link')),
                 ('name', models.CharField(help_text='Strategic Advisor Name', max_length=255)),
-                ('description', wagtail.wagtailcore.fields.RichTextField()),
+                ('description', wagtail.core.fields.RichTextField()),
             ],
             options={
                 'abstract': False,

@@ -10,13 +10,13 @@ from django.db import models
 from django.forms import ValidationError
 from django.utils.html import format_html, mark_safe
 from modelcluster.fields import ParentalKey
-from wagtail.wagtailadmin.edit_handlers import (FieldPanel, InlinePanel,
+from wagtail.admin.edit_handlers import (FieldPanel, InlinePanel,
                                                 PageChooserPanel)
-from wagtail.wagtailcore import blocks
-from wagtail.wagtailcore.fields import RichTextField, StreamField
-from wagtail.wagtailcore.models import Orderable, Page
-from wagtail.wagtaildocs.edit_handlers import DocumentChooserPanel
-from wagtail.wagtailsnippets.edit_handlers import SnippetChooserPanel
+from wagtail.core import blocks
+from wagtail.core.fields import RichTextField, StreamField
+from wagtail.core.models import Orderable, Page
+from wagtail.documents.edit_handlers import DocumentChooserPanel
+from wagtail.snippets.edit_handlers import SnippetChooserPanel
 
 from allies.models import Ally
 from openstax.functions import build_document_url, build_image_url
@@ -50,7 +50,8 @@ class FacultyResources(models.Model):
         FacultyResource,
         null=True,
         help_text="Manage resources through snippets.",
-        related_name='+'
+        related_name='+',
+        on_delete=models.SET_NULL
     )
 
     def get_resource_description(self):
@@ -67,13 +68,15 @@ class FacultyResources(models.Model):
         'wagtailcore.Page',
         null=True,
         blank=True,
-        related_name='+'
+        related_name='+',
+        on_delete=models.SET_NULL
     )
     link_document = models.ForeignKey(
         'wagtaildocs.Document',
         null=True,
         blank=True,
-        related_name='+'
+        related_name='+',
+        on_delete=models.SET_NULL
     )
 
     def get_resource_heading(self):
@@ -109,7 +112,8 @@ class StudentResources(models.Model):
         StudentResource,
         null=True,
         help_text="Manage resources through snippets.",
-        related_name='+'
+        related_name='+',
+        on_delete=models.SET_NULL
     )
 
     def get_resource_heading(self):
@@ -129,13 +133,15 @@ class StudentResources(models.Model):
         'wagtailcore.Page',
         null=True,
         blank=True,
-        related_name='+'
+        related_name='+',
+        on_delete=models.SET_NULL
     )
     link_document = models.ForeignKey(
         'wagtaildocs.Document',
         null=True,
         blank=True,
-        related_name='+'
+        related_name='+',
+        on_delete=models.SET_NULL
     )
 
     def get_link_document(self):
