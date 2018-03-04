@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 import django.db.models.deletion
-import wagtail.wagtailcore.fields
+import wagtail.core.fields
 
 
 class Migration(migrations.Migration):
@@ -23,13 +23,13 @@ class Migration(migrations.Migration):
                 ('intro_description', models.TextField()),
                 ('other_payment_methods_heading', models.CharField(max_length=255)),
                 ('payment_method_1_heading', models.CharField(max_length=255)),
-                ('payment_method_1_content', wagtail.wagtailcore.fields.RichTextField()),
+                ('payment_method_1_content', wagtail.core.fields.RichTextField()),
                 ('payment_method_2_heading', models.CharField(max_length=255)),
-                ('payment_method_2_content', wagtail.wagtailcore.fields.RichTextField()),
+                ('payment_method_2_content', wagtail.core.fields.RichTextField()),
                 ('payment_method_3_heading', models.CharField(max_length=255)),
-                ('payment_method_3_content', wagtail.wagtailcore.fields.RichTextField()),
+                ('payment_method_3_content', wagtail.core.fields.RichTextField()),
                 ('payment_method_4_heading', models.CharField(max_length=255)),
-                ('payment_method_4_content', wagtail.wagtailcore.fields.RichTextField()),
+                ('payment_method_4_content', wagtail.core.fields.RichTextField()),
                 ('give_cta', models.CharField(max_length=255)),
                 ('give_cta_link', models.URLField()),
             ],

@@ -1,4 +1,8 @@
-{% overextends "wagtailadmin/home.html" %}
+{% extends "wagtailadmin/home.html" %}
 {% load gravatar static compress i18n %}
 
 {% block branding_welcome %}Welcome to OpenstaxCMS{% endblock %}
+
+{% block branding_logo %}
+    <img src="https://openstax.org/images/logo-white.svg" alt="OpenStax" />
+{% endblock %}

@@ -3,7 +3,7 @@
 from __future__ import unicode_literals
 
 from django.db import migrations, models
-import wagtail.wagtailcore.fields
+import wagtail.core.fields
 
 
 class Migration(migrations.Migration):
@@ -58,7 +58,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='marketing',
             name='section_6_knowledge_base_copy',
-            field=wagtail.wagtailcore.fields.RichTextField(default='Knowledge base copy goes here.'),
+            field=wagtail.core.fields.RichTextField(default='Knowledge base copy goes here.'),
             preserve_default=False,
         ),
     ]

@@ -4,8 +4,8 @@ from salesforce.models import Adopter
 from social.apps.django_app.default.models import \
     DjangoStorage as SocialAuthStorage
 from global_settings.models import StickyNote, Footer
-from wagtail.wagtailimages.models import Image
-from wagtail.wagtaildocs.models import Document
+from wagtail.images.models import Image
+from wagtail.documents.models import Document
 
 from .serializers import AdopterSerializer, ImageSerializer, DocumentSerializer
 from accounts.functions import update_user_status, get_or_create_user_profile
@@ -39,7 +39,10 @@ def user_api(request):
 
     if profile:
         if not profile.uuid or profile.faculty_status == 'no_faculty_info' or profile.faculty_status == 'pending_faculty':
-            update_user_status(user)
+            try:
+                update_user_status(user)
+            except IndexError:
+                print("[error] cannot find account instance for that user")
 
     try:
         social_auth = SocialAuthStorage.user.get_social_auth_for_user(user)

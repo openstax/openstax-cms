@@ -2,18 +2,19 @@ from django import forms
 from django.db import models
 from django.http.response import JsonResponse
 from modelcluster.fields import ParentalKey
-from wagtail.wagtailadmin.edit_handlers import (FieldPanel,
+from wagtail.admin.edit_handlers import (FieldPanel,
                                                 InlinePanel,
                                                 StreamFieldPanel)
-from wagtail.wagtailcore import blocks
-from wagtail.wagtailcore.blocks import FieldBlock, RawHTMLBlock, StructBlock
-from wagtail.wagtailcore.fields import RichTextField, StreamField
-from wagtail.wagtailcore.models import Orderable, Page
-from wagtail.wagtailimages.blocks import ImageChooserBlock
-from wagtail.wagtaildocs.blocks import DocumentChooserBlock
-from wagtail.wagtaildocs.edit_handlers import DocumentChooserPanel
-from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
+from wagtail.core import blocks
+from wagtail.core.blocks import FieldBlock, RawHTMLBlock, StructBlock
+from wagtail.core.fields import RichTextField, StreamField
+from wagtail.core.models import Orderable, Page
+from wagtail.images.blocks import ImageChooserBlock
+from wagtail.documents.blocks import DocumentChooserBlock
+from wagtail.documents.edit_handlers import DocumentChooserPanel
+from wagtail.images.edit_handlers import ImageChooserPanel
 from openstax.functions import build_image_url, build_document_url
+from wagtail.api import APIField
 
 from allies.models import Ally
 from books.models import Book
@@ -285,6 +286,9 @@ class HomePage(Page):
         'news.NewsIndex',
         'allies.Ally',
     ]
+
+    def __str__(self):
+        return self.path
 
 
 class HigherEducation(Page):
@@ -594,16 +598,16 @@ class OurImpact(Page):
         ('column', ColumnBlock()),
     ])
 
-    api_fields = (
-        'title',
-        'intro_heading',
-        'intro_description',
-        'row_1',
-        'institutions',
-        'slug',
-        'seo_title',
-        'search_description',
-    )
+    api_fields = [
+        APIField('title'),
+        APIField('intro_heading'),
+        APIField('intro_description'),
+        APIField('row_1'),
+        APIField('institutions'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+    ]
 
     content_panels = [
         FieldPanel('title', classname='full title'),
