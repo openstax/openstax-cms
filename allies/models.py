@@ -1,17 +1,17 @@
 from django.db import models
 from modelcluster.fields import ParentalKey
-from wagtail.wagtailadmin.edit_handlers import (FieldPanel, InlinePanel,
+from wagtail.admin.edit_handlers import (FieldPanel, InlinePanel,
                                                 MultiFieldPanel)
-from wagtail.wagtailcore.fields import RichTextField
-from wagtail.wagtailcore.models import Page
-from wagtail.wagtailimages.edit_handlers import ImageChooserPanel
+from wagtail.core.fields import RichTextField
+from wagtail.core.models import Page
+from wagtail.images.edit_handlers import ImageChooserPanel
 
 from openstax.functions import build_image_url
 from snippets.models import Subject
 
 
 class AllySubject(models.Model):
-    subject = models.ForeignKey(Subject)
+    subject = models.ForeignKey(Subject, on_delete=models.PROTECT)
     ally = ParentalKey('Ally', related_name='ally_subjects')
 
     def get_subject_name(self):

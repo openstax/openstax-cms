@@ -5,7 +5,7 @@ from __future__ import unicode_literals
 from django.db import migrations, models
 import django.db.models.deletion
 import modelcluster.fields
-import wagtail.wagtailcore.fields
+import wagtail.core.fields
 
 
 class Migration(migrations.Migration):
@@ -38,8 +38,8 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('cnx_id', models.CharField(help_text='This is used to pull relevant information from CNX.', max_length=255)),
                 ('updated', models.DateTimeField(auto_now=True)),
-                ('short_description', wagtail.wagtailcore.fields.RichTextField(blank=True, help_text='Description shown on Subject page.')),
-                ('description', wagtail.wagtailcore.fields.RichTextField(blank=True, help_text='Description shown on Book Detail page.')),
+                ('short_description', wagtail.core.fields.RichTextField(blank=True, help_text='Description shown on Subject page.')),
+                ('description', wagtail.core.fields.RichTextField(blank=True, help_text='Description shown on Book Detail page.')),
                 ('publish_date', models.DateField(blank=True, editable=False, null=True)),
                 ('isbn_10', models.IntegerField(blank=True, null=True)),
                 ('isbn_13', models.CharField(blank=True, max_length=255, null=True)),
@@ -65,14 +65,14 @@ class Migration(migrations.Migration):
             name='BookIndex',
             fields=[
                 ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.Page')),
-                ('page_description', wagtail.wagtailcore.fields.RichTextField()),
+                ('page_description', wagtail.core.fields.RichTextField()),
                 ('dev_standards_heading', models.CharField(blank=True, max_length=255, null=True)),
                 ('dev_standard_1_heading', models.CharField(blank=True, max_length=255, null=True)),
-                ('dev_standard_1_description', wagtail.wagtailcore.fields.RichTextField()),
+                ('dev_standard_1_description', wagtail.core.fields.RichTextField()),
                 ('dev_standard_2_heading', models.CharField(blank=True, max_length=255, null=True)),
-                ('dev_standard_2_description', wagtail.wagtailcore.fields.RichTextField()),
+                ('dev_standard_2_description', wagtail.core.fields.RichTextField()),
                 ('dev_standard_3_heading', models.CharField(blank=True, max_length=255, null=True)),
-                ('dev_standard_3_description', wagtail.wagtailcore.fields.RichTextField()),
+                ('dev_standard_3_description', wagtail.core.fields.RichTextField()),
                 ('subject_list_heading', models.CharField(blank=True, max_length=255, null=True)),
             ],
             options={
@@ -91,7 +91,7 @@ class Migration(migrations.Migration):
             name='Quotes',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('quote_text', wagtail.wagtailcore.fields.RichTextField()),
+                ('quote_text', wagtail.core.fields.RichTextField()),
                 ('quote_author', models.CharField(max_length=255)),
                 ('quote_author_school', models.CharField(max_length=255)),
             ],
@@ -101,7 +101,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('heading', models.CharField(max_length=255)),
-                ('description', wagtail.wagtailcore.fields.RichTextField()),
+                ('description', wagtail.core.fields.RichTextField()),
             ],
         ),
         migrations.CreateModel(

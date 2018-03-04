@@ -1,7 +1,7 @@
 from rest_framework import serializers
 from salesforce.models import Adopter
-from wagtail.wagtailimages.models import Image
-from wagtail.wagtaildocs.models import Document
+from wagtail.images.models import Image
+from wagtail.documents.models import Document
 
 
 class AdopterSerializer(serializers.HyperlinkedModelSerializer):

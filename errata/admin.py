@@ -8,7 +8,7 @@ from django.views.decorators.csrf import csrf_protect
 from django.http import HttpResponse
 from django.utils.encoding import smart_str
 from django.utils.html import mark_safe
-from django.core.urlresolvers import resolve
+from django.urls import resolve
 from django.db.models.fields.files import FieldFile
 
 from extraadminfilters.filters import UnionFieldListFilter

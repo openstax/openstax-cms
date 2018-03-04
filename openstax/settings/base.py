@@ -78,15 +78,15 @@ STATICFILES_FINDERS = [
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'wq21wtjo3@d_qfjvd-#td!%7gfy2updj2z+nev^k$iy%=m4_tr'
 
-MIDDLEWARE_CLASSES = [
+MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'wagtail.wagtailcore.middleware.SiteMiddleware',
-    'wagtail.wagtailredirects.middleware.RedirectMiddleware',
+    'wagtail.core.middleware.SiteMiddleware',
+    'wagtail.contrib.redirects.middleware.RedirectMiddleware',
 ]
 
 AUTHENTICATION_BACKENDS = (
@@ -137,9 +137,6 @@ TEMPLATES = [
                 'social.apps.django_app.context_processors.backends',
                 'social.apps.django_app.context_processors.login_redirect',
             ],
-            'builtins': [
-                'overextends.templatetags.overextends_tags',
-            ],
         },
     },
 ]
@@ -162,7 +159,6 @@ INSTALLED_APPS = [
     'compressor',
     'taggit',
     'modelcluster',
-    'overextends',
     'rest_framework',
     'rest_framework.authtoken',
     'rest_auth',
@@ -185,18 +181,18 @@ INSTALLED_APPS = [
     'errata',
     'extraadminfilters',
     # wagtail
-    'wagtail.wagtailcore',
-    'wagtail.wagtailadmin',
-    'wagtail.wagtaildocs',
-    'wagtail.wagtailsnippets',
-    'wagtail.wagtailusers',
-    'wagtail.wagtailimages',
-    'wagtail.wagtailembeds',
-    'wagtail.wagtailsearch',
-    'wagtail.wagtailredirects',
-    'wagtail.wagtailforms',
-    'wagtail.wagtailsites',
-    'wagtail.contrib.wagtailapi',
+    'wagtail.core',
+    'wagtail.admin',
+    'wagtail.documents',
+    'wagtail.snippets',
+    'wagtail.users',
+    'wagtail.images',
+    'wagtail.embeds',
+    'wagtail.search',
+    'wagtail.contrib.redirects',
+    'wagtail.contrib.forms',
+    'wagtail.sites',
+    #'wagtail.contrib.wagtailapi',
     'wagtail.api.v2',
     'wagtail.contrib.settings',
     'wagtail.contrib.modeladmin',
@@ -213,7 +209,7 @@ COMPRESS_PRECOMPILERS = (
 
 #django rest framework settings
 REST_FRAMEWORK = {
-    'DEFAULT_FILTER_BACKENDS': ('rest_framework.filters.DjangoFilterBackend',),
+    'DEFAULT_FILTER_BACKENDS': ('django_filters.rest_framework.DjangoFilterBackend',),
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
     ),
@@ -272,7 +268,7 @@ LOGGING = {
 # WAGTAIL SETTINGS
 WAGTAIL_SITE_NAME = 'openstax'
 # Wagtail API number of results
-WAGTAILAPI_LIMIT_MAX = 250
+WAGTAILAPI_LIMIT_MAX = None
 
 # used in page.models to retrieve book information
 CNX_ARCHIVE_URL = 'https://archive.cnx.org'

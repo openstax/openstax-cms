@@ -4,9 +4,9 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 import django.db.models.deletion
-import wagtail.wagtailcore.blocks
-import wagtail.wagtailcore.fields
-import wagtail.wagtaildocs.blocks
+import wagtail.core.blocks
+import wagtail.core.fields
+import wagtail.documents.blocks
 
 
 class Migration(migrations.Migration):
@@ -24,19 +24,19 @@ class Migration(migrations.Migration):
                 ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.Page')),
                 ('section_1_heading', models.CharField(max_length=255)),
                 ('section_1_subheading', models.CharField(max_length=255)),
-                ('section_1_paragraph', wagtail.wagtailcore.fields.RichTextField()),
+                ('section_1_paragraph', wagtail.core.fields.RichTextField()),
                 ('section_1_cta_link', models.URLField()),
                 ('section_1_cta_text', models.CharField(max_length=255)),
                 ('section_2_heading', models.CharField(max_length=255)),
                 ('section_2_subheading', models.CharField(max_length=255)),
-                ('section_2_paragraph', wagtail.wagtailcore.fields.RichTextField()),
+                ('section_2_paragraph', wagtail.core.fields.RichTextField()),
                 ('section_3_heading', models.CharField(max_length=255)),
-                ('section_3_paragraph', wagtail.wagtailcore.fields.RichTextField()),
+                ('section_3_paragraph', wagtail.core.fields.RichTextField()),
                 ('section_4_heading', models.CharField(max_length=255)),
                 ('section_4_book_heading', models.CharField(max_length=255)),
                 ('section_5_heading', models.CharField(max_length=255)),
-                ('section_5_paragraph', wagtail.wagtailcore.fields.RichTextField()),
-                ('faqs', wagtail.wagtailcore.fields.StreamField((('faq', wagtail.wagtailcore.blocks.StructBlock((('question', wagtail.wagtailcore.blocks.RichTextBlock(required=True)), ('slug', wagtail.wagtailcore.blocks.CharBlock(required=True)), ('answer', wagtail.wagtailcore.blocks.RichTextBlock(required=True)), ('document', wagtail.wagtaildocs.blocks.DocumentChooserBlock(required=False))))),))),
+                ('section_5_paragraph', wagtail.core.fields.RichTextField()),
+                ('faqs', wagtail.core.fields.StreamField((('faq', wagtail.core.blocks.StructBlock((('question', wagtail.core.blocks.RichTextBlock(required=True)), ('slug', wagtail.core.blocks.CharBlock(required=True)), ('answer', wagtail.core.blocks.RichTextBlock(required=True)), ('document', wagtail.documents.blocks.DocumentChooserBlock(required=False))))),))),
                 ('section_7_heading', models.CharField(max_length=255)),
                 ('section_7_subheading', models.CharField(max_length=255)),
                 ('section_7_cta_text_1', models.CharField(max_length=255)),

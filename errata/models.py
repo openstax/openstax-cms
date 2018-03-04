@@ -8,8 +8,8 @@ from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 
-from wagtail.wagtailcore import hooks
-from wagtail.wagtailadmin.menu import MenuItem
+from wagtail.core import hooks
+from wagtail.admin.menu import MenuItem
 
 from books.models import Book
 from django.conf import settings
@@ -86,7 +86,7 @@ ERRATA_RESOURCES = (
 class Errata(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
-    book = models.ForeignKey(Book)
+    book = models.ForeignKey(Book, on_delete=models.PROTECT)
     is_assessment_errata = models.CharField(
         max_length=100,
         choices=YES_NO_CHOICES,
@@ -105,7 +105,7 @@ class Errata(models.Model):
         blank=True,
         null=True,
     )
-    duplicate_id = models.ForeignKey('self', related_name='duplicate_report', null=True, blank=True)
+    duplicate_id = models.ForeignKey('self', related_name='duplicate_report', null=True, blank=True, on_delete=models.PROTECT)
     reviewed_date = models.DateField(blank=True, null=True, editable=False)
     corrected_date = models.DateField(blank=True, null=True)
     archived = models.BooleanField(default=False)
@@ -128,7 +128,7 @@ class Errata(models.Model):
         null=True
     )
     resource_other = models.CharField(max_length=255, blank=True, null=True)
-    submitted_by = models.ForeignKey(User, blank=True, null=True)
+    submitted_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
     submitter_email_address = models.EmailField(blank=True, null=True)
     file_1 = models.FileField(upload_to='errata/user_uploads/1/', blank=True, null=True)
     file_2 = models.FileField(upload_to='errata/user_uploads/2/', blank=True, null=True)
@@ -245,5 +245,5 @@ def send_status_update_email(sender, instance, created, **kwargs):
 
 
 class InternalDocumentation(models.Model):
-    errata = models.ForeignKey(Errata)
+    errata = models.ForeignKey(Errata, on_delete=models.PROTECT)
     file = models.FileField(upload_to='errata/internal/')

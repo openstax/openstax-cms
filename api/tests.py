@@ -7,7 +7,7 @@ from django.core.management import call_command
 from django.test import LiveServerTestCase, TestCase
 from django.utils.six import StringIO
 from wagtail.tests.utils import WagtailPageTests, WagtailTestUtils
-from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
+from wagtail.images.tests.utils import Image, get_test_image_file
 
 from accounts.utils import create_user
 
