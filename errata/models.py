@@ -38,6 +38,7 @@ NOT_AN_ERROR = 'Not An Error'
 WILL_NOT_FIX = 'Will Not Fix'
 APPROVED = 'Approved'
 MAJOR_BOOK_REVISION = 'Major Book Revision'
+TECHNICAL_ERROR = 'Technical Error'
 CUSTOMER_SUPPORT = 'Sent to Customer Support'
 ERRATA_RESOLUTIONS = (
     (DUPLICATE, 'Duplicate'),
@@ -45,6 +46,7 @@ ERRATA_RESOLUTIONS = (
     (WILL_NOT_FIX, 'Will Not Fix'),
     (APPROVED, 'Approved'),
     (MAJOR_BOOK_REVISION, 'Major Book Revision'),
+    (TECHNICAL_ERROR, 'Technical Error'),
     (CUSTOMER_SUPPORT, 'Sent to Customer Support'),
 )
 
@@ -167,6 +169,8 @@ class Errata(models.Model):
             self.resolution_notes = "Our reviewers accepted this change."
         if self.status == "Completed" and self.resolution == "Sent to Customer Support" and not self.resolution_notes:
             self.resolution_notes = "Thank you for this feedback. Your report has been escalated to our Support team. A member of the Support team will contact you with further details."
+        if self.resolution == 'Technical Error' and not self.resolution_notes:
+            self.resolution_notes = 'This a technical error and the proper departments have been notified so that it can be fixed. Thank you for your submission.'
 
         super(Errata, self).save(*args, **kwargs)
 
