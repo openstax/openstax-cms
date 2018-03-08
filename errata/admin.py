@@ -8,8 +8,6 @@ from django.views.decorators.csrf import csrf_protect
 from django.http import HttpResponse
 from django.utils.encoding import smart_str
 from django.utils.html import mark_safe
-from django.urls import resolve
-from django.db.models.fields.files import FieldFile
 
 from extraadminfilters.filters import UnionFieldListFilter
 
@@ -227,20 +225,5 @@ class ErrataAdmin(admin.ModelAdmin):
             self.save_as = False
 
         return super(ErrataAdmin, self).get_form(request, obj, **kwargs)
-
-    def save_model(self, request, obj, form, change):
-        if '_saveasnew' in request.POST:
-            original_pk = resolve(request.path).args[0]
-            original_obj = obj._meta.concrete_model.objects.get(id=original_pk)
-
-            for prop, value in vars(original_obj).items():
-                print(prop)
-                if prop == 'submitter_email_address':
-                    setattr(obj, prop, None)
-                if prop == 'submitted_by_id':
-                    setattr(obj, prop, None)
-                if isinstance(getattr(original_obj, prop), FieldFile):
-                    setattr(obj, prop, getattr(original_obj, prop))
-        obj.save(request)
 
 admin.site.register(Errata, ErrataAdmin)
