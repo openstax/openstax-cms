@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 
 from django.db import migrations, models
 import django.db.models.deletion
-import wagtail.wagtailcore.fields
+import wagtail.core.fields
 
 
 class Migration(migrations.Migration):
@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='marketing',
             name='section_4_paragraph',
-            field=wagtail.wagtailcore.fields.RichTextField(default='Thousands of students have piloted OpenStax Tutor Beta. Here are the features we’ve prioritized, and more are on the way. Have suggestions for future development? Send us an email at info@openstaxtutor.org.'),
+            field=wagtail.core.fields.RichTextField(default='Thousands of students have piloted OpenStax Tutor Beta. Here are the features we’ve prioritized, and more are on the way. Have suggestions for future development? Send us an email at info@openstaxtutor.org.'),
             preserve_default=False,
         ),
         migrations.AddField(

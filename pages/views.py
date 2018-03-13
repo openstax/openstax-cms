@@ -1,6 +1,6 @@
 from django.http import HttpResponse
+from django.shortcuts import redirect
 from django.views.decorators.csrf import csrf_exempt
-from rest_framework.renderers import JSONRenderer
 from .models import (GeneralPage,
                      HomePage,
                      HigherEducation,
@@ -24,206 +24,150 @@ from .models import (GeneralPage,
                      Technology,
                      ErrataList,
                      PrivacyPolicy)
-from .serializers import (HomePageSerializer,
-                          HigherEducationSerializer,
-                          GeneralPageSerializer,
-                          AboutUsSerializer,
-                          EcosystemAlliesSerializer,
-                          ContactUsSerializer,
-                          FoundationSupportSerializer,
-                          OurImpactSerializer,
-                          GiveSerializer,
-                          TermsOfServiceSerializer,
-                          APSerializer,
-                          FAQSerializer,
-                          SupportSerializer,
-                          GiveFormSerializer,
-                          AccessibilitySerializer,
-                          LicensingSerializer,
-                          CompCopySerializer,
-                          AdoptFormSerializer,
-                          InterestFormSerializer,
-                          MarketingSerializer,
-                          TechnologySerializer,
-                          ErrataListSerializer,
-                          PrivacyPolicySerializer)
-
-
-class JSONResponse(HttpResponse):
-    """
-    An HttpResponse that renders its content into JSON.
-    """
-    def __init__(self, data, **kwargs):
-        content = JSONRenderer().render(data)
-        kwargs['content_type'] = 'application/json'
-        super(JSONResponse, self).__init__(content, **kwargs)
 
 
 @csrf_exempt
 def page_detail(request, slug):
     """
-    Retrieve a pages JSON by slug.
+    Redirects the page api to the Wagtail API. This should eventually be removed as the FE moves to the new /api/v2/ endpoint
     """
     page_found = True
 
     try:
         page = HomePage.objects.get(slug=slug)
-        serializer = HomePageSerializer(page)
-        return JSONResponse(serializer.data)
+        return redirect('/api/v2/pages/{}'.format(page.pk))
     except HomePage.DoesNotExist:
         page_found = False
 
     try:
         page = HigherEducation.objects.get(slug=slug)
-        serializer = HigherEducationSerializer(page)
-        return JSONResponse(serializer.data)
+        return redirect('/api/v2/pages/{}'.format(page.pk))
     except HigherEducation.DoesNotExist:
         page_found = False
 
     try:
         page = GeneralPage.objects.get(slug=slug)
-        serializer = GeneralPageSerializer(page)
-        return JSONResponse(serializer.data)
+        return redirect('/api/v2/pages/{}'.format(page.pk))
     except GeneralPage.DoesNotExist:
         page_found = False
 
     try:
         page = AboutUs.objects.get(slug=slug)
-        serializer = AboutUsSerializer(page)
-        return JSONResponse(serializer.data)
+        return redirect('/api/v2/pages/{}'.format(page.pk))
     except AboutUs.DoesNotExist:
         page_found = False
 
     try:
         page = EcosystemAllies.objects.get(slug=slug)
-        serializer = EcosystemAlliesSerializer(page)
-        return JSONResponse(serializer.data)
+        return redirect('/api/v2/pages/{}'.format(page.pk))
     except EcosystemAllies.DoesNotExist:
         page_found = False
 
     try:
         page = ContactUs.objects.get(slug=slug)
-        serializer = ContactUsSerializer(page)
-        return JSONResponse(serializer.data)
+        return redirect('/api/v2/pages/{}'.format(page.pk))
     except ContactUs.DoesNotExist:
         page_found = False
 
     try:
         page = FoundationSupport.objects.get(slug=slug)
-        serializer = FoundationSupportSerializer(page)
-        return JSONResponse(serializer.data)
+        return redirect('/api/v2/pages/{}'.format(page.pk))
     except FoundationSupport.DoesNotExist:
         page_found = False
 
     try:
         page = OurImpact.objects.get(slug=slug)
-        serializer = OurImpactSerializer(page)
-        return JSONResponse(serializer.data)
+        return redirect('/api/v2/pages/{}'.format(page.pk))
     except OurImpact.DoesNotExist:
         page_found = False
 
     try:
         page = Give.objects.get(slug=slug)
-        serializer = GiveSerializer(page)
-        return JSONResponse(serializer.data)
+        return redirect('/api/v2/pages/{}'.format(page.pk))
     except Give.DoesNotExist:
         page_found = False
 
     try:
         page = TermsOfService.objects.get(slug=slug)
-        serializer = TermsOfServiceSerializer(page)
-        return JSONResponse(serializer.data)
+        return redirect('/api/v2/pages/{}'.format(page.pk))
     except TermsOfService.DoesNotExist:
         page_found = False
 
     try:
         page = AP.objects.get(slug=slug)
-        serializer = APSerializer(page)
-        return JSONResponse(serializer.data)
+        return redirect('/api/v2/pages/{}'.format(page.pk))
     except AP.DoesNotExist:
         page_found = False
 
     try:
         page = FAQ.objects.get(slug=slug)
-        serializer = FAQSerializer(page)
-        return JSONResponse(serializer.data)
+        return redirect('/api/v2/pages/{}'.format(page.pk))
     except FAQ.DoesNotExist:
         page_found = False
 
     try:
         page = Support.objects.get(slug=slug)
-        serializer = SupportSerializer(page)
-        return JSONResponse(serializer.data)
+        return redirect('/api/v2/pages/{}'.format(page.pk))
     except Support.DoesNotExist:
         page_found = False
 
     try:
         page = GiveForm.objects.get(slug=slug)
-        serializer = GiveFormSerializer(page)
-        return JSONResponse(serializer.data)
+        return redirect('/api/v2/pages/{}'.format(page.pk))
     except GiveForm.DoesNotExist:
         page_found = False
 
     try:
         page = Accessibility.objects.get(slug=slug)
-        serializer = AccessibilitySerializer(page)
-        return JSONResponse(serializer.data)
+        return redirect('/api/v2/pages/{}'.format(page.pk))
     except Accessibility.DoesNotExist:
         page_found = False
 
     try:
         page = Licensing.objects.get(slug=slug)
-        serializer = LicensingSerializer(page)
-        return JSONResponse(serializer.data)
+        return redirect('/api/v2/pages/{}'.format(page.pk))
     except Licensing.DoesNotExist:
         page_found = False
 
     try:
         page = CompCopy.objects.get(slug=slug)
-        serializer = CompCopySerializer(page)
-        return JSONResponse(serializer.data)
+        return redirect('/api/v2/pages/{}'.format(page.pk))
     except CompCopy.DoesNotExist:
         page_found = False
 
     try:
         page = AdoptForm.objects.get(slug=slug)
-        serializer = AdoptFormSerializer(page)
-        return JSONResponse(serializer.data)
+        return redirect('/api/v2/pages/{}'.format(page.pk))
     except AdoptForm.DoesNotExist:
         page_found = False
 
     try:
         page = InterestForm.objects.get(slug=slug)
-        serializer = InterestFormSerializer(page)
-        return JSONResponse(serializer.data)
+        return redirect('/api/v2/pages/{}'.format(page.pk))
     except InterestForm.DoesNotExist:
         page_found = False
 
     try:
         page = Marketing.objects.get(slug=slug)
-        serializer = MarketingSerializer(page)
-        return JSONResponse(serializer.data)
+        return redirect('/api/v2/pages/{}'.format(page.pk))
     except Marketing.DoesNotExist:
         page_found = False
 
     try:
         page = Technology.objects.get(slug=slug)
-        serializer = TechnologySerializer(page)
-        return JSONResponse(serializer.data)
+        return redirect('/api/v2/pages/{}'.format(page.pk))
     except Technology.DoesNotExist:
         page_found = False
 
     try:
         page = ErrataList.objects.get(slug=slug)
-        serializer = ErrataListSerializer(page)
-        return JSONResponse(serializer.data)
+        return redirect('/api/v2/pages/{}'.format(page.pk))
     except ErrataList.DoesNotExist:
         page_found = False
 
     try:
         page = PrivacyPolicy.objects.get(slug=slug)
-        serializer = PrivacyPolicySerializer(page)
-        return JSONResponse(serializer.data)
+        return redirect('/api/v2/pages/{}'.format(page.pk))
     except PrivacyPolicy.DoesNotExist:
         page_found = False
 

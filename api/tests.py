@@ -7,7 +7,7 @@ from django.core.management import call_command
 from django.test import LiveServerTestCase, TestCase
 from django.utils.six import StringIO
 from wagtail.tests.utils import WagtailPageTests, WagtailTestUtils
-from wagtail.wagtailimages.tests.utils import Image, get_test_image_file
+from wagtail.images.tests.utils import Image, get_test_image_file
 
 from accounts.utils import create_user
 
@@ -110,21 +110,21 @@ class ImageAPI(TestCase, WagtailTestUtils):
     def setUp(self):
         self.login()
 
-    def test_api_v1_no_images(self):
-        response = self.client.get('/api/v1/images/')
+    def test_api_v2_no_images(self):
+        response = self.client.get('/api/v2/images/')
         self.assertEqual(response.status_code, 200)
         response_dict = eval(response.content.decode(response.charset))
         self.assertIsInstance(response_dict, dict)
         self.assertEqual(response_dict['meta']['total_count'], 0)
-        self.assertEqual(response_dict['images'], [])
+        self.assertEqual(response_dict['items'], [])
 
-    def test_api_v1_single_image(self):
-        response = self.client.get('/api/v1/images/')
+    def test_api_v2_single_image(self):
+        response = self.client.get('/api/v2/images/')
         self.assertEqual(response.status_code, 200)
         response_dict = eval(response.content.decode(response.charset))
         self.assertIsInstance(response_dict, dict)
         self.assertEqual(response_dict['meta']['total_count'], 0)
-        self.assertEqual(response_dict['images'], [])
+        self.assertEqual(response_dict['items'], [])
 
         expected_title = "Test image"
         image = Image.objects.create(
@@ -132,11 +132,11 @@ class ImageAPI(TestCase, WagtailTestUtils):
             file=get_test_image_file(),
         )
 
-        response = self.client.get('/api/v1/images/')
+        response = self.client.get('/api/v2/images/')
         self.assertEqual(response.status_code, 200)
         response_dict = eval(response.content.decode(response.charset))
         self.assertIsInstance(response_dict, dict)
         self.assertEqual(response_dict['meta']['total_count'], 1)
-        returned_title = response_dict['images'][0]['title']
+        returned_title = response_dict['items'][0]['title']
         self.assertEqual(expected_title, returned_title)
 

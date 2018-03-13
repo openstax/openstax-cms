@@ -2,11 +2,10 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
-from wagtail.contrib.wagtailapi import urls as wagtailapi_urls
-from wagtail.wagtailadmin import urls as wagtailadmin_urls
-from wagtail.wagtailcore import urls as wagtail_urls
-from wagtail.wagtaildocs import urls as wagtaildocs_urls
-from wagtail.wagtailimages import urls as wagtailimages_urls
+from wagtail.admin import urls as wagtailadmin_urls
+from wagtail.core import urls as wagtail_urls
+from wagtail.documents import urls as wagtaildocs_urls
+from wagtail.images import urls as wagtailimages_urls
 from .api import api_router
 
 from news.search import search
@@ -17,7 +16,7 @@ from api import urls as api_urls
 admin.site.site_header = 'OpenStax'
 
 urlpatterns = [
-    url(r'^django-admin/', include(admin.site.urls)),
+    url(r'^django-admin/', admin.site.urls),
 
     url(r'^admin/', include(wagtailadmin_urls)),
     url(r'^accounts/', include('accounts.urls')),
@@ -25,7 +24,6 @@ urlpatterns = [
     url(r'^images/', include(wagtailimages_urls)),
 
     url(r'^api/mail/', include('mail.urls')),
-    url(r'^api/', include(wagtailapi_urls)),
     url(r'^api/', include(api_urls)),
     url(r'^api/search/$', search, name='search'),
     url(r'^api/v2/', api_router.urls),

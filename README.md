@@ -34,3 +34,39 @@ Run with ``python3 manage.py test --liveserver=localhost:8001 --settings=opensta
 
 SQLite is supported as an alternative to PostgreSQL - update the `DATABASES` setting
 in openstax/settings/base.py to use `'django.db.backends.sqlite3'` and set `NAME` to be the full path of your database file, as you would with a regular Django project.
+
+### API Endpoints
+`/api/v2` - Wagtails API. This serves things like pages, images, and documents - except when it doesn't, see below for exceptions.
+
+`/api/v2/pages` (mostly used with `/api/v2/pages/?slug=[slug]`) returns the `detail_url` for the page content. You can also call `/api/v2/pages` and get a list of all pages with their `detail_url` and `slug`.
+ 
+ `/api/snippets/roles` - Returns list of available roles for a user. This lives in the `snippets` directory.
+ 
+ `/api/sticky` - Returns the text for the sticky note. Lives in the `api` directory.
+ 
+ `/api/footer` - Returns the text for the footer. Lives in the `api` directory.
+ 
+ `/api/errata/[id]` - Returns details for a piece of Errata
+ 
+ `/api/books` - Returns a list of books, with their slug and some information needed to render the subjects page
+ 
+ `/api/mail/send_mail` - Takes post parameters and sends mail through Amazon SES. We prevent spamming by only having a limited set of subjects that it will accept and go to a particular email address. 
+ 
+ `/api/documents` - Custom API endpoint to return all documents with their cloudfront url, this lives in the `api` directory
+ 
+ `/api/images` - Custom API endpoint to return all images with their cloudfront url, this lives in the `api` directory.
+ 
+ `/api/user` - Returns information from accounts, cms, and salesforce about the user. This lives in the `api` directory.
+ 
+ ##### Deprecated API Endpoints (March 1, 2018 - planned removal on August 1, 2018)
+ These endpoints are being deprecated. Until the FE code is updated, they will redirect to the Wagtail API v2 endpoint (`/api/v2/pages`)
+ 
+ `/api/books` - [Deprecated] - Returns a list of books, with their slug and some information needed to render the subjects page. This is being deprecated and you should now use `/api/v2/pages/?slug=subjects`.
+ 
+ `/api/books/[slug]` - [Deprecated] - Returns details about a book. This is being deprecated and you should now use `/api/v2/pages/?slug=[book-slug]` and follow the `detail_url` or `/api/v2/pages/[book_id]` (if known).
+ 
+ `/api/news` - [Deprecated] - Returns the content of the news pages and a list of articles. This is being deprecated and you should now use `/api/v2/pages/?slug=openstax-news`.
+ 
+ `/api/news/[slug]` - [Deprecated] - Returns the content of a news article. This is being deprecated and you should now use `/api/v2/pages/?slug=[news-article=slug]` and follow the `details_url` or `/api/v2/pages/[article_id]` (if known).
+ 
+ `/api/pages` - [Deprecated] - Returns a page based on slug, eg. `/api/pages/openstax-homepage`. This is being deprecated and you should now use `/api/v2/pages/?slug=openstax-homepage`.
