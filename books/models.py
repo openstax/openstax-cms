@@ -32,7 +32,16 @@ def cleanhtml(raw_html):
 
 
 class Quotes(models.Model):
-    quote_text = RichTextField()
+    quote_text = RichTextField(features=['ol',
+                                         'ul',
+                                         'bold',
+                                         'italic',
+                                         'link',
+                                         'image',
+                                         'hr',
+                                         'br',
+                                         'embed',
+                                         'superscript'])
     quote_author = models.CharField(max_length=255)
     quote_author_school = models.CharField(max_length=255)
 
@@ -271,7 +280,17 @@ class Book(Page):
     updated = models.DateTimeField(auto_now=True)
     is_ap = models.BooleanField(default=False)
     description = RichTextField(
-        blank=True, help_text="Description shown on Book Detail page.")
+        blank=True, help_text="Description shown on Book Detail page.", features=['ol',
+                                                                                  'ul',
+                                                                                  'bold',
+                                                                                  'italic',
+                                                                                  'link',
+                                                                                  'image',
+                                                                                  'hr',
+                                                                                  'br',
+                                                                                  'document',
+                                                                                  'embed',
+                                                                                  'superscript'])
     cover = models.ForeignKey(
         'wagtaildocs.Document',
         null=True,
@@ -560,13 +579,40 @@ class BookIndex(Page):
         max_length=255, blank=True, null=True)
     dev_standard_1_heading = models.CharField(
         max_length=255, blank=True, null=True)
-    dev_standard_1_description = RichTextField()
+    dev_standard_1_description = RichTextField(features=['ol',
+                                                         'ul',
+                                                         'bold',
+                                                         'italic',
+                                                         'link',
+                                                         'image',
+                                                         'hr',
+                                                         'br',
+                                                         'embed',
+                                                         'superscript'])
     dev_standard_2_heading = models.CharField(
         max_length=255, blank=True, null=True)
-    dev_standard_2_description = RichTextField()
+    dev_standard_2_description = RichTextField(features=['ol',
+                                                         'ul',
+                                                         'bold',
+                                                         'italic',
+                                                         'link',
+                                                         'image',
+                                                         'hr',
+                                                         'br',
+                                                         'embed',
+                                                         'superscript'])
     dev_standard_3_heading = models.CharField(
         max_length=255, blank=True, null=True)
-    dev_standard_3_description = RichTextField()
+    dev_standard_3_description = RichTextField(features=['ol',
+                                                         'ul',
+                                                         'bold',
+                                                         'italic',
+                                                         'link',
+                                                         'image',
+                                                         'hr',
+                                                         'br',
+                                                         'embed',
+                                                         'superscript'])
     subject_list_heading = models.CharField(
         max_length=255, blank=True, null=True)
 

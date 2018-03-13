@@ -99,7 +99,16 @@ class OpenStaxTeam(models.Model):
 
 class ColumnBlock(blocks.StructBlock):
     heading = blocks.CharBlock(required=False)
-    content = blocks.RichTextBlock(required=False)
+    content = blocks.RichTextBlock(required=False, features=['ol',
+                                                             'ul',
+                                                             'bold',
+                                                             'italic',
+                                                             'link',
+                                                             'image',
+                                                             'hr',
+                                                             'br',
+                                                             'embed',
+                                                             'superscript'])
     image = ImageBlock(required=False, help_text='Callout boxes 940x400, Home page boxes 1464x640')
     document = DocumentChooserBlock(required=False)
     cta = blocks.CharBlock(required=False)
@@ -112,7 +121,16 @@ class ColumnBlock(blocks.StructBlock):
 class FAQBlock(blocks.StructBlock):
     question = blocks.RichTextBlock(required=True)
     slug = blocks.CharBlock(required=True)
-    answer = blocks.RichTextBlock(required=True)
+    answer = blocks.RichTextBlock(required=True, features=['ol',
+                                                           'ul',
+                                                           'bold',
+                                                           'italic',
+                                                           'link',
+                                                           'image',
+                                                           'hr',
+                                                           'br',
+                                                           'embed',
+                                                           'superscript'])
     document = DocumentChooserBlock(required=False)
 
     class Meta:
@@ -130,7 +148,16 @@ class AboutUsOpenStaxTeam(Orderable, OpenStaxTeam):
 class AboutUs(Page):
     tagline = models.CharField(max_length=255)
     intro_heading = models.CharField(max_length=255)
-    intro_paragraph = RichTextField()
+    intro_paragraph = RichTextField(features=['ol',
+                                              'ul',
+                                              'bold',
+                                              'italic',
+                                              'link',
+                                              'image',
+                                              'hr',
+                                              'br',
+                                              'embed',
+                                              'superscript'])
     our_team_heading = models.CharField(max_length=255)
 
     api_fields = (
@@ -170,7 +197,16 @@ class Quote(models.Model):
         ('R', 'right'),
         ('F', 'full'),
     )
-    quote_text = RichTextField()
+    quote_text = RichTextField(features=['ol',
+                                         'ul',
+                                         'bold',
+                                         'italic',
+                                         'link',
+                                         'image',
+                                         'hr',
+                                         'br',
+                                         'embed',
+                                         'superscript'])
 
     quote_image = models.ForeignKey(
         'wagtailimages.Image',
@@ -385,8 +421,26 @@ class HigherEducation(Page):
 class ContactUs(Page):
     tagline = models.CharField(max_length=255)
     mailing_header = models.CharField(max_length=255)
-    mailing_address = RichTextField()
-    customer_service = RichTextField()
+    mailing_address = RichTextField(features=['ol',
+                                              'ul',
+                                              'bold',
+                                              'italic',
+                                              'link',
+                                              'image',
+                                              'hr',
+                                              'br',
+                                              'embed',
+                                              'superscript'])
+    customer_service = RichTextField(features=['ol',
+                                              'ul',
+                                              'bold',
+                                              'italic',
+                                              'link',
+                                              'image',
+                                              'hr',
+                                              'br',
+                                              'embed',
+                                              'superscript'])
 
     content_panels = [
         FieldPanel('title', classname="full title"),
@@ -631,13 +685,49 @@ class Give(Page):
     intro_description = models.TextField()
     other_payment_methods_heading = models.CharField(max_length=255)
     payment_method_1_heading = models.CharField(max_length=255)
-    payment_method_1_content = RichTextField()
+    payment_method_1_content = RichTextField(features=['ol',
+                                                       'ul',
+                                                       'bold',
+                                                       'italic',
+                                                       'link',
+                                                       'image',
+                                                       'hr',
+                                                       'br',
+                                                       'embed',
+                                                       'superscript'])
     payment_method_2_heading = models.CharField(max_length=255)
-    payment_method_2_content = RichTextField()
+    payment_method_2_content = RichTextField(features=['ol',
+                                                       'ul',
+                                                       'bold',
+                                                       'italic',
+                                                       'link',
+                                                       'image',
+                                                       'hr',
+                                                       'br',
+                                                       'embed',
+                                                       'superscript'])
     payment_method_3_heading = models.CharField(max_length=255)
-    payment_method_3_content = RichTextField()
+    payment_method_3_content = RichTextField(features=['ol',
+                                                       'ul',
+                                                       'bold',
+                                                       'italic',
+                                                       'link',
+                                                       'image',
+                                                       'hr',
+                                                       'br',
+                                                       'embed',
+                                                       'superscript'])
     payment_method_4_heading = models.CharField(max_length=255, blank=True, null=True)
-    payment_method_4_content = RichTextField(blank=True, null=True)
+    payment_method_4_content = RichTextField(blank=True, null=True, features=['ol',
+                                                                              'ul',
+                                                                              'bold',
+                                                                              'italic',
+                                                                              'link',
+                                                                              'image',
+                                                                              'hr',
+                                                                              'br',
+                                                                              'embed',
+                                                                              'superscript'])
     give_cta = models.CharField(max_length=255)
     give_cta_link = models.URLField()
 
@@ -688,7 +778,16 @@ class Give(Page):
 
 class TermsOfService(Page):
     intro_heading = models.CharField(max_length=255)
-    terms_of_service_content = RichTextField()
+    terms_of_service_content = RichTextField(features=['ol',
+                                                       'ul',
+                                                       'bold',
+                                                       'italic',
+                                                       'link',
+                                                       'image',
+                                                       'hr',
+                                                       'br',
+                                                       'embed',
+                                                       'superscript'])
 
     api_fields = (
         'title',
@@ -752,7 +851,16 @@ class AP(Page):
 
 class FAQ(Page):
     intro_heading = models.CharField(max_length=255)
-    intro_description = RichTextField()
+    intro_description = RichTextField(features=['ol',
+                                                'ul',
+                                                'bold',
+                                                'italic',
+                                                'link',
+                                                'image',
+                                                'hr',
+                                                'br',
+                                                'embed',
+                                                'superscript'])
 
     questions = StreamField([
         ('question', FAQBlock()),
@@ -782,7 +890,16 @@ class FAQ(Page):
 
 class Support(Page):
     intro_heading = models.CharField(max_length=255)
-    intro_description = RichTextField()
+    intro_description = RichTextField(features=['ol',
+                                                'ul',
+                                                'bold',
+                                                'italic',
+                                                'link',
+                                                'image',
+                                                'hr',
+                                                'br',
+                                                'embed',
+                                                'superscript'])
 
     row_1 = StreamField([
         ('column', ColumnBlock()),
@@ -837,7 +954,16 @@ class GiveForm(Page):
 
 class Accessibility(Page):
     intro_heading = models.CharField(max_length=255)
-    accessibility_content = RichTextField()
+    accessibility_content = RichTextField(features=['ol',
+                                                    'ul',
+                                                    'bold',
+                                                    'italic',
+                                                    'link',
+                                                    'image',
+                                                    'hr',
+                                                    'br',
+                                                    'embed',
+                                                    'superscript'])
 
     api_fields = (
         'title',
@@ -865,7 +991,16 @@ class Accessibility(Page):
 
 class Licensing(Page):
     intro_heading = models.CharField(max_length=255)
-    licensing_content = RichTextField()
+    licensing_content = RichTextField(features=['ol',
+                                                'ul',
+                                                'bold',
+                                                'italic',
+                                                'link',
+                                                'image',
+                                                'hr',
+                                                'br',
+                                                'embed',
+                                                'superscript'])
 
     api_fields = (
         'title',
@@ -893,7 +1028,16 @@ class Licensing(Page):
 
 class CompCopy(Page):
     intro_heading = models.CharField(max_length=255)
-    intro_description = RichTextField()
+    intro_description = RichTextField(features=['ol',
+                                                'ul',
+                                                'bold',
+                                                'italic',
+                                                'link',
+                                                'image',
+                                                'hr',
+                                                'br',
+                                                'embed',
+                                                'superscript'])
 
     api_fields = (
         'intro_heading',
@@ -917,7 +1061,16 @@ class CompCopy(Page):
 
 class AdoptForm(Page):
     intro_heading = models.CharField(max_length=255)
-    intro_description = RichTextField()
+    intro_description = RichTextField(features=['ol',
+                                                'ul',
+                                                'bold',
+                                                'italic',
+                                                'link',
+                                                'image',
+                                                'hr',
+                                                'br',
+                                                'embed',
+                                                'superscript'])
 
     api_fields = (
         'intro_heading',
@@ -941,7 +1094,16 @@ class AdoptForm(Page):
 
 class InterestForm(Page):
     intro_heading = models.CharField(max_length=255)
-    intro_description = RichTextField()
+    intro_description = RichTextField(features=['ol',
+                                                'ul',
+                                                'bold',
+                                                'italic',
+                                                'link',
+                                                'image',
+                                                'hr',
+                                                'br',
+                                                'embed',
+                                                'superscript'])
 
     api_fields = (
         'intro_heading',
@@ -1040,7 +1202,16 @@ class ResourceAvailability(Orderable, Resource):
 
 class Marketing(Page):
     #hover box text
-    pop_up_text = RichTextField()
+    pop_up_text = RichTextField(features=['ol',
+                                          'ul',
+                                          'bold',
+                                          'italic',
+                                          'link',
+                                          'image',
+                                          'hr',
+                                          'br',
+                                          'embed',
+                                          'superscript'])
     #access tutor section
     access_tagline = models.CharField(max_length=255)
     access_button_cta = models.CharField(max_length=255)
@@ -1048,13 +1219,31 @@ class Marketing(Page):
     #section 1 - discover header
     section_1_heading = models.CharField(max_length=255)
     section_1_subheading = models.CharField(max_length=255)
-    section_1_paragraph = RichTextField()
+    section_1_paragraph = RichTextField(features=['ol',
+                                                  'ul',
+                                                  'bold',
+                                                  'italic',
+                                                  'link',
+                                                  'image',
+                                                  'hr',
+                                                  'br',
+                                                  'embed',
+                                                  'superscript'])
     section_1_cta_link = models.URLField()
     section_1_cta_text = models.CharField(max_length=255)
     #section 2 - how does it work?
     section_2_heading = models.CharField(max_length=255)
     section_2_subheading = models.CharField(max_length=255)
-    section_2_paragraph = RichTextField()
+    section_2_paragraph = RichTextField(features=['ol',
+                                                  'ul',
+                                                  'bold',
+                                                  'italic',
+                                                  'link',
+                                                  'image',
+                                                  'hr',
+                                                  'br',
+                                                  'embed',
+                                                  'superscript'])
     icon_1_image = models.ForeignKey(
         'wagtaildocs.Document',
         on_delete=models.SET_NULL,
@@ -1110,25 +1299,79 @@ class Marketing(Page):
     icon_4_paragraph = models.CharField(max_length=255)
     #section 3 - what your students will see
     section_3_heading = models.CharField(max_length=255)
-    section_3_paragraph = RichTextField()
+    section_3_paragraph = RichTextField(features=['ol',
+                                                  'ul',
+                                                  'bold',
+                                                  'italic',
+                                                  'link',
+                                                  'image',
+                                                  'hr',
+                                                  'br',
+                                                  'embed',
+                                                  'superscript'])
     #marketing videos orderable resource
     #section 4 - current features and plans
     #resource availability via orderable resource
     section_4_heading = models.CharField(max_length=255)
-    section_4_paragraph = RichTextField()
+    section_4_paragraph = RichTextField(features=['ol',
+                                                  'ul',
+                                                  'bold',
+                                                  'italic',
+                                                  'link',
+                                                  'image',
+                                                  'hr',
+                                                  'br',
+                                                  'embed',
+                                                  'superscript'])
     section_4_resource_fine_print = models.CharField(max_length=255)
     section_4_book_heading = models.CharField(max_length=255)
     section_4_coming_soon_heading = models.CharField(max_length=255)
-    section_4_coming_soon_text = RichTextField()
+    section_4_coming_soon_text = RichTextField(features=['ol',
+                                                         'ul',
+                                                         'bold',
+                                                         'italic',
+                                                         'link',
+                                                         'image',
+                                                         'hr',
+                                                         'br',
+                                                         'embed',
+                                                         'superscript'])
     #section 5 - $10
     section_5_heading = models.CharField(max_length=255)
-    section_5_paragraph = RichTextField()
+    section_5_paragraph = RichTextField(features=['ol',
+                                                  'ul',
+                                                  'bold',
+                                                  'italic',
+                                                  'link',
+                                                  'image',
+                                                  'hr',
+                                                  'br',
+                                                  'embed',
+                                                  'superscript'])
     #science
     section_5_science_heading = models.CharField(max_length=255)
-    section_5_science_paragraph = RichTextField()
+    section_5_science_paragraph = RichTextField(features=['ol',
+                                                          'ul',
+                                                          'bold',
+                                                          'italic',
+                                                          'link',
+                                                          'image',
+                                                          'hr',
+                                                          'br',
+                                                          'embed',
+                                                          'superscript'])
     #section 6 - FAQs
     section_6_heading = models.CharField(max_length=255)
-    section_6_knowledge_base_copy = RichTextField()
+    section_6_knowledge_base_copy = RichTextField(features=['ol',
+                                                            'ul',
+                                                            'bold',
+                                                            'italic',
+                                                            'link',
+                                                            'image',
+                                                            'hr',
+                                                            'br',
+                                                            'embed',
+                                                            'superscript'])
     faqs = StreamField([
         ('faq', FAQBlock()),
     ])
@@ -1297,7 +1540,16 @@ class Marketing(Page):
 
 class Technology(Page):
     intro_heading = models.CharField(max_length=255)
-    intro_description = RichTextField()
+    intro_description = RichTextField(features=['ol',
+                                                'ul',
+                                                'bold',
+                                                'italic',
+                                                'link',
+                                                'image',
+                                                'hr',
+                                                'br',
+                                                'embed',
+                                                'superscript'])
 
     banner_cta = models.CharField(max_length=255)
     banner_cta_link = models.URLField(blank=True, null=True)
@@ -1309,7 +1561,16 @@ class Technology(Page):
 
     new_frontier_heading = models.CharField(max_length=255)
     new_frontier_subheading = models.CharField(max_length=255)
-    new_frontier_description = RichTextField()
+    new_frontier_description = RichTextField(features=['ol',
+                                                       'ul',
+                                                       'bold',
+                                                       'italic',
+                                                       'link',
+                                                       'image',
+                                                       'hr',
+                                                       'br',
+                                                       'embed',
+                                                       'superscript'])
     new_frontier_cta_1 = models.CharField(max_length=255)
     new_frontier_cta_link_1 = models.URLField(blank=True, null=True)
     new_frontier_cta_2 = models.CharField(max_length=255)
@@ -1362,7 +1623,16 @@ class Technology(Page):
 
 
 class ErrataList(Page):
-    correction_schedule = RichTextField(features=['link', 'bold', 'italic', 'hr', 'ol', 'ul'])
+    correction_schedule = RichTextField(features=['ol',
+                                                  'ul',
+                                                  'bold',
+                                                  'italic',
+                                                  'link',
+                                                  'image',
+                                                  'hr',
+                                                  'br',
+                                                  'embed',
+                                                  'superscript'])
 
     api_fields = (
         'correction_schedule',
@@ -1377,7 +1647,16 @@ class ErrataList(Page):
 
 class PrivacyPolicy(Page):
     intro_heading = models.CharField(max_length=255)
-    privacy_content = RichTextField()
+    privacy_content = RichTextField(features=['ol',
+                                              'ul',
+                                              'bold',
+                                              'italic',
+                                              'link',
+                                              'image',
+                                              'hr',
+                                              'br',
+                                              'embed',
+                                              'superscript'])
 
     api_fields = (
         'title',

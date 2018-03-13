@@ -21,7 +21,16 @@ register_snippet(Subject)
 
 class FacultyResource(models.Model):
     heading = models.CharField(max_length=255)
-    description = RichTextField(blank=True, null=True)
+    description = RichTextField(blank=True, null=True, features=['ol',
+                                                                 'ul',
+                                                                 'bold',
+                                                                 'italic',
+                                                                 'link',
+                                                                 'image',
+                                                                 'hr',
+                                                                 'br',
+                                                                 'embed',
+                                                                 'superscript'])
     unlocked_resource = models.BooleanField(default=False)
 
     api_fields = ('heading', 'description', 'unlocked_resource')
@@ -40,7 +49,16 @@ register_snippet(FacultyResource)
 
 class StudentResource(models.Model):
     heading = models.CharField(max_length=255)
-    description = RichTextField(blank=True, null=True)
+    description = RichTextField(blank=True, null=True, features=['ol',
+                                                                 'ul',
+                                                                 'bold',
+                                                                 'italic',
+                                                                 'link',
+                                                                 'image',
+                                                                 'hr',
+                                                                 'br',
+                                                                 'embed',
+                                                                 'superscript'])
     unlocked_resource = models.BooleanField(default=True)
 
     api_fields = ('heading', 'description', 'unlocked_resource')

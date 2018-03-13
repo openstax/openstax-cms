@@ -1,10 +1,9 @@
 from django.db import models
 from django import forms
-from django.contrib.sites.shortcuts import get_current_site
 
 from wagtail.core.models import Page
 from wagtail.core.fields import RichTextField, StreamField
-from wagtail.admin.edit_handlers import FieldPanel, PageChooserPanel, StreamFieldPanel
+from wagtail.admin.edit_handlers import FieldPanel, StreamFieldPanel
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.documents.edit_handlers import DocumentChooserPanel
 from wagtail.embeds.blocks import EmbedBlock
@@ -55,7 +54,16 @@ class AlignedHTMLBlock(StructBlock):
 
 
 class BlogStreamBlock(StreamBlock):
-    paragraph = RichTextBlock(icon="pilcrow")
+    paragraph = RichTextBlock(icon="pilcrow", features=['ol',
+                                                        'ul',
+                                                        'bold',
+                                                        'italic',
+                                                        'link',
+                                                        'image',
+                                                        'hr',
+                                                        'br',
+                                                        'embed',
+                                                        'superscript'])
     aligned_image = ImageBlock(label="Aligned image", icon="image")
     pullquote = PullQuoteBlock()
     aligned_html = AlignedHTMLBlock(icon="code", label='Raw HTML')
@@ -64,7 +72,16 @@ class BlogStreamBlock(StreamBlock):
 
 
 class NewsIndex(Page):
-    intro = RichTextField(blank=True)
+    intro = RichTextField(blank=True, features=['ol',
+                                                'ul',
+                                                'bold',
+                                                'italic',
+                                                'link',
+                                                'image',
+                                                'hr',
+                                                'br',
+                                                'embed',
+                                                'superscript'])
     press_kit = models.ForeignKey(
         'wagtaildocs.Document',
         null=True,
@@ -131,7 +148,16 @@ class NewsArticle(Page):
     article_image = property(get_article_image)
 
     tags = ClusterTaggableManager(through=NewsArticleTag, blank=True)
-    body = RichTextField(blank=True)
+    body = RichTextField(blank=True, features=['ol',
+                                               'ul',
+                                                'bold',
+                                                'italic',
+                                                'link',
+                                                'image',
+                                                'hr',
+                                                'br',
+                                                'embed',
+                                                'superscript'])
 
     body = StreamField(BlogStreamBlock())
 
