@@ -27,5 +27,5 @@ def register_strikethrough_feature(features):
         'from_database_format': {tag: InlineStyleElementHandler(type_)},
         'to_database_format': {'style_map': {type_: tag}},
     }
-
+    features.default_features.append(feature_name)
     features.register_converter_rule('contentstate', feature_name, db_conversion)

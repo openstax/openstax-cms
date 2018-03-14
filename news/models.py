@@ -54,16 +54,7 @@ class AlignedHTMLBlock(StructBlock):
 
 
 class BlogStreamBlock(StreamBlock):
-    paragraph = RichTextBlock(icon="pilcrow", features=['ol',
-                                                        'ul',
-                                                        'bold',
-                                                        'italic',
-                                                        'link',
-                                                        'image',
-                                                        'hr',
-                                                        'br',
-                                                        'embed',
-                                                        'superscript'])
+    paragraph = RichTextBlock(icon="pilcrow")
     aligned_image = ImageBlock(label="Aligned image", icon="image")
     pullquote = PullQuoteBlock()
     aligned_html = AlignedHTMLBlock(icon="code", label='Raw HTML')
@@ -72,16 +63,7 @@ class BlogStreamBlock(StreamBlock):
 
 
 class NewsIndex(Page):
-    intro = RichTextField(blank=True, features=['ol',
-                                                'ul',
-                                                'bold',
-                                                'italic',
-                                                'link',
-                                                'image',
-                                                'hr',
-                                                'br',
-                                                'embed',
-                                                'superscript'])
+    intro = RichTextField(blank=True)
     press_kit = models.ForeignKey(
         'wagtaildocs.Document',
         null=True,
@@ -148,16 +130,7 @@ class NewsArticle(Page):
     article_image = property(get_article_image)
 
     tags = ClusterTaggableManager(through=NewsArticleTag, blank=True)
-    body = RichTextField(blank=True, features=['ol',
-                                               'ul',
-                                                'bold',
-                                                'italic',
-                                                'link',
-                                                'image',
-                                                'hr',
-                                                'br',
-                                                'embed',
-                                                'superscript'])
+    body = RichTextField(blank=True)
 
     body = StreamField(BlogStreamBlock())
 
