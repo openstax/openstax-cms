@@ -1362,7 +1362,7 @@ class Technology(Page):
 
 
 class ErrataList(Page):
-    correction_schedule = RichTextField(features=['link', 'bold', 'italic', 'hr', 'ol', 'ul'])
+    correction_schedule = RichTextField()
 
     api_fields = (
         'correction_schedule',
