@@ -27,7 +27,7 @@ class OpenStax(BaseOAuth2):
             email = contact_infos[0]['value']
         except IndexError:
             email = "none@openstax.org"
-        return {'username': response.get('id'),
+        return {'username': str(response.get('id')),
                 'email': email,
                 'first_name': response.get('first_name'),
                 'last_name': response.get('last_name'),

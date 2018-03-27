@@ -113,6 +113,7 @@ SOCIAL_AUTH_PIPELINE = (
 IMPORT_USER_PIPELINE = (
     'social.pipeline.social_auth.social_user',
     'social.pipeline.user.create_user',
+    'accounts.pipelines.save_profile',
     'social.pipeline.social_auth.associate_user',
     'social.pipeline.user.user_details',
 )
