@@ -1,17 +1,18 @@
-from books.models import Book, Authors
+from .models import Authors
 from lxml import etree
 import requests
 import json
 
 def get_authors(cnx_id, title):
     #print(book.cnx_id)
-    toc_url = 'https://archive.cnx.org/contents/' + cnx_id + '.json'
+    cnx_domain = 'https://archive.cnx.org'
+    toc_url = cnx_domain + '/contents/' + cnx_id + '.json'
     #print(toc_url)
     response = requests.get(toc_url)
 
     toc = json.loads(response.text)
     preface_id = toc['tree']['contents'][0]['id']
-    preface_url = 'https://archive.cnx.org/contents/' + preface_id + '.html'
+    preface_url = cnx_domain + '/contents/' + preface_id + '.html'
 
     response2 = requests.get(preface_url)
     xml = etree.XML(response2.text)
