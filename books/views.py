@@ -11,5 +11,10 @@ def book_index(request):
 
 @csrf_exempt
 def book_detail(request, slug):
-    page = Book.objects.get(slug=slug)
-    return redirect('/api/v2/pages/{}'.format(page.pk))
+    try:
+        page = Book.objects.get(slug=slug)
+        return redirect('/api/v2/pages/{}'.format(page.pk))
+    except Book.DoesNotExist:
+        #no book, return to book index
+        page = BookIndex.objects.all()[0]
+        return redirect('/api/v2/pages/{}'.format(page.pk))
