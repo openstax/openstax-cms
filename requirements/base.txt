@@ -24,6 +24,7 @@ Pillow==4.3.0
 psycopg2==2.7.3.2
 pytz==2018.3
 python-dateutil==2.4.2
+raven==6.6.0
 requests==2.18.4
 six==1.11.0
 sphinx-me==0.3
