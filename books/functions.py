@@ -1,13 +1,10 @@
-from .models import Authors
 from lxml import etree
 import requests
 import json
 
 def get_authors(cnx_id, title):
-    #print(book.cnx_id)
     cnx_domain = 'https://archive.cnx.org'
     toc_url = cnx_domain + '/contents/' + cnx_id + '.json'
-    #print(toc_url)
     response = requests.get(toc_url)
 
     toc = json.loads(response.text)
@@ -46,7 +43,6 @@ def get_authors(cnx_id, title):
     if len(sa) > 0:
         for item in sa:
             clean_item = item.replace('\n','')
-            #print(item)
             items = clean_item.split(',')
             if len(items) != 2:
                 items.append('')
@@ -68,14 +64,10 @@ def get_authors(cnx_id, title):
         contrib_authors[7] = remove_last_char(contrib_authors[7])
 
     for item in contrib_authors:
-        #print(item)
         clean_item = item.replace('\n', '')
         items = clean_item.split(',')
         if len(items) == 2:
             authors.append(create_author_obj(items[0], items[1]))
-
-    for a in authors:
-        print(a.name + ' ' + a.university + ' ' + str(a.senior_author) + ' ' + str(a.display_at_top))
 
     return authors
 
@@ -86,8 +78,8 @@ def remove_last_char(string_to_change):
 
 def create_author_obj(author, school='', senior=False, at_top=False):
     if school.strip() == 'PhD':
-        #print('setting school to empty string')
         school=''
+    from books.models import Authors
     return Authors.objects.create(name=author.strip(),
                                  university=school.strip(),
                                  senior_author=senior,
