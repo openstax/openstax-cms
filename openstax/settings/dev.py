@@ -7,7 +7,7 @@ ALLOWED_HOSTS = ['.openstax.org']
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Disable Python Social Auth Warnings
-LOGGING['disable_existing_loggers'] = True
+LOGGING_CONFIG = None
 
 # Cloudfront static file settings
 DEFAULT_FILE_STORAGE = 'storages.S3Storage.S3Storage'
