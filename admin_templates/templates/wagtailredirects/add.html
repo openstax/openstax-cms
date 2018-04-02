@@ -36,13 +36,13 @@
     {% include "wagtailadmin/pages/_editor_js.html" %}
 
     <script>
-        // show alert to user if redirect does not have required path
-        $(document).ready(function() {
-            $("#id_old_path").focusout(function(){
-                if ($(this).val().indexOf("/l/") == 0 || $(this).val().indexOf("/r/") == 0) {
-                    alert("You need to format Redirect From with /l/ (lowercase L) or /r/ at the beginning so it will work properly (/l/new-link/ or /r/new-link/).");
-                }
-            });
-          });
+    // show alert to user if redirect does not have required path
+    $(document).ready(function() {
+        $("#id_old_path").focusout(function(){
+            if (!($(this).val().match("^/l/") || $(this).val().match("^/r/"))) {
+                alert("You need to format Redirect From with /l/ (lowercase L) or /r/ at the beginning so it will work properly (/l/new-link/ or /r/new-link/).");
+            }
+        });
+      });
     </script>
 {% endblock %}
