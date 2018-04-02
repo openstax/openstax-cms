@@ -1,9 +1,11 @@
 from lxml import etree
 import requests
 import json
+from django.conf import settings
+
 
 def get_authors(cnx_id, title):
-    cnx_domain = 'https://archive.cnx.org'
+    cnx_domain = settings.CNX_ARCHIVE_URL
     toc_url = cnx_domain + '/contents/' + cnx_id + '.json'
     response = requests.get(toc_url)
 
@@ -48,7 +50,6 @@ def get_authors(cnx_id, title):
                 items.append('')
             authors.append(create_author_obj(items[0], items[1], True, True))
 
-
     contrib_authors = xml.xpath('//*[@class="contrib-auth"]/x:p/text()', namespaces={'x': 'http://www.w3.org/1999/xhtml'})
 
     if title == 'Fizyka dla szkół wyższych. Tom 1':
@@ -78,12 +79,12 @@ def remove_last_char(string_to_change):
 
 def create_author_obj(author, school='', senior=False, at_top=False):
     if school.strip() == 'PhD':
-        school=''
+        school = ''
     from books.models import Authors
     return Authors.objects.create(name=author.strip(),
-                                 university=school.strip(),
-                                 senior_author=senior,
-                                 display_at_top=at_top,)
+                                  university=school.strip(),
+                                  senior_author=senior,
+                                  display_at_top=at_top,)
 
 
 
