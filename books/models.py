@@ -4,6 +4,7 @@ import json
 import urllib
 import ssl
 
+from .functions import get_authors
 from django.conf import settings
 from django.contrib.postgres.fields import JSONField
 from django.db import models
@@ -529,20 +530,23 @@ class Book(Page):
             raise ValidationError(errors)
 
     def save(self, *args, **kwargs):
-        # Temporary fix to migrate authors to the new orderable streamfields
         authors = []
-        for author in self.book_contributing_authors.all():
-            author_json = {'type': 'author',
-                        'value': {
-                            'name': author.name,
-                            'university': author.university,
-                            'country': author.country,
-                            'senior_author': author.senior_author,
-                            'display_at_top': author.display_at_top,
-                        }}
-            authors.append(author_json)
-        if self.authors != json.dumps(authors):
-            self.authors = json.dumps(authors)
+        cnx_authors = get_authors(self.cnx_id,self.title)
+        if len(cnx_authors) > 0:
+            self.book_contributing_authors = cnx_authors
+            for author in self.book_contributing_authors.all():
+                author_json = {'type': 'author',
+                               'value': {
+                                   'name': author.name,
+                                   'university': author.university,
+                                   'country': author.country,
+                                   'senior_author': author.senior_author,
+                                   'display_at_top': author.display_at_top,
+                               }}
+                authors.append(author_json)
+
+            if self.authors != json.dumps(authors):
+                self.authors = json.dumps(authors)
 
         if self.cnx_id:
             self.webview_link = 'https://cnx.org/contents/' + self.cnx_id
