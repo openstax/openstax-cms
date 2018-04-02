@@ -18,6 +18,7 @@ from wagtail.core.fields import RichTextField, StreamField
 from wagtail.core.models import Orderable, Page
 from wagtail.documents.edit_handlers import DocumentChooserPanel
 from wagtail.snippets.edit_handlers import SnippetChooserPanel
+from wagtail.admin.edit_handlers import TabbedInterface, ObjectList
 
 from allies.models import Ally
 from openstax.functions import build_document_url, build_image_url
@@ -255,6 +256,32 @@ class BookAllies(Orderable, BookAlly):
     book_ally = ParentalKey('books.Book', related_name='book_allies')
 
 
+BLUE = 'Blue'
+DEEP_GREEN = 'Deep Green'
+GOLD = 'Gold'
+GRAY = 'Gray'
+GREEN = 'Green'
+LIGHT_BLUE = 'Light Blue'
+LIGHT_GRAY = 'Light Gray'
+MEDIUM_BLUE = 'Medium Blue'
+ORANGE = 'Orange'
+RED = 'Red'
+YELLOW = 'Yellow'
+COVER_COLORS = (
+    (BLUE, 'Blue'),
+    (DEEP_GREEN, 'Deep Green'),
+    (GOLD, 'Gold'),
+    (GRAY, 'Gray'),
+    (GREEN, 'Green'),
+    (LIGHT_BLUE, 'Light Blue'),
+    (LIGHT_GRAY, 'Light Gray'),
+    (MEDIUM_BLUE, 'Medium Blue'),
+    (ORANGE, 'Orange'),
+    (RED, 'Red'),
+    (YELLOW, 'Yellow'),
+)
+
+
 class Book(Page):
     created = models.DateTimeField(auto_now_add=True)
     cnx_id = models.CharField(
@@ -285,6 +312,20 @@ class Book(Page):
         return build_document_url(self.cover.url)
 
     cover_url = property(get_cover_url)
+    title_image = models.ForeignKey(
+        'wagtaildocs.Document',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    def get_title_image_url(self):
+        return build_document_url(self.title_image.url)
+
+    title_image_url = property(get_title_image_url)
+    cover_color = models.CharField(max_length=255, choices=COVER_COLORS, default='Blue')
+    reverse_gradient = models.BooleanField(default=False)
     publish_date = models.DateField(blank=True, null=True)
     authors = StreamField([
         ('author', AuthorBlock()),
@@ -347,8 +388,17 @@ class Book(Page):
         return build_document_url(self.student_handbook.url)
 
     student_handbook_url = property(get_student_handbook_url)
+    free_stuff_heading = models.CharField(max_length=255, default="Free stuff. No catch.")
+    free_stuff_blurb = models.TextField(blank=True)
     community_resource_url = models.URLField(blank=True)
     community_resource_cta = models.CharField(max_length=255, blank=True, null=True)
+    community_resources_blurb = models.TextField(blank=True)
+    #community_resources_blurb = models.URLField(blank=True)
+    community_resources_feature_text = models.TextField(blank=True)
+    webinar_heading = models.CharField(max_length=255, blank=True, default="Find a webinar")
+    webinar_blurb = models.TextField(blank=True)
+    ally_header = models.CharField(max_length=255, default="Want more?")
+    ally_blurb = models.TextField(blank=True)
     coming_soon = models.BooleanField(default=False)
     ibook_link = models.URLField(blank=True, help_text="Link to iBook")
     ibook_link_volume_2 = models.URLField(blank=True, help_text="Link to secondary iBook")
@@ -368,6 +418,8 @@ class Book(Page):
     bookstore_link = models.URLField(blank=True, help_text="Link to Bookstore")
     bookstore_blurb = models.TextField(blank=True)
     comp_copy_available = models.BooleanField(default=True)
+    comp_copy_blurb = models.TextField(blank=True)
+    errata_blurb = models.TextField(blank=True)
     errata_link = models.URLField(
         blank=True, help_text="Link to view openstaxcollege.org errata")
     errata_corrections_link = models.URLField(
@@ -375,7 +427,7 @@ class Book(Page):
     table_of_contents = JSONField(editable=False, blank=True, null=True)
     tutor_marketing_book = models.BooleanField(default=False)
 
-    content_panels = Page.content_panels + [
+    book_detail_panel = Page.content_panels + [
         FieldPanel('cnx_id'),
         FieldPanel('salesforce_abbreviation'),
         FieldPanel('salesforce_name'),
@@ -384,13 +436,11 @@ class Book(Page):
         FieldPanel('is_ap'),
         FieldPanel('description', classname="full"),
         DocumentChooserPanel('cover'),
+        DocumentChooserPanel('title_image'),
+        FieldPanel('cover_color'),
+        FieldPanel('reverse_gradient'),
         InlinePanel('book_quotes', label="Quotes"),
         InlinePanel('book_allies', label="Allies"),
-        InlinePanel('book_student_resources', label="Student Resources"),
-        InlinePanel('book_faculty_resources', label="Instructor Resources"),
-        InlinePanel('book_contributing_authors', label="Contributing Authors"),
-        #Hide until we are pulling authors from CNX
-        #StreamFieldPanel('authors'),
         FieldPanel('print_isbn_10'),
         FieldPanel('print_isbn_13'),
         FieldPanel('digital_isbn_10'),
@@ -403,8 +453,17 @@ class Book(Page):
         DocumentChooserPanel('high_resolution_pdf'),
         DocumentChooserPanel('low_resolution_pdf'),
         DocumentChooserPanel('student_handbook'),
+        FieldPanel('free_stuff_heading'),
+        FieldPanel('free_stuff_blurb'),
         FieldPanel('community_resource_url'),
         FieldPanel('community_resource_cta'),
+        FieldPanel('community_resources_blurb'),
+        # FieldPanel('community_resources_feature_link'),
+        FieldPanel('community_resources_feature_text'),
+        FieldPanel('webinar_heading'),
+        FieldPanel('webinar_blurb'),
+        FieldPanel('ally_header'),
+        FieldPanel('ally_blurb'),
         FieldPanel('coming_soon'),
         FieldPanel('ibook_link'),
         FieldPanel('ibook_link_volume_2'),
@@ -419,10 +478,29 @@ class Book(Page):
         FieldPanel('bookstore_link'),
         FieldPanel('bookstore_blurb'),
         FieldPanel('comp_copy_available'),
+        FieldPanel('comp_copy_blurb'),
+        FieldPanel('errata_blurb'),
         FieldPanel('errata_link'),
         FieldPanel('errata_corrections_link'),
         FieldPanel('tutor_marketing_book'),
     ]
+    instructor_resources_panel = [
+        InlinePanel('book_faculty_resources', label="Instructor Resources"),
+    ]
+    student_resources_panel = [
+        InlinePanel('book_student_resources', label="Student Resources"),
+    ]
+    author_panel = [
+        InlinePanel('book_contributing_authors', label="Contributing Authors"),
+    ]
+
+    edit_handler = TabbedInterface([
+        ObjectList(book_detail_panel, heading='Book Details'),
+        ObjectList(instructor_resources_panel, heading='Instructor Resources'),
+        ObjectList(student_resources_panel, heading='Student Resources'),
+        ObjectList(Page.promote_panels, heading='Promote'),
+        ObjectList(Page.settings_panels, heading='Settings', classname="settings"),
+    ])
 
     api_fields = ('created',
                   'updated',
@@ -435,6 +513,9 @@ class Book(Page):
                   'is_ap',
                   'description',
                   'cover_url',
+                  'title_image_url',
+                  'cover_color',
+                  'reverse_gradient',
                   'book_quotes',
                   'book_allies',
                   'book_student_resources',
@@ -457,8 +538,17 @@ class Book(Page):
                   'high_resolution_pdf_url',
                   'low_resolution_pdf_url',
                   'student_handbook_url',
+                  'free_stuff_heading',
+                  'free_stuff_blurb',
                   'community_resource_url',
                   'community_resource_cta',
+                  'community_resources_blurb',
+                  #'community_resources_blurb',
+                  'community_resources_feature_text',
+                  'webinar_heading',
+                  'webinar_blurb',
+                  'ally_header',
+                  'ally_blurb',
                   'coming_soon',
                   'ibook_link',
                   'ibook_link_volume_2',
@@ -474,6 +564,8 @@ class Book(Page):
                   'bookstore_link',
                   'bookstore_blurb',
                   'comp_copy_available',
+                  'comp_copy_blurb',
+                  'errata_blurb',
                   'errata_link',
                   'errata_corrections_link',
                   'table_of_contents',
