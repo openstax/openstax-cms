@@ -324,7 +324,7 @@ class Book(Page):
         return build_document_url(self.title_image.url)
 
     title_image_url = property(get_title_image_url)
-    cover_color = models.CharField(max_length=255, choices=COVER_COLORS, default='Blue')
+    cover_color = models.CharField(max_length=255, choices=COVER_COLORS, default='blue')
     reverse_gradient = models.BooleanField(default=False)
     publish_date = models.DateField(blank=True, null=True)
     authors = StreamField([
