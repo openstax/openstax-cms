@@ -509,6 +509,7 @@ class Book(Page):
         ObjectList(book_detail_panel, heading='Book Details'),
         ObjectList(instructor_resources_panel, heading='Instructor Resources'),
         ObjectList(student_resources_panel, heading='Student Resources'),
+        ObjectList(author_panel, heading='Authors'),
         ObjectList(Page.promote_panels, heading='Promote'),
         ObjectList(Page.settings_panels, heading='Settings', classname="settings"),
     ])
