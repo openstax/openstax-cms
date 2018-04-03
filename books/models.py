@@ -256,17 +256,17 @@ class BookAllies(Orderable, BookAlly):
     book_ally = ParentalKey('books.Book', related_name='book_allies')
 
 
-BLUE = 'Blue'
-DEEP_GREEN = 'Deep Green'
-GOLD = 'Gold'
-GRAY = 'Gray'
-GREEN = 'Green'
-LIGHT_BLUE = 'Light Blue'
-LIGHT_GRAY = 'Light Gray'
-MEDIUM_BLUE = 'Medium Blue'
-ORANGE = 'Orange'
-RED = 'Red'
-YELLOW = 'Yellow'
+BLUE = 'blue'
+DEEP_GREEN = 'deep-green'
+GOLD = 'gold'
+GRAY = 'gray'
+GREEN = 'green'
+LIGHT_BLUE = 'light-blue'
+LIGHT_GRAY = 'light-gray'
+MEDIUM_BLUE = 'medium-blue'
+ORANGE = 'orange'
+RED = 'red'
+YELLOW = 'yellow'
 COVER_COLORS = (
     (BLUE, 'Blue'),
     (DEEP_GREEN, 'Deep Green'),
@@ -393,7 +393,18 @@ class Book(Page):
     community_resource_url = models.URLField(blank=True)
     community_resource_cta = models.CharField(max_length=255, blank=True, null=True)
     community_resources_blurb = models.TextField(blank=True)
-    #community_resources_blurb = models.URLField(blank=True)
+    community_resources_feature_link = models.ForeignKey(
+        'wagtaildocs.Document',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='+'
+    )
+
+    def get_community_resources_feature_link_url(self):
+        return build_document_url(self.community_resources_feature_link.url)
+
+    community_resources_feature_link_url = property(get_community_resources_feature_link_url)
     community_resources_feature_text = models.TextField(blank=True)
     webinar_heading = models.CharField(max_length=255, blank=True, default="Find a webinar")
     webinar_blurb = models.TextField(blank=True)
@@ -458,7 +469,7 @@ class Book(Page):
         FieldPanel('community_resource_url'),
         FieldPanel('community_resource_cta'),
         FieldPanel('community_resources_blurb'),
-        # FieldPanel('community_resources_feature_link'),
+        DocumentChooserPanel('community_resources_feature_link'),
         FieldPanel('community_resources_feature_text'),
         FieldPanel('webinar_heading'),
         FieldPanel('webinar_blurb'),
@@ -543,7 +554,7 @@ class Book(Page):
                   'community_resource_url',
                   'community_resource_cta',
                   'community_resources_blurb',
-                  #'community_resources_blurb',
+                  'community_resources_feature_link_url',
                   'community_resources_feature_text',
                   'webinar_heading',
                   'webinar_blurb',
