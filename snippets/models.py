@@ -1,4 +1,5 @@
 from django.db import models
+from wagtail.search import index
 from wagtail.admin.edit_handlers import FieldPanel
 from wagtail.core.fields import RichTextField
 from wagtail.snippets.models import register_snippet
@@ -19,7 +20,7 @@ class Subject(models.Model):
 register_snippet(Subject)
 
 
-class FacultyResource(models.Model):
+class FacultyResource(index.Indexed, models.Model):
     heading = models.CharField(max_length=255)
     description = RichTextField(blank=True, null=True)
     unlocked_resource = models.BooleanField(default=False)
@@ -32,13 +33,17 @@ class FacultyResource(models.Model):
         FieldPanel('unlocked_resource'),
     ]
 
+    search_fields = [
+        index.SearchField('heading', partial_match=True),
+    ]
+
     def __str__(self):
         return self.heading
 
 register_snippet(FacultyResource)
 
 
-class StudentResource(models.Model):
+class StudentResource(index.Indexed, models.Model):
     heading = models.CharField(max_length=255)
     description = RichTextField(blank=True, null=True)
     unlocked_resource = models.BooleanField(default=True)
@@ -49,6 +54,10 @@ class StudentResource(models.Model):
         FieldPanel('heading'),
         FieldPanel('description'),
         FieldPanel('unlocked_resource'),
+    ]
+
+    search_fields = [
+        index.SearchField('heading', partial_match=True),
     ]
 
     def __str__(self):
