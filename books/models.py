@@ -11,18 +11,22 @@ from django.db import models
 from django.forms import ValidationError
 from django.utils.html import format_html, mark_safe
 from modelcluster.fields import ParentalKey
-from wagtail.admin.edit_handlers import (FieldPanel, InlinePanel,
-                                                PageChooserPanel)
+from wagtail.admin.edit_handlers import (FieldPanel,
+                                         InlinePanel,
+                                         PageChooserPanel,
+                                         StreamFieldPanel)
 from wagtail.core import blocks
 from wagtail.core.fields import RichTextField, StreamField
 from wagtail.core.models import Orderable, Page
 from wagtail.documents.edit_handlers import DocumentChooserPanel
+from wagtail.snippets.blocks import SnippetChooserBlock
 from wagtail.snippets.edit_handlers import SnippetChooserPanel
 from wagtail.admin.edit_handlers import TabbedInterface, ObjectList
+from wagtail.api import APIField
 
 from allies.models import Ally
 from openstax.functions import build_document_url, build_image_url
-from snippets.models import FacultyResource, StudentResource, Subject
+from snippets.models import FacultyResource, StudentResource, Subject, SharedContent
 
 
 def cleanhtml(raw_html):
@@ -238,6 +242,33 @@ class BookAlly(models.Model):
     ]
 
 
+class SharedContentChooserBlock(SnippetChooserBlock):
+    def get_api_representation(self, value, context=None):
+        if value:
+            return {
+                'id': value.id,
+                'heading': value.heading,
+                'content': value.content,
+            }
+
+
+class SharedContentBlock(blocks.StreamBlock):
+    content = SharedContentChooserBlock(SharedContent)
+    link = blocks.URLBlock(required=False)
+    link_text = blocks.CharBlock(required=False)
+
+    def get_content_heading(self):
+        return self.content.heading
+    content_heading = property(get_content_heading)
+
+    def get_content_content(self):
+        return self.content.content
+    content_content = property(get_content_content)
+
+    class Meta:
+        icon = 'document'
+
+
 class BookQuotes(Orderable, Quotes):
     quote = ParentalKey('books.Book', related_name='book_quotes')
 
@@ -388,8 +419,9 @@ class Book(Page):
         return build_document_url(self.student_handbook.url)
 
     student_handbook_url = property(get_student_handbook_url)
-    free_stuff_heading = models.CharField(max_length=255, default="Free stuff. No catch.")
-    free_stuff_blurb = models.TextField(blank=True)
+    free_stuff_instructor = StreamField(SharedContentBlock(), null=True)
+    free_stuff_student = StreamField(SharedContentBlock(), null=True)
+
     community_resource_url = models.URLField(blank=True)
     community_resource_cta = models.CharField(max_length=255, blank=True, null=True)
     community_resources_blurb = models.TextField(blank=True)
@@ -406,10 +438,9 @@ class Book(Page):
 
     community_resources_feature_link_url = property(get_community_resources_feature_link_url)
     community_resources_feature_text = models.TextField(blank=True)
-    webinar_heading = models.CharField(max_length=255, blank=True, default="Find a webinar")
-    webinar_blurb = models.TextField(blank=True)
-    ally_header = models.CharField(max_length=255, default="Want more?")
-    ally_blurb = models.TextField(blank=True)
+
+    webinar_content = StreamField(SharedContentBlock(), null=True)
+    ally_content = StreamField(SharedContentBlock(), null=True)
     coming_soon = models.BooleanField(default=False)
     ibook_link = models.URLField(blank=True, help_text="Link to iBook")
     ibook_link_volume_2 = models.URLField(blank=True, help_text="Link to secondary iBook")
@@ -426,13 +457,10 @@ class Book(Page):
     amazon_blurb = models.TextField(blank=True)
     kindle_link = models.URLField(blank=True, help_text="Link to Kindle version")
     bookstore_coming_soon = models.BooleanField(default=False)
-    bookstore_link = models.URLField(blank=True, help_text="Link to Bookstore")
-    bookstore_blurb = models.TextField(blank=True)
+    bookstore_content = StreamField(SharedContentBlock(), null=True)
     comp_copy_available = models.BooleanField(default=True)
-    comp_copy_blurb = models.TextField(blank=True)
-    errata_blurb = models.TextField(blank=True)
-    errata_link = models.URLField(
-        blank=True, help_text="Link to view openstaxcollege.org errata")
+    comp_copy_content = StreamField(SharedContentBlock(), null=True)
+    errata_content = StreamField(SharedContentBlock(), null=True)
     errata_corrections_link = models.URLField(
         blank=True, help_text="Link errata corrections")
     table_of_contents = JSONField(editable=False, blank=True, null=True)
@@ -464,17 +492,15 @@ class Book(Page):
         DocumentChooserPanel('high_resolution_pdf'),
         DocumentChooserPanel('low_resolution_pdf'),
         DocumentChooserPanel('student_handbook'),
-        FieldPanel('free_stuff_heading'),
-        FieldPanel('free_stuff_blurb'),
+        StreamFieldPanel('free_stuff_instructor'),
+        StreamFieldPanel('free_stuff_student'),
         FieldPanel('community_resource_url'),
         FieldPanel('community_resource_cta'),
         FieldPanel('community_resources_blurb'),
         DocumentChooserPanel('community_resources_feature_link'),
         FieldPanel('community_resources_feature_text'),
-        FieldPanel('webinar_heading'),
-        FieldPanel('webinar_blurb'),
-        FieldPanel('ally_header'),
-        FieldPanel('ally_blurb'),
+        StreamFieldPanel('webinar_content'),
+        StreamFieldPanel('ally_content'),
         FieldPanel('coming_soon'),
         FieldPanel('ibook_link'),
         FieldPanel('ibook_link_volume_2'),
@@ -486,12 +512,10 @@ class Book(Page):
         FieldPanel('amazon_blurb'),
         FieldPanel('kindle_link'),
         FieldPanel('bookstore_coming_soon'),
-        FieldPanel('bookstore_link'),
-        FieldPanel('bookstore_blurb'),
+        StreamFieldPanel('bookstore_content'),
         FieldPanel('comp_copy_available'),
-        FieldPanel('comp_copy_blurb'),
-        FieldPanel('errata_blurb'),
-        FieldPanel('errata_link'),
+        StreamFieldPanel('comp_copy_content'),
+        StreamFieldPanel('errata_content'),
         FieldPanel('errata_corrections_link'),
         FieldPanel('tutor_marketing_book'),
     ]
@@ -550,17 +574,15 @@ class Book(Page):
                   'high_resolution_pdf_url',
                   'low_resolution_pdf_url',
                   'student_handbook_url',
-                  'free_stuff_heading',
-                  'free_stuff_blurb',
+                  'free_stuff_instructor',
+                  'free_stuff_student',
                   'community_resource_url',
                   'community_resource_cta',
                   'community_resources_blurb',
                   'community_resources_feature_link_url',
                   'community_resources_feature_text',
-                  'webinar_heading',
-                  'webinar_blurb',
-                  'ally_header',
-                  'ally_blurb',
+                  'webinar_content',
+                  'ally_content',
                   'coming_soon',
                   'ibook_link',
                   'ibook_link_volume_2',
@@ -573,12 +595,10 @@ class Book(Page):
                   'amazon_blurb',
                   'kindle_link',
                   'bookstore_coming_soon',
-                  'bookstore_link',
-                  'bookstore_blurb',
+                  'bookstore_content',
                   'comp_copy_available',
-                  'comp_copy_blurb',
-                  'errata_blurb',
-                  'errata_link',
+                  'comp_copy_content',
+                  'errata_content',
                   'errata_corrections_link',
                   'table_of_contents',
                   'tutor_marketing_book', )
