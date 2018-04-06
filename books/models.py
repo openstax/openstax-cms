@@ -11,18 +11,21 @@ from django.db import models
 from django.forms import ValidationError
 from django.utils.html import format_html, mark_safe
 from modelcluster.fields import ParentalKey
-from wagtail.admin.edit_handlers import (FieldPanel, InlinePanel,
-                                                PageChooserPanel)
+from wagtail.admin.edit_handlers import (FieldPanel,
+                                         InlinePanel,
+                                         PageChooserPanel,
+                                         StreamFieldPanel)
 from wagtail.core import blocks
 from wagtail.core.fields import RichTextField, StreamField
 from wagtail.core.models import Orderable, Page
 from wagtail.documents.edit_handlers import DocumentChooserPanel
+from wagtail.snippets.blocks import SnippetChooserBlock
 from wagtail.snippets.edit_handlers import SnippetChooserPanel
 from wagtail.admin.edit_handlers import TabbedInterface, ObjectList
 
 from allies.models import Ally
 from openstax.functions import build_document_url, build_image_url
-from snippets.models import FacultyResource, StudentResource, Subject
+from snippets.models import FacultyResource, StudentResource, CommunityResource, Subject, SharedContent
 
 
 def cleanhtml(raw_html):
@@ -56,6 +59,10 @@ class FacultyResources(models.Model):
         on_delete=models.SET_NULL
     )
 
+    def get_resource_heading(self):
+        return self.resource.heading
+    resource_heading = property(get_resource_heading)
+
     def get_resource_description(self):
         return self.resource.description
     resource_description = property(get_resource_description)
@@ -63,7 +70,6 @@ class FacultyResources(models.Model):
     def get_resource_unlocked(self):
         return self.resource.unlocked_resource
     resource_unlocked = property(get_resource_unlocked)
-
 
     link_external = models.URLField("External link", blank=True)
     link_page = models.ForeignKey(
@@ -81,10 +87,6 @@ class FacultyResources(models.Model):
         on_delete=models.SET_NULL
     )
 
-    def get_resource_heading(self):
-        return self.resource.heading
-    resource_heading = property(get_resource_heading)
-
     def get_link_document(self):
         return build_document_url(self.link_document.url)
     link_document_url = property(get_link_document)
@@ -93,12 +95,17 @@ class FacultyResources(models.Model):
         return self.link_document.title
     link_document_title = property(get_document_title)
 
-    link_text = models.CharField(
-        max_length=255, help_text="Call to Action Text")
+    link_text = models.CharField(max_length=255, help_text="Call to Action Text")
 
-    api_fields = ('resource_heading', 'resource_description', 'resource_unlocked',
-                  'link_external', 'link_page',
-                  'link_document_url', 'link_document_title', 'link_text', )
+    api_fields = ('resource_heading',
+                  'resource_description',
+                  'resource_unlocked',
+                  'link_external',
+                  'link_page',
+                  'link_document_url',
+                  'link_document_title',
+                  'link_text',
+                  )
 
     panels = [
         SnippetChooserPanel('resource'),
@@ -154,12 +161,77 @@ class StudentResources(models.Model):
         return self.link_document.title
     link_document_title = property(get_document_title)
 
-    link_text = models.CharField(
-        max_length=255, help_text="Call to Action Text")
+    link_text = models.CharField(max_length=255, help_text="Call to Action Text")
 
-    api_fields = ('resource_heading', 'resource_description', 'resource_unlocked',
-                  'link_external', 'link_page',
-                  'link_document_url', 'link_document_title', 'link_text', )
+    api_fields = ('resource_heading',
+                  'resource_description',
+                  'resource_unlocked',
+                  'link_external',
+                  'link_page',
+                  'link_document_url',
+                  'link_document_title',
+                  'link_text',
+                  )
+
+    panels = [
+        SnippetChooserPanel('resource'),
+        FieldPanel('link_external'),
+        PageChooserPanel('link_page'),
+        DocumentChooserPanel('link_document'),
+        FieldPanel('link_text'),
+    ]
+
+
+class CommunityResources(models.Model):
+    resource = models.ForeignKey(
+        CommunityResource,
+        null=True,
+        help_text="Manage resources through snippets.",
+        related_name='+',
+        on_delete=models.SET_NULL
+    )
+
+    def get_resource_heading(self):
+        return self.resource.heading
+    resource_heading = property(get_resource_heading)
+
+    def get_resource_description(self):
+        return self.resource.description
+    resource_description = property(get_resource_description)
+
+    link_external = models.URLField("External link", blank=True)
+    link_page = models.ForeignKey(
+        'wagtailcore.Page',
+        null=True,
+        blank=True,
+        related_name='+',
+        on_delete=models.SET_NULL
+    )
+    link_document = models.ForeignKey(
+        'wagtaildocs.Document',
+        null=True,
+        blank=True,
+        related_name='+',
+        on_delete=models.SET_NULL
+    )
+
+    def get_link_document(self):
+        return build_document_url(self.link_document.url)
+    link_document_url = property(get_link_document)
+
+    def get_document_title(self):
+        return self.link_document.title
+    link_document_title = property(get_document_title)
+    link_text = models.CharField(max_length=255, help_text="Call to Action Text")
+
+    api_fields = ('resource_heading',
+                  'resource_description',
+                  'link_external',
+                  'link_page',
+                  'link_document_url',
+                  'link_document_title',
+                  'link_text',
+                  )
 
     panels = [
         SnippetChooserPanel('resource'),
@@ -238,18 +310,39 @@ class BookAlly(models.Model):
     ]
 
 
+class SharedContentChooserBlock(SnippetChooserBlock):
+    def get_api_representation(self, value, context=None):
+        if value:
+            return {
+                'id': value.id,
+                'heading': value.heading,
+                'content': value.content,
+            }
+
+
+class SharedContentBlock(blocks.StreamBlock):
+    content = SharedContentChooserBlock(SharedContent)
+    link = blocks.URLBlock(required=False)
+    link_text = blocks.CharBlock(required=False)
+
+    class Meta:
+        icon = 'document'
+
+
 class BookQuotes(Orderable, Quotes):
     quote = ParentalKey('books.Book', related_name='book_quotes')
 
 
 class BookFacultyResources(Orderable, FacultyResources):
-    book_faculty_resource = ParentalKey(
-        'books.Book', related_name='book_faculty_resources')
+    book_faculty_resource = ParentalKey('books.Book', related_name='book_faculty_resources')
 
 
 class BookStudentResources(Orderable, StudentResources):
-    book_student_resource = ParentalKey(
-        'books.Book', related_name='book_student_resources')
+    book_student_resource = ParentalKey('books.Book', related_name='book_student_resources')
+
+
+class BookCommunityResources(Orderable, CommunityResources):
+    book_community_resource = ParentalKey('books.Book', related_name='book_community_resources')
 
 
 class BookAllies(Orderable, BookAlly):
@@ -289,17 +382,17 @@ class Book(Page):
         blank=True, null=True)
     salesforce_abbreviation = models.CharField(max_length=255, blank=True, null=True)
     salesforce_name = models.CharField(max_length=255, blank=True, null=True)
-    subject = models.ForeignKey(Subject, on_delete=models.SET_NULL,
-                                null=True, related_name='+')
 
+    subject = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True, related_name='+')
     def get_subject_name(self):
         return self.subject.name
-
     subject_name = property(get_subject_name)
+
     updated = models.DateTimeField(auto_now=True)
     is_ap = models.BooleanField(default=False)
     description = RichTextField(
         blank=True, help_text="Description shown on Book Detail page.")
+
     cover = models.ForeignKey(
         'wagtaildocs.Document',
         null=True,
@@ -307,11 +400,10 @@ class Book(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
-
     def get_cover_url(self):
         return build_document_url(self.cover.url)
-
     cover_url = property(get_cover_url)
+
     title_image = models.ForeignKey(
         'wagtaildocs.Document',
         null=True,
@@ -319,11 +411,10 @@ class Book(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
-
     def get_title_image_url(self):
         return build_document_url(self.title_image.url)
-
     title_image_url = property(get_title_image_url)
+
     cover_color = models.CharField(max_length=255, choices=COVER_COLORS, default='blue')
     reverse_gradient = models.BooleanField(default=False)
     publish_date = models.DateField(blank=True, null=True)
@@ -346,6 +437,7 @@ class Book(Page):
         max_length=255, blank=True, null=True, editable=False)
     license_url = models.CharField(
         max_length=255, blank=True, null=True, editable=False)
+
     high_resolution_pdf = models.ForeignKey(
         'wagtaildocs.Document',
         null=True,
@@ -353,14 +445,13 @@ class Book(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
-
     def get_high_res_pdf_url(self):
         if self.high_resolution_pdf:
             return build_document_url(self.high_resolution_pdf.url)
         else:
             return None
-
     high_resolution_pdf_url = property(get_high_res_pdf_url)
+
     low_resolution_pdf = models.ForeignKey(
         'wagtaildocs.Document',
         null=True,
@@ -368,14 +459,13 @@ class Book(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
-
     def get_low_res_pdf_url(self):
         if self.low_resolution_pdf:
             return build_document_url(self.low_resolution_pdf.url)
         else:
             return None
-
     low_resolution_pdf_url = property(get_low_res_pdf_url)
+
     student_handbook = models.ForeignKey(
         'wagtaildocs.Document',
         on_delete=models.SET_NULL,
@@ -383,13 +473,15 @@ class Book(Page):
         blank=True,
         related_name='+'
     )
-
     def get_student_handbook_url(self):
         return build_document_url(self.student_handbook.url)
-
     student_handbook_url = property(get_student_handbook_url)
-    free_stuff_heading = models.CharField(max_length=255, default="Free stuff. No catch.")
-    free_stuff_blurb = models.TextField(blank=True)
+
+    free_stuff_instructor = StreamField(SharedContentBlock(), null=True)
+    free_stuff_student = StreamField(SharedContentBlock(), null=True)
+
+    community_resource_content = StreamField(SharedContentBlock(), null=True)
+
     community_resource_url = models.URLField(blank=True)
     community_resource_cta = models.CharField(max_length=255, blank=True, null=True)
     community_resources_blurb = models.TextField(blank=True)
@@ -406,33 +498,25 @@ class Book(Page):
 
     community_resources_feature_link_url = property(get_community_resources_feature_link_url)
     community_resources_feature_text = models.TextField(blank=True)
-    webinar_heading = models.CharField(max_length=255, blank=True, default="Find a webinar")
-    webinar_blurb = models.TextField(blank=True)
-    ally_header = models.CharField(max_length=255, default="Want more?")
-    ally_blurb = models.TextField(blank=True)
+
+    webinar_content = StreamField(SharedContentBlock(), null=True)
+    ally_content = StreamField(SharedContentBlock(), null=True)
     coming_soon = models.BooleanField(default=False)
     ibook_link = models.URLField(blank=True, help_text="Link to iBook")
     ibook_link_volume_2 = models.URLField(blank=True, help_text="Link to secondary iBook")
-    webview_link = models.URLField(
-        blank=True, help_text="Link to CNX Webview book")
-    concept_coach_link = models.URLField(
-        blank=True, help_text="Link to Concept Coach")
-    bookshare_link = models.URLField(
-        blank=True, help_text="Link to Bookshare resources")
+    webview_link = models.URLField(blank=True, help_text="Link to CNX Webview book")
+    concept_coach_link = models.URLField(blank=True, help_text="Link to Concept Coach")
+    bookshare_link = models.URLField(blank=True, help_text="Link to Bookshare resources")
     amazon_coming_soon = models.BooleanField(default=False)
     amazon_link = models.URLField(blank=True, help_text="Link to Amazon")
-    amazon_price = models.DecimalField(
-        default=0.00, max_digits=6, decimal_places=2)
+    amazon_price = models.DecimalField(default=0.00, max_digits=6, decimal_places=2)
     amazon_blurb = models.TextField(blank=True)
     kindle_link = models.URLField(blank=True, help_text="Link to Kindle version")
     bookstore_coming_soon = models.BooleanField(default=False)
-    bookstore_link = models.URLField(blank=True, help_text="Link to Bookstore")
-    bookstore_blurb = models.TextField(blank=True)
+    bookstore_content = StreamField(SharedContentBlock(), null=True)
     comp_copy_available = models.BooleanField(default=True)
-    comp_copy_blurb = models.TextField(blank=True)
-    errata_blurb = models.TextField(blank=True)
-    errata_link = models.URLField(
-        blank=True, help_text="Link to view openstaxcollege.org errata")
+    comp_copy_content = StreamField(SharedContentBlock(), null=True)
+    errata_content = StreamField(SharedContentBlock(), null=True)
     errata_corrections_link = models.URLField(
         blank=True, help_text="Link errata corrections")
     table_of_contents = JSONField(editable=False, blank=True, null=True)
@@ -464,17 +548,17 @@ class Book(Page):
         DocumentChooserPanel('high_resolution_pdf'),
         DocumentChooserPanel('low_resolution_pdf'),
         DocumentChooserPanel('student_handbook'),
-        FieldPanel('free_stuff_heading'),
-        FieldPanel('free_stuff_blurb'),
+        StreamFieldPanel('free_stuff_instructor'),
+        StreamFieldPanel('free_stuff_student'),
+        StreamFieldPanel('community_resource_content'),
         FieldPanel('community_resource_url'),
         FieldPanel('community_resource_cta'),
         FieldPanel('community_resources_blurb'),
         DocumentChooserPanel('community_resources_feature_link'),
         FieldPanel('community_resources_feature_text'),
-        FieldPanel('webinar_heading'),
-        FieldPanel('webinar_blurb'),
-        FieldPanel('ally_header'),
-        FieldPanel('ally_blurb'),
+        InlinePanel('book_community_resources', label="Community Resources"),
+        StreamFieldPanel('webinar_content'),
+        StreamFieldPanel('ally_content'),
         FieldPanel('coming_soon'),
         FieldPanel('ibook_link'),
         FieldPanel('ibook_link_volume_2'),
@@ -486,12 +570,10 @@ class Book(Page):
         FieldPanel('amazon_blurb'),
         FieldPanel('kindle_link'),
         FieldPanel('bookstore_coming_soon'),
-        FieldPanel('bookstore_link'),
-        FieldPanel('bookstore_blurb'),
+        StreamFieldPanel('bookstore_content'),
         FieldPanel('comp_copy_available'),
-        FieldPanel('comp_copy_blurb'),
-        FieldPanel('errata_blurb'),
-        FieldPanel('errata_link'),
+        StreamFieldPanel('comp_copy_content'),
+        StreamFieldPanel('errata_content'),
         FieldPanel('errata_corrections_link'),
         FieldPanel('tutor_marketing_book'),
     ]
@@ -550,17 +632,17 @@ class Book(Page):
                   'high_resolution_pdf_url',
                   'low_resolution_pdf_url',
                   'student_handbook_url',
-                  'free_stuff_heading',
-                  'free_stuff_blurb',
+                  'free_stuff_instructor',
+                  'free_stuff_student',
+                  'community_resource_content',
                   'community_resource_url',
                   'community_resource_cta',
                   'community_resources_blurb',
                   'community_resources_feature_link_url',
                   'community_resources_feature_text',
-                  'webinar_heading',
-                  'webinar_blurb',
-                  'ally_header',
-                  'ally_blurb',
+                  'book_community_resources',
+                  'webinar_content',
+                  'ally_content',
                   'coming_soon',
                   'ibook_link',
                   'ibook_link_volume_2',
@@ -573,12 +655,10 @@ class Book(Page):
                   'amazon_blurb',
                   'kindle_link',
                   'bookstore_coming_soon',
-                  'bookstore_link',
-                  'bookstore_blurb',
+                  'bookstore_content',
                   'comp_copy_available',
-                  'comp_copy_blurb',
-                  'errata_blurb',
-                  'errata_link',
+                  'comp_copy_content',
+                  'errata_content',
                   'errata_corrections_link',
                   'table_of_contents',
                   'tutor_marketing_book', )
