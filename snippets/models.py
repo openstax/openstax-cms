@@ -66,6 +66,27 @@ class StudentResource(index.Indexed, models.Model):
 register_snippet(StudentResource)
 
 
+class CommunityResource(index.Indexed, models.Model):
+    heading = models.CharField(max_length=255)
+    description = RichTextField(blank=True, null=True)
+
+    api_fields = ('heading', 'description')
+
+    panels = [
+        FieldPanel('heading'),
+        FieldPanel('description'),
+    ]
+
+    search_fields = [
+        index.SearchField('heading', partial_match=True),
+    ]
+
+    def __str__(self):
+        return self.heading
+
+register_snippet(CommunityResource)
+
+
 class Role(models.Model):
     display_name = models.CharField(max_length=255)
     salesforce_name = models.CharField(max_length=255)
