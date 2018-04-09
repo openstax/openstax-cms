@@ -25,7 +25,7 @@ from wagtail.admin.edit_handlers import TabbedInterface, ObjectList
 
 from allies.models import Ally
 from openstax.functions import build_document_url, build_image_url
-from snippets.models import FacultyResource, StudentResource, CommunityResource, Subject, SharedContent
+from snippets.models import FacultyResource, StudentResource, Subject, SharedContent
 
 
 def cleanhtml(raw_html):
@@ -182,66 +182,6 @@ class StudentResources(models.Model):
     ]
 
 
-class CommunityResources(models.Model):
-    resource = models.ForeignKey(
-        CommunityResource,
-        null=True,
-        help_text="Manage resources through snippets.",
-        related_name='+',
-        on_delete=models.SET_NULL
-    )
-
-    def get_resource_heading(self):
-        return self.resource.heading
-    resource_heading = property(get_resource_heading)
-
-    def get_resource_description(self):
-        return self.resource.description
-    resource_description = property(get_resource_description)
-
-    link_external = models.URLField("External link", blank=True)
-    link_page = models.ForeignKey(
-        'wagtailcore.Page',
-        null=True,
-        blank=True,
-        related_name='+',
-        on_delete=models.SET_NULL
-    )
-    link_document = models.ForeignKey(
-        'wagtaildocs.Document',
-        null=True,
-        blank=True,
-        related_name='+',
-        on_delete=models.SET_NULL
-    )
-
-    def get_link_document(self):
-        return build_document_url(self.link_document.url)
-    link_document_url = property(get_link_document)
-
-    def get_document_title(self):
-        return self.link_document.title
-    link_document_title = property(get_document_title)
-    link_text = models.CharField(max_length=255, help_text="Call to Action Text")
-
-    api_fields = ('resource_heading',
-                  'resource_description',
-                  'link_external',
-                  'link_page',
-                  'link_document_url',
-                  'link_document_title',
-                  'link_text',
-                  )
-
-    panels = [
-        SnippetChooserPanel('resource'),
-        FieldPanel('link_external'),
-        PageChooserPanel('link_page'),
-        DocumentChooserPanel('link_document'),
-        FieldPanel('link_text'),
-    ]
-
-
 class Authors(models.Model):
     name = models.CharField(max_length=255)
     university = models.CharField(max_length=255, null=True, blank=True)
@@ -339,10 +279,6 @@ class BookFacultyResources(Orderable, FacultyResources):
 
 class BookStudentResources(Orderable, StudentResources):
     book_student_resource = ParentalKey('books.Book', related_name='book_student_resources')
-
-
-class BookCommunityResources(Orderable, CommunityResources):
-    book_community_resource = ParentalKey('books.Book', related_name='book_community_resources')
 
 
 class BookAllies(Orderable, BookAlly):
@@ -479,9 +415,6 @@ class Book(Page):
 
     free_stuff_instructor = StreamField(SharedContentBlock(), null=True)
     free_stuff_student = StreamField(SharedContentBlock(), null=True)
-
-    community_resource_content = StreamField(SharedContentBlock(), null=True)
-
     community_resource_url = models.URLField(blank=True)
     community_resource_cta = models.CharField(max_length=255, blank=True, null=True)
     community_resources_blurb = models.TextField(blank=True)
@@ -550,13 +483,11 @@ class Book(Page):
         DocumentChooserPanel('student_handbook'),
         StreamFieldPanel('free_stuff_instructor'),
         StreamFieldPanel('free_stuff_student'),
-        StreamFieldPanel('community_resource_content'),
         FieldPanel('community_resource_url'),
         FieldPanel('community_resource_cta'),
         FieldPanel('community_resources_blurb'),
         DocumentChooserPanel('community_resources_feature_link'),
         FieldPanel('community_resources_feature_text'),
-        InlinePanel('book_community_resources', label="Community Resources"),
         StreamFieldPanel('webinar_content'),
         StreamFieldPanel('ally_content'),
         FieldPanel('coming_soon'),
@@ -634,13 +565,11 @@ class Book(Page):
                   'student_handbook_url',
                   'free_stuff_instructor',
                   'free_stuff_student',
-                  'community_resource_content',
                   'community_resource_url',
                   'community_resource_cta',
                   'community_resources_blurb',
                   'community_resources_feature_link_url',
                   'community_resources_feature_text',
-                  'book_community_resources',
                   'webinar_content',
                   'ally_content',
                   'coming_soon',
@@ -785,8 +714,7 @@ class BookIndex(Page):
                     'amazon_price': book.amazon_price,
                     'amazon_blurb': book.amazon_blurb,
                     'bookstore_coming_soon': book.bookstore_coming_soon,
-                    'bookstore_link': book.bookstore_link,
-                    'bookstore_blurb': book.bookstore_blurb,
+                    'bookstore_content': book.bookstore_content.stream_data,
                     'comp_copy_available': book.comp_copy_available,
                     'salesforce_abbreviation': book.salesforce_abbreviation,
                     'salesforce_name': book.salesforce_name,
