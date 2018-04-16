@@ -269,7 +269,7 @@ REST_FRAMEWORK = {
 # }
 
 LOGGING_CONFIG = None
-LOGLEVEL = os.environ.get('LOGLEVEL', 'info').upper()
+LOGLEVEL = os.environ.get('LOGLEVEL', 'error').upper()
 logging.config.dictConfig({
     'version': 1,
     'disable_existing_loggers': False,
@@ -288,7 +288,7 @@ logging.config.dictConfig({
         },
         # Add Handler for Sentry for `warning` and above
         'sentry': {
-            'level': 'WARNING',
+            'level': 'ERROR',
             'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
         },
         'django.server': DEFAULT_LOGGING['handlers']['django.server'],
@@ -296,7 +296,7 @@ logging.config.dictConfig({
     'loggers': {
         # default for all undefined Python modules
         '': {
-            'level': 'WARNING',
+            'level': 'ERROR',
             'handlers': ['console', 'sentry'],
         },
         # Our application code
@@ -307,7 +307,12 @@ logging.config.dictConfig({
             'propagate': False,
         },
         # Prevent noisy modules from logging to Sentry
-        'noisy_module': {
+        'django.security.DisallowedHost': {
+            'level': 'ERROR',
+            'handlers': ['console'],
+            'propagate': False,
+        },
+        'django.request': {
             'level': 'ERROR',
             'handlers': ['console'],
             'propagate': False,
