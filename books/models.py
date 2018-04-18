@@ -467,7 +467,7 @@ class Book(Page):
         StreamFieldPanel('free_stuff_instructor'),
         StreamFieldPanel('free_stuff_student'),
         FieldPanel('community_resource_heading'),
-        FieldPanel('community_resource_logo'),
+        DocumentChooserPanel('community_resource_logo'),
         FieldPanel('community_resource_url'),
         FieldPanel('community_resource_cta'),
         FieldPanel('community_resource_blurb'),
