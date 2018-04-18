@@ -87,7 +87,7 @@ register_snippet(Role)
 class SharedContent(index.Indexed, models.Model):
     title = models.CharField(max_length=255, help_text="Internal name for identification.")
     heading = models.CharField(max_length=255, null=True, blank=True)
-    content = RichTextField(null=True, blank=True)
+    content = models.TextField(null=True, blank=True)
 
     api_fields = ('heading', 'content', )
 
