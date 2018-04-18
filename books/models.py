@@ -547,7 +547,7 @@ class Book(Page):
                   'free_stuff_instructor',
                   'free_stuff_student',
                   'community_resource_heading',
-                  'community_resource_logo',
+                  'community_resource_logo_url',
                   'community_resource_url',
                   'community_resource_cta',
                   'community_resource_blurb',
