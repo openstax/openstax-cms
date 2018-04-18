@@ -35,20 +35,6 @@ def cleanhtml(raw_html):
     return cleantext
 
 
-class Quotes(models.Model):
-    quote_text = RichTextField()
-    quote_author = models.CharField(max_length=255)
-    quote_author_school = models.CharField(max_length=255)
-
-    api_fields = ('quote_text', 'quote_author', 'quote_author_school', )
-
-    panels = [
-        FieldPanel('quote_text'),
-        FieldPanel('quote_author'),
-        FieldPanel('quote_author_school'),
-    ]
-
-
 class FacultyResources(models.Model):
     resource = models.ForeignKey(
         FacultyResource,
@@ -268,10 +254,6 @@ class SharedContentBlock(blocks.StreamBlock):
         icon = 'document'
 
 
-class BookQuotes(Orderable, Quotes):
-    quote = ParentalKey('books.Book', related_name='book_quotes')
-
-
 class BookFacultyResources(Orderable, FacultyResources):
     book_faculty_resource = ParentalKey('books.Book', related_name='book_faculty_resources')
 
@@ -365,7 +347,7 @@ class Book(Page):
     ibook_volume_2_isbn_10 = models.CharField(max_length=255, blank=True, null=True)
     ibook_volume_2_isbn_13 = models.CharField(max_length=255, blank=True, null=True)
     license_text = models.TextField(
-        blank=True, null=True, help_text="Text blurb that describes the license.")
+        blank=True, null=True, help_text="Overrides default license text.")
     license_name = models.CharField(
         max_length=255, blank=True, null=True, editable=False)
     license_version = models.CharField(
@@ -401,35 +383,41 @@ class Book(Page):
             return None
     low_resolution_pdf_url = property(get_low_res_pdf_url)
 
-    student_handbook = models.ForeignKey(
-        'wagtaildocs.Document',
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name='+'
-    )
-    def get_student_handbook_url(self):
-        return build_document_url(self.student_handbook.url)
-    student_handbook_url = property(get_student_handbook_url)
-
     free_stuff_instructor = StreamField(SharedContentBlock(), null=True)
     free_stuff_student = StreamField(SharedContentBlock(), null=True)
+    community_resource_heading = models.CharField(max_length=255, blank=True, null=True)
+    community_resource_logo = models.ForeignKey(
+        'wagtaildocs.Document',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    def get_community_resource_logo_url(self):
+        if self.community_resource_logo:
+            return build_document_url(self.community_resource_logo.url)
+        else:
+            return None
+
+    community_resource_logo_url = property(get_community_resource_logo_url)
+    community_resource_cta = models.CharField(max_length=255, blank=True, null=True)
     community_resource_url = models.URLField(blank=True)
     community_resource_cta = models.CharField(max_length=255, blank=True, null=True)
-    community_resources_blurb = models.TextField(blank=True)
-    community_resources_feature_link = models.ForeignKey(
+    community_resource_blurb = models.TextField(blank=True)
+    community_resource_feature_link = models.ForeignKey(
         'wagtaildocs.Document',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
         related_name='+'
     )
-
     def get_community_resources_feature_link_url(self):
         return build_document_url(self.community_resources_feature_link.url)
 
-    community_resources_feature_link_url = property(get_community_resources_feature_link_url)
-    community_resources_feature_text = models.TextField(blank=True)
+    community_resource_feature_link_url = property(get_community_resources_feature_link_url)
+    community_resource_feature_text = models.TextField(blank=True)
+
 
     webinar_content = StreamField(SharedContentBlock(), null=True)
     ally_content = StreamField(SharedContentBlock(), null=True)
@@ -437,12 +425,10 @@ class Book(Page):
     ibook_link = models.URLField(blank=True, help_text="Link to iBook")
     ibook_link_volume_2 = models.URLField(blank=True, help_text="Link to secondary iBook")
     webview_link = models.URLField(blank=True, help_text="Link to CNX Webview book")
-    concept_coach_link = models.URLField(blank=True, help_text="Link to Concept Coach")
     bookshare_link = models.URLField(blank=True, help_text="Link to Bookshare resources")
     amazon_coming_soon = models.BooleanField(default=False)
     amazon_link = models.URLField(blank=True, help_text="Link to Amazon")
     amazon_price = models.DecimalField(default=0.00, max_digits=6, decimal_places=2)
-    amazon_blurb = models.TextField(blank=True)
     kindle_link = models.URLField(blank=True, help_text="Link to Kindle version")
     bookstore_coming_soon = models.BooleanField(default=False)
     bookstore_content = StreamField(SharedContentBlock(), null=True)
@@ -466,7 +452,6 @@ class Book(Page):
         DocumentChooserPanel('title_image'),
         FieldPanel('cover_color'),
         FieldPanel('reverse_gradient'),
-        InlinePanel('book_quotes', label="Quotes"),
         InlinePanel('book_allies', label="Allies"),
         FieldPanel('print_isbn_10'),
         FieldPanel('print_isbn_13'),
@@ -479,25 +464,24 @@ class Book(Page):
         FieldPanel('license_text'),
         DocumentChooserPanel('high_resolution_pdf'),
         DocumentChooserPanel('low_resolution_pdf'),
-        DocumentChooserPanel('student_handbook'),
         StreamFieldPanel('free_stuff_instructor'),
         StreamFieldPanel('free_stuff_student'),
+        FieldPanel('community_resource_heading'),
+        FieldPanel('community_resource_logo'),
         FieldPanel('community_resource_url'),
         FieldPanel('community_resource_cta'),
-        FieldPanel('community_resources_blurb'),
-        DocumentChooserPanel('community_resources_feature_link'),
-        FieldPanel('community_resources_feature_text'),
+        FieldPanel('community_resource_blurb'),
+        DocumentChooserPanel('community_resource_feature_link'),
+        FieldPanel('community_resource_feature_text'),
         StreamFieldPanel('webinar_content'),
         StreamFieldPanel('ally_content'),
         FieldPanel('coming_soon'),
         FieldPanel('ibook_link'),
         FieldPanel('ibook_link_volume_2'),
-        FieldPanel('concept_coach_link'),
         FieldPanel('bookshare_link'),
         FieldPanel('amazon_coming_soon'),
         FieldPanel('amazon_link'),
         FieldPanel('amazon_price'),
-        FieldPanel('amazon_blurb'),
         FieldPanel('kindle_link'),
         FieldPanel('bookstore_coming_soon'),
         StreamFieldPanel('bookstore_content'),
@@ -540,7 +524,6 @@ class Book(Page):
                   'title_image_url',
                   'cover_color',
                   'reverse_gradient',
-                  'book_quotes',
                   'book_allies',
                   'book_student_resources',
                   'book_faculty_resources',
@@ -561,26 +544,25 @@ class Book(Page):
                   'license_url',
                   'high_resolution_pdf_url',
                   'low_resolution_pdf_url',
-                  'student_handbook_url',
                   'free_stuff_instructor',
                   'free_stuff_student',
+                  'community_resource_heading',
+                  'community_resource_logo',
                   'community_resource_url',
                   'community_resource_cta',
-                  'community_resources_blurb',
-                  'community_resources_feature_link_url',
-                  'community_resources_feature_text',
+                  'community_resource_blurb',
+                  'community_resource_feature_link_url',
+                  'community_resource_feature_text',
                   'webinar_content',
                   'ally_content',
                   'coming_soon',
                   'ibook_link',
                   'ibook_link_volume_2',
                   'webview_link',
-                  'concept_coach_link',
                   'bookshare_link',
                   'amazon_coming_soon',
                   'amazon_link',
                   'amazon_price',
-                  'amazon_blurb',
                   'kindle_link',
                   'bookstore_coming_soon',
                   'bookstore_content',
@@ -701,13 +683,11 @@ class BookIndex(Page):
                     'ibook_link': book.ibook_link,
                     'ibook_link_volume_2': book.ibook_link_volume_2,
                     'webview_link': book.webview_link,
-                    'concept_coach_link': book.concept_coach_link,
                     'bookshare_link': book.bookshare_link,
                     'kindle_link': book.kindle_link,
                     'amazon_coming_soon': book.amazon_coming_soon,
                     'amazon_link': book.amazon_link,
                     'amazon_price': book.amazon_price,
-                    'amazon_blurb': book.amazon_blurb,
                     'bookstore_coming_soon': book.bookstore_coming_soon,
                     'bookstore_content': book.bookstore_content.stream_data,
                     'comp_copy_available': book.comp_copy_available,
