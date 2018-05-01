@@ -412,10 +412,10 @@ class Book(Page):
         blank=True,
         related_name='+'
     )
-    def get_community_resources_feature_link_url(self):
-        return build_document_url(self.community_resources_feature_link.url)
+    def get_community_resource_feature_link_url(self):
+        return build_document_url(self.community_resource_feature_link.url)
 
-    community_resource_feature_link_url = property(get_community_resources_feature_link_url)
+    community_resource_feature_link_url = property(get_community_resource_feature_link_url)
     community_resource_feature_text = models.TextField(blank=True)
 
 
