@@ -383,8 +383,8 @@ class Book(Page):
             return None
     low_resolution_pdf_url = property(get_low_res_pdf_url)
 
-    free_stuff_instructor = StreamField(SharedContentBlock(), null=True)
-    free_stuff_student = StreamField(SharedContentBlock(), null=True)
+    free_stuff_instructor = StreamField(SharedContentBlock(), null=True, blank=True)
+    free_stuff_student = StreamField(SharedContentBlock(), null=True, blank=True)
     community_resource_heading = models.CharField(max_length=255, blank=True, null=True)
     community_resource_logo = models.ForeignKey(
         'wagtaildocs.Document',
@@ -419,8 +419,8 @@ class Book(Page):
     community_resource_feature_text = models.TextField(blank=True)
 
 
-    webinar_content = StreamField(SharedContentBlock(), null=True)
-    ally_content = StreamField(SharedContentBlock(), null=True)
+    webinar_content = StreamField(SharedContentBlock(), null=True, blank=True)
+    ally_content = StreamField(SharedContentBlock(), null=True, blank=True)
     coming_soon = models.BooleanField(default=False)
     ibook_link = models.URLField(blank=True, help_text="Link to iBook")
     ibook_link_volume_2 = models.URLField(blank=True, help_text="Link to secondary iBook")
@@ -431,10 +431,10 @@ class Book(Page):
     amazon_price = models.DecimalField(default=0.00, max_digits=6, decimal_places=2)
     kindle_link = models.URLField(blank=True, help_text="Link to Kindle version")
     bookstore_coming_soon = models.BooleanField(default=False)
-    bookstore_content = StreamField(SharedContentBlock(), null=True)
+    bookstore_content = StreamField(SharedContentBlock(), null=True, blank=True)
     comp_copy_available = models.BooleanField(default=True)
-    comp_copy_content = StreamField(SharedContentBlock(), null=True)
-    errata_content = StreamField(SharedContentBlock(), null=True)
+    comp_copy_content = StreamField(SharedContentBlock(), null=True, blank=True)
+    errata_content = StreamField(SharedContentBlock(), null=True, blank=True)
     errata_corrections_link = models.URLField(
         blank=True, help_text="Link errata corrections")
     table_of_contents = JSONField(editable=False, blank=True, null=True)
