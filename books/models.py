@@ -666,7 +666,7 @@ class BookIndex(Page):
 
     @property
     def books(self):
-        books = Book.objects.all().order_by('path')
+        books = Book.objects.live().order_by('path')
         book_data = []
         for book in books:
             try:
