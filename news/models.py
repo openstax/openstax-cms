@@ -1,9 +1,9 @@
 from django.db import models
 from django import forms
 
-from wagtail.core.models import Page
+from wagtail.core.models import Page, Orderable
 from wagtail.core.fields import RichTextField, StreamField
-from wagtail.admin.edit_handlers import FieldPanel, StreamFieldPanel
+from wagtail.admin.edit_handlers import FieldPanel, StreamFieldPanel, InlinePanel
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.documents.edit_handlers import DocumentChooserPanel
 from wagtail.embeds.blocks import EmbedBlock
@@ -180,3 +180,108 @@ class NewsArticle(Page):
 
         return super(NewsArticle, self).save(*args, **kwargs)
 
+
+class Experts(models.Model):
+    name = models.CharField(max_length=255)
+    email = models.EmailField(blank=True, null=True)
+    title = models.CharField(max_length=255)
+    blurb = models.TextField()
+
+
+class ExpertsPR(Orderable, Experts):
+    experts_pr = ParentalKey('news.PressIndex', related_name='experts_pr')
+
+
+class PressIndex(Page):
+    intro = RichTextField(blank=True)
+    press_kit = models.ForeignKey(
+        'wagtaildocs.Document',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    @property
+    def releases(self):
+        releases = PressRelease.objects.live().child_of(self)
+        print(releases)
+        releases_data = {}
+        for release in releases:
+            releases_data['press/{}'.format(release.slug)] = {
+                'detail_url': '/api/v2/pages/{}'.format(release.pk),
+                'date': release.date,
+                'heading': release.heading,
+                'subheading': release.subheading,
+                'article_image': release.article_image,
+                'author': release.author,
+            }
+        return releases_data
+
+    content_panels = Page.content_panels + [
+        FieldPanel('intro', classname="full"),
+        DocumentChooserPanel('press_kit'),
+        InlinePanel('experts_pr', label="Experts"),
+    ]
+
+    api_fields = (
+        'intro',
+        'press_kit',
+        'releases',
+        'slug',
+        'seo_title',
+        'search_description',
+    )
+
+    subpage_types = ['news.PressRelease']
+    parent_page_types = ['pages.HomePage']
+
+
+class PressRelease(Page):
+    date = models.DateField("PR date")
+    heading = models.CharField(max_length=250, help_text="Heading displayed on website")
+    subheading = models.CharField(max_length=250, blank=True, null=True)
+    author = models.CharField(max_length=250)
+
+    featured_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+    )
+
+    def get_article_image(self):
+        return build_image_url(self.featured_image)
+    article_image = property(get_article_image)
+
+    body = RichTextField(blank=True)
+
+    body = StreamField(BlogStreamBlock())
+
+    search_fields = Page.search_fields + [
+        index.SearchField('body'),
+    ]
+
+    content_panels = Page.content_panels + [
+        FieldPanel('date'),
+        FieldPanel('title'),
+        FieldPanel('heading'),
+        FieldPanel('subheading'),
+        FieldPanel('author'),
+        ImageChooserPanel('featured_image'),
+        StreamFieldPanel('body'),
+    ]
+
+    api_fields = (
+        'date',
+        'title',
+        'heading',
+        'subheading',
+        'author',
+        'article_image',
+        'body',
+        'slug',
+        'seo_title',
+        'search_description',
+    )
