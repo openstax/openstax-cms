@@ -108,7 +108,7 @@ class SharedContent(index.Indexed, models.Model):
 register_snippet(SharedContent)
 
 
-class NewsSources(index.Indexed, models.Model):
+class NewsSource(index.Indexed, models.Model):
     name = models.CharField(max_length=255)
     logo = models.ForeignKey(
         'wagtailimages.Image',
@@ -137,4 +137,4 @@ class NewsSources(index.Indexed, models.Model):
     def __str__(self):
         return self.name
 
-register_snippet(NewsSources)
+register_snippet(NewsSource)

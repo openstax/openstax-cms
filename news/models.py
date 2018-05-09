@@ -12,12 +12,14 @@ from wagtail.search import index
 from wagtail.core.blocks import TextBlock, StructBlock, StreamBlock, FieldBlock, CharBlock, RichTextBlock, RawHTMLBlock
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.documents.blocks import DocumentChooserBlock
+from wagtail.snippets.blocks import SnippetChooserBlock
+from wagtail.snippets.edit_handlers import SnippetChooserPanel
 
 from modelcluster.fields import ParentalKey
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from taggit.models import TaggedItemBase
 from openstax.functions import build_image_url
-
+from snippets.models import NewsSource
 
 class PullQuoteBlock(StructBlock):
     quote = TextBlock("quote title")
@@ -205,7 +207,6 @@ class PressIndex(Page):
     @property
     def releases(self):
         releases = PressRelease.objects.live().child_of(self)
-        print(releases)
         releases_data = {}
         for release in releases:
             releases_data['press/{}'.format(release.slug)] = {
@@ -235,6 +236,27 @@ class PressIndex(Page):
 
     subpage_types = ['news.PressRelease']
     parent_page_types = ['pages.HomePage']
+
+
+class NewsSources(models.Model):
+    news_source = models.ForeignKey(
+        NewsSource,
+        null=True,
+        help_text="Manage news sources through snippets.",
+        on_delete=models.SET_NULL,
+        related_name='news_sources'
+    )
+
+    api_fields = ('news_source',
+                  )
+
+    panels = [
+        SnippetChooserPanel('news_source'),
+    ]
+
+
+class NewsSourcesPR(Orderable, NewsSources):
+    experts_pr = ParentalKey('news.PressRelease', related_name='news_sources_pr')
 
 
 class PressRelease(Page):
@@ -271,6 +293,7 @@ class PressRelease(Page):
         FieldPanel('author'),
         ImageChooserPanel('featured_image'),
         StreamFieldPanel('body'),
+        InlinePanel('news_sources_pr', label="News Sources"),
     ]
 
     api_fields = (
@@ -281,6 +304,7 @@ class PressRelease(Page):
         'author',
         'article_image',
         'body',
+        'news_sources_pr',
         'slug',
         'seo_title',
         'search_description',

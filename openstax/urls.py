@@ -32,7 +32,7 @@ urlpatterns = [
     url(r'^api/pages/', include('pages.urls')),
     url(r'^api/snippets/', include('snippets.urls')),
     url(r'^api/books/', include('books.urls')),
-    url(r'^api/news/', include('news.urls')),
+    url(r'^api/', include('news.urls')),
     url(r'^blog-feed/rss/$', RssBlogFeed()),
     url(r'^blog-feed/atom/$', AtomBlogFeed()),
     url(r'^api/errata/', include('errata.urls')),
