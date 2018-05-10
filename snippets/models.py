@@ -1,9 +1,10 @@
 from django.db import models
 from wagtail.search import index
 from wagtail.admin.edit_handlers import FieldPanel
+from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.core.fields import RichTextField
 from wagtail.snippets.models import register_snippet
-
+from openstax.functions import build_image_url
 
 class Subject(models.Model):
     name = models.CharField(max_length=255)
@@ -105,3 +106,35 @@ class SharedContent(index.Indexed, models.Model):
         return self.title
 
 register_snippet(SharedContent)
+
+
+class NewsSource(index.Indexed, models.Model):
+    name = models.CharField(max_length=255)
+    logo = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+    )
+
+    def get_news_logo(self):
+        return build_image_url(self.logo)
+
+    news_logo = property(get_news_logo)
+
+    api_fields = ('name', 'news_logo',)
+
+    panels = [
+        FieldPanel('name'),
+        ImageChooserPanel('logo'),
+    ]
+
+    search_fields = [
+        index.SearchField('name', partial_match=True),
+    ]
+
+    def __str__(self):
+        return self.name
+
+register_snippet(NewsSource)

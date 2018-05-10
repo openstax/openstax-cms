@@ -284,6 +284,7 @@ class HomePage(Page):
         'pages.PrivacyPolicy',
         'books.BookIndex',
         'news.NewsIndex',
+        'news.PressIndex',
         'allies.Ally',
     ]
 
