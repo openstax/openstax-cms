@@ -25,7 +25,7 @@ from pages.models import (HomePage,
                           ErrataList,
                           PrivacyPolicy)
 from allies.models import Ally
-from news.models import NewsIndex
+from news.models import NewsIndex, PressIndex
 from books.models import BookIndex
 
 
@@ -57,6 +57,7 @@ class HomePageTests(WagtailPageTests):
             EcosystemAllies,
             Ally,
             NewsIndex,
+            PressIndex,
             BookIndex,
             FoundationSupport,
             OurImpact,
