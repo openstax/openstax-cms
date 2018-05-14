@@ -189,6 +189,9 @@ class Experts(models.Model):
     title = models.CharField(max_length=255)
     blurb = models.TextField()
 
+    api_fields = (
+        'name', 'email', 'title', 'blurb')
+
 
 class ExpertsPR(Orderable, Experts):
     experts_pr = ParentalKey('news.PressIndex', related_name='experts_pr')
@@ -232,6 +235,7 @@ class PressIndex(Page):
         'slug',
         'seo_title',
         'search_description',
+        'experts_pr',
     )
 
     subpage_types = ['news.PressRelease']
