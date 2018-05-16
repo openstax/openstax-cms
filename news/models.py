@@ -8,18 +8,18 @@ from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.documents.edit_handlers import DocumentChooserPanel
 from wagtail.embeds.blocks import EmbedBlock
 from wagtail.search import index
-
+from wagtail.core import blocks
 from wagtail.core.blocks import TextBlock, StructBlock, StreamBlock, FieldBlock, CharBlock, RichTextBlock, RawHTMLBlock
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.documents.blocks import DocumentChooserBlock
 from wagtail.snippets.blocks import SnippetChooserBlock
 from wagtail.snippets.edit_handlers import SnippetChooserPanel
+from wagtail.snippets.models import register_snippet
 
 from modelcluster.fields import ParentalKey
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from taggit.models import TaggedItemBase
 from openstax.functions import build_image_url
-from snippets.models import NewsSource
 
 class PullQuoteBlock(StructBlock):
     quote = TextBlock("quote title")
@@ -187,14 +187,85 @@ class Experts(models.Model):
     name = models.CharField(max_length=255)
     email = models.EmailField(blank=True, null=True)
     title = models.CharField(max_length=255)
-    blurb = models.TextField()
+    bio = models.TextField()
+    image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+    )
 
-    api_fields = (
-        'name', 'email', 'title', 'blurb')
+    def get_expert_image(self):
+        return build_image_url(self.image)
+    expert_image = property(get_expert_image)
+
+    api_fields = ('name', 'email', 'title', 'bio', 'expert_image')
+
+    panels = [
+        FieldPanel('name'),
+        FieldPanel('email'),
+        FieldPanel('title'),
+        FieldPanel('bio'),
+        ImageChooserPanel('image'),
+    ]
 
 
-class ExpertsPR(Orderable, Experts):
-    experts_pr = ParentalKey('news.PressIndex', related_name='experts_pr')
+class ExpertsBios(Orderable, Experts):
+    experts_bios = ParentalKey('news.PressIndex', related_name='experts_bios')
+
+
+class NewsSourceChooserBlock(SnippetChooserBlock):
+    def get_api_representation(self, value, context=None):
+        if value:
+            return {
+                'id': value.id,
+                'heading': value.heading,
+                'content': value.content,
+            }
+
+
+class NewsMention(models.Model):
+    source_name = models.CharField(max_length=255)
+    image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+    )
+
+    def get_source_image(self):
+        return build_image_url(self.image)
+
+    source_image = property(get_source_image)
+    url = models.URLField()
+    headline = models.CharField(max_length=255)
+    date = models.DateField()
+
+    api_fields = ('source_name', 'source_image', 'url', 'headline', 'date' )
+
+    panels = [
+        FieldPanel('source_name'),
+        ImageChooserPanel('image'),
+        FieldPanel('url'),
+        FieldPanel('headline'),
+        FieldPanel('date'),
+    ]
+
+
+class NewsMentions(Orderable, NewsMention):
+    news_mentions = ParentalKey('news.PressIndex', related_name='news_mentions')
+
+
+class MissionStatement(models.Model):
+    statement = models.CharField(max_length=255)
+
+    api_fields = ('statement', )
+
+
+class MissionStatements(Orderable, MissionStatement):
+    mission_statements = ParentalKey('news.PressIndex', related_name='mission_statements')
 
 
 class PressIndex(Page):
@@ -206,6 +277,11 @@ class PressIndex(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+    press_inquiry_name = models.CharField(max_length=255, blank=True, null=True)
+    press_inquiry_phone = models.CharField(max_length=255)
+    press_inquiry_email = models.EmailField()
+    experts_heading = models.CharField(max_length=255)
+    experts_blurb = models.TextField()
 
     @property
     def releases(self):
@@ -216,8 +292,7 @@ class PressIndex(Page):
                 'detail_url': '/api/v2/pages/{}'.format(release.pk),
                 'date': release.date,
                 'heading': release.heading,
-                'subheading': release.subheading,
-                'article_image': release.article_image,
+                'excerpt': release.excerpt,
                 'author': release.author,
             }
         return releases_data
@@ -225,7 +300,14 @@ class PressIndex(Page):
     content_panels = Page.content_panels + [
         FieldPanel('intro', classname="full"),
         DocumentChooserPanel('press_kit'),
-        InlinePanel('experts_pr', label="Experts"),
+        FieldPanel('press_inquiry_name'),
+        FieldPanel('press_inquiry_phone'),
+        FieldPanel('press_inquiry_email'),
+        FieldPanel('experts_heading'),
+        FieldPanel('experts_blurb'),
+        InlinePanel('experts_bios', label="Experts"),
+        InlinePanel('news_mentions', label="News Mentions"),
+        InlinePanel('mission_statements', label="Mission Statement"),
     ]
 
     api_fields = (
@@ -235,32 +317,16 @@ class PressIndex(Page):
         'slug',
         'seo_title',
         'search_description',
-        'experts_pr',
+        'experts_bios',
+        'news_mentions',
+        'mission_statements',
+        'press_inquiry_name',
+        'press_inquiry_phone',
+        'press_inquiry_email',
     )
 
     subpage_types = ['news.PressRelease']
     parent_page_types = ['pages.HomePage']
-
-
-class NewsSources(models.Model):
-    news_source = models.ForeignKey(
-        NewsSource,
-        null=True,
-        help_text="Manage news sources through snippets.",
-        on_delete=models.SET_NULL,
-        related_name='news_sources'
-    )
-
-    api_fields = ('news_source',
-                  )
-
-    panels = [
-        SnippetChooserPanel('news_source'),
-    ]
-
-
-class NewsSourcesPR(Orderable, NewsSources):
-    experts_pr = ParentalKey('news.PressRelease', related_name='news_sources_pr')
 
 
 class PressRelease(Page):
@@ -280,8 +346,7 @@ class PressRelease(Page):
     def get_article_image(self):
         return build_image_url(self.featured_image)
     article_image = property(get_article_image)
-
-    body = RichTextField(blank=True)
+    excerpt = models.CharField(max_length=255)
 
     body = StreamField(BlogStreamBlock())
 
@@ -297,7 +362,6 @@ class PressRelease(Page):
         FieldPanel('author'),
         ImageChooserPanel('featured_image'),
         StreamFieldPanel('body'),
-        InlinePanel('news_sources_pr', label="News Sources"),
     ]
 
     api_fields = (
@@ -308,7 +372,6 @@ class PressRelease(Page):
         'author',
         'article_image',
         'body',
-        'news_sources_pr',
         'slug',
         'seo_title',
         'search_description',
