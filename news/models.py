@@ -20,6 +20,7 @@ from modelcluster.fields import ParentalKey
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from taggit.models import TaggedItemBase
 from openstax.functions import build_image_url
+from snippets.models import NewsSource
 
 class PullQuoteBlock(StructBlock):
     quote = TextBlock("quote title")
@@ -215,47 +216,24 @@ class ExpertsBios(Orderable, Experts):
     experts_bios = ParentalKey('news.PressIndex', related_name='experts_bios')
 
 
-class NewsSourceChooserBlock(SnippetChooserBlock):
+class NewsMentionChooserBlock(SnippetChooserBlock):
     def get_api_representation(self, value, context=None):
         if value:
             return {
                 'id': value.id,
-                'heading': value.heading,
-                'content': value.content,
+                'name': value.name,
+                'logo': value.news_logo,
             }
 
 
-class NewsMention(models.Model):
-    source_name = models.CharField(max_length=255)
-    image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+',
-    )
+class NewsMentionBlock(blocks.StructBlock):
+    source = NewsMentionChooserBlock(NewsSource)
+    url = blocks.URLBlock()
+    headline = blocks.CharBlock()
+    date = blocks.DateBlock()
 
-    def get_source_image(self):
-        return build_image_url(self.image)
-
-    source_image = property(get_source_image)
-    url = models.URLField()
-    headline = models.CharField(max_length=255)
-    date = models.DateField()
-
-    api_fields = ('source_name', 'source_image', 'url', 'headline', 'date' )
-
-    panels = [
-        FieldPanel('source_name'),
-        ImageChooserPanel('image'),
-        FieldPanel('url'),
-        FieldPanel('headline'),
-        FieldPanel('date'),
-    ]
-
-
-class NewsMentions(Orderable, NewsMention):
-    news_mentions = ParentalKey('news.PressIndex', related_name='news_mentions')
+    class Meta:
+        icon = 'document'
 
 
 class MissionStatement(models.Model):
@@ -282,6 +260,9 @@ class PressIndex(Page):
     press_inquiry_email = models.EmailField()
     experts_heading = models.CharField(max_length=255)
     experts_blurb = models.TextField()
+    mentions = StreamField([
+        ('mention', NewsMentionBlock(icon='document')),
+    ], null=True)
 
     @property
     def releases(self):
@@ -306,7 +287,7 @@ class PressIndex(Page):
         FieldPanel('experts_heading'),
         FieldPanel('experts_blurb'),
         InlinePanel('experts_bios', label="Experts"),
-        InlinePanel('news_mentions', label="News Mentions"),
+        StreamFieldPanel('mentions'),
         InlinePanel('mission_statements', label="Mission Statement"),
     ]
 
@@ -318,7 +299,7 @@ class PressIndex(Page):
         'seo_title',
         'search_description',
         'experts_bios',
-        'news_mentions',
+        'mentions',
         'mission_statements',
         'press_inquiry_name',
         'press_inquiry_phone',
