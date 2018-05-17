@@ -106,35 +106,3 @@ class SharedContent(index.Indexed, models.Model):
         return self.title
 
 register_snippet(SharedContent)
-
-
-class NewsSource(index.Indexed, models.Model):
-    name = models.CharField(max_length=255)
-    logo = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+',
-    )
-
-    def get_news_logo(self):
-        return build_image_url(self.logo)
-
-    news_logo = property(get_news_logo)
-
-    api_fields = ('name', 'news_logo',)
-
-    panels = [
-        FieldPanel('name'),
-        ImageChooserPanel('logo'),
-    ]
-
-    search_fields = [
-        index.SearchField('name', partial_match=True),
-    ]
-
-    def __str__(self):
-        return self.name
-
-register_snippet(NewsSource)
