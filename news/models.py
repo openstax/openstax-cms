@@ -342,6 +342,7 @@ class PressRelease(Page):
         FieldPanel('subheading'),
         FieldPanel('author'),
         ImageChooserPanel('featured_image'),
+        FieldPanel('excerpt'),
         StreamFieldPanel('body'),
     ]
 
@@ -352,6 +353,7 @@ class PressRelease(Page):
         'subheading',
         'author',
         'article_image',
+        'excerpt',
         'body',
         'slug',
         'seo_title',
