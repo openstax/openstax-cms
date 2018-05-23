@@ -282,6 +282,7 @@ class HomePage(Page):
         'pages.Technology',
         'pages.ErrataList',
         'pages.PrivacyPolicy',
+        'pages.PrintOrder',
         'books.BookIndex',
         'news.NewsIndex',
         'news.PressIndex',
@@ -1376,6 +1377,7 @@ class ErrataList(Page):
 
     parent_page_types = ['pages.HomePage']
 
+
 class PrivacyPolicy(Page):
     intro_heading = models.CharField(max_length=255)
     privacy_content = RichTextField()
@@ -1393,6 +1395,103 @@ class PrivacyPolicy(Page):
         FieldPanel('title', classname='full title'),
         FieldPanel('intro_heading'),
         FieldPanel('privacy_content'),
+    ]
+
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+    ]
+
+    parent_page_types = ['pages.HomePage']
+
+
+class BookProviderBlock(blocks.StructBlock):
+    name = blocks.CharBlock()
+    blurb = blocks.TextBlock()
+    icon = ImageChooserBlock()
+    cta = blocks.CharBlock()
+    url = blocks.URLBlock()
+
+    class Meta:
+        icon = 'document'
+
+    def get_api_representation(self, value, context=None):
+        if value:
+            return {
+                'name': value['name'],
+                'blurb': value['blurb'],
+                'icon': build_image_url(value['icon']),
+                'cta': value['cta'],
+                'url': value['url']
+            }
+
+
+
+class PrintOrder(Page):
+    intro_heading = models.CharField(max_length=255)
+    intro_description = models.TextField()
+    featured_provider_name = models.CharField(max_length=255, null=True, blank=True)
+    featured_provider_logo = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+    )
+
+    def get_featured_provider_logo(self):
+        return build_image_url(self.featured_provider_logo)
+    featured_provider_logo_url = property(get_featured_provider_logo)
+
+    featured_provider_blurb = models.TextField()
+    featured_provider_link = models.URLField()
+    featured_provider_cta = models.CharField(max_length=255)
+    providers = StreamField([
+        ('provider', BookProviderBlock(icon='document')),
+    ])
+    isbn_download = models.ForeignKey(
+        'wagtaildocs.Document',
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='+',
+    )
+
+    def get_isbn_download(self):
+        return build_document_url(self.isbn_download.url)
+
+    isbn_download_url = property(get_isbn_download)
+    isbn_cta = models.CharField(max_length=255)
+
+    api_fields = (
+        'title',
+        'intro_heading',
+        'intro_description',
+        'featured_provider_name',
+        'featured_provider_logo_url',
+        'featured_provider_blurb',
+        'featured_provider_link',
+        'featured_provider_cta',
+        'providers',
+        'isbn_download_url',
+        'isbn_cta',
+        'slug',
+        'seo_title',
+        'search_description',
+    )
+
+    content_panels = [
+        FieldPanel('title', classname='full title'),
+        FieldPanel('intro_heading'),
+        FieldPanel('intro_description'),
+        FieldPanel('featured_provider_name'),
+        ImageChooserPanel('featured_provider_logo'),
+        FieldPanel('featured_provider_blurb'),
+        FieldPanel('featured_provider_link'),
+        FieldPanel('featured_provider_cta'),
+        StreamFieldPanel('providers'),
+        FieldPanel('isbn_download'),
+        FieldPanel('isbn_cta'),
     ]
 
     promote_panels = [
