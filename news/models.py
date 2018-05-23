@@ -247,7 +247,6 @@ class MissionStatements(Orderable, MissionStatement):
 
 
 class PressIndex(Page):
-    intro = RichTextField(blank=True)
     press_kit = models.ForeignKey(
         'wagtaildocs.Document',
         null=True,
@@ -279,7 +278,6 @@ class PressIndex(Page):
         return releases_data
 
     content_panels = Page.content_panels + [
-        FieldPanel('intro', classname="full"),
         DocumentChooserPanel('press_kit'),
         FieldPanel('press_inquiry_name'),
         FieldPanel('press_inquiry_phone'),
@@ -292,12 +290,13 @@ class PressIndex(Page):
     ]
 
     api_fields = (
-        'intro',
         'press_kit',
         'releases',
         'slug',
         'seo_title',
         'search_description',
+        'experts_heading',
+        'experts_blurb',
         'experts_bios',
         'mentions',
         'mission_statements',
