@@ -1431,7 +1431,7 @@ class BookProviderBlock(blocks.StructBlock):
 class PrintOrder(Page):
     intro_heading = models.CharField(max_length=255)
     intro_description = models.TextField()
-
+    featured_provider_name = models.CharField(max_length=255, null=True, blank=True)
     featured_provider_logo = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -1467,6 +1467,7 @@ class PrintOrder(Page):
         'title',
         'intro_heading',
         'intro_description',
+        'featured_provider_name',
         'featured_provider_logo_url',
         'featured_provider_blurb',
         'featured_provider_link',
@@ -1483,6 +1484,7 @@ class PrintOrder(Page):
         FieldPanel('title', classname='full title'),
         FieldPanel('intro_heading'),
         FieldPanel('intro_description'),
+        FieldPanel('featured_provider_name'),
         ImageChooserPanel('featured_provider_logo'),
         FieldPanel('featured_provider_blurb'),
         FieldPanel('featured_provider_link'),
