@@ -10,7 +10,7 @@ import wagtail.core.fields
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('news', '0029_pressindex_mentions'),
+        ('news', '0030_auto_20180521_1137'),
     ]
 
     operations = [
