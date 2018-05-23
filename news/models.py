@@ -298,6 +298,8 @@ class PressIndex(Page):
         'slug',
         'seo_title',
         'search_description',
+        'experts_heading',
+        'experts_blurb',
         'experts_bios',
         'mentions',
         'mission_statements',
