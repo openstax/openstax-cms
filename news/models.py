@@ -80,7 +80,7 @@ class NewsIndex(Page):
         articles = NewsArticle.objects.live().child_of(self)
         article_data = {}
         for article in articles:
-            article_data['news/{}'.format(article.slug)] = {
+            article_data['{}'.format(article.slug)] = {
                 'detail_url': '/api/v2/pages/{}'.format(article.pk),
                 'date': article.date,
                 'heading': article.heading,
