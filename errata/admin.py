@@ -96,8 +96,14 @@ class ErrataAdmin(admin.ModelAdmin):
             smart_str("Resource"),
             smart_str("Submitted By"),
             smart_str("Submitter E-mail Address"),
+            smart_str("Submitted By Group(s)"),
         ])
         for obj in queryset:
+            groups = []
+            if obj.submitted_by:
+                for group in obj.submitted_by.groups.all():
+                    groups.append(group.name)
+
             writer.writerow([
                 smart_str(obj.pk),
                 smart_str(obj.created),
@@ -117,6 +123,7 @@ class ErrataAdmin(admin.ModelAdmin):
                 smart_str(obj.resource),
                 smart_str(obj.submitted_by),
                 smart_str(obj.submitter_email_address),
+                smart_str(''.join(groups))
             ])
         return response
     export_as_csv.short_description = "Export as CSV file"
