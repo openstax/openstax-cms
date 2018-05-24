@@ -23,7 +23,8 @@ from .models import (GeneralPage,
                      Marketing,
                      Technology,
                      ErrataList,
-                     PrivacyPolicy)
+                     PrivacyPolicy,
+                     PrintOrder)
 
 
 @csrf_exempt
@@ -169,6 +170,12 @@ def page_detail(request, slug):
         page = PrivacyPolicy.objects.get(slug=slug)
         return redirect('/api/v2/pages/{}'.format(page.pk))
     except PrivacyPolicy.DoesNotExist:
+        page_found = False
+
+    try:
+        page = PrintOrder.objects.get(slug=slug)
+        return redirect('/api/v2/pages/{}'.format(page.pk))
+    except PrintOrder.DoesNotExist:
         page_found = False
 
     if not page_found:
