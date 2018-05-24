@@ -80,6 +80,17 @@ class HomePageTests(WagtailPageTests):
             PrintOrder
         })
 
+class PageTests(WagtailPageTests):
+    def setUp(self):
+        pass
+
+    def test_api_redirect(self):
+        pages = Page.objects.all()
+        for page in pages:
+            response = self.client.get('/api/pages/{}'.format(page.slug))
+            self.assertNotEquals(response.status_code, 404)
+
+
 
 class ErrataListTest(WagtailPageTests):
 
