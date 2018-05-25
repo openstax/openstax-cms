@@ -292,6 +292,23 @@ class HomePage(Page):
     def __str__(self):
         return self.path
 
+    def get_url_parts(self, *args, **kwargs):
+        url_parts = super(HomePage, self).get_url_parts(*args, **kwargs)
+
+        if url_parts is None:
+            # in this case, the page doesn't have a well-defined URL in the first place -
+            # for example, it's been created at the top level of the page tree
+            # and hasn't been associated with a site record
+            return None
+
+        site_id, root_url, page_path = url_parts
+
+        # return '/' in place of the real page path
+        return (site_id, root_url, '/')
+
+    class Meta:
+        verbose_name = "homepage"
+
 
 class HigherEducation(Page):
     intro_heading = models.CharField(max_length=255)

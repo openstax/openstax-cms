@@ -342,6 +342,8 @@ CNX_ARCHIVE_URL = 'https://archive.cnx.org'
 # Server host (used to populate links in the email)
 HOST_LINK = 'https://openstax.org'
 
+WAGTAIL_GRAVATAR_PROVIDER_URL = '//www.gravatar.com/avatar'
+
 try:
     from local import *
 except ImportError:
