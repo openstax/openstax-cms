@@ -123,6 +123,7 @@ class Errata(models.Model):
         null=True
     )
     error_type_other = models.CharField(max_length=255, blank=True, null=True)
+    number_of_errors = models.IntegerField(null=True, blank=True)
     resource = models.CharField(
         max_length=100,
         choices=ERRATA_RESOURCES,
