@@ -29,7 +29,7 @@ class ErrataFilter(FilterSet):
 
 
 class ErrataView(ModelViewSet):
-    queryset = Errata.objects.filter(archived=False).filter(is_assessment_errata='No')
+    queryset = Errata.objects.filter(archived=False).exclude(is_assessment_errata='Yes')
     serializer_class = ErrataSerializer
     http_method_names = ['get', 'post', 'head']
     filter_backends = (DjangoFilterBackend, OrderingFilter)
