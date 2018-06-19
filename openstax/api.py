@@ -6,6 +6,27 @@ from wagtail.documents.api.v2.endpoints import DocumentsAPIEndpoint
 # Create the router. "wagtailapi" is the URL namespace
 api_router = WagtailAPIRouter('wagtailapi')
 
+#TODO: This is fixed in an upcoming version of Wagtail, and should be removed.
+# If the API is causing errors after an upgrade - this is likely the first two classes to remove!
+class ImagesAPIEndpoint(ImagesAPIEndpoint):
+
+    body_fields = ImagesAPIEndpoint.body_fields + [
+        'file',
+    ]
+
+    listing_default_fields = ImagesAPIEndpoint.listing_default_fields + [
+        'file',
+    ]
+
+class DocumentsAPIEndpoint(DocumentsAPIEndpoint):
+    body_fields = DocumentsAPIEndpoint.body_fields + [
+        'file',
+    ]
+
+    listing_default_fields = DocumentsAPIEndpoint.listing_default_fields + [
+        'file',
+    ]
+
 # Add the three endpoints using the "register_endpoint" method.
 # The first parameter is the name of the endpoint (eg. pages, images). This
 # is used in the URL of the endpoint
