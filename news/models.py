@@ -13,8 +13,6 @@ from wagtail.core.blocks import TextBlock, StructBlock, StreamBlock, FieldBlock,
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.documents.blocks import DocumentChooserBlock
 from wagtail.snippets.blocks import SnippetChooserBlock
-from wagtail.snippets.edit_handlers import SnippetChooserPanel
-from wagtail.snippets.models import register_snippet
 
 from modelcluster.fields import ParentalKey
 from modelcluster.contrib.taggit import ClusterTaggableManager
@@ -254,6 +252,10 @@ class PressIndex(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+    def get_press_kit(self):
+        return build_image_url(self.press_kit)
+    press_kit_url = property(get_press_kit)
+
     press_inquiry_name = models.CharField(max_length=255, blank=True, null=True)
     press_inquiry_phone = models.CharField(max_length=255)
     press_inquiry_email = models.EmailField()
@@ -291,6 +293,7 @@ class PressIndex(Page):
 
     api_fields = (
         'press_kit',
+        'press_kit_url',
         'releases',
         'slug',
         'seo_title',
