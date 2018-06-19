@@ -127,7 +127,7 @@ class AboutUsOpenStaxTeam(Orderable, OpenStaxTeam):
     page = ParentalKey('pages.AboutUs', related_name='openstax_team')
 
 
-class AboutUs(Page):
+class AboutUs(Page): #to be removed after release of about us page
     tagline = models.CharField(max_length=255)
     intro_heading = models.CharField(max_length=255)
     intro_paragraph = RichTextField()
@@ -152,6 +152,64 @@ class AboutUs(Page):
         FieldPanel('our_team_heading'),
         InlinePanel('openstax_team', label="OpenStax Team"),
         InlinePanel('strategic_advisors', label="Strategic Advisors"),
+    ]
+
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+
+    ]
+
+    parent_page_types = ['pages.HomePage']
+
+
+class AboutUsPage(Page):
+    who_heading = models.CharField(max_length=255)
+    who_paragraph = models.TextField()
+    what_heading = models.CharField(max_length=255)
+    what_paragraph = models.TextField()
+    what_cards = StreamField([
+        ('card', blocks.StreamBlock([
+            ('image', ImageBlock()),
+            ('paragraph', blocks.TextBlock())
+        ],
+            icon='placeholder'
+        )),
+    ])
+    where_heading = models.CharField(max_length=255)
+    where_paragraph = models.TextField()
+    where_map = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    api_fields = (
+        'who_heading',
+        'who_paragraph',
+        'what_heading',
+        'what_paragraph',
+        'what_cards',
+        'where_heading',
+        'where_paragraph',
+        'where_map',
+        'slug',
+        'seo_title',
+        'search_description',)
+
+    content_panels = [
+        FieldPanel('title', classname="full title"),
+        FieldPanel('who_heading'),
+        FieldPanel('who_paragraph'),
+        FieldPanel('what_heading'),
+        FieldPanel('what_paragraph'),
+        StreamFieldPanel('what_cards'),
+        FieldPanel('where_heading'),
+        FieldPanel('where_paragraph'),
+        ImageChooserPanel('where_map'),
     ]
 
     promote_panels = [
@@ -263,6 +321,7 @@ class HomePage(Page):
         'pages.HigherEducation',
         'pages.ContactUs',
         'pages.AboutUs',
+        'pages.AboutUsPage',
         'pages.GeneralPage',
         'pages.EcosystemAllies',
         'pages.FoundationSupport',
