@@ -167,6 +167,16 @@ class AboutUs(Page): #to be removed after release of about us page
 class AboutUsPage(Page):
     who_heading = models.CharField(max_length=255)
     who_paragraph = models.TextField()
+    who_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    def get_who_image(self):
+        return build_image_url(self.who_image)
+    who_image_url = property(get_who_image)
     what_heading = models.CharField(max_length=255)
     what_paragraph = models.TextField()
     what_cards = StreamField([
@@ -186,16 +196,22 @@ class AboutUsPage(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+    def get_where_map(self):
+        return build_image_url(self.where_map)
+    where_map_url = property(get_where_map)
 
     api_fields = (
         'who_heading',
         'who_paragraph',
+        'who_image',
+        'who_image_url',
         'what_heading',
         'what_paragraph',
         'what_cards',
         'where_heading',
         'where_paragraph',
         'where_map',
+        'where_map_url',
         'slug',
         'seo_title',
         'search_description',)
