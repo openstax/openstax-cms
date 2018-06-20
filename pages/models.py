@@ -342,6 +342,7 @@ class HomePage(Page):
         'pages.ErrataList',
         'pages.PrivacyPolicy',
         'pages.PrintOrder',
+        'pages.ResearchPage',
         'books.BookIndex',
         'news.NewsIndex',
         'news.PressIndex',
@@ -1574,6 +1575,63 @@ class PrintOrder(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
+    ]
+
+    parent_page_types = ['pages.HomePage']
+
+
+class ResearchPage(Page):
+    mission_header = models.CharField(max_length=255)
+    mission_body = models.TextField()
+    projects_header = models.CharField(max_length=255)
+    people_header = models.CharField(max_length=255)
+    people = StreamField([
+        ('person', blocks.StructBlock([
+            ('name', blocks.CharBlock()),
+            ('title', blocks.CharBlock()),
+            ('photo', ImageChooserBlock(required=False)),
+        ], icon='user')),
+    ], null=True, blank=True)
+    publication_header = models.CharField(max_length=255)
+    publications = StreamField([
+        ('publication', blocks.StructBlock([
+            ('authors', blocks.CharBlock()),
+            ('date', blocks.DateBlock()),
+            ('title', blocks.CharBlock()),
+            ('excerpt', blocks.CharBlock()),
+            ('download_url', blocks.URLBlock()),
+        ], icon='user')),
+    ], null=True, blank=True)
+
+    content_panels = [
+        FieldPanel('title', classname='full title', help_text="Internal name for page."),
+        FieldPanel('mission_header'),
+        FieldPanel('mission_body'),
+        FieldPanel('projects_header'),
+        FieldPanel('people_header'),
+        StreamFieldPanel('people'),
+        FieldPanel('publication_header'),
+        StreamFieldPanel('publications'),
+    ]
+
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+
+    ]
+
+    api_fields = [
+        APIField('mission_header'),
+        APIField('mission_body'),
+        APIField('projects_header'),
+        APIField('people_header'),
+        APIField('people'),
+        APIField('publication_header'),
+        APIField('publications'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
     ]
 
     parent_page_types = ['pages.HomePage']
