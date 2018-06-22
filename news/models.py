@@ -13,6 +13,8 @@ from wagtail.core.blocks import TextBlock, StructBlock, StreamBlock, FieldBlock,
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.documents.blocks import DocumentChooserBlock
 from wagtail.snippets.blocks import SnippetChooserBlock
+from wagtail.snippets.edit_handlers import SnippetChooserPanel
+from wagtail.snippets.models import register_snippet
 
 from modelcluster.fields import ParentalKey
 from modelcluster.contrib.taggit import ClusterTaggableManager
@@ -44,6 +46,7 @@ class ImageBlock(StructBlock):
     image = ImageChooserBlock()
     caption = RichTextBlock()
     alignment = ImageFormatChoiceBlock()
+    alt_text = blocks.CharBlock(required=False)
 
 
 class AlignedHTMLBlock(StructBlock):
@@ -55,6 +58,7 @@ class AlignedHTMLBlock(StructBlock):
 
 
 class BlogStreamBlock(StreamBlock):
+    featured_image = ImageBlock(label="Featured image", icon="image")
     paragraph = RichTextBlock(icon="pilcrow")
     aligned_image = ImageBlock(label="Aligned image", icon="image")
     pullquote = PullQuoteBlock()
@@ -117,17 +121,9 @@ class NewsArticle(Page):
     heading = models.CharField(max_length=250, help_text="Heading displayed on website")
     subheading = models.CharField(max_length=250, blank=True, null=True)
     author = models.CharField(max_length=250)
-    featured_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+',
-        help_text="Image should be 1200 x 600"
-    )
 
     def get_article_image(self):
-        return build_image_url(self.featured_image)
+        return build_image_url(self.body.featured_image)
     article_image = property(get_article_image)
 
     tags = ClusterTaggableManager(through=NewsArticleTag, blank=True)
@@ -148,7 +144,6 @@ class NewsArticle(Page):
         FieldPanel('heading'),
         FieldPanel('subheading'),
         FieldPanel('author'),
-        ImageChooserPanel('featured_image'),
         FieldPanel('tags'),
         StreamFieldPanel('body'),
         FieldPanel('pin_to_top'),
@@ -252,10 +247,6 @@ class PressIndex(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
-    def get_press_kit(self):
-        return build_image_url(self.press_kit)
-    press_kit_url = property(get_press_kit)
-
     press_inquiry_name = models.CharField(max_length=255, blank=True, null=True)
     press_inquiry_phone = models.CharField(max_length=255)
     press_inquiry_email = models.EmailField()
@@ -293,7 +284,6 @@ class PressIndex(Page):
 
     api_fields = (
         'press_kit',
-        'press_kit_url',
         'releases',
         'slug',
         'seo_title',
@@ -318,16 +308,8 @@ class PressRelease(Page):
     subheading = models.CharField(max_length=250, blank=True, null=True)
     author = models.CharField(max_length=250)
 
-    featured_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+',
-    )
-
     def get_article_image(self):
-        return build_image_url(self.featured_image)
+        return build_image_url(self.body.featured_image)
     article_image = property(get_article_image)
     excerpt = models.CharField(max_length=255)
 
@@ -343,7 +325,6 @@ class PressRelease(Page):
         FieldPanel('heading'),
         FieldPanel('subheading'),
         FieldPanel('author'),
-        ImageChooserPanel('featured_image'),
         FieldPanel('excerpt'),
         StreamFieldPanel('body'),
     ]
