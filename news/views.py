@@ -6,6 +6,7 @@ from .models import NewsIndex, NewsArticle, PressIndex, PressRelease
 @csrf_exempt
 def news_index(request):
     page = NewsIndex.objects.all()[0]
+    print(page)
     return redirect('/api/v2/pages/{}'.format(page.pk))
 
 
