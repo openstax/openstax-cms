@@ -87,7 +87,7 @@ class NewsIndex(Page):
                 'heading': article.heading,
                 'subheading': article.subheading,
                 'pin_to_top': article.pin_to_top,
-                'article_image': article.featured_image,
+                'article_image': article.article_image,
                 'author': article.author,
                 'tags': [tag.name for tag in article.tags.all()],
             }
