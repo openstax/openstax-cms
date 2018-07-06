@@ -1524,22 +1524,11 @@ class BookProviderBlock(blocks.StructBlock):
 class PrintOrder(Page):
     intro_heading = models.CharField(max_length=255)
     intro_description = models.TextField()
-    featured_provider_name = models.CharField(max_length=255, null=True, blank=True)
-    featured_provider_logo = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+',
-    )
-
-    def get_featured_provider_logo(self):
-        return build_image_url(self.featured_provider_logo)
-    featured_provider_logo_url = property(get_featured_provider_logo)
-
-    featured_provider_blurb = models.TextField()
-    featured_provider_link = models.URLField()
-    featured_provider_cta = models.CharField(max_length=255)
+    featured_provider_intro_blurb = models.TextField()
+    featured_providers = StreamField([
+        ('provider', BookProviderBlock(icon='document')),
+    ], null=True)
+    other_providers_intro_blurb = models.TextField()
     providers = StreamField([
         ('provider', BookProviderBlock(icon='document')),
     ])
@@ -1560,11 +1549,9 @@ class PrintOrder(Page):
         'title',
         'intro_heading',
         'intro_description',
-        'featured_provider_name',
-        'featured_provider_logo_url',
-        'featured_provider_blurb',
-        'featured_provider_link',
-        'featured_provider_cta',
+        'featured_provider_intro_blurb',
+        'featured_providers',
+        'other_providers_intro_blurb',
         'providers',
         'isbn_download_url',
         'isbn_cta',
@@ -1577,11 +1564,9 @@ class PrintOrder(Page):
         FieldPanel('title', classname='full title'),
         FieldPanel('intro_heading'),
         FieldPanel('intro_description'),
-        FieldPanel('featured_provider_name'),
-        ImageChooserPanel('featured_provider_logo'),
-        FieldPanel('featured_provider_blurb'),
-        FieldPanel('featured_provider_link'),
-        FieldPanel('featured_provider_cta'),
+        FieldPanel('featured_provider_intro_blurb'),
+        StreamFieldPanel('featured_providers'),
+        FieldPanel('other_providers_intro_blurb'),
         StreamFieldPanel('providers'),
         FieldPanel('isbn_download'),
         FieldPanel('isbn_cta'),

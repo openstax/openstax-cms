@@ -205,7 +205,7 @@ class ErrataAdmin(admin.ModelAdmin):
                            'resolution_notes',
                            'resolution_date',
                            'error_type',
-                           'number_of_errors'
+                           'number_of_errors',
                            'resource',
                            'submitted_by',
                            'submitter_email_address',
