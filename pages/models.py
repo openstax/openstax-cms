@@ -1585,8 +1585,27 @@ class ResearchPage(Page):
     mission_header = models.CharField(max_length=255)
     mission_body = models.TextField()
     projects_header = models.CharField(max_length=255)
+    projects = StreamField([
+        ('project', blocks.StructBlock([
+            ('title', blocks.CharBlock()),
+            ('blurb', blocks.TextBlock()),
+        ], icon='user')),
+    ], null=True, blank=True)
     people_header = models.CharField(max_length=255)
-    people = StreamField([
+    alumni = StreamField([
+        ('person', blocks.StructBlock([
+            ('name', blocks.CharBlock()),
+            ('title', blocks.CharBlock()),
+        ], icon='user')),
+    ], null=True, blank=True)
+    current_members = StreamField([
+        ('person', blocks.StructBlock([
+            ('name', blocks.CharBlock()),
+            ('title', blocks.CharBlock()),
+            ('photo', ImageChooserBlock(required=False)),
+        ], icon='user')),
+    ], null=True, blank=True)
+    external_collaborators = StreamField([
         ('person', blocks.StructBlock([
             ('name', blocks.CharBlock()),
             ('title', blocks.CharBlock()),
@@ -1609,8 +1628,11 @@ class ResearchPage(Page):
         FieldPanel('mission_header'),
         FieldPanel('mission_body'),
         FieldPanel('projects_header'),
+        StreamFieldPanel('projects'),
         FieldPanel('people_header'),
-        StreamFieldPanel('people'),
+        StreamFieldPanel('alumni'),
+        StreamFieldPanel('current_members'),
+        StreamFieldPanel('external_collaborators'),
         FieldPanel('publication_header'),
         StreamFieldPanel('publications'),
     ]
@@ -1626,8 +1648,11 @@ class ResearchPage(Page):
         APIField('mission_header'),
         APIField('mission_body'),
         APIField('projects_header'),
+        APIField('projects'),
         APIField('people_header'),
-        APIField('people'),
+        APIField('alumni'),
+        APIField('current_members'),
+        APIField('external_collaborators'),
         APIField('publication_header'),
         APIField('publications'),
         APIField('slug'),
