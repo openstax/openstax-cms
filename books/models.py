@@ -435,10 +435,9 @@ class Book(Page):
     comp_copy_available = models.BooleanField(default=True)
     comp_copy_content = StreamField(SharedContentBlock(), null=True, blank=True)
     errata_content = StreamField(SharedContentBlock(), null=True, blank=True)
-    errata_corrections_link = models.URLField(
-        blank=True, help_text="Link errata corrections")
     table_of_contents = JSONField(editable=False, blank=True, null=True)
     tutor_marketing_book = models.BooleanField(default=False)
+    deprecated = models.BooleanField(default=False, help_text="Currently, disallows errata submissions only. Possible future uses for deprecation.")
 
     book_detail_panel = Page.content_panels + [
         FieldPanel('cnx_id'),
@@ -488,8 +487,8 @@ class Book(Page):
         FieldPanel('comp_copy_available'),
         StreamFieldPanel('comp_copy_content'),
         StreamFieldPanel('errata_content'),
-        FieldPanel('errata_corrections_link'),
         FieldPanel('tutor_marketing_book'),
+        FieldPanel('deprecated'),
     ]
     instructor_resources_panel = [
         InlinePanel('book_faculty_resources', label="Instructor Resources"),
@@ -569,9 +568,9 @@ class Book(Page):
                   'comp_copy_available',
                   'comp_copy_content',
                   'errata_content',
-                  'errata_corrections_link',
                   'table_of_contents',
-                  'tutor_marketing_book', )
+                  'tutor_marketing_book',
+                  'deprecated', )
 
     parent_page_types = ['books.BookIndex']
 
