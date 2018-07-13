@@ -220,6 +220,7 @@ class AboutUsPage(Page):
         FieldPanel('title', classname="full title"),
         FieldPanel('who_heading'),
         FieldPanel('who_paragraph'),
+        ImageChooserPanel('who_image'),
         FieldPanel('what_heading'),
         FieldPanel('what_paragraph'),
         StreamFieldPanel('what_cards'),
