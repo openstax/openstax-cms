@@ -291,9 +291,21 @@ COVER_COLORS = (
     (YELLOW, 'Yellow'),
 )
 
+LIVE = 'live'
+COMING_SOON = 'coming_soon'
+DEPRECATED = 'deprecated'
+RETIRED = 'retired'
+BOOK_STATES = (
+    (LIVE, 'Live'),
+    (COMING_SOON, 'Coming Soon'),
+    (DEPRECATED, 'Deprecated'),
+    (RETIRED, 'Retired')
+)
+
 
 class Book(Page):
     created = models.DateTimeField(auto_now_add=True)
+    book_state = models.CharField(max_length=255, choices=BOOK_STATES, default='live')
     cnx_id = models.CharField(
         max_length=255, help_text="This is used to pull relevant information from CNX.",
         blank=True, null=True)
@@ -421,7 +433,7 @@ class Book(Page):
 
     webinar_content = StreamField(SharedContentBlock(), null=True, blank=True)
     ally_content = StreamField(SharedContentBlock(), null=True, blank=True)
-    coming_soon = models.BooleanField(default=False)
+    coming_soon = models.BooleanField(default=False) #TODO: Remove after FE implements book_states
     ibook_link = models.URLField(blank=True, help_text="Link to iBook")
     ibook_link_volume_2 = models.URLField(blank=True, help_text="Link to secondary iBook")
     webview_link = models.URLField(blank=True, help_text="Link to CNX Webview book")
@@ -437,9 +449,9 @@ class Book(Page):
     errata_content = StreamField(SharedContentBlock(), null=True, blank=True)
     table_of_contents = JSONField(editable=False, blank=True, null=True)
     tutor_marketing_book = models.BooleanField(default=False)
-    deprecated = models.BooleanField(default=False, help_text="Currently, disallows errata submissions only. Possible future uses for deprecation.")
 
     book_detail_panel = Page.content_panels + [
+        FieldPanel('book_state'),
         FieldPanel('cnx_id'),
         FieldPanel('salesforce_abbreviation'),
         FieldPanel('salesforce_name'),
@@ -488,7 +500,6 @@ class Book(Page):
         StreamFieldPanel('comp_copy_content'),
         StreamFieldPanel('errata_content'),
         FieldPanel('tutor_marketing_book'),
-        FieldPanel('deprecated'),
     ]
     instructor_resources_panel = [
         InlinePanel('book_faculty_resources', label="Instructor Resources"),
@@ -513,6 +524,7 @@ class Book(Page):
                   'updated',
                   'slug',
                   'title',
+                  'book_state',
                   'cnx_id',
                   'salesforce_abbreviation',
                   'salesforce_name',
@@ -569,8 +581,7 @@ class Book(Page):
                   'comp_copy_content',
                   'errata_content',
                   'table_of_contents',
-                  'tutor_marketing_book',
-                  'deprecated', )
+                  'tutor_marketing_book', )
 
     parent_page_types = ['books.BookIndex']
 
@@ -672,6 +683,7 @@ class BookIndex(Page):
                 book_data.append({
                     'id': book.id,
                     'slug': 'books/{}'.format(book.slug),
+                    'book_state': book.book_state,
                     'title': book.title,
                     'subject': book.subject.name,
                     'is_ap': book.is_ap,
