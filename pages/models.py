@@ -285,6 +285,9 @@ class Quote(models.Model):
 
 # Home Page
 class HomePage(Page):
+    banner_images = StreamField([
+        ('image', ImageBlock())
+    ], null=True)
     row_1 = StreamField([
         ('column', ColumnBlock()),
     ])
@@ -303,6 +306,7 @@ class HomePage(Page):
 
     api_fields = (
         'title',
+        'banner_images',
         'row_1',
         'row_2',
         'row_3',
@@ -317,6 +321,7 @@ class HomePage(Page):
 
     content_panels = [
         FieldPanel('title', classname="full title"),
+        StreamFieldPanel('banner_images'),
         StreamFieldPanel('row_1'),
         StreamFieldPanel('row_2'),
         StreamFieldPanel('row_3'),
