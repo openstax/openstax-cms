@@ -34,9 +34,8 @@ class ImageBlock(StructBlock):
     alignment = ImageFormatChoiceBlock()
 
 
-class AlignedHTMLBlock(StructBlock):
-    html = RawHTMLBlock()
-    alignment = HTMLAlignmentChoiceBlock()
+class APIImageChooserBlock(ImageChooserBlock): # Use this block to return the path in the page API, does not support alt_text and alignment
+    def get_api_representation(self, value, context=None):
         return ImageSerializer(context=context).to_representation(value)
 
 
