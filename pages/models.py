@@ -31,6 +31,7 @@ class ImageFormatChoiceBlock(FieldBlock):
 class ImageBlock(StructBlock):
     image = ImageChooserBlock(required=False)
     alt_text = blocks.CharBlock(required=False)
+    link = blocks.URLBlock(required=False)
     alignment = ImageFormatChoiceBlock()
 
 
