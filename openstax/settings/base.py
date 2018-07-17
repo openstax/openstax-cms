@@ -185,6 +185,7 @@ INSTALLED_APPS = [
     'global_settings',
     'errata',
     'extraadminfilters',
+    'redirects',
     # wagtail
     'wagtail.core',
     'wagtail.admin',

@@ -1,4 +1,5 @@
 import json
+import mail.functions as mail_func
 
 from django.middleware import csrf
 from django.test import Client, TestCase
@@ -39,3 +40,14 @@ class MailTest(TestCase):
                                                              'message_body': 'Send me a bulk order of books, please!'})
         self.assertRedirects(
             response, '/confirmation/bulk-order', target_status_code=301)
+
+    def test_send_redirect_report(self):
+        redirects = self.create_fake_redirects()
+        mail_func.send_redirect_report(redirects)
+
+    def create_fake_redirects(self):
+        redirect = '/l/junk\thttps//:cnx.org\n'
+        redirect += '/l/garbage\thttps://cnx.org/contents/HTmjSAcf@2.61:rrzms6rP@2/Introduction\n'
+        redirect += '/l/refuse\thttps://openstax.org/openstax-tutor\n'
+        redirect += '/r/trash\thttps://trello.com/b/20yf8veQ/devops-go\n'
+        return redirect
