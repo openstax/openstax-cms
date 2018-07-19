@@ -1,4 +1,5 @@
-from django.http import JsonResponse
+from django.core import serializers
+from django.http import JsonResponse, HttpResponse
 from rest_framework import viewsets
 from salesforce.models import Adopter
 from social.apps.django_app.default.models import \
@@ -9,6 +10,8 @@ from wagtail.documents.models import Document
 
 from .serializers import AdopterSerializer, ImageSerializer, DocumentSerializer
 from accounts.functions import update_user_status, get_or_create_user_profile
+
+from salesforce.models import School
 
 
 class AdopterViewSet(viewsets.ModelViewSet):
@@ -105,3 +108,28 @@ def footer(request):
         'twitter_link': footer.twitter_link,
         'linkedin_link': footer.linkedin_link,
     })
+
+def schools(request):
+    format = request.GET.get('format', 'json')
+    schools = School.objects.all()
+
+    if format == 'geojson':
+        data = []
+        for school in schools:
+            item = {
+                'type': 'Feature',
+                'geometry': {
+                    'type': "Point",
+                    'coordinates': [school.long, school.lat]
+                },
+                'properties': {
+                    'name': school.name
+                }
+            }
+            data.append(item)
+        return JsonResponse(data, safe=False)
+    elif format == 'json':
+        response = serializers.serialize("json", schools)
+        return HttpResponse(response, content_type='application/json')
+    else:
+        return JsonResponse({'error': 'Invalid format requested.'})
