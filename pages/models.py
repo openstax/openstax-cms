@@ -37,8 +37,10 @@ class ImageBlock(StructBlock):
 
 class APIImageChooserBlock(ImageChooserBlock): # Use this block to return the path in the page API, does not support alt_text and alignment
     def get_api_representation(self, value, context=None):
-        return ImageSerializer(context=context).to_representation(value)
-
+        try:
+            return ImageSerializer(context=context).to_representation(value)
+        except AttributeError:
+            return None
 
 class ColumnBlock(blocks.StructBlock):
     heading = blocks.CharBlock(required=False)
