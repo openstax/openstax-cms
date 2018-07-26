@@ -116,17 +116,18 @@ def schools(request):
     if format == 'geojson':
         data = []
         for school in schools:
-            item = {
-                'type': 'Feature',
-                'geometry': {
-                    'type': "Point",
-                    'coordinates': [school.long, school.lat]
-                },
-                'properties': {
-                    'name': school.name
+            if school.lat and school.long:
+                item = {
+                    'type': 'Feature',
+                    'geometry': {
+                        'type': 'Point',
+                        'coordinates': [float(school.long), float(school.lat)]
+                    },
+                    'properties': {
+                        'name': school.name
+                    }
                 }
-            }
-            data.append(item)
+                data.append(item)
         return JsonResponse(data, safe=False)
     elif format == 'json':
         response = serializers.serialize("json", schools)
