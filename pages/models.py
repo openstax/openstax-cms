@@ -299,7 +299,8 @@ class Group(models.Model):
     people = StreamField([
         ('person', blocks.StructBlock([
             ('name', blocks.CharBlock()),
-            ('title', blocks.CharBlock()),
+            ('title', blocks.CharBlock(required=False)),
+            ('bio', blocks.CharBlock(required=False)),
             ('photo', APIImageChooserBlock(required=False)),
         ], icon='user')),
     ])
@@ -468,6 +469,9 @@ class TeamPage(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+    def get_header_image(self):
+        return build_document_url(self.header_image.url)
+    header_image_url = property(get_header_image)
 
     content_panels = [
         FieldPanel('title', classname="full title"),
@@ -488,7 +492,7 @@ class TeamPage(Page):
         'title',
         'header',
         'subheader',
-        'header_image',
+        'header_image_url',
         'openstax_people',
         'slug',
         'seo_title',
