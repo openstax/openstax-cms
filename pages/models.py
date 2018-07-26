@@ -473,11 +473,14 @@ class TeamPage(Page):
         return build_document_url(self.header_image.url)
     header_image_url = property(get_header_image)
 
+    team_header = models.CharField(max_length=255, null=True, blank=True)
+
     content_panels = [
         FieldPanel('title', classname="full title"),
         FieldPanel('header'),
         FieldPanel('subheader'),
         ImageChooserPanel('header_image'),
+        FieldPanel('team_header'),
         InlinePanel('openstax_people', label="OpenStax People"),
     ]
 
@@ -493,6 +496,7 @@ class TeamPage(Page):
         'header',
         'subheader',
         'header_image_url',
+        'team_header',
         'openstax_people',
         'slug',
         'seo_title',
