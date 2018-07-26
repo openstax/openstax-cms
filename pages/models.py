@@ -294,6 +294,24 @@ class Resource(models.Model):
         FieldPanel('alternate_text'),
     ]
 
+class Group(models.Model):
+    heading = models.CharField(max_length=255)
+    people = StreamField([
+        ('person', blocks.StructBlock([
+            ('name', blocks.CharBlock()),
+            ('title', blocks.CharBlock()),
+            ('photo', APIImageChooserBlock(required=False)),
+        ], icon='user')),
+    ])
+
+    api_fields = ('heading',
+                  'people', )
+
+    panels = [
+        FieldPanel('heading'),
+        StreamFieldPanel('people'),
+    ]
+
 
 ### Orderable Through-Models ###
 
@@ -304,6 +322,10 @@ class AboutUsStrategicAdvisors(Orderable, StrategicAdvisors):
 class AboutUsOpenStaxTeam(Orderable, OpenStaxTeam):
     page = ParentalKey('pages.AboutUs', related_name='openstax_team')
 
+
+class OpenStaxPeople(Orderable, Group):
+    marketing_video = ParentalKey(
+        'pages.TeamPage', related_name='openstax_people')
 
 class FoundationSupportFunders(Orderable, Funder):
     page = ParentalKey('pages.FoundationSupport', related_name='funders')
@@ -436,6 +458,43 @@ class AboutUsPage(Page):
     parent_page_types = ['pages.HomePage']
 
 
+class TeamPage(Page):
+    header = models.TextField(max_length=255)
+    subheader = models.TextField(max_length=255)
+    header_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    content_panels = [
+        FieldPanel('title', classname="full title"),
+        FieldPanel('header'),
+        FieldPanel('subheader'),
+        ImageChooserPanel('header_image'),
+        InlinePanel('openstax_people', label="OpenStax People"),
+    ]
+
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+
+    ]
+
+    api_fields = (
+        'title',
+        'header',
+        'subheader',
+        'header_image',
+        'openstax_people',
+        'slug',
+        'seo_title',
+        'search_description',)
+
+
 class HomePage(Page):
     banner_images = StreamField([
         ('image', ImageBlock())
@@ -496,6 +555,7 @@ class HomePage(Page):
         'pages.ContactUs',
         'pages.AboutUs',
         'pages.AboutUsPage',
+        'pages.TeamPage',
         'pages.GeneralPage',
         'pages.EcosystemAllies',
         'pages.FoundationSupport',
