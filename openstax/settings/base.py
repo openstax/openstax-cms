@@ -349,6 +349,8 @@ HOST_LINK = 'https://openstax.org'
 
 WAGTAIL_GRAVATAR_PROVIDER_URL = '//www.gravatar.com/avatar'
 
+MAPBOX_TOKEN = '' # should be the sk from mapbox, put in the appropriate settings file
+
 try:
     from local import *
 except ImportError:
