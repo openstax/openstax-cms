@@ -470,7 +470,7 @@ class TeamPage(Page):
         related_name='+'
     )
     def get_header_image(self):
-        return build_document_url(self.header_image.url)
+        return build_image_url(self.header_image)
     header_image_url = property(get_header_image)
 
     content_panels = [
