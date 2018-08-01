@@ -89,13 +89,17 @@ class SharedContent(index.Indexed, models.Model):
     title = models.CharField(max_length=255, help_text="Internal name for identification.")
     heading = models.CharField(max_length=255, null=True, blank=True)
     content = models.TextField(null=True, blank=True)
+    button_text = models.CharField(max_length=255, null=True, blank=True)
+    button_url = models.URLField(null=True, blank=True)
 
-    api_fields = ('heading', 'content', )
+    api_fields = ('heading', 'content','button_text',  )
 
     panels = [
         FieldPanel('title'),
         FieldPanel('heading'),
         FieldPanel('content'),
+        FieldPanel('button_text'),
+        FieldPanel('button_url'),
     ]
 
     search_fields = [
