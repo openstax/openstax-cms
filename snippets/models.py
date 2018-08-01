@@ -92,7 +92,7 @@ class SharedContent(index.Indexed, models.Model):
     button_text = models.CharField(max_length=255, null=True, blank=True)
     button_url = models.URLField(null=True, blank=True)
 
-    api_fields = ('heading', 'content','button_text',  )
+    api_fields = ('heading', 'content','button_text', 'button_url' )
 
     panels = [
         FieldPanel('title'),
