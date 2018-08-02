@@ -111,7 +111,10 @@ def footer(request):
 
 def schools(request):
     format = request.GET.get('format', 'json')
-    schools = School.objects.all()
+    name = request.GET.get('name', False)
+    id = request.GET.get('id', False)
+
+    schools = School.objects.filter(long__isnull=False, lat__isnull=False)
 
     if format == 'geojson':
         data = []
@@ -130,6 +133,12 @@ def schools(request):
                 data.append(item)
         return JsonResponse(data, safe=False)
     elif format == 'json':
+        if name:
+            schools = School.objects.filter(name__icontains=name)
+            print(schools.count())
+        if id:
+            schools = School.objects.filter(pk=id)
+
         response = serializers.serialize("json", schools)
         return HttpResponse(response, content_type='application/json')
     else:
