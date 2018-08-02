@@ -242,6 +242,8 @@ class SharedContentChooserBlock(SnippetChooserBlock):
                 'id': value.id,
                 'heading': value.heading,
                 'content': value.content,
+                'button_text': value.button_text,
+                'button_url': value.button_url,
             }
 
 
