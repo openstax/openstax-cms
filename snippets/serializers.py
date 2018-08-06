@@ -1,4 +1,4 @@
-from .models import Role
+from .models import Role, Subject
 
 from rest_framework import serializers
 
@@ -11,3 +11,10 @@ class RoleSerializer(serializers.ModelSerializer):
         fields = ('id',
                   'display_name',
                   'salesforce_name')
+
+
+class SubjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Subject
+        fields = ('id',
+                  'name')
