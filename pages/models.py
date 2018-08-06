@@ -1677,6 +1677,7 @@ class ResearchPage(Page):
             ('name', blocks.CharBlock()),
             ('title', blocks.CharBlock()),
             ('photo', APIImageChooserBlock(required=False)),
+            ('website', blocks.URLBlock(required=False)),
         ], icon='user')),
     ], null=True, blank=True)
     external_collaborators = StreamField([
