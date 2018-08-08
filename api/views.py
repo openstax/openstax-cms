@@ -113,6 +113,13 @@ def schools(request):
     format = request.GET.get('format', 'json')
     name = request.GET.get('name', False)
     id = request.GET.get('id', False)
+    physical_country = request.GET.get('physical_country', False)
+    physical_state_province = request.GET.get('physical_state_province', False)
+    physical_city = request.GET.get('physical_city', False)
+    key_institutional_partner = request.GET.get('key_institutional_partner', False) #bool
+    achieving_the_dream_school = request.GET.get('achieving_the_dream_school', False) #bool
+    testimonial = request.GET.get('testimonial', False)
+
 
     schools = School.objects.filter(long__isnull=False, lat__isnull=False)
 
@@ -134,10 +141,22 @@ def schools(request):
         return JsonResponse(data, safe=False)
     elif format == 'json':
         if name:
-            schools = School.objects.filter(name__icontains=name)
-            print(schools.count())
+            schools = schools.filter(name__icontains=name)
         if id:
-            schools = School.objects.filter(pk=id)
+            schools = schools.filter(pk=id)
+        if physical_city:
+            schools = schools.filter(physical_city=physical_city)
+        if physical_state_province:
+            schools = schools.filter(physical_state_province=physical_state_province)
+        if physical_country:
+            schools = schools.filter(physical_country=physical_country)
+        if key_institutional_partner:
+            schools = schools.filter(key_institutional_partner=True)
+        if achieving_the_dream_school:
+            schools = schools.filter(achieving_the_dream_school=True)
+        if testimonial:
+            schools = schools.filter(testimonial__isnull=False)
+
 
         response = serializers.serialize("json", schools)
         return HttpResponse(response, content_type='application/json')
