@@ -17,6 +17,7 @@ class ErrataSerializer(serializers.ModelSerializer):
                   'reviewed_date',
                   'corrected_date',
                   'archived',
+                  'is_assessment_errata',
                   'location',
                   'detail',
                   'short_detail',
