@@ -22,14 +22,15 @@ class JSONResponse(HttpResponse):
 class ErrataFilter(FilterSet):
     book_title = django_filters.CharFilter(name='book__title')
     book_id = django_filters.CharFilter(name='book__id')
+    is_assessment_errata__not = django_filters.CharFilter(name='is_assessment_errata', exclude=True)
 
     class Meta:
         model = Errata
-        fields = ['book_title', 'book_id', 'archived']
+        fields = ['book_title', 'book_id', 'archived', 'is_assessment_errata', 'is_assessment_errata__not']
 
 
 class ErrataView(ModelViewSet):
-    queryset = Errata.objects.filter(archived=False).exclude(is_assessment_errata='Yes')
+    queryset = Errata.objects.all()
     serializer_class = ErrataSerializer
     http_method_names = ['get', 'post', 'head']
     filter_backends = (DjangoFilterBackend, OrderingFilter)
