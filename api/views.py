@@ -113,6 +113,7 @@ def schools(request):
     format = request.GET.get('format', 'json')
     name = request.GET.get('name', False)
     id = request.GET.get('id', False)
+    type = request.GET.get('type', False)
     physical_country = request.GET.get('physical_country', False)
     physical_state_province = request.GET.get('physical_state_province', False)
     physical_city = request.GET.get('physical_city', False)
@@ -144,6 +145,8 @@ def schools(request):
             schools = schools.filter(name__icontains=name)
         if id:
             schools = schools.filter(pk=id)
+        if type:
+            schools = schools.filter(type__icontains=type)
         if physical_city:
             schools = schools.filter(physical_city=physical_city)
         if physical_state_province:
