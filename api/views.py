@@ -151,11 +151,11 @@ def schools(request):
         if physical_country:
             schools = schools.filter(physical_country=physical_country)
         if key_institutional_partner:
-            schools = schools.filter(key_institutional_partner=True)
+            schools = schools.filter(key_institutional_partner=key_institutional_partner)
         if achieving_the_dream_school:
-            schools = schools.filter(achieving_the_dream_school=True)
+            schools = schools.filter(achieving_the_dream_school=achieving_the_dream_school)
         if testimonial:
-            schools = schools.filter(testimonial__isnull=False)
+            schools = schools.filter(testimonial__isnull=testimonial)
 
 
         response = serializers.serialize("json", schools)
