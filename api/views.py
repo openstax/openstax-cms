@@ -113,6 +113,7 @@ def schools(request):
     format = request.GET.get('format', 'json')
     name = request.GET.get('name', False)
     id = request.GET.get('id', False)
+    type = request.GET.get('type', False)
     physical_country = request.GET.get('physical_country', False)
     physical_state_province = request.GET.get('physical_state_province', False)
     physical_city = request.GET.get('physical_city', False)
@@ -144,6 +145,8 @@ def schools(request):
             schools = schools.filter(name__icontains=name)
         if id:
             schools = schools.filter(pk=id)
+        if type:
+            schools = schools.filter(type__icontains=type)
         if physical_city:
             schools = schools.filter(physical_city=physical_city)
         if physical_state_province:
@@ -151,11 +154,11 @@ def schools(request):
         if physical_country:
             schools = schools.filter(physical_country=physical_country)
         if key_institutional_partner:
-            schools = schools.filter(key_institutional_partner=True)
+            schools = schools.filter(key_institutional_partner=key_institutional_partner)
         if achieving_the_dream_school:
-            schools = schools.filter(achieving_the_dream_school=True)
+            schools = schools.filter(achieving_the_dream_school=achieving_the_dream_school)
         if testimonial:
-            schools = schools.filter(testimonial__isnull=False)
+            schools = schools.filter(testimonial__isnull=testimonial)
 
 
         response = serializers.serialize("json", schools)
