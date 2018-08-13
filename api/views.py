@@ -117,10 +117,15 @@ def schools(request):
     physical_country = request.GET.get('physical_country', False)
     physical_state_province = request.GET.get('physical_state_province', False)
     physical_city = request.GET.get('physical_city', False)
-    key_institutional_partner = request.GET.get('key_institutional_partner', False) #bool
-    achieving_the_dream_school = request.GET.get('achieving_the_dream_school', False) #bool
+    key_institutional_partner = request.GET.get('key_institutional_partner', False)
+    if key_institutional_partner != False:
+        key_institutional_partner = key_institutional_partner.capitalize()
+    achieving_the_dream_school = request.GET.get('achieving_the_dream_school', False)
+    if achieving_the_dream_school != False:
+        achieving_the_dream_school = achieving_the_dream_school.capitalize()
     testimonial = request.GET.get('testimonial', False)
-
+    if testimonial != False:
+        testimonial = testimonial.capitalize()
 
     schools = School.objects.filter(long__isnull=False, lat__isnull=False)
 
