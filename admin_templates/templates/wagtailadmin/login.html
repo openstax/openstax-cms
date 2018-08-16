@@ -35,6 +35,7 @@
 
             <h1><img src="{% static 'images/openstax.png' %}" alt="Openstax" width="100" /></h1>
 
+            {% if debug %}
             <ul class="fields">
                 {% block fields %}
                 <li class="full">
@@ -84,6 +85,9 @@
                     {% endblock %}
                 </li>
             </ul>
+            {% else %}
+                <a href="{% url 'social:begin' 'openstax' %}?next=/admin" class="button">Login with OSAccounts</a>
+            {% endif %}
         {% endblock %}
         </form>
 
