@@ -6,7 +6,7 @@ from wagtail.contrib.settings.models import BaseSetting, register_setting
 class StickyNote(BaseSetting):
     show = models.BooleanField(default=False)
     expires = models.DateTimeField(null=True, blank=True, help_text="Set the date to override the content of the Give Sticky. Set the content below to change.")
-    content = models.CharField(max_length=255)
+    content = models.TextField()
     emergency_expires = models.DateTimeField(null=True, blank=True)
     emergency_content = models.CharField(max_length=255)
 
