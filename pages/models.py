@@ -585,6 +585,7 @@ class HomePage(Page):
         'pages.PrivacyPolicy',
         'pages.PrintOrder',
         'pages.ResearchPage',
+        'pages.Careers',
         'books.BookIndex',
         'news.NewsIndex',
         'news.PressIndex',
@@ -1733,6 +1734,34 @@ class ResearchPage(Page):
         APIField('slug'),
         APIField('seo_title'),
         APIField('search_description'),
+    ]
+
+    parent_page_types = ['pages.HomePage']
+
+
+class Careers(Page):
+    intro_heading = models.CharField(max_length=255)
+    careers_content = RichTextField()
+
+    api_fields = (
+        'title',
+        'intro_heading',
+        'careers_content',
+        'slug',
+        'seo_title',
+        'search_description',
+    )
+
+    content_panels = [
+        FieldPanel('title', classname='full title'),
+        FieldPanel('intro_heading'),
+        FieldPanel('careers_content'),
+    ]
+
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
     ]
 
     parent_page_types = ['pages.HomePage']
