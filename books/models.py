@@ -458,7 +458,7 @@ class Book(Page):
         FieldPanel('salesforce_abbreviation'),
         FieldPanel('salesforce_name'),
         FieldPanel('publish_date'),
-        SnippetChooserPanel('subject'),
+        FieldPanel('subject'),
         FieldPanel('is_ap'),
         FieldPanel('description', classname="full"),
         DocumentChooserPanel('cover'),
