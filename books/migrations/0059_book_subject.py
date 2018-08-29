@@ -7,7 +7,7 @@ import django.db.models.deletion
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('snippets', '0017_auto_20180801_1719'),
+        ('snippets', '__first__'),
         ('books', '0058_remove_book_subject'),
     ]
 
