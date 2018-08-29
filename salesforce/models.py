@@ -46,3 +46,16 @@ class MapBoxDataset(models.Model):
 
     def __str__(self):
         return self.name
+
+
+class SalesforceSettings(models.Model):
+    username = models.CharField(max_length=255)
+    password = models.CharField(max_length=255)
+    security_token = models.CharField(max_length=255)
+    sandbox = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.username
+
+    class Meta:
+        verbose_name_plural = "Salesforce Settings"
