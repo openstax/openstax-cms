@@ -28,6 +28,7 @@ class ErrataAdmin(admin.ModelAdmin):
               'created',
               'modified',
               'book',
+              'openstax_book',
               'is_assessment_errata',
               'assessment_id',
               'status',
@@ -44,6 +45,7 @@ class ErrataAdmin(admin.ModelAdmin):
               'resource',
               'submitted_by',
               'submitter_email_address',
+              'submitted_by_account_id',
               'file_1',
               'file_2']
     search_fields = ('id',
@@ -166,6 +168,7 @@ class ErrataAdmin(admin.ModelAdmin):
                            'created',
                            'modified',
                            'book',
+                           'openstax_book',
                            'is_assessment_errata',
                            'assessment_id',
                            'status',
@@ -182,6 +185,7 @@ class ErrataAdmin(admin.ModelAdmin):
                            'resource',
                            'submitted_by',
                            'submitter_email_address',
+                           'submitted_by_account_id',
                            'file_1',
                            'file_2'] # fields to show on the actual form
             self.readonly_fields = ['id',
@@ -193,6 +197,7 @@ class ErrataAdmin(admin.ModelAdmin):
                            'created',
                            'modified',
                            'book',
+                           'openstax_book',
                            'is_assessment_errata',
                            'assessment_id',
                            'status',
@@ -209,12 +214,14 @@ class ErrataAdmin(admin.ModelAdmin):
                            'resource',
                            'submitted_by',
                            'submitter_email_address',
+                           'submitted_by_account_id',
                            'file_1',
                            'file_2']
             self.readonly_fields = ['id',
                                     'created',
                                     'modified',
                                     'book',
+                                    'openstax_book',
                                     'is_assessment_errata',
                                     'assessment_id',
                                     'status',
@@ -231,6 +238,7 @@ class ErrataAdmin(admin.ModelAdmin):
                                     'resource',
                                     'submitted_by',
                                     'submitter_email_address',
+                                    'submitted_by_account_id',
                                     'file_1',
                                     'file_2']
             self.save_as = False

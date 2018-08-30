@@ -7,6 +7,7 @@ from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
+from django.core.validators import MinValueValidator
 
 from wagtail.core import hooks
 from wagtail.admin.menu import MenuItem
@@ -89,6 +90,7 @@ class Errata(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     book = models.ForeignKey(Book, on_delete=models.PROTECT)
+    openstax_book = models.CharField(max_length=255, null=True)
     is_assessment_errata = models.CharField(
         max_length=100,
         choices=YES_NO_CHOICES,
@@ -131,8 +133,12 @@ class Errata(models.Model):
         null=True
     )
     resource_other = models.CharField(max_length=255, blank=True, null=True)
+
+    #TODO: We are keeping the Foreign Key to the local user until the migrations to production are complete, then remove submitted_by and submitter_email_address
     submitted_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
     submitter_email_address = models.EmailField(blank=True, null=True)
+    submitted_by_account_id = models.IntegerField(blank=True, null=True, validators=[MinValueValidator(0)])
+
     file_1 = models.FileField(upload_to='errata/user_uploads/1/', blank=True, null=True)
     file_2 = models.FileField(upload_to='errata/user_uploads/2/', blank=True, null=True)
 
