@@ -1671,6 +1671,7 @@ class ResearchPage(Page):
         ('person', blocks.StructBlock([
             ('name', blocks.CharBlock()),
             ('title', blocks.CharBlock()),
+            ('website', blocks.URLBlock(required=False)),
         ], icon='user')),
     ], null=True, blank=True)
     current_members = StreamField([
@@ -1686,6 +1687,7 @@ class ResearchPage(Page):
             ('name', blocks.CharBlock()),
             ('title', blocks.CharBlock()),
             ('photo', APIImageChooserBlock(required=False)),
+            ('website', blocks.URLBlock(required=False)),
         ], icon='user')),
     ], null=True, blank=True)
     publication_header = models.CharField(max_length=255)
