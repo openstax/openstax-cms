@@ -35,6 +35,7 @@ urlpatterns = [
     url(r'^api/', include('news.urls')),
     url(r'^blog-feed/rss/$', RssBlogFeed()),
     url(r'^blog-feed/atom/$', AtomBlogFeed()),
+    url(r'^errata/', include('errata.urls')),
     url(r'^api/errata/', include('errata.urls')),
 
     # For anything not caught by a more specific rule above, hand over to
