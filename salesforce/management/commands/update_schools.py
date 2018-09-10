@@ -30,6 +30,8 @@ class Command(BaseCommand):
                       "Address_Latitude__c, " \
                       "Address_Longitude__c," \
                       "Testimonial__c," \
+                      "Testimonial_Name__c", \
+                      "Testimonial_Position__c", \
                       "Number_of_Adoptions__c FROM Account"
             response = sf.query_all(query)
             sf_schools = response['records']
@@ -62,7 +64,9 @@ class Command(BaseCommand):
                                                                       physical_zip_postal_code=sf_school['BillingPostalCode'],
                                                                       long=sf_school['Address_Latitude__c'],
                                                                       lat=sf_school['Address_Longitude__c'],
-                                                                      testimonial=sf_school['Testimonial__c'])
+                                                                      testimonial=sf_school['Testimonial__c'],
+                                                                      testimonial_name=['Testimonial_Name__c'],
+                                                                      testimonial_position=['Testimonial_Position__c'])
 
                     school.save()
                     updated_schools = updated_schools + 1
