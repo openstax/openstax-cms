@@ -36,6 +36,8 @@ class School(models.Model):
     long = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True)
     lat = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True)
     testimonial = models.TextField(null=True, blank=True)
+    testimonial_name = models.CharField(max_length=255, null=True, blank=True)
+    testimonial_position = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return self.name
