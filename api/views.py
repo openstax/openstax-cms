@@ -1,17 +1,11 @@
 from django.core import serializers
 from django.http import JsonResponse, HttpResponse
 from rest_framework import viewsets
-from salesforce.models import Adopter
-from social.apps.django_app.default.models import \
-    DjangoStorage as SocialAuthStorage
+from salesforce.models import Adopter, School
 from global_settings.models import StickyNote, Footer
 from wagtail.images.models import Image
 from wagtail.documents.models import Document
-
 from .serializers import AdopterSerializer, ImageSerializer, DocumentSerializer
-from accounts.functions import update_user_status, get_or_create_user_profile
-
-from salesforce.models import School
 
 
 class AdopterViewSet(viewsets.ModelViewSet):
@@ -34,55 +28,6 @@ class DocumentViewSet(viewsets.ModelViewSet):
         if search is not None:
             queryset = queryset.filter(title__icontains=search)
         return queryset
-
-
-def user_api(request):
-    user = request.user
-    profile = get_or_create_user_profile(user)
-
-    if profile:
-        if not profile.uuid or profile.faculty_status == 'no_faculty_info' or profile.faculty_status == 'pending_faculty':
-            try:
-                update_user_status(user)
-            except IndexError:
-                print("[error] cannot find account instance for that user")
-
-    try:
-        social_auth = SocialAuthStorage.user.get_social_auth_for_user(user)
-        user.accounts_id = social_auth[0].uid
-    except:
-        user.accounts_id = None
-
-    try:
-        return JsonResponse({
-            'id': user.pk,
-            'email': user.email,
-            'username': user.username,
-            'first_name': user.first_name,
-            'last_name': user.last_name,
-            'is_staff': user.is_staff,
-            'is_superuser': user.is_superuser,
-            'groups': list(user.groups.values_list('name', flat=True)),
-            'accounts_id': user.accounts_id,
-            'accounts_uuid': profile.uuid,
-            'faculty_status': profile.faculty_status,
-            'pending_verification': profile.faculty_status == 'pending_faculty'
-        })
-    except:
-        return JsonResponse({
-            'id': False,
-            'email': '',
-            'username': '',
-            'first_name': '',
-            'last_name': '',
-            'is_staff': False,
-            'is_superuser': False,
-            'groups': [],
-            'accounts_id': None,
-            'accounts_uuid': None,
-            'faculty_status': None,
-            'pending_verification': False
-        })
 
 
 def sticky_note(request):
