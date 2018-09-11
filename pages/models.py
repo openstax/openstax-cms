@@ -66,7 +66,7 @@ class FAQBlock(blocks.StructBlock):
 
 class BookProviderBlock(blocks.StructBlock):
     name = blocks.CharBlock()
-    blurb = blocks.TextBlock()
+    blurb = blocks.TextBlock(required=False)
     icon = ImageChooserBlock()
     cta = blocks.CharBlock()
     url = blocks.URLBlock()
@@ -538,6 +538,7 @@ class HomePage(Page):
     class Meta:
         verbose_name = "Home Page"
 
+
     content_panels = [
         FieldPanel('title', classname="full title"),
         StreamFieldPanel('banner_images'),
@@ -554,6 +555,8 @@ class HomePage(Page):
         FieldPanel('search_description'),
 
     ]
+
+    template = 'page.html'
 
     # we are controlling what types of pages are allowed under a homepage
     # if a new page type is created, it needs to be added here to show up in
