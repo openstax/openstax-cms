@@ -27,7 +27,6 @@ class ErrataSerializer(serializers.ModelSerializer):
                   'error_type_other',
                   'resource',
                   'resource_other',
-                  'submitted_by',
-                  'submitter_email_address',
+                  'submitted_by_account_id',
                   'file_1',
                   'file_2')
