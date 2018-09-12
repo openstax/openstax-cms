@@ -1,4 +1,5 @@
 from django.shortcuts import redirect
+from django.http import Http404
 from django.views.decorators.csrf import csrf_exempt
 from .models import BookIndex, Book
 
@@ -15,6 +16,4 @@ def book_detail(request, slug):
         page = Book.objects.get(slug=slug)
         return redirect('/api/v2/pages/{}'.format(page.pk))
     except Book.DoesNotExist:
-        #no book, return to book index
-        page = BookIndex.objects.all()[0]
-        return redirect('/api/v2/pages/{}'.format(page.pk))
+        raise Http404("Book does not exist.")
