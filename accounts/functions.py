@@ -84,3 +84,38 @@ def update_user_status(user):
             group.user_set.add(user)
 
         return user
+
+def get_user_info(uid):
+    if uid:
+        token = get_token()
+        url = settings.USERS_QUERY + urlencode({
+            'q': 'id:{}'.format(uid),
+            'access_token': token['access_token']
+        })
+
+        with urlopen(url) as url:
+            data = json.loads(url.read().decode())
+
+            # update email address if possible
+            try:
+                contact_infos = data['items'][0]['contact_infos']
+                most_recent_email = max(contact_infos, key=lambda x: x['id'])
+                email = most_recent_email['value']
+            except ValueError:
+                pass  # no saved emails
+
+            self_reported_role = data['items'][0]['self_reported_role']
+            faculty_status = data['items'][0]['faculty_status']
+            applications = data['items'][0]['applications']
+
+            user_data = {
+                'faculty_status': data['items'][0]['faculty_status'],
+                'email': email,
+                'self_reported_role': data['items'][0]['self_reported_role'],
+                'faculty_status': data['items'][0]['faculty_status'],
+                'applications': data['items'][0]['applications']
+            }
+
+            return user_data
+    else:
+        return False
