@@ -30,8 +30,8 @@ class Command(BaseCommand):
                       "Address_Latitude__c, " \
                       "Address_Longitude__c," \
                       "Testimonial__c," \
-                      "Testimonial_Name__c", \
-                      "Testimonial_Position__c", \
+                      "Testimonial_Name__c, " \
+                      "Testimonial_Position__c, " \
                       "Number_of_Adoptions__c FROM Account"
             response = sf.query_all(query)
             sf_schools = response['records']
