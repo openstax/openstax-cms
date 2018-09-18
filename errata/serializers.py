@@ -12,6 +12,7 @@ class ErrataSerializer(serializers.ModelSerializer):
                   'created',
                   'modified',
                   'book',
+                  'openstax_book',
                   'status',
                   'resolution',
                   'reviewed_date',
