@@ -3,10 +3,8 @@ from urllib.parse import urlencode
 from urllib.request import urlopen
 
 from django.test import TestCase
-from django.contrib.auth.models import User
 from django.conf import settings
 
-from accounts.models import Profile
 from accounts.functions import get_token
 
 
@@ -14,16 +12,6 @@ class AccountsTestCase(TestCase):
     def setUp(self):
         pass
 
-    def test_new_user_gets_profile(self):
-        """Profile should be created when a new user is created"""
-        user = User.objects.create_user('test',
-                                        'test@openstax.org',
-                                        'testpassword')
-
-        try:
-            Profile.objects.get(user=user)
-        except:
-            self.fail("Account profile creation failed.")
 
     def test_accounts_contains_uuid(self):
         token = get_token()
