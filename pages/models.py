@@ -507,6 +507,9 @@ class HomePage(Page):
     banner_images = StreamField([
         ('image', ImageBlock())
     ], null=True)
+    mobile_banner_images = StreamField([
+        ('image', ImageBlock())
+    ], null=True, blank=True)
     row_1 = StreamField([
         ('column', ColumnBlock()),
     ])
@@ -525,6 +528,7 @@ class HomePage(Page):
 
     api_fields = (
         'title',
+        'mobile_banner_images',
         'banner_images',
         'row_1',
         'row_2',
@@ -541,6 +545,7 @@ class HomePage(Page):
 
     content_panels = [
         FieldPanel('title', classname="full title"),
+        StreamFieldPanel('mobile_banner_images'),
         StreamFieldPanel('banner_images'),
         StreamFieldPanel('row_1'),
         StreamFieldPanel('row_2'),
