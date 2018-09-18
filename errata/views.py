@@ -1,6 +1,7 @@
 import django_filters
 from django.http import HttpResponse
 from django.db import models
+from django.contrib.auth.decorators import login_required, permission_required
 from rest_framework.renderers import JSONRenderer
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.filters import OrderingFilter
@@ -41,6 +42,7 @@ class ErrataView(ModelViewSet):
     ordering_fields = ('id', 'resolution_date', 'created', 'modified', )
 
 
+@permission_required('errata..erratum.can_change_errata', login_url="/admin/login/?next=/errata/dashboard/")
 def dashboard(request):
     errata = Errata.objects.all()
     recent_errata = Errata.objects.filter(status='New').order_by('-created')[:10]
@@ -68,6 +70,7 @@ def dashboard(request):
                                                              'by_type': by_type })
 
 
+@permission_required('errata..erratum.can_change_errata', login_url="/admin/login/?next=/errata/list/")
 def list(request):
     errata = Errata.objects.all().order_by('created')
     status = request.GET.get('status', False)
@@ -90,6 +93,7 @@ def list(request):
                                                 'type': type})
 
 
+@permission_required('errata..erratum.can_change_errata', login_url="/admin/login/?next=/errata/edit/")
 def edit(request):
     edit_errata = request.GET.get('errata', False)
     errata = False
