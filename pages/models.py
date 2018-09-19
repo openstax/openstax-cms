@@ -381,6 +381,8 @@ class AboutUs(Page): #TODO: remove after release of about us page
 
     ]
 
+    template = 'page.html'
+
     parent_page_types = ['pages.HomePage']
 
 
@@ -456,6 +458,8 @@ class AboutUsPage(Page):
 
     ]
 
+    template = 'page.html'
+
     parent_page_types = ['pages.HomePage']
 
 
@@ -501,6 +505,8 @@ class TeamPage(Page):
         'slug',
         'seo_title',
         'search_description',)
+
+    template = 'page.html'
 
 
 class HomePage(Page):
@@ -709,6 +715,8 @@ class HigherEducation(Page):
 
     ]
 
+    template = 'page.html'
+
     parent_page_types = ['pages.HomePage']
 
 
@@ -743,6 +751,8 @@ class ContactUs(Page):
         'seo_title',
         'search_description',
     )
+
+    template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
 
@@ -780,6 +790,8 @@ class GeneralPage(Page):
         FieldPanel('search_description'),
 
     ]
+
+    template = 'page.html'
 
     def serve(self, request, *args, **kwargs):
         data = {
@@ -834,6 +846,8 @@ class EcosystemAllies(Page):
 
     ]
 
+    template = 'page.html'
+
     parent_page_types = ['pages.HomePage']
 
 
@@ -861,6 +875,8 @@ class FoundationSupport(Page):
         FieldPanel('search_description'),
 
     ]
+
+    template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
 
@@ -897,6 +913,8 @@ class OurImpact(Page):
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
     ]
+
+    template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
 
@@ -958,6 +976,8 @@ class Give(Page):
         FieldPanel('search_description'),
     ]
 
+    template = 'page.html'
+
     parent_page_types = ['pages.HomePage']
 
 
@@ -985,6 +1005,8 @@ class TermsOfService(Page):
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
     ]
+
+    template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
 
@@ -1022,6 +1044,8 @@ class AP(Page):
         FieldPanel('search_description'),
     ]
 
+    template = 'page.html'
+
     parent_page_types = ['pages.HomePage']
 
 
@@ -1051,6 +1075,8 @@ class FAQ(Page):
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
     ]
+
+    template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
 
@@ -1082,6 +1108,8 @@ class Support(Page):
         FieldPanel('search_description'),
     ]
 
+    template = 'page.html'
+
     parent_page_types = ['pages.HomePage']
 
 
@@ -1106,6 +1134,8 @@ class GiveForm(Page):
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
     ]
+
+    template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
 
@@ -1135,6 +1165,8 @@ class Accessibility(Page):
         FieldPanel('search_description'),
     ]
 
+    template = 'page.html'
+
     parent_page_types = ['pages.HomePage']
 
 
@@ -1163,6 +1195,8 @@ class Licensing(Page):
         FieldPanel('search_description'),
     ]
 
+    template = 'page.html'
+
     parent_page_types = ['pages.HomePage']
 
 
@@ -1186,6 +1220,8 @@ class CompCopy(Page):
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
     ]
+
+    template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
 
@@ -1211,6 +1247,8 @@ class AdoptForm(Page):
         FieldPanel('search_description'),
     ]
 
+    template = 'page.html'
+
     parent_page_types = ['pages.HomePage']
 
 
@@ -1234,6 +1272,8 @@ class InterestForm(Page):
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
     ]
+
+    template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
 
@@ -1492,6 +1532,8 @@ class Marketing(Page):
         FieldPanel('search_description'),
     ]
 
+    template = 'page.html'
+
     parent_page_types = ['pages.HomePage']
 
 
@@ -1558,6 +1600,8 @@ class Technology(Page):
 
     ]
 
+    template = 'page.html'
+
     parent_page_types = ['pages.HomePage']
 
 
@@ -1572,6 +1616,8 @@ class ErrataList(Page):
         FieldPanel('title', classname="full title"),
         FieldPanel('correction_schedule')
     ]
+
+    template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
 
@@ -1600,6 +1646,8 @@ class PrivacyPolicy(Page):
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
     ]
+
+    template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
 
@@ -1660,6 +1708,8 @@ class PrintOrder(Page):
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
     ]
+
+    template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
 
@@ -1746,6 +1796,8 @@ class ResearchPage(Page):
         APIField('search_description'),
     ]
 
+    template = 'page.html'
+
     parent_page_types = ['pages.HomePage']
 
 
@@ -1773,5 +1825,7 @@ class Careers(Page):
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
     ]
+
+    template = 'page.html'
 
     parent_page_types = ['pages.HomePage']

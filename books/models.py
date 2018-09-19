@@ -585,6 +585,8 @@ class Book(Page):
                   'table_of_contents',
                   'tutor_marketing_book', )
 
+    template = 'page.html'
+
     parent_page_types = ['books.BookIndex']
 
     @property
@@ -737,6 +739,8 @@ class BookIndex(Page):
         'subject_list_heading',
         'books'
     )
+
+    template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
     subpage_types = ['books.Book']
