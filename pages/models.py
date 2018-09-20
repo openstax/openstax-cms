@@ -87,59 +87,6 @@ class BookProviderBlock(blocks.StructBlock):
 
 ### Secondary Model Definitions ###
 
-class StrategicAdvisors(models.Model):
-    name = models.CharField(max_length=255, help_text="Strategic Advisor Name")
-    image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-
-    def get_advisor_image(self):
-        return build_image_url(self.image)
-
-    advisor_image = property(get_advisor_image)
-
-    description = models.TextField()
-
-    api_fields = ('name', 'advisor_image', 'description', )
-
-    panels = [
-        FieldPanel('name'),
-        ImageChooserPanel('image'),
-        FieldPanel('description'),
-    ]
-
-
-class OpenStaxTeam(models.Model):
-    name = models.CharField(max_length=255, help_text="Team Member Name")
-    image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-
-    def get_team_member_image(self):
-        return build_image_url(self.image)
-    team_member_image = property(get_team_member_image)
-
-    position = models.CharField(max_length=255)
-    description = models.TextField()
-
-    api_fields = ('name', 'team_member_image', 'position', 'description', )
-
-    panels = [
-        FieldPanel('name'),
-        ImageChooserPanel('image'),
-        FieldPanel('position'),
-        FieldPanel('description'),
-    ]
-
-
 class Quote(models.Model):
     IMAGE_ALIGNMENT_CHOICES = (
         ('L', 'left'),
@@ -316,14 +263,6 @@ class Group(models.Model):
 
 ### Orderable Through-Models ###
 
-class AboutUsStrategicAdvisors(Orderable, StrategicAdvisors):
-    page = ParentalKey('pages.AboutUs', related_name='strategic_advisors')
-
-
-class AboutUsOpenStaxTeam(Orderable, OpenStaxTeam):
-    page = ParentalKey('pages.AboutUs', related_name='openstax_team')
-
-
 class OpenStaxPeople(Orderable, Group):
     marketing_video = ParentalKey(
         'pages.TeamPage', related_name='openstax_people')
@@ -346,52 +285,6 @@ class ResourceAvailability(Orderable, Resource):
 
 
 ### Page Definitions ###
-
-class AboutUs(Page): #TODO: remove after release of about us page
-    tagline = models.CharField(max_length=255)
-    intro_heading = models.CharField(max_length=255)
-    intro_paragraph = RichTextField()
-    our_team_heading = models.CharField(max_length=255)
-    promote_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-
-    api_fields = (
-        'tagline',
-        'intro_heading',
-        'intro_paragraph',
-        'our_team_heading',
-        'openstax_team',
-        'strategic_advisors',
-        'slug',
-        'seo_title',
-        'search_description',)
-
-    content_panels = [
-        FieldPanel('title', classname="full title"),
-        FieldPanel('tagline'),
-        FieldPanel('intro_heading'),
-        FieldPanel('intro_paragraph'),
-        FieldPanel('our_team_heading'),
-        InlinePanel('openstax_team', label="OpenStax Team"),
-        InlinePanel('strategic_advisors', label="Strategic Advisors"),
-    ]
-
-    promote_panels = [
-        FieldPanel('slug'),
-        FieldPanel('seo_title'),
-        FieldPanel('search_description'),
-        ImageChooserPanel('promote_image'),
-    ]
-
-    template = 'page.html'
-
-    parent_page_types = ['pages.HomePage']
-
 
 class AboutUsPage(Page):
     who_heading = models.CharField(max_length=255)
@@ -605,7 +498,6 @@ class HomePage(Page):
     subpage_types = [
         'pages.HigherEducation',
         'pages.ContactUs',
-        'pages.AboutUs',
         'pages.AboutUsPage',
         'pages.TeamPage',
         'pages.GeneralPage',
