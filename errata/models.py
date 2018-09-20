@@ -187,7 +187,11 @@ class Errata(models.Model):
 
     @hooks.register('register_admin_menu_item')
     def register_errata_menu_item():
-        return MenuItem('Errata', '/django-admin/errata/errata', classnames='icon icon-openquote', order=10000)
+        return MenuItem('Errata', '/django-admin/errata/errata', classnames='icon icon-form', order=10000)
+
+    @hooks.register('register_admin_menu_item')
+    def register_errata_menu_item():
+        return MenuItem('Errata (beta)', '/api/errata/admin/dashboard/', classnames='icon icon-form', order=10000)
 
     def __str__(self):
         return self.book.book_title
