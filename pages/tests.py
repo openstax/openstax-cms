@@ -4,7 +4,6 @@ from wagtail.core.models import Page
 from pages.models import (HomePage,
                           HigherEducation,
                           ContactUs,
-                          AboutUs,
                           AboutUsPage,
                           GeneralPage,
                           EcosystemAllies,
@@ -57,7 +56,6 @@ class HomePageTests(WagtailPageTests):
         self.assertAllowedSubpageTypes(HomePage, {
             HigherEducation,
             ContactUs,
-            AboutUs,
             AboutUsPage,
             GeneralPage,
             EcosystemAllies,
