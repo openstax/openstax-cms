@@ -19,6 +19,7 @@ from wagtail.core.fields import RichTextField, StreamField
 from wagtail.core.models import Orderable, Page
 from wagtail.documents.edit_handlers import DocumentChooserPanel
 from wagtail.snippets.blocks import SnippetChooserBlock
+from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.snippets.edit_handlers import SnippetChooserPanel
 from wagtail.admin.edit_handlers import TabbedInterface, ObjectList
 
@@ -451,6 +452,13 @@ class Book(Page):
     errata_content = StreamField(SharedContentBlock(), null=True, blank=True)
     table_of_contents = JSONField(editable=False, blank=True, null=True)
     tutor_marketing_book = models.BooleanField(default=False)
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     book_detail_panel = Page.content_panels + [
         FieldPanel('book_state'),
@@ -589,6 +597,13 @@ class Book(Page):
 
     parent_page_types = ['books.BookIndex']
 
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
+    ]
+
     @property
     def book_title(self):
         return format_html(
@@ -677,6 +692,13 @@ class BookIndex(Page):
     dev_standard_3_description = RichTextField()
     subject_list_heading = models.CharField(
         max_length=255, blank=True, null=True)
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     @property
     def books(self):
@@ -724,6 +746,13 @@ class BookIndex(Page):
         FieldPanel('dev_standard_3_heading'),
         FieldPanel('dev_standard_3_description'),
         FieldPanel('subject_list_heading'),
+    ]
+
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
     ]
 
     api_fields = (
