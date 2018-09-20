@@ -321,6 +321,13 @@ class AboutUsPage(Page):
     def get_where_map(self):
         return build_image_url(self.where_map)
     where_map_url = property(get_where_map)
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     api_fields = (
         'who_heading',
@@ -355,8 +362,11 @@ class AboutUsPage(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
 
     ]
+
+    template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
 
@@ -376,6 +386,13 @@ class TeamPage(Page):
     header_image_url = property(get_header_image)
 
     team_header = models.CharField(max_length=255, null=True, blank=True)
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     content_panels = [
         FieldPanel('title', classname="full title"),
@@ -390,6 +407,7 @@ class TeamPage(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
 
     ]
 
@@ -403,6 +421,8 @@ class TeamPage(Page):
         'slug',
         'seo_title',
         'search_description',)
+
+    template = 'page.html'
 
 
 class HomePage(Page):
@@ -427,6 +447,13 @@ class HomePage(Page):
     row_5 = StreamField([
         ('column', ColumnBlock()),
     ])
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     api_fields = (
         'title',
@@ -460,7 +487,7 @@ class HomePage(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-
+        ImageChooserPanel('promote_image')
     ]
 
     template = 'page.html'
@@ -555,6 +582,13 @@ class HigherEducation(Page):
     row_3 = StreamField([
         ('column', ColumnBlock()),
     ])
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     api_fields = (
         'intro_heading',
@@ -607,8 +641,10 @@ class HigherEducation(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-
+        ImageChooserPanel('promote_image')
     ]
+
+    template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
 
@@ -618,6 +654,13 @@ class ContactUs(Page):
     mailing_header = models.CharField(max_length=255)
     mailing_address = RichTextField()
     customer_service = RichTextField()
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     content_panels = [
         FieldPanel('title', classname="full title"),
@@ -631,6 +674,7 @@ class ContactUs(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
 
     ]
 
@@ -644,6 +688,8 @@ class ContactUs(Page):
         'seo_title',
         'search_description',
     )
+
+    template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
 
@@ -661,6 +707,13 @@ class GeneralPage(Page):
         )),
         ('html', RawHTMLBlock()),
     ])
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     api_fields = (
         'title',
@@ -679,8 +732,10 @@ class GeneralPage(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-
+        ImageChooserPanel('promote_image')
     ]
+
+    template = 'page.html'
 
     def serve(self, request, *args, **kwargs):
         data = {
@@ -696,6 +751,13 @@ class GeneralPage(Page):
 
 class EcosystemAllies(Page):
     page_description = models.TextField()
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     @property
     def allies(self):
@@ -732,14 +794,23 @@ class EcosystemAllies(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-
+        ImageChooserPanel('promote_image'),
     ]
+
+    template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
 
 
 class FoundationSupport(Page):
     page_description = models.TextField()
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     api_fields = (
         'title',
@@ -760,8 +831,10 @@ class FoundationSupport(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-
+        ImageChooserPanel('promote_image')
     ]
+
+    template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
 
@@ -773,6 +846,13 @@ class OurImpact(Page):
     row_1 = StreamField([
         ('column', ColumnBlock()),
     ])
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     api_fields = [
         APIField('title'),
@@ -797,7 +877,10 @@ class OurImpact(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
     ]
+
+    template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
 
@@ -816,6 +899,13 @@ class Give(Page):
     payment_method_4_content = RichTextField(blank=True, null=True)
     give_cta = models.CharField(max_length=255)
     give_cta_link = models.URLField()
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     api_fields = (
         'intro_heading',
@@ -857,7 +947,10 @@ class Give(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
     ]
+
+    template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
 
@@ -865,6 +958,13 @@ class Give(Page):
 class TermsOfService(Page):
     intro_heading = models.CharField(max_length=255)
     terms_of_service_content = RichTextField()
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     api_fields = (
         'title',
@@ -885,7 +985,10 @@ class TermsOfService(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
     ]
+
+    template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
 
@@ -901,6 +1004,13 @@ class AP(Page):
     row_2 = StreamField([
         ('column', ColumnBlock()),
     ])
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     api_fields = (
         'intro_heading',
@@ -921,7 +1031,10 @@ class AP(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
     ]
+
+    template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
 
@@ -929,6 +1042,13 @@ class AP(Page):
 class FAQ(Page):
     intro_heading = models.CharField(max_length=255)
     intro_description = RichTextField()
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     questions = StreamField([
         ('question', FAQBlock()),
@@ -951,7 +1071,10 @@ class FAQ(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
     ]
+
+    template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
 
@@ -963,6 +1086,13 @@ class Support(Page):
     row_1 = StreamField([
         ('column', ColumnBlock()),
     ])
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     api_fields = (
         'intro_heading',
@@ -981,13 +1111,23 @@ class Support(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
     ]
+
+    template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
 
 
 class GiveForm(Page):
     page_description = models.TextField()
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     api_fields = (
         'title',
@@ -1006,7 +1146,10 @@ class GiveForm(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
     ]
+
+    template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
 
@@ -1014,6 +1157,13 @@ class GiveForm(Page):
 class Accessibility(Page):
     intro_heading = models.CharField(max_length=255)
     accessibility_content = RichTextField()
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     api_fields = (
         'title',
@@ -1034,7 +1184,10 @@ class Accessibility(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
     ]
+
+    template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
 
@@ -1042,6 +1195,13 @@ class Accessibility(Page):
 class Licensing(Page):
     intro_heading = models.CharField(max_length=255)
     licensing_content = RichTextField()
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     api_fields = (
         'title',
@@ -1062,7 +1222,10 @@ class Licensing(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
     ]
+
+    template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
 
@@ -1070,6 +1233,13 @@ class Licensing(Page):
 class CompCopy(Page):
     intro_heading = models.CharField(max_length=255)
     intro_description = RichTextField()
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     api_fields = (
         'intro_heading',
@@ -1086,7 +1256,10 @@ class CompCopy(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
     ]
+
+    template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
 
@@ -1094,6 +1267,13 @@ class CompCopy(Page):
 class AdoptForm(Page):
     intro_heading = models.CharField(max_length=255)
     intro_description = RichTextField()
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     api_fields = (
         'intro_heading',
@@ -1110,7 +1290,10 @@ class AdoptForm(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
     ]
+
+    template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
 
@@ -1118,6 +1301,13 @@ class AdoptForm(Page):
 class InterestForm(Page):
     intro_heading = models.CharField(max_length=255)
     intro_description = RichTextField()
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     api_fields = (
         'intro_heading',
@@ -1134,7 +1324,10 @@ class InterestForm(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
     ]
+
+    template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
 
@@ -1249,6 +1442,13 @@ class Marketing(Page):
     floating_footer_button_2_cta = models.CharField(max_length=255)
     floating_footer_button_2_link = models.URLField()
     floating_footer_button_2_caption = models.CharField(max_length=255)
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     @property
     def marketing_books(self):
@@ -1391,7 +1591,10 @@ class Marketing(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
     ]
+
+    template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
 
@@ -1415,6 +1618,13 @@ class Technology(Page):
     new_frontier_cta_link_1 = models.URLField(blank=True, null=True)
     new_frontier_cta_2 = models.CharField(max_length=255)
     new_frontier_cta_link_2 = models.URLField(blank=True, null=True)
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     api_fields = (
         'intro_heading',
@@ -1456,14 +1666,24 @@ class Technology(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
 
     ]
+
+    template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
 
 
 class ErrataList(Page):
     correction_schedule = RichTextField()
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     api_fields = (
         'correction_schedule',
@@ -1474,12 +1694,28 @@ class ErrataList(Page):
         FieldPanel('correction_schedule')
     ]
 
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
+    ]
+
+    template = 'page.html'
+
     parent_page_types = ['pages.HomePage']
 
 
 class PrivacyPolicy(Page):
     intro_heading = models.CharField(max_length=255)
     privacy_content = RichTextField()
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     api_fields = (
         'title',
@@ -1500,7 +1736,10 @@ class PrivacyPolicy(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
     ]
+
+    template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
 
@@ -1528,6 +1767,13 @@ class PrintOrder(Page):
 
     isbn_download_url = property(get_isbn_download)
     isbn_cta = models.CharField(max_length=255)
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     api_fields = (
         'title',
@@ -1560,7 +1806,10 @@ class PrintOrder(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
     ]
+
+    template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
 
@@ -1609,6 +1858,13 @@ class ResearchPage(Page):
             ('download_url', blocks.URLBlock()),
         ], icon='user')),
     ], null=True, blank=True)
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     content_panels = [
         FieldPanel('title', classname='full title', help_text="Internal name for page."),
@@ -1628,6 +1884,7 @@ class ResearchPage(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
 
     ]
 
@@ -1647,12 +1904,21 @@ class ResearchPage(Page):
         APIField('search_description'),
     ]
 
+    template = 'page.html'
+
     parent_page_types = ['pages.HomePage']
 
 
 class Careers(Page):
     intro_heading = models.CharField(max_length=255)
     careers_content = RichTextField()
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     api_fields = (
         'title',
@@ -1673,6 +1939,9 @@ class Careers(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
     ]
+
+    template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
