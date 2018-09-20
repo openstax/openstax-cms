@@ -1,3 +1,6 @@
+import json
+from urllib.parse import urlencode
+from urllib.request import urlopen
 from oauthlib.oauth2 import BackendApplicationClient
 from requests_oauthlib import OAuth2Session
 
@@ -32,10 +35,6 @@ def get_user_info(uid):
                 email = most_recent_email['value']
             except ValueError:
                 pass  # no saved emails
-
-            self_reported_role = data['items'][0]['self_reported_role']
-            faculty_status = data['items'][0]['faculty_status']
-            applications = data['items'][0]['applications']
 
             user_data = {
                 'faculty_status': data['items'][0]['faculty_status'],
