@@ -55,7 +55,6 @@ def dashboard(request):
     by_book = Errata.objects.all().values("book__title").annotate(reports=models.Count("pk"))
     by_type = Errata.objects.all().values("error_type").annotate(reports=models.Count("pk"))
 
-
     for book in by_book:
         book['percent'] = round(book['reports'] * 100.0 / errata.count(), 2)
 
