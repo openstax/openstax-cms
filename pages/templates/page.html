@@ -4,12 +4,15 @@
 
     <title>{{ page.seo_title }}</title>
     <meta name="description" content="{{ page.search_description }}">
+    <link rel="canonical" href="{{page.get_full_url}}" />
+    <meta http-equiv="refresh">
 
     <meta property="og:url" content="https://openstax.org{% pageurl self %}" />
     <meta property="og:type" content="article" />
     <meta property="og:title" content="{{ page.seo_title }}" />
     <meta property="og:description" content="{{ page.search_description }}" />
     <meta property="og:image" content="{{ page.promote_image.url }}" />
+    <meta property="og:image:alt" content="OpenStax: {{ page.seo_title }}" />
 
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:site" content="@OpenStax">
