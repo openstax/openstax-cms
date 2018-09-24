@@ -34,7 +34,7 @@ def get_user_info(uid):
                 most_recent_email = max(contact_infos, key=lambda x: x['id'])
                 email = most_recent_email['value']
             except ValueError:
-                pass  # no saved emails
+                email = None  # no saved emails
 
             user_data = {
                 'faculty_status': data['items'][0]['faculty_status'],
