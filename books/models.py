@@ -57,6 +57,10 @@ class FacultyResources(models.Model):
         return self.resource.unlocked_resource
     resource_unlocked = property(get_resource_unlocked)
 
+    def get_resource_creator_fest_resource(self):
+        return self.resource.creator_fest_resource
+    creator_fest_resource = property(get_resource_creator_fest_resource)
+
     link_external = models.URLField("External link", blank=True)
     link_page = models.ForeignKey(
         'wagtailcore.Page',
@@ -86,6 +90,7 @@ class FacultyResources(models.Model):
     api_fields = ('resource_heading',
                   'resource_description',
                   'resource_unlocked',
+                  'creator_fest_resource',
                   'link_external',
                   'link_page',
                   'link_document_url',

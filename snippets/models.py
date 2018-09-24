@@ -25,13 +25,15 @@ class FacultyResource(index.Indexed, models.Model):
     heading = models.CharField(max_length=255)
     description = RichTextField(blank=True, null=True)
     unlocked_resource = models.BooleanField(default=False)
+    creator_fest_resource = models.BooleanField(default=False)
 
-    api_fields = ('heading', 'description', 'unlocked_resource')
+    api_fields = ('heading', 'description', 'unlocked_resource', 'creator_fest_resource')
 
     panels = [
         FieldPanel('heading'),
         FieldPanel('description'),
         FieldPanel('unlocked_resource'),
+        FieldPanel('creator_fest_resource')
     ]
 
     search_fields = [
