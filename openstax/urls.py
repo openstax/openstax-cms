@@ -2,6 +2,7 @@ from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
 from django.contrib import admin
+from django.views.generic.base import RedirectView
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.core import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
@@ -16,9 +17,10 @@ from api import urls as api_urls
 admin.site.site_header = 'OpenStax'
 
 urlpatterns = [
+    url(r'^django-admin/login', RedirectView.as_view(url='/admin/login')),
     url(r'^django-admin/', admin.site.urls),
-
     url(r'^admin/', include(wagtailadmin_urls)),
+
     url(r'^accounts/', include('accounts.urls')),
     url(r'^documents/', include(wagtaildocs_urls)),
     url(r'^images/', include(wagtailimages_urls)),
