@@ -11,6 +11,9 @@
         color: black !important;
         margin-right: 25px;
     }
+    .errorlist {
+        color: red;
+    }
 </style>
 {% endblock %}
 
@@ -42,7 +45,10 @@
                         <form method="post">
                             {% csrf_token %}
                             {{ form.as_p }}
-                            <input type="submit" value="Submit">
+                            <div class="submit-buttons pull-right">
+                                <input type="submit" class="btn btn-success" name="save" value="Save">
+                                <input type="submit" class="btn btn-warning" name="duplicate" value="Duplicate">
+                            </div>
                         </form>
                     </div>
                 </div>
@@ -62,6 +68,29 @@
     <script src="{% static 'errata/js/lib/html5-editor/wysihtml5-init.js' %}"></script>
 
     <script>
+        //DUPLICATE ID FIELD
+        if($('#id_resolution_0').is(':checked')) {
+           $("label[for='id_duplicate_id']").show('slow');
+           $('#id_duplicate_id').show('slow');
+           $('.helptext').show('slow');
+       } else {
+           $("label[for='id_duplicate_id']").hide('slow');
+           $('#id_duplicate_id').hide('slow');
+           $('.helptext').hide('slow');
+       }
+
+        $('#id_resolution').click(function() {
+           if($('#id_resolution_0').is(':checked')) {
+               $("label[for='id_duplicate_id']").show('slow');
+               $('#id_duplicate_id').show('slow');
+               $('.helptext').show('slow');
+           } else {
+               $("label[for='id_duplicate_id']").hide('slow');
+               $('#id_duplicate_id').hide('slow');
+               $('.helptext').hide('slow');
+           }
+        });
+
         // ASSESSMENT ERRATA
         // check if error type other is checked, to show other box
         if($( "#id_is_assessment_errata option:selected" ).text() == 'Yes'){$('#id_assessment_id').show('slow');$("label[for='id_assessment_id']").show('slow');}else{$('#id_assessment_id').hide();$("label[for='id_assessment_id']").hide();}

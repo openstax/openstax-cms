@@ -25,7 +25,10 @@ class ErrataModelForm(forms.ModelForm):
         self.fields['error_type'].widget.attrs.update({'class': 'btn-group btn-group-toggle'})
         self.fields['resource'].widget.attrs.update({'class': 'btn-group btn-group-toggle'})
 
-    duplicate_id = forms.CharField(help_text="Enter internal errata ID of duplicate.")
+    duplicate_id = forms.CharField(help_text="Enter internal errata ID of duplicate.", required=False)
+    resource_other = forms.CharField(required=False)
+    error_type_other = forms.CharField(required=False)
+
     corrected_date = forms.CharField(widget=forms.TextInput(attrs={'type': 'date'}))
     resolution_date = forms.CharField(widget=forms.TextInput(attrs={'type': 'date'}))
 
@@ -35,8 +38,9 @@ class ErrataModelForm(forms.ModelForm):
     resource = forms.ChoiceField(choices=ERRATA_RESOURCES, widget=forms.RadioSelect())
 
     def clean_duplicate_id(self):
-        data = self.cleaned_data['duplicate_id']
-        return Errata.objects.get(pk=data)
+        if self.cleaned_data['duplicate_id']:
+            data = self.cleaned_data['duplicate_id']
+            return Errata.objects.get(pk=data)
 
     class Meta:
         model = Errata
