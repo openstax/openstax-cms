@@ -93,7 +93,7 @@ class Errata(models.Model):
 
     # TODO: If we seperate the Errata application from the CMS, the books will need to be store differently. `book` will be removed, `openstax_book` will store as string
     book = models.ForeignKey(Book, on_delete=models.PROTECT)
-    openstax_book = models.CharField(max_length=255, null=True)
+    openstax_book = models.CharField(max_length=255, null=True, blank=True, editable=False)
 
     is_assessment_errata = models.CharField(
         max_length=100,
