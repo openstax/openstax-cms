@@ -42,9 +42,6 @@ class ErrataAdmin(admin.ModelAdmin):
               'error_type',
               'number_of_errors',
               'resource',
-              'submitted_by',
-              'submitter_email_address',
-              'submitted_by_account_id',
               'file_1',
               'file_2']
     search_fields = ('id',
@@ -96,8 +93,7 @@ class ErrataAdmin(admin.ModelAdmin):
             smart_str("Resolution Date"),
             smart_str("Error Type"),
             smart_str("Resource"),
-            smart_str("Submitted By"),
-            smart_str("Submitter E-mail Address"),
+            smart_str('User Email'),
             smart_str("Submitted By Group(s)"),
         ])
         for obj in queryset:
@@ -123,8 +119,7 @@ class ErrataAdmin(admin.ModelAdmin):
                 smart_str(obj.resolution_date),
                 smart_str(obj.error_type),
                 smart_str(obj.resource),
-                smart_str(obj.submitted_by),
-                smart_str(obj.submitter_email_address),
+                smart_str(obj.user_email),
                 smart_str(''.join(groups))
             ])
         return response
@@ -181,14 +176,15 @@ class ErrataAdmin(admin.ModelAdmin):
                            'error_type',
                            'number_of_errors',
                            'resource',
-                           'submitted_by',
-                           'submitter_email_address',
-                           'submitted_by_account_id',
+                           'user_email',
+                           'accounts_link',
                            'file_1',
                            'file_2'] # fields to show on the actual form
             self.readonly_fields = ['id',
                                     'created',
-                                    'modified']
+                                    'modified',
+                                    'user_email',
+                                    'accounts_link']
             self.save_as = True
         else:
             self.fields = ['id',
@@ -209,9 +205,8 @@ class ErrataAdmin(admin.ModelAdmin):
                            'error_type',
                            'number_of_errors',
                            'resource',
-                           'submitted_by',
-                           'submitter_email_address',
-                           'submitted_by_account_id',
+                           'user_email',
+                           'accounts_link',
                            'file_1',
                            'file_2']
             self.readonly_fields = ['id',
@@ -232,9 +227,8 @@ class ErrataAdmin(admin.ModelAdmin):
                                     'error_type',
                                     'number_of_errors',
                                     'resource',
-                                    'submitted_by',
-                                    'submitter_email_address',
-                                    'submitted_by_account_id',
+                                    'user_email',
+                                    'accounts_link',
                                     'file_1',
                                     'file_2']
             self.save_as = False

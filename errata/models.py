@@ -8,7 +8,7 @@ from django.contrib.auth.models import User
 from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.core.validators import MinValueValidator
-
+from django.utils.html import format_html
 from wagtail.core import hooks
 from wagtail.admin.menu import MenuItem
 
@@ -147,6 +147,21 @@ class Errata(models.Model):
     file_2 = models.FileField(upload_to='errata/user_uploads/2/', blank=True, null=True)
 
     @property
+    def user_email(self):
+        try:
+            user = get_user_info(self.submitted_by_account_id)
+            return user['email']
+        except:
+            return None
+
+    @property
+    def accounts_link(self):
+        try:
+            return format_html('<a href="{}/admin/users/{}/edit" target="_blank">OpenStax Accounts Link</a>'.format('https://accounts-dev.openstax.org', self.submitted_by_account_id))
+        except:
+            return None
+
+    @property
     def short_detail(self):
         return truncatewords(self.detail, 15)
 
@@ -159,6 +174,8 @@ class Errata(models.Model):
             raise ValidationError({'duplicate_id': 'You must specify the duplicate report ID when resolution is marked duplicate.'})
 
     def save(self, *args, **kwargs):
+        print('<a href="{}/admin/users/{}/edit" target="_blank">OpenStax Accounts Link</a>'.format(
+            'https://accounts-dev.openstax.org', self.submitted_by_account_id))
         # update instance dates
         if self.resolution:
             self.resolution_date = now()
