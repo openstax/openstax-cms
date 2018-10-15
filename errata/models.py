@@ -157,7 +157,7 @@ class Errata(models.Model):
     @property
     def accounts_link(self):
         try:
-            return format_html('<a href="{}/admin/users/{}/edit" target="_blank">OpenStax Accounts Link</a>'.format('https://accounts-dev.openstax.org', self.submitted_by_account_id))
+            return format_html('<a href="{}/admin/users/{}/edit" target="_blank">OpenStax Accounts Link</a>'.format(settings.ACCOUNTS_URL, self.submitted_by_account_id))
         except:
             return None
 
@@ -174,8 +174,6 @@ class Errata(models.Model):
             raise ValidationError({'duplicate_id': 'You must specify the duplicate report ID when resolution is marked duplicate.'})
 
     def save(self, *args, **kwargs):
-        print('<a href="{}/admin/users/{}/edit" target="_blank">OpenStax Accounts Link</a>'.format(
-            'https://accounts-dev.openstax.org', self.submitted_by_account_id))
         # update instance dates
         if self.resolution:
             self.resolution_date = now()

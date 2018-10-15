@@ -28,6 +28,7 @@ AWS_SES_REGION_NAME = 'us-west-2'
 AWS_SES_REGION_ENDPOINT = 'email.us-west-2.amazonaws.com'
 
 # Openstax Accounts
+ACCOUNTS_URL = 'https://accounts-staging.openstax.org'
 AUTHORIZATION_URL = 'https://accounts-staging.openstax.org/oauth/authorize'
 ACCESS_TOKEN_URL = 'https://accounts-staging.openstax.org/oauth/token'
 USER_QUERY = 'https://accounts-staging.openstax.org/api/user?'

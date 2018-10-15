@@ -21,6 +21,7 @@ MEDIA_URL = "https://%s/%s/media/" % (AWS_S3_CUSTOM_DOMAIN, AWS_STORAGE_DIR)
 DEFAULT_FILE_STORAGE = 'openstax.custom_storages.MediaStorage'
 
 # Openstax Accounts
+ACCOUNTS_URL = 'https://accounts-qa.openstax.org'
 AUTHORIZATION_URL = 'https://accounts-qa.openstax.org/oauth/authorize'
 ACCESS_TOKEN_URL = 'https://accounts-qa.openstax.org/oauth/token'
 USER_QUERY = 'https://accounts-qa.openstax.org/api/user?'
