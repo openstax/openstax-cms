@@ -260,6 +260,28 @@ class Group(models.Model):
         StreamFieldPanel('people'),
     ]
 
+class Card(models.Model):
+    heading = models.CharField(max_length=255)
+    description = RichTextField()
+    cards = StreamField([
+        ('card', blocks.StructBlock([
+            ('image', ImageBlock()),
+            ('headline', blocks.TextBlock(required=False)),
+            ('description', blocks.RichTextBlock(required=False)),
+            ('button_text', blocks.CharBlock(required=False)),
+            ('button_url', blocks.CharBlock(required=False))
+        ], icon='document')),
+    ])
+
+    api_fields = ('heading',
+                  'description',
+                  'cards')
+
+    panels = [
+        FieldPanel('heading'),
+        FieldPanel('description'),
+        StreamFieldPanel('cards')
+    ]
 
 ### Orderable Through-Models ###
 
@@ -282,6 +304,12 @@ class MarketingVideos(Orderable, MarketingVideoLink):
 class ResourceAvailability(Orderable, Resource):
     marketing_video = ParentalKey(
         'pages.Marketing', related_name='resource_availability')
+
+class RoverCardsSection2(Orderable, Card):
+    rover_cards = ParentalKey('pages.Rover', related_name='rover_cards_section_2')
+
+class RoverCardsSection3(Orderable, Card):
+    rover_cards = ParentalKey('pages.Rover', related_name='rover_cards_section_3')
 
 
 ### Page Definitions ###
@@ -1971,28 +1999,11 @@ class Rover(Page):
     section_1_button_url = models.URLField(null=True)
 
     section_2_headline = models.CharField(max_length=255, null=True)
-    section_2_tabs = StreamField([
-        ('headline', blocks.CharBlock()),
-        ('description', blocks.RichTextBlock()),
-        ('cards', blocks.ListBlock(blocks.StructBlock([
-            ('image', ImageBlock()),
-            ('headline', blocks.TextBlock()),
-            ('description', blocks.RichTextBlock())
-        ]))),
-    ], null=True)
-
+    #section 2 cards are an inline panel
+    
     section_3_headline = models.CharField(max_length=255, null=True)
     section_3_description = RichTextField(null=True)
-    section_3_cards = StreamField([
-        ('headline', blocks.CharBlock()),
-        ('description', blocks.RichTextBlock()),
-        ('cards', blocks.ListBlock(blocks.StructBlock([
-            ('icon', ImageBlock()),
-            ('description', blocks.RichTextBlock()),
-            ('button_text', blocks.CharBlock()),
-            ('button_url', blocks.URLBlock())
-        ]))),
-    ], null=True)
+    #section 3 cards are an inline panel
 
     form_headline = models.CharField(max_length=255)
 
@@ -2023,10 +2034,10 @@ class Rover(Page):
         FieldPanel('section_1_button_text'),
         FieldPanel('section_1_button_url'),
         FieldPanel('section_2_headline'),
-        StreamFieldPanel('section_2_tabs'),
+        InlinePanel('rover_cards_section_2', label='Section 2 Cards'),
         FieldPanel('section_3_headline'),
         FieldPanel('section_3_description'),
-        StreamFieldPanel('section_3_cards'),
+        InlinePanel('rover_cards_section_3', label='Section 3 Cards'),
         FieldPanel('form_headline'),
         FieldPanel('section_4_headline'),
         StreamFieldPanel('section_4_faqs'),
@@ -2049,10 +2060,10 @@ class Rover(Page):
         APIField('section_1_button_text'),
         APIField('section_1_button_url'),
         APIField('section_2_headline'),
-        APIField('section_2_tabs'),
+        APIField('rover_cards_section_2'),
         APIField('section_3_headline'),
         APIField('section_3_description'),
-        APIField('section_3_cards'),
+        APIField('rover_cards_section_3'),
         APIField('form_headline'),
         APIField('section_4_headline'),
         APIField('section_4_faqs'),
