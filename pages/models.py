@@ -262,12 +262,12 @@ class Group(models.Model):
 
 class Card(models.Model):
     heading = models.CharField(max_length=255)
-    description = RichTextField()
+    description = models.TextField(blank=True, null=True)
     cards = StreamField([
         ('card', blocks.StructBlock([
             ('image', ImageBlock()),
             ('headline', blocks.TextBlock(required=False)),
-            ('description', blocks.RichTextBlock(required=False)),
+            ('description', blocks.TextBlock(required=False)),
             ('button_text', blocks.CharBlock(required=False)),
             ('button_url', blocks.CharBlock(required=False))
         ], icon='document')),
@@ -2002,7 +2002,7 @@ class Rover(Page):
     #section 2 cards are an inline panel
     
     section_3_headline = models.CharField(max_length=255, null=True)
-    section_3_description = RichTextField(null=True)
+    section_3_description = models.TextField(null=True)
     #section 3 cards are an inline panel
 
     form_headline = models.CharField(max_length=255)
