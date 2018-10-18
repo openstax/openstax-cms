@@ -522,6 +522,7 @@ class HomePage(Page):
         'pages.PrintOrder',
         'pages.ResearchPage',
         'pages.Careers',
+        'pages.Rover',
         'books.BookIndex',
         'news.NewsIndex',
         'news.PressIndex',
@@ -1945,3 +1946,123 @@ class Careers(Page):
     template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
+
+
+class Rover(Page):
+    header_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    header_image_alt = models.CharField(max_length=255)
+    mobile_header_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    section_1_headline = models.CharField(max_length=255, null=True)
+    section_1_description = RichTextField(null=True)
+    section_1_button_text = models.CharField(max_length=255, null=True)
+    section_1_button_url = models.URLField(null=True)
+
+    section_2_headline = models.CharField(max_length=255, null=True)
+    section_2_tabs = StreamField([
+        ('headline', blocks.CharBlock()),
+        ('cards', blocks.ListBlock(blocks.StructBlock([
+            ('image', ImageBlock()),
+            ('headline', blocks.TextBlock()),
+            ('description', blocks.RichTextBlock())
+        ]))),
+    ], null=True)
+
+    section_3_headline = models.CharField(max_length=255, null=True)
+    section_3_description = RichTextField(null=True)
+    section_3_cards = StreamField([
+        ('headline', blocks.CharBlock()),
+        ('cards', blocks.ListBlock(blocks.StructBlock([
+            ('icon', ImageBlock()),
+            ('description', blocks.RichTextBlock()),
+            ('button_text', blocks.CharBlock()),
+            ('button_url', blocks.URLBlock())
+        ]))),
+    ], null=True)
+
+    form_headline = models.CharField(max_length=255)
+
+    section_4_headline = models.CharField(max_length=255, null=True)
+    section_4_faqs = StreamField([
+        ('headline', blocks.CharBlock()),
+        ('faqs', blocks.ListBlock(blocks.StructBlock([
+            ('question', blocks.CharBlock()),
+            ('answer', blocks.TextBlock())
+        ]))),
+    ], null=True)
+
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    content_panels = [
+        FieldPanel('title', classname='full title', help_text="Internal name for page."),
+        ImageChooserPanel('header_image'),
+        FieldPanel('header_image_alt'),
+        ImageChooserPanel('mobile_header_image'),
+        FieldPanel('section_1_headline'),
+        FieldPanel('section_1_description'),
+        FieldPanel('section_1_button_text'),
+        FieldPanel('section_1_button_url'),
+        FieldPanel('section_2_headline'),
+        StreamFieldPanel('section_2_tabs'),
+        FieldPanel('section_3_headline'),
+        FieldPanel('section_3_description'),
+        StreamFieldPanel('section_3_cards'),
+        FieldPanel('form_headline'),
+        FieldPanel('section_4_headline'),
+        StreamFieldPanel('section_4_faqs'),
+    ]
+
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
+
+    ]
+
+    api_fields = [
+        APIField('header_image'),
+        APIField('header_image_alt'),
+        APIField('mobile_header_image'),
+        APIField('section_1_headline'),
+        APIField('section_1_description'),
+        APIField('section_1_button_text'),
+        APIField('section_1_button_url'),
+        APIField('section_2_headline'),
+        APIField('section_2_tabs'),
+        APIField('section_3_headline'),
+        APIField('section_3_description'),
+        APIField('section_3_cards'),
+        APIField('form_headline'),
+        APIField('section_4_headline'),
+        APIField('section_4_faqs'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+    ]
+
+    template = 'page.html'
+
+    parent_page_types = ['pages.HomePage']
+
+
+
