@@ -1973,6 +1973,7 @@ class Rover(Page):
     section_2_headline = models.CharField(max_length=255, null=True)
     section_2_tabs = StreamField([
         ('headline', blocks.CharBlock()),
+        ('description', blocks.RichTextBlock()),
         ('cards', blocks.ListBlock(blocks.StructBlock([
             ('image', ImageBlock()),
             ('headline', blocks.TextBlock()),
@@ -1984,6 +1985,7 @@ class Rover(Page):
     section_3_description = RichTextField(null=True)
     section_3_cards = StreamField([
         ('headline', blocks.CharBlock()),
+        ('description', blocks.RichTextBlock()),
         ('cards', blocks.ListBlock(blocks.StructBlock([
             ('icon', ImageBlock()),
             ('description', blocks.RichTextBlock()),
