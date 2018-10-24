@@ -1851,6 +1851,7 @@ class ResearchPage(Page):
         ('project', blocks.StructBlock([
             ('title', blocks.CharBlock()),
             ('blurb', blocks.TextBlock()),
+            ('link', blocks.URLBlock(required=False, help_text="Optional link to project."))
         ], icon='user')),
     ], null=True, blank=True)
     people_header = models.CharField(max_length=255)
