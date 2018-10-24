@@ -2018,10 +2018,10 @@ class Rover(Page):
     section_4_faqs = StreamField([
         ('headline', blocks.CharBlock()),
         ('faqs', blocks.ListBlock(blocks.StructBlock([
-            ('question', blocks.CharBlock()),
-            ('answer', blocks.TextBlock())
+            ('question', blocks.CharBlock(required=False)),
+            ('answer', blocks.TextBlock(required=False))
         ]))),
-    ], null=True)
+    ], null=True, blank=True)
 
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
