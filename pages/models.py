@@ -1985,7 +1985,7 @@ class Rover(Page):
         related_name='+'
     )
     def get_header_image(self):
-        return build_document_url(self.header_image.url)
+        return build_image_url(self.header_image.url)
     header_image_url = property(get_header_image)
 
     header_image_alt = models.CharField(max_length=255)
@@ -1997,7 +1997,7 @@ class Rover(Page):
         related_name='+'
     )
     def get_mobile_header_image(self):
-        return build_document_url(self.mobile_header_image.url)
+        return build_image_url(self.mobile_header_image.url)
     mobile_header_image_url = property(get_mobile_header_image)
 
     section_1_headline = models.CharField(max_length=255, null=True)
