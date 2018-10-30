@@ -4,6 +4,7 @@ import os
 import raven
 import logging.config
 from django.utils.log import DEFAULT_LOGGING
+from salesforce.models import SalesforceSettings
 
 PROJECT_ROOT = os.path.join(os.path.dirname(__file__), '..', '..')
 BASE_DIR = PROJECT_ROOT
@@ -301,6 +302,12 @@ HOST_LINK = 'https://openstax.org'
 WAGTAIL_GRAVATAR_PROVIDER_URL = '//www.gravatar.com/avatar'
 
 MAPBOX_TOKEN = '' # should be the sk from mapbox, put in the appropriate settings file
+
+salesforce_settings = SalesforceSettings.objects.all()[0]
+SALESFORCE = { 'username' : salesforce_settings.username,
+               'password' : salesforce_settings.password,
+               'security_token' : salesforce_settings.security_token,
+               'sandbox': salesforce_settings.sandbox }
 
 try:
     from local import *
