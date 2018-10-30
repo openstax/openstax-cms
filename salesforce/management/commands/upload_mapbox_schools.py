@@ -34,7 +34,8 @@ class Command(BaseCommand):
                     'coordinates': [float(school.long), float(school.lat)]
                 },
                 'properties': {
-                    'name': school.name
+                    'name': school.name,
+                    'id': school.id
                 }
             }
             datasets.update_feature(dataset_id, school.pk, feature)
