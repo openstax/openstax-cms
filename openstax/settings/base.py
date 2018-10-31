@@ -1,4 +1,6 @@
 # Django settings for openstax project.
+import django
+django.setup()
 
 import os
 import raven
