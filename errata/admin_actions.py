@@ -1,7 +1,14 @@
 import unicodecsv
-from django.http import HttpResponse
-from django.utils.encoding import smart_str
+from django.http import StreamingHttpResponse
 
+
+class Echo:
+    """An object that implements just the write method of the file-like
+    interface.
+    """
+    def write(self, value):
+        """Write the value by returning it, instead of storing in a buffer."""
+        return value
 
 def export_as_csv_action(description="Export selected objects as CSV file",
                          fields=None, exclude=None, header=True):
@@ -18,10 +25,11 @@ def export_as_csv_action(description="Export selected objects as CSV file",
         else:
             field_names = fields
 
-        response = HttpResponse(content_type='text/csv')
+        response = StreamingHttpResponse(content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename=%s.csv' % str(opts).replace('.', '_')
 
-        writer = unicodecsv.writer(response, encoding='utf-8')
+        pseudo_buffer = Echo()
+        writer = unicodecsv.writer(pseudo_buffer)
         if header:
             writer.writerow(field_names)
         for obj in queryset:
