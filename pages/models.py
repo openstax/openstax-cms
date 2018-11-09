@@ -532,7 +532,7 @@ class HomePage(Page):
         'pages.EcosystemAllies',
         'pages.FoundationSupport',
         'pages.OurImpact',
-        'pages.ImpactPage',
+        'pages.MapPage',
         'pages.Give',
         'pages.TermsOfService',
         'pages.AP',
@@ -869,7 +869,7 @@ class FoundationSupport(Page):
     parent_page_types = ['pages.HomePage']
 
 
-class OurImpact(Page): # TODO: Remove this after the ImpactPage is released
+class OurImpact(Page):
     intro_heading = models.CharField(max_length=255)
     intro_description = models.TextField()
 
@@ -915,7 +915,7 @@ class OurImpact(Page): # TODO: Remove this after the ImpactPage is released
     parent_page_types = ['pages.HomePage']
 
 
-class ImpactPage(Page):
+class MapPage(Page):
     header_text = models.CharField(max_length=255)
     sections_1_cards = StreamField([
         ('card', blocks.StructBlock([
