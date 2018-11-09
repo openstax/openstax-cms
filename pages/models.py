@@ -532,6 +532,7 @@ class HomePage(Page):
         'pages.EcosystemAllies',
         'pages.FoundationSupport',
         'pages.OurImpact',
+        'pages.MapPage',
         'pages.Give',
         'pages.TermsOfService',
         'pages.AP',
@@ -900,6 +901,111 @@ class OurImpact(Page):
         FieldPanel('intro_description'),
         StreamFieldPanel('row_1'),
         InlinePanel('institutions', label="Institutions"),
+    ]
+
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
+    ]
+
+    template = 'page.html'
+
+    parent_page_types = ['pages.HomePage']
+
+
+class MapPage(Page):
+    header_text = models.CharField(max_length=255)
+    sections_1_cards = StreamField([
+        ('card', blocks.StructBlock([
+            ('image', ImageBlock()),
+            ('headline', blocks.TextBlock(required=False)),
+            ('description', blocks.TextBlock(required=False)),
+        ], icon='document')),
+    ])
+    section_2_header_1 = models.CharField(max_length=255)
+    section_2_blurb_1 = models.TextField()
+    sections_2_cta_1 = models.CharField(max_length=255)
+    section_2_link_1 = models.CharField(max_length=255)
+    section_2_image_1 = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    def get_section_2_image_1(self):
+        return build_image_url(self.section_2_image_1)
+    section_2_image_1_url = property(get_section_2_image_1)
+    section_2_header_2 = models.CharField(max_length=255)
+    section_2_blurb_2 = models.TextField()
+    sections_2_cta_2 = models.CharField(max_length=255)
+    section_2_link_2 = models.CharField(max_length=255)
+    section_2_image_2 = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    def get_section_2_image_2(self):
+        return build_image_url(self.section_2_image_2)
+    section_2_image_2_url = property(get_section_2_image_2)
+    section_3_heading = models.CharField(max_length=255)
+    section_3_blurb = models.TextField()
+    section_3_cta = models.CharField(max_length=255)
+    section_3_link = models.CharField(max_length=255)
+
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    api_fields = [
+        APIField('title'),
+        APIField('header_text'),
+        APIField('sections_1_cards'),
+        APIField('section_2_header_1'),
+        APIField('section_2_blurb_1'),
+        APIField('sections_2_cta_1'),
+        APIField('section_2_link_1'),
+        APIField('section_2_image_1_url'),
+        APIField('section_2_header_2'),
+        APIField('section_2_blurb_2'),
+        APIField('sections_2_cta_2'),
+        APIField('section_2_link_2'),
+        APIField('section_2_image_2_url'),
+        APIField('section_3_heading'),
+        APIField('section_3_blurb'),
+        APIField('section_3_cta'),
+        APIField('section_3_link'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+    ]
+
+    content_panels = [
+        FieldPanel('title', classname='full title'),
+        FieldPanel('header_text'),
+        StreamFieldPanel('sections_1_cards'),
+        FieldPanel('section_2_header_1'),
+        FieldPanel('section_2_blurb_1'),
+        FieldPanel('sections_2_cta_1'),
+        FieldPanel('section_2_link_1'),
+        ImageChooserPanel('section_2_image_1'),
+        FieldPanel('section_2_header_2'),
+        FieldPanel('section_2_blurb_2'),
+        FieldPanel('sections_2_cta_2'),
+        FieldPanel('section_2_link_2'),
+        ImageChooserPanel('section_2_image_2'),
+        FieldPanel('section_3_heading'),
+        FieldPanel('section_3_blurb'),
+        FieldPanel('section_3_cta'),
+        FieldPanel('section_3_link'),
     ]
 
     promote_panels = [
