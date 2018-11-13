@@ -75,6 +75,13 @@ class NewsIndex(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     @property
     def articles(self):
@@ -98,6 +105,13 @@ class NewsIndex(Page):
         DocumentChooserPanel('press_kit'),
     ]
 
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
+    ]
+
     api_fields = (
         'intro',
         'press_kit',
@@ -105,6 +119,7 @@ class NewsIndex(Page):
         'slug',
         'seo_title',
         'search_description',
+        'promote_image'
     )
 
     subpage_types = ['news.NewsArticle']
@@ -129,16 +144,19 @@ class NewsArticle(Page):
         help_text="Image should be 1200 x 600"
     )
     featured_image_alt_text = models.CharField(max_length=250, blank=True, null=True)
-
     def get_article_image(self):
         return build_image_url(self.featured_image)
     article_image = property(get_article_image)
-
     tags = ClusterTaggableManager(through=NewsArticleTag, blank=True)
-
     body = StreamField(BlogStreamBlock())
-
     pin_to_top = models.BooleanField(default=False)
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     search_fields = Page.search_fields + [
         index.SearchField('body'),
@@ -158,6 +176,13 @@ class NewsArticle(Page):
         FieldPanel('pin_to_top'),
     ]
 
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
+    ]
+
     api_fields = (
         'date',
         'title',
@@ -172,6 +197,7 @@ class NewsArticle(Page):
         'slug',
         'seo_title',
         'search_description',
+        'promote_image'
     )
 
     parent_page_types = ['news.NewsIndex']
@@ -270,6 +296,13 @@ class PressIndex(Page):
     mentions = StreamField([
         ('mention', NewsMentionBlock(icon='document')),
     ], null=True)
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     @property
     def releases(self):
@@ -297,6 +330,13 @@ class PressIndex(Page):
         InlinePanel('mission_statements', label="Mission Statement"),
     ]
 
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
+    ]
+
     api_fields = (
         'press_kit',
         'press_kit_url',
@@ -304,6 +344,7 @@ class PressIndex(Page):
         'slug',
         'seo_title',
         'search_description',
+        'promote_image',
         'experts_heading',
         'experts_blurb',
         'experts_bios',
@@ -340,6 +381,14 @@ class PressRelease(Page):
 
     body = StreamField(BlogStreamBlock())
 
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
     search_fields = Page.search_fields + [
         index.SearchField('body'),
     ]
@@ -356,6 +405,13 @@ class PressRelease(Page):
         StreamFieldPanel('body'),
     ]
 
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
+    ]
+
     api_fields = (
         'date',
         'title',
@@ -369,4 +425,5 @@ class PressRelease(Page):
         'slug',
         'seo_title',
         'search_description',
+        'promote_image'
     )
