@@ -371,7 +371,8 @@ class AboutUsPage(Page):
         'where_map_url',
         'slug',
         'seo_title',
-        'search_description',)
+        'search_description',
+        'promote_image')
 
     content_panels = [
         FieldPanel('title', classname="full title"),
@@ -448,7 +449,8 @@ class TeamPage(Page):
         'openstax_people',
         'slug',
         'seo_title',
-        'search_description',)
+        'search_description',
+        'promote_image')
 
     template = 'page.html'
 
@@ -494,7 +496,8 @@ class HomePage(Page):
         'row_5',
         'slug',
         'seo_title',
-        'search_description',)
+        'search_description',
+        'promote_image')
 
     class Meta:
         verbose_name = "Home Page"
@@ -642,7 +645,8 @@ class HigherEducation(Page):
         'row_3',
         'slug',
         'seo_title',
-        'search_description',)
+        'search_description',
+        'promote_image')
 
     content_panels = [
         FieldPanel('title', classname="full title"),
@@ -717,6 +721,7 @@ class ContactUs(Page):
         'slug',
         'seo_title',
         'search_description',
+        'promote_image'
     )
 
     template = 'page.html'
@@ -751,6 +756,7 @@ class GeneralPage(Page):
         'slug',
         'seo_title',
         'search_description',
+        'promote_image'
     )
 
     content_panels = [
@@ -773,6 +779,7 @@ class GeneralPage(Page):
             'slug': self.slug,
             'seo_title': self.seo_title,
             'search_description': self.search_description,
+            'promote_image': self.promote_image,
             'body': self.body,
         }
 
@@ -813,6 +820,7 @@ class EcosystemAllies(Page):
         'slug',
         'seo_title',
         'search_description',
+        'promote_image'
     )
 
     content_panels = [
@@ -849,6 +857,7 @@ class FoundationSupport(Page):
         'slug',
         'seo_title',
         'search_description',
+        'promote_image'
     )
 
     content_panels = [
@@ -893,6 +902,7 @@ class OurImpact(Page):
         APIField('slug'),
         APIField('seo_title'),
         APIField('search_description'),
+        APIField('promote_image')
     ]
 
     content_panels = [
@@ -986,6 +996,7 @@ class MapPage(Page):
         APIField('slug'),
         APIField('seo_title'),
         APIField('search_description'),
+        APIField('promote_image')
     ]
 
     content_panels = [
@@ -1059,6 +1070,7 @@ class Give(Page):
         'slug',
         'seo_title',
         'search_description',
+        'promote_image'
     )
 
     content_panels = [
@@ -1108,6 +1120,7 @@ class TermsOfService(Page):
         'slug',
         'seo_title',
         'search_description',
+        'promote_image'
     )
 
     content_panels = [
@@ -1152,6 +1165,7 @@ class AP(Page):
         'intro_description',
         'row_1',
         'row_2',
+        'promote_image'
     )
 
     content_panels = [
@@ -1193,6 +1207,9 @@ class FAQ(Page):
         'intro_heading',
         'intro_description',
         'questions',
+        'seo_title',
+        'search_description',
+        'promote_image'
     )
 
     content_panels = [
@@ -1233,6 +1250,9 @@ class Support(Page):
         'intro_heading',
         'intro_description',
         'row_1',
+        'seo_title',
+        'search_description',
+        'promote_image'
     )
 
     content_panels = [
@@ -1270,6 +1290,7 @@ class GiveForm(Page):
         'slug',
         'seo_title',
         'search_description',
+        'promote_image'
     )
 
     content_panels = [
@@ -1307,6 +1328,7 @@ class Accessibility(Page):
         'slug',
         'seo_title',
         'search_description',
+        'promote_image'
     )
 
     content_panels = [
@@ -1345,6 +1367,7 @@ class Licensing(Page):
         'slug',
         'seo_title',
         'search_description',
+        'promote_image'
     )
 
     content_panels = [
@@ -1379,6 +1402,9 @@ class CompCopy(Page):
     api_fields = (
         'intro_heading',
         'intro_description',
+        'seo_title',
+        'search_description',
+        'promote_image'
     )
 
     content_panels = [
@@ -1413,6 +1439,8 @@ class AdoptForm(Page):
     api_fields = (
         'intro_heading',
         'intro_description',
+        'seo_title',
+        'search_description'
     )
 
     content_panels = [
@@ -1447,6 +1475,9 @@ class InterestForm(Page):
     api_fields = (
         'intro_heading',
         'intro_description',
+        'seo_title',
+        'search_description',
+        'promote_image'
     )
 
     content_panels = [
@@ -1659,6 +1690,7 @@ class Marketing(Page):
         'slug',
         'seo_title',
         'search_description',
+        'promote_image'
     )
 
     content_panels = [
@@ -1776,7 +1808,10 @@ class Technology(Page):
         'new_frontier_cta_1',
         'new_frontier_cta_link_1',
         'new_frontier_cta_2',
-        'new_frontier_cta_link_2')
+        'new_frontier_cta_link_2',
+        'seo_title',
+        'search_descriptions',
+        'promote_image')
 
     content_panels = [
         FieldPanel('title', classname="full title"),
@@ -1822,6 +1857,9 @@ class ErrataList(Page):
 
     api_fields = (
         'correction_schedule',
+        'seo_title',
+        'search_description',
+        'promote_image'
     )
 
     content_panels = [
@@ -1859,6 +1897,7 @@ class PrivacyPolicy(Page):
         'slug',
         'seo_title',
         'search_description',
+        'promote_image'
     )
 
     content_panels = [
@@ -1923,6 +1962,7 @@ class PrintOrder(Page):
         'slug',
         'seo_title',
         'search_description',
+        'promote_image'
     )
 
     content_panels = [
@@ -2038,6 +2078,7 @@ class ResearchPage(Page):
         APIField('slug'),
         APIField('seo_title'),
         APIField('search_description'),
+        APIField('promote_image')
     ]
 
     template = 'page.html'
@@ -2063,6 +2104,7 @@ class Careers(Page):
         'slug',
         'seo_title',
         'search_description',
+        'promote_image'
     )
 
     content_panels = [

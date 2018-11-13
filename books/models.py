@@ -596,7 +596,10 @@ class Book(Page):
                   'comp_copy_content',
                   'errata_content',
                   'table_of_contents',
-                  'tutor_marketing_book', )
+                  'tutor_marketing_book',
+                  'seo_title',
+                  'search_description',
+                  'promote_image')
 
     template = 'page.html'
 
@@ -771,7 +774,10 @@ class BookIndex(Page):
         'dev_standard_3_heading',
         'dev_standard_3_description',
         'subject_list_heading',
-        'books'
+        'books',
+        'seo_title',
+        'search_description',
+        'promote_image'
     )
 
     template = 'page.html'
