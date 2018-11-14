@@ -357,22 +357,23 @@ class AboutUsPage(Page):
         related_name='+'
     )
 
-    api_fields = (
-        'who_heading',
-        'who_paragraph',
-        'who_image',
-        'who_image_url',
-        'what_heading',
-        'what_paragraph',
-        'what_cards',
-        'where_heading',
-        'where_paragraph',
-        'where_map',
-        'where_map_url',
-        'slug',
-        'seo_title',
-        'search_description',
-        'promote_image')
+    api_fields = [
+        APIField('who_heading'),
+        APIField('who_paragraph'),
+        APIField('who_image'),
+        APIField('who_image_url'),
+        APIField('what_heading'),
+        APIField('what_paragraph'),
+        APIField('what_cards'),
+        APIField('where_heading'),
+        APIField('where_paragraph'),
+        APIField('where_map'),
+        APIField('where_map_url'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+    ]
 
     content_panels = [
         FieldPanel('title', classname="full title"),
@@ -440,17 +441,18 @@ class TeamPage(Page):
 
     ]
 
-    api_fields = (
-        'title',
-        'header',
-        'subheader',
-        'header_image_url',
-        'team_header',
-        'openstax_people',
-        'slug',
-        'seo_title',
-        'search_description',
-        'promote_image')
+    api_fields = [
+        APIField('title'),
+        APIField('header'),
+        APIField('subheader'),
+        APIField('header_image_url'),
+        APIField('team_header'),
+        APIField('openstax_people'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+    ]
 
     template = 'page.html'
 
@@ -485,19 +487,20 @@ class HomePage(Page):
         related_name='+'
     )
 
-    api_fields = (
-        'title',
-        'mobile_banner_images',
-        'banner_images',
-        'row_1',
-        'row_2',
-        'row_3',
-        'row_4',
-        'row_5',
-        'slug',
-        'seo_title',
-        'search_description',
-        'promote_image')
+    api_fields = [
+        APIField('title'),
+        APIField('mobile_banner_images'),
+        APIField('banner_images'),
+        APIField('row_1'),
+        APIField('row_2'),
+        APIField('row_3'),
+        APIField('row_4'),
+        APIField('row_5'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+    ]
 
     class Meta:
         verbose_name = "Home Page"
@@ -623,30 +626,31 @@ class HigherEducation(Page):
         related_name='+'
     )
 
-    api_fields = (
-        'intro_heading',
-        'intro_description',
-        'row_1',
-        'get_started_heading',
-        'get_started_step_1_heading',
-        'get_started_step_1_description',
-        'get_started_step_1_cta',
-        'get_started_step_2_heading',
-        'get_started_step_2_description',
-        'get_started_step_2_logged_in_cta',
-        'get_started_step_2_logged_out_cta',
-        'get_started_step_3_heading',
-        'get_started_step_3_description',
-        'get_started_step_3_cta',
-        'adopt_heading',
-        'adopt_description',
-        'adopt_cta',
-        'row_2',
-        'row_3',
-        'slug',
-        'seo_title',
-        'search_description',
-        'promote_image')
+    api_fields = [
+        APIField('intro_heading'),
+        APIField('intro_description'),
+        APIField('row_1'),
+        APIField('get_started_heading'),
+        APIField('get_started_step_1_heading'),
+        APIField('get_started_step_1_description'),
+        APIField('get_started_step_1_cta'),
+        APIField('get_started_step_2_heading'),
+        APIField('get_started_step_2_description'),
+        APIField('get_started_step_2_logged_in_cta'),
+        APIField('get_started_step_2_logged_out_cta'),
+        APIField('get_started_step_3_heading'),
+        APIField('get_started_step_3_description'),
+        APIField('get_started_step_3_cta'),
+        APIField('adopt_heading'),
+        APIField('adopt_description'),
+        APIField('adopt_cta'),
+        APIField('row_2'),
+        APIField('row_3'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+    ]
 
     content_panels = [
         FieldPanel('title', classname="full title"),
@@ -712,17 +716,17 @@ class ContactUs(Page):
 
     ]
 
-    api_fields = (
-        'title',
-        'tagline',
-        'mailing_header',
-        'mailing_address',
-        'customer_service',
-        'slug',
-        'seo_title',
-        'search_description',
-        'promote_image'
-    )
+    api_fields = [
+        APIField('title'),
+        APIField('tagline'),
+        APIField('mailing_header'),
+        APIField('mailing_address'),
+        APIField('customer_service'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+    ]
 
     template = 'page.html'
 
@@ -750,14 +754,14 @@ class GeneralPage(Page):
         related_name='+'
     )
 
-    api_fields = (
-        'title',
-        'body',
-        'slug',
-        'seo_title',
-        'search_description',
-        'promote_image'
-    )
+    api_fields = [
+        APIField('title'),
+        APIField('body'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+    ]
 
     content_panels = [
         FieldPanel('title'),
@@ -813,15 +817,15 @@ class EcosystemAllies(Page):
             }
         return ally_data
 
-    api_fields = (
-        'title',
-        'page_description',
-        'allies',
-        'slug',
-        'seo_title',
-        'search_description',
-        'promote_image'
-    )
+    api_fields = [
+        APIField('title'),
+        APIField('page_description'),
+        APIField('allies'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+    ]
 
     content_panels = [
         FieldPanel('title', classname="full title"),
@@ -850,15 +854,15 @@ class FoundationSupport(Page):
         related_name='+'
     )
 
-    api_fields = (
-        'title',
-        'page_description',
-        'funders',
-        'slug',
-        'seo_title',
-        'search_description',
-        'promote_image'
-    )
+    api_fields = [
+        APIField('title'),
+        APIField('page_description'),
+        APIField('funders'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+    ]
 
     content_panels = [
         FieldPanel('title', classname="full title"),
@@ -1053,25 +1057,25 @@ class Give(Page):
         related_name='+'
     )
 
-    api_fields = (
-        'intro_heading',
-        'intro_description',
-        'other_payment_methods_heading',
-        'payment_method_1_heading',
-        'payment_method_1_content',
-        'payment_method_2_heading',
-        'payment_method_2_content',
-        'payment_method_3_heading',
-        'payment_method_3_content',
-        'payment_method_4_heading',
-        'payment_method_4_content',
-        'give_cta',
-        'give_cta_link',
-        'slug',
-        'seo_title',
-        'search_description',
-        'promote_image'
-    )
+    api_fields = [
+        APIField('intro_heading'),
+        APIField('intro_description'),
+        APIField('other_payment_methods_heading'),
+        APIField('payment_method_1_heading'),
+        APIField('payment_method_1_content'),
+        APIField('payment_method_2_heading'),
+        APIField('payment_method_2_content'),
+        APIField('payment_method_3_heading'),
+        APIField('payment_method_3_content'),
+        APIField('payment_method_4_heading'),
+        APIField('payment_method_4_content'),
+        APIField('give_cta'),
+        APIField('give_cta_link'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+    ]
 
     content_panels = [
         FieldPanel('title', classname='full title'),
@@ -1113,15 +1117,15 @@ class TermsOfService(Page):
         related_name='+'
     )
 
-    api_fields = (
-        'title',
-        'intro_heading',
-        'terms_of_service_content',
-        'slug',
-        'seo_title',
-        'search_description',
-        'promote_image'
-    )
+    api_fields = [
+        APIField('title'),
+        APIField('intro_heading'),
+        APIField('terms_of_service_content'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+    ]
 
     content_panels = [
         FieldPanel('title', classname='full title'),
@@ -1160,13 +1164,13 @@ class AP(Page):
         related_name='+'
     )
 
-    api_fields = (
-        'intro_heading',
-        'intro_description',
-        'row_1',
-        'row_2',
-        'promote_image'
-    )
+    api_fields = [
+        APIField('intro_heading'),
+        APIField('intro_description'),
+        APIField('row_1'),
+        APIField('row_2'),
+        APIField('promote_image')
+    ]
 
     content_panels = [
         FieldPanel('title', classname="full title"),
@@ -1203,14 +1207,14 @@ class FAQ(Page):
         ('question', FAQBlock()),
     ])
 
-    api_fields = (
-        'intro_heading',
-        'intro_description',
-        'questions',
-        'seo_title',
-        'search_description',
-        'promote_image'
-    )
+    api_fields = [
+        APIField('intro_heading'),
+        APIField('intro_description'),
+        APIField('questions'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+    ]
 
     content_panels = [
         FieldPanel('title', classname="full title"),
@@ -1246,14 +1250,14 @@ class Support(Page):
         related_name='+'
     )
 
-    api_fields = (
-        'intro_heading',
-        'intro_description',
-        'row_1',
-        'seo_title',
-        'search_description',
-        'promote_image'
-    )
+    api_fields = [
+        APIField('intro_heading'),
+        APIField('intro_description'),
+        APIField('row_1'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+    ]
 
     content_panels = [
         FieldPanel('title', classname="full title"),
@@ -1284,14 +1288,14 @@ class GiveForm(Page):
         related_name='+'
     )
 
-    api_fields = (
-        'title',
-        'page_description',
-        'slug',
-        'seo_title',
-        'search_description',
-        'promote_image'
-    )
+    api_fields = [
+        APIField('title'),
+        APIField('page_description'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+    ]
 
     content_panels = [
         FieldPanel('title', classname="full title"),
@@ -1321,15 +1325,15 @@ class Accessibility(Page):
         related_name='+'
     )
 
-    api_fields = (
-        'title',
-        'intro_heading',
-        'accessibility_content',
-        'slug',
-        'seo_title',
-        'search_description',
-        'promote_image'
-    )
+    api_fields = [
+        APIField('title'),
+        APIField('intro_heading'),
+        APIField('accessibility_content'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+    ]
 
     content_panels = [
         FieldPanel('title', classname='full title'),
@@ -1360,15 +1364,15 @@ class Licensing(Page):
         related_name='+'
     )
 
-    api_fields = (
-        'title',
-        'intro_heading',
-        'licensing_content',
-        'slug',
-        'seo_title',
-        'search_description',
-        'promote_image'
-    )
+    api_fields = [
+        APIField('title'),
+        APIField('intro_heading'),
+        APIField('licensing_content'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+    ]
 
     content_panels = [
         FieldPanel('title', classname='full title'),
@@ -1399,13 +1403,13 @@ class CompCopy(Page):
         related_name='+'
     )
 
-    api_fields = (
-        'intro_heading',
-        'intro_description',
-        'seo_title',
-        'search_description',
-        'promote_image'
-    )
+    api_fields = [
+        APIField('intro_heading'),
+        APIField('intro_description'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+    ]
 
     content_panels = [
         FieldPanel('title', classname="full title"),
@@ -1436,12 +1440,14 @@ class AdoptForm(Page):
         related_name='+'
     )
 
-    api_fields = (
-        'intro_heading',
-        'intro_description',
-        'seo_title',
-        'search_description'
-    )
+    api_fields = [
+        APIField('intro_heading'),
+        APIField('intro_description'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+
+    ]
 
     content_panels = [
         FieldPanel('title', classname="full title"),
@@ -1472,13 +1478,13 @@ class InterestForm(Page):
         related_name='+'
     )
 
-    api_fields = (
-        'intro_heading',
-        'intro_description',
-        'seo_title',
-        'search_description',
-        'promote_image'
-    )
+    api_fields = [
+        APIField('intro_heading'),
+        APIField('intro_description'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+    ]
 
     content_panels = [
         FieldPanel('title', classname="full title"),
@@ -1629,69 +1635,69 @@ class Marketing(Page):
             })
         return book_data
 
-    api_fields = (
-        'title',
-        'pop_up_text',
-        'access_tagline',
-        'access_button_cta',
-        'access_button_link',
-        'section_1_heading',
-        'section_1_subheading',
-        'section_1_paragraph',
-        'section_1_cta_link',
-        'section_1_cta_text',
-        'section_2_heading',
-        'section_2_subheading',
-        'section_2_paragraph',
-        'icon_1_image_url',
-        'icon_1_subheading',
-        'icon_1_paragraph',
-        'icon_2_image_url',
-        'icon_2_subheading',
-        'icon_2_paragraph',
-        'icon_3_image_url',
-        'icon_3_subheading',
-        'icon_3_paragraph',
-        'icon_4_image_url',
-        'icon_4_subheading',
-        'icon_4_paragraph',
-        'section_3_heading',
-        'section_3_paragraph',
-        'marketing_videos',
-        'resource_availability',
-        'section_4_heading',
-        'section_4_paragraph',
-        'section_4_resource_fine_print',
-        'marketing_books',
-        'section_4_book_heading',
-        'section_4_coming_soon_heading',
-        'section_4_coming_soon_text',
-        'section_5_heading',
-        'section_5_paragraph',
-        'section_5_science_heading',
-        'section_5_science_paragraph',
-        'section_6_heading',
-        'section_6_knowledge_base_copy',
-        'faqs',
-        'section_7_heading',
-        'section_7_subheading',
-        'section_7_cta_text_1',
-        'section_7_cta_link_1',
-        'section_7_cta_blurb_1',
-        'section_7_cta_text_2',
-        'section_7_cta_link_2',
-        'section_7_cta_blurb_2',
-        'floating_footer_button_1_cta',
-        'floating_footer_button_1_link',
-        'floating_footer_button_1_caption',
-        'floating_footer_button_2_cta',
-        'floating_footer_button_2_link',
-        'floating_footer_button_2_caption',
-        'slug',
-        'seo_title',
-        'search_description',
-        'promote_image'
-    )
+    api_fields = [
+        APIField('title'),
+        APIField('pop_up_text'),
+        APIField('access_tagline'),
+        APIField('access_button_cta'),
+        APIField('access_button_link'),
+        APIField('section_1_heading'),
+        APIField('section_1_subheading'),
+        APIField('section_1_paragraph'),
+        APIField('section_1_cta_link'),
+        APIField('section_1_cta_text'),
+        APIField('section_2_heading'),
+        APIField('section_2_subheading'),
+        APIField('section_2_paragraph'),
+        APIField('icon_1_image_url'),
+        APIField('icon_1_subheading'),
+        APIField('icon_1_paragraph'),
+        APIField('icon_2_image_url'),
+        APIField('icon_2_subheading'),
+        APIField('icon_2_paragraph'),
+        APIField('icon_3_image_url'),
+        APIField('icon_3_subheading'),
+        APIField('icon_3_paragraph'),
+        APIField('icon_4_image_url'),
+        APIField('icon_4_subheading'),
+        APIField('icon_4_paragraph'),
+        APIField('section_3_heading'),
+        APIField('section_3_paragraph'),
+        APIField('marketing_videos'),
+        APIField('resource_availability'),
+        APIField('section_4_heading'),
+        APIField('section_4_paragraph'),
+        APIField('section_4_resource_fine_print'),
+        APIField('marketing_books'),
+        APIField('section_4_book_heading'),
+        APIField('section_4_coming_soon_heading'),
+        APIField('section_4_coming_soon_text'),
+        APIField('section_5_heading'),
+        APIField('section_5_paragraph'),
+        APIField('section_5_science_heading'),
+        APIField('section_5_science_paragraph'),
+        APIField('section_6_heading'),
+        APIField('section_6_knowledge_base_copy'),
+        APIField('faqs'),
+        APIField('section_7_heading'),
+        APIField('section_7_subheading'),
+        APIField('section_7_cta_text_1'),
+        APIField('section_7_cta_link_1'),
+        APIField('section_7_cta_blurb_1'),
+        APIField('section_7_cta_text_2'),
+        APIField('section_7_cta_link_2'),
+        APIField('section_7_cta_blurb_2'),
+        APIField('floating_footer_button_1_cta'),
+        APIField('floating_footer_button_1_link'),
+        APIField('floating_footer_button_1_caption'),
+        APIField('floating_footer_button_2_cta'),
+        APIField('floating_footer_button_2_link'),
+        APIField('floating_footer_button_2_caption'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+    ]
 
     content_panels = [
         FieldPanel('title', classname="full title"),
@@ -1793,25 +1799,26 @@ class Technology(Page):
         related_name='+'
     )
 
-    api_fields = (
-        'intro_heading',
-        'intro_description',
-        'banner_cta',
-        'banner_cta_link',
-        'select_tech_heading',
-        'select_tech_step_1',
-        'select_tech_step_2',
-        'select_tech_step_3',
-        'new_frontier_heading',
-        'new_frontier_subheading',
-        'new_frontier_description',
-        'new_frontier_cta_1',
-        'new_frontier_cta_link_1',
-        'new_frontier_cta_2',
-        'new_frontier_cta_link_2',
-        'seo_title',
-        'search_descriptions',
-        'promote_image')
+    api_fields = [
+        APIField('intro_heading'),
+        APIField('intro_description'),
+        APIField('banner_cta'),
+        APIField('banner_cta_link'),
+        APIField('select_tech_heading'),
+        APIField('select_tech_step_1'),
+        APIField('select_tech_step_2'),
+        APIField('select_tech_step_3'),
+        APIField('new_frontier_heading'),
+        APIField('new_frontier_subheading'),
+        APIField('new_frontier_description'),
+        APIField('new_frontier_cta_1'),
+        APIField('new_frontier_cta_link_1'),
+        APIField('new_frontier_cta_2'),
+        APIField('new_frontier_cta_link_2'),
+        APIField('seo_title'),
+        APIField('search_descriptions'),
+        APIField('promote_image')
+    ]
 
     content_panels = [
         FieldPanel('title', classname="full title"),
@@ -1855,12 +1862,12 @@ class ErrataList(Page):
         related_name='+'
     )
 
-    api_fields = (
-        'correction_schedule',
-        'seo_title',
-        'search_description',
-        'promote_image'
-    )
+    api_fields = [
+        APIField('correction_schedule'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+    ]
 
     content_panels = [
         FieldPanel('title', classname="full title"),
@@ -1890,15 +1897,15 @@ class PrivacyPolicy(Page):
         related_name='+'
     )
 
-    api_fields = (
-        'title',
-        'intro_heading',
-        'privacy_content',
-        'slug',
-        'seo_title',
-        'search_description',
-        'promote_image'
-    )
+    api_fields = [
+        APIField('title'),
+        APIField('intro_heading'),
+        APIField('privacy_content'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+    ]
 
     content_panels = [
         FieldPanel('title', classname='full title'),
@@ -1949,21 +1956,21 @@ class PrintOrder(Page):
         related_name='+'
     )
 
-    api_fields = (
-        'title',
-        'intro_heading',
-        'intro_description',
-        'featured_provider_intro_blurb',
-        'featured_providers',
-        'other_providers_intro_blurb',
-        'providers',
-        'isbn_download_url',
-        'isbn_cta',
-        'slug',
-        'seo_title',
-        'search_description',
-        'promote_image'
-    )
+    api_fields = [
+        APIField('title'),
+        APIField('intro_heading'),
+        APIField('intro_description'),
+        APIField('featured_provider_intro_blurb'),
+        APIField('featured_providers'),
+        APIField('other_providers_intro_blurb'),
+        APIField('providers'),
+        APIField('isbn_download_url'),
+        APIField('isbn_cta'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+    ]
 
     content_panels = [
         FieldPanel('title', classname='full title'),
@@ -2097,15 +2104,15 @@ class Careers(Page):
         related_name='+'
     )
 
-    api_fields = (
-        'title',
-        'intro_heading',
-        'careers_content',
-        'slug',
-        'seo_title',
-        'search_description',
-        'promote_image'
-    )
+    api_fields = [
+        APIField('title'),
+        APIField('intro_heading'),
+        APIField('careers_content'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+    ]
 
     content_panels = [
         FieldPanel('title', classname='full title'),

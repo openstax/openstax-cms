@@ -22,6 +22,7 @@ from wagtail.snippets.blocks import SnippetChooserBlock
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.snippets.edit_handlers import SnippetChooserPanel
 from wagtail.admin.edit_handlers import TabbedInterface, ObjectList
+from wagtail.api import APIField
 
 from allies.models import Ally
 from openstax.functions import build_document_url, build_image_url
@@ -87,16 +88,17 @@ class FacultyResources(models.Model):
 
     link_text = models.CharField(max_length=255, help_text="Call to Action Text")
 
-    api_fields = ('resource_heading',
-                  'resource_description',
-                  'resource_unlocked',
-                  'creator_fest_resource',
-                  'link_external',
-                  'link_page',
-                  'link_document_url',
-                  'link_document_title',
-                  'link_text',
-                  )
+    api_fields = [
+        APIField('resource_heading'),
+        APIField('resource_description'),
+        APIField('resource_unlocked'),
+        APIField('creator_fest_resource'),
+        APIField('link_external'),
+        APIField('link_page'),
+        APIField('link_document_url'),
+        APIField('link_document_title'),
+        APIField('link_text')
+    ]
 
     panels = [
         SnippetChooserPanel('resource'),
@@ -154,15 +156,16 @@ class StudentResources(models.Model):
 
     link_text = models.CharField(max_length=255, help_text="Call to Action Text")
 
-    api_fields = ('resource_heading',
-                  'resource_description',
-                  'resource_unlocked',
-                  'link_external',
-                  'link_page',
-                  'link_document_url',
-                  'link_document_title',
-                  'link_text',
-                  )
+    api_fields = [
+        APIField('resource_heading'),
+        APIField('resource_description'),
+        APIField('resource_unlocked'),
+        APIField('link_external'),
+        APIField('link_page'),
+        APIField('link_document_url'),
+        APIField('link_document_title'),
+        APIField('link_text'),
+    ]
 
     panels = [
         SnippetChooserPanel('resource'),
@@ -182,8 +185,13 @@ class Authors(models.Model):
     book = ParentalKey(
         'books.Book', related_name='book_contributing_authors', null=True, blank=True)
 
-    api_fields = (
-        'name', 'university', 'country', 'senior_author', 'display_at_top', )
+    api_fields = [
+        APIField('name'),
+        APIField('university'),
+        APIField('country'),
+        APIField('senior_author'),
+        APIField('display_at_top'),
+    ]
 
     panels = [
         FieldPanel('name'),
@@ -231,8 +239,13 @@ class BookAlly(models.Model):
     book_link_text = models.CharField(
         max_length=255, help_text="Call to Action Text")
 
-    api_fields = ('ally_heading', 'ally_short_description', 'ally_color_logo', 'book_link_url',
-                  'book_link_text', )
+    api_fields = [
+        APIField('ally_heading'),
+        APIField('ally_short_description'),
+        APIField('ally_color_logo'),
+        APIField('book_link_url'),
+        APIField('book_link_text'),
+    ]
 
     panels = [
         FieldPanel('ally'),
@@ -535,71 +548,73 @@ class Book(Page):
         ObjectList(Page.settings_panels, heading='Settings', classname="settings"),
     ])
 
-    api_fields = ('created',
-                  'updated',
-                  'slug',
-                  'title',
-                  'book_state',
-                  'cnx_id',
-                  'salesforce_abbreviation',
-                  'salesforce_name',
-                  'subject_name',
-                  'is_ap',
-                  'description',
-                  'cover_url',
-                  'title_image_url',
-                  'cover_color',
-                  'reverse_gradient',
-                  'book_allies',
-                  'book_student_resources',
-                  'book_faculty_resources',
-                  'book_contributing_authors',
-                  'publish_date',
-                  'authors',
-                  'print_isbn_10',
-                  'print_isbn_13',
-                  'digital_isbn_10',
-                  'digital_isbn_13',
-                  'ibook_isbn_10',
-                  'ibook_isbn_13',
-                  'ibook_volume_2_isbn_10',
-                  'ibook_volume_2_isbn_13',
-                  'license_text',
-                  'license_name',
-                  'license_version',
-                  'license_url',
-                  'high_resolution_pdf_url',
-                  'low_resolution_pdf_url',
-                  'free_stuff_instructor',
-                  'free_stuff_student',
-                  'community_resource_heading',
-                  'community_resource_logo_url',
-                  'community_resource_url',
-                  'community_resource_cta',
-                  'community_resource_blurb',
-                  'community_resource_feature_link_url',
-                  'community_resource_feature_text',
-                  'webinar_content',
-                  'ally_content',
-                  'coming_soon',
-                  'ibook_link',
-                  'ibook_link_volume_2',
-                  'webview_link',
-                  'bookshare_link',
-                  'amazon_coming_soon',
-                  'amazon_link',
-                  'amazon_price',
-                  'kindle_link',
-                  'bookstore_coming_soon',
-                  'bookstore_content',
-                  'comp_copy_available',
-                  'comp_copy_content',
-                  'errata_content',
-                  'table_of_contents',
-                  'tutor_marketing_book',
-                  'seo_title',
-                  'search_description',
-                  'promote_image')
+    api_fields = [
+        APIField('created'),
+        APIField('updated'),
+        APIField('slug'),
+        APIField('title'),
+        APIField('book_state'),
+        APIField('cnx_id'),
+        APIField('salesforce_abbreviation'),
+        APIField('salesforce_name'),
+        APIField('subject_name'),
+        APIField('is_ap'),
+        APIField('description'),
+        APIField('cover_url'),
+        APIField('title_image_url'),
+        APIField('cover_color'),
+        APIField('reverse_gradient'),
+        APIField('book_allies'),
+        APIField('book_student_resources'),
+        APIField('book_faculty_resources'),
+        APIField('book_contributing_authors'),
+        APIField('publish_date'),
+        APIField('authors'),
+        APIField('print_isbn_10'),
+        APIField('print_isbn_13'),
+        APIField('digital_isbn_10'),
+        APIField('digital_isbn_13'),
+        APIField('ibook_isbn_10'),
+        APIField('ibook_isbn_13'),
+        APIField('ibook_volume_2_isbn_10'),
+        APIField('ibook_volume_2_isbn_13'),
+        APIField('license_text'),
+        APIField('license_name'),
+        APIField('license_version'),
+        APIField('license_url'),
+        APIField('high_resolution_pdf_url'),
+        APIField('low_resolution_pdf_url'),
+        APIField('free_stuff_instructor'),
+        APIField('free_stuff_student'),
+        APIField('community_resource_heading'),
+        APIField('community_resource_logo_url'),
+        APIField('community_resource_url'),
+        APIField('community_resource_cta'),
+        APIField('community_resource_blurb'),
+        APIField('community_resource_feature_link_url'),
+        APIField('community_resource_feature_text'),
+        APIField('webinar_content'),
+        APIField('ally_content'),
+        APIField('coming_soon'),
+        APIField('ibook_link'),
+        APIField('ibook_link_volume_2'),
+        APIField('webview_link'),
+        APIField('bookshare_link'),
+        APIField('amazon_coming_soon'),
+        APIField('amazon_link'),
+        APIField('amazon_price'),
+        APIField('kindle_link'),
+        APIField('bookstore_coming_soon'),
+        APIField('bookstore_content'),
+        APIField('comp_copy_available'),
+        APIField('comp_copy_content'),
+        APIField('errata_content'),
+        APIField('table_of_contents'),
+        APIField('tutor_marketing_book'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+    ]
 
     template = 'page.html'
 
@@ -763,22 +778,22 @@ class BookIndex(Page):
         ImageChooserPanel('promote_image')
     ]
 
-    api_fields = (
-        'title',
-        'page_description',
-        'dev_standards_heading',
-        'dev_standard_1_heading',
-        'dev_standard_1_description',
-        'dev_standard_2_heading',
-        'dev_standard_2_description',
-        'dev_standard_3_heading',
-        'dev_standard_3_description',
-        'subject_list_heading',
-        'books',
-        'seo_title',
-        'search_description',
-        'promote_image'
-    )
+    api_fields = [
+        APIField('title'),
+        APIField('page_description'),
+        APIField('dev_standards_heading'),
+        APIField('dev_standard_1_heading'),
+        APIField('dev_standard_1_description'),
+        APIField('dev_standard_2_heading'),
+        APIField('dev_standard_2_description'),
+        APIField('dev_standard_3_heading'),
+        APIField('dev_standard_3_description'),
+        APIField('subject_list_heading'),
+        APIField('books'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+    ]
 
     template = 'page.html'
 
