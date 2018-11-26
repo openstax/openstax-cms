@@ -15,6 +15,7 @@ from wagtail.documents.blocks import DocumentChooserBlock
 from wagtail.snippets.blocks import SnippetChooserBlock
 from wagtail.snippets.edit_handlers import SnippetChooserPanel
 from wagtail.snippets.models import register_snippet
+from wagtail.api import APIField
 
 from modelcluster.fields import ParentalKey
 from modelcluster.contrib.taggit import ClusterTaggableManager
@@ -75,6 +76,13 @@ class NewsIndex(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     @property
     def articles(self):
@@ -98,14 +106,22 @@ class NewsIndex(Page):
         DocumentChooserPanel('press_kit'),
     ]
 
-    api_fields = (
-        'intro',
-        'press_kit',
-        'articles',
-        'slug',
-        'seo_title',
-        'search_description',
-    )
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
+    ]
+
+    api_fields = [
+        APIField('intro'),
+        APIField('press_kit'),
+        APIField('articles'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+    ]
 
     subpage_types = ['news.NewsArticle']
     parent_page_types = ['pages.HomePage']
@@ -129,16 +145,19 @@ class NewsArticle(Page):
         help_text="Image should be 1200 x 600"
     )
     featured_image_alt_text = models.CharField(max_length=250, blank=True, null=True)
-
     def get_article_image(self):
         return build_image_url(self.featured_image)
     article_image = property(get_article_image)
-
     tags = ClusterTaggableManager(through=NewsArticleTag, blank=True)
-
     body = StreamField(BlogStreamBlock())
-
     pin_to_top = models.BooleanField(default=False)
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     search_fields = Page.search_fields + [
         index.SearchField('body'),
@@ -158,21 +177,29 @@ class NewsArticle(Page):
         FieldPanel('pin_to_top'),
     ]
 
-    api_fields = (
-        'date',
-        'title',
-        'heading',
-        'subheading',
-        'author',
-        'article_image',
-        'featured_image_alt_text',
-        'tags',
-        'body',
-        'pin_to_top',
-        'slug',
-        'seo_title',
-        'search_description',
-    )
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
+    ]
+
+    api_fields = [
+        APIField('date'),
+        APIField('title'),
+        APIField('heading'),
+        APIField('subheading'),
+        APIField('author'),
+        APIField('article_image'),
+        APIField('featured_image_alt_text'),
+        APIField('tags'),
+        APIField('body'),
+        APIField('pin_to_top'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+    ]
 
     parent_page_types = ['news.NewsIndex']
 
@@ -204,7 +231,13 @@ class Experts(models.Model):
         return build_image_url(self.image)
     expert_image = property(get_expert_image)
 
-    api_fields = ('name', 'email', 'title', 'bio', 'expert_image')
+    api_fields = [
+        APIField('name'),
+        APIField('email'),
+        APIField('title'),
+        APIField('bio'),
+        APIField('expert_image')
+    ]
 
     panels = [
         FieldPanel('name'),
@@ -270,6 +303,13 @@ class PressIndex(Page):
     mentions = StreamField([
         ('mention', NewsMentionBlock(icon='document')),
     ], null=True)
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     @property
     def releases(self):
@@ -297,22 +337,30 @@ class PressIndex(Page):
         InlinePanel('mission_statements', label="Mission Statement"),
     ]
 
-    api_fields = (
-        'press_kit',
-        'press_kit_url',
-        'releases',
-        'slug',
-        'seo_title',
-        'search_description',
-        'experts_heading',
-        'experts_blurb',
-        'experts_bios',
-        'mentions',
-        'mission_statements',
-        'press_inquiry_name',
-        'press_inquiry_phone',
-        'press_inquiry_email',
-    )
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
+    ]
+
+    api_fields = [
+        APIField('press_kit'),
+        APIField('press_kit_url'),
+        APIField('releases'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image'),
+        APIField('experts_heading'),
+        APIField('experts_blurb'),
+        APIField('experts_bios'),
+        APIField('mentions'),
+        APIField('mission_statements'),
+        APIField('press_inquiry_name'),
+        APIField('press_inquiry_phone'),
+        APIField('press_inquiry_email')
+    ]
 
     subpage_types = ['news.PressRelease']
     parent_page_types = ['pages.HomePage']
@@ -340,6 +388,14 @@ class PressRelease(Page):
 
     body = StreamField(BlogStreamBlock())
 
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
     search_fields = Page.search_fields + [
         index.SearchField('body'),
     ]
@@ -356,17 +412,25 @@ class PressRelease(Page):
         StreamFieldPanel('body'),
     ]
 
-    api_fields = (
-        'date',
-        'title',
-        'heading',
-        'subheading',
-        'author',
-        'article_image',
-        'featured_image_alt_text',
-        'excerpt',
-        'body',
-        'slug',
-        'seo_title',
-        'search_description',
-    )
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
+    ]
+
+    api_fields = [
+        APIField('date'),
+        APIField('title'),
+        APIField('heading'),
+        APIField('subheading'),
+        APIField('author'),
+        APIField('article_image'),
+        APIField('featured_image_alt_text'),
+        APIField('excerpt'),
+        APIField('body'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+    ]
