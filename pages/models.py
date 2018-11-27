@@ -1817,7 +1817,7 @@ class Technology(Page):
         APIField('new_frontier_cta_2'),
         APIField('new_frontier_cta_link_2'),
         APIField('seo_title'),
-        APIField('search_descriptions'),
+        APIField('search_description'),
         APIField('promote_image')
     ]
 
