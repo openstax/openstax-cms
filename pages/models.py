@@ -33,6 +33,7 @@ class ImageBlock(StructBlock):
     alt_text = blocks.CharBlock(required=False)
     link = blocks.URLBlock(required=False)
     alignment = ImageFormatChoiceBlock()
+    identifier = blocks.CharBlock(required=False, help_text="Used by the frontend for Google Analytics.")
 
 
 class APIImageChooserBlock(ImageChooserBlock): # Use this block to return the path in the page API, does not support alt_text and alignment
@@ -738,7 +739,7 @@ class GeneralPage(Page):
         ('heading', blocks.CharBlock(classname="full title")),
         ('tagline', blocks.CharBlock(classname="full title")),
         ('paragraph', blocks.RichTextBlock()),
-        ('image', ImageChooserBlock()),
+        ('image', APIImageChooserBlock()),
         ('multicolumn', blocks.StreamBlock([
             ('column', ColumnBlock()),
             ],
