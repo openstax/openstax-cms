@@ -164,7 +164,6 @@ INSTALLED_APPS = [
     'rest_auth',
     'raven.contrib.django.raven_compat',
     'django_filters',
-    #'social.apps.django_app.default',
     'social_django',
     'storages',
     'django_ses',
