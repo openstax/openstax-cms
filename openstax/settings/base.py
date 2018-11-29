@@ -168,6 +168,7 @@ INSTALLED_APPS = [
     'storages',
     'django_ses',
     'cachalot',
+    'import_export',
     # custom
     'admin_templates',  # this overrides the admin templates
     'pages',
