@@ -1,4 +1,6 @@
 import unicodecsv
+from import_export import resources
+from import_export.admin import ExportActionModelAdmin
 
 from django.contrib import admin
 from django.db import models
@@ -15,11 +17,20 @@ from .models import Errata, InternalDocumentation
 from .forms import ErrataForm
 
 
+class ErrataResource(resources.ModelResource):
+    class Meta:
+        model = Errata
+        fields = ('id', 'created', 'modified', 'book__title', 'is_assessment_errata', 'assessment_id', 'status', 'resolution', 'archived', 'location', 'detail', 'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'resource', 'submitted_by_account_id')
+        export_order = ('id', 'created', 'modified', 'book__title', 'is_assessment_errata', 'assessment_id', 'status', 'resolution', 'archived', 'location', 'detail', 'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'resource', 'submitted_by_account_id')
+
+
 class InlineInternalImage(admin.TabularInline):
     model = InternalDocumentation
 
 
-class ErrataAdmin(admin.ModelAdmin):
+class ErrataAdmin(ExportActionModelAdmin):
+    resource_class = ErrataResource
+
     form = ErrataForm
     list_max_show_all = 10000
     list_per_page = 200
@@ -54,7 +65,7 @@ class ErrataAdmin(admin.ModelAdmin):
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
     }
-    actions = ['mark_in_review', 'mark_reviewed', 'mark_archived', 'export_as_csv']
+    actions = ['mark_in_review', 'mark_reviewed', 'mark_archived']
     inlines = [InlineInternalImage, ]
     raw_id_fields = ('submitted_by', 'duplicate_id')
 
@@ -70,60 +81,6 @@ class ErrataAdmin(admin.ModelAdmin):
     def mark_archived(self, request, queryset):
         queryset.update(archived=True)
     mark_archived.short_description = "Mark errata as archived"
-
-    def export_as_csv(self, request, queryset):
-        response = HttpResponse(content_type='text/csv')
-        response['Content-Disposition'] = 'attachment; filename={}.csv'.format("file1")
-
-        writer = unicodecsv.writer(response, encoding='utf-8')
-        writer.writerow([
-            smart_str("Errata ID"),
-            smart_str("Created"),
-            smart_str("Modified"),
-            smart_str("Book"),
-            smart_str("Assessment"),
-            smart_str("Assessment ID"),
-            smart_str("Status"),
-            smart_str("Resolution"),
-            smart_str("Archived"),
-            smart_str("Location"),
-            smart_str("Detail"),
-            smart_str("Internal Notes"),
-            smart_str("Resolution Notes"),
-            smart_str("Resolution Date"),
-            smart_str("Error Type"),
-            smart_str("Resource"),
-            smart_str('User Email'),
-            smart_str("Submitted By Group(s)"),
-        ])
-        for obj in queryset:
-            groups = []
-            if obj.submitted_by:
-                for group in obj.submitted_by.groups.all():
-                    groups.append(group.name)
-
-            writer.writerow([
-                smart_str(obj.pk),
-                smart_str(obj.created),
-                smart_str(obj.modified),
-                smart_str(obj.book.title),
-                smart_str(obj.is_assessment_errata),
-                smart_str(obj.assessment_id),
-                smart_str(obj.status),
-                smart_str(obj.resolution),
-                smart_str(obj.archived),
-                smart_str(obj.location),
-                smart_str(obj.detail),
-                smart_str(obj.internal_notes),
-                smart_str(obj.resolution_notes),
-                smart_str(obj.resolution_date),
-                smart_str(obj.error_type),
-                smart_str(obj.resource),
-                smart_str(obj.user_email),
-                smart_str(''.join(groups))
-            ])
-        return response
-    export_as_csv.short_description = "Export as CSV file"
 
     def get_actions(self, request):
         actions = super(ErrataAdmin, self).get_actions(request)
