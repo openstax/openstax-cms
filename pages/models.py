@@ -559,6 +559,7 @@ class HomePage(Page):
         'pages.ResearchPage',
         'pages.Careers',
         'pages.Rover',
+        'pages.AnnualReportPage',
         'books.BookIndex',
         'news.NewsIndex',
         'news.PressIndex',
@@ -2242,4 +2243,140 @@ class Rover(Page):
     parent_page_types = ['pages.HomePage']
 
 
+class AnnualReportPage(Page):
+    improving_access = StreamField([
+        ('background_image', APIImageChooserBlock(max_num=1)),
+        ('heading', blocks.CharBlock(max_num=1)),
+        ('description', blocks.TextBlock(max_num=1)),
+        ('give_text', blocks.CharBlock(max_num=1))
+    ], null=True)
+    revolution = StreamField([
+        ('heading', blocks.CharBlock(max_num=1)),
+        ('letter_body', blocks.TextBlock(max_num=1)),
+        ('signature_image', APIImageChooserBlock(max_num=1)),
+        ('signature_alt_text', blocks.CharBlock(max_num=1)),
+        ('signature_text', blocks.CharBlock(max_num=1)),
+        ('portrait', APIImageChooserBlock(max_num=1)),
+        ('portrait_alt_text', blocks.CharBlock(max_num=1))
+    ], null=True)
+    founding = StreamField([
+        ('caption', blocks.RichTextBlock(max_num=1)),
+        ('portrait', APIImageChooserBlock(max_num=1)),
+        ('portrait_alt_text', blocks.CharBlock(max_num=1)),
+        ('heading', blocks.CharBlock(max_num=1)),
+        ('description', blocks.TextBlock(max_num=1)),
+    ], null=True)
+    reach = StreamField([
+        ('heading', blocks.CharBlock(max_num=1)),
+        ('description', blocks.TextBlock(max_num=1)),
+        ('facts', blocks.ListBlock(blocks.StructBlock([
+            ('number', blocks.IntegerBlock(max_num=1)),
+            ('unit', blocks.CharBlock(max_num=1)),
+            ('text', blocks.CharBlock(max_num=1))
+        ])))
+    ], null=True)
+    testimonials = StreamField([
+        ('heading', blocks.CharBlock(max_num=1)),
+        ('description', blocks.TextBlock(max_num=1)),
+        ('testimonials', blocks.ListBlock(blocks.StructBlock([
+            ('image', APIImageChooserBlock(max_num=1, required=False)),
+            ('image_alt_text', blocks.CharBlock(max_num=1)),
+            ('quote', blocks.CharBlock(max_num=1)),
+            ('link', blocks.URLBlock(max_num=1)),
+            ('link_text', blocks.CharBlock(max_num=1)),
+        ])))
+    ], null=True)
+    sustainability = StreamField([
+        ('heading', blocks.CharBlock(max_num=1)),
+        ('description', blocks.TextBlock(max_num=1)),
+        ('partners', blocks.ListBlock(blocks.StructBlock([
+            ('image', APIImageChooserBlock(max_num=1, required=False)),
+            ('image_alt_text', blocks.CharBlock(max_num=1)),
+        ])))
+    ], null=True)
+    disruption = StreamField([
+        ('heading', blocks.CharBlock(max_num=1)),
+        ('description', blocks.TextBlock(max_num=1)),
+        ('graph', blocks.StructBlock([
+            ('top_caption', blocks.CharBlock(max_num=1)),
+            ('bottom_caption', blocks.RawHTMLBlock(max_num=1)),
+            ('image', APIImageChooserBlock(max_num=1, required=False)),
+            ('image_alt_text', blocks.CharBlock(max_num=1, required=False)),
+        ]))
+    ], null=True)
+    looking_ahead = StreamField([
+        ('heading', blocks.RichTextBlock(max_num=1)),
+        ('description', blocks.TextBlock(max_num=1)),
+        ('image', APIImageChooserBlock(max_num=1)),
+    ], null=True)
+    map = StreamField([
+        ('heading', blocks.RichTextBlock(max_num=1)),
+        ('description', blocks.TextBlock(max_num=1)),
+        ('link', blocks.CharBlock()),
+        ('link_text', blocks.CharBlock()),
+        ('background_image', APIImageChooserBlock(max_num=1)),
+        ('image_1', APIImageChooserBlock(max_num=1)),
+        ('image_2', APIImageChooserBlock(max_num=1)),
+    ], null=True)
+    tutor = StreamField([
+        ('heading', blocks.RichTextBlock(max_num=1)),
+        ('description', blocks.TextBlock(max_num=1)),
+        ('link', blocks.CharBlock()),
+        ('link_text', blocks.CharBlock()),
+        ('right_image', APIImageChooserBlock(max_num=1)),
+        ('bottom_image', APIImageChooserBlock(max_num=1)),
+    ], null=True)
+    philanthropic_partners = StreamField([
+        ('heading', blocks.RichTextBlock(max_num=1)),
+        ('description', blocks.TextBlock(max_num=1)),
+        ('image', APIImageChooserBlock(max_num=1)),
+        ('image_alt_text', blocks.CharBlock()),
+        ('link_1', blocks.CharBlock()),
+        ('link_1_text', blocks.CharBlock()),
+        ('link_2', blocks.CharBlock()),
+        ('link_2_text', blocks.CharBlock()),
+    ], null=True)
+    giving = StreamField([
+        ('heading', blocks.RichTextBlock(max_num=1)),
+        ('description', blocks.TextBlock(max_num=1)),
+        ('link_1', blocks.CharBlock()),
+        ('link_1_text', blocks.CharBlock()),
+    ], null=True)
 
+
+    content_panels = [
+        FieldPanel('title', classname='full title', help_text="Internal name for page."),
+        StreamFieldPanel('improving_access'),
+        StreamFieldPanel('revolution'),
+        StreamFieldPanel('founding'),
+        StreamFieldPanel('reach'),
+        StreamFieldPanel('testimonials'),
+        StreamFieldPanel('sustainability'),
+        StreamFieldPanel('disruption'),
+        StreamFieldPanel('looking_ahead'),
+        StreamFieldPanel('map'),
+        StreamFieldPanel('tutor'),
+        StreamFieldPanel('philanthropic_partners'),
+        StreamFieldPanel('giving'),
+    ]
+
+    api_fields = [
+        APIField('title'),
+        APIField('improving_access'),
+        APIField('revolution'),
+        APIField('founding'),
+        APIField('reach'),
+        APIField('testimonials'),
+        APIField('sustainability'),
+        APIField('disruption'),
+        APIField('looking_ahead'),
+        APIField('map'),
+        APIField('tutor'),
+        APIField('philanthropic_partners'),
+        APIField('giving'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+    ]
+
+    parent_page_type = ['pages.HomePage']
