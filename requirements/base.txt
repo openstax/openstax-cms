@@ -38,7 +38,7 @@ social-auth-app-django==2.1.0
 social-auth-core==1.7.0
 simple_salesforce==0.68.1
 # Django SES has not updated their Pypy release, so we need to install from Github
-git+https://github.com/django-ses/django-ses.git
+django-ses==0.8.7
 PyYAML==3.11
 unicodecsv==0.14.1
 
