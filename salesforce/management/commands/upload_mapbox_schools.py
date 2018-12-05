@@ -25,20 +25,27 @@ class Command(BaseCommand):
 
         #cool - we have a dataset, now let's fill it with school location data
         schools = School.objects.all()
+        total_schools = 0
+        uploaded_schools = 0
 
         for school in schools:
-            feature = {
-                'type': 'Feature',
-                'geometry': {
-                    'type': "Point",
-                    'coordinates': [float(school.long), float(school.lat)]
-                },
-                'properties': {
-                    'name': school.name,
-                    'id': school.id
+            total_schools = total_schools + 1
+            if school.lat and school.long:
+                feature = {
+                    'type': 'Feature',
+                    'geometry': {
+                        'type': "Point",
+                        'coordinates': [float(school.long), float(school.lat)]
+                    },
+                    'properties': {
+                        'name': school.name,
+                        'id': school.id
+                    }
                 }
-            }
-            datasets.update_feature(dataset_id, school.pk, feature)
+                datasets.update_feature(dataset_id, school.pk, feature)
+                uploaded_schools = uploaded_schools + 1
 
 
+        self.stdout.write("Total schools: {}".format(total_schools))
+        self.stdout.write("Total schools uploaded: {}".format(uploaded_schools))
         self.stdout.write("fin")
