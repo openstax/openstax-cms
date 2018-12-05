@@ -1,6 +1,6 @@
 appdirs==1.4.3
 beautifulsoup4==4.6.0
-boto==2.39.0
+boto==2.49.0
 Django==2.0.8
 django-admin-view-permission==1.5
 django-appconf==1.0.1
