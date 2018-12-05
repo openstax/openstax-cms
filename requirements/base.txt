@@ -1,6 +1,6 @@
 appdirs==1.4.3
 beautifulsoup4==4.6.0
-boto==2.39.0
+boto==2.49.0
 Django==2.0.8
 django-admin-view-permission==1.5
 django-appconf==1.0.1
@@ -15,6 +15,7 @@ django-treebeard==4.2.0
 django-storages==1.5.1
 djangorestframework==3.8.2
 draftjs-exporter==2.0.0
+google-compute-engine==2.8.3
 html2text==2016.9.19
 html5lib==1.0.1
 jsonfield==1.0.3
@@ -38,7 +39,7 @@ social-auth-app-django==2.1.0
 social-auth-core==1.7.0
 simple_salesforce==0.68.1
 # Django SES has not updated their Pypy release, so we need to install from Github
-git+https://github.com/django-ses/django-ses.git
+django-ses==0.8.7
 PyYAML==3.11
 unicodecsv==0.14.1
 
