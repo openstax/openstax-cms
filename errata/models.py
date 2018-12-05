@@ -42,6 +42,7 @@ APPROVED = 'Approved'
 MAJOR_BOOK_REVISION = 'Major Book Revision'
 TECHNICAL_ERROR = 'Technical Error'
 CUSTOMER_SUPPORT = 'Sent to Customer Support'
+MORE_INFO_REQUESTED = 'More Information Requested'
 ERRATA_RESOLUTIONS = (
     (DUPLICATE, 'Duplicate'),
     (NOT_AN_ERROR, 'Not An Error'),
@@ -50,6 +51,7 @@ ERRATA_RESOLUTIONS = (
     (MAJOR_BOOK_REVISION, 'Major Book Revision'),
     (TECHNICAL_ERROR, 'Technical Error'),
     (CUSTOMER_SUPPORT, 'Sent to Customer Support'),
+    (MORE_INFO_REQUESTED, 'More Information Requested')
 )
 
 FACTUAL = 'Other factual inaccuracy in content'
@@ -241,6 +243,10 @@ def send_status_update_email(sender, instance, created, **kwargs):
             send_email = True
             override_to = True
             to = "support@openstax.org"
+        elif instance.resolution == 'More Information Requested':
+            subject = "More information requested on your errata report"
+            body = "Thank you for the feedback. Unfortunately, our reviewers were unable to locate this error. Please submit a new report with additional information, such as a link to the relevant content, or a screenshot."
+            send_email = True
 
         if not override_to:
             if instance.submitted_by_account_id:
