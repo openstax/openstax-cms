@@ -2247,15 +2247,15 @@ class AnnualReportPage(Page):
     improving_access = StreamField([
         ('background_image', APIImageChooserBlock(max_num=1)),
         ('heading', blocks.CharBlock(max_num=1)),
-        ('description', blocks.TextBlock(max_num=1)),
+        ('description', blocks.RichTextBlock(max_num=1)),
         ('give_text', blocks.CharBlock(max_num=1))
     ], null=True)
     revolution = StreamField([
         ('heading', blocks.CharBlock(max_num=1)),
-        ('letter_body', blocks.TextBlock(max_num=1)),
+        ('letter_body', blocks.RichTextBlock(max_num=1)),
         ('signature_image', APIImageChooserBlock(max_num=1)),
         ('signature_alt_text', blocks.CharBlock(max_num=1)),
-        ('signature_text', blocks.CharBlock(max_num=1)),
+        ('signature_text', blocks.RichTextBlock(max_num=1)),
         ('portrait', APIImageChooserBlock(max_num=1)),
         ('portrait_alt_text', blocks.CharBlock(max_num=1))
     ], null=True)
@@ -2268,7 +2268,7 @@ class AnnualReportPage(Page):
     ], null=True)
     reach = StreamField([
         ('heading', blocks.CharBlock(max_num=1)),
-        ('description', blocks.TextBlock(max_num=1)),
+        ('description', blocks.RichTextBlock(max_num=1)),
         ('facts', blocks.ListBlock(blocks.StructBlock([
             ('number', blocks.IntegerBlock(max_num=1)),
             ('unit', blocks.CharBlock(max_num=1)),
@@ -2299,18 +2299,18 @@ class AnnualReportPage(Page):
         ('description', blocks.TextBlock(max_num=1)),
         ('graph', blocks.StructBlock([
             ('top_caption', blocks.CharBlock(max_num=1)),
-            ('bottom_caption', blocks.RawHTMLBlock(max_num=1)),
+            ('bottom_caption', blocks.RichTextBlock(max_num=1)),
             ('image', APIImageChooserBlock(max_num=1, required=False)),
             ('image_alt_text', blocks.CharBlock(max_num=1, required=False)),
         ]))
     ], null=True)
     looking_ahead = StreamField([
-        ('heading', blocks.RichTextBlock(max_num=1)),
+        ('heading', blocks.CharBlock(max_num=1)),
         ('description', blocks.TextBlock(max_num=1)),
         ('image', APIImageChooserBlock(max_num=1)),
     ], null=True)
     map = StreamField([
-        ('heading', blocks.RichTextBlock(max_num=1)),
+        ('heading', blocks.CharBlock(max_num=1)),
         ('description', blocks.TextBlock(max_num=1)),
         ('link', blocks.CharBlock()),
         ('link_text', blocks.CharBlock()),
@@ -2319,7 +2319,7 @@ class AnnualReportPage(Page):
         ('image_2', APIImageChooserBlock(max_num=1)),
     ], null=True)
     tutor = StreamField([
-        ('heading', blocks.RichTextBlock(max_num=1)),
+        ('heading', blocks.CharBlock(max_num=1)),
         ('description', blocks.TextBlock(max_num=1)),
         ('link', blocks.CharBlock()),
         ('link_text', blocks.CharBlock()),
@@ -2327,7 +2327,7 @@ class AnnualReportPage(Page):
         ('bottom_image', APIImageChooserBlock(max_num=1)),
     ], null=True)
     philanthropic_partners = StreamField([
-        ('heading', blocks.RichTextBlock(max_num=1)),
+        ('heading', blocks.CharBlock(max_num=1)),
         ('description', blocks.TextBlock(max_num=1)),
         ('image', APIImageChooserBlock(max_num=1)),
         ('image_alt_text', blocks.CharBlock()),
@@ -2337,7 +2337,7 @@ class AnnualReportPage(Page):
         ('link_2_text', blocks.CharBlock()),
     ], null=True)
     giving = StreamField([
-        ('heading', blocks.RichTextBlock(max_num=1)),
+        ('heading', blocks.CharBlock(max_num=1)),
         ('description', blocks.TextBlock(max_num=1)),
         ('link_1', blocks.CharBlock()),
         ('link_1_text', blocks.CharBlock()),
