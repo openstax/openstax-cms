@@ -107,7 +107,7 @@ def schools(request):
             schools = schools.filter(testimonial__isnull=False)
 
         if q:
-            schools = schools.filter((Q(name__icontains=q) | Q(physical_city=q)| Q(physical_state_province=q)| Q(physical_country=q)))
+            schools = schools.filter((Q(name__icontains=q) | Q(physical_city__icontains=q)| Q(physical_state_province__icontains=q)| Q(physical_country__icontains=q)))
 
         response = serializers.serialize("json", schools)
         return HttpResponse(response, content_type='application/json')
