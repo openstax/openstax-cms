@@ -1,5 +1,6 @@
 from django.core import serializers
 from django.http import JsonResponse, HttpResponse
+from django.db.models import Q
 from rest_framework import viewsets
 from salesforce.models import Adopter, School
 from global_settings.models import StickyNote, Footer
@@ -56,6 +57,7 @@ def footer(request):
 
 def schools(request):
     format = request.GET.get('format', 'json')
+    q = request.GET.get('q', False)
     name = request.GET.get('name', False)
     id = request.GET.get('id', False)
     type = request.GET.get('type', False)
@@ -103,6 +105,9 @@ def schools(request):
             schools = schools.filter(achieving_the_dream_school=True)
         if testimonial:
             schools = schools.filter(testimonial__isnull=False)
+
+        if q:
+            schools = schools.filter((Q(name__icontains=q) | Q(physical_city__icontains=q)| Q(physical_state_province__icontains=q)| Q(physical_country__icontains=q)))
 
         response = serializers.serialize("json", schools)
         return HttpResponse(response, content_type='application/json')
