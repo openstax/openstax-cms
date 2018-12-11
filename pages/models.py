@@ -777,7 +777,7 @@ class GeneralPage(Page):
         ImageChooserPanel('promote_image')
     ]
 
-    template = 'page.html'
+    template = 'general.html'
 
     def serve(self, request, *args, **kwargs):
         data = {

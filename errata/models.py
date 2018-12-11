@@ -199,6 +199,8 @@ class Errata(models.Model):
             self.resolution_notes = "Thank you for this feedback. Your report has been escalated to our Support team. A member of the Support team will contact you with further details."
         if self.resolution == 'Technical Error' and not self.resolution_notes:
             self.resolution_notes = 'This a technical error and the proper departments have been notified so that it can be fixed. Thank you for your submission.'
+        if self.resolution == 'More Information Requested':
+            self.resolution_notes = 'Thank you for the feedback. Unfortunately, our reviewers were unable to locate this error. Please submit a new report with additional information, such as a link to the relevant content, or a screenshot.'
 
         super(Errata, self).save(*args, **kwargs)
 
