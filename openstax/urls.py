@@ -39,6 +39,8 @@ urlpatterns = [
     url(r'^blog-feed/atom/$', AtomBlogFeed()),
     url(r'^errata/', include('errata.urls')),
     url(r'^api/errata/', include('errata.urls')),
+    # route everything to /api/spike also...
+    url(r'^api/spike/', include(wagtail_urls)),
 
     # For anything not caught by a more specific rule above, hand over to
     # Wagtail's serving mechanism

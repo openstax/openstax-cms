@@ -741,11 +741,6 @@ class GeneralPage(Page):
         ('tagline', blocks.CharBlock(classname="full title")),
         ('paragraph', blocks.RichTextBlock()),
         ('image', APIImageChooserBlock()),
-        ('multicolumn', blocks.StreamBlock([
-            ('column', ColumnBlock()),
-            ],
-            icon='placeholder'
-        )),
         ('html', RawHTMLBlock()),
     ])
     promote_image = models.ForeignKey(
@@ -777,19 +772,7 @@ class GeneralPage(Page):
         ImageChooserPanel('promote_image')
     ]
 
-    template = 'general.html'
-
-    def serve(self, request, *args, **kwargs):
-        data = {
-            'title': self.title,
-            'slug': self.slug,
-            'seo_title': self.seo_title,
-            'search_description': self.search_description,
-            'promote_image': self.promote_image,
-            'body': self.body,
-        }
-
-        return JsonResponse(data)
+    #template = 'page.html'
 
 
 class EcosystemAllies(Page):
