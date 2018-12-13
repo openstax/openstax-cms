@@ -1,6 +1,7 @@
+{% extends 'page.html' %}
 {% load wagtailcore_tags wagtailimages_tags %}
 
-
+{% block content %}
 {% for block in page.body %}
     {% if block.block_type == 'multicolumn' %}
         {# We need to do some magic to handle this block type and have it look good. Ignoring for the spike. #}
@@ -10,3 +11,4 @@
         </section>
     {% endif %}
 {% endfor %}
+{% endblock %}
