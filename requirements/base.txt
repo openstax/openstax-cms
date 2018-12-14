@@ -22,7 +22,7 @@ jsonfield==1.0.3
 lxml==3.5.0
 mapbox==0.16.2
 olefile==0.45.1
-Pillow==5.2.0
+Pillow==5.3.0
 psycopg2==2.7.3.2
 pytz==2018.5
 python-dateutil==2.4.2
