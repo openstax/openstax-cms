@@ -302,6 +302,9 @@ WAGTAIL_GRAVATAR_PROVIDER_URL = '//www.gravatar.com/avatar'
 
 MAPBOX_TOKEN = '' # should be the sk from mapbox, put in the appropriate settings file
 
+from PIL import ImageFile
+ImageFile.LOAD_TRUNCATED_IMAGES = True
+
 try:
     from local import *
 except ImportError:
