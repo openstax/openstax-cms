@@ -199,6 +199,8 @@ INSTALLED_APPS = [
     'wagtail.api.v2',
     'wagtail.contrib.settings',
     'wagtail.contrib.modeladmin',
+    'wagtailimportexport',
+
 ]
 
 EMAIL_SUBJECT_PREFIX = '[openstax] '
