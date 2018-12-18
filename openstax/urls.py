@@ -43,8 +43,7 @@ urlpatterns = [
     url(r'^api/errata/', include('errata.urls')),
 
     # wagtail import export urls
-    url(r'', include(wagtailimportexport_urls)),
-    url(r'', include(wagtail_urls)),
+    url(r'^api/', include(wagtailimportexport_urls)),
 
     # route everything to /api/spike also...
     url(r'^api/spike/', include(wagtail_urls)),
