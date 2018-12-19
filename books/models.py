@@ -465,6 +465,7 @@ class Book(Page):
     amazon_price = models.DecimalField(default=0.00, max_digits=6, decimal_places=2)
     kindle_link = models.URLField(blank=True, help_text="Link to Kindle version")
     chegg_link = models.URLField(blank=True, null=True, help_text="Link to Chegg e-reader")
+    chegg_link_text = models.CharField(max_length=255, blank=True, null=True)
     bookstore_coming_soon = models.BooleanField(default=False)
     bookstore_content = StreamField(SharedContentBlock(), null=True, blank=True)
     comp_copy_available = models.BooleanField(default=True)
@@ -525,6 +526,7 @@ class Book(Page):
         FieldPanel('amazon_price'),
         FieldPanel('kindle_link'),
         FieldPanel('chegg_link'),
+        FieldPanel('chegg_link_text'),
         FieldPanel('bookstore_coming_soon'),
         StreamFieldPanel('bookstore_content'),
         FieldPanel('comp_copy_available'),
@@ -608,6 +610,7 @@ class Book(Page):
         APIField('amazon_price'),
         APIField('kindle_link'),
         APIField('chegg_link'),
+        APIField('chegg_link_text'),
         APIField('bookstore_coming_soon'),
         APIField('bookstore_content'),
         APIField('comp_copy_available'),
