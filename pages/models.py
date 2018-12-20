@@ -2228,7 +2228,7 @@ class Rover(Page):
 
 class AnnualReportPage(Page):
     improving_access = StreamField([
-        ('background_image', APIImageChooserBlock(max_num=1)),
+        ('background_image', ImageBlock(max_num=1)),
         ('heading', blocks.CharBlock(max_num=1)),
         ('description', blocks.RichTextBlock(max_num=1)),
         ('give_text', blocks.CharBlock(max_num=1))
@@ -2236,15 +2236,15 @@ class AnnualReportPage(Page):
     revolution = StreamField([
         ('heading', blocks.CharBlock(max_num=1)),
         ('letter_body', blocks.RichTextBlock(max_num=1)),
-        ('signature_image', APIImageChooserBlock(max_num=1)),
+        ('signature_image', ImageBlock(max_num=1)),
         ('signature_alt_text', blocks.CharBlock(max_num=1)),
         ('signature_text', blocks.RichTextBlock(max_num=1)),
-        ('portrait', APIImageChooserBlock(max_num=1)),
+        ('portrait', ImageBlock(max_num=1)),
         ('portrait_alt_text', blocks.CharBlock(max_num=1))
     ], null=True)
     founding = StreamField([
         ('caption', blocks.RichTextBlock(max_num=1)),
-        ('portrait', APIImageChooserBlock(max_num=1)),
+        ('portrait', ImageBlock(max_num=1)),
         ('portrait_alt_text', blocks.CharBlock(max_num=1)),
         ('heading', blocks.CharBlock(max_num=1)),
         ('description', blocks.TextBlock(max_num=1)),
@@ -2262,7 +2262,7 @@ class AnnualReportPage(Page):
         ('heading', blocks.CharBlock(max_num=1)),
         ('description', blocks.TextBlock(max_num=1)),
         ('testimonials', blocks.ListBlock(blocks.StructBlock([
-            ('image', APIImageChooserBlock(max_num=1, required=False)),
+            ('image', ImageBlock(max_num=1, required=False)),
             ('image_alt_text', blocks.CharBlock(max_num=1)),
             ('quote', blocks.CharBlock(max_num=1)),
             ('link', blocks.URLBlock(max_num=1)),
@@ -2273,7 +2273,7 @@ class AnnualReportPage(Page):
         ('heading', blocks.CharBlock(max_num=1)),
         ('description', blocks.TextBlock(max_num=1)),
         ('partners', blocks.ListBlock(blocks.StructBlock([
-            ('image', APIImageChooserBlock(max_num=1, required=False)),
+            ('image', ImageBlock(max_num=1, required=False)),
             ('image_alt_text', blocks.CharBlock(max_num=1)),
         ])))
     ], null=True)
@@ -2283,36 +2283,36 @@ class AnnualReportPage(Page):
         ('graph', blocks.StructBlock([
             ('top_caption', blocks.CharBlock(max_num=1)),
             ('bottom_caption', blocks.RichTextBlock(max_num=1)),
-            ('image', APIImageChooserBlock(max_num=1, required=False)),
+            ('image', ImageBlock(max_num=1, required=False)),
             ('image_alt_text', blocks.CharBlock(max_num=1, required=False)),
         ]))
     ], null=True)
     looking_ahead = StreamField([
         ('heading', blocks.CharBlock(max_num=1)),
         ('description', blocks.TextBlock(max_num=1)),
-        ('image', APIImageChooserBlock(max_num=1)),
+        ('image', ImageBlock(max_num=1)),
     ], null=True)
     map = StreamField([
         ('heading', blocks.CharBlock(max_num=1)),
         ('description', blocks.TextBlock(max_num=1)),
         ('link', blocks.CharBlock()),
         ('link_text', blocks.CharBlock()),
-        ('background_image', APIImageChooserBlock(max_num=1)),
-        ('image_1', APIImageChooserBlock(max_num=1)),
-        ('image_2', APIImageChooserBlock(max_num=1)),
+        ('background_image', ImageBlock(max_num=1)),
+        ('image_1', ImageBlock(max_num=1)),
+        ('image_2', ImageBlock(max_num=1)),
     ], null=True)
     tutor = StreamField([
         ('heading', blocks.CharBlock(max_num=1)),
         ('description', blocks.TextBlock(max_num=1)),
         ('link', blocks.CharBlock()),
         ('link_text', blocks.CharBlock()),
-        ('right_image', APIImageChooserBlock(max_num=1)),
-        ('bottom_image', APIImageChooserBlock(max_num=1)),
+        ('right_image', ImageBlock(max_num=1)),
+        ('bottom_image', ImageBlock(max_num=1)),
     ], null=True)
     philanthropic_partners = StreamField([
         ('heading', blocks.CharBlock(max_num=1)),
         ('description', blocks.TextBlock(max_num=1)),
-        ('image', APIImageChooserBlock(max_num=1)),
+        ('image', ImageBlock(max_num=1)),
         ('image_alt_text', blocks.CharBlock()),
         ('link_1', blocks.CharBlock()),
         ('link_1_text', blocks.CharBlock()),
