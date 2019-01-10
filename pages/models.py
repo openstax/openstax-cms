@@ -2318,6 +2318,10 @@ class AnnualReportPage(Page):
         ('link_1_text', blocks.CharBlock()),
         ('link_2', blocks.CharBlock()),
         ('link_2_text', blocks.CharBlock()),
+        ('quote', blocks.TextBlock()),
+        ('attribution_name', blocks.CharBlock()),
+        ('attribution_title', blocks.CharBlock())
+
     ], null=True)
     giving = StreamField([
         ('heading', blocks.CharBlock()),
