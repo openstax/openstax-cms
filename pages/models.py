@@ -2253,7 +2253,7 @@ class AnnualReportPage(Page):
         ('heading', blocks.CharBlock()),
         ('description', blocks.RichTextBlock()),
         ('facts', blocks.ListBlock(blocks.StructBlock([
-            ('number', blocks.IntegerBlock()),
+            ('number', blocks.DecimalBlock()),
             ('unit', blocks.CharBlock()),
             ('text', blocks.CharBlock())
         ])))
