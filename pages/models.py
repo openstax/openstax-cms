@@ -2322,8 +2322,8 @@ class AnnualReportPage(Page):
     giving = StreamField([
         ('heading', blocks.CharBlock()),
         ('description', blocks.TextBlock()),
-        ('link_1', blocks.CharBlock()),
-        ('link_1_text', blocks.CharBlock()),
+        ('link', blocks.CharBlock()),
+        ('link_text', blocks.CharBlock()),
     ], null=True)
 
 
