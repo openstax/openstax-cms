@@ -559,6 +559,7 @@ class HomePage(Page):
         'pages.ResearchPage',
         'pages.Careers',
         'pages.Rover',
+        'pages.RoverPage',
         'pages.AnnualReportPage',
         'books.BookIndex',
         'news.NewsIndex',
@@ -2224,6 +2225,112 @@ class Rover(Page):
     template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
+
+
+class RoverPage(Page):
+        section_1 = StreamField([
+            ('access_button_link', blocks.URLBlock()),
+            ('access_button_cta', blocks.CharBlock()),
+            ('image', APIImageChooserBlock()),
+            ('blurb', blocks.TextBlock()),
+            ('button_link', blocks.URLBlock()),
+            ('button_cta', blocks.CharBlock())
+        ])
+        section_2 = StreamField([
+            ('video', blocks.RawHTMLBlock()),
+            ('heading', blocks.CharBlock()),
+            ('blurb', blocks.RawHTMLBlock())
+        ])
+        section_3 = StreamField([
+            ('heading', blocks.CharBlock()),
+            ('subheading', blocks.TextBlock()),
+            ('cards', blocks.ListBlock(blocks.StructBlock([
+                ('icon', APIImageChooserBlock()),
+                ('blurb', blocks.TextBlock())
+            ]))),
+            ('button_link', blocks.URLBlock()),
+            ('button_cta', blocks.CharBlock())
+        ])
+        section_4 = StreamField([
+            ('heading', blocks.CharBlock()),
+            ('blurb', blocks.TextBlock()),
+            ('cards', blocks.ListBlock(blocks.StructBlock([
+                ('heading', blocks.CharBlock()),
+                ('blurb', blocks.TextBlock()),
+                ('image', APIImageChooserBlock())
+            ])))
+        ])
+        section_5 = StreamField([
+            ('heading', blocks.CharBlock()),
+            ('blurb', blocks.TextBlock()),
+            ('cards', blocks.ListBlock(blocks.StructBlock([
+                ('video', blocks.RawHTMLBlock()),
+                ('heading', blocks.CharBlock()),
+                ('blurb', blocks.TextBlock())
+            ])))
+        ])
+        section_6 = StreamField([
+            ('heading', blocks.CharBlock()),
+            ('blurb', blocks.RichTextBlock()),
+            ('image', APIImageChooserBlock()),
+            ('caption', blocks.CharBlock())
+        ])
+        section_7 = StreamField([
+            ('faqs', blocks.ListBlock(blocks.StructBlock([
+                ('question', blocks.CharBlock()),
+                ('answer', blocks.TextBlock())
+            ]))),
+            ('webinar_button_url', blocks.URLBlock()),
+            ('webinar_button_cta', blocks.CharBlock()),
+            ('signup_button_url', blocks.URLBlock()),
+            ('signup_button_cta', blocks.CharBlock())
+        ])
+        promote_image = models.ForeignKey(
+            'wagtailimages.Image',
+            null=True,
+            blank=True,
+            on_delete=models.SET_NULL,
+            related_name='+'
+        )
+
+        content_panels = [
+            FieldPanel('title', classname='full title', help_text="Internal name for page."),
+            StreamFieldPanel('section_1'),
+            StreamFieldPanel('section_2'),
+            StreamFieldPanel('section_3'),
+            StreamFieldPanel('section_4'),
+            StreamFieldPanel('section_5'),
+            StreamFieldPanel('section_6'),
+            StreamFieldPanel('section_7'),
+        ]
+
+        promote_panels = [
+            FieldPanel('slug'),
+            FieldPanel('seo_title'),
+            FieldPanel('search_description'),
+            ImageChooserPanel('promote_image')
+
+        ]
+
+        api_fields = [
+            APIField('title'),
+            APIField('section_1'),
+            APIField('section_2'),
+            APIField('section_3'),
+            APIField('section_4'),
+            APIField('section_5'),
+            APIField('section_6'),
+            APIField('section_7'),
+            APIField('slug'),
+            APIField('seo_title'),
+            APIField('search_description'),
+            APIField('promote_image')
+        ]
+
+        template = 'page.html'
+
+        parent_page_types = ['pages.HomePage']
+
 
 
 class AnnualReportPage(Page):
