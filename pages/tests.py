@@ -30,6 +30,7 @@ from pages.models import (HomePage,
                           TeamPage,
                           Careers,
                           Rover,
+                          RoverPage,
                           AnnualReportPage)
 from allies.models import Ally
 from news.models import NewsIndex, PressIndex
@@ -89,6 +90,7 @@ class HomePageTests(WagtailPageTests):
             TeamPage,
             Careers,
             Rover,
+            RoverPage,
             AnnualReportPage
         })
 
