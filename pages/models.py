@@ -2239,7 +2239,7 @@ class RoverPage(Page):
         section_2 = StreamField([
             ('video', blocks.RawHTMLBlock()),
             ('heading', blocks.CharBlock()),
-            ('blurb', blocks.RawHTMLBlock())
+            ('subheading', blocks.TextBlock()),
         ])
         section_3 = StreamField([
             ('heading', blocks.CharBlock()),
@@ -2257,7 +2257,8 @@ class RoverPage(Page):
             ('cards', blocks.ListBlock(blocks.StructBlock([
                 ('heading', blocks.CharBlock()),
                 ('blurb', blocks.TextBlock()),
-                ('image', APIImageChooserBlock())
+                ('image', APIImageChooserBlock()),
+                ('image_alt_text', blocks.CharBlock())
             ])))
         ])
         section_5 = StreamField([
@@ -2273,6 +2274,7 @@ class RoverPage(Page):
             ('heading', blocks.CharBlock()),
             ('blurb', blocks.RichTextBlock()),
             ('image', APIImageChooserBlock()),
+            ('image_alt_text', blocks.CharBlock()),
             ('caption', blocks.CharBlock())
         ])
         section_7 = StreamField([
