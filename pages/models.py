@@ -2240,6 +2240,7 @@ class RoverPage(Page):
             ('video', blocks.RawHTMLBlock()),
             ('heading', blocks.CharBlock()),
             ('subheading', blocks.TextBlock()),
+            ('blurb', blocks.TextBlock()),
         ])
         section_3 = StreamField([
             ('heading', blocks.CharBlock()),
