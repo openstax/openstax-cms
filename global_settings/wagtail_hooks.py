@@ -1,7 +1,9 @@
+import boto
 import wagtail.admin.rich_text.editors.draftail.features as draftail_features
 from wagtail.admin.rich_text.converters.html_to_contentstate import InlineStyleElementHandler
 from wagtail.core import hooks
 
+from .models import CloudfrontDistribution
 
 @hooks.register('register_rich_text_features')
 def register_strikethrough_feature(features):
@@ -29,3 +31,12 @@ def register_strikethrough_feature(features):
     }
     features.default_features.append(feature_name)
     features.register_converter_rule('contentstate', feature_name, db_conversion)
+
+@hooks.register('after_edit_page')
+def purge_cloudfront_caches(page, request):
+    try:
+        distribution = CloudfrontDistribution.objects.all()[0]
+        cf = boto.connect_cloudfront()
+        cf.create_invalidation_request(distribution.distribution_id, [])
+    except IndexError:
+        pass
