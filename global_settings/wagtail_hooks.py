@@ -2,6 +2,8 @@ import boto
 import wagtail.admin.rich_text.editors.draftail.features as draftail_features
 from wagtail.admin.rich_text.converters.html_to_contentstate import InlineStyleElementHandler
 from wagtail.core import hooks
+from django.urls import reverse
+from wagtail.admin.menu import MenuItem
 
 from .models import CloudfrontDistribution
 
@@ -40,3 +42,8 @@ def purge_cloudfront_caches(page, request):
         cf.create_invalidation_request(distribution.distribution_id, [])
     except IndexError:
         pass
+
+@hooks.register('register_settings_menu_item')
+def register_500_menu_item():
+  return MenuItem('Generate 500', reverse('throw_error'), classnames='icon icon-warning', order=10000)
+
