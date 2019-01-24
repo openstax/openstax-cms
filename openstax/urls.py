@@ -24,7 +24,7 @@ urlpatterns = [
     url(r'^django-admin/login', RedirectView.as_view(url='/admin/login')),
     url(r'^django-admin/', admin.site.urls),
     url(r'^admin/', include(wagtailadmin_urls)),
-    url(r'^error/', throw_error, name='throw_error'),
+    url(r'^django-admin/error/', throw_error, name='throw_error'),
 
     url(r'^accounts/', include('accounts.urls')),
     url(r'^documents/', include(wagtaildocs_urls)),
