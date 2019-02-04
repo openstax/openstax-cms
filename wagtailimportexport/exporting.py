@@ -18,8 +18,6 @@ def export_pages(root_page, export_unpublished=False):
     If export_unpublished=True the root_page and all its descendants
     are included.
     """
-    root_page = Page.objects.get(id=root_page)
-
     pages = Page.objects.descendant_of(root_page, inclusive=True).order_by('path').specific()
     if not export_unpublished:
         pages = pages.filter(live=True)
