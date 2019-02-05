@@ -15,8 +15,6 @@ def import_pages(import_data, parent_page):
     pages_by_original_path = {}
     pages_by_original_id = {}
 
-    parent_page = Page.objects.get(id=parent_page)
-
     # First create the base Page records; these contain no foreign keys, so this allows us to
     # build a complete mapping from old IDs to new IDs before we go on to importing the
     # specific page models, which may require us to rewrite page IDs within foreign keys / rich
@@ -83,7 +81,7 @@ def update_page_references(model, pages_by_original_id):
     # update references within inline child models, including the ParentalKey pointing back
     # to the page
     for rel in get_all_child_relations(model):
-        for child in getattr(model, rel.name).all():
+        for child in getattr(model, rel.get_accessor_name()).all():
             # reset the child model's PK so that it will be inserted as a new record
             # rather than updating an existing one
             child.pk = None
