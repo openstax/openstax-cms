@@ -118,7 +118,7 @@ IMPORT_USER_PIPELINE = (
     'social.pipeline.user.user_details',
 )
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
-
+OPENSTAX_SOCIAL_AUTH_RAISE_EXCEPTIONS = False
 
 TEMPLATES = [
     {
