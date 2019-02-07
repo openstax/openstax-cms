@@ -3,7 +3,7 @@ from urllib.parse import urlencode
 from urllib.request import urlopen
 
 from django.conf import settings
-from social.backends.oauth import BaseOAuth2
+from social_core.backends.oauth import BaseOAuth2
 
 
 class OpenStax(BaseOAuth2):

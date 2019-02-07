@@ -98,27 +98,25 @@ AUTHENTICATION_BACKENDS = (
 )
 
 SOCIAL_AUTH_PIPELINE = (
-    'social.pipeline.social_auth.social_details',
-    'social.pipeline.social_auth.social_uid',
-    'social.pipeline.social_auth.auth_allowed',
-    'social.pipeline.social_auth.social_user',
-    'social.pipeline.user.create_user',
+    'social_core.pipeline.social_auth.social_details',
+    'social_core.pipeline.social_auth.social_uid',
+    'social_core.pipeline.social_auth.social_user',
+    'social_core.pipeline.user.create_user',
     'accounts.pipelines.save_profile',
     'accounts.pipelines.update_email',
-    'social.pipeline.social_auth.associate_user',
-    'social.pipeline.social_auth.load_extra_data',
-    'social.pipeline.user.user_details',
+    'social_core.pipeline.social_auth.associate_user',
+    'social_core.pipeline.social_auth.load_extra_data',
+    'social_core.pipeline.user.user_details',
 )
 
 IMPORT_USER_PIPELINE = (
-    'social.pipeline.social_auth.social_user',
-    'social.pipeline.user.create_user',
+    'social_django.pipeline.social_auth.social_user',
+    'social_django.pipeline.user.create_user',
     'accounts.pipelines.save_profile',
-    'social.pipeline.social_auth.associate_user',
-    'social.pipeline.user.user_details',
+    'social_django.pipeline.social_auth.associate_user',
+    'social_django.pipeline.user.user_details',
 )
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
-
 
 TEMPLATES = [
     {
@@ -134,8 +132,8 @@ TEMPLATES = [
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.request',
-                'social.apps.django_app.context_processors.backends',
-                'social.apps.django_app.context_processors.login_redirect',
+                'social_django.context_processors.backends',
+                'social_django.context_processors.login_redirect',
             ],
         },
     },

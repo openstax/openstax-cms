@@ -8,7 +8,7 @@ def save_profile(user, response, *args, **kwargs):
 
             user.email = newest_email['value']
         except ValueError:
-            user.email = '{}@openstax.org'.format(user.username)
+            user.email = 'none@openstax.org'
         user.save()
 
 

@@ -14,7 +14,7 @@ django-taggit==0.23.0
 django-treebeard==4.2.0
 django-storages==1.5.1
 djangorestframework==3.8.2
-draftjs-exporter==2.0.0
+draftjs-exporter==2.1.5
 google-compute-engine==2.8.3
 html2text==2016.9.19
 html5lib==1.0.1
@@ -31,13 +31,12 @@ requests==2.19.1
 six==1.11.0
 sphinx-me==0.3
 Unidecode==1.0.22
-wagtail==2.3
+wagtail==2.4
 #wagtail-import-export==0.1 # this has a bug, incorporating in project until fixed
 wheel==0.24.0
 Willow==1.1
-python-social-auth==0.3.6
-social-auth-app-django==2.1.0
-social-auth-core==1.7.0
+social-auth-app-django==3.1.0
+social-auth-core==3.0.0
 simple_salesforce==0.68.1
 # Django SES has not updated their Pypy release, so we need to install from Github
 django-ses==0.8.7
