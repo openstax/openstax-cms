@@ -37,6 +37,7 @@ class BookTests(WagtailPageTests):
         cls.book_index = Page.objects.get(id=book_index.id)
 
     def test_can_create_book(self):
+        book_index = BookIndex.objects.all()[0]
         book = Book(title="University Physics",
                     slug="university-physics",
                     cnx_id='031da8d3-b525-429c-80cf-6c8ed997733a',
@@ -45,11 +46,11 @@ class BookTests(WagtailPageTests):
                     subject=self.subject,
                     description="Test Book",
                     )
-        book.save()
-        self.book_index.add_child(instance=book)
+        book_index.add_child(instance=book)
         self.assertEqual(book.salesforce_abbreviation, 'University Phys (Calc)')
 
     def test_can_create_ap_book(self):
+        book_index = BookIndex.objects.all()[0]
         book = Book(title="Prealgebra",
                     slug="prealgebra",
                     salesforce_abbreviation='Prealgebra',
@@ -58,12 +59,12 @@ class BookTests(WagtailPageTests):
                     description="This is Prealgebra. Next, you learn Algebra!",
                     is_ap=True
                     )
-        self.book_index.add_child(instance=book)
-        book.save()
+        book_index.add_child(instance=book)
         self.assertEqual(book.salesforce_abbreviation, 'Prealgebra')
 
 
     def test_can_create_book_without_cnx_id(self):
+        book_index = BookIndex.objects.all()[0]
         book = Book(title="Prealgebra",
                     slug="prealgebra",
                     salesforce_abbreviation='Prealgebra',
@@ -71,28 +72,11 @@ class BookTests(WagtailPageTests):
                     subject=self.subject,
                     description="This is Prealgebra. Next, you learn Algebra!",
                     )
-        self.book_index.add_child(instance=book)
-        book.save()
+        book_index.add_child(instance=book)
         self.assertEqual(book.salesforce_abbreviation, 'Prealgebra')
 
-    def test_book_with_ally(self):
-        ally = Ally(heading="Carnegie Learning", short_description="Short", long_description="Long")
-        book_ally = BookAllies(ally=ally)
-
-        book = Book(title="Prealgebra",
-                    slug="prealgebra",
-                    cnx_id='031da8d3-b525-429c-80cf-6c8ed997733a',
-                    salesforce_abbreviation='University Phys (Calc)',
-                    salesforce_name='University Physics',
-                    subject=self.subject,
-                    description="Test Book",
-                    )
-        self.book_index.add_child(instance=book)
-        book.book_allies.add(book_ally)
-        book.save()
-        self.assertEqual(book.cnx_id, '031da8d3-b525-429c-80cf-6c8ed997733a')
-
     def test_can_create_coming_soon_book(self):
+        book_index = BookIndex.objects.all()[0]
         book = Book(title="Prealgebra",
                     slug="prealgebra",
                     salesforce_abbreviation='Prealgebra',
@@ -101,11 +85,11 @@ class BookTests(WagtailPageTests):
                     description="This is Prealgebra. Next, you learn Algebra!",
                     coming_soon=True
                     )
-        self.book_index.add_child(instance=book)
-        book.save()
+        book_index.add_child(instance=book)
         self.assertEqual(book.salesforce_abbreviation, 'Prealgebra')
 
     def test_only_numbers_for_price(self):
+        book_index = BookIndex.objects.all()[0]
         book = Book(title="Prealgebra",
                 slug="prealgebra",
                 salesforce_abbreviation='Prealgebra',
@@ -114,18 +98,18 @@ class BookTests(WagtailPageTests):
                 description="This is Prealgebra. Next, you learn Algebra!",
                 amazon_price=False
                 )
-        self.book_index.add_child(instance=book)
-        book.save()
+        book_index.add_child(instance=book)
         self.assertEqual(book.salesforce_abbreviation, 'Prealgebra')
 
     def test_book_creation_fails_without_salesforce_info(self):
+        book_index = BookIndex.objects.all()[0]
         book = Book(title="Prealgebra",
                     slug="prealgebra",
                     subject=self.subject,
                     description="This is Prealgebra. Next, you learn Algebra!",
                     )
-        self.book_index.add_child(instance=book)
-        book.save()
+        book_index.add_child(instance=book)
+
         self.assertNotEqual(book.subject, 'Math')
 
     def test_allowed_subpages(self):
