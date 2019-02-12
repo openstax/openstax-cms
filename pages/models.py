@@ -400,6 +400,7 @@ class AboutUsPage(Page):
     template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
+    max_count = 1
 
 
 class TeamPage(Page):
@@ -456,6 +457,7 @@ class TeamPage(Page):
     ]
 
     template = 'page.html'
+    max_count = 1
 
 
 class HomePage(Page):
@@ -502,6 +504,8 @@ class HomePage(Page):
         APIField('search_description'),
         APIField('promote_image')
     ]
+
+    max_count = 1
 
     class Meta:
         verbose_name = "Home Page"
@@ -566,6 +570,8 @@ class HomePage(Page):
         'news.PressIndex',
         'allies.Ally',
     ]
+
+    max_count = 1
 
     def __str__(self):
         return self.path
@@ -688,6 +694,7 @@ class HigherEducation(Page):
     template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
+    max_count = 1
 
 
 class ContactUs(Page):
@@ -734,6 +741,7 @@ class ContactUs(Page):
     template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
+    max_count = 1
 
 
 class GeneralPage(Page):
@@ -773,7 +781,7 @@ class GeneralPage(Page):
         ImageChooserPanel('promote_image')
     ]
 
-    #template = 'page.html'
+    max_count = 1
 
 
 class EcosystemAllies(Page):
@@ -828,6 +836,7 @@ class EcosystemAllies(Page):
     template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
+    max_count = 1
 
 
 class FoundationSupport(Page):
@@ -866,6 +875,7 @@ class FoundationSupport(Page):
     template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
+    max_count = 1
 
 
 class OurImpact(Page):
@@ -913,6 +923,7 @@ class OurImpact(Page):
     template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
+    max_count = 1
 
 
 class MapPage(Page):
@@ -1019,6 +1030,7 @@ class MapPage(Page):
     template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
+    max_count = 1
 
 
 class Give(Page):
@@ -1090,6 +1102,7 @@ class Give(Page):
     template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
+    max_count = 1
 
 
 class TermsOfService(Page):
@@ -1129,6 +1142,7 @@ class TermsOfService(Page):
     template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
+    max_count = 1
 
 
 class AP(Page):
@@ -1176,6 +1190,7 @@ class AP(Page):
     template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
+    max_count = 1
 
 
 class FAQ(Page):
@@ -1219,6 +1234,7 @@ class FAQ(Page):
     template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
+    max_count = 1
 
 
 class Support(Page):
@@ -1262,6 +1278,7 @@ class Support(Page):
     template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
+    max_count = 1
 
 
 class GiveForm(Page):
@@ -1298,6 +1315,7 @@ class GiveForm(Page):
     template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
+    max_count = 1
 
 
 class Accessibility(Page):
@@ -1337,6 +1355,7 @@ class Accessibility(Page):
     template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
+    max_count = 1
 
 
 class Licensing(Page):
@@ -1376,6 +1395,7 @@ class Licensing(Page):
     template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
+    max_count = 1
 
 
 class CompCopy(Page):
@@ -1413,6 +1433,7 @@ class CompCopy(Page):
     template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
+    max_count = 1
 
 
 class AdoptForm(Page):
@@ -1451,6 +1472,7 @@ class AdoptForm(Page):
     template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
+    max_count = 1
 
 
 class InterestForm(Page):
@@ -1488,6 +1510,7 @@ class InterestForm(Page):
     template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
+    max_count = 1
 
 
 class Marketing(Page):
@@ -1756,6 +1779,7 @@ class Marketing(Page):
     template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
+    max_count = 1
 
 
 class Technology(Page):
@@ -1836,6 +1860,7 @@ class Technology(Page):
     template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
+    max_count = 1
 
 
 class ErrataList(Page):
@@ -1870,6 +1895,7 @@ class ErrataList(Page):
     template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
+    max_count = 1
 
 
 class PrivacyPolicy(Page):
@@ -1909,6 +1935,7 @@ class PrivacyPolicy(Page):
     template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
+    max_count = 1
 
 
 class PrintOrder(Page):
@@ -1980,6 +2007,7 @@ class PrintOrder(Page):
     template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
+    max_count = 1
 
 
 class ResearchPage(Page):
@@ -2077,6 +2105,7 @@ class ResearchPage(Page):
     template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
+    max_count = 1
 
 
 class Careers(Page):
@@ -2116,6 +2145,7 @@ class Careers(Page):
     template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
+    max_count = 1
 
 
 class Rover(Page):
@@ -2225,6 +2255,7 @@ class Rover(Page):
     template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
+    max_count = 1
 
 
 class RoverPage(Page):
@@ -2333,7 +2364,7 @@ class RoverPage(Page):
         template = 'page.html'
 
         parent_page_types = ['pages.HomePage']
-
+        max_count = 1
 
 
 class AnnualReportPage(Page):
@@ -2477,3 +2508,4 @@ class AnnualReportPage(Page):
     ]
 
     parent_page_type = ['pages.HomePage']
+    max_count = 1
