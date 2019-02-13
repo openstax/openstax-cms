@@ -7,4 +7,5 @@ router.register(r'', views.SchoolViewSet)
 
 urlpatterns = [
     url(r'^schools/', include(router.urls)),
+    url(r'^adoption-status/', views.get_adoption_status),
 ]
