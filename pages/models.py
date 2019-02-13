@@ -561,6 +561,7 @@ class HomePage(Page):
         'pages.Rover',
         'pages.RoverPage',
         'pages.AnnualReportPage',
+        'pages.InstitutionalPartnership',
         'books.BookIndex',
         'news.NewsIndex',
         'news.PressIndex',
@@ -2477,3 +2478,80 @@ class AnnualReportPage(Page):
     ]
 
     parent_page_type = ['pages.HomePage']
+
+
+class InstitutionalPartnership(Page):
+    heading_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    heading_year = models.CharField(max_length=255)
+    heading = models.CharField(max_length=255)
+    program_heading = models.CharField(max_length=255)
+    program_details = models.TextField()
+    cost_heading = models.CharField(max_length=255)
+    cost_details = models.TextField()
+    timeline_heading = models.CharField(max_length=255)
+    timeline_details = models.TextField()
+    what_you_get_heading = models.CharField(max_length=255)
+    what_you_get_details = RichTextField()
+    current_partners_heading = models.CharField(max_length=255)
+    current_partners_details = RichTextField()
+    quote = models.TextField()
+    quote_author = models.CharField(max_length=255)
+    quote_title = models.CharField(max_length=255, blank=True, null=True)
+    quote_school = models.CharField(max_length=255, blank=True, null=True)
+    application_heading = models.CharField(max_length=255, blank=True, null=True)
+
+    content_panels = [
+        FieldPanel('title'),
+        ImageChooserPanel('heading_image'),
+        FieldPanel('heading_year'),
+        FieldPanel('heading'),
+        FieldPanel('program_heading'),
+        FieldPanel('program_details'),
+        FieldPanel('cost_heading'),
+        FieldPanel('cost_details'),
+        FieldPanel('timeline_heading'),
+        FieldPanel('timeline_details'),
+        FieldPanel('what_you_get_heading'),
+        FieldPanel('what_you_get_details'),
+        FieldPanel('current_partners_heading'),
+        FieldPanel('current_partners_details'),
+        FieldPanel('quote'),
+        FieldPanel('quote_author'),
+        FieldPanel('quote_title'),
+        FieldPanel('quote_school'),
+        FieldPanel('application_heading'),
+    ]
+
+    api_fields = [
+        APIField('heading_image'),
+        APIField('heading_year'),
+        APIField('heading'),
+        APIField('program_heading'),
+        APIField('program_details'),
+        APIField('cost_heading'),
+        APIField('cost_details'),
+        APIField('timeline_heading'),
+        APIField('timeline_details'),
+        APIField('what_you_get_heading'),
+        APIField('what_you_get_details'),
+        APIField('current_partners_heading'),
+        APIField('current_partners_details'),
+        APIField('quote'),
+        APIField('quote_author'),
+        APIField('quote_title'),
+        APIField('quote_school'),
+        APIField('application_heading'),
+        APIField('title'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+    ]
+
+    parent_page_type = ['pages.HomePage']
+    max_count = 1
