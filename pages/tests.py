@@ -31,7 +31,8 @@ from pages.models import (HomePage,
                           Careers,
                           Rover,
                           RoverPage,
-                          AnnualReportPage)
+                          AnnualReportPage,
+                          InstitutionalPartnership)
 from allies.models import Ally
 from news.models import NewsIndex, PressIndex
 from books.models import BookIndex
@@ -91,7 +92,8 @@ class HomePageTests(WagtailPageTests):
             Careers,
             Rover,
             RoverPage,
-            AnnualReportPage
+            AnnualReportPage,
+            InstitutionalPartnership
         })
 
 class PageTests(WagtailPageTests):
