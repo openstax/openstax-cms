@@ -56,6 +56,8 @@ in openstax/settings/base.py to use `'django.db.backends.sqlite3'` and set `NAME
  
  `/api/images` - Custom API endpoint to return all images with their cloudfront url, this lives in the `api` directory.
  
+ `/api/progress` - Custom API endpoint that allows writing user progress through the instructor process. This takes an `account_id` and `progress` (integer representation of the users progress, 1-5). You can query using `?account_id=[id]` to retrieve progress.
+ 
  `/api/salesforce/schools` and `/api/schools` - Returns a list of adoption schools from Salesforce. 
  You can also filter on this API by the following fields:
  - `name` [string]
