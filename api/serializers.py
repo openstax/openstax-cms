@@ -39,6 +39,14 @@ class DocumentSerializer(serializers.HyperlinkedModelSerializer):
 
 class ProgressSerializer(serializers.HyperlinkedModelSerializer):
 
+    def create(self, validated_data):
+        progress, created = ProgressTracker.objects.update_or_create(
+            account_id=validated_data.get('account_id', None),
+            defaults={'progress':validated_data.get('progress', None)})
+        print(created)
+
+        return progress
+
     class Meta:
         model = ProgressTracker
         fields = ('account_id',
