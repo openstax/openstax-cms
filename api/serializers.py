@@ -2,7 +2,7 @@ from rest_framework import serializers
 from salesforce.models import Adopter
 from wagtail.images.models import Image
 from wagtail.documents.models import Document
-
+from api.models import ProgressTracker
 
 class AdopterSerializer(serializers.HyperlinkedModelSerializer):
 
@@ -34,4 +34,13 @@ class DocumentSerializer(serializers.HyperlinkedModelSerializer):
                   'file',
                   'title',
                   'created_at',
+                  )
+
+
+class ProgressSerializer(serializers.HyperlinkedModelSerializer):
+
+    class Meta:
+        model = ProgressTracker
+        fields = ('account_id',
+                  'progress',
                   )
