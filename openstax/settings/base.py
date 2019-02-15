@@ -169,6 +169,7 @@ INSTALLED_APPS = [
     'import_export',
     # custom
     'admin_templates',  # this overrides the admin templates
+    'api',
     'pages',
     'books',
     'news',

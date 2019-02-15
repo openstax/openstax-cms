@@ -1,12 +1,14 @@
 from django.core import serializers
 from django.http import JsonResponse, HttpResponse
 from django.db.models import Q
-from rest_framework import viewsets
+from rest_framework import viewsets, generics
+from rest_framework.decorators import api_view
 from salesforce.models import Adopter, School
 from global_settings.models import StickyNote, Footer
 from wagtail.images.models import Image
 from wagtail.documents.models import Document
-from .serializers import AdopterSerializer, ImageSerializer, DocumentSerializer
+from .models import ProgressTracker
+from .serializers import AdopterSerializer, ImageSerializer, DocumentSerializer, ProgressSerializer
 
 
 class AdopterViewSet(viewsets.ModelViewSet):
@@ -30,6 +32,17 @@ class DocumentViewSet(viewsets.ModelViewSet):
             queryset = queryset.filter(title__icontains=search)
         return queryset
 
+
+class ProgressViewSet(viewsets.ModelViewSet):
+    queryset = ProgressTracker.objects.all()
+    serializer_class = ProgressSerializer
+
+    def get_queryset(self):
+        queryset = ProgressTracker.objects.all()
+        account_id = self.request.query_params.get('account_id', None)
+        if account_id is not None:
+            queryset = queryset.filter(account_id=account_id)
+        return queryset
 
 def sticky_note(request):
     sticky_note = StickyNote.for_site(request.site)
