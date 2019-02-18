@@ -125,6 +125,7 @@ class NewsIndex(Page):
 
     subpage_types = ['news.NewsArticle']
     parent_page_types = ['pages.HomePage']
+    max_count = 1
 
 
 class NewsArticleTag(TaggedItemBase):
@@ -364,6 +365,7 @@ class PressIndex(Page):
 
     subpage_types = ['news.PressRelease']
     parent_page_types = ['pages.HomePage']
+    max_count = 1
 
 
 class PressRelease(Page):

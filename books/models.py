@@ -806,3 +806,4 @@ class BookIndex(Page):
 
     parent_page_types = ['pages.HomePage']
     subpage_types = ['books.Book']
+    max_count = 1
