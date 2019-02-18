@@ -566,6 +566,7 @@ class HomePage(Page):
         'pages.RoverPage',
         'pages.AnnualReportPage',
         'pages.InstitutionalPartnership',
+        'pages.HeroJourneyPage',
         'books.BookIndex',
         'news.NewsIndex',
         'news.PressIndex',
@@ -2586,3 +2587,69 @@ class InstitutionalPartnership(Page):
 
     parent_page_type = ['pages.HomePage']
     max_count = 1
+
+
+class HeroJourneyPage(Page):
+    books = StreamField([
+        ('heading', blocks.CharBlock()),
+        ('subheading', blocks.CharBlock()),
+        ('description', blocks.TextBlock()),
+        ('book_heading', blocks.CharBlock()),
+        ('book_description', blocks.TextBlock()),
+        ('books_link', blocks.CharBlock()),
+        ('books_link_text', blocks.CharBlock()),
+    ], null=True)
+    quiz = StreamField([
+        ('heading', blocks.CharBlock()),
+        ('skip_link', blocks.CharBlock()),
+        ('skip_link_text', blocks.CharBlock()),
+        ('complete_message', blocks.CharBlock()),
+        ('questions', blocks.ListBlock(blocks.StructBlock([
+            ('question', blocks.CharBlock()),
+            ('answers', blocks.ListBlock(blocks.StructBlock([
+                ('text', blocks.CharBlock()),
+                ('correct', blocks.BooleanBlock(required=False))
+            ])
+            ))
+        ])))
+    ], null=True)
+    quiz_complete = StreamField([
+        ('heading', blocks.CharBlock()),
+        ('description', blocks.TextBlock()),
+        ('instructions', blocks.TextBlock()),
+        ('link_url', blocks.CharBlock()),
+        ('link_text', blocks.CharBlock())
+    ], null=True)
+    share = StreamField([
+        ('heading', blocks.CharBlock()),
+        ('description', blocks.TextBlock()),
+        ('instructions', blocks.TextBlock()),
+    ], null=True)
+    thanks = StreamField([
+        ('heading', blocks.CharBlock()),
+    ], null=True)
+
+
+    content_panels = [
+        FieldPanel('title', classname='full title', help_text="Internal name for page."),
+        StreamFieldPanel('books'),
+        StreamFieldPanel('quiz'),
+        StreamFieldPanel('quiz_complete'),
+        StreamFieldPanel('share'),
+        StreamFieldPanel('thanks'),
+    ]
+
+    api_fields = [
+        APIField('title'),
+        APIField('books'),
+        APIField('quiz'),
+        APIField('quiz_complete'),
+        APIField('share'),
+        APIField('thanks'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+    ]
+
+    parent_page_type = ['pages.HomePage']
+
