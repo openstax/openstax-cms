@@ -2598,6 +2598,7 @@ class HeroJourneyPage(Page):
         ('book_description', blocks.TextBlock()),
         ('books_link', blocks.CharBlock()),
         ('books_link_text', blocks.CharBlock()),
+        ('skip_html', blocks.RichTextBlock())
     ], null=True)
     quiz = StreamField([
         ('heading', blocks.CharBlock()),
@@ -2626,7 +2627,8 @@ class HeroJourneyPage(Page):
         ('instructions', blocks.TextBlock()),
     ], null=True)
     thanks = StreamField([
-        ('heading', blocks.CharBlock()),
+        ('heading', blocks.TextBlock()),
+        ('description', blocks.TextBlock())
     ], null=True)
 
 
