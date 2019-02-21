@@ -9,7 +9,9 @@ from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.forms import ValidationError
 from django.utils.html import format_html, mark_safe
+from django.contrib.postgres.fields import ArrayField
 from modelcluster.fields import ParentalKey
+from modelcluster.models import ClusterableModel
 from wagtail.admin.edit_handlers import (FieldPanel,
                                          InlinePanel,
                                          PageChooserPanel,
@@ -23,6 +25,7 @@ from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.snippets.edit_handlers import SnippetChooserPanel
 from wagtail.admin.edit_handlers import TabbedInterface, ObjectList
 from wagtail.api import APIField
+from wagtail.snippets.models import register_snippet
 
 from allies.models import Ally
 from openstax.functions import build_document_url, build_image_url
@@ -253,6 +256,16 @@ class BookAlly(models.Model):
         FieldPanel('book_link_text'),
     ]
 
+class SubjectBooks(models.Model):
+    subject = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True, related_name='subjects_subject')
+    def get_subject_name(self):
+        return self.subject.name
+    subject_name = property(get_subject_name)
+
+    api_fields = [
+        APIField('subject_name'),
+    ]
+
 
 class SharedContentChooserBlock(SnippetChooserBlock):
     def get_api_representation(self, value, context=None):
@@ -286,6 +299,10 @@ class BookStudentResources(Orderable, StudentResources):
 
 class BookAllies(Orderable, BookAlly):
     book_ally = ParentalKey('books.Book', related_name='book_allies')
+
+
+class BookSubjects(Orderable, SubjectBooks):
+    book_subject = ParentalKey('books.Book', related_name='book_subjects')
 
 
 BLUE = 'blue'
@@ -487,7 +504,7 @@ class Book(Page):
         FieldPanel('salesforce_abbreviation'),
         FieldPanel('salesforce_name'),
         FieldPanel('publish_date'),
-        FieldPanel('subject'),
+        InlinePanel('book_subjects', label='Subjects'),
         FieldPanel('is_ap'),
         FieldPanel('description', classname="full"),
         DocumentChooserPanel('cover'),
@@ -563,6 +580,7 @@ class Book(Page):
         APIField('salesforce_abbreviation'),
         APIField('salesforce_name'),
         APIField('subject_name'),
+        APIField('book_subjects'),
         APIField('is_ap'),
         APIField('description'),
         APIField('cover_url'),
