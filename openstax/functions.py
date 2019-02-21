@@ -17,12 +17,10 @@ def build_document_url(url):
 
 def build_image_url(image):
     if image:
-        print('image found')
         site = Site.objects.get(is_default_site=True)
         if site.port == 80:
             return "{}{}".format(settings.MEDIA_URL, image.file)
         else:
             return "http://{}:{}/api/v0/images/{}".format(site.hostname, site.port, image.pk)
     else:
-        print('no image')
         return None

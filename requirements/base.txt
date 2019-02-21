@@ -1,7 +1,7 @@
 appdirs==1.4.3
 beautifulsoup4==4.6.0
 boto==2.49.0
-Django==2.0.8
+Django==2.0.13
 django-admin-view-permission==1.5
 django-appconf==1.0.1
 git+https://github.com/mwharrison/django-cachalot.git
@@ -27,7 +27,7 @@ psycopg2==2.7.3.2
 pytz==2018.5
 python-dateutil==2.4.2
 raven==6.6.0
-requests==2.19.1
+requests==2.21.0
 six==1.11.0
 sphinx-me==0.3
 Unidecode==1.0.22
@@ -40,7 +40,7 @@ social-auth-core==3.0.0
 simple_salesforce==0.68.1
 # Django SES has not updated their Pypy release, so we need to install from Github
 django-ses==0.8.7
-PyYAML==3.11
+PyYAML==4.2b1
 unicodecsv==0.14.1
 
 #django-import-export stuff
