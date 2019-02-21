@@ -659,6 +659,12 @@ class Book(Page):
             mark_safe(self.book.title),
         )
 
+    def subjects(self):
+        subject_list = []
+        for subject in self.book_subjects.all():
+            subject_list.append(subject.subject_name)
+        return subject_list
+
     def get_slug(self):
         return 'books/{}'.format(self.slug)
 
@@ -760,6 +766,7 @@ class BookIndex(Page):
                     'book_state': book.book_state,
                     'title': book.title,
                     'subject': book.subject.name,
+                    'subjects': book.subjects(),
                     'is_ap': book.is_ap,
                     'coming_soon': book.coming_soon,
                     'cover_url': book.cover_url,
