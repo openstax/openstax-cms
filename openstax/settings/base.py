@@ -100,7 +100,8 @@ AUTHENTICATION_BACKENDS = (
 SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.social_details',
     'social_core.pipeline.social_auth.social_uid',
-    'social_core.pipeline.social_auth.social_user',
+    #'social_core.pipeline.social_auth.social_user',
+    'accounts.pipelines.social_user',
     'social_core.pipeline.user.create_user',
     'accounts.pipelines.save_profile',
     'accounts.pipelines.update_email',
@@ -167,6 +168,7 @@ INSTALLED_APPS = [
     'django_ses',
     'cachalot',
     'import_export',
+    'django_extensions',
     # custom
     'admin_templates',  # this overrides the admin templates
     'api',

@@ -6,6 +6,7 @@ django-admin-view-permission==1.5
 django-appconf==1.0.1
 git+https://github.com/mwharrison/django-cachalot.git
 django-compressor==2.0
+django-extensions==2.0.7
 django-filter==1.1.0
 django-libsass==0.6
 django-modelcluster==4.3
