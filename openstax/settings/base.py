@@ -184,6 +184,7 @@ INSTALLED_APPS = [
     'errata',
     'extraadminfilters',
     'redirects',
+    'oxauth',
     # wagtail
     'wagtail.core',
     'wagtail.admin',

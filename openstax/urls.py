@@ -26,6 +26,7 @@ urlpatterns = [
     url(r'^django-admin/error/', throw_error, name='throw_error'),
 
     url(r'^accounts/', include('accounts.urls')),
+    url(r'^oxauth/', include('oxauth.urls')), # new auth package
     url(r'^documents/', include(wagtaildocs_urls)),
     url(r'^images/', include(wagtailimages_urls)),
 

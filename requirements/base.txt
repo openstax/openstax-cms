@@ -54,3 +54,7 @@ openpyxl==2.5.12
 tablib==0.12.1
 xlrd==1.1.0
 xlwt==1.3.0
+
+# sso stuff
+pycrypto==2.6.1
+django-cors-headers==2.4.1
