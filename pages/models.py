@@ -2533,7 +2533,6 @@ class InstitutionalPartnership(Page):
     quote_author = models.CharField(max_length=255)
     quote_title = models.CharField(max_length=255, blank=True, null=True)
     quote_school = models.CharField(max_length=255, blank=True, null=True)
-    application_heading = models.CharField(max_length=255, blank=True, null=True)
     application_quote = models.TextField(blank=True, null=True)
     application_quote_author = models.CharField(max_length=255, blank=True, null=True)
     application_quote_title = models.CharField(max_length=255, blank=True, null=True)
@@ -2549,7 +2548,6 @@ class InstitutionalPartnership(Page):
         FieldPanel('quote_author'),
         FieldPanel('quote_title'),
         FieldPanel('quote_school'),
-        FieldPanel('application_heading'),
         FieldPanel('application_quote'),
         FieldPanel('application_quote_author'),
         FieldPanel('application_quote_title'),
@@ -2565,7 +2563,6 @@ class InstitutionalPartnership(Page):
         APIField('quote_author'),
         APIField('quote_title'),
         APIField('quote_school'),
-        APIField('application_heading'),
         APIField('application_quote'),
         APIField('application_quote_author'),
         APIField('application_quote_title'),
