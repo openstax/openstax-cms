@@ -4,6 +4,7 @@ import urllib
 from Crypto.Cipher import AES
 from Crypto.Protocol.KDF import PBKDF2
 
+unpad = lambda s: s[:-ord(s[len(s) - 1:])]
 
 class OXSessionDecryptor(object):
     def __init__(self, secret_key_base, salt="encrypted cookie", keylen=64, iterations=1000):
