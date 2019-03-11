@@ -2,8 +2,15 @@ from .models import School
 
 from rest_framework import serializers
 
+from django.utils.formats import number_format
+import locale
+
+locale.setlocale(locale.LC_ALL, 'en_US')
+
 
 class SchoolSerializer(serializers.ModelSerializer):
+    all_time_savings = serializers.SerializerMethodField('all_time_savings_localize')
+    current_year_savings = serializers.SerializerMethodField('current_year_savings_localize')
 
     class Meta:
         model = School
@@ -32,3 +39,10 @@ class SchoolSerializer(serializers.ModelSerializer):
                   'long',
                   'lat',
                   'testimonial',)
+
+    def all_time_savings_localize(self, obj):
+        return locale.format("%d", int(obj.all_time_savings), grouping=True)
+
+
+    def current_year_savings_localize(self, obj):
+        return locale.format("%d", int(obj.current_year_savings), grouping=True)
