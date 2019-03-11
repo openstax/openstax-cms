@@ -11,14 +11,12 @@ def login(request):
     if next:
         url = "{}login/?r={}".format(settings.ACCOUNTS_SERVER_URL, next)
 
-    print(request.COOKIES)
-
-    print(url)
     return redirect(url)
 
 
 def get_user_data(request):
     cookie = request.COOKIES.get(settings.COOKIE_NAME, None)
+
     if not cookie:
         return JsonResponse({'logged_in': False})
 
