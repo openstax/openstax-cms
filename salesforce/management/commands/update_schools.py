@@ -18,9 +18,9 @@ class Command(BaseCommand):
                       "Approximate_Enrollment__c, " \
                       "Pell_Grant_Recipients__c, " \
                       "Students_Pell_Grant__c, " \
-                      "Current_Students__c, " \
+                      "Students_Current_Year__c, " \
                       "All_Time_Students2__c, " \
-                      "Current_Savings__c, " \
+                      "Savings_Current_Year__c, " \
                       "All_Time_Savings2__c, " \
                       "BillingStreet, " \
                       "BillingCity, " \
@@ -53,9 +53,9 @@ class Command(BaseCommand):
                                                                       undergraduate_enrollment=sf_school['Approximate_Enrollment__c'],
                                                                       pell_grant_recipients=sf_school['Pell_Grant_Recipients__c'],
                                                                       percent_students_pell_grant=sf_school['Students_Pell_Grant__c'],
-                                                                      current_year_students=sf_school['Current_Students__c'],
+                                                                      current_year_students=sf_school['Students_Current_Year__c'],
                                                                       all_time_students=sf_school['All_Time_Students2__c'],
-                                                                      current_year_savings=sf_school['Current_Savings__c'],
+                                                                      current_year_savings=sf_school['Savings_Current_Year__c'],
                                                                       all_time_savings=sf_school['All_Time_Savings2__c'],
                                                                       physical_country=sf_school['BillingCountry'],
                                                                       physical_street=sf_school['BillingStreet'],
