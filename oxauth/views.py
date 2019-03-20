@@ -33,8 +33,8 @@ def logout(request):
         if next:
             response = logout(request, next_page=next)
             response.delete_cookie(settings.COOKIE_NAME)
-            return response
+            return JsonResponse({'logged_in': False})
         else:
             response = logout(request, next_page=request.site.hostname)
             response.delete_cookie(settings.COOKIE_NAME)
-            return response
+            return JsonResponse({'logged_in': False})
