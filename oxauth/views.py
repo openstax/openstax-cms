@@ -27,14 +27,7 @@ def get_user_data(request):
 
 
 def logout(request):
-    next = request.GET.get('next', None)
-
     if request.COOKIES.get(settings.COOKIE_NAME):
-        if next:
-            response = logout(request, next_page=next)
-            response.delete_cookie(settings.COOKIE_NAME)
-            return JsonResponse({'logged_in': False})
-        else:
-            response = logout(request, next_page=request.site.hostname)
-            response.delete_cookie(settings.COOKIE_NAME)
-            return JsonResponse({'logged_in': False})
+        response = logout(request)
+        response.delete_cookie(settings.COOKIE_NAME)
+        return JsonResponse({'logged_in': False})
