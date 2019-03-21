@@ -26,7 +26,7 @@ def get_user_data(request):
     return JsonResponse(decrypted_user)
 
 
-def login(request):
+def logout(request):
     url = "{}logout/".format(settings.ACCOUNTS_SERVER_URL)
 
     next = request.GET.get('next', None)
