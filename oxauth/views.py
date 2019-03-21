@@ -26,8 +26,11 @@ def get_user_data(request):
     return JsonResponse(decrypted_user)
 
 
-def logout(request):
-    if request.COOKIES.get(settings.COOKIE_NAME):
-        response = logout(request)
-        response.delete_cookie(settings.COOKIE_NAME)
-        return JsonResponse({'logged_in': False})
+def login(request):
+    url = "{}logout/".format(settings.ACCOUNTS_SERVER_URL)
+
+    next = request.GET.get('next', None)
+    if next:
+        url = "{}logout/?r={}".format(settings.ACCOUNTS_SERVER_URL, next)
+
+    return redirect(url)
