@@ -8,12 +8,14 @@ from openstax.functions import build_image_url
 
 class Subject(models.Model):
     name = models.CharField(max_length=255)
+    seo_title = models.CharField(max_length=255, null=True, blank=True)
     search_description = models.CharField(max_length=255, null=True, blank=True)
 
-    api_fields = ('name', 'search_description' )
+    api_fields = ('name', 'seo_title', 'search_description' )
 
     panels = [
         FieldPanel('name'),
+        FieldPanel('seo_title'),
         FieldPanel('search_description'),
     ]
 

@@ -263,6 +263,10 @@ class SubjectBooks(models.Model):
         return self.subject.name
     subject_name = property(get_subject_name)
 
+    def get_subject_page_title(self):
+        return self.subject.seo_title
+    subject_seo_title = property(get_subject_page_title)
+
     def get_subject_meta(self):
         return self.subject.search_description
     subject_search_description = property(get_subject_meta)
@@ -661,9 +665,9 @@ class Book(Page):
     def subjects(self):
         subject_list = {}
         for subject in self.book_subjects.all():
-            subject_list[subject.subject_name] = subject.subject_search_description
-
-            #subject_list.append(subject.subject_name)
+            subject_list[subject.subject_name] = {}
+            subject_list[subject.subject_name]['seo_title'] = subject.subject_seo_title
+            subject_list[subject.subject_name]['search_description'] = subject.subject_search_description
         return subject_list
 
     def get_slug(self):
@@ -769,9 +773,9 @@ class BookIndex(Page):
                     'subjects': book.subjects(),
                     'is_ap': book.is_ap,
                     'coming_soon': book.coming_soon,
-                    'cover_url': book.cover_url,
-                    'high_resolution_pdf_url': book.high_resolution_pdf_url,
-                    'low_resolution_pdf_url': book.low_resolution_pdf_url,
+                    #'cover_url': book.cover_url,
+                    #'high_resolution_pdf_url': book.high_resolution_pdf_url,
+                    #'low_resolution_pdf_url': book.low_resolution_pdf_url,
                     'ibook_link': book.ibook_link,
                     'ibook_link_volume_2': book.ibook_link_volume_2,
                     'webview_link': book.webview_link,
