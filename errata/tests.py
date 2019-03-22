@@ -1,7 +1,7 @@
 from django.test import TestCase
 
 from errata.models import Errata
-from books.models import Book, BookIndex, Subject
+from books.models import Book, BookIndex
 from pages.models import Page, HomePage
 
 
@@ -25,14 +25,11 @@ class ErrataTest(TestCase):
                                )
         # add book index to homepage
         homepage.add_child(instance=book_index)
-        # create subject
-        subject = Subject.objects.create(name="Science")
         # create book (finally! needed for Errata reports)
         book = Book(cnx_id='d50f6e32-0fda-46ef-a362-9bd36ca7c97d',
                             title='University Physics',
                             salesforce_abbreviation='University Phys (Calc)',
                             salesforce_name='University Physics',
-                            subject=subject,
                             description="Test Book",
                             )
         book_index.add_child(instance=book)
