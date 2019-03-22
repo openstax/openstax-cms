@@ -258,12 +258,18 @@ class BookAlly(models.Model):
 
 class SubjectBooks(models.Model):
     subject = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True, related_name='subjects_subject')
+
     def get_subject_name(self):
         return self.subject.name
     subject_name = property(get_subject_name)
 
+    def get_subject_meta(self):
+        return self.subject.search_description
+    subject_search_description = property(get_subject_meta)
+
     api_fields = [
         APIField('subject_name'),
+        APIField('subject_search_description')
     ]
 
 
@@ -350,12 +356,6 @@ class Book(Page):
         blank=True, null=True)
     salesforce_abbreviation = models.CharField(max_length=255, blank=True, null=True)
     salesforce_name = models.CharField(max_length=255, blank=True, null=True)
-
-    subject = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True, related_name='+')
-    def get_subject_name(self):
-        return self.subject.name
-    subject_name = property(get_subject_name)
-
     updated = models.DateTimeField(auto_now=True)
     is_ap = models.BooleanField(default=False)
     description = RichTextField(
@@ -579,7 +579,6 @@ class Book(Page):
         APIField('cnx_id'),
         APIField('salesforce_abbreviation'),
         APIField('salesforce_name'),
-        APIField('subject_name'),
         APIField('book_subjects'),
         APIField('is_ap'),
         APIField('description'),
@@ -660,9 +659,11 @@ class Book(Page):
         )
 
     def subjects(self):
-        subject_list = []
+        subject_list = {}
         for subject in self.book_subjects.all():
-            subject_list.append(subject.subject_name)
+            subject_list[subject.subject_name] = subject.subject_search_description
+
+            #subject_list.append(subject.subject_name)
         return subject_list
 
     def get_slug(self):
@@ -765,7 +766,6 @@ class BookIndex(Page):
                     'slug': 'books/{}'.format(book.slug),
                     'book_state': book.book_state,
                     'title': book.title,
-                    'subject': book.subject.name,
                     'subjects': book.subjects(),
                     'is_ap': book.is_ap,
                     'coming_soon': book.coming_soon,
