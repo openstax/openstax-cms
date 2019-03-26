@@ -2,7 +2,7 @@ from wagtail.tests.utils import WagtailPageTests
 from wagtail.core.models import Page
 from pages.models import HomePage
 from books.models import BookIndex, Book, BookAllies
-from snippets.models import Subject
+#from snippets.models import Subject
 from allies.models import Ally
 
 
@@ -12,10 +12,6 @@ class BookTests(WagtailPageTests):
 
     @classmethod
     def setUpTestData(cls):
-        subject = Subject(name="Test")
-        subject.save()
-        cls.subject = subject
-
         # create root page
         root_page = Page.objects.get(title="Root")
         # create homepage
@@ -43,7 +39,6 @@ class BookTests(WagtailPageTests):
                     cnx_id='031da8d3-b525-429c-80cf-6c8ed997733a',
                     salesforce_abbreviation='University Phys (Calc)',
                     salesforce_name='University Physics',
-                    subject=self.subject,
                     description="Test Book",
                     )
         book_index.add_child(instance=book)
@@ -55,7 +50,6 @@ class BookTests(WagtailPageTests):
                     slug="prealgebra",
                     salesforce_abbreviation='Prealgebra',
                     salesforce_name='Prealgebra',
-                    subject=self.subject,
                     description="This is Prealgebra. Next, you learn Algebra!",
                     is_ap=True
                     )
@@ -69,7 +63,6 @@ class BookTests(WagtailPageTests):
                     slug="prealgebra",
                     salesforce_abbreviation='Prealgebra',
                     salesforce_name='Prealgebra',
-                    subject=self.subject,
                     description="This is Prealgebra. Next, you learn Algebra!",
                     )
         book_index.add_child(instance=book)
@@ -81,7 +74,6 @@ class BookTests(WagtailPageTests):
                     slug="prealgebra",
                     salesforce_abbreviation='Prealgebra',
                     salesforce_name='Prealgebra',
-                    subject=self.subject,
                     description="This is Prealgebra. Next, you learn Algebra!",
                     coming_soon=True
                     )
@@ -94,23 +86,11 @@ class BookTests(WagtailPageTests):
                 slug="prealgebra",
                 salesforce_abbreviation='Prealgebra',
                 salesforce_name='Prealgebra',
-                subject=self.subject,
                 description="This is Prealgebra. Next, you learn Algebra!",
                 amazon_price=False
                 )
         book_index.add_child(instance=book)
         self.assertEqual(book.salesforce_abbreviation, 'Prealgebra')
-
-    def test_book_creation_fails_without_salesforce_info(self):
-        book_index = BookIndex.objects.all()[0]
-        book = Book(title="Prealgebra",
-                    slug="prealgebra",
-                    subject=self.subject,
-                    description="This is Prealgebra. Next, you learn Algebra!",
-                    )
-        book_index.add_child(instance=book)
-
-        self.assertNotEqual(book.subject, 'Math')
 
     def test_allowed_subpages(self):
         self.assertAllowedSubpageTypes(BookIndex, {
