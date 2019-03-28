@@ -567,6 +567,7 @@ class HomePage(Page):
         'pages.AnnualReportPage',
         'pages.InstitutionalPartnership',
         'pages.HeroJourneyPage',
+        'pages.InstitutionalPartnerProgramPage',
         'books.BookIndex',
         'news.NewsIndex',
         'news.PressIndex',
@@ -2643,3 +2644,172 @@ class HeroJourneyPage(Page):
 
     parent_page_type = ['pages.HomePage']
 
+
+class InstitutionalPartnerProgramPage(Page):
+    section_1_heading = models.CharField(max_length=255)
+    section_1_description = RichTextField()
+    section_1_link_text = models.CharField(max_length=255)
+    section_1_link = models.URLField()
+    quote = models.TextField()
+    quote_name = models.CharField(max_length=255)
+    quote_title = models.CharField(max_length=255)
+    quote_school = models.CharField(max_length=255)
+    section_2_heading = models.CharField(max_length=255)
+    section_2_description = RichTextField()
+    section_2_image  = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    section_2_image_alt = models.CharField(max_length=255)
+    section_3_heading = models.CharField(max_length=255)
+    section_3_description = models.TextField()
+    section_3_wide_cards = StreamField([
+        ('card', blocks.ListBlock(blocks.StructBlock([
+            ('icon', ImageBlock()),
+            ('html', blocks.RichTextBlock()),
+        ])))
+    ])
+    section_3_tall_cards = StreamField([
+        ('card', blocks.ListBlock(blocks.StructBlock([
+            ('html', blocks.RichTextBlock()),
+            ('link', blocks.URLBlock()),
+            ('link_text', blocks.CharBlock())
+        ])))
+    ])
+    section_4_quote_text = models.TextField()
+    section_4_quote_name = models.CharField(max_length=255)
+    section_4_quote_title = models.CharField(max_length=255)
+    section_4_quote_school = models.CharField(max_length=255, null=True)
+    section_5_heading = models.CharField(max_length=255)
+    section_5_description = RichTextField()
+    section_5_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    section_5_image_alt = models.CharField(max_length=255)
+    section_6_heading = models.CharField(max_length=255)
+    section_6_description = models.TextField()
+    section_6_cards = StreamField([
+        ('card', blocks.ListBlock(blocks.StructBlock([
+            ('heading_number', blocks.CharBlock()),
+            ('heading_unit', blocks.CharBlock()),
+            ('description', blocks.CharBlock())
+        ])))
+    ])
+    section_7_heading = models.CharField(max_length=255)
+    section_7_subheading = models.CharField(max_length=255)
+    section_7_icons = StreamField([
+        ('card', blocks.ListBlock(blocks.StructBlock([
+            ('image', ImageBlock()),
+            ('image_alt_text', blocks.CharBlock())
+        ])))
+    ])
+    section_7_link_text = models.CharField(max_length=255)
+    section_7_link_target = models.URLField()
+    section_8_quote_text = models.TextField()
+    section_8_quote_name = models.CharField(max_length=255)
+    section_8_quote_title = models.CharField(max_length=255)
+    section_8_quote_school = models.CharField(max_length=255)
+    section_9_heading = models.CharField(max_length=255)
+    section_9_submit_url = models.URLField()
+    section_9_form_prompt = models.CharField(max_length=255)
+    section_9_button_text = models.CharField(max_length=255)
+    section_9_contact_html = RichTextField()
+
+    content_panels = [
+        FieldPanel('title', classname='full title', help_text="Internal name for page."),
+        FieldPanel('section_1_heading'),
+        FieldPanel('section_1_description'),
+        FieldPanel('section_1_link_text'),
+        FieldPanel('section_1_link'),
+        FieldPanel('quote'),
+        FieldPanel('quote_name'),
+        FieldPanel('quote_title'),
+        FieldPanel('quote_school'),
+        FieldPanel('section_2_heading'),
+        FieldPanel('section_2_description'),
+        ImageChooserPanel('section_2_image'),
+        FieldPanel('section_2_image_alt'),
+        FieldPanel('section_3_heading'),
+        FieldPanel('section_3_description'),
+        StreamFieldPanel('section_3_wide_cards'),
+        StreamFieldPanel('section_3_tall_cards'),
+        FieldPanel('section_4_quote_text'),
+        FieldPanel('section_4_quote_name'),
+        FieldPanel('section_4_quote_title'),
+        FieldPanel('section_4_quote_school'),
+        FieldPanel('section_5_heading'),
+        FieldPanel('section_5_description'),
+        ImageChooserPanel('section_5_image'),
+        FieldPanel('section_5_image_alt'),
+        FieldPanel('section_6_heading'),
+        FieldPanel('section_6_description'),
+        StreamFieldPanel('section_6_cards'),
+        FieldPanel('section_7_heading'),
+        FieldPanel('section_7_subheading'),
+        StreamFieldPanel('section_7_icons'),
+        FieldPanel('section_7_link_text'),
+        FieldPanel('section_7_link_target'),
+        FieldPanel('section_8_quote_text'),
+        FieldPanel('section_8_quote_name'),
+        FieldPanel('section_8_quote_title'),
+        FieldPanel('section_8_quote_school'),
+        FieldPanel('section_9_heading'),
+        FieldPanel('section_9_submit_url'),
+        FieldPanel('section_9_form_prompt'),
+        FieldPanel('section_9_button_text'),
+        FieldPanel('section_9_contact_html'),
+    ]
+
+    api_fields = [
+        APIField('title'),
+        APIField('section_1_heading'),
+        APIField('section_1_description'),
+        APIField('section_1_link_text'),
+        APIField('section_1_link'),
+        APIField('quote'),
+        APIField('quote_name'),
+        APIField('quote_title'),
+        APIField('quote_school'),
+        APIField('section_2_heading'),
+        APIField('section_2_description'),
+        APIField('section_2_image'),
+        APIField('section_2_image_alt'),
+        APIField('section_3_heading'),
+        APIField('section_3_description'),
+        APIField('section_3_wide_cards'),
+        APIField('section_3_tall_cards'),
+        APIField('section_4_quote_text'),
+        APIField('section_4_quote_name'),
+        APIField('section_4_quote_title'),
+        APIField('section_4_quote_school'),
+        APIField('section_5_heading'),
+        APIField('section_5_description'),
+        APIField('section_5_image'),
+        APIField('section_5_image_alt'),
+        APIField('section_6_heading'),
+        APIField('section_6_description'),
+        APIField('section_6_cards'),
+        APIField('section_7_heading'),
+        APIField('section_7_subheading'),
+        APIField('section_7_icons'),
+        APIField('section_7_link_text'),
+        APIField('section_7_link_target'),
+        APIField('section_8_quote_text'),
+        APIField('section_8_quote_name'),
+        APIField('section_8_quote_title'),
+        APIField('section_8_quote_school'),
+        APIField('section_9_heading'),
+        APIField('section_9_submit_url'),
+        APIField('section_9_form_prompt'),
+        APIField('section_9_button_text'),
+        APIField('section_9_contact_html'),
+    ]
+
+    parent_page_type = ['pages.HomePage']
