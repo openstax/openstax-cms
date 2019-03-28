@@ -17,4 +17,6 @@ class SubjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subject
         fields = ('id',
-                  'name')
+                  'name',
+                  'seo_title',
+                  'search_description')
