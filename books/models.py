@@ -663,11 +663,9 @@ class Book(Page):
         )
 
     def subjects(self):
-        subject_list = {}
+        subject_list = []
         for subject in self.book_subjects.all():
-            subject_list[subject.subject_name] = {}
-            subject_list[subject.subject_name]['seo_title'] = subject.subject_seo_title
-            subject_list[subject.subject_name]['search_description'] = subject.subject_search_description
+            subject_list.append(subject.subject_name)
         return subject_list
 
     def get_slug(self):
