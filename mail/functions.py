@@ -9,7 +9,7 @@ def send_redirect_report(bad_redirects):
 
     subject = 'OpenStax Redirect Report'
     from_address = 'noreply@openstax.org'
-    to_address = ['redirect_report@openstax.org', ]
+    to_address = ['cmsupport@openstax.org', ]
 
     try:
         email = EmailMessage(subject,
