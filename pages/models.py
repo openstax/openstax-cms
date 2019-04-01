@@ -2650,13 +2650,20 @@ class InstitutionalPartnerProgramPage(Page):
     section_1_description = RichTextField()
     section_1_link_text = models.CharField(max_length=255)
     section_1_link = models.URLField()
+    section_1_background_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
     quote = models.TextField()
     quote_name = models.CharField(max_length=255)
     quote_title = models.CharField(max_length=255)
     quote_school = models.CharField(max_length=255)
     section_2_heading = models.CharField(max_length=255)
     section_2_description = RichTextField()
-    section_2_image  = models.ForeignKey(
+    section_2_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
         blank=True,
@@ -2693,6 +2700,7 @@ class InstitutionalPartnerProgramPage(Page):
         related_name='+'
     )
     section_5_image_alt = models.CharField(max_length=255)
+    section_5_image_caption = models.CharField(max_length=255, null=True)
     section_6_heading = models.CharField(max_length=255)
     section_6_description = models.TextField()
     section_6_cards = StreamField([
@@ -2728,6 +2736,7 @@ class InstitutionalPartnerProgramPage(Page):
         FieldPanel('section_1_description'),
         FieldPanel('section_1_link_text'),
         FieldPanel('section_1_link'),
+        ImageChooserPanel('section_1_background_image'),
         FieldPanel('quote'),
         FieldPanel('quote_name'),
         FieldPanel('quote_title'),
@@ -2748,6 +2757,7 @@ class InstitutionalPartnerProgramPage(Page):
         FieldPanel('section_5_description'),
         ImageChooserPanel('section_5_image'),
         FieldPanel('section_5_image_alt'),
+        FieldPanel('section_5_image_caption'),
         FieldPanel('section_6_heading'),
         FieldPanel('section_6_description'),
         StreamFieldPanel('section_6_cards'),
@@ -2773,6 +2783,7 @@ class InstitutionalPartnerProgramPage(Page):
         APIField('section_1_description'),
         APIField('section_1_link_text'),
         APIField('section_1_link'),
+        APIField('section_1_background_image'),
         APIField('quote'),
         APIField('quote_name'),
         APIField('quote_title'),
@@ -2793,6 +2804,7 @@ class InstitutionalPartnerProgramPage(Page):
         APIField('section_5_description'),
         APIField('section_5_image'),
         APIField('section_5_image_alt'),
+        APIField('section_5_image_caption'),
         APIField('section_6_heading'),
         APIField('section_6_description'),
         APIField('section_6_cards'),
