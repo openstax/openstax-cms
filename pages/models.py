@@ -2690,6 +2690,13 @@ class InstitutionalPartnerProgramPage(Page):
     section_4_quote_name = models.CharField(max_length=255)
     section_4_quote_title = models.CharField(max_length=255)
     section_4_quote_school = models.CharField(max_length=255, null=True)
+    section_4_background_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
     section_5_heading = models.CharField(max_length=255)
     section_5_description = RichTextField()
     section_5_image = models.ForeignKey(
@@ -2753,6 +2760,7 @@ class InstitutionalPartnerProgramPage(Page):
         FieldPanel('section_4_quote_name'),
         FieldPanel('section_4_quote_title'),
         FieldPanel('section_4_quote_school'),
+        FieldPanel('section_4_background_image'),
         FieldPanel('section_5_heading'),
         FieldPanel('section_5_description'),
         ImageChooserPanel('section_5_image'),
@@ -2800,6 +2808,7 @@ class InstitutionalPartnerProgramPage(Page):
         APIField('section_4_quote_name'),
         APIField('section_4_quote_title'),
         APIField('section_4_quote_school'),
+        APIField('section_4_background_image'),
         APIField('section_5_heading'),
         APIField('section_5_description'),
         APIField('section_5_image'),
