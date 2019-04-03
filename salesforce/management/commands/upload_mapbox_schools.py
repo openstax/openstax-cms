@@ -30,7 +30,7 @@ class Command(BaseCommand):
 
         for school in schools:
             total_schools = total_schools + 1
-            if school.lat and school.long:
+            if (school.lat and school.long) and (school.lat != 0 and school.long != 0):
                 feature = {
                     'type': 'Feature',
                     'geometry': {
