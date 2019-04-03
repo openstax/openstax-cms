@@ -2760,7 +2760,7 @@ class InstitutionalPartnerProgramPage(Page):
         FieldPanel('section_4_quote_name'),
         FieldPanel('section_4_quote_title'),
         FieldPanel('section_4_quote_school'),
-        FieldPanel('section_4_background_image'),
+        ImageChooserPanel('section_4_background_image'),
         FieldPanel('section_5_heading'),
         FieldPanel('section_5_description'),
         ImageChooserPanel('section_5_image'),
