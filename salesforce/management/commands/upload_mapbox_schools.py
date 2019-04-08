@@ -27,25 +27,35 @@ class Command(BaseCommand):
         schools = School.objects.all()
         total_schools = 0
         uploaded_schools = 0
+        location_data_issue = 0
 
         for school in schools:
             total_schools = total_schools + 1
-            if (school.lat and school.long) and (school.lat != 0 or school.long != 0):
-                feature = {
-                    'type': 'Feature',
-                    'geometry': {
-                        'type': "Point",
-                        'coordinates': [float(school.long), float(school.lat)]
-                    },
-                    'properties': {
-                        'name': school.name,
-                        'id': school.id
+            if school.lat and school.long):
+                if school.lat != 0 or school.long != 0:
+                    feature = {
+                        'type': 'Feature',
+                        'geometry': {
+                            'type': "Point",
+                            'coordinates': [float(school.long), float(school.lat)]
+                        },
+                        'properties': {
+                            'name': school.name,
+                            'id': school.id
+                        }
                     }
-                }
-                datasets.update_feature(dataset_id, school.pk, feature)
-                uploaded_schools = uploaded_schools + 1
+                    datasets.update_feature(dataset_id, school.pk, feature)
+                    uploaded_schools = uploaded_schools + 1
+                else:
+                    location_data_issue = location_data_issue + 1
+                    print("Location appears incorrect in Salesforce. (ID: {})".format(school.pk))
+            else:
+                location_data_issue = location_data_issue + 1
+                print("Location is not populated. (ID: {})".format(school.pk)
+                
 
 
         self.stdout.write("Total schools: {}".format(total_schools))
+        self.stdout.write("Schools with missing or malformed location data: {}".format(location_data_issue))
         self.stdout.write("Total schools uploaded: {}".format(uploaded_schools))
         self.stdout.write("fin")
