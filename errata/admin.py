@@ -114,7 +114,7 @@ class ErrataAdmin(ExportActionModelAdmin):
 
     @method_decorator(csrf_protect)
     def get_form(self, request, obj=None, **kwargs):
-        if request.user.is_superuser or request.user.groups.filter(name__in=['Content Managers', 'Content Development Intern']).exists():
+        if request.user.is_superuser or request.user.groups.filter(name__in=['Content Managers']).exists():
             self.fields = ['id',
                            'created',
                            'modified',
@@ -141,6 +141,33 @@ class ErrataAdmin(ExportActionModelAdmin):
                                     'created',
                                     'modified',
                                     'user_email',
+                                    'accounts_link']
+            self.save_as = True
+        if request.user.groups.filter(name__in=['Content Development Intern']).exists():
+            self.fields = ['id',
+                           'created',
+                           'modified',
+                           'book',
+                           'is_assessment_errata',
+                           'assessment_id',
+                           'status',
+                           'resolution',
+                           'duplicate_id',
+                           'archived',
+                           'location',
+                           'detail',
+                           'internal_notes',
+                           'resolution_notes',
+                           'resolution_date',
+                           'error_type',
+                           'number_of_errors',
+                           'resource',
+                           'accounts_link',
+                           'file_1',
+                           'file_2']  # fields to show on the actual form
+            self.readonly_fields = ['id',
+                                    'created',
+                                    'modified',
                                     'accounts_link']
             self.save_as = True
         else:
