@@ -61,6 +61,7 @@ urlpatterns = [
     url(r'^blog-feed/atom/$', AtomBlogFeed()),
     url(r'^errata/', include('errata.urls')),
     url(r'^api/errata/', include('errata.urls')),
+    url(r'^apps/cms/api/errata/', include('errata.urls')),
 
     # wagtail import export urls
     url(r'^api/', include(wagtailimportexport_urls)),
