@@ -143,7 +143,7 @@ class ErrataAdmin(ExportActionModelAdmin):
                                     'user_email',
                                     'accounts_link']
             self.save_as = True
-        if request.user.groups.filter(name__in=['Content Development Intern']).exists():
+        elif request.user.groups.filter(name__in=['Content Development Intern']).exists():
             self.fields = ['id',
                            'created',
                            'modified',
