@@ -31,7 +31,7 @@ class Command(BaseCommand):
 
         for school in schools:
             total_schools = total_schools + 1
-            if school.lat and school.long):
+            if school.lat and school.long:
                 if school.lat != 0 or school.long != 0:
                     feature = {
                         'type': 'Feature',
@@ -51,7 +51,7 @@ class Command(BaseCommand):
                     print("Location appears incorrect in Salesforce. (ID: {})".format(school.pk))
             else:
                 location_data_issue = location_data_issue + 1
-                print("Location is not populated. (ID: {})".format(school.pk)
+                print("Location is not populated. (ID: {})".format(school.pk))
                 
 
 
