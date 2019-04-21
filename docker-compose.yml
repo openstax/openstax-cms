@@ -1,0 +1,4 @@
+version: '3.5'
+services:
+  app:
+    image: "openstax/openstax-cms"

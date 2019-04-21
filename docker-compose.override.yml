@@ -1,0 +1,29 @@
+version: '3.5'
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/code
+    networks:
+      - openstax
+    links:
+      - postgres
+    depends_on:
+      - postgres
+  postgres:
+    image: "postgres:9.5"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - openstax
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=openstax
+networks:
+  openstax:
+    name: openstax
+volumes:
+  pgdata:
