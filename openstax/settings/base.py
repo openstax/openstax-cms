@@ -10,6 +10,8 @@ BASE_DIR = PROJECT_ROOT
 
 DEBUG = True
 
+APPEND_SLASH = False
+
 ADMINS = (
     ('Michael Harrison', 'mwharrison@rice.edu'),
 )

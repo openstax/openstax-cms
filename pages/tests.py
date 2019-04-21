@@ -38,6 +38,7 @@ from pages.models import (HomePage,
 from allies.models import Ally
 from news.models import NewsIndex, PressIndex
 from books.models import BookIndex
+from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
 
 
 class HomePageTests(WagtailPageTests):
@@ -110,6 +111,9 @@ class PageTests(WagtailPageTests):
             response = self.client.get('/api/pages/{}'.format(page.slug))
             self.assertNotEquals(response.status_code, 404)
 
+    def test_slashless_apis_are_good(self):
+        assertPathDoesNotRedirectToTrailingSlash(self, '/api/pages/slug')
+        assertPathDoesNotRedirectToTrailingSlash(self, '/apps/cms/api/pages/slug')
 
 
 class ErrataListTest(WagtailPageTests):

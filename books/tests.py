@@ -4,6 +4,7 @@ from pages.models import HomePage
 from books.models import BookIndex, Book, BookAllies
 #from snippets.models import Subject
 from allies.models import Ally
+from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
 
 
 class BookTests(WagtailPageTests):
@@ -100,3 +101,8 @@ class BookTests(WagtailPageTests):
     def test_cannot_create_book_under_homepage(self):
         self.assertCanNotCreateAt(HomePage, Book)
 
+    def test_slashless_apis_are_good(self):
+        assertPathDoesNotRedirectToTrailingSlash(self, '/api/books')
+        assertPathDoesNotRedirectToTrailingSlash(self, '/apps/cms/api/books')
+        assertPathDoesNotRedirectToTrailingSlash(self, '/api/books/slug')
+        assertPathDoesNotRedirectToTrailingSlash(self, '/apps/cms/api/books/slug')
