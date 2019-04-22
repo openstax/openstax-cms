@@ -419,7 +419,7 @@ class Book(Page):
     title_image_url = property(get_title_image_url)
 
     cover_color = models.CharField(max_length=255, choices=COVER_COLORS, default='blue')
-    book_cover_text_color = models.CharField(max_length=255, choices=BOOK_COVER_TEXT_COLOR, default='yellow')
+    book_cover_text_color = models.CharField(max_length=255, choices=BOOK_COVER_TEXT_COLOR, default='yellow', help_text="Use by the Unified team - this will not change the text color on the book cover.")
     reverse_gradient = models.BooleanField(default=False)
     publish_date = models.DateField(blank=True, null=True)
     authors = StreamField([
