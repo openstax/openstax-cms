@@ -340,6 +340,37 @@ COVER_COLORS = (
     (YELLOW, 'Yellow'),
 )
 
+YELLOW = 'yellow'
+LIGHT_BLUE = 'light_blue'
+DARK_BLUE = 'dark_blue'
+GREEN = 'green'
+WHITE = 'white'
+GREY = 'grey'
+RED = 'red'
+WHITE_RED = 'white_red'
+WHITE_BLUE = 'white_blue'
+GREEN_WHITE = 'green_white'
+YELLOW_WHITE = 'yellow_white'
+GREY_WHITE = 'grey_white'
+WHITE_GREY = 'white_grey'
+WHITE_ORANGE = 'white_orange'
+BOOK_COVER_TEXT_COLOR = (
+    (YELLOW, 'yellow'),
+    (LIGHT_BLUE, 'light_blue'),
+    (DARK_BLUE, 'dark_blue'),
+    (GREEN, 'green'),
+    (WHITE, 'white'),
+    (GREY, 'grey'),
+    (RED, 'red'),
+    (WHITE_RED, 'white_red'),
+    (WHITE_BLUE, 'white_blue'),
+    (GREEN_WHITE, 'green_white'),
+    (YELLOW_WHITE, 'yellow_white'),
+    (GREY_WHITE, 'grey_white'),
+    (WHITE_GREY, 'white_grey'),
+    (WHITE_ORANGE, 'white_orange'),
+)
+
 LIVE = 'live'
 COMING_SOON = 'coming_soon'
 DEPRECATED = 'deprecated'
@@ -388,6 +419,7 @@ class Book(Page):
     title_image_url = property(get_title_image_url)
 
     cover_color = models.CharField(max_length=255, choices=COVER_COLORS, default='blue')
+    book_cover_text_color = models.CharField(max_length=255, choices=BOOK_COVER_TEXT_COLOR, default='yellow', help_text="Use by the Unified team - this will not change the text color on the book cover.")
     reverse_gradient = models.BooleanField(default=False)
     publish_date = models.DateField(blank=True, null=True)
     authors = StreamField([
@@ -514,6 +546,7 @@ class Book(Page):
         DocumentChooserPanel('cover'),
         DocumentChooserPanel('title_image'),
         FieldPanel('cover_color'),
+        FieldPanel('book_cover_text_color'),
         FieldPanel('reverse_gradient'),
         InlinePanel('book_allies', label="Allies"),
         FieldPanel('print_isbn_10'),
@@ -589,6 +622,7 @@ class Book(Page):
         APIField('cover_url'),
         APIField('title_image_url'),
         APIField('cover_color'),
+        APIField('book_cover_text_color'),
         APIField('reverse_gradient'),
         APIField('book_allies'),
         APIField('book_student_resources'),
