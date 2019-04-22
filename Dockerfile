@@ -2,12 +2,14 @@ FROM python:3.6-slim
 
 ENV PYTHONUNBUFFERED 1
 
-RUN apt-get update
-RUN apt-get -y install git
-RUN apt-get -y install gcc
-RUN apt-get -y install libxml2-dev libxslt1-dev libz-dev
-
-RUN mkdir /code
+RUN apt-get update && \
+  apt-get install -y --no-install-recommends \
+  git \
+  gcc \
+  libxml2-dev \
+  libxslt1-dev \
+  libz-dev \
+  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /code
 
