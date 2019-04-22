@@ -1,0 +1,1 @@
+docker-compose exec -e DJANGO_SETTINGS_MODULE=openstax.settings.docker app bash

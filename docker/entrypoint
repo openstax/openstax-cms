@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -e
+
+# uncomment this to load docker secrets into environment variables
+# export $(egrep  -v '^#'  /run/secrets/* | xargs)
+
+exec "$@"
