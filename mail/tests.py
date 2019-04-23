@@ -3,6 +3,7 @@ import mail.functions as mail_func
 
 from django.middleware import csrf
 from django.test import Client, TestCase
+from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
 
 from mail.models import Mail
 
@@ -52,3 +53,7 @@ class MailTest(TestCase):
         redirect += '/l/refuse\thttps://openstax.org/openstax-tutor\n'
         redirect += '/r/trash\thttps://trello.com/b/20yf8veQ/devops-go\n'
         return redirect
+
+    def test_slashless_apis_are_good(self):
+        assertPathDoesNotRedirectToTrailingSlash(self, '/api/mail/send_mail')
+        assertPathDoesNotRedirectToTrailingSlash(self, '/apps/cms/api/mail/send_mail')
