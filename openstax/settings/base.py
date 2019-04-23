@@ -22,6 +22,10 @@ DEBUG = True
 APPEND_SLASH = True
 WAGTAIL_APPEND_SLASH = False
 
+# urls.W002 warns about slashes at the start of URLs.  But we need those so
+#   we don't have to have slashes at the end of URLs.  So ignore.
+SILENCED_SYSTEM_CHECKS = ['urls.W002']
+
 ADMINS = (
     ('Michael Harrison', 'mwharrison@rice.edu'),
 )
