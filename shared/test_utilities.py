@@ -4,7 +4,7 @@ def assertPathDoesNotRedirectToTrailingSlash(test, path):
     try:
         resolve(path)
     except Resolver404:
-        test.fail(f'The path {path} cannot be found')
+        test.fail('The path {} cannot be found'.format(path))
 
     response = test.client.get(path)
 
