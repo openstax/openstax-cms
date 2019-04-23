@@ -1,7 +1,7 @@
 from wagtail.tests.utils import WagtailPageTests
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
 from unittest.mock import MagicMock
-from .models import NewsIndex, NewsArticle, PressIndex, PressRelease
+from news.models import NewsIndex, NewsArticle, PressIndex, PressRelease
 
 class NewsTests(WagtailPageTests):
     def setUp(self):
