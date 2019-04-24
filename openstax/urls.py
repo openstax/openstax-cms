@@ -26,12 +26,12 @@ urlpatterns = [
     url(r'^django-admin/error/', throw_error, name='throw_error'),
 
     url(r'^accounts/', include('accounts.urls')),
-    url(r'^oxauth/', include('oxauth.urls')), # new auth package
+    url(r'^oxauth', include('oxauth.urls')), # new auth package
     url(r'^documents/', include(wagtaildocs_urls)),
     url(r'^images/', include(wagtailimages_urls)),
 
-    url(r'^api/mail/', include('mail.urls')),
-    url(r'^apps/cms/api/mail/', include('mail.urls')),
+    url(r'^api/mail', include('mail.urls')),
+    url(r'^apps/cms/api/mail', include('mail.urls')),
 
     url(r'^api/', include(api_urls)),
     url(r'^apps/cms/api/', include(api_urls)),
@@ -45,17 +45,17 @@ urlpatterns = [
     url(r'^api/salesforce/', include('salesforce.urls')),
     url(r'^apps/cms/api/salesforce/', include('salesforce.urls')),
 
-    url(r'^api/pages/', include('pages.urls')),
-    url(r'^apps/cms/api/pages/', include('pages.urls')),
+    url(r'^api/pages', include('pages.urls')),
+    url(r'^apps/cms/api/pages', include('pages.urls')),
 
     url(r'^api/snippets/', include('snippets.urls')),
     url(r'^apps/cms/api/snippets/', include('snippets.urls')),
 
-    url(r'^api/books/', include('books.urls')),
-    url(r'^apps/cms/api/books/', include('books.urls')),
+    url(r'^api/books', include('books.urls')),
+    url(r'^apps/cms/api/books', include('books.urls')),
 
-    url(r'^api/', include('news.urls')),
-    url(r'^apps/cms/api/', include('news.urls')),
+    url(r'^api', include('news.urls')),
+    url(r'^apps/cms/api', include('news.urls')),
 
     url(r'^blog-feed/rss/$', RssBlogFeed()),
     url(r'^blog-feed/atom/$', AtomBlogFeed()),
