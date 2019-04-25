@@ -11,6 +11,6 @@ def page_detail(request, slug):
     """
     try:
         page = Page.objects.filter(slug=slug).first()
-        return redirect('/api/v2/pages/{}'.format(page.pk))
+        return redirect('/api/v2/pages/{}/'.format(page.pk))
     except:
         return HttpResponse(status=404)

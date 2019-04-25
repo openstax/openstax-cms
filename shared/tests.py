@@ -6,6 +6,3 @@ class WagtailTests(WagtailPageTests):
     def setUp(self):
         pass
 
-    def test_slashless_apis_are_good(self):
-        # Doesn't pass if WAGTAIL_APPEND_SLASH = False is not set
-        assertPathDoesNotRedirectToTrailingSlash(self, '/api/v2/pages/30')
