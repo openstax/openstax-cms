@@ -16,11 +16,11 @@ DEBUG = True
 # will append a slash if the incoming URL doesn't match any of our URL patterns.
 # (If it does match, it shouldn't append a slash, which is good and which means
 # we can work to make our URLs match either without or without slashes to avoid
-# extra redirects).  We disable for wagtail since it is its own self-contained
-# code.
+# extra redirects).  We tried to set WAGTAIL_APPEND_SLASH=False for wagtail but
+# it wasn't handling unslashed paths as it should have (maybe because we are
+# wrapping wagtail paths ourselves under /api?)
 
 APPEND_SLASH = True
-WAGTAIL_APPEND_SLASH = False
 
 # urls.W002 warns about slashes at the start of URLs.  But we need those so
 #   we don't have to have slashes at the end of URLs.  So ignore.
