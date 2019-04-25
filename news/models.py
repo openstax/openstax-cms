@@ -90,7 +90,7 @@ class NewsIndex(Page):
         article_data = {}
         for article in articles:
             article_data['{}'.format(article.slug)] = {
-                'detail_url': '/api/v2/pages/{}/'.format(article.pk),
+                'detail_url': '/apps/cms/api/v2/pages/{}/'.format(article.pk),
                 'date': article.date,
                 'heading': article.heading,
                 'subheading': article.subheading,
@@ -318,7 +318,7 @@ class PressIndex(Page):
         releases_data = {}
         for release in releases:
             releases_data['press/{}'.format(release.slug)] = {
-                'detail_url': '/api/v2/pages/{}/'.format(release.pk),
+                'detail_url': '/apps/cms/api/v2/pages/{}/'.format(release.pk),
                 'date': release.date,
                 'heading': release.heading,
                 'excerpt': release.excerpt,
