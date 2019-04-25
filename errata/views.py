@@ -106,7 +106,7 @@ def edit(request):
             if request.POST.get('duplicate', False):
                 duplicate(errata)
             else:
-                return redirect('/api/errata/admin/dashboard/') #TODO: change to URL resolver name
+                return redirect('/apps/cms/api/errata/admin/dashboard/') #TODO: change to URL resolver name
 
     else:
         if edit_errata:
@@ -124,4 +124,4 @@ def edit(request):
 def duplicate(errata):
     errata.pk = None
     errata.save()
-    return redirect('/api/errata/admin/edit/{}'.format(errata.pk)) #TODO: Change to use url resolver name
+    return redirect('/apps/cms/api/errata/admin/edit/{}'.format(errata.pk)) #TODO: Change to use url resolver name
