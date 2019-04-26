@@ -74,29 +74,29 @@ The `--keepdb` option reuses the test database from run to run so you don't have
 To debug tests, you can insert the normal `import pdb; pdb.set_trace()` lines in your code and test runs from the bash environment will show you the debugger.
 
 ### API Endpoints
-`/api/v2` - Wagtails API. This serves things like pages, images, and documents - except when it doesn't, see below for exceptions.
+`/apps/cms/api/v2` - Wagtails API. This serves things like pages, images, and documents - except when it doesn't, see below for exceptions.
 
-`/api/v2/pages` (mostly used with `/api/v2/pages/?slug=[slug]`) returns the `detail_url` for the page content. You can also call `/api/v2/pages` and get a list of all pages with their `detail_url` and `slug`.
+`/apps/cms/api/v2/pages` (mostly used with `/api/v2/pages/?slug=[slug]`) returns the `detail_url` for the page content. You can also call `/api/v2/pages` and get a list of all pages with their `detail_url` and `slug`.
 
- `/api/snippets/roles` - Returns list of available roles for a user. This lives in the `snippets` directory.
+ `/apps/cms/api/snippets/roles` - Returns list of available roles for a user. This lives in the `snippets` directory.
 
- `/api/sticky` - Returns the text for the sticky note. Lives in the `api` directory.
+ `/apps/cms/api/sticky` - Returns the text for the sticky note. Lives in the `api` directory.
 
- `/api/footer` - Returns the text for the footer. Lives in the `api` directory.
+ `/apps/cms/api/footer` - Returns the text for the footer. Lives in the `api` directory.
 
- `/api/errata/[id]` - Returns details for a piece of Errata
+ `/apps/cms/api/errata/[id]` - Returns details for a piece of Errata
 
- `/api/books` - Returns a list of books, with their slug and some information needed to render the subjects page
+ `/apps/cms/api/books` - Returns a list of books, with their slug and some information needed to render the subjects page
 
- `/api/mail/send_mail` - Takes post parameters and sends mail through Amazon SES. We prevent spamming by only having a limited set of subjects that it will accept and go to a particular email address.
+ `/apps/cms/api/mail/send_mail` - Takes post parameters and sends mail through Amazon SES. We prevent spamming by only having a limited set of subjects that it will accept and go to a particular email address.
 
- `/api/documents` - Custom API endpoint to return all documents with their cloudfront url, this lives in the `api` directory
+ `/apps/cms/api/documents` - Custom API endpoint to return all documents with their cloudfront url, this lives in the `api` directory
 
- `/api/images` - Custom API endpoint to return all images with their cloudfront url, this lives in the `api` directory.
+ `/apps/cms/api/images` - Custom API endpoint to return all images with their cloudfront url, this lives in the `api` directory.
 
- `/api/progress` - Custom API endpoint that allows writing user progress through the instructor process. This takes an `account_id` and `progress` (integer representation of the users progress, 1-5). You can query using `?account_id=[id]` to retrieve progress.
+ `/apps/cms/api/progress` - Custom API endpoint that allows writing user progress through the instructor process. This takes an `account_id` and `progress` (integer representation of the users progress, 1-5). You can query using `?account_id=[id]` to retrieve progress.
 
- `/api/salesforce/schools` and `/api/schools` - Returns a list of adoption schools from Salesforce.
+ `/apps/cms/api/salesforce/schools` and `/api/schools` - Returns a list of adoption schools from Salesforce.
  You can also filter on this API by the following fields:
  - `name` [string]
  - `id` [int]
@@ -110,14 +110,14 @@ To debug tests, you can insert the normal `import pdb; pdb.set_trace()` lines in
 
 
 
- These are convience endpoints. They redirect to the Wagtail API v2 endpoint (`/api/v2/pages/[id]`)
+ These are convience endpoints. They redirect to the Wagtail API v2 endpoint (`/apps/cms/api/v2/pages/[id]`)
 
- `/api/books` - Returns a list of books, with their slug and some information needed to render the subjects page. Wagtail API endpoint: `/api/v2/pages/?slug=subjects`.
+ `/apps/cms/api/books` - Returns a list of books, with their slug and some information needed to render the subjects page. Wagtail API endpoint: `/api/v2/pages/?slug=subjects`.
 
- `/api/books/[slug]` - Returns details about a book. Wagtail API endoint: `/api/v2/pages/?slug=[book-slug]`.
+ `/apps/cms/api/books/[slug]` - Returns details about a book. Wagtail API endoint: `/api/v2/pages/?slug=[book-slug]`.
 
- `/api/news` - Returns the content of the news pages and a list of articles. Wagtail API endpoint: `/api/v2/pages/?slug=openstax-news`.
+ `/apps/cms/api/news` - Returns the content of the news pages and a list of articles. Wagtail API endpoint: `/api/v2/pages/?slug=openstax-news`.
 
- `/api/news/[slug]` - Returns the content of a news article. Wagtail API endpoint: `/api/v2/pages/?slug=[news-article=slug]`.
+ `/apps/cms/api/news/[slug]` - Returns the content of a news article. Wagtail API endpoint: `/api/v2/pages/?slug=[news-article=slug]`.
 
- `/api/pages` - Returns a page based on slug, eg. `/api/pages/openstax-homepage`. Wagtail API endpoint: `/api/v2/pages/?slug=openstax-homepage`.
+ `/apps/cms/api/pages` - Returns a page based on slug, eg. `/api/pages/openstax-homepage`. Wagtail API endpoint: `/api/v2/pages/?slug=openstax-homepage`.
