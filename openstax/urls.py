@@ -30,45 +30,24 @@ urlpatterns = [
     url(r'^documents/', include(wagtaildocs_urls)),
     url(r'^images/', include(wagtailimages_urls)),
 
-    url(r'^api/mail', include('mail.urls')),
     url(r'^apps/cms/api/mail', include('mail.urls')),
-
-    url(r'^api/', include(api_urls)),
     url(r'^apps/cms/api/', include(api_urls)),
-
-    url(r'^api/search/$', search, name='search'),
     url(r'^apps/cms/api/search/$', search, name='search'),
-
-    url(r'^api/v2/', api_router.urls),
     url(r'^apps/cms/api/v2/', api_router.urls),
-
-    url(r'^api/salesforce/', include('salesforce.urls')),
     url(r'^apps/cms/api/salesforce/', include('salesforce.urls')),
-
-    url(r'^api/pages', include('pages.urls')),
     url(r'^apps/cms/api/pages', include('pages.urls')),
-
-    url(r'^api/snippets/', include('snippets.urls')),
     url(r'^apps/cms/api/snippets/', include('snippets.urls')),
-
-    url(r'^api/books', include('books.urls')),
     url(r'^apps/cms/api/books', include('books.urls')),
-
-    url(r'^api', include('news.urls')),
     url(r'^apps/cms/api', include('news.urls')),
-
     url(r'^blog-feed/rss/$', RssBlogFeed()),
     url(r'^blog-feed/atom/$', AtomBlogFeed()),
     url(r'^errata/', include('errata.urls')),
-    url(r'^api/errata/', include('errata.urls')),
     url(r'^apps/cms/api/errata/', include('errata.urls')),
 
     # wagtail import export urls
-    url(r'^api/', include(wagtailimportexport_urls)),
     url(r'^apps/cms/api/', include(wagtailimportexport_urls)),
 
     # route everything to /api/spike also...
-    url(r'^api/spike/', include(wagtail_urls)),
     url(r'^apps/cms/api/spike/', include(wagtail_urls)),
 
     # For anything not caught by a more specific rule above, hand over to
