@@ -10,7 +10,7 @@ from django.shortcuts import render, redirect
 from .models import Errata
 from .serializers import ErrataSerializer
 from .forms import ErrataModelForm
-from accounts.functions import get_user_info
+from oxauth.functions import get_user_info
 
 
 class JSONResponse(HttpResponse):

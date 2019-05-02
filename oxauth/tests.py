@@ -5,7 +5,7 @@ from urllib.request import urlopen
 from django.test import TestCase
 from django.conf import settings
 
-from accounts.functions import get_token
+from oxauth.functions import get_token
 
 
 class AccountsTestCase(TestCase):

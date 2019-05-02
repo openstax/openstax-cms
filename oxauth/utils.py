@@ -2,7 +2,7 @@ from django.conf import settings
 from social.apps.django_app.default.models import DjangoStorage
 from social.strategies.django_strategy import DjangoStrategy
 
-from .backend import OpenStax
+from oxauth.backend import OpenStax
 
 
 def create_user(**user_details):
