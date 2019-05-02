@@ -7,5 +7,7 @@
 openstax/settings/local.py
 *.log
 /.idea
+/htmlcov
+/.coverage
 
 *.bk
