@@ -1,4 +1,5 @@
-[![Dependency Status](https://gemnasium.com/badges/github.com/openstax/openstax-cms.svg)](https://gemnasium.com/github.com/openstax/openstax-cms)
+[![Build Status](https://travis-ci.org/openstax/openstax-cms.svg?branch=master)](https://travis-ci.org/openstax/openstax-cms)
+[![codecov](https://codecov.io/gh/openstax/openstax-cms/branch/master/graph/badge.svg)](https://codecov.io/gh/openstax/openstax-cms)
 
 OpenStax CMS
 =======================
