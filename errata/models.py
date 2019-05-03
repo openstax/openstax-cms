@@ -14,7 +14,7 @@ from wagtail.admin.menu import MenuItem
 
 from books.models import Book
 from django.conf import settings
-from accounts.functions import get_user_info
+from oxauth.functions import get_user_info
 
 
 YES = 'Yes'

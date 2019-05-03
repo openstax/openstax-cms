@@ -109,7 +109,7 @@ MIDDLEWARE = [
 ]
 
 AUTHENTICATION_BACKENDS = (
-    'accounts.backend.OpenStax',
+    'oxauth.backend.OpenStax',
     'django.contrib.auth.backends.ModelBackend',
 )
 
@@ -117,10 +117,10 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.social_details',
     'social_core.pipeline.social_auth.social_uid',
     #'social_core.pipeline.social_auth.social_user',
-    'accounts.pipelines.social_user',
+    'oxauth.pipelines.social_user',
     'social_core.pipeline.user.create_user',
-    'accounts.pipelines.save_profile',
-    'accounts.pipelines.update_email',
+    'oxauth.pipelines.save_profile',
+    'oxauth.pipelines.update_email',
     'social_core.pipeline.social_auth.associate_user',
     'social_core.pipeline.social_auth.load_extra_data',
     'social_core.pipeline.user.user_details',
@@ -129,7 +129,7 @@ SOCIAL_AUTH_PIPELINE = (
 IMPORT_USER_PIPELINE = (
     'social_django.pipeline.social_auth.social_user',
     'social_django.pipeline.user.create_user',
-    'accounts.pipelines.save_profile',
+    'oxauth.pipelines.save_profile',
     'social_django.pipeline.social_auth.associate_user',
     'social_django.pipeline.user.user_details',
 )
@@ -192,7 +192,6 @@ INSTALLED_APPS = [
     'books',
     'news',
     'allies',
-    'accounts',
     'snippets',
     'salesforce',
     'mail',
