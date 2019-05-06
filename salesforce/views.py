@@ -12,7 +12,7 @@ class SchoolViewSet(viewsets.ModelViewSet):
 
 def get_adoption_status(request):
     account = request.GET.get('id', False)
-    print(account)
+
     if account:
         with Salesforce() as sf:
             q = sf.query("SELECT Adoption_Status__c FROM Contact WHERE Accounts_ID__c = '{}'".format(account))
