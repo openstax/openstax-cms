@@ -1,15 +1,14 @@
 from django import forms
 from django.utils.translation import ugettext as _
 
-from wagtailimportexport.compat import AdminPageChooser, Page, WAGTAIL_VERSION_2_OR_GREATER
+from wagtailimportexport.compat import AdminPageChooser, Page
 
 
 admin_page_params = {
     'can_choose_root': True,
 }
 
-if WAGTAIL_VERSION_2_OR_GREATER:
-    admin_page_params['user_perms'] = 'copy_to'
+admin_page_params['user_perms'] = 'copy_to'
 
 
 class ImportFromAPIForm(forms.Form):
