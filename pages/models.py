@@ -2722,7 +2722,8 @@ class InstitutionalPartnerProgramPage(Page):
     section_7_icons = StreamField([
         ('card', blocks.ListBlock(blocks.StructBlock([
             ('image', ImageBlock()),
-            ('image_alt_text', blocks.CharBlock())
+            ('image_alt_text', blocks.CharBlock()),
+            ('current_cohort', blocks.BooleanBlock())
         ])))
     ])
     section_7_link_text = models.CharField(max_length=255)
