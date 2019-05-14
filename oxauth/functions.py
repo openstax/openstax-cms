@@ -33,16 +33,19 @@ def get_user_info(uid):
                 contact_infos = data['items'][0]['contact_infos']
                 most_recent_email = max(contact_infos, key=lambda x: x['id'])
                 email = most_recent_email['value']
-            except ValueError:
+            except (ValueError, IndexError):
                 email = None  # no saved emails
 
-            user_data = {
-                'faculty_status': data['items'][0]['faculty_status'],
-                'email': email,
-                'self_reported_role': data['items'][0]['self_reported_role'],
-                'faculty_status': data['items'][0]['faculty_status'],
-                'applications': data['items'][0]['applications']
-            }
+            try:
+                user_data = {
+                    'faculty_status': data['items'][0]['faculty_status'],
+                    'email': email,
+                    'self_reported_role': data['items'][0]['self_reported_role'],
+                    'faculty_status': data['items'][0]['faculty_status'],
+                    'applications': data['items'][0]['applications']
+                }
+            except IndexError:
+                return False
 
             return user_data
     else:

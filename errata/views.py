@@ -1,7 +1,7 @@
 import django_filters
 from django.http import HttpResponse
 from django.db import models
-from django.contrib.auth.decorators import login_required, permission_required
+from django.contrib.auth.decorators import permission_required
 from rest_framework.renderers import JSONRenderer
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.filters import OrderingFilter
