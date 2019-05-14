@@ -2723,7 +2723,7 @@ class InstitutionalPartnerProgramPage(Page):
         ('card', blocks.ListBlock(blocks.StructBlock([
             ('image', ImageBlock()),
             ('image_alt_text', blocks.CharBlock()),
-            ('current_cohort', blocks.BooleanBlock())
+            ('current_cohort', blocks.BooleanBlock(required=False))
         ])))
     ])
     section_7_link_text = models.CharField(max_length=255)
