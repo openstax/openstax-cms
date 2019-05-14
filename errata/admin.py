@@ -1,6 +1,7 @@
 import unicodecsv
 from import_export import resources
 from import_export.admin import ExportActionModelAdmin
+from import_export.formats import base_formats
 
 from django.contrib import admin
 from django.db import models
@@ -26,7 +27,7 @@ class ErrataResource(resources.ModelResource):
 
 class InlineInternalImage(admin.TabularInline):
     model = InternalDocumentation
-
+    
 
 class ErrataAdmin(ExportActionModelAdmin):
     resource_class = ErrataResource
@@ -68,6 +69,9 @@ class ErrataAdmin(ExportActionModelAdmin):
     actions = ['mark_in_review', 'mark_reviewed', 'mark_archived']
     inlines = [InlineInternalImage, ]
     raw_id_fields = ('submitted_by', 'duplicate_id')
+
+    def get_export_formats(self):
+        return [base_formats.CSV]
 
     """Actions for the Django Admin list view"""
     def mark_in_review(self, request, queryset):
