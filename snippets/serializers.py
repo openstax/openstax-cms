@@ -1,6 +1,6 @@
 from .models import Role, Subject
 
-from rest_framework import serializers
+from rest_framework import serializers, generics
 
 
 class RoleSerializer(serializers.ModelSerializer):
@@ -18,5 +18,6 @@ class SubjectSerializer(serializers.ModelSerializer):
         model = Subject
         fields = ('id',
                   'name',
+                  'page_content',
                   'seo_title',
                   'search_description')
