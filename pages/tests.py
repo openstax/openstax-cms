@@ -101,69 +101,12 @@ class HomePageTests(WagtailPageTests):
             InstitutionalPartnerProgramPage
         })
 
-        def test_can_create_ipp_page(self):
-            root_page = Page.objects.get(title="Root")
-            homepage = HomePage(title="Hello World",
-                                slug="hello-world",
-                                )
-            root_page.add_child(instance=homepage)
-
-            ipp_page = InstitutionalPartnerProgramPage(
-                title="IPP Sample Page",
-                section_1_heading="Heading",
-                section_1_description="Description",
-                section_1_link_text="Click me!",
-                section_1_link="https://rice.edu",
-                section_1_background_image=False,
-                quote="Quote",
-                quote_name="Author",
-                quote_title="Title",
-                quote_school="Rice University",
-                section_2_heading="Heading 2",
-                section_2_description="Description 2",
-                section_2_image=None,
-                section_2_image_alt="Alt",
-                section_3_heading="Heading 3",
-                section_3_description="Description 3",
-                section_3_wide_cards=None,
-                section_3_tall_cards=None,
-                section_4_quote_text="Quote text",
-                section_4_quote_name="Quote Name",
-                section_4_quote_title="Quote title",
-                section_4_quote_school="Rice University",
-                section_4_background_image=None,
-                section_5_heading="Heading 5",
-                section_5_description="Description 5",
-                section_5_image=None,
-                section_5_image_alt="Alt",
-                section_5_image_caption="Image caption",
-                section_6_heading="Heading 6",
-                section_6_description="Description 6",
-                section_6_cards=None,
-                section_7_heading="Heading 7",
-                section_7_subheading="Subheading 7",
-                section_7_icons=None,
-                section_7_link_text="Click me",
-                section_7_link_target="https://rice.edu",
-                section_8_quote_text="Quote text",
-                section_8_quote_name="Quote Name",
-                section_8_quote_title="Quote title",
-                section_8_quote_school="Rice University",
-                section_9_heading="Heading 9",
-                section_9_submit_url="https://rice.edu",
-                section_9_form_prompt="Form here",
-                section_9_button_text="Click me",
-                section_9_contact_html="<b>Sample HTML</b>"
-            )
-
-            ipp_page.save()
-
-            homepage.add_child(ipp_page)
-            self.assertEqual(ipp_page.title, "IPP Sample Page")
-
 class PageTests(WagtailPageTests):
     def setUp(self):
         pass
+
+    def test_can_create_ipp_page(self):
+        self.assertCanCreateAt(HomePage, InstitutionalPartnerProgramPage)
 
     def test_api_redirect(self):
         pages = Page.objects.all()
