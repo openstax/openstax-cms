@@ -156,6 +156,8 @@ class HomePageTests(WagtailPageTests):
                 section_9_contact_html="<b>Sample HTML</b>"
             )
 
+            ipp_page.save()
+
             homepage.add_child(ipp_page)
             self.assertEqual(ipp_page.title, "IPP Sample Page")
 
