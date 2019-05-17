@@ -9,7 +9,7 @@ class AuthSettings(models.Model):
     secret_base_key = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
-        return self.pk
+        return str(self.pk)
 
     def save(self, *args, **kwargs):
         if AuthSettings.objects.exists() and not self.pk:
