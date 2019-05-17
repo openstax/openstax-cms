@@ -56,5 +56,5 @@ xlrd==1.1.0
 xlwt==1.3.0
 
 # sso stuff
-pycrypto>=2.6.1
+pycryptodome>=3.8.1
 django-cors-headers==2.4.1
