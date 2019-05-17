@@ -33,7 +33,7 @@ def get_user_data(request):
     if not decrypted_user:
         return JsonResponse({"logged_in": False})
 
-    return JsonResponse(decrypted_user)
+    return JsonResponse(decrypted_user.decode())
 
 
 def logout(request):
