@@ -12,9 +12,9 @@ class AuthSettings(models.Model):
         return self.username
 
     def save(self, *args, **kwargs):
-        if SalesforceSettings.objects.exists() and not self.pk:
-            raise ValidationError('There is can be only one SalesforceSettings instance')
-        return super(SalesforceSettings, self).save(*args, **kwargs)
+        if AuthSettings.objects.exists() and not self.pk:
+            raise ValidationError('There is can be only one AuthSettings instance')
+        return super(AuthSettings, self).save(*args, **kwargs)
 
     class Meta:
-        verbose_name_plural = "Salesforce Settings"
+        verbose_name_plural = "Auth Settings"
