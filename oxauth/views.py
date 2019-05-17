@@ -22,8 +22,17 @@ def get_user_data(request):
     if not cookie:
         return JsonResponse({"logged_in": False})
 
-    decrypt = OXSessionDecryptor(secret_key_base=settings.SHARED_SECRET)
+    decrypt = OXSessionDecryptor(secret_key_base=settings.SHARED_SECRET, encrypted_cookie_salt=settings.ENCRYPTED_COOKIE_SALT, encrypted_signed_cookie_salt=settings.SIGNED_ENCRYPTED_COOKIE_SALT)
+    validate = decrypt.validate_cookie(cookie)
+
+    if not validate:
+        return JsonResponse({"logged_in": False})
+    
     decrypted_user = decrypt.get_cookie_data(cookie)
+
+    if not decrypted_user:
+        return JsonResponse({"logged_in": False})
+
     return JsonResponse(decrypted_user)
 
 
