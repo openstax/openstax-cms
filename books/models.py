@@ -263,6 +263,10 @@ class SubjectBooks(models.Model):
         return self.subject.name
     subject_name = property(get_subject_name)
 
+    def get_subject_page_content(self):
+        return self.subject.page_content
+    subject_page_content = property(get_subject_page_content)
+
     def get_subject_page_title(self):
         return self.subject.seo_title
     subject_seo_title = property(get_subject_page_title)
@@ -273,6 +277,7 @@ class SubjectBooks(models.Model):
 
     api_fields = [
         APIField('subject_name'),
+        APIField('subject_page_content'),
         APIField('subject_search_description')
     ]
 
