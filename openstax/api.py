@@ -7,6 +7,8 @@ from wagtail.core.models import Page
 from oxauth.views import get_user_data
 from oxauth.functions import get_user_info
 
+from .functions import remove_locked_links_listing, remove_locked_links_detail
+
 import json
 
 
@@ -49,12 +51,8 @@ class CachedPagesAPIEndpoint(PagesAPIEndpoint):
 
         # Overwriting the Response if ox credential does not
         # authorize faculty access.
-        if "book_faculty_resources" in response.data:
-            if "faculty_status" not in auth_user or auth_user["faculty_status"] != "confirmed_faculty":
-                for res_id in range(len(response.data["book_faculty_resources"])):
-                    if not response.data["book_faculty_resources"][res_id]["resource_unlocked"]:
-                        response.data["book_faculty_resources"][res_id]["link_document_url"] = ""
-                        response.data["book_faculty_resources"][res_id]["link_external"] = ""
+        if "faculty_status" not in auth_user or auth_user["faculty_status"] != "confirmed_faculty":
+            remove_locked_links_listing(response)
 
         return response
 
@@ -76,12 +74,8 @@ class CachedPagesAPIEndpoint(PagesAPIEndpoint):
 
         # Overwriting the Response if ox credential does not
         # authorize faculty access.
-        if "book_faculty_resources" in response.data:
-            if "faculty_status" not in auth_user or auth_user["faculty_status"] != "confirmed_faculty":
-                for res_id in range(len(response.data["book_faculty_resources"])):
-                    if not response.data["book_faculty_resources"][res_id]["resource_unlocked"]:
-                        response.data["book_faculty_resources"][res_id]["link_document_url"] = ""
-                        response.data["book_faculty_resources"][res_id]["link_external"] = ""
+        if "faculty_status" not in auth_user or auth_user["faculty_status"] != "confirmed_faculty":
+            remove_locked_links_detail(response)
 
         return response
 
