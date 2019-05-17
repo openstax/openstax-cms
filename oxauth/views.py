@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.auth.views import logout
 
 from .auth import OXSessionDecryptor
+from .models import AuthSettings
 
 
 def login(request):
@@ -17,12 +18,14 @@ def login(request):
 
 
 def get_user_data(request):
-    cookie = request.COOKIES.get(settings.SECRET_COOKIE_NAME, None)
+    auth_settings = AuthSettings.objects.latest('id')
+
+    cookie = request.COOKIES.get(auth_settings.cookie_name, None)
 
     if not cookie:
         return JsonResponse({"logged_in": False, "cookie": False, "validation": False, "decryption": False})
 
-    decrypt = OXSessionDecryptor(secret_key_base=settings.SECRET_KEY_BASE, encrypted_cookie_salt=settings.ENCRYPTED_COOKIE_SALT, encrypted_signed_cookie_salt=settings.SIGNED_ENCRYPTED_COOKIE_SALT)
+    decrypt = OXSessionDecryptor(secret_key_base=auth_settings.secret_base_key, encrypted_cookie_salt=auth_settings.encrypted_salt, encrypted_signed_cookie_salt=auth_settings.signed_encrypted_salt)
     validate = decrypt.validate_cookie(cookie)
 
     if not validate:
