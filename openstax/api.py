@@ -46,9 +46,9 @@ class CachedPagesAPIEndpoint(PagesAPIEndpoint):
         auth_user = json.loads(get_user_data(request).content.decode())
 
         # Fetching User Information and Overwriting auth_user
-        if "user_id" in auth_user:
-            auth_user = get_user_info(auth_user["user_id"])
-
+        if "user" in auth_user:
+            auth_user = get_user_info(auth_user["user"]["id"])
+        
         # Overwriting the Response if ox credential does not
         # authorize faculty access.
         if "faculty_status" not in auth_user or auth_user["faculty_status"] != "confirmed_faculty":
@@ -69,8 +69,8 @@ class CachedPagesAPIEndpoint(PagesAPIEndpoint):
         auth_user = json.loads(get_user_data(request).content.decode())
 
         # Fetching User Information and Overwriting auth_user
-        if "user_id" in auth_user:
-            auth_user = get_user_info(auth_user["user_id"])
+        if "user" in auth_user:
+            auth_user = get_user_info(auth_user["user"]["id"])
 
         # Overwriting the Response if ox credential does not
         # authorize faculty access.

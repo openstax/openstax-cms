@@ -322,9 +322,7 @@ WAGTAIL_GRAVATAR_PROVIDER_URL = '//www.gravatar.com/avatar'
 MAPBOX_TOKEN = '' # should be the sk from mapbox, put in the appropriate settings file
 
 # ACCOUNTS COOKIE AUTHENTICATION
-COOKIE_NAME = '_accounts_session'
-ENCRYPTED_COOKIE_SALT = "encrypted cookie"
-SIGNED_ENCRYPTED_COOKIE_SALT = "signed encrypted cookie"
+COOKIE_NAME = 'ox'
 
 from PIL import ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
