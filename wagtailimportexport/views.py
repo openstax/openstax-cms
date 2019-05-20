@@ -6,6 +6,7 @@ from django.http import JsonResponse, FileResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import ungettext, ugettext_lazy as _
+from django.http import HttpResponse
 
 import requests
 
@@ -116,15 +117,19 @@ def export_to_file(request):
                     root_page=form.cleaned_data['root_page'],
                     export_unpublished=form.cleaned_data['export_unpublished'],
                     null_users=form.cleaned_data['null_users'],
+                    null_images=True,
                 ),
-                'snippets': export_snippets(),
-                'images': export_image_data(null_users=form.cleaned_data['null_users']),
+                #'snippets': export_snippets(),
+                #'images': export_image_data(null_users=form.cleaned_data['null_users']),
             }
             filedata = zip_content(content_data)
             payload = io.BytesIO(filedata)
-            response = FileResponse(payload)
-            response['Content-Disposition'] = 'attachment; filename="content.zip"'
-            response.content_type = 'application/zip'
+
+            # Grab ZIP file from in-memory, make response with correct MIME-type
+            response = HttpResponse(payload.getvalue(), content_type = "application/x-zip-compressed")
+            # ..and correct content-disposition
+            response['Content-Disposition'] = 'attachment; filename=content.zip'
+
             return response
     else:
         form = ExportForm()

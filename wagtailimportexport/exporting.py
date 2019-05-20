@@ -12,8 +12,11 @@ from wagtail.images import get_image_model
 from wagtail.snippets.models import SNIPPET_MODELS
 from wagtailimportexport.compat import Page
 
+from django.conf import settings
 
-def export_pages(root_page=None, export_unpublished=False, null_users=False):
+
+
+def export_pages(root_page=None, export_unpublished=False, null_users=False, null_images=True):
     """
     Create a JSON-able dict definition of part of a site's page tree 
     starting from root_page and descending into its descendants
@@ -45,6 +48,12 @@ def export_pages(root_page=None, export_unpublished=False, null_users=False):
             data = json.loads(page.to_json())
             if null_users == True and data.get('owner') is not None:
                 data['owner'] = None
+            if null_images == True and data.get('promote_image') is not None:
+                data['promote_image'] = None
+            if null_images == True and data.get('title_image') is not None:
+                data['title_image'] = None
+            if null_images == True and data.get('cover') is not None:
+                data['cover'] = None
             page_data.append({
                 'content': data,
                 'model': page.content_type.model,
@@ -89,12 +98,9 @@ def instance_to_data(instance, null_users=False):
         elif isinstance(value, StreamValue):
             data[key] = json.dumps(value.stream_data, cls=DjangoJSONEncoder)
         elif isinstance(value, FieldFile) or isinstance(value, File):
-            print("TETS:")
-            print(value)
             data[key] = {'name': value.name, 'size': value.size}
         else:
             data[key] = value
-        print("ST")
     return data
 
 
@@ -109,10 +115,10 @@ def zip_content(content_data):
             zf.writestr(
                 'content.json',
                 json.dumps(content_data, indent=2, cls=DjangoJSONEncoder))
-            for image_def in content_data['images']:
-                filename = image_def['file']['name']
-                with file_storage.open(filename, 'rb') as f:
-                    zf.writestr(filename, f.read())
+            # for image_def in content_data['images']:
+            #     filename = image_def['file']['name']
+            #     with file_storage.open(filename, 'rb') as f:
+            #         zf.writestr(filename, f.read())
         with open(zfname, 'rb') as zf:
             fd = zf.read()
     return fd
