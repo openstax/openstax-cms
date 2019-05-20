@@ -1,7 +1,8 @@
+import io
 import json
 import re
 
-from django.http import JsonResponse
+from django.http import JsonResponse, FileResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
 from django.utils.translation import ungettext, ugettext_lazy as _
@@ -9,7 +10,12 @@ from django.utils.translation import ungettext, ugettext_lazy as _
 import requests
 
 from wagtailimportexport.compat import messages, Page
-from wagtailimportexport.exporting import export_pages
+from wagtailimportexport.exporting import (
+    export_pages,
+    export_snippets,
+    export_image_data,
+    zip_content,
+)
 from wagtailimportexport.forms import ExportForm, ImportFromAPIForm, ImportFromFileForm
 from wagtailimportexport.importing import import_pages
 
@@ -31,10 +37,11 @@ def import_from_api(request):
         form = ImportFromAPIForm(request.POST)
         if form.is_valid():
             # remove trailing slash from base url
-            base_url = re.sub(r'\/$', '', form.cleaned_data['source_site_base_url'])
-            import_url = (
-                base_url + reverse('wagtailimportexport:export', args=[form.cleaned_data['source_page_id']])
-            )
+            base_url = re.sub(r'\/$', '',
+                              form.cleaned_data['source_site_base_url'])
+            import_url = (base_url + reverse(
+                'wagtailimportexport:export',
+                args=[form.cleaned_data['source_page_id']]))
             r = requests.get(import_url)
             import_data = r.json()
             parent_page = form.cleaned_data['parent_page']
@@ -42,15 +49,14 @@ def import_from_api(request):
             try:
                 page_count = import_pages(import_data, parent_page)
             except LookupError as e:
-                messages.error(request, _(
-                    "Import failed: %(reason)s") % {'reason': e}
-                )
+                messages.error(request,
+                               _("Import failed: %(reason)s") % {'reason': e})
             else:
-                messages.success(request, ungettext(
-                    "%(count)s page imported.",
-                    "%(count)s pages imported.",
-                    page_count) % {'count': page_count}
-                )
+                messages.success(
+                    request,
+                    ungettext("%(count)s page imported.",
+                              "%(count)s pages imported.", page_count) %
+                    {'count': page_count})
             return redirect('wagtailadmin_explore', parent_page.pk)
     else:
         form = ImportFromAPIForm()
@@ -72,21 +78,21 @@ def import_from_file(request):
     if request.method == 'POST':
         form = ImportFromFileForm(request.POST, request.FILES)
         if form.is_valid():
-            import_data = json.loads(form.cleaned_data['file'].read().decode('utf-8-sig'))
+            import_data = json.loads(
+                form.cleaned_data['file'].read().decode('utf-8-sig'))
             parent_page = form.cleaned_data['parent_page']
 
             try:
                 page_count = import_pages(import_data, parent_page)
             except LookupError as e:
-                messages.error(request, _(
-                    "Import failed: %(reason)s") % {'reason': e}
-                )
+                messages.error(request,
+                               _("Import failed: %(reason)s") % {'reason': e})
             else:
-                messages.success(request, ungettext(
-                    "%(count)s page imported.",
-                    "%(count)s pages imported.",
-                    page_count) % {'count': page_count}
-                )
+                messages.success(
+                    request,
+                    ungettext("%(count)s page imported.",
+                              "%(count)s pages imported.", page_count) %
+                    {'count': page_count})
             return redirect('wagtailadmin_explore', parent_page.pk)
     else:
         form = ImportFromFileForm()
@@ -98,16 +104,27 @@ def import_from_file(request):
 
 def export_to_file(request):
     """
-    Export a part of this source site's page tree to a JSON file
-    on this user's filesystem for subsequent import in a destination
-    site's Wagtail Admin
+    Export a part of this source site's page tree, along with all snippets 
+    and images, to a ZIP file on this user's filesystem for subsequent 
+    import in a destination site's Wagtail Admin
     """
     if request.method == 'POST':
         form = ExportForm(request.POST)
         if form.is_valid():
-            payload = export_pages(form.cleaned_data['root_page'], export_unpublished=True)
-            response = JsonResponse(payload)
-            response['Content-Disposition'] = 'attachment; filename="export.json"'
+            content_data = {
+                'pages': export_pages(
+                    root_page=form.cleaned_data['root_page'],
+                    export_unpublished=form.cleaned_data['export_unpublished'],
+                    null_users=form.cleaned_data['null_users'],
+                ),
+                'snippets': export_snippets(),
+                'images': export_image_data(null_users=form.cleaned_data['null_users']),
+            }
+            filedata = zip_content(content_data)
+            payload = io.BytesIO(filedata)
+            response = FileResponse(payload)
+            response['Content-Disposition'] = 'attachment; filename="content.zip"'
+            response.content_type = 'application/zip'
             return response
     else:
         form = ExportForm()
@@ -132,6 +149,10 @@ def export(request, page_id, export_unpublished=False):
     except Page.DoesNotExist:
         return JsonResponse({'error': _('page not found')})
 
-    payload = export_pages(root_page, export_unpublished=export_unpublished)
+    payload = {
+        'pages':
+        export_pages(
+            root_page=root_page, export_unpublished=export_unpublished)
+    }
 
     return JsonResponse(payload)
