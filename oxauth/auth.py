@@ -38,4 +38,5 @@ class OXSessionDecryptor(object):
             
         except Exception as e: 
             print("Cookie Decryption Failed: "+str(e))
+            return {"err": str(e)}
             return False
