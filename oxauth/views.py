@@ -31,10 +31,8 @@ def get_user_data(request):
     
     decrypted_user = decrypt.get_cookie_data(cookie)
 
-    # if not decrypted_user:
-    #     return JsonResponse({"logged_in": False, "cookie": True, "validation": True, "decryption": False})
-
-    return JsonResponse({"debug": decrypted_user})
+    if not decrypted_user:
+        return JsonResponse({"logged_in": False, "cookie": True, "validation": True, "decryption": False})
 
     try:
         return JsonResponse(decrypted_user.decode())
