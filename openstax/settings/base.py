@@ -323,8 +323,8 @@ MAPBOX_TOKEN = '' # should be the sk from mapbox, put in the appropriate setting
 
 # ACCOUNTS COOKIE AUTHENTICATION
 COOKIE_NAME = 'ox'
-ENCRYPTED_COOKIE_SALT = "ox-shared-salt"
-SIGNED_ENCRYPTED_COOKIE_SALT = "signed encrypted ox-shared-salt"
+ENCRYPTED_COOKIE_SALT = "cookie"
+SIGNED_ENCRYPTED_COOKIE_SALT = "signed encrypted cookie"
 
 from PIL import ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
