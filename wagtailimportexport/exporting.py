@@ -2,6 +2,8 @@ import json, os, argparse
 from zipfile import ZipFile
 from tempfile import TemporaryDirectory
 
+import wagtail
+
 from django.core.files import File
 from django.core.files.storage import get_storage_class
 from django.core.serializers.json import DjangoJSONEncoder
@@ -11,6 +13,8 @@ from wagtail.core.blocks import StreamValue
 from wagtail.images import get_image_model
 from wagtail.snippets.models import SNIPPET_MODELS
 from wagtailimportexport.compat import Page
+
+from wagtail.images.models import Image
 
 from django.conf import settings
 
@@ -45,19 +49,38 @@ def export_pages(root_page=None, export_unpublished=False, null_users=False, nul
         # skip over pages whose parents haven't already been exported
         # (which means that export_unpublished is false and the parent was unpublished)
         if i == 0 or (parent_path in exported_paths):
+
+            # Turn page data to a dictionary.
             data = json.loads(page.to_json())
+
+            # Get the list of field names where images are used.
+            images = list_images(page._meta.get_fields())
+
+            # Turning images into a dictionary and storing the image id.
+            images = {key : data[key] for key in images}
+
+            # Updating images dictionary and assigning the data of the instance
+            # if the img_id is valid.
+            for (field, img_id) in images.items():
+                if img_id: 
+                    images[field] = instance_to_data(Image.objects.get(pk=img_id), null_users=null_users)
+
+            # Null the owner of the page.
             if null_users == True and data.get('owner') is not None:
                 data['owner'] = None
-            if null_images == True and data.get('promote_image') is not None:
-                data['promote_image'] = None
-            if null_images == True and data.get('title_image') is not None:
-                data['title_image'] = None
-            if null_images == True and data.get('cover') is not None:
-                data['cover'] = None
+
+            # Null all the images.
+            if null_images == True:
+                for image in images:
+                    if data.get(image) is not None:
+                        data[image] = None
+
+            # Export page data.
             page_data.append({
                 'content': data,
                 'model': page.content_type.model,
                 'app_label': page.content_type.app_label,
+                'images': images
             })
 
             exported_paths.add(page.path)
@@ -77,15 +100,15 @@ def export_snippets():
     return snippet_data
 
 
-def export_image_data(null_users=False):
+def list_images(fields):
     """
-    Create and return a JSON-able dict of the instance's images
+    Returns the list of all fields that has the related_model of models.Image
     """
-    ImageModel = get_image_model()
-    images = ImageModel.objects.all()
-    image_data = [instance_to_data(image, null_users=null_users) for image in images]
-    return image_data
-
+    images = []
+    for field in fields:
+        if field.related_model and str(field.related_model) == "<class 'wagtail.images.models.Image'>":
+            images.append(field.name)
+    return images
 
 def instance_to_data(instance, null_users=False):
     """A utility to create JSON-able data from a model instance"""
@@ -115,10 +138,13 @@ def zip_content(content_data):
             zf.writestr(
                 'content.json',
                 json.dumps(content_data, indent=2, cls=DjangoJSONEncoder))
-            # for image_def in content_data['images']:
-            #     filename = image_def['file']['name']
-            #     with file_storage.open(filename, 'rb') as f:
-            #         zf.writestr(filename, f.read())
+            for page in content_data['pages']:
+                for image_def in page['images'].values():
+                    if image_def:
+                        print(image_def)
+                        filename = image_def['file']['name']
+                        with file_storage.open(filename, 'rb') as f:
+                            zf.writestr(filename, f.read())
         with open(zfname, 'rb') as zf:
             fd = zf.read()
     return fd

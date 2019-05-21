@@ -14,58 +14,14 @@ from wagtailimportexport.compat import messages, Page
 from wagtailimportexport.exporting import (
     export_pages,
     export_snippets,
-    export_image_data,
     zip_content,
 )
-from wagtailimportexport.forms import ExportForm, ImportFromAPIForm, ImportFromFileForm
+from wagtailimportexport.forms import ExportForm, ImportFromFileForm
 from wagtailimportexport.importing import import_pages
 
 
 def index(request):
     return render(request, 'wagtailimportexport/index.html')
-
-
-def import_from_api(request):
-    """
-    Import a part of a source site's page tree via a direct API request from
-    this Wagtail Admin to the source site
-
-    The source site's base url and the source page id of the point in the
-    tree to import defined what to import and the destination parent page
-    defines where to import it to.
-    """
-    if request.method == 'POST':
-        form = ImportFromAPIForm(request.POST)
-        if form.is_valid():
-            # remove trailing slash from base url
-            base_url = re.sub(r'\/$', '',
-                              form.cleaned_data['source_site_base_url'])
-            import_url = (base_url + reverse(
-                'wagtailimportexport:export',
-                args=[form.cleaned_data['source_page_id']]))
-            r = requests.get(import_url)
-            import_data = r.json()
-            parent_page = form.cleaned_data['parent_page']
-
-            try:
-                page_count = import_pages(import_data, parent_page)
-            except LookupError as e:
-                messages.error(request,
-                               _("Import failed: %(reason)s") % {'reason': e})
-            else:
-                messages.success(
-                    request,
-                    ungettext("%(count)s page imported.",
-                              "%(count)s pages imported.", page_count) %
-                    {'count': page_count})
-            return redirect('wagtailadmin_explore', parent_page.pk)
-    else:
-        form = ImportFromAPIForm()
-
-    return render(request, 'wagtailimportexport/import_from_api.html', {
-        'form': form,
-    })
-
 
 def import_from_file(request):
     """
@@ -117,10 +73,8 @@ def export_to_file(request):
                     root_page=form.cleaned_data['root_page'],
                     export_unpublished=form.cleaned_data['export_unpublished'],
                     null_users=form.cleaned_data['null_users'],
-                    null_images=True,
-                ),
-                #'snippets': export_snippets(),
-                #'images': export_image_data(null_users=form.cleaned_data['null_users']),
+                    null_images=form.cleaned_data['null_images'],
+                )
             }
             filedata = zip_content(content_data)
             payload = io.BytesIO(filedata)

@@ -3,7 +3,6 @@ from django.core.management.base import BaseCommand
 from wagtailimportexport.exporting import (
     export_pages,
     export_snippets,
-    export_image_data,
     zip_content,
 )
 from wagtailimportexport.compat import Page
@@ -40,9 +39,8 @@ class Command(BaseCommand):
         content_data = {
             'pages': export_pages(
                 export_unpublished=options['all_pages'],
-                null_users=options['null_users']),
-            'snippets': export_snippets(),
-            'images': export_image_data(null_users=options['null_users']),
+                null_users=options['null_users'],
+                null_images=options['null_images'])
         }
         fd = zip_content(content_data)
         with open(os.path.abspath(options['filename']), 'wb') as f:

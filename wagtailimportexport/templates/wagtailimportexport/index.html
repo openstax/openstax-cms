@@ -6,10 +6,25 @@
     {% include "wagtailadmin/shared/header.html" with title=title_str icon="download" %}
 
     <div class="nice-padding">
-        <ul>
-            <li><a href="{% url 'wagtailimportexport_admin:import_from_api' %}">{% trans "Import from API" %}</a></li>
-            <li><a href="{% url 'wagtailimportexport_admin:import_from_file' %}">{% trans "Import from file" %}</a></li>
-            <li><a href="{% url 'wagtailimportexport_admin:export_to_file' %}">{% trans "Export to file" %}</a></li>
+        <ul class="listing">
+            <li>
+                <div class="row row-flush title">
+                    <h2>
+                        <a href="{% url 'wagtailimportexport_admin:import_from_file' %}" class="col6">
+                            {% trans "Import from File" %}
+                        </a>
+                    </h2>
+                </div>
+            </li>
+            <li>
+                <div class="row row-flush title">
+                    <h2>
+                        <a href="{% url 'wagtailimportexport_admin:export_to_file' %}" class="col6">
+                            {% trans "Export to File" %}
+                        </a>
+                    </h2>
+                </div>
+            </li>
         </ul>
     </div>
 {% endblock %}

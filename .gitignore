@@ -9,5 +9,6 @@ openstax/settings/local.py
 /.idea
 /htmlcov
 /.coverage
+.DS_STORE
 
 *.bk
