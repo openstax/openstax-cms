@@ -34,8 +34,10 @@ class OXSessionDecryptor(object):
 
             pt = unpad(cipher.decrypt(encrypted_data), AES.block_size)
 
-            return json.loads(pt.decode())
+            try:
+                return json.loads(pt.decode())
+            except:
+                return json.loads(pt)
             
         except Exception as e: 
-            print("Cookie Decryption Failed: "+str(e))
-            return False
+            return {"err": "Cookie decryption failed.", "code": str(e)}
