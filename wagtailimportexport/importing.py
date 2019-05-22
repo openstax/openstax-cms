@@ -3,17 +3,46 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models, transaction
 from modelcluster.models import get_all_child_relations
 
-from wagtailimportexport.compat import Page
+from wagtail.images.models import Image
 
+from wagtailimportexport.compat import Page
+from django.core.files.images import ImageFile
+import base64
 
 @transaction.atomic()
-def import_pages(import_data, parent_page):
+def import_pages(import_data, parent_page, zf):
     """
     Take a JSON export of part of a source site's page tree
     and create those pages under the parent page
     """
     pages_by_original_path = {}
     pages_by_original_id = {}
+
+    page_images = []
+
+    for (i, page_record) in enumerate(import_data['pages']):
+        # Check whether the images that are used on the page already
+        # exists on the new environment, and if not, upload them and retreive
+        # the new foreign key.
+
+        new_img_ids = {}
+
+        for (img_fieldname, img_data) in page_record["images"].items():
+            if not img_data:
+                continue
+            
+            try:
+                localimg = Image.objects.get(file=img_data["file"]["name"])
+                new_img_ids[img_fieldname] = localimg.id
+            except:
+
+                with zf.open(img_data["file"]["name"].split("/")[-1]) as imgf:
+                    image_data = ImageFile(imgf)
+
+                    localimg = Image.objects.create(file=image_data, title=img_data["title"])
+                    new_img_ids[img_fieldname] = localimg.id
+
+        page_images.append(new_img_ids)
 
     # First create the base Page records; these contain no foreign keys, so this allows us to
     # build a complete mapping from old IDs to new IDs before we go on to importing the
@@ -23,6 +52,10 @@ def import_pages(import_data, parent_page):
     for (i, page_record) in enumerate(import_data['pages']):
         # build a base Page instance from the exported content (so that we pick up its title and other
         # core attributes)
+
+        for (field, new_value) in page_images[i].items():
+            page_record['content'][field] = new_value
+
         page = Page.from_serializable_data(page_record['content'])
         original_path = page.path
         original_id = page.id

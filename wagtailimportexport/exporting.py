@@ -141,10 +141,9 @@ def zip_content(content_data):
             for page in content_data['pages']:
                 for image_def in page['images'].values():
                     if image_def:
-                        print(image_def)
                         filename = image_def['file']['name']
                         with file_storage.open(filename, 'rb') as f:
-                            zf.writestr(filename, f.read())
+                            zf.writestr(filename.split("/")[-1], f.read())
         with open(zfname, 'rb') as zf:
             fd = zf.read()
     return fd
