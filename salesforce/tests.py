@@ -44,7 +44,8 @@ class SalesforceTest(LiveServerTestCase, WagtailPageTests):
 
     def test_login(self):
         sf = SimpleSalesforce(**settings.SALESFORCE)
-        self.assertEqual(sf.sf_instance, u'cs4.salesforce.com')
+        self.assertContains(sf.sf_instance, u'salesforce.com')
+        self.assertContains(sf.sf_instance, u'cs')
 
     def test_database_query(self):
         sf = SimpleSalesforce(**settings.SALESFORCE)
