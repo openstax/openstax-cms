@@ -11,9 +11,10 @@ from django.core.files.images import ImageFile
 import base64
 import os
 import logging
+import io
 
 @transaction.atomic()
-def import_pages(import_data, parent_page, zf):
+def import_pages(import_data, parent_page, zip_contents):
     """
     Take a JSON export of part of a source site's page tree
     and create those pages under the parent page
@@ -31,7 +32,7 @@ def import_pages(import_data, parent_page, zf):
 
             if localpage:
                 skip_pages.append(i)
-        except:
+        except Page.DoesNotExist:
             continue
 
     for (i, page_record) in enumerate(import_data['pages']):
@@ -52,18 +53,18 @@ def import_pages(import_data, parent_page, zf):
                 # Check whether image already exists.
                 localimg = Image.objects.get(file=img_data["file"]["name"])
                 new_img_ids[img_fieldname] = localimg.id
-            except:
+            except Image.DoesNotExist:
                 # Image does not exist or fails to query, so upload a new one.
                 try:
                     # Python 3.7
-                    with zf.open(img_data["file"]["name"].split("/")[-1]) as imgf:
+                    with zip_contents.open(img_data["file"]["name"].split("/")[-1]) as imgf:
                         image_data = ImageFile(imgf)
 
                         localimg = Image.objects.create(file=image_data, title=img_data["title"])
                         new_img_ids[img_fieldname] = localimg.id
-                except:
+                except io.UnsupportedOperation:
                     # Python 3.5
-                    extracted_path = zf.extract(img_data["file"]["name"].split("/")[-1], "")
+                    extracted_path = zip_contents.extract(img_data["file"]["name"].split("/")[-1], "")
 
                     with open(extracted_path, 'rb') as imgf:
                         image_data = ImageFile(imgf)

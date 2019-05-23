@@ -5,11 +5,8 @@ import zipfile
 from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.auth.models import User
 from django.test import TestCase
-#from wagtail_factories import ImageFactory
 from wagtailimportexport.compat import Page
 from wagtailimportexport import exporting  # read this aloud
-#from testapp.models import TestSnippet
-
 
 class TestExportingPages(TestCase):
     def test_export_pages(self):
@@ -53,42 +50,24 @@ class TestExportingPages(TestCase):
         page_json = json.dumps(page_data, cls=DjangoJSONEncoder)
         assert '"owner": %d' % user.pk not in page_json
 
-
-# class TestExportingSnippets(TestCase):
-#     def test_export_snippets(self):
-#         """exporting snippets returns a list of all snippets in the database"""
-#         snippet = TestSnippet.objects.create(text="Hi, folks, Snippy here.")
-#         snippet_data = exporting.export_snippets()
-#         snippet_json = json.dumps(snippet_data, cls=DjangoJSONEncoder)
-#         assert '"text": "%s"' % snippet.text in snippet_json
-
-#class TestExportingZipContent(TestCase):
-    # def test_export_zip(self):
-    #     """exporting content zip should result in a zip file containing content.json and images"""
-    #     root_page = Page.objects.first()
-    #     new_page = Page(
-    #         title="This is the New Page", slug="new-page")
-    #     root_page.add_child(instance=new_page)
-    #     image = ImageFactory(title="Very blue.")
-    #     snippet = TestSnippet.objects.create(text="Hi, folks, Snippy here.")
-    #     content_data = {
-    #         'pages': exporting.export_pages(),
-    #         'snippets': exporting.export_snippets(),
-    #         'images': exporting.export_image_data(),
-    #     }
-    #     zip_data = exporting.zip_content(content_data)
-    #     with tempfile.TemporaryDirectory() as tempdir:
-    #         zipfilename = os.path.join(tempdir, 'content.zip')
-    #         with open(zipfilename, 'wb') as f:
-    #             f.write(zip_data)
-    #         with zipfile.ZipFile(zipfilename, 'r') as zf:
-    #             assert 'content.json' in zf.namelist()
-    #             content_json = zf.read('content.json').decode('utf-8')
-
-    #     assert '"pages":' in content_json
-    #     assert '"images":' in content_json
-    #     assert '"snippets"' in content_json
-    #     content_data = json.loads(content_json)
-    #     assert len(content_data['pages']) > 1
-    #     assert len(content_data['images']) == 1
-    #     assert len(content_data['snippets']) == 1
+class TestExportingZipContent(TestCase):
+    def test_export_zip(self):
+        """exporting content zip should result in a zip file containing content.json and images"""
+        root_page = Page.objects.first()
+        new_page = Page(
+            title="This is the New Page", slug="new-page")
+        root_page.add_child(instance=new_page)
+        content_data = {
+            'pages': exporting.export_pages(),
+        }
+        zip_data = exporting.zip_content(content_data)
+        with tempfile.TemporaryDirectory() as tempdir:
+            zipfilename = os.path.join(tempdir, 'content.zip')
+            with open(zipfilename, 'wb') as f:
+                f.write(zip_data)
+            with zipfile.ZipFile(zipfilename, 'r') as zf:
+                assert 'content.json' in zf.namelist()
+                content_json = zf.read('content.json').decode('utf-8')        
+        assert '"pages":' in content_json
+        content_data = json.loads(content_json)
+        assert len(content_data['pages']) > 1

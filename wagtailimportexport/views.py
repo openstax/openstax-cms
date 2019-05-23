@@ -15,7 +15,6 @@ import requests
 from wagtailimportexport.compat import messages, Page
 from wagtailimportexport.exporting import (
     export_pages,
-    #export_snippets,
     zip_content,
 )
 from wagtailimportexport.forms import ExportForm, ImportFromFileForm
