@@ -47,17 +47,21 @@ def import_from_file(request):
                     with zf.open('content.json') as mf:
                         import_data = json.loads(mf.read().decode('utf-8-sig'))
 
-                        page_count = import_pages(import_data, parent_page, zf)
+                        page_count, skipped_page_count = import_pages(import_data, parent_page, zf)
                 
                 except LookupError as e:
                     messages.error(request, _("Import failed: %(reason)s") % {'reason': e})             
 
                 else:
-                    messages.success(
-                        request,
-                        ungettext("%(count)s page imported.",
-                                "%(count)s pages imported.", page_count) %
-                        {'count': page_count})
+                    if not skipped_page_count:
+
+                        messages.success(
+                            request,
+                            ungettext("%(count)s page imported.",
+                                    "%(count)s pages imported.", page_count) %
+                            {'count': page_count})
+                    else:
+                        messages.success(request, _("%(uploaded)s page(s) were uploaded while %(skipped)s page(s) were skipped because they were already in the environment.") % {'uploaded': page_count - skipped_page_count, 'skipped': skipped_page_count})
 
                 return redirect('wagtailadmin_explore', parent_page.pk)
     else:

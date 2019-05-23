@@ -22,11 +22,25 @@ def import_pages(import_data, parent_page, zf):
     pages_by_original_id = {}
 
     page_images = []
+    skip_pages = []
+
+    for (i, page_record) in enumerate(import_data['pages']):
+        # Skip pages that are already present to aviod slug error.
+        try:
+            localpage = Page.objects.get(slug=page_record['content']['slug'])
+
+            if localpage:
+                skip_pages.append(i)
+        except:
+            continue
 
     for (i, page_record) in enumerate(import_data['pages']):
         # Check whether the images that are used on the page already
         # exists on the new environment, and if not, upload them and retreive
         # the new foreign key.
+
+        if i in skip_pages:
+            continue
 
         new_img_ids = {}
 
@@ -56,8 +70,6 @@ def import_pages(import_data, parent_page, zf):
                         
                         localimg = Image.objects.create(file=image_data, title=img_data["title"])
                         new_img_ids[img_fieldname] = localimg.id
-
-                        print(extracted_path)
                         
                         try:
                             os.remove(extracted_path)
@@ -72,6 +84,10 @@ def import_pages(import_data, parent_page, zf):
     # text / streamfields.
     page_content_type = ContentType.objects.get_for_model(Page)
     for (i, page_record) in enumerate(import_data['pages']):
+
+        if i in skip_pages:
+            continue
+
         # build a base Page instance from the exported content (so that we pick up its title and other
         # core attributes)
 
@@ -101,6 +117,10 @@ def import_pages(import_data, parent_page, zf):
         pages_by_original_id[original_id] = page
 
     for (i, page_record) in enumerate(import_data['pages']):
+
+        if i in skip_pages:
+            continue
+
         # Get the page model of the source page by app_label and model name
         # The content type ID of the source page is not in general the same
         # between the source and destination sites but the page model needs
@@ -116,7 +136,7 @@ def import_pages(import_data, parent_page, zf):
         update_page_references(specific_page, pages_by_original_id)
         specific_page.save()
 
-    return len(import_data['pages'])
+    return len(import_data['pages']), len(skip_pages)
 
 
 def update_page_references(model, pages_by_original_id):
