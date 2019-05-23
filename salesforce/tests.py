@@ -57,9 +57,6 @@ class SalesforceTest(LiveServerTestCase, WagtailPageTests):
         out = StringIO()
         call_command('update_adopters', stdout=out)
         self.assertIn("Success", out.getvalue())
-        Adopter.objects.all()
-        self.assertTrue(
-            Adopter.objects.filter(name='Rice University').exists())
 
     def tearDown(self):
         super(WagtailPageTests, self).tearDown()
