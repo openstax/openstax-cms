@@ -42,11 +42,6 @@ class SalesforceTest(LiveServerTestCase, WagtailPageTests):
         with self.assertRaises(ValidationError):
             self.create_salesforce_setting(username="test2", password="test2", security_token="test2", sandbox=False)
 
-    def test_login(self):
-        sf = SimpleSalesforce(**settings.SALESFORCE)
-        self.assertContains(sf.sf_instance, u'salesforce.com')
-        self.assertContains(sf.sf_instance, u'cs')
-
     def test_database_query(self):
         sf = SimpleSalesforce(**settings.SALESFORCE)
         contact_info = sf.query(
