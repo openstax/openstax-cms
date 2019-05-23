@@ -7,7 +7,10 @@ from wagtail.images.models import Image
 
 from wagtailimportexport.compat import Page
 from django.core.files.images import ImageFile
+
 import base64
+import os
+import logging
 
 @transaction.atomic()
 def import_pages(import_data, parent_page, zf):
@@ -32,15 +35,34 @@ def import_pages(import_data, parent_page, zf):
                 continue
             
             try:
+                # Check whether image already exists.
                 localimg = Image.objects.get(file=img_data["file"]["name"])
                 new_img_ids[img_fieldname] = localimg.id
             except:
+                # Image does not exist or fails to query, so upload a new one.
+                try:
+                    # Python 3.7
+                    with zf.open(img_data["file"]["name"].split("/")[-1]) as imgf:
+                        image_data = ImageFile(imgf)
 
-                with zf.open(img_data["file"]["name"].split("/")[-1]) as imgf:
-                    image_data = ImageFile(imgf)
+                        localimg = Image.objects.create(file=image_data, title=img_data["title"])
+                        new_img_ids[img_fieldname] = localimg.id
+                except:
+                    # Python 3.5
+                    extracted_path = zf.extract(img_data["file"]["name"].split("/")[-1], "")
 
-                    localimg = Image.objects.create(file=image_data, title=img_data["title"])
-                    new_img_ids[img_fieldname] = localimg.id
+                    with open(extracted_path, 'rb') as imgf:
+                        image_data = ImageFile(imgf)
+                        
+                        localimg = Image.objects.create(file=image_data, title=img_data["title"])
+                        new_img_ids[img_fieldname] = localimg.id
+
+                        print(extracted_path)
+                        
+                        try:
+                            os.remove(extracted_path)
+                        except:
+                            logging.error("The following image could not be deleted after import:", extracted_path)
 
         page_images.append(new_img_ids)
 
