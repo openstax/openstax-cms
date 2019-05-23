@@ -2,7 +2,7 @@ import os, logging
 from django.core.management.base import BaseCommand
 from wagtailimportexport.exporting import (
     export_pages,
-    export_snippets,
+    #export_snippets,
     zip_content,
 )
 from wagtailimportexport.compat import Page

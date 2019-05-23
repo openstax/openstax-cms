@@ -87,17 +87,17 @@ def export_pages(root_page=None, export_unpublished=False, null_users=False, nul
     return page_data
 
 
-def export_snippets():
-    """
-    Create and return a JSON-able dict of the instance's snippets
-    """
-    snippet_data = {}
-    for Model in SNIPPET_MODELS:
-        module_name = Model.__module__.split('.')[0]
-        model_key = '.'.join([module_name, Model.__name__])  # for django.apps.apps.get_model(...)
-        snippets = Model.objects.all()
-        snippet_data[model_key] = [instance_to_data(snippet) for snippet in snippets]
-    return snippet_data
+# def export_snippets():
+#     """
+#     Create and return a JSON-able dict of the instance's snippets
+#     """
+#     snippet_data = {}
+#     for Model in SNIPPET_MODELS:
+#         module_name = Model.__module__.split('.')[0]
+#         model_key = '.'.join([module_name, Model.__name__])  # for django.apps.apps.get_model(...)
+#         snippets = Model.objects.all()
+#         snippet_data[model_key] = [instance_to_data(snippet) for snippet in snippets]
+#     return snippet_data
 
 
 def list_images(fields):
