@@ -2263,19 +2263,22 @@ class Rover(Page):
 
 
 class RoverPage(Page):
+        nav_title = models.CharField(max_length=255, null=True, blank=True)
         section_1 = StreamField([
             ('access_button_link', blocks.URLBlock()),
             ('access_button_cta', blocks.CharBlock()),
             ('image', APIImageChooserBlock()),
             ('blurb', blocks.TextBlock()),
             ('button_link', blocks.URLBlock()),
-            ('button_cta', blocks.CharBlock())
+            ('button_cta', blocks.CharBlock()),
+            ('nav_text', blocks.CharBlock(required=False))
         ])
         section_2 = StreamField([
             ('video', blocks.RawHTMLBlock()),
             ('heading', blocks.CharBlock()),
             ('subheading', blocks.TextBlock()),
             ('blurb', blocks.TextBlock()),
+            ('nav_text', blocks.CharBlock(required=False))
         ])
         section_3 = StreamField([
             ('heading', blocks.CharBlock()),
@@ -2285,7 +2288,8 @@ class RoverPage(Page):
                 ('blurb', blocks.TextBlock())
             ]))),
             ('button_link', blocks.URLBlock()),
-            ('button_cta', blocks.CharBlock())
+            ('button_cta', blocks.CharBlock()),
+            ('nav_text', blocks.CharBlock(required=False))
         ])
         section_4 = StreamField([
             ('heading', blocks.CharBlock()),
@@ -2295,7 +2299,8 @@ class RoverPage(Page):
                 ('blurb', blocks.TextBlock()),
                 ('image', APIImageChooserBlock()),
                 ('image_alt_text', blocks.CharBlock())
-            ])))
+            ]))),
+            ('nav_text', blocks.CharBlock(required=False))
         ])
         section_5 = StreamField([
             ('heading', blocks.CharBlock()),
@@ -2304,14 +2309,16 @@ class RoverPage(Page):
                 ('video', blocks.RawHTMLBlock()),
                 ('heading', blocks.CharBlock()),
                 ('blurb', blocks.TextBlock())
-            ])))
+            ]))),
+            ('nav_text', blocks.CharBlock(required=False))
         ])
         section_6 = StreamField([
             ('heading', blocks.CharBlock()),
             ('blurb', blocks.RichTextBlock()),
             ('image', APIImageChooserBlock()),
             ('image_alt_text', blocks.CharBlock()),
-            ('caption', blocks.CharBlock())
+            ('caption', blocks.CharBlock()),
+            ('nav_text', blocks.CharBlock(required=False))
         ])
         section_7 = StreamField([
             ('faqs', blocks.ListBlock(blocks.StructBlock([
@@ -2321,7 +2328,8 @@ class RoverPage(Page):
             ('webinar_button_url', blocks.URLBlock()),
             ('webinar_button_cta', blocks.CharBlock()),
             ('signup_button_url', blocks.URLBlock()),
-            ('signup_button_cta', blocks.CharBlock())
+            ('signup_button_cta', blocks.CharBlock()),
+            ('nav_text', blocks.CharBlock(required=False))
         ])
         promote_image = models.ForeignKey(
             'wagtailimages.Image',
@@ -2333,6 +2341,7 @@ class RoverPage(Page):
 
         content_panels = [
             FieldPanel('title', classname='full title', help_text="Internal name for page."),
+            FieldPanel('nav_title', help_text="Sets navigation menu title."),
             StreamFieldPanel('section_1'),
             StreamFieldPanel('section_2'),
             StreamFieldPanel('section_3'),
@@ -2352,6 +2361,7 @@ class RoverPage(Page):
 
         api_fields = [
             APIField('title'),
+            APIField('nav_title'),
             APIField('section_1'),
             APIField('section_2'),
             APIField('section_3'),

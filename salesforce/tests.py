@@ -42,10 +42,6 @@ class SalesforceTest(LiveServerTestCase, WagtailPageTests):
         with self.assertRaises(ValidationError):
             self.create_salesforce_setting(username="test2", password="test2", security_token="test2", sandbox=False)
 
-    def test_login(self):
-        sf = SimpleSalesforce(**settings.SALESFORCE)
-        self.assertEqual(sf.sf_instance, u'cs4.salesforce.com')
-
     def test_database_query(self):
         sf = SimpleSalesforce(**settings.SALESFORCE)
         contact_info = sf.query(
@@ -57,9 +53,6 @@ class SalesforceTest(LiveServerTestCase, WagtailPageTests):
         out = StringIO()
         call_command('update_adopters', stdout=out)
         self.assertIn("Success", out.getvalue())
-        Adopter.objects.all()
-        self.assertTrue(
-            Adopter.objects.filter(name='Rice University').exists())
 
     def tearDown(self):
         super(WagtailPageTests, self).tearDown()
