@@ -96,6 +96,7 @@ class NewsIndex(Page):
                 'subheading': article.subheading,
                 'pin_to_top': article.pin_to_top,
                 'article_image': article.article_image,
+                'article_image_alt': article.featured_image_alt_text,
                 'author': article.author,
                 'tags': [tag.name for tag in article.tags.all()],
             }
