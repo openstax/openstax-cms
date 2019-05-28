@@ -349,6 +349,7 @@ class AboutUsPage(Page):
     )
     def get_where_map(self):
         return build_image_url(self.where_map)
+    where_map_alt = models.CharField(max_length=255, blank=True, null=True)
     where_map_url = property(get_where_map)
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
@@ -369,6 +370,7 @@ class AboutUsPage(Page):
         APIField('where_heading'),
         APIField('where_paragraph'),
         APIField('where_map'),
+        APIField('where_map_alt'),
         APIField('where_map_url'),
         APIField('slug'),
         APIField('seo_title'),
@@ -387,6 +389,7 @@ class AboutUsPage(Page):
         FieldPanel('where_heading'),
         FieldPanel('where_paragraph'),
         ImageChooserPanel('where_map'),
+        FieldPanel('where_map_alt'),
     ]
 
     promote_panels = [
