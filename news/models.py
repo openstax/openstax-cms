@@ -92,7 +92,7 @@ class NewsIndex(Page):
         for article in articles:
             for block in article.body:
                 if block.block_type =='paragraph':
-                    paragraphs.append(block.value)
+                    paragraphs.append(str(block.value))
             article_data['{}'.format(article.slug)] = {
                 'detail_url': '/apps/cms/api/v2/pages/{}/'.format(article.pk),
                 'date': article.date,
