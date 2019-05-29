@@ -17,7 +17,7 @@ from wagtailimportexport.exporting import (
     export_pages,
     zip_content,
 )
-from wagtailimportexport.forms import ExportForm, ImportFromFileForm
+from wagtailimportexport.forms import ExportForm, ImportFromFileForm, DuplicateForm
 from wagtailimportexport.importing import (
     import_pages,
 )
@@ -25,6 +25,57 @@ from wagtailimportexport.importing import (
 
 def index(request):
     return render(request, 'wagtailimportexport/index.html')
+
+def duplicate(request, page):
+    if request.method == 'POST':
+        form = DuplicateForm(request.POST or None, user=request.user, page=page)
+        if form.is_valid():
+            try:
+                allpages = {'pages' : export_pages(root_page=Page.objects.get(pk=page))}
+
+                if len(allpages) > 1:
+                    messages.error(request, _("More than one page cannot be duplicated at a time. Please duplicate a page that is not parent.s"))  
+                else:
+                    for (p_id, pdata) in enumerate(allpages['pages']):
+                        allpages['pages'][p_id]["images"] = {}
+                        allpages['pages'][p_id]["content"]["slug"] = form.cleaned_data['new_slug']
+                        allpages['pages'][p_id]["content"]["title"] = form.cleaned_data['new_title']
+                        allpages['pages'][p_id]["content"]["draft_title"] = form.cleaned_data['new_title']
+
+                        for (f_id, fdata) in pdata["content"].items():
+                            if type(fdata) == list:
+                                for (f2_id, f2data) in enumerate(fdata):
+                                    if 'pk' in f2data:
+                                        allpages['pages'][p_id]["content"][f_id][f2_id]['pk'] = None
+
+
+                parent_page = form.cleaned_data['new_parent_page']
+
+                page_count, skipped_page_count = import_pages(allpages, parent_page, None)
+
+                if not skipped_page_count:
+                    messages.success(
+                        request,
+                        ungettext("%(count)s page duplicated.",
+                                "%(count)s pages duplicated.", page_count) %
+                        {'count': page_count})
+                else:
+                    messages.success(request, _("%(uploaded)s page(s) were duplicated while %(skipped)s page(s) were skipped because they were already in the environment.") % {'uploaded': page_count - skipped_page_count, 'skipped': skipped_page_count})
+
+                return redirect('wagtailadmin_explore', parent_page.pk)
+
+            except Page.DoesNotExist:
+                messages.error(request, _("Duplicate failed because the root page was not found."))        
+
+                return redirect('wagtailadmin_explore', page.pk)
+    else:
+        form = DuplicateForm(request.POST or None, user=request.user, page=page)
+
+    return render(request, 'wagtailimportexport/duplicate.html', {
+        'form': form,
+        'pageid': page
+    })
+
 
 def import_from_file(request):
     """
@@ -103,27 +154,3 @@ def export_to_file(request):
     return render(request, 'wagtailimportexport/export_to_file.html', {
         'form': form,
     })
-
-
-def export(request, page_id, export_unpublished=False):
-    """
-    API endpoint of this source site to export a part of the page tree
-    rooted at page_id
-
-    Requests are made by a destination site's import_from_api view.
-    """
-    try:
-        if export_unpublished:
-            root_page = Page.objects.get(id=page_id)
-        else:
-            root_page = Page.objects.get(id=page_id, live=True)
-    except Page.DoesNotExist:
-        return JsonResponse({'error': _('page not found')})
-
-    payload = {
-        'pages':
-        export_pages(
-            root_page=root_page, export_unpublished=export_unpublished)
-    }
-
-    return JsonResponse(payload)
