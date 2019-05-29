@@ -7,7 +7,6 @@ from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.core import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
 from wagtail.images import urls as wagtailimages_urls
-from wagtailimportexport import urls as wagtailimportexport_urls
 
 from .api import api_router
 from news.search import search
@@ -61,10 +60,6 @@ urlpatterns = [
     url(r'^errata/', include('errata.urls')),
     url(r'^api/errata/', include('errata.urls')),
     url(r'^apps/cms/api/errata/', include('errata.urls')),
-
-    # wagtail import export urls
-    url(r'^api/', include(wagtailimportexport_urls)),
-    url(r'^apps/cms/api/', include(wagtailimportexport_urls)),
 
     # route everything to /api/spike also...
     url(r'^api/spike/', include(wagtail_urls)),
