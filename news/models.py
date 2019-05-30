@@ -88,17 +88,13 @@ class NewsIndex(Page):
     def articles(self):
         articles = NewsArticle.objects.live().child_of(self)
         article_data = {}
-        paragraphs = []
         for article in articles:
-            for block in article.body:
-                if block.block_type =='paragraph':
-                    paragraphs.append(str(block.value))
             article_data['{}'.format(article.slug)] = {
                 'detail_url': '/apps/cms/api/v2/pages/{}/'.format(article.pk),
                 'date': article.date,
                 'heading': article.heading,
                 'subheading': article.subheading,
-                'body_blurb': paragraphs[0],
+                'body_blurb': article.first_paragraph,
                 'pin_to_top': article.pin_to_top,
                 'article_image': article.article_image,
                 'article_image_alt': article.featured_image_alt_text,
@@ -165,6 +161,14 @@ class NewsArticle(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+
+    @property
+    def first_paragraph(self):
+        paragraphs = []
+        for block in self.body:
+            if block.block_type == 'paragraph':
+                paragraphs.append(str(block.value))
+        return paragraphs[0]
 
     search_fields = Page.search_fields + [
         index.SearchField('body'),
