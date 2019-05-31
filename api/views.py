@@ -79,6 +79,7 @@ def schools(request):
     physical_city = request.GET.get('physical_city', False)
     key_institutional_partner = request.GET.get('key_institutional_partner', None)
     achieving_the_dream_school = request.GET.get('achieving_the_dream_school', None)
+    saved_one_million = request.GET.get('saved_one_million', None)
     testimonial = request.GET.get('testimonial', None)
 
     schools = School.objects.filter(long__isnull=False, lat__isnull=False)
@@ -116,6 +117,9 @@ def schools(request):
             schools = schools.filter(key_institutional_partner=True)
         if achieving_the_dream_school:
             schools = schools.filter(achieving_the_dream_school=True)
+        if saved_one_million:
+            schools = schools.filter(all_time_savings__gte = 1000000)
+            
         if testimonial:
             schools = schools.filter(testimonial__isnull=False)
 
