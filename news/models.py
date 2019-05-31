@@ -1,3 +1,5 @@
+from bs4 import BeautifulSoup
+
 from django.db import models
 from django import forms
 
@@ -168,7 +170,13 @@ class NewsArticle(Page):
         for block in self.body:
             if block.block_type == 'paragraph':
                 paragraphs.append(str(block.value))
-        return paragraphs[0]
+
+        first_paragraph_parsed = []
+        soup = BeautifulSoup(paragraphs[0], "html.parser")
+        for tag in soup.findAll('p'):
+            first_paragraph_parsed.append(tag)
+
+        return str(first_paragraph_parsed[0])
 
     search_fields = Page.search_fields + [
         index.SearchField('body'),
