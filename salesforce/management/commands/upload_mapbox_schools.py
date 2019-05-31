@@ -11,11 +11,15 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         datasets = Datasets(access_token=settings.MAPBOX_TOKEN)
         try:
-            mapbox_dataset = MapBoxDataset.objects.all()[0] #check if a dataset was already created
+            mapbox_dataset = MapBoxDataset.objects.filter(name='os-schools-live')[0] #check if a dataset was already created
             dataset_id = mapbox_dataset.dataset_id
-            dataset = datasets.read_dataset(dataset_id).json()
+            dataset_raw = datasets.read_dataset(dataset_id)
+            dataset = dataset_raw.json()
+            print("Found a dataset.")
+
         except IndexError: #it wasn't, let's do that
-            dataset = datasets.create(name='os-schools', description='A listing of OpenStax Adoptions')
+            print("Creating a new dataset.")
+            dataset = datasets.create(name='os-schools-live', description='A listing of OpenStax Adoptions')
             dataset_decoded = ast.literal_eval(dataset.content.decode())
 
             mapbox_dataset_created, _ = MapBoxDataset.objects.get_or_create(name=dataset_decoded["name"],
@@ -46,6 +50,7 @@ class Command(BaseCommand):
                     }
                     datasets.update_feature(dataset_id, school.pk, feature)
                     uploaded_schools = uploaded_schools + 1
+                    print("School uploaded succesfully. (ID: {})".format(school.pk))
                 else:
                     location_data_issue = location_data_issue + 1
                     print("Location appears incorrect in Salesforce. (ID: {})".format(school.pk))
@@ -58,4 +63,3 @@ class Command(BaseCommand):
         self.stdout.write("Total schools: {}".format(total_schools))
         self.stdout.write("Schools with missing or malformed location data: {}".format(location_data_issue))
         self.stdout.write("Total schools uploaded: {}".format(uploaded_schools))
-        self.stdout.write("fin")
