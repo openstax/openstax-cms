@@ -46,6 +46,11 @@ class MapBoxDataset(models.Model):
     name = models.CharField(max_length=255)
     dataset_id = models.CharField(max_length=255)
 
+    def save(self, *args, **kwargs):
+        if MapBoxDataset.objects.exists() and not self.pk:
+            raise ValidationError('There is can be only one MapBoxDataset instance')
+        return super(MapBoxDataset, self).save(*args, **kwargs)
+
     def __str__(self):
         return self.name
 

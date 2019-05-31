@@ -11,7 +11,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         datasets = Datasets(access_token=settings.MAPBOX_TOKEN)
         try:
-            mapbox_dataset = MapBoxDataset.objects.filter(name='os-schools-live')[0] #check if a dataset was already created
+            mapbox_dataset = MapBoxDataset.objects.first() #check if a dataset was already created
             dataset_id = mapbox_dataset.dataset_id
             dataset_raw = datasets.read_dataset(dataset_id)
             dataset = dataset_raw.json()
