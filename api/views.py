@@ -3,7 +3,7 @@ from django.http import JsonResponse, HttpResponse
 from django.db.models import Q
 from rest_framework import viewsets, generics
 from rest_framework.decorators import api_view
-from salesforce.models import Adopter, School
+from salesforce.models import Adopter, School, MapBoxDataset
 from global_settings.models import StickyNote, Footer
 from wagtail.images.models import Image
 from wagtail.documents.models import Document
@@ -67,6 +67,18 @@ def footer(request):
         'twitter_link': footer.twitter_link,
         'linkedin_link': footer.linkedin_link,
     })
+
+def mapbox(request):
+    mapbox = MapBoxDataset.objects.all()
+    response = []
+
+    for mapbox_instance in mapbox:
+        response.append({
+            'name': mapbox_instance.name,
+            'style': mapbox_instance.style_url
+        })
+
+    return JsonResponse(response, safe=False)
 
 def schools(request):
     format = request.GET.get('format', 'json')

@@ -45,6 +45,7 @@ class School(models.Model):
 class MapBoxDataset(models.Model):
     name = models.CharField(max_length=255)
     dataset_id = models.CharField(max_length=255)
+    style_url = models.CharField(max_length=255)
 
     def save(self, *args, **kwargs):
         if MapBoxDataset.objects.exists() and not self.pk:
