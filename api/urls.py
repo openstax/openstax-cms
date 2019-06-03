@@ -14,6 +14,6 @@ urlpatterns = [
     url(r'^sticky/$', sticky_note, name='sticky_note'),
     url(r'^footer/$', footer, name='footer'),
     url(r'^schools/$', schools, name='schools'),
-    url(r'^mapbox/$', mapbox, name='schools'),
+    url(r'^mapbox/$', mapbox, name='mapbox'),
 ]
 
