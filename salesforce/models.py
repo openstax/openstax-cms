@@ -26,8 +26,8 @@ class School(models.Model):
     percent_students_pell_grant = models.CharField(max_length=255, null=True, blank=True)
     current_year_students = models.CharField(max_length=255, null=True, blank=True)
     all_time_students = models.CharField(max_length=255, null=True, blank=True)
-    current_year_savings = models.CharField(max_length=255, null=True, blank=True)
-    all_time_savings = models.CharField(max_length=255, null=True, blank=True)
+    current_year_savings = models.DecimalField(max_digits=12, decimal_places=3, null=True, blank=True)
+    all_time_savings = models.DecimalField(max_digits=12, decimal_places=3, null=True, blank=True)
     physical_country = models.CharField(max_length=255, null=True, blank=True)
     physical_street = models.CharField(max_length=255, null=True, blank=True)
     physical_city = models.CharField(max_length=255, null=True, blank=True)
@@ -45,6 +45,12 @@ class School(models.Model):
 class MapBoxDataset(models.Model):
     name = models.CharField(max_length=255)
     dataset_id = models.CharField(max_length=255)
+    style_url = models.CharField(max_length=255)
+
+    def save(self, *args, **kwargs):
+        if MapBoxDataset.objects.exists() and not self.pk:
+            raise ValidationError('There is can be only one MapBoxDataset instance')
+        return super(MapBoxDataset, self).save(*args, **kwargs)
 
     def __str__(self):
         return self.name
