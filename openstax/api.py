@@ -51,8 +51,9 @@ class CachedPagesAPIEndpoint(PagesAPIEndpoint):
         
         # Overwriting the Response if ox credential does not
         # authorize faculty access.
-        if "faculty_status" not in auth_user or auth_user["faculty_status"] != "confirmed_faculty":
-            remove_locked_links_listing(response)
+        # HOTFIX: NEEDS TO BE REMOVED ONCE CACHES ARE RELEASED AFTER LOGIN
+        # if "faculty_status" not in auth_user or auth_user["faculty_status"] != "confirmed_faculty":
+        #     remove_locked_links_listing(response)
 
         return response
 
@@ -74,8 +75,9 @@ class CachedPagesAPIEndpoint(PagesAPIEndpoint):
 
         # Overwriting the Response if ox credential does not
         # authorize faculty access.
-        if "faculty_status" not in auth_user or auth_user["faculty_status"] != "confirmed_faculty":
-            remove_locked_links_detail(response)
+        # HOTFIX: NEEDS TO BE REMOVED ONCE CACHES ARE RELEASED AFTER LOGIN
+        # if "faculty_status" not in auth_user or auth_user["faculty_status"] != "confirmed_faculty":
+        #     remove_locked_links_detail(response)
 
         return response
 
