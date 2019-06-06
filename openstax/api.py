@@ -63,6 +63,13 @@ class PagesAPIEndpoint(PagesAPIEndpoint):
         response = super().detail_view(request, pk)
         page = Page.objects.get(pk=pk)
 
+        # Implementing Caching
+        if not request.GET.get('force-reload'):
+            response['Cache-Control'] = 'max-age=290304000, public'
+            response['Last-Modified'] = page.last_published_at
+        else:
+            response['Last-Modified'] = timezone.now()
+
         # Implementing User Authentication
         auth_user = json.loads(get_user_data(request).content.decode())
 
