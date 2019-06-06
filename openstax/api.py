@@ -60,15 +60,10 @@ class PagesAPIEndpoint(PagesAPIEndpoint):
 
     def detail_view(self, request, pk):
 
+        any_hidden = False
+
         response = super().detail_view(request, pk)
         page = Page.objects.get(pk=pk)
-
-        # Implementing Caching
-        if not request.GET.get('force-reload'):
-            response['Cache-Control'] = 'max-age=290304000, public'
-            response['Last-Modified'] = page.last_published_at
-        else:
-            response['Last-Modified'] = timezone.now()
 
         # Implementing User Authentication
         auth_user = json.loads(get_user_data(request).content.decode())
@@ -80,8 +75,16 @@ class PagesAPIEndpoint(PagesAPIEndpoint):
         # Overwriting the Response if ox credential does not
         # authorize faculty access.
         if "faculty_status" not in auth_user or auth_user["faculty_status"] != "confirmed_faculty":
-            remove_locked_links_detail(response)
+            any_hidden = remove_locked_links_detail(response)
 
+        # Implementing Caching
+        response['Cache-Control'] = 'max-age=290304000, public'
+        response['Last-Modified'] = page.last_published_at
+
+        # If we ended up revealing a link, then force the content to be loaded.
+        if not any_hidden or request.GET.get('force-reload'):
+            response['Last-Modified'] = timezone.now()
+        
         return response
 
 
