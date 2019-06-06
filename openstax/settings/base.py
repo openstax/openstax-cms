@@ -106,6 +106,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'wagtail.core.middleware.SiteMiddleware',
     'wagtail.contrib.redirects.middleware.RedirectMiddleware',
+    'flags.middleware.FlagConditionsMiddleware',
 ]
 
 AUTHENTICATION_BACKENDS = (
@@ -217,6 +218,7 @@ INSTALLED_APPS = [
     'wagtail.contrib.settings',
     'wagtail.contrib.modeladmin',
     'wagtailimportexport',
+    'flags',
 
 ]
 
@@ -302,6 +304,11 @@ RAVEN_CONFIG = {
     # If you are using git, you can also automatically configure the
     # release based on the git info.
     'release': raven.fetch_git_sha(os.path.dirname(os.pardir)),
+}
+
+# FLAGS
+FLAGS = {
+    'hide_faculty_resources': []
 }
 
 
