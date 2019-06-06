@@ -7,6 +7,8 @@ from wagtail.core.models import Page
 from oxauth.views import get_user_data
 from oxauth.functions import get_user_info
 
+from django.utils import timezone
+
 from .functions import remove_locked_links_listing, remove_locked_links_detail
 
 import json
@@ -42,11 +44,6 @@ class PagesAPIEndpoint(PagesAPIEndpoint):
 
         response = super().listing_view(request)
         
-        # Implementing Caching
-        if not request.GET.get('force-reload'):
-            response['Cache-Control'] = 'max-age=290304000, public'
-            response['Last-Modified'] = page.last_published_at
-
         # Implementing User Authentication
         auth_user = json.loads(get_user_data(request).content.decode())
 
@@ -65,11 +62,6 @@ class PagesAPIEndpoint(PagesAPIEndpoint):
 
         response = super().detail_view(request, pk)
         page = Page.objects.get(pk=pk)
-
-        # Implementing Caching
-        if not request.GET.get('force-reload'):
-            response['Cache-Control'] = 'max-age=290304000, public'
-            response['Last-Modified'] = page.last_published_at
 
         # Implementing User Authentication
         auth_user = json.loads(get_user_data(request).content.decode())
