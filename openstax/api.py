@@ -37,11 +37,16 @@ class DocumentsAPIEndpoint(DocumentsAPIEndpoint):
     ]
 
         
-class CachedPagesAPIEndpoint(PagesAPIEndpoint):
+class PagesAPIEndpoint(PagesAPIEndpoint):
     def listing_view(self, request):
 
         response = super().listing_view(request)
         
+        # Implementing Caching
+        if not request.GET.get('force-reload'):
+            response['Cache-Control'] = 'max-age=290304000, public'
+            response['Last-Modified'] = page.last_published_at
+
         # Implementing User Authentication
         auth_user = json.loads(get_user_data(request).content.decode())
 
@@ -51,9 +56,8 @@ class CachedPagesAPIEndpoint(PagesAPIEndpoint):
         
         # Overwriting the Response if ox credential does not
         # authorize faculty access.
-        # HOTFIX: NEEDS TO BE REMOVED ONCE CACHES ARE RELEASED AFTER LOGIN
-        # if "faculty_status" not in auth_user or auth_user["faculty_status"] != "confirmed_faculty":
-        #     remove_locked_links_listing(response)
+        if "faculty_status" not in auth_user or auth_user["faculty_status"] != "confirmed_faculty":
+            remove_locked_links_listing(response)
 
         return response
 
@@ -63,8 +67,9 @@ class CachedPagesAPIEndpoint(PagesAPIEndpoint):
         page = Page.objects.get(pk=pk)
 
         # Implementing Caching
-        response['Cache-Control'] = 'max-age=290304000, public'
-        response['Last-Modified'] = page.last_published_at
+        if not request.GET.get('force-reload'):
+            response['Cache-Control'] = 'max-age=290304000, public'
+            response['Last-Modified'] = page.last_published_at
 
         # Implementing User Authentication
         auth_user = json.loads(get_user_data(request).content.decode())
@@ -75,9 +80,8 @@ class CachedPagesAPIEndpoint(PagesAPIEndpoint):
 
         # Overwriting the Response if ox credential does not
         # authorize faculty access.
-        # HOTFIX: NEEDS TO BE REMOVED ONCE CACHES ARE RELEASED AFTER LOGIN
-        # if "faculty_status" not in auth_user or auth_user["faculty_status"] != "confirmed_faculty":
-        #     remove_locked_links_detail(response)
+        if "faculty_status" not in auth_user or auth_user["faculty_status"] != "confirmed_faculty":
+            remove_locked_links_detail(response)
 
         return response
 
@@ -86,6 +90,6 @@ class CachedPagesAPIEndpoint(PagesAPIEndpoint):
 # The first parameter is the name of the endpoint (eg. pages, images). This
 # is used in the URL of the endpoint
 # The second parameter is the endpoint class that handles the requests
-api_router.register_endpoint('pages', CachedPagesAPIEndpoint)
+api_router.register_endpoint('pages', PagesAPIEndpoint)
 api_router.register_endpoint('images', ImagesAPIEndpoint)
 api_router.register_endpoint('documents', DocumentsAPIEndpoint)
