@@ -11,6 +11,8 @@ from django.utils import timezone
 
 from .functions import remove_locked_links_listing, remove_locked_links_detail
 
+from flags.state import flag_state
+
 import json
 
 
@@ -54,7 +56,8 @@ class PagesAPIEndpoint(PagesAPIEndpoint):
         # Overwriting the Response if ox credential does not
         # authorize faculty access.
         if "faculty_status" not in auth_user or auth_user["faculty_status"] != "confirmed_faculty":
-            remove_locked_links_listing(response)
+            if flag_state('hide_faculty_resources', bool=True):
+                remove_locked_links_listing(response)
 
         return response
 
@@ -75,7 +78,8 @@ class PagesAPIEndpoint(PagesAPIEndpoint):
         # Overwriting the Response if ox credential does not
         # authorize faculty access.
         if "faculty_status" not in auth_user or auth_user["faculty_status"] != "confirmed_faculty":
-            any_hidden = remove_locked_links_detail(response)
+            if flag_state('hide_faculty_resources', bool=True):
+                any_hidden = remove_locked_links_detail(response)
 
         # Implementing Caching
         response['Cache-Control'] = 'max-age=290304000, public'
