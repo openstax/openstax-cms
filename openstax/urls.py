@@ -7,7 +7,6 @@ from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.core import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
 from wagtail.images import urls as wagtailimages_urls
-from wagtailimportexport import urls as wagtailimportexport_urls
 
 from .api import api_router
 from news.search import search
@@ -25,7 +24,6 @@ urlpatterns = [
     url(r'^admin/', include(wagtailadmin_urls)),
     url(r'^django-admin/error/', throw_error, name='throw_error'),
 
-    url(r'^auth/', include('accounts.urls')),
     url(r'^oxauth', include('oxauth.urls')), # new auth package
     url(r'^documents/', include(wagtaildocs_urls)),
     url(r'^images/', include(wagtailimages_urls)),
@@ -43,9 +41,6 @@ urlpatterns = [
     url(r'^blog-feed/atom/$', AtomBlogFeed()),
     url(r'^errata/', include('errata.urls')),
     url(r'^apps/cms/api/errata/', include('errata.urls')),
-
-    # wagtail import export urls
-    url(r'^apps/cms/api/', include(wagtailimportexport_urls)),
 
     # route everything to /api/spike also...
     url(r'^apps/cms/api/spike/', include(wagtail_urls)),

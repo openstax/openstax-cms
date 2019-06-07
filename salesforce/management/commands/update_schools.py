@@ -62,8 +62,8 @@ class Command(BaseCommand):
                                                                       physical_city=sf_school['BillingCity'],
                                                                       physical_state_province=sf_school['BillingState'],
                                                                       physical_zip_postal_code=sf_school['BillingPostalCode'],
-                                                                      long=sf_school['Address_Latitude__c'],
-                                                                      lat=sf_school['Address_Longitude__c'],
+                                                                      lat=sf_school['Address_Latitude__c'],
+                                                                      long=sf_school['Address_Longitude__c'],
                                                                       testimonial=sf_school['Testimonial__c'],
                                                                       testimonial_name=sf_school['Testimonial_Name__c'],
                                                                       testimonial_position=sf_school['Testimonial_Position__c'])

@@ -106,10 +106,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'wagtail.core.middleware.SiteMiddleware',
     'wagtail.contrib.redirects.middleware.RedirectMiddleware',
+    'flags.middleware.FlagConditionsMiddleware',
 ]
 
 AUTHENTICATION_BACKENDS = (
-    'accounts.backend.OpenStax',
+    'oxauth.backend.OpenStax',
     'django.contrib.auth.backends.ModelBackend',
 )
 
@@ -117,10 +118,10 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.social_details',
     'social_core.pipeline.social_auth.social_uid',
     #'social_core.pipeline.social_auth.social_user',
-    'accounts.pipelines.social_user',
+    'oxauth.pipelines.social_user',
     'social_core.pipeline.user.create_user',
-    'accounts.pipelines.save_profile',
-    'accounts.pipelines.update_email',
+    'oxauth.pipelines.save_profile',
+    'oxauth.pipelines.update_email',
     'social_core.pipeline.social_auth.associate_user',
     'social_core.pipeline.social_auth.load_extra_data',
     'social_core.pipeline.user.user_details',
@@ -129,7 +130,7 @@ SOCIAL_AUTH_PIPELINE = (
 IMPORT_USER_PIPELINE = (
     'social_django.pipeline.social_auth.social_user',
     'social_django.pipeline.user.create_user',
-    'accounts.pipelines.save_profile',
+    'oxauth.pipelines.save_profile',
     'social_django.pipeline.social_auth.associate_user',
     'social_django.pipeline.user.user_details',
 )
@@ -192,7 +193,6 @@ INSTALLED_APPS = [
     'books',
     'news',
     'allies',
-    'accounts',
     'snippets',
     'salesforce',
     'mail',
@@ -218,6 +218,7 @@ INSTALLED_APPS = [
     'wagtail.contrib.settings',
     'wagtail.contrib.modeladmin',
     'wagtailimportexport',
+    'flags',
 
 ]
 
@@ -305,6 +306,11 @@ RAVEN_CONFIG = {
     'release': raven.fetch_git_sha(os.path.dirname(os.pardir)),
 }
 
+# FLAGS
+FLAGS = {
+    'hide_faculty_resources': []
+}
+
 
 # WAGTAIL SETTINGS
 WAGTAIL_SITE_NAME = 'openstax'
@@ -321,6 +327,11 @@ HOST_LINK = 'https://openstax.org'
 WAGTAIL_GRAVATAR_PROVIDER_URL = '//www.gravatar.com/avatar'
 
 MAPBOX_TOKEN = '' # should be the sk from mapbox, put in the appropriate settings file
+
+# ACCOUNTS COOKIE AUTHENTICATION
+COOKIE_NAME = 'ox'
+ENCRYPTED_COOKIE_SALT = "ox-shared-salt"
+SIGNED_ENCRYPTED_COOKIE_SALT = "signed encrypted ox-shared-salt"
 
 from PIL import ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True

@@ -73,6 +73,7 @@ def search(request):
             'id': result.id,
             'title': result.title,
             'subheading': result.subheading,
+            'body_blurb': result.first_paragraph,
             'article_image': result.article_image,
             'author': result.author,
             'pin_to_top': result.pin_to_top,

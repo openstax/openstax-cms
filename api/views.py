@@ -3,7 +3,7 @@ from django.http import JsonResponse, HttpResponse
 from django.db.models import Q
 from rest_framework import viewsets, generics
 from rest_framework.decorators import api_view
-from salesforce.models import Adopter, School
+from salesforce.models import Adopter, School, MapBoxDataset
 from global_settings.models import StickyNote, Footer
 from wagtail.images.models import Image
 from wagtail.documents.models import Document
@@ -68,6 +68,18 @@ def footer(request):
         'linkedin_link': footer.linkedin_link,
     })
 
+def mapbox(request):
+    mapbox = MapBoxDataset.objects.all()
+    response = []
+
+    for mapbox_instance in mapbox:
+        response.append({
+            'name': mapbox_instance.name,
+            'style': mapbox_instance.style_url
+        })
+
+    return JsonResponse(response, safe=False)
+
 def schools(request):
     format = request.GET.get('format', 'json')
     q = request.GET.get('q', False)
@@ -79,6 +91,7 @@ def schools(request):
     physical_city = request.GET.get('physical_city', False)
     key_institutional_partner = request.GET.get('key_institutional_partner', None)
     achieving_the_dream_school = request.GET.get('achieving_the_dream_school', None)
+    saved_one_million = request.GET.get('saved_one_million', None)
     testimonial = request.GET.get('testimonial', None)
 
     schools = School.objects.filter(long__isnull=False, lat__isnull=False)
@@ -116,6 +129,9 @@ def schools(request):
             schools = schools.filter(key_institutional_partner=True)
         if achieving_the_dream_school:
             schools = schools.filter(achieving_the_dream_school=True)
+        if saved_one_million:
+            schools = schools.filter(all_time_savings__gte = 1000000)
+            
         if testimonial:
             schools = schools.filter(testimonial__isnull=False)
 

@@ -105,6 +105,9 @@ class PageTests(WagtailPageTests):
     def setUp(self):
         pass
 
+    def test_can_create_ipp_page(self):
+        self.assertCanCreateAt(HomePage, InstitutionalPartnerProgramPage)
+
     def test_api_redirect(self):
         pages = Page.objects.all()
         for page in pages:

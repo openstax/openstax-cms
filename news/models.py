@@ -1,3 +1,5 @@
+from bs4 import BeautifulSoup
+
 from django.db import models
 from django import forms
 
@@ -94,8 +96,10 @@ class NewsIndex(Page):
                 'date': article.date,
                 'heading': article.heading,
                 'subheading': article.subheading,
+                'body_blurb': article.first_paragraph,
                 'pin_to_top': article.pin_to_top,
                 'article_image': article.article_image,
+                'article_image_alt': article.featured_image_alt_text,
                 'author': article.author,
                 'tags': [tag.name for tag in article.tags.all()],
             }
@@ -159,6 +163,20 @@ class NewsArticle(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+
+    @property
+    def first_paragraph(self):
+        paragraphs = []
+        for block in self.body:
+            if block.block_type == 'paragraph':
+                paragraphs.append(str(block.value))
+
+        first_paragraph_parsed = []
+        soup = BeautifulSoup(paragraphs[0], "html.parser")
+        for tag in soup.findAll('p'):
+            first_paragraph_parsed.append(tag)
+
+        return str(first_paragraph_parsed[0])
 
     search_fields = Page.search_fields + [
         index.SearchField('body'),
