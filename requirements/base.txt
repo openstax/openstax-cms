@@ -14,6 +14,7 @@ django-rest-auth==0.6.0
 django-taggit==0.23.0
 django-treebeard==4.2.0
 django-storages==1.5.1
+django-flags==4.1.2
 djangorestframework==3.9.1
 draftjs-exporter==2.1.5
 google-compute-engine==2.8.3
