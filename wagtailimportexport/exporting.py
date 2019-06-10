@@ -122,7 +122,6 @@ def list_documents(fields):
     """
     documents = []
     for field in fields:
-        print(str(field.related_model))
         if field.related_model and str(field.related_model) == "<class 'wagtail.documents.models.Document'>":
             documents.append(field.name)
     return documents
