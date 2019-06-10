@@ -1,40 +1,55 @@
 import ast
 from django.core.management.base import BaseCommand
 from salesforce.models import School, MapBoxDataset
-from mapbox import Datasets
+from django.core.files.storage import get_storage_class
+from mapbox import Uploader
 from django.conf import settings
+
+import json
+import os
+import tempfile
 
 
 class Command(BaseCommand):
     help = "upload geoJSON school data to Mapbox"
 
     def handle(self, *args, **options):
-        datasets = Datasets(access_token=settings.MAPBOX_TOKEN)
+
         try:
-            mapbox_dataset = MapBoxDataset.objects.first() #check if a dataset was already created
-            dataset_id = mapbox_dataset.dataset_id
-            dataset_raw = datasets.read_dataset(dataset_id)
-            dataset = dataset_raw.json()
-            print("Found a dataset.")
+            # Try to load the tileset with tileset information from Django database.
+            print("Trying to load the tileset from Django database...")
 
-        except IndexError: #it wasn't, let's do that
-            print("Creating a new dataset.")
-            dataset = datasets.create(name='os-schools-live', description='A listing of OpenStax Adoptions')
-            dataset_decoded = ast.literal_eval(dataset.content.decode())
+            # Retrieving the first record.
+            mapbox_tileset = MapBoxDataset.objects.first()
+            tileset_id = mapbox_tileset.tileset_id
+            tileset_name = mapbox_tileset.name
 
-            mapbox_dataset_created, _ = MapBoxDataset.objects.get_or_create(name=dataset_decoded["name"],
-                                                                            dataset_id=dataset_decoded["id"])
-            dataset_id = mapbox_dataset_created.dataset_id
+            print("Found tileset:", tileset_id)
 
+        except IndexError:
+            # If there is no such tileset, we are going to create one.
+            print("Could not find a tileset. Please create a tileset in Django database before this process.")
 
-        #cool - we have a dataset, now let's fill it with school location data
+            tileset_id = None
+        
+        # Stopping if no tileset is found.
+        if not tileset_id:
+            pass
+        
+        # Initializing uploader service.
+        service = Uploader(access_token=settings.MAPBOX_TOKEN)
+
+        # Retrieving schools list.
         schools = School.objects.all()
-        total_schools = 0
-        uploaded_schools = 0
-        location_data_issue = 0
+        
+        # Initializing json response.
+        allfeatures = {
+            "features": [],
+            "type": "FeatureCollection"
+        }
 
+        # Loading all school information to the json response.
         for school in schools:
-            total_schools = total_schools + 1
             if school.lat and school.long:
                 if school.lat != 0 or school.long != 0:
                     feature = {
@@ -48,18 +63,19 @@ class Command(BaseCommand):
                             'id': school.id
                         }
                     }
-                    datasets.update_feature(dataset_id, school.pk, feature)
-                    uploaded_schools = uploaded_schools + 1
-                    print("School uploaded succesfully. (ID: {})".format(school.pk))
-                else:
-                    location_data_issue = location_data_issue + 1
-                    print("Location appears incorrect in Salesforce. (ID: {})".format(school.pk))
-            else:
-                location_data_issue = location_data_issue + 1
-                print("Location is not populated. (ID: {})".format(school.pk))
+                    allfeatures["features"].append(feature)
+
+        file_storage = get_storage_class()()
+
+        with tempfile.TemporaryDirectory() as tempdir:
+            fname = os.path.join(tempdir, 'schools.geojson')
+            with open(fname, 'w') as f:
+                f.write(json.dumps(allfeatures))
                 
-
-
-        self.stdout.write("Total schools: {}".format(total_schools))
-        self.stdout.write("Schools with missing or malformed location data: {}".format(location_data_issue))
-        self.stdout.write("Total schools uploaded: {}".format(uploaded_schools))
+            with open(fname, 'rb') as f:
+                upload_resp = service.upload(f, tileset_id, name=tileset_name)
+                
+                if upload_resp.status_code == 201:
+                    print("Upload successful.")
+                else:
+                    print("Upload failed with code:", upload_resp.status_code)
