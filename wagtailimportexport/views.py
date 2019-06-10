@@ -113,8 +113,6 @@ def import_from_file(request):
 
                         null_pks(import_data)
 
-                        print(import_data)
-
                         page_count, skipped_page_count = import_pages(import_data, parent_page, zf)
                 
                 except LookupError as e:
