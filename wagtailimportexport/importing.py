@@ -4,9 +4,11 @@ from django.db import models, transaction
 from modelcluster.models import get_all_child_relations
 
 from wagtail.images.models import Image
+from wagtail.documents.models import Document
 
 from wagtailimportexport.compat import Page
 from django.core.files.images import ImageFile
+from django.core.files.base import File
 
 import base64
 import os
@@ -23,6 +25,7 @@ def import_pages(import_data, parent_page, zip_contents):
     pages_by_original_id = {}
 
     page_images = []
+    page_documents = []
     skip_pages = []
 
     for (i, page_record) in enumerate(import_data['pages']):
@@ -34,6 +37,50 @@ def import_pages(import_data, parent_page, zip_contents):
                 skip_pages.append(i)
         except Page.DoesNotExist:
             continue
+
+    for (i, page_record) in enumerate(import_data['pages']):
+        # Check whether the documents that are used on the page already
+        # exists on the new environment, and if not, upload them and retreive
+        # the new foreign key.
+
+        if i in skip_pages:
+            continue
+
+        new_doc_ids = {}
+
+        for (doc_fieldname, doc_data) in page_record["documents"].items():
+            if not doc_data:
+                continue
+
+            try:
+                # Check whether the document already exists.
+                localdoc = Document.objects.get(file=doc_data["file"])
+                new_doc_ids[doc_fieldname] = localdoc.id
+            except Document.DoesNotExist:
+                # Document does not exists or fails to query, so upload a new one.
+                try:
+                    # Python 3.7
+                    with zip_contents.open(doc_data["file"].split("/")[-1]) as docf:
+                        document_data = File(docf)
+
+                        localdoc = Document.objects.create(file=document_data, title=doc_data["title"])
+                        new_doc_ids[doc_fieldname] = localdoc.id
+                except io.UnsupportedOperation:
+                    # Python 3.5
+                    extracted_path = zip_contents.extract(doc_data["file"].split("/")[-1], "")
+
+                    with open(extracted_path, 'rb') as docf:
+                        document_data = File(docf)
+                        
+                        localdoc = Document.objects.create(file=document_data, title=doc_data["title"])
+                        new_doc_ids[doc_fieldname] = localdoc.id
+                        
+                        try:
+                            os.remove(extracted_path)
+                        except:
+                            logging.error("The following document could not be deleted after import:", extracted_path)
+
+        page_documents.append(new_doc_ids)
 
     for (i, page_record) in enumerate(import_data['pages']):
         # Check whether the images that are used on the page already
@@ -93,6 +140,9 @@ def import_pages(import_data, parent_page, zip_contents):
         # core attributes)
 
         for (field, new_value) in page_images[i].items():
+            page_record['content'][field] = new_value
+        
+        for (field, new_value) in page_documents[i].items():
             page_record['content'][field] = new_value
 
         page = Page.from_serializable_data(page_record['content'])
