@@ -15,12 +15,13 @@ from wagtail.snippets.models import SNIPPET_MODELS
 from wagtailimportexport.compat import Page
 
 from wagtail.images.models import Image
+from wagtail.documents.models import Document
 
 from django.conf import settings
 
 
 
-def export_pages(root_page=None, export_unpublished=False, null_users=False, null_images=True):
+def export_pages(root_page=None, export_unpublished=False, null_users=False, null_images=True, null_docs=True):
     """
     Create a JSON-able dict definition of part of a site's page tree 
     starting from root_page and descending into its descendants
@@ -59,12 +60,24 @@ def export_pages(root_page=None, export_unpublished=False, null_users=False, nul
             # Turning images into a dictionary and storing the image id.
             images = {key : data[key] for key in images}
 
+            # Get the list of field names where documents are used.
+            documents = list_documents(page._meta.get_fields())
+
+            # Turning documents into a dictionary and storing the doc id.
+            documents = {key : data[key] for key in documents}
+
             # Updating images dictionary and assigning the data of the instance
             # if the img_id is valid.
             for (field, img_id) in images.items():
                 if img_id: 
                     images[field] = instance_to_data(Image.objects.get(pk=img_id), null_users=null_users)
 
+            # Updating documents dictionary and assigning the data of the instance
+            # if the doc_id is valid.
+            for (field, doc_id) in documents.items():
+                if doc_id: 
+                    documents[field] = instance_to_data(Document.objects.get(pk=doc_id), null_users=null_users)
+            
             # Null the owner of the page.
             if null_users == True and data.get('owner') is not None:
                 data['owner'] = None
@@ -74,13 +87,20 @@ def export_pages(root_page=None, export_unpublished=False, null_users=False, nul
                 for image in images:
                     if data.get(image) is not None:
                         data[image] = None
+            
+            # Null all the documents.
+            if null_docs == True:
+                for doc in documents:
+                    if data.get(doc) is not None:
+                        data[doc] = None
 
             # Export page data.
             page_data.append({
                 'content': data,
                 'model': page.content_type.model,
                 'app_label': page.content_type.app_label,
-                'images': images
+                'images': images,
+                'documents': documents
             })
 
             exported_paths.add(page.path)
@@ -95,6 +115,16 @@ def list_images(fields):
         if field.related_model and str(field.related_model) == "<class 'wagtail.images.models.Image'>":
             images.append(field.name)
     return images
+
+def list_documents(fields):
+    """
+    Returns the list of all fields that has the related_model of models.Documents
+    """
+    documents = []
+    for field in fields:
+        if field.related_model and str(field.related_model) == "<class 'wagtail.documents.models.Document'>":
+            documents.append(field.name)
+    return documents
 
 def instance_to_data(instance, null_users=False):
     """A utility to create JSON-able data from a model instance"""
@@ -128,6 +158,12 @@ def zip_content(content_data):
                 for image_def in page['images'].values():
                     if image_def:
                         filename = image_def['file']['name']
+                        with file_storage.open(filename, 'rb') as f:
+                            zf.writestr(filename.split("/")[-1], f.read())
+                
+                for doc_def in page['documents'].values():
+                    if doc_def:
+                        filename = doc_def['file']
                         with file_storage.open(filename, 'rb') as f:
                             zf.writestr(filename.split("/")[-1], f.read())
         with open(zfname, 'rb') as zf:

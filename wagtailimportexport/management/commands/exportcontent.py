@@ -40,7 +40,8 @@ class Command(BaseCommand):
             'pages': export_pages(
                 export_unpublished=options['all_pages'],
                 null_users=options['null_users'],
-                null_images=options['null_images'])
+                null_images=options['null_images'],
+                null_docs=options['null_docs'])
         }
         fd = zip_content(content_data)
         with open(os.path.abspath(options['filename']), 'wb') as f:

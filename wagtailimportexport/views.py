@@ -153,6 +153,7 @@ def export_to_file(request):
                     export_unpublished=form.cleaned_data['export_unpublished'],
                     null_users=form.cleaned_data['null_users'],
                     null_images=form.cleaned_data['null_images'],
+                    null_docs=form.cleaned_data['null_docs'],
                 )
             }
             filedata = zip_content(content_data)

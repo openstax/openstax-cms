@@ -45,6 +45,11 @@ class ExportForm(forms.Form):
         required=False,
         help_text=_("If True, image references will be nulled and images that are used on the page will be exported along with the rest of the content. If unchecked, the export will have no image references."),
     )
+    null_docs = forms.BooleanField(
+        initial=True,
+        required=False,
+        help_text=_("If True, document references will be nulled and documents that are used on the page will be exported along with the rest of the content. If unchecked, the export will have no docs references."),
+    )
 
 class DuplicateForm(forms.Form):
     def __init__(self, *args, **kwargs):
