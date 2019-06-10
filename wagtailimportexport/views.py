@@ -26,6 +26,31 @@ from wagtailimportexport.importing import (
 def index(request):
     return render(request, 'wagtailimportexport/index.html')
 
+def null_pks(allpages, form = None):
+    """
+    Nullify primary keys in streamfield objects to ensure the original page
+    will have their ancillaries.
+
+    form argument will be passed if duplicate method is used to overwrite slug, title, and draft_title.
+    Otherwise, we assume that wagtailimportexport will be used for transfer in between different
+    environments, and we will remove link_document.
+    """
+    for (p_id, pdata) in enumerate(allpages['pages']):
+
+        if form:
+            allpages['pages'][p_id]["images"] = {}
+            allpages['pages'][p_id]["content"]["slug"] = form.cleaned_data['new_slug']
+            allpages['pages'][p_id]["content"]["title"] = form.cleaned_data['new_title']
+            allpages['pages'][p_id]["content"]["draft_title"] = form.cleaned_data['new_title']
+
+        for (f_id, fdata) in pdata["content"].items():
+            if type(fdata) == list:
+                for (f2_id, f2data) in enumerate(fdata):
+                    if 'pk' in f2data:
+                        allpages['pages'][p_id]["content"][f_id][f2_id]['pk'] = None
+                    if not form and 'link_document' in f2data:
+                        allpages['pages'][p_id]["content"][f_id][f2_id]['link_document'] = None
+                        
 def duplicate(request, page):
     if request.method == 'POST':
         form = DuplicateForm(request.POST or None, user=request.user, page=page)
@@ -36,18 +61,7 @@ def duplicate(request, page):
                 if len(allpages) > 1:
                     messages.error(request, _("More than one page cannot be duplicated at a time. Please duplicate a page that is not parent.s"))  
                 else:
-                    for (p_id, pdata) in enumerate(allpages['pages']):
-                        allpages['pages'][p_id]["images"] = {}
-                        allpages['pages'][p_id]["content"]["slug"] = form.cleaned_data['new_slug']
-                        allpages['pages'][p_id]["content"]["title"] = form.cleaned_data['new_title']
-                        allpages['pages'][p_id]["content"]["draft_title"] = form.cleaned_data['new_title']
-
-                        for (f_id, fdata) in pdata["content"].items():
-                            if type(fdata) == list:
-                                for (f2_id, f2data) in enumerate(fdata):
-                                    if 'pk' in f2data:
-                                        allpages['pages'][p_id]["content"][f_id][f2_id]['pk'] = None
-
+                    null_pks(allpages, form)
 
                 parent_page = form.cleaned_data['new_parent_page']
 
@@ -96,6 +110,8 @@ def import_from_file(request):
                 try:
                     with zf.open('content.json') as mf:
                         import_data = json.loads(mf.read().decode('utf-8-sig'))
+
+                        null_pks(import_data)
 
                         page_count, skipped_page_count = import_pages(import_data, parent_page, zf)
                 
