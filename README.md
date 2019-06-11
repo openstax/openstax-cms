@@ -165,3 +165,5 @@ API Endpoints
  `/apps/cms/api/news/[slug]` - Returns the content of a news article. Wagtail API endpoint: `/api/v2/pages/?slug=[news-article=slug]`.
 
  `/apps/cms/api/pages` - Returns a page based on slug, eg. `/api/pages/openstax-homepage`. Wagtail API endpoint: `/api/v2/pages/?slug=openstax-homepage`.
+
+`/apps/cms/api/flags` - Returns the list of all available feature flags. Appending by `?flag=<flagname>` lists all set conditions for the given flag.

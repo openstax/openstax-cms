@@ -9,7 +9,7 @@ from wagtail.images.models import Image
 from wagtail.documents.models import Document
 from .models import ProgressTracker
 from .serializers import AdopterSerializer, ImageSerializer, DocumentSerializer, ProgressSerializer
-
+from flags.sources import get_flags
 
 class AdopterViewSet(viewsets.ModelViewSet):
     queryset = Adopter.objects.all()
@@ -142,3 +142,30 @@ def schools(request):
         return HttpResponse(response, content_type='application/json')
     else:
         return JsonResponse({'error': 'Invalid format requested.'})
+
+def flags(request):
+    q_flag = request.GET.get('flag', False)
+
+    list_flags = get_flags(sources=None, ignore_errors=False)
+
+    if not q_flag:
+        # We return the list of all flags.
+        data = []
+        for (flag, fobject) in list_flags.items():
+            data.append({
+                'name': flag
+            })
+        return JsonResponse(data, safe=False)
+    else:
+        # We return the enabled settings for the set flag.
+        if q_flag in list_flags:
+            data = [{'name': q_flag, "conditions": []}]
+            for condition in list_flags[q_flag].conditions:
+                data[0]['conditions'].append({
+                    'required': condition.__dict__['required'],
+                    'type': condition.__dict__['condition'],
+                    'value': condition.__dict__['value']
+                })
+            return JsonResponse(data, safe=False)
+        else:
+            return JsonResponse([{'error': 'The flag does not exist.'}], safe=False)
