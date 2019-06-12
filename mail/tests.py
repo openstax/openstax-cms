@@ -25,7 +25,7 @@ class MailTest(TestCase):
         csrf_token = csrf.get_token(request)
 
     def test_send(self):
-        response = self.client.post('/api/mail/send_mail/', {'to_address': 'noreply@openstax.org',
+        response = self.client.post('/apps/cms/api/mail/send_mail/', {'to_address': 'noreply@openstax.org',
                                                              'from_name': 'Openstax',
                                                              'from_address': 'noreply@openstax.org',
                                                              'subject': 'Test Subject',
