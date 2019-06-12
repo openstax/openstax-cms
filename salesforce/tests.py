@@ -5,7 +5,7 @@ from django.core.management import call_command
 from django.test import LiveServerTestCase, TestCase
 from django.utils.six import StringIO
 from django.core.exceptions import ValidationError
-from salesforce.models import Adopter, SalesforceSettings
+from salesforce.models import Adopter, SalesforceSettings, MapBoxDataset
 from salesforce.views import Salesforce
 from simple_salesforce import Salesforce as SimpleSalesforce
 from wagtail.tests.utils import WagtailPageTests
@@ -58,3 +58,12 @@ class SalesforceTest(LiveServerTestCase, WagtailPageTests):
         super(WagtailPageTests, self).tearDown()
         super(LiveServerTestCase, self).tearDown()
 
+
+class MapboxTest(TestCase):
+    def create_mapbox_setting(self, name="test", tileset_id="test", style_url="test"):
+        return MapBoxDataset.objects.create(name=name, tileset_id=tileset_id, style_url=style_url)
+    
+    def test_mapbox_setting_creation(self):
+        setting = self.create_mapbox_setting()
+        self.assertTrue(isinstance(setting, MapBoxDataset))
+        self.assertEqual(setting.__str__(), setting.name)
