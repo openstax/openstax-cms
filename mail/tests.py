@@ -55,5 +55,4 @@ class MailTest(TestCase):
         return redirect
 
     def test_slashless_apis_are_good(self):
-        assertPathDoesNotRedirectToTrailingSlash(self, '/api/mail/send_mail')
         assertPathDoesNotRedirectToTrailingSlash(self, '/apps/cms/api/mail/send_mail')
