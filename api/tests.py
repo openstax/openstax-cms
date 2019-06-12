@@ -91,3 +91,11 @@ class APITests(TestCase, WagtailTestUtils):
     def test_school_api_redirect(self):
         response = self.client.get('/apps/cms/api/schools')
         self.assertEqual(response.status_code, 301)
+
+    def test_mapbox_api_redirect(self):
+        response = self.client.get('/apps/cms/api/mapbox')
+        self.assertEqual(response.status_code, 301)
+    
+    def test_flags_api_redirect(self):
+        response = self.client.get('/apps/cms/api/flags')
+        self.assertEqual(response.status_code, 301)
