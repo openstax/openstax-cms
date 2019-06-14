@@ -10,6 +10,9 @@ from wagtailimportexport.compat import Page
 from django.urls import reverse
 from wagtailimportexport import views  # read this aloud
 
+class TestClass(object):
+    pass
+
 class TestViews(TestCase):
     def test_null_pks(self):
         """
@@ -22,7 +25,8 @@ class TestViews(TestCase):
                     'test': [
                         {
                             'pk': 12,
-                            'haha': 'yup'
+                            'haha': 'yup',
+                            'link_document': 'omg'
                         }
                     ]
                 }
@@ -33,6 +37,42 @@ class TestViews(TestCase):
 
         assert allpages['pages'][0]['content']['test'][0]['pk'] == None
         assert allpages['pages'][0]['content']['test'][0]['haha'] == 'yup'
+        assert allpages['pages'][0]['content']['test'][0]['link_document'] == None
+
+    def test_null_pks_form(self):
+        """
+        Testing null_pk method.
+        """
+
+        form = TestClass()
+        setattr(form, 'cleaned_data', {
+            'new_title': 'test2',
+            'new_slug': 'test2'
+        })
+
+        allpages = {'pages': [
+            {
+                'content': {
+                    'test': [
+                        {
+                            'pk': 12,
+                            'haha': 'yup'
+                        }
+                    ],
+                    'title': 'test',
+                    'slug': 'test',
+                    'draft_title': 'test'
+                }
+            }
+        ]}
+
+        views.null_pks(allpages, form)
+
+        assert allpages['pages'][0]['content']['test'][0]['pk'] == None
+        assert allpages['pages'][0]['content']['test'][0]['haha'] == 'yup'
+        assert allpages['pages'][0]['content']['title'] == 'test2'
+        assert allpages['pages'][0]['content']['draft_title'] == 'test2'
+        assert allpages['pages'][0]['content']['slug'] == 'test2'
 
 class TestForms(TestCase, WagtailTestUtils):
     def setUp(self):
