@@ -15,14 +15,15 @@ class OXSessionDecryptor(object):
         self.secret = hashlib.pbkdf2_hmac('sha1', secret_key_base.encode(), encrypted_cookie_salt, iterations, keylen)[:32]
         self.signsecret = hashlib.pbkdf2_hmac('sha1', secret_key_base.encode(), encrypted_signed_cookie_salt, iterations, keylen)
 
-    def validate_cookie(self, cookie):
-        data, digest = cookie.split('--')
+    # TODO: Fix the validation, and run the validation function as well.
+    # def validate_cookie(self, cookie):
+    #     data, digest = cookie.split('--')
         
-        myhmac = hmac.new(self.signsecret, digestmod=hashlib.sha1)
-        myhmac.update(data.encode())
-        decrypted_digest = myhmac.hexdigest()
+    #     myhmac = hmac.new(self.signsecret, digestmod=hashlib.sha1)
+    #     myhmac.update(data.encode())
+    #     decrypted_digest = myhmac.hexdigest()
 
-        return hmac.compare_digest(digest, decrypted_digest)
+    #     return hmac.compare_digest(digest, decrypted_digest)
 
     def get_cookie_data(self, cookie):
 

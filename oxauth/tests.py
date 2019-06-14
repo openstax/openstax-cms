@@ -7,6 +7,7 @@ from django.conf import settings
 from django.urls import reverse
 
 from oxauth.functions import get_token, get_user_info
+from oxauth.views import login, get_user_data, logout
 from .auth import OXSessionDecryptor
 
 
@@ -38,6 +39,26 @@ class AccountsTestCase(TestCase):
     def test_oauth_login_url(self):
         response = self.client.get(reverse('social:begin', args=['openstax']))
         self.assertNotEqual(response.status_code, 404)
+
+    def test_login(self):
+        response = self.client.get(reverse('login'))
+        self.assertNotEqual(response.status_code, 404)
+    
+    def test_logout(self):
+        response = self.client.get(reverse('logout'))
+        self.assertNotEqual(response.status_code, 404)
+    
+    def test_user_notloggedin(self):
+        response = self.client.get(reverse('user'))
+
+        response_readable = json.loads(response.content.decode())
+
+        self.assertNotEqual(response.status_code, 404)
+        self.assertIn("decryption", response_readable)
+        self.assertIn("logged_in", response_readable)
+        self.assertIn("cookie", response_readable)
+        self.assertIn("validation", response_readable)
+
 
     # TODO: Fix the validation, and run the validation function as well.
     # def test_validate_cookie(self):

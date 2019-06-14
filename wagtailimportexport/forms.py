@@ -2,6 +2,7 @@ from django import forms
 from django.utils.translation import ugettext as _
 
 from wagtailimportexport.compat import AdminPageChooser, Page, wagtailadmin_widgets, WAGTAIL_VERSION_2_OR_GREATER
+from django.utils.translation import ungettext, ugettext_lazy as _
 
 
 admin_page_params = {
