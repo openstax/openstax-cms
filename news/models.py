@@ -18,12 +18,24 @@ from wagtail.snippets.blocks import SnippetChooserBlock
 from wagtail.snippets.edit_handlers import SnippetChooserPanel
 from wagtail.snippets.models import register_snippet
 from wagtail.api import APIField
+from wagtail.images.api.fields import ImageRenditionField
 
 from modelcluster.fields import ParentalKey
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from taggit.models import TaggedItemBase
 from openstax.functions import build_image_url
 from snippets.models import NewsSource
+
+class ImageChooserBlock(ImageChooserBlock):
+    def get_api_representation(self, value, context=None):
+        if value:
+            print(dir(value))
+            return {
+                'id': value.id,
+                'title': value.title,
+                'original': value.get_rendition('original').attrs_dict,
+                'small': value.get_rendition('width-300').attrs_dict,
+            }
 
 class PullQuoteBlock(StructBlock):
     quote = TextBlock("quote title")
@@ -50,6 +62,7 @@ class ImageBlock(StructBlock):
     caption = RichTextBlock()
     alignment = ImageFormatChoiceBlock()
     alt_text = blocks.CharBlock(required=False)
+
 
 
 class AlignedHTMLBlock(StructBlock):
@@ -210,6 +223,7 @@ class NewsArticle(Page):
         APIField('subheading'),
         APIField('author'),
         APIField('article_image'),
+        APIField('featured_image_small', serializer=ImageRenditionField('fill-300x150', source='featured_image')),
         APIField('featured_image_alt_text'),
         APIField('tags'),
         APIField('body'),
