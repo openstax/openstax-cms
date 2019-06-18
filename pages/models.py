@@ -2334,6 +2334,16 @@ class RoverPage(Page):
             ('signup_button_cta', blocks.CharBlock()),
             ('nav_text', blocks.CharBlock(required=False))
         ])
+        popup = StreamField([
+            ('content', blocks.ListBlock(blocks.StructBlock([
+                ('headline', blocks.CharBlock()),
+                ('instructions', blocks.TextBlock()),
+                ('sign_in_text', blocks.CharBlock()),
+                ('other_option_text', blocks.CharBlock()),
+                ('other_option_url', blocks.URLBlock()),
+                ('background_image', APIImageChooserBlock())
+            ])))
+        ], null=True)
         promote_image = models.ForeignKey(
             'wagtailimages.Image',
             null=True,
@@ -2352,6 +2362,7 @@ class RoverPage(Page):
             StreamFieldPanel('section_5'),
             StreamFieldPanel('section_6'),
             StreamFieldPanel('section_7'),
+            StreamFieldPanel('popup'),
         ]
 
         promote_panels = [
@@ -2372,6 +2383,7 @@ class RoverPage(Page):
             APIField('section_5'),
             APIField('section_6'),
             APIField('section_7'),
+            APIField('popup'),
             APIField('slug'),
             APIField('seo_title'),
             APIField('search_description'),
