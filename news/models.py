@@ -34,7 +34,7 @@ class ImageChooserBlock(ImageChooserBlock):
                 'id': value.id,
                 'title': value.title,
                 'original': value.get_rendition('original').attrs_dict,
-                'small': value.get_rendition('width-300').attrs_dict,
+                'small': value.get_rendition('width-420').attrs_dict,
             }
 
 class PullQuoteBlock(StructBlock):
@@ -223,7 +223,7 @@ class NewsArticle(Page):
         APIField('subheading'),
         APIField('author'),
         APIField('article_image'),
-        APIField('featured_image_small', serializer=ImageRenditionField('fill-300x150', source='featured_image')),
+        APIField('featured_image_small', serializer=ImageRenditionField('width-420', source='featured_image')),
         APIField('featured_image_alt_text'),
         APIField('tags'),
         APIField('body'),
