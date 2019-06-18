@@ -29,7 +29,6 @@ from snippets.models import NewsSource
 class ImageChooserBlock(ImageChooserBlock):
     def get_api_representation(self, value, context=None):
         if value:
-            print(dir(value))
             return {
                 'id': value.id,
                 'title': value.title,
