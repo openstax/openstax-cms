@@ -2339,7 +2339,8 @@ class RoverPage(Page):
                 ('headline', blocks.CharBlock()),
                 ('instructions', blocks.TextBlock()),
                 ('sign_in_text', blocks.CharBlock()),
-                ('cancel_text', blocks.CharBlock()),
+                ('other_option_text', blocks.CharBlock()),
+                ('other_option_url', blocks.URLBlock()),
                 ('background_image', APIImageChooserBlock())
             ])))
         ], null=True)
