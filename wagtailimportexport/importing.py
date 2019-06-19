@@ -63,22 +63,31 @@ def import_pages(import_data, parent_page, zip_contents):
                     with zip_contents.open(doc_data["file"].split("/")[-1]) as docf:
                         document_data = File(docf)
 
-                        localdoc = Document.objects.create(file=document_data, title=doc_data["title"])
-                        new_doc_ids[doc_fieldname] = localdoc.id
+                        try:
+                            with transaction.atomic():
+                                localdoc = Document.objects.create(file=document_data, title=doc_data["title"])
+                                new_doc_ids[doc_fieldname] = localdoc.id
+                        except IntegrityError:
+                            logging.error("Integrity error while uploading a document:", doc_data["title"])
+                        
                 except io.UnsupportedOperation:
                     # Python 3.5
                     extracted_path = zip_contents.extract(doc_data["file"].split("/")[-1], "")
 
                     with open(extracted_path, 'rb') as docf:
                         document_data = File(docf)
-                        
-                        localdoc = Document.objects.create(file=document_data, title=doc_data["title"])
-                        new_doc_ids[doc_fieldname] = localdoc.id
-                        
+
                         try:
-                            os.remove(extracted_path)
-                        except:
-                            logging.error("The following document could not be deleted after import:", extracted_path)
+                            with transaction.atomic():
+                                localdoc = Document.objects.create(file=document_data, title=doc_data["title"])
+                                new_doc_ids[doc_fieldname] = localdoc.id
+
+                                try:
+                                    os.remove(extracted_path)
+                                except:
+                                    logging.error("The following document could not be deleted after import:", extracted_path)
+                        except IntegrityError:
+                            logging.error("Integrity error while uploading a document:", doc_data["title"])
 
         page_documents.append(new_doc_ids)
 
