@@ -1,6 +1,6 @@
 from django.apps import apps
 from django.contrib.contenttypes.models import ContentType
-from django.db import models, transaction
+from django.db import models, transaction, IntegrityError
 from modelcluster.models import get_all_child_relations
 
 from wagtail.images.models import Image
