@@ -53,6 +53,8 @@ def import_pages(import_data, parent_page, zip_contents):
             if not doc_data:
                 continue
 
+            new_doc_ids[doc_fieldname] = None
+
             try:
                 # Check whether the document already exists.
                 localdoc = Document.objects.get(file=doc_data["file"])
@@ -105,6 +107,8 @@ def import_pages(import_data, parent_page, zip_contents):
         for (img_fieldname, img_data) in page_record["images"].items():
             if not img_data:
                 continue
+
+            new_img_ids[img_fieldname] = None
             
             try:
                 # Check whether image already exists.
