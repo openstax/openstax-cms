@@ -14,6 +14,7 @@ import base64
 import os
 import logging
 import io
+import tempfile
 
 @transaction.atomic()
 def import_pages(import_data, parent_page, zip_contents):
@@ -72,7 +73,7 @@ def import_pages(import_data, parent_page, zip_contents):
                         
                 except io.UnsupportedOperation:
                     # Python 3.5
-                    extracted_path = zip_contents.extract(doc_data["file"].split("/")[-1], "")
+                    extracted_path = zip_contents.extract(doc_data["file"].split("/")[-1], tempfile.mkdtemp())
 
                     with open(extracted_path, 'rb') as docf:
                         document_data = File(docf)
@@ -120,7 +121,7 @@ def import_pages(import_data, parent_page, zip_contents):
                         new_img_ids[img_fieldname] = localimg.id
                 except io.UnsupportedOperation:
                     # Python 3.5
-                    extracted_path = zip_contents.extract(img_data["file"]["name"].split("/")[-1], "")
+                    extracted_path = zip_contents.extract(img_data["file"]["name"].split("/")[-1], tempfile.mkdtemp())
 
                     with open(extracted_path, 'rb') as imgf:
                         image_data = ImageFile(imgf)
