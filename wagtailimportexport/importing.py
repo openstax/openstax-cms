@@ -82,7 +82,7 @@ def import_pages(import_data, parent_page, zip_contents):
 
                         try:
                             with transaction.atomic():
-                                localdoc = Document.objects.create(file=document_data, title=doc_data["title"])
+                                localdoc = Document.objects.create(file=document_data, title=doc_data["title"], upload_to='documents')
                                 new_doc_ids[doc_fieldname] = localdoc.id
 
                                 try:
@@ -130,7 +130,7 @@ def import_pages(import_data, parent_page, zip_contents):
                     with open(extracted_path, 'rb') as imgf:
                         image_data = ImageFile(imgf)
                         
-                        localimg = Image.objects.create(file=image_data, title=img_data["title"])
+                        localimg = Image.objects.create(file=image_data, title=img_data["title"], upload_to='images')
                         new_img_ids[img_fieldname] = localimg.id
                         
                         try:
