@@ -48,8 +48,13 @@ def null_pks(allpages, form = None):
                 for (f2_id, f2data) in enumerate(fdata):
                     if 'pk' in f2data:
                         allpages['pages'][p_id]["content"][f_id][f2_id]['pk'] = None
-                    if not form and 'link_document' in f2data:
-                        allpages['pages'][p_id]["content"][f_id][f2_id]['link_document'] = None
+                    if not form:
+                        if 'link_document' in f2data:
+                            allpages['pages'][p_id]["content"][f_id][f2_id]['link_document'] = None
+                        if 'book_ally' in f2data:
+                            allpages['pages'][p_id]["content"][f_id][f2_id]['book_ally'] = None
+                        if 'ally' in f2data:
+                            allpages['pages'][p_id]["content"][f_id][f2_id]['ally'] = None
                         
 def duplicate(request, page):
     if request.method == 'POST':
