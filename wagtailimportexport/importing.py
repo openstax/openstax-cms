@@ -55,6 +55,9 @@ def import_pages(import_data, parent_page, zip_contents):
 
             new_doc_ids[doc_fieldname] = None
 
+            # TODO: Fix Document Upload
+            continue
+
             try:
                 # Check whether the document already exists.
                 localdoc = Document.objects.get(file=doc_data["file"])
@@ -82,7 +85,7 @@ def import_pages(import_data, parent_page, zip_contents):
 
                         try:
                             with transaction.atomic():
-                                localdoc = Document.objects.create(file=document_data, title=doc_data["title"], upload_to='documents')
+                                localdoc = Document.objects.create(file=document_data, title=doc_data["title"])
                                 new_doc_ids[doc_fieldname] = localdoc.id
 
                                 try:
@@ -125,12 +128,12 @@ def import_pages(import_data, parent_page, zip_contents):
                         new_img_ids[img_fieldname] = localimg.id
                 except io.UnsupportedOperation:
                     # Python 3.5
-                    extracted_path = zip_contents.extract(img_data["file"]["name"].split("/")[-1], tempfile.mkdtemp())
+                    extracted_path = zip_contents.extract(img_data["file"]["name"].split("/")[-1], "")
 
                     with open(extracted_path, 'rb') as imgf:
                         image_data = ImageFile(imgf)
                         
-                        localimg = Image.objects.create(file=image_data, title=img_data["title"], upload_to='images')
+                        localimg = Image.objects.create(file=image_data, title=img_data["title"])
                         new_img_ids[img_fieldname] = localimg.id
                         
                         try:
