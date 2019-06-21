@@ -1,6 +1,6 @@
 from django.apps import apps
 from django.contrib.contenttypes.models import ContentType
-from django.db import models, transaction
+from django.db import models, transaction, IntegrityError
 from modelcluster.models import get_all_child_relations
 
 from wagtail.images.models import Image
@@ -14,6 +14,7 @@ import base64
 import os
 import logging
 import io
+import tempfile
 
 @transaction.atomic()
 def import_pages(import_data, parent_page, zip_contents):
@@ -52,6 +53,11 @@ def import_pages(import_data, parent_page, zip_contents):
             if not doc_data:
                 continue
 
+            new_doc_ids[doc_fieldname] = None
+
+            # TODO: Fix Document Upload
+            continue
+
             try:
                 # Check whether the document already exists.
                 localdoc = Document.objects.get(file=doc_data["file"])
@@ -63,22 +69,31 @@ def import_pages(import_data, parent_page, zip_contents):
                     with zip_contents.open(doc_data["file"].split("/")[-1]) as docf:
                         document_data = File(docf)
 
-                        localdoc = Document.objects.create(file=document_data, title=doc_data["title"])
-                        new_doc_ids[doc_fieldname] = localdoc.id
+                        try:
+                            with transaction.atomic():
+                                localdoc = Document.objects.create(file=document_data, title=doc_data["title"])
+                                new_doc_ids[doc_fieldname] = localdoc.id
+                        except IntegrityError:
+                            logging.error("Integrity error while uploading a document:", doc_data["title"])
+                        
                 except io.UnsupportedOperation:
                     # Python 3.5
-                    extracted_path = zip_contents.extract(doc_data["file"].split("/")[-1], "")
+                    extracted_path = zip_contents.extract(doc_data["file"].split("/")[-1], tempfile.mkdtemp())
 
                     with open(extracted_path, 'rb') as docf:
                         document_data = File(docf)
-                        
-                        localdoc = Document.objects.create(file=document_data, title=doc_data["title"])
-                        new_doc_ids[doc_fieldname] = localdoc.id
-                        
+
                         try:
-                            os.remove(extracted_path)
-                        except:
-                            logging.error("The following document could not be deleted after import:", extracted_path)
+                            with transaction.atomic():
+                                localdoc = Document.objects.create(file=document_data, title=doc_data["title"])
+                                new_doc_ids[doc_fieldname] = localdoc.id
+
+                                try:
+                                    os.remove(extracted_path)
+                                except:
+                                    logging.error("The following document could not be deleted after import:", extracted_path)
+                        except IntegrityError:
+                            logging.error("Integrity error while uploading a document:", doc_data["title"])
 
         page_documents.append(new_doc_ids)
 
@@ -95,6 +110,8 @@ def import_pages(import_data, parent_page, zip_contents):
         for (img_fieldname, img_data) in page_record["images"].items():
             if not img_data:
                 continue
+
+            new_img_ids[img_fieldname] = None
             
             try:
                 # Check whether image already exists.

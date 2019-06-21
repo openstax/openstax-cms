@@ -430,6 +430,7 @@ class Book(Page):
     authors = StreamField([
         ('author', AuthorBlock()),
     ], blank=True, null=True)
+    
     print_isbn_10 = models.CharField(max_length=255, blank=True, null=True)
     print_isbn_13 = models.CharField(max_length=255, blank=True, null=True)
     digital_isbn_10 = models.CharField(max_length=255, blank=True, null=True)
