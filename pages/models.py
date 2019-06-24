@@ -787,8 +787,6 @@ class GeneralPage(Page):
         ImageChooserPanel('promote_image')
     ]
 
-    max_count = 1
-
 
 class EcosystemAllies(Page):
     page_description = models.TextField()
