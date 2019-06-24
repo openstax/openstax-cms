@@ -33,7 +33,6 @@ class ImageChooserBlock(ImageChooserBlock):
                 'id': value.id,
                 'title': value.title,
                 'original': value.get_rendition('original').attrs_dict,
-                'small': value.get_rendition('width-420').attrs_dict,
             }
 
 class PullQuoteBlock(StructBlock):
