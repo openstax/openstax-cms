@@ -102,7 +102,5 @@ class BookTests(WagtailPageTests):
         self.assertCanNotCreateAt(HomePage, Book)
 
     def test_slashless_apis_are_good(self):
-        assertPathDoesNotRedirectToTrailingSlash(self, '/api/books')
         assertPathDoesNotRedirectToTrailingSlash(self, '/apps/cms/api/books')
-        assertPathDoesNotRedirectToTrailingSlash(self, '/api/books/slug')
         assertPathDoesNotRedirectToTrailingSlash(self, '/apps/cms/api/books/slug')
