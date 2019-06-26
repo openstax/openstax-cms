@@ -430,7 +430,7 @@ class Book(Page):
     authors = StreamField([
         ('author', AuthorBlock()),
     ], blank=True, null=True)
-    
+
     print_isbn_10 = models.CharField(max_length=255, blank=True, null=True)
     print_isbn_13 = models.CharField(max_length=255, blank=True, null=True)
     digital_isbn_10 = models.CharField(max_length=255, blank=True, null=True)
@@ -601,7 +601,7 @@ class Book(Page):
         InlinePanel('book_student_resources', label="Student Resources"),
     ]
     author_panel = [
-        InlinePanel('book_contributing_authors', label="Contributing Authors"),
+        StreamFieldPanel('authors')
     ]
 
     edit_handler = TabbedInterface([
@@ -633,7 +633,6 @@ class Book(Page):
         APIField('book_allies'),
         APIField('book_student_resources'),
         APIField('book_faculty_resources'),
-        APIField('book_contributing_authors'),
         APIField('publish_date'),
         APIField('authors'),
         APIField('print_isbn_10'),
