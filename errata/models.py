@@ -89,6 +89,27 @@ ERRATA_RESOURCES = (
 )
 
 
+def is_user_blocked(account_id):
+    block_query = BlockedUser.objects.filter(account_id=account_id)
+
+    if block_query:
+        raise ValidationError('This account does not have privileges to submit an erratum.')
+
+class BlockedUser(models.Model):
+    account_id = models.IntegerField(blank=True, null=True, validators=[MinValueValidator(0)])
+    reason = models.TextField(blank=True, null=True)
+
+    @property
+    def fullname(self):
+        try:
+            user = get_user_info(self.account_id)
+            return user['fullname']
+        except:
+            return None
+
+    def __str__(self):
+        return str(self.account_id)
+
 class Errata(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
@@ -143,7 +164,7 @@ class Errata(models.Model):
     # TODO: We are keeping the Foreign Key to the local user until the migrations to production are complete, then remove submitted_by and submitter_email_address
     submitted_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
     submitter_email_address = models.EmailField(blank=True, null=True)
-    submitted_by_account_id = models.IntegerField(blank=True, null=True, validators=[MinValueValidator(0)])
+    submitted_by_account_id = models.IntegerField(blank=True, null=True, validators=[MinValueValidator(0), is_user_blocked])
 
     file_1 = models.FileField(upload_to='errata/user_uploads/1/', blank=True, null=True)
     file_2 = models.FileField(upload_to='errata/user_uploads/2/', blank=True, null=True)
