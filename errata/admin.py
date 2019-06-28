@@ -14,7 +14,7 @@ from django.utils.html import mark_safe
 
 from extraadminfilters.filters import UnionFieldListFilter
 
-from .models import Errata, InternalDocumentation
+from .models import Errata, BlockedUser, InternalDocumentation
 from .forms import ErrataForm
 
 
@@ -27,7 +27,6 @@ class ErrataResource(resources.ModelResource):
 
 class InlineInternalImage(admin.TabularInline):
     model = InternalDocumentation
-    
 
 class ErrataAdmin(ExportActionModelAdmin):
     resource_class = ErrataResource
@@ -224,3 +223,4 @@ class ErrataAdmin(ExportActionModelAdmin):
         return super(ErrataAdmin, self).get_form(request, obj, **kwargs)
 
 admin.site.register(Errata, ErrataAdmin)
+admin.site.register(BlockedUser)
