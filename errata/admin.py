@@ -28,6 +28,9 @@ class ErrataResource(resources.ModelResource):
 class InlineInternalImage(admin.TabularInline):
     model = InternalDocumentation
 
+class BlockedUserAdmin(admin.ModelAdmin):
+    list_display = ('account_id', 'fullname', 'reason',)
+
 class ErrataAdmin(ExportActionModelAdmin):
     resource_class = ErrataResource
 
@@ -223,4 +226,4 @@ class ErrataAdmin(ExportActionModelAdmin):
         return super(ErrataAdmin, self).get_form(request, obj, **kwargs)
 
 admin.site.register(Errata, ErrataAdmin)
-admin.site.register(BlockedUser)
+admin.site.register(BlockedUser, BlockedUserAdmin)

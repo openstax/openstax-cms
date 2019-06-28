@@ -36,13 +36,20 @@ def get_user_info(uid):
             except (ValueError, IndexError):
                 email = None  # no saved emails
 
+            # update full name if possible
+            try: 
+                fullname = data['items'][0]['full_name']
+            except (ValueError, IndexError):
+                fullname = None
+
             try:
                 user_data = {
                     'faculty_status': data['items'][0]['faculty_status'],
                     'email': email,
                     'self_reported_role': data['items'][0]['self_reported_role'],
                     'faculty_status': data['items'][0]['faculty_status'],
-                    'applications': data['items'][0]['applications']
+                    'applications': data['items'][0]['applications'],
+                    'fullname': fullname
                 }
             except IndexError:
                 return False

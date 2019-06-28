@@ -99,6 +99,14 @@ class BlockedUser(models.Model):
     account_id = models.IntegerField(blank=True, null=True, validators=[MinValueValidator(0)])
     reason = models.TextField(blank=True, null=True)
 
+    @property
+    def fullname(self):
+        try:
+            user = get_user_info(self.account_id)
+            return user['fullname']
+        except:
+            return None
+
     def __str__(self):
         return str(self.account_id)
 
