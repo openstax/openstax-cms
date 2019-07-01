@@ -33,13 +33,13 @@ def get_user_info(uid):
                 contact_infos = data['items'][0]['contact_infos']
                 most_recent_email = max(contact_infos, key=lambda x: x['id'])
                 email = most_recent_email['value']
-            except (ValueError, IndexError):
+            except (ValueError, IndexError, KeyError):
                 email = None  # no saved emails
 
             # update full name if possible
             try: 
                 fullname = data['items'][0]['full_name']
-            except (ValueError, IndexError):
+            except (ValueError, IndexError, KeyError):
                 fullname = None
 
             try:
