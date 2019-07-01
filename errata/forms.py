@@ -3,7 +3,7 @@ from .models import Errata, ERRATA_RESOLUTIONS, ERRATA_STATUS, ERRATA_ERROR_TYPE
 
 class ErrataForm(forms.ModelForm):
     class Media:
-        js = ('errata/errata-admin.js', 'errata/errata-admin-ui.js', )
+        js = ('errata/errata-admin-ui.js', )
 
 
 class ErrataModelForm(forms.ModelForm):
