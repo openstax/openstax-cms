@@ -88,16 +88,35 @@ ERRATA_RESOURCES = (
     (OTHER, 'Other'),
 )
 
+BLOCK_TYPES = (
+    ('Shadown Ban', 'Shadow Ban'),
+    ('Force Block', 'Force Block'),
+)
+
 
 def is_user_blocked(account_id):
     block_query = BlockedUser.objects.filter(account_id=account_id)
 
-    if block_query:
+    if block_query and block_query[0].type == "Force Block":
         raise ValidationError('This account does not have privileges to submit an erratum.')
+
+def is_user_shadow_blocked(account_id):
+    block_query = BlockedUser.objects.filter(account_id=account_id)
+
+    if block_query and block_query[0].type == "Shadown Ban":
+        return True
+    else:
+        return False
 
 class BlockedUser(models.Model):
     account_id = models.IntegerField(blank=True, null=True, validators=[MinValueValidator(0)])
     reason = models.TextField(blank=True, null=True)
+    type = models.CharField(
+        max_length=100,
+        choices=BLOCK_TYPES,
+        blank=True,
+        null=True
+    )
 
     @property
     def fullname(self):
@@ -222,6 +241,10 @@ class Errata(models.Model):
             self.resolution_notes = 'This a technical error and the proper departments have been notified so that it can be fixed. Thank you for your submission.'
         if self.resolution == 'More Information Requested':
             self.resolution_notes = 'Thank you for the feedback. Unfortunately, our reviewers were unable to locate this error. Please submit a new report with additional information, such as a link to the relevant content, or a screenshot.'
+
+        # set to archived if user is shadow banned
+        if(is_user_shadow_blocked(self.submitted_by_account_id)):
+            self.archived = True
 
         super(Errata, self).save(*args, **kwargs)
 
