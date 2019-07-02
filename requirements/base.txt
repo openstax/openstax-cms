@@ -55,7 +55,7 @@ tablib==0.12.1
 xlrd==1.1.0
 xlwt==1.3.0
 
-wagtail-import-export-tool==0.9.3
+# wagtail-import-export-tool==0.9.3
 
 # sso stuff
 pycryptodome>=3.8.1
