@@ -107,7 +107,7 @@ def import_page(uploaded_archive, parent_page):
                         page_record['content'][field] = new_value
                 
                     # Create page instance.
-                    page = Page.from_serializable_data(page_record['content'])
+                    page = Page.from_serializable_data(page_record['content'], check_fks=False, strict_fks=False)
 
                     original_path = page.path
                     original_id = page.id
