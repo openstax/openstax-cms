@@ -17,7 +17,7 @@ def get_token():
     return token
 
 
-def get_user_info(uid):
+def get_user_info(uid=None):
     if uid:
         token = get_token()
         url = settings.USERS_QUERY + urlencode({
