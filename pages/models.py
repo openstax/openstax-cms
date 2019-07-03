@@ -932,6 +932,16 @@ class OurImpact(Page):
 
 class MapPage(Page):
     header_text = models.CharField(max_length=255)
+    map_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    def get_map_image(self):
+        return build_image_url(self.map_image)
+    map_image_url = property(get_map_image)
     section_1_cards = StreamField([
         ('card', blocks.StructBlock([
             ('image', ImageBlock()),
@@ -985,6 +995,7 @@ class MapPage(Page):
         APIField('title'),
         APIField('header_text'),
         APIField('section_1_cards'),
+        APIField('map_image_url'),
         APIField('section_2_header_1'),
         APIField('section_2_blurb_1'),
         APIField('section_2_cta_1'),
@@ -1008,6 +1019,7 @@ class MapPage(Page):
     content_panels = [
         FieldPanel('title', classname='full title'),
         FieldPanel('header_text'),
+        ImageChooserPanel('map_image'),
         StreamFieldPanel('section_1_cards'),
         FieldPanel('section_2_header_1'),
         FieldPanel('section_2_blurb_1'),
