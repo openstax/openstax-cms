@@ -219,6 +219,7 @@ INSTALLED_APPS = [
     'wagtail.contrib.modeladmin',
     'wagtailimportexport',
     'flags',
+    'duplicatebooks'
 
 ]
 
