@@ -82,8 +82,7 @@ class PagesAPIEndpoint(PagesAPIEndpoint):
                 any_hidden = remove_locked_links_detail(response)
 
         # Implementing Caching
-        response['Cache-Control'] = 'max-age=290304000, public'
-        response['Last-Modified'] = page.last_published_at
+        response['Cache-Control'] = 'no-cache'
 
         # If we ended up revealing a link, then force the content to be loaded.
         if not any_hidden or request.GET.get('force-reload'):
