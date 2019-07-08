@@ -87,6 +87,7 @@ class PagesAPIEndpoint(PagesAPIEndpoint):
         # If we ended up revealing a link, then force the content to be loaded.
         if not any_hidden or request.GET.get('force-reload'):
             response['Last-Modified'] = timezone.now()
+
         
         return response
 

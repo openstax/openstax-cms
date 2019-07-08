@@ -32,6 +32,10 @@ class AccountsTestCase(TestCase):
         user_data = get_user_info(2)
         self.assertNotEqual(user_data, False)
 
+    def test_user_info_returns_false_with_no_uid(self):
+        user_data = get_user_info()
+        self.assertEqual(user_data, False)
+
     def test_user_data_returns_false_when_invalid(self):
         user_data = get_user_info('asdf')
         self.assertEqual(user_data, False)
