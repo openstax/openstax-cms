@@ -25,6 +25,7 @@ class DuplicateForm(forms.Form):
             label=_("New parent page"),
             help_text=_("This copy will be a child of this given parent page.")
         )
+        
         pages_to_copy = self.page.get_descendants(inclusive=True)
         subpage_count = pages_to_copy.count() - 1
         if subpage_count > 0:
