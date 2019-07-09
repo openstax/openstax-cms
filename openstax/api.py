@@ -81,15 +81,9 @@ class PagesAPIEndpoint(PagesAPIEndpoint):
             if flag_state('hide_faculty_resources', bool=True):
                 any_hidden = remove_locked_links_detail(response)
 
-        #TODO: Removing all caches to try and fix issues, put back in after a few releases
-        # # Implementing Caching
-        # response['Cache-Control'] = 'max-age=290304000, public'
-        # response['Last-Modified'] = page.last_published_at
-        #
-        # # If we ended up revealing a link, then force the content to be loaded.
-        # if not any_hidden or request.GET.get('force-reload'):
-        #     response['Last-Modified'] = timezone.now()
-        
+
+        response['Cache-Control'] = 'no-cache'
+
         return response
 
 
