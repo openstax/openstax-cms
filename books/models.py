@@ -65,20 +65,22 @@ class FacultyResources(models.Model):
         return self.resource.creator_fest_resource
     creator_fest_resource = property(get_resource_creator_fest_resource)
 
-    link_external = models.URLField("External link", blank=True)
+    link_external = models.URLField("External link", blank=True, help_text="Provide an external URL starting with http:// (or fill out either one of the following two).")
     link_page = models.ForeignKey(
         'wagtailcore.Page',
         null=True,
         blank=True,
         related_name='+',
-        on_delete=models.SET_NULL
+        on_delete=models.SET_NULL,
+        help_text="Or select an existing page to attach."
     )
     link_document = models.ForeignKey(
         'wagtaildocs.Document',
         null=True,
         blank=True,
         related_name='+',
-        on_delete=models.SET_NULL
+        on_delete=models.SET_NULL,
+        help_text="Or select a document for viewers to download."
     )
 
     def get_link_document(self):
@@ -133,20 +135,22 @@ class StudentResources(models.Model):
         return self.resource.unlocked_resource
     resource_unlocked = property(get_resource_unlocked)
 
-    link_external = models.URLField("External link", blank=True)
+    link_external = models.URLField("External link", blank=True, help_text="Provide an external URL starting with http:// (or fill out either one of the following two).")
     link_page = models.ForeignKey(
         'wagtailcore.Page',
         null=True,
         blank=True,
         related_name='+',
-        on_delete=models.SET_NULL
+        on_delete=models.SET_NULL,
+        help_text="Or select an existing page to attach."
     )
     link_document = models.ForeignKey(
         'wagtaildocs.Document',
         null=True,
         blank=True,
         related_name='+',
-        on_delete=models.SET_NULL
+        on_delete=models.SET_NULL,
+        help_text="Or select a document for viewers to download."
     )
 
     def get_link_document(self):
@@ -180,11 +184,11 @@ class StudentResources(models.Model):
 
 
 class Authors(models.Model):
-    name = models.CharField(max_length=255)
-    university = models.CharField(max_length=255, null=True, blank=True)
-    country = models.CharField(max_length=255, null=True, blank=True)
-    senior_author = models.BooleanField(default=False)
-    display_at_top = models.BooleanField(default=False)
+    name = models.CharField(max_length=255, help_text="Full name of the author.")
+    university = models.CharField(max_length=255, null=True, blank=True, help_text="Name of the university/institution the author is associated with.")
+    country = models.CharField(max_length=255, null=True, blank=True, help_text="Country of the university/institution.")
+    senior_author = models.BooleanField(default=False, help_text="Whether the author is a senior author. (Senior authors are shown before non-senior authors.)")
+    display_at_top = models.BooleanField(default=False, help_text="Whether display the author on top.")
     book = ParentalKey(
         'books.Book', related_name='book_contributing_authors', null=True, blank=True)
 
@@ -206,11 +210,11 @@ class Authors(models.Model):
 
 
 class AuthorBlock(blocks.StructBlock):
-        name = blocks.CharBlock(required=True)
-        university = blocks.CharBlock(required=False)
-        country = blocks.CharBlock(required=False)
-        senior_author = blocks.BooleanBlock(required=False)
-        display_at_top = blocks.BooleanBlock(required=False)
+        name = blocks.CharBlock(required=True, help_text="Full name of the author.")
+        university = blocks.CharBlock(required=False, help_text="Name of the university/institution the author is associated with.")
+        country = blocks.CharBlock(required=False, help_text="Country of the university/institution.")
+        senior_author = blocks.BooleanBlock(required=False, help_text="Whether the author is a senior author. (Senior authors are shown before non-senior authors.)")
+        display_at_top = blocks.BooleanBlock(required=False, help_text="Whether display the author on top.")
 
         class Meta:
             icon = 'user'
@@ -390,14 +394,14 @@ BOOK_STATES = (
 
 class Book(Page):
     created = models.DateTimeField(auto_now_add=True)
-    book_state = models.CharField(max_length=255, choices=BOOK_STATES, default='live')
+    book_state = models.CharField(max_length=255, choices=BOOK_STATES, default='live', help_text='The state of the book.')
     cnx_id = models.CharField(
         max_length=255, help_text="This is used to pull relevant information from CNX.",
         blank=True, null=True)
     salesforce_abbreviation = models.CharField(max_length=255, blank=True, null=True)
     salesforce_name = models.CharField(max_length=255, blank=True, null=True)
     updated = models.DateTimeField(auto_now=True)
-    is_ap = models.BooleanField(default=False)
+    is_ap = models.BooleanField(default=False, help_text='Whether this book is an AP (Advanced Placement) book.')
     description = RichTextField(
         blank=True, help_text="Description shown on Book Detail page.")
 
@@ -406,7 +410,8 @@ class Book(Page):
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
-        related_name='+'
+        related_name='+',
+        help_text='The book cover to be shown on the website.'
     )
     def get_cover_url(self):
         return build_document_url(self.cover.url)
@@ -417,43 +422,45 @@ class Book(Page):
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
-        related_name='+'
+        related_name='+',
+        help_text='The svg for title image to be shown on the website.'
     )
     def get_title_image_url(self):
         return build_document_url(self.title_image.url)
     title_image_url = property(get_title_image_url)
 
-    cover_color = models.CharField(max_length=255, choices=COVER_COLORS, default='blue')
+    cover_color = models.CharField(max_length=255, choices=COVER_COLORS, default='blue', help_text='The color of the cover.')
     book_cover_text_color = models.CharField(max_length=255, choices=BOOK_COVER_TEXT_COLOR, default='yellow', help_text="Use by the Unified team - this will not change the text color on the book cover.")
     reverse_gradient = models.BooleanField(default=False)
-    publish_date = models.DateField(blank=True, null=True)
+    publish_date = models.DateField(blank=True, null=True, help_text='Date the book is published on.')
     authors = StreamField([
         ('author', AuthorBlock()),
     ], blank=True, null=True)
 
-    print_isbn_10 = models.CharField(max_length=255, blank=True, null=True)
-    print_isbn_13 = models.CharField(max_length=255, blank=True, null=True)
-    digital_isbn_10 = models.CharField(max_length=255, blank=True, null=True)
-    digital_isbn_13 = models.CharField(max_length=255, blank=True, null=True)
-    ibook_isbn_10 = models.CharField(max_length=255, blank=True, null=True)
-    ibook_isbn_13 = models.CharField(max_length=255, blank=True, null=True)
-    ibook_volume_2_isbn_10 = models.CharField(max_length=255, blank=True, null=True)
-    ibook_volume_2_isbn_13 = models.CharField(max_length=255, blank=True, null=True)
+    print_isbn_10 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 10 for print version.')
+    print_isbn_13 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 13 for print version.')
+    digital_isbn_10 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 10 for digital version.')
+    digital_isbn_13 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 13 for digital version.')
+    ibook_isbn_10 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 10 for iBook version.')
+    ibook_isbn_13 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 13 for iBook version.')
+    ibook_volume_2_isbn_10 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 10 for iBook v2 version.')
+    ibook_volume_2_isbn_13 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 13 for iBook v2 version.')
     license_text = models.TextField(
         blank=True, null=True, help_text="Overrides default license text.")
     license_name = models.CharField(
-        max_length=255, blank=True, null=True, editable=False)
+        max_length=255, blank=True, null=True, editable=False, help_text="Name of the license.")
     license_version = models.CharField(
-        max_length=255, blank=True, null=True, editable=False)
+        max_length=255, blank=True, null=True, editable=False, help_text="Version of the license.")
     license_url = models.CharField(
-        max_length=255, blank=True, null=True, editable=False)
+        max_length=255, blank=True, null=True, editable=False, help_text="External URL of the license.")
 
     high_resolution_pdf = models.ForeignKey(
         'wagtaildocs.Document',
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
-        related_name='+'
+        related_name='+',
+        help_text="High quality PDF document of the book."
     )
     def get_high_res_pdf_url(self):
         if self.high_resolution_pdf:
@@ -467,7 +474,8 @@ class Book(Page):
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
-        related_name='+'
+        related_name='+',
+        help_text="Low quality PDF document of the book."
     )
     def get_low_res_pdf_url(self):
         if self.low_resolution_pdf:
@@ -476,15 +484,16 @@ class Book(Page):
             return None
     low_resolution_pdf_url = property(get_low_res_pdf_url)
 
-    free_stuff_instructor = StreamField(SharedContentBlock(), null=True, blank=True)
-    free_stuff_student = StreamField(SharedContentBlock(), null=True, blank=True)
-    community_resource_heading = models.CharField(max_length=255, blank=True, null=True)
+    free_stuff_instructor = StreamField(SharedContentBlock(), null=True, blank=True, help_text="Snippet to show texts for free instructor resources.")
+    free_stuff_student = StreamField(SharedContentBlock(), null=True, blank=True, help_text="Snipped to show texts for free student resources.")
+    community_resource_heading = models.CharField(max_length=255, blank=True, null=True, help_text="Snipped to show texts for community resources.")
     community_resource_logo = models.ForeignKey(
         'wagtaildocs.Document',
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
-        related_name='+'
+        related_name='+',
+        help_text="Logo for community resources."
     )
 
     def get_community_resource_logo_url(self):
@@ -494,22 +503,22 @@ class Book(Page):
             return None
 
     community_resource_logo_url = property(get_community_resource_logo_url)
-    community_resource_cta = models.CharField(max_length=255, blank=True, null=True)
-    community_resource_url = models.URLField(blank=True)
-    community_resource_cta = models.CharField(max_length=255, blank=True, null=True)
-    community_resource_blurb = models.TextField(blank=True)
+    community_resource_cta = models.CharField(max_length=255, blank=True, null=True, help_text='Call the action text.')
+    community_resource_url = models.URLField(blank=True, help_text='URL of the external source.')
+    community_resource_blurb = models.TextField(blank=True, help_text='Blurb.')
     community_resource_feature_link = models.ForeignKey(
         'wagtaildocs.Document',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name='+'
+        related_name='+',
+        help_text='Document of the community resource feature.'
     )
     def get_community_resource_feature_link_url(self):
         return build_document_url(self.community_resource_feature_link.url)
 
     community_resource_feature_link_url = property(get_community_resource_feature_link_url)
-    community_resource_feature_text = models.TextField(blank=True)
+    community_resource_feature_text = models.TextField(blank=True, help_text='Text of the community resource feature.')
 
 
     webinar_content = StreamField(SharedContentBlock(), null=True, blank=True)
@@ -519,25 +528,26 @@ class Book(Page):
     ibook_link_volume_2 = models.URLField(blank=True, help_text="Link to secondary iBook")
     webview_link = models.URLField(blank=True, help_text="Link to CNX Webview book")
     bookshare_link = models.URLField(blank=True, help_text="Link to Bookshare resources")
-    amazon_coming_soon = models.BooleanField(default=False)
+    amazon_coming_soon = models.BooleanField(default=False, help_text='Whether this book is coming to Amazon bookstore.')
     amazon_link = models.URLField(blank=True, help_text="Link to Amazon")
     amazon_price = models.DecimalField(default=0.00, max_digits=6, decimal_places=2)
     kindle_link = models.URLField(blank=True, help_text="Link to Kindle version")
     chegg_link = models.URLField(blank=True, null=True, help_text="Link to Chegg e-reader")
-    chegg_link_text = models.CharField(max_length=255, blank=True, null=True)
-    bookstore_coming_soon = models.BooleanField(default=False)
-    bookstore_content = StreamField(SharedContentBlock(), null=True, blank=True)
-    comp_copy_available = models.BooleanField(default=True)
-    comp_copy_content = StreamField(SharedContentBlock(), null=True, blank=True)
-    errata_content = StreamField(SharedContentBlock(), null=True, blank=True)
-    table_of_contents = JSONField(editable=False, blank=True, null=True)
-    tutor_marketing_book = models.BooleanField(default=False)
+    chegg_link_text = models.CharField(max_length=255, blank=True, null=True, help_text='Text for Chegg link.')
+    bookstore_coming_soon = models.BooleanField(default=False, help_text='Whether this book is coming to bookstore soon.')
+    bookstore_content = StreamField(SharedContentBlock(), null=True, blank=True, help_text='Bookstore content.')
+    comp_copy_available = models.BooleanField(default=True, help_text='Whether free compy available for teachers.')
+    comp_copy_content = StreamField(SharedContentBlock(), null=True, blank=True, help_text='Content of the free copy.')
+    errata_content = StreamField(SharedContentBlock(), null=True, blank=True, help_text='Errata content.')
+    table_of_contents = JSONField(editable=False, blank=True, null=True, help_text='TOC.')
+    tutor_marketing_book = models.BooleanField(default=False, help_text='Whether this is a Tutor marketing book.')
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
-        related_name='+'
+        related_name='+',
+        help_text='Promote image.'
     )
 
     book_detail_panel = Page.content_panels + [
