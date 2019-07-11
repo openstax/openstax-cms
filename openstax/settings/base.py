@@ -334,6 +334,8 @@ COOKIE_NAME = 'ox'
 ENCRYPTED_COOKIE_SALT = "ox-shared-salt"
 SIGNED_ENCRYPTED_COOKIE_SALT = "signed encrypted ox-shared-salt"
 
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
+
 from PIL import ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
