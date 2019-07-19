@@ -68,7 +68,7 @@ def search(request):
         search_results_json.append({
             'id': result.id,
             'title': result.title,
-            'subheading': result.subheading,
+            'subheading': result.subheading or None,
             'body_blurb': result.first_paragraph,
             'article_image': result.article_image,
             'author': result.author,
