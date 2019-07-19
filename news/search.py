@@ -1,22 +1,21 @@
 import re
 
-from django.db.models import Q
+from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.http import JsonResponse
 
 from news.models import NewsArticle
 
-
-def normalize_query(query_string,
-                    findterms=re.compile(r'"([^"]+)"|(\S+)').findall,
-                    normspace=re.compile(r'\s{2,}').sub):
-    ''' Splits the query string in individual keywords, getting rid of unnecessary spaces
-        and grouping quoted words together.
-        Example:
-        
-        >>> normalize_query('  some random  words "with   quotes  " and   spaces')
-        ['some', 'random', 'words', 'with quotes', 'and', 'spaces']
+def normalize_query(query_string, findterms=re.compile(r'"([^"]+)"|(\S+)').findall, normspace=re.compile(r'\s{2,}').sub):
+    """
+    Splits the query string in individual keywords, getting rid of unnecessary spaces
+    and grouping quoted words together.
     
-    '''
+    Example Input:
+    normalize_query('  some random  words "with   quotes  " and   spaces')
+    
+    Response:
+    ['some', 'random', 'words', 'with quotes', 'and', 'spaces']
+    """
 
     # Remove common stopwords from the search query
     stopwords = ['of', 'is', 'a', 'at', 'is', 'the']
@@ -27,31 +26,25 @@ def normalize_query(query_string,
     return [normspace(' ', (t[0] or t[1]).strip()) for t in findterms(result)]
 
 
-def get_query(query_string, search_fields):
-    ''' Returns a query, that is a combination of Q objects. That combination
-        aims to search keywords within a model by testing the given search fields.
-    
-    '''
-    query = None # Query to search for every search term        
-    terms = normalize_query(query_string)
-    for term in terms:
-        or_query = None # Query to search for a given term in each field
-        for field_name in search_fields:
-            q = Q(**{"%s__icontains" % field_name: term})
-            if or_query is None:
-                or_query = q
-            else:
-                or_query = or_query | q
-        if query is None:
-            query = or_query
-        else:
-            query = query & or_query
+def get_query(query_string):
+    """
+    Returns a query, that is a combination of Q objects. That combination
+    aims to search keywords within a model by testing the given search fields.
+    """
+
+    query_items = normalize_query(query_string)
+
+    query = SearchQuery(query_items.pop())
+
+    for term in query_items:
+        query &= SearchQuery(term)
+       
     return query
 
 
 def search(request):
     query_string = ''
-    found_entries = None
+    found_entries = []
     #filter by tags
     if ('tag' in request.GET) and request.GET['tag'].strip():
         query_string = request.GET['tag']
@@ -62,10 +55,13 @@ def search(request):
     if ('q' in request.GET) and request.GET['q'].strip():
         query_string = request.GET['q']
 
-        entry_query = get_query(query_string, ['title', 'body', 'subheading',
-                                               'tags__name'])
+        vector = SearchVector('title', weight='A') + SearchVector('subheading', weight='B') + SearchVector('body', weight='C') + SearchVector('tags__name', weight='C')
+        query = get_query(query_string)
 
-        found_entries = NewsArticle.objects.filter(entry_query).order_by('-date').distinct()
+        found_entries = NewsArticle.objects.annotate(
+            rank=SearchRank(vector, query),
+            search=vector,
+        ).filter(search=query).order_by('rank', '-date')
 
     search_results_json = []
     for result in found_entries:
@@ -84,3 +80,4 @@ def search(request):
         })
 
     return JsonResponse(search_results_json, safe=False)
+    return JsonResponse([], safe=False)
