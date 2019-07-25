@@ -4,6 +4,7 @@ from django.db.models import Q
 from rest_framework import viewsets, generics
 from rest_framework.decorators import api_view
 from salesforce.models import Adopter, School, MapBoxDataset
+from errata.models import ERRATA_RESOURCES
 from global_settings.models import StickyNote, Footer
 from wagtail.images.models import Image
 from wagtail.documents.models import Document
@@ -77,6 +78,15 @@ def mapbox(request):
             'name': mapbox_instance.name,
             'style': mapbox_instance.style_url
         })
+
+    return JsonResponse(response, safe=False)
+
+def errata_fields(request):
+    response = []
+
+    if request.GET.get('field', None) == 'resources':
+        for field, verbose in ERRATA_RESOURCES:
+            response.append({'field': field, 'verbose': verbose})
 
     return JsonResponse(response, safe=False)
 
