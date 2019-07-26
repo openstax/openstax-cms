@@ -1,7 +1,7 @@
 from django.conf.urls import include, url
 from rest_framework import routers
 
-from .views import AdopterViewSet, ImageViewSet, DocumentViewSet, ProgressViewSet, sticky_note, footer, schools, mapbox, flags
+from .views import AdopterViewSet, ImageViewSet, DocumentViewSet, ProgressViewSet, sticky_note, footer, schools, mapbox, flags, errata_fields
 
 router = routers.DefaultRouter()
 router.register(r'images', ImageViewSet)
@@ -16,5 +16,6 @@ urlpatterns = [
     url(r'^schools/$', schools, name='schools'),
     url(r'^mapbox/$', mapbox, name='mapbox'),
     url(r'^flags/$', flags, name='flags'),
+    url(r'^errata-fields/', errata_fields, name='errata-fields'),
 ]
 

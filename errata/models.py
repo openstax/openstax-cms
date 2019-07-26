@@ -69,23 +69,17 @@ ERRATA_ERROR_TYPES = (
     (OTHER, 'Other'),
 )
 
-TEXTBOOK = 'Textbook'
-IBOOKS = 'iBooks version'
-INSTRUCTOR_SOLUTION = 'Instructor solution manual'
-STUDENT_SOLUTION = 'Student solution manual'
-TUTOR = 'OpenStax Tutor'
-CONCEPT_COACH = 'OpenStax Concept Coach'
-KINDLE = 'Kindle'
-OTHER = 'Other'
 ERRATA_RESOURCES = (
-    (TEXTBOOK, 'Textbook'),
-    (IBOOKS, 'iBooks version'),
-    (INSTRUCTOR_SOLUTION, 'Instructor solution manual'),
-    (STUDENT_SOLUTION, 'Student solution manual'),
-    (TUTOR, 'OpenStax Tutor'),
-    (CONCEPT_COACH, 'OpenStax Concept Coach'),
-    (KINDLE, 'Kindle'),
-    (OTHER, 'Other'),
+    ('Textbook', 'Textbook'),
+    ('iBooks version', 'iBooks version'),
+    ('Instructor solution manual', 'Instructor solution manual'),
+    ('Student solution manual', 'Student solution manual'),
+    ('OpenStax Tutor', 'OpenStax Tutor'),
+    ('OpenStax Concept Coach', 'OpenStax Concept Coach'),
+    ('Rover by OpenStax', 'Rover by OpenStax'),
+    ('OpenStax + SE', 'OpenStax + SE'),
+    ('Kindle', 'Kindle'),
+    ('Other', 'Other'),
 )
 
 BLOCK_TYPES = (
