@@ -69,7 +69,7 @@ def search(request):
         if result.slug in search_results_shown:
             continue
         
-        search_results_shown.push(result.slug)
+        search_results_shown.add(result.slug)
 
         search_results_json.append({
             'id': result.id,
