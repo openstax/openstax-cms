@@ -551,6 +551,9 @@ class Book(Page):
         help_text='Promote image.'
     )
 
+    last_updated_pdf = models.DateTimeField(blank=True, null=True, help_text="Last time PDF is updated. This field is NOT managed by CMS.")
+    last_updated_web = models.DateTimeField(blank=True, null=True, help_text="Last time webview is updated. This field is automatically managed by CMS.")
+
     book_detail_panel = Page.content_panels + [
         FieldPanel('book_state'),
         FieldPanel('cnx_id'),
@@ -605,6 +608,7 @@ class Book(Page):
         StreamFieldPanel('comp_copy_content'),
         StreamFieldPanel('errata_content'),
         FieldPanel('tutor_marketing_book'),
+        FieldPanel('last_updated_pdf'),
     ]
     instructor_resources_panel = [
         InlinePanel('book_faculty_resources', label="Instructor Resources"),
@@ -693,7 +697,9 @@ class Book(Page):
         APIField('tutor_marketing_book'),
         APIField('seo_title'),
         APIField('search_description'),
-        APIField('promote_image')
+        APIField('promote_image'),
+        APIField('last_updated_pdf'),
+        APIField('last_updated_web'),
     ]
 
     template = 'page.html'
@@ -826,6 +832,8 @@ class BookIndex(Page):
                     'salesforce_abbreviation': book.salesforce_abbreviation,
                     'salesforce_name': book.salesforce_name,
                     'urls': book.book_urls(),
+                    'last_updated_pdf': book.last_updated_pdf,
+                    'last_updated_web': book.last_updated_web,
                 })
             except Exception as e:
                 print("Error: {}".format(e))
@@ -864,7 +872,9 @@ class BookIndex(Page):
         APIField('books'),
         APIField('seo_title'),
         APIField('search_description'),
-        APIField('promote_image')
+        APIField('promote_image'),
+        APIField('last_updated_pdf'),
+        APIField('last_updated_web'),
     ]
 
     template = 'page.html'
