@@ -64,7 +64,13 @@ def search(request):
         ).filter(search=query).order_by('rank', '-date')
 
     search_results_json = []
+    search_results_shown = set()
     for result in found_entries:
+        if result.slug in search_results_shown:
+            continue
+        
+        search_results_shown.push(result.slug)
+
         search_results_json.append({
             'id': result.id,
             'title': result.title,
