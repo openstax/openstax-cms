@@ -530,6 +530,7 @@ class Book(Page):
     ibook_link_volume_2 = models.URLField(blank=True, help_text="Link to secondary iBook")
     webview_link = models.URLField(blank=True, help_text="Link to CNX Webview book")
     webview_rex_link = models.URLField(blank=True, help_text="Link to REX Webview book")
+    study_edge_link = models.URLField(blank=True, null=True, help_text="Link to Study Edge app. This will cause the link to appear on the book details page.")
     bookshare_link = models.URLField(blank=True, help_text="Link to Bookshare resources")
     amazon_coming_soon = models.BooleanField(default=False, help_text='Whether this book is coming to Amazon bookstore.')
     amazon_link = models.URLField(blank=True, help_text="Link to Amazon")
@@ -582,6 +583,7 @@ class Book(Page):
         FieldPanel('ibook_volume_2_isbn_13'),
         FieldPanel('license_text'),
         FieldPanel('webview_rex_link'),
+        FieldPanel('study_edge_link'),
         DocumentChooserPanel('high_resolution_pdf'),
         DocumentChooserPanel('low_resolution_pdf'),
         StreamFieldPanel('free_stuff_instructor'),
@@ -685,6 +687,7 @@ class Book(Page):
         APIField('ibook_link_volume_2'),
         APIField('webview_link'),
         APIField('webview_rex_link'),
+        APIField('study_edge_link'),
         APIField('bookshare_link'),
         APIField('amazon_coming_soon'),
         APIField('amazon_link'),
