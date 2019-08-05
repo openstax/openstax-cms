@@ -309,7 +309,8 @@ RAVEN_CONFIG = {
 
 # FLAGS
 FLAGS = {
-    'hide_faculty_resources': []
+    'hide_faculty_resources': [],
+    'disable_pulse_insights': [],
 }
 
 
