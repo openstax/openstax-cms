@@ -218,6 +218,8 @@ class Errata(models.Model):
         if self.status == "Completed" and self.resolution != "Will Not Fix":
             self.corrected_date = now()
 
+            Book.objects.filter(pk=self.book.pk).update(last_updated_web=now())
+
         # prefill resolution notes based on certain status and resolutions
         if self.resolution == "Duplicate" and not self.resolution_notes:
             self.resolution_notes = "This is a duplicate of another report for this book."
