@@ -530,7 +530,7 @@ class Book(Page):
     ibook_link_volume_2 = models.URLField(blank=True, help_text="Link to secondary iBook")
     webview_link = models.URLField(blank=True, help_text="Link to CNX Webview book")
     webview_rex_link = models.URLField(blank=True, help_text="Link to REX Webview book")
-    study_edge_link = models.URLField(blank=True, help_text="Link to Study Edge app. This will cause the link to appear on the book details page.")
+    study_edge_link = models.URLField(blank=True, null=True, help_text="Link to Study Edge app. This will cause the link to appear on the book details page.")
     bookshare_link = models.URLField(blank=True, help_text="Link to Bookshare resources")
     amazon_coming_soon = models.BooleanField(default=False, help_text='Whether this book is coming to Amazon bookstore.')
     amazon_link = models.URLField(blank=True, help_text="Link to Amazon")
