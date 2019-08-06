@@ -882,8 +882,6 @@ class BookIndex(Page):
         APIField('seo_title'),
         APIField('search_description'),
         APIField('promote_image'),
-        APIField('last_updated_pdf'),
-        APIField('last_updated_web'),
     ]
 
     template = 'page.html'
