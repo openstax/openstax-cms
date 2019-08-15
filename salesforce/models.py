@@ -10,6 +10,18 @@ class Adopter(models.Model):
     def __str__(self):
         return self.name
 
+class AdoptionOpportunityRecord(models.Model):
+    opportunity_id = models.CharField(max_length=255)
+    account_id = models.CharField(max_length=255, null=True, blank=True)
+    book_name = models.CharField(max_length=255)
+    email = models.EmailField(null=True, blank=True)
+    school = models.CharField(max_length=255)
+    yearly_students = models.CharField(max_length=255)
+    updated = models.DateTimeField(null=True, blank=True)
+
+    def __str__(self):
+        return self.opportunity_id
+
 
 class School(models.Model):
     name = models.CharField(max_length=255)

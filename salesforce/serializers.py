@@ -1,4 +1,4 @@
-from .models import School
+from .models import School, AdoptionOpportunityRecord
 
 from rest_framework import serializers
 
@@ -32,3 +32,21 @@ class SchoolSerializer(serializers.ModelSerializer):
                   'long',
                   'lat',
                   'testimonial',)
+
+
+class AdoptionOpportunityRecordSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AdoptionOpportunityRecord
+        fields = ('opportunity_id',
+                  'account_id',
+                  'book_name',
+                  'email',
+                  'school',
+                  'yearly_students',
+                  'updated')
+        read_only_fields = ('opportunity_id',
+                  'account_id',
+                  'book_name',
+                  'email',
+                  'school',
+                  'yearly_students')

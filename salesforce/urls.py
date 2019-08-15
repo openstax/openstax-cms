@@ -3,9 +3,10 @@ from rest_framework import routers
 from . import views
 
 router = routers.SimpleRouter()
-router.register(r'', views.SchoolViewSet)
+router.register(r'schools', views.SchoolViewSet, basename='School')
+router.register(r'renewal', views.AdoptionOpportunityRecordViewSet, basename='AdoptionOpportunityRecord')
 
 urlpatterns = [
-    url(r'^schools/', include(router.urls)),
+    url(r'', include(router.urls)),
     url(r'^adoption-status/', views.get_adoption_status),
 ]

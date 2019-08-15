@@ -1,12 +1,23 @@
 from django.contrib import admin
 
-from .models import School, MapBoxDataset, SalesforceSettings
+from .models import AdoptionOpportunityRecord, School, MapBoxDataset, SalesforceSettings
 
 
 class SchoolAdmin(admin.ModelAdmin):
     list_display = ['name', 'phone']
     list_filter = ('key_institutional_partner', 'achieving_the_dream_school', 'hbcu', 'texas_higher_ed')
     search_fields = ['name', ]
+
+    def has_add_permission(self, request):
+        return False
+
+class AdoptionOpportunityRecordAdmin(admin.ModelAdmin):
+    list_display = ['email', 'book_name', 'school', 'yearly_students']
+    list_filter = ('book_name', 'school')
+    search_fields = ['email', 'account_id']
+
+    def has_add_permission(self, request):
+        return False
 
 
 class SalesforceSettingsAdmin(admin.ModelAdmin):
@@ -21,4 +32,5 @@ class SalesforceSettingsAdmin(admin.ModelAdmin):
 
 admin.site.register(SalesforceSettings, SalesforceSettingsAdmin)
 admin.site.register(School, SchoolAdmin)
+admin.site.register(AdoptionOpportunityRecord, AdoptionOpportunityRecordAdmin)
 admin.site.register(MapBoxDataset)
