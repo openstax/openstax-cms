@@ -40,7 +40,7 @@ def purge_cloudfront_caches(page, request):
         distribution = CloudfrontDistribution.objects.all()[0]
         cf = boto.connect_cloudfront()
         cf.create_invalidation_request(distribution.distribution_id, [])
-    except IndexError:
+    except: #TODO: This is a broad exception - but we are having issues with the cache. Will tighten down once we start using it.
         pass
 
 @hooks.register('register_settings_menu_item')
