@@ -1,3 +1,4 @@
+import datetime
 from django.core.management.base import BaseCommand
 from salesforce.models import AdoptionOpportunityRecord
 from salesforce.salesforce import Salesforce
@@ -8,9 +9,20 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         with Salesforce() as sf:
-            command = "SELECT Id, OS_Accounts_ID__c, Book_Text__c, Contact_Email__c, School_Name__c, Yearly_Students__c from Opportunity"
+            now = datetime.datetime.now()
+            year = now.year
+            if now.month < 7: # Salesforce needs the school base year, this is how they calculate it
+                year = year - 1
+
+            command = "SELECT Id, OS_Accounts_ID__c, Book_Text__c, Contact_Email__c, School_Name__c, Yearly_Students__c, Type, Base_Year__c, IsWon from Opportunity WHERE OS_Accounts_ID__c != null AND Type = 'Renewal' AND Base_Year__c = {} AND IsWon = True".format(year)
+            # Type = 'Renewal' <-- this will need to be changed for QA testing each time (New Business is for brand new adoptions)
+
             response = sf.query_all(command)
             records = response['records']
+
+            if records:
+                AdoptionOpportunityRecord.objects.all().delete()
+
             num_created = 0
             for record in records:
 
