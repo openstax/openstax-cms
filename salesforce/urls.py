@@ -9,4 +9,5 @@ router.register(r'renewal', views.AdoptionOpportunityRecordViewSet, basename='Ad
 urlpatterns = [
     url(r'', include(router.urls)),
     url(r'^adoption-status/', views.get_adoption_status),
+    url(r'^renewal/update/(?P<account_id>\d+)', views.AdoptionUpdated.as_view(), name='adoption-updated'),
 ]

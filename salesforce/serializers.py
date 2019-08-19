@@ -49,4 +49,5 @@ class AdoptionOpportunityRecordSerializer(serializers.ModelSerializer):
                   'book_name',
                   'email',
                   'school',
-                  'yearly_students')
+                  'yearly_students',
+                  'updated')
