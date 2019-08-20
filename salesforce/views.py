@@ -1,7 +1,10 @@
 from rest_framework import viewsets
+from rest_framework.views import APIView
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
 from django.http import JsonResponse
+from django.utils import timezone
 
 from .models import School, AdoptionOpportunityRecord
 from .serializers import SchoolSerializer, AdoptionOpportunityRecordSerializer
@@ -14,19 +17,35 @@ class SchoolViewSet(viewsets.ModelViewSet):
 
 
 class AdoptionOpportunityRecordViewSet(viewsets.ModelViewSet):
-    authentication_classes = [SessionAuthentication, BasicAuthentication]
-    permission_classes = [IsAuthenticated]
-
     serializer_class = AdoptionOpportunityRecordSerializer
 
     def get_queryset(self):
-        queryset = AdoptionOpportunityRecord.objects.all()
+        queryset = AdoptionOpportunityRecord.objects.filter(updated=False)
         account_id = self.request.query_params.get('account_id', None)
         if account_id is not None:
             queryset = queryset.filter(account_id=account_id)
         else:
             queryset = None # if no account id, return nothing
         return queryset
+
+class AdoptionUpdated(APIView):
+    def post(self, request, account_id):
+        # if no model exists by this PK, raise a 404 error
+        records = AdoptionOpportunityRecord.objects.filter(account_id=account_id)
+        if not records:
+            return JsonResponse({'error': 'No records associated with that ID.'})
+
+        for record in records:
+            # this is the only field we want to update
+            data = {"updated": True}
+            serializer = AdoptionOpportunityRecordSerializer(record, data=data, partial=True)
+
+            if serializer.is_valid():
+                serializer.save()
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+        return JsonResponse({'updated': True})
 
 
 def get_adoption_status(request):
