@@ -45,7 +45,7 @@ class AdoptionUpdated(APIView):
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        return JsonResponse({'updated': True})
+        return JsonResponse(data)
 
 
 def get_adoption_status(request):
