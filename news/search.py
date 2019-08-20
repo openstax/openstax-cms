@@ -77,6 +77,8 @@ def search(request):
             'subheading': result.subheading,
             'body_blurb': result.first_paragraph,
             'article_image': result.article_image,
+            'article_image_alt': result.featured_image_alt_text,
+            'date': result.date,
             'author': result.author,
             'pin_to_top': result.pin_to_top,
             'tags': list(result.tags.names()),
