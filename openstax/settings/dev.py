@@ -19,7 +19,7 @@ AWS_S3_OBJECT_PARAMETERS = {
 }
 # S3 static file storage using custom backend
 STATICFILES_LOCATION = '{}/static'.format(AWS_STORAGE_DIR)
-STATICFILES_STORAGE = 'openstax.custom_storages.StaticStorage'
+STATICFILES_STORAGE = 'openstax.custom_storages.ManifestS3Storage'
 STATIC_URL = "https://%s/%s/static/" % (AWS_S3_CUSTOM_DOMAIN, AWS_STORAGE_DIR)
 # S3 media storage using custom backend
 MEDIAFILES_LOCATION = '{}/media'.format(AWS_STORAGE_DIR)
