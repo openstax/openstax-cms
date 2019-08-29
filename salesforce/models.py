@@ -24,6 +24,7 @@ class AdoptionOpportunityRecord(models.Model):
 
 
 class School(models.Model):
+    salesforce_id = models.CharField(max_length=255, blank=True, null=True)
     name = models.CharField(max_length=255)
     phone = models.CharField(max_length=255, null=True, blank=True)
     website = models.CharField(max_length=255, null=True, blank=True)
