@@ -98,6 +98,7 @@ STATICFILES_FINDERS = [
 SECRET_KEY = 'wq21wtjo3@d_qfjvd-#td!%7gfy2updj2z+nev^k$iy%=m4_tr'
 
 MIDDLEWARE = [
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -339,6 +340,9 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
 
 from PIL import ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
+
+STATIC_HOST = 'https://d3bxy9euw4e147.cloudfront.net' if not DEBUG else ''
+STATIC_URL = STATIC_HOST + '/static/'
 
 try:
     from local import *
