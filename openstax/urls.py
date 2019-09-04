@@ -7,6 +7,7 @@ from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.core import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
 from wagtail.images import urls as wagtailimages_urls
+from accounts import urls as accounts_urls
 
 from .api import api_router
 from news.search import search
@@ -27,6 +28,7 @@ urlpatterns = [
     url(r'^oxauth', include('oxauth.urls')), # new auth package
     url(r'^documents/', include(wagtaildocs_urls)),
     url(r'^images/', include(wagtailimages_urls)),
+    url(r'^accounts', include(accounts_urls)), # non-CloudFront Accounts redirects
 
     url(r'^apps/cms/api/mail', include('mail.urls')),
     url(r'^apps/cms/api/', include(api_urls)),

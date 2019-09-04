@@ -47,11 +47,3 @@ def logout(request):
         url = "/accounts/logout/?r={}".format(next)
 
     return redirect(url)
-
-def accounts(request):
-    # This will not be reached in deployed environments where Cloudfront is serving OSWeb,
-    # because Cloudfront proxies all `/accounts*` traffic straight to Accounts.  It is only
-    # for test and dev environments where we have Accounts running.
-
-    url = "{}{}".format(settings.ACCOUNTS_SERVER_URL, request.get_full_path())
-    return redirect(url)
