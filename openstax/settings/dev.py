@@ -39,6 +39,9 @@ SOCIAL_AUTH_SANITIZE_REDIRECTS = False
 # Server host (used to populate links in the email)
 HOST_LINK = 'https://oscms-dev.openstax.org'
 
+#CNX URL for viewing book online
+CNX_URL = 'https://dev.cnx.org/'
+
 try:
     from .local import *
 except ImportError:
