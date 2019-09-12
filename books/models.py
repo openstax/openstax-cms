@@ -777,7 +777,7 @@ class Book(Page):
 
     def save(self, *args, **kwargs):
         if self.cnx_id:
-            self.webview_link = 'https://cnx.org/contents/' + self.cnx_id
+            self.webview_link = '{}contents/{}'.format(settings.CNX_URL, self.cnx_id)
 
         return super(Book, self).save(*args, **kwargs)
 
