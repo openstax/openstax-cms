@@ -82,11 +82,16 @@ def mapbox(request):
     return JsonResponse(response, safe=False)
 
 def errata_fields(request):
+    '''
+    Return a JSON representation of fields from the errata.model.errata static options.
+    For now this only works on resources but has the capability to be expanded in the future.
+    '''
     response = []
 
     if request.GET.get('field', None) == 'resources':
         for field, verbose in ERRATA_RESOURCES:
-            response.append({'field': field, 'verbose': verbose})
+            if field != 'OpenStax Concept Coach': # This is not my favorite way to do this but we need to keep the data on existing errata
+                response.append({'field': field, 'verbose': verbose})
 
     return JsonResponse(response, safe=False)
 
