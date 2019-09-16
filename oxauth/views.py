@@ -7,11 +7,11 @@ from .auth import OXSessionDecryptor
 
 
 def login(request):
-    url = "{}login/".format(settings.ACCOUNTS_SERVER_URL)
+    url = "/accounts/login/"
 
     next = request.GET.get("next", None)
     if next:
-        url = "{}login/?r={}".format(settings.ACCOUNTS_SERVER_URL, next)
+        url = "/accounts/login/?r={}".format(next)
 
     return redirect(url)
 
@@ -28,7 +28,7 @@ def get_user_data(request):
     # TODO: Fix Validation. Currently, does not validate cookie unless the logged in user is id=1
     #if not validate:
     #    return JsonResponse({"logged_in": False, "cookie": True, "validation": False, "decryption": False})
-    
+
     decrypted_user = decrypt.get_cookie_data(cookie)
 
     if not decrypted_user:
@@ -40,10 +40,10 @@ def get_user_data(request):
         return JsonResponse(decrypted_user)
 
 def logout(request):
-    url = "{}logout/".format(settings.ACCOUNTS_SERVER_URL)
+    url = "/accounts/logout/"
 
     next = request.GET.get("next", None)
     if next:
-        url = "{}logout/?r={}".format(settings.ACCOUNTS_SERVER_URL, next)
+        url = "/accounts/logout/?r={}".format(next)
 
     return redirect(url)

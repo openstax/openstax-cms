@@ -13,13 +13,13 @@ from .auth import OXSessionDecryptor
 
 class AccountsTestCase(TestCase):
     def setUp(self):
-        self.token = get_token()
         self.client = Client()
 
     def test_accounts_contains_uuid(self):
+        token = get_token()
         url = settings.USERS_QUERY + urlencode({
             'q': 'id:{}'.format("2"),
-            'access_token': self.token['access_token']
+            'access_token': token['access_token']
         })
 
         with urlopen(url) as url:
@@ -46,12 +46,18 @@ class AccountsTestCase(TestCase):
 
     def test_login(self):
         response = self.client.get(reverse('login'))
-        self.assertNotEqual(response.status_code, 404)
-    
+        self.assertRedirects(response, "/accounts/login/", fetch_redirect_response=False)
+
+        response = self.client.get(reverse('login') + "?next=foo")
+        self.assertRedirects(response, "/accounts/login/?r=foo", fetch_redirect_response=False)
+
     def test_logout(self):
         response = self.client.get(reverse('logout'))
-        self.assertNotEqual(response.status_code, 404)
-    
+        self.assertRedirects(response, "/accounts/logout/", fetch_redirect_response=False)
+
+        response = self.client.get(reverse('logout') + "?next=foo")
+        self.assertRedirects(response, "/accounts/logout/?r=foo", fetch_redirect_response=False)
+
     def test_user_notloggedin(self):
         response = self.client.get(reverse('user'))
 

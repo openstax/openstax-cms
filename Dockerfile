@@ -9,6 +9,7 @@ RUN apt-get update && \
   libxml2-dev \
   libxslt1-dev \
   libz-dev \
+  libpq-dev \
   && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /code

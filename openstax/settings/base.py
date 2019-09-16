@@ -188,6 +188,7 @@ INSTALLED_APPS = [
     'import_export',
     'django_extensions',
     # custom
+    'accounts',
     'admin_templates',  # this overrides the admin templates
     'api',
     'pages',
