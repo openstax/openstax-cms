@@ -69,6 +69,7 @@ ERRATA_ERROR_TYPES = (
     (OTHER, 'Other'),
 )
 
+# These are served through the API using api.views.errata_fields
 ERRATA_RESOURCES = (
     ('Textbook', 'Textbook'),
     ('iBooks version', 'iBooks version'),
