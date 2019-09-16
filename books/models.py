@@ -530,6 +530,8 @@ class Book(Page):
     ibook_link_volume_2 = models.URLField(blank=True, help_text="Link to secondary iBook")
     webview_link = models.URLField(blank=True, help_text="Link to CNX Webview book")
     webview_rex_link = models.URLField(blank=True, help_text="Link to REX Webview book")
+    rex_callout_title = models.CharField(max_length=255, blank=True, null=True, help_text='Title of the REX callout', default="Recommended")
+    rex_callout_blurb = models.CharField(max_length=255, blank=True, null=True, help_text='Additional text for the REX callout.')
     enable_study_edge = models.BooleanField(default=False, help_text="This will cause the link to the Study Edge app appear on the book details page.")
     bookshare_link = models.URLField(blank=True, help_text="Link to Bookshare resources")
     amazon_coming_soon = models.BooleanField(default=False, help_text='Whether this book is coming to Amazon bookstore.')
@@ -583,6 +585,8 @@ class Book(Page):
         FieldPanel('ibook_volume_2_isbn_13'),
         FieldPanel('license_text'),
         FieldPanel('webview_rex_link'),
+        FieldPanel('rex_callout_title'),
+        FieldPanel('rex_callout_blurb'),
         FieldPanel('enable_study_edge'),
         DocumentChooserPanel('high_resolution_pdf'),
         DocumentChooserPanel('low_resolution_pdf'),
@@ -687,6 +691,8 @@ class Book(Page):
         APIField('ibook_link_volume_2'),
         APIField('webview_link'),
         APIField('webview_rex_link'),
+        APIField('rex_callout_title'),
+        APIField('rex_callout_blurb'),
         APIField('enable_study_edge'),
         APIField('bookshare_link'),
         APIField('amazon_coming_soon'),
