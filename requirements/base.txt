@@ -13,7 +13,7 @@ django-appconf==1.0.1
 django-cachalot==1.5.0
 django-compressor==2.0
 django-extensions==2.0.7
-django-filter==1.1.0
+django-filter==2.2.0
 django-libsass==0.6
 django-modelcluster==4.4
 django-overextends==0.4.2
@@ -40,7 +40,6 @@ msgpack==0.6.1
 oauthlib==3.1.0
 olefile==0.45.1
 Pillow==6.1.0
-pkg-resources==0.0.0
 polyline==1.4.0
 psycopg2>=2.8.3
 PyJWT==1.7.1
