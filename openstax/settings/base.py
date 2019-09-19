@@ -36,7 +36,7 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'oscms_prodcms',
+        'NAME': 'openstax',
     }
 }
 
@@ -170,7 +170,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.postgres',
-    'admin_view_permission',
     'django.contrib.admin',
     # contrib
     'compressor',
