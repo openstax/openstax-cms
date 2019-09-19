@@ -183,7 +183,6 @@ INSTALLED_APPS = [
     'social_django',
     'storages',
     'django_ses',
-    'cachalot',
     'import_export',
     'django_extensions',
     # custom
