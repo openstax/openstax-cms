@@ -7,11 +7,11 @@ from .auth import OXSessionDecryptor
 
 
 def login(request):
-    url = "/accounts/login/"
+    url = "accounts/login/"
 
     next = request.GET.get("next", None)
     if next:
-        url = "/accounts/login/?r={}".format(next)
+        url = "accounts/login/?r={}".format(next)
 
     return redirect(url)
 
@@ -40,10 +40,10 @@ def get_user_data(request):
         return JsonResponse(decrypted_user)
 
 def logout(request):
-    url = "/accounts/logout/"
+    url = "accounts/logout/"
 
     next = request.GET.get("next", None)
     if next:
-        url = "/accounts/logout/?r={}".format(next)
+        url = "accounts/logout/?r={}".format(next)
 
     return redirect(url)
