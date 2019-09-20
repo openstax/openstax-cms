@@ -9,7 +9,7 @@ AUTHORIZATION_URL = 'https://accounts-qa.openstax.org/oauth/authorize'
 ACCESS_TOKEN_URL = 'https://accounts-qa.openstax.org/oauth/token'
 USER_QUERY = 'https://accounts-qa.openstax.org/api/user?'
 USERS_QUERY = 'https://accounts-qa.openstax.org/api/users?'
-
+ACCOUNTS_SERVER_URL = 'https://accounts-qa.openstax.org'
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'http://os-webview-dev.openstax.org'
 SOCIAL_AUTH_SANITIZE_REDIRECTS = False
 
