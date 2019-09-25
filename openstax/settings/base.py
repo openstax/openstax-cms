@@ -170,7 +170,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.postgres',
-    'admin_view_permission',
     'django.contrib.admin',
     # contrib
     'compressor',
@@ -184,7 +183,6 @@ INSTALLED_APPS = [
     'social_django',
     'storages',
     'django_ses',
-    'cachalot',
     'import_export',
     'django_extensions',
     # custom

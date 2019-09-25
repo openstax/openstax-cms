@@ -1,7 +1,7 @@
 from django.shortcuts import redirect
 from django.http import request, JsonResponse
 from django.conf import settings
-from django.contrib.auth.views import logout
+from django.contrib.auth import logout
 
 from .auth import OXSessionDecryptor
 
