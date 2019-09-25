@@ -2323,7 +2323,9 @@ class RoverPage(Page):
                 ('heading', blocks.CharBlock()),
                 ('blurb', blocks.TextBlock())
             ]))),
-            ('nav_text', blocks.CharBlock(required=False))
+            ('nav_text', blocks.CharBlock(required=False)),
+            ('see_more_text', blocks.CharBlock(required=False)),
+            ('see_more_url', blocks.URLBlock(required=False))
         ])
         section_6 = StreamField([
             ('heading', blocks.CharBlock()),
@@ -2354,6 +2356,16 @@ class RoverPage(Page):
                 ('background_image', APIImageChooserBlock())
             ])))
         ], null=True)
+        office_hours = StreamField([
+            ('content', blocks.ListBlock(blocks.StructBlock([
+                ('heading', blocks.CharBlock()),
+                ('description', blocks.RichTextBlock()),
+                ('more_info', blocks.RichTextBlock()),
+                ('image', APIImageChooserBlock()),
+                ('link_url', blocks.URLBlock()),
+                ('link_text', blocks.CharBlock())
+            ])))
+        ], null=True)
         promote_image = models.ForeignKey(
             'wagtailimages.Image',
             null=True,
@@ -2373,6 +2385,7 @@ class RoverPage(Page):
             StreamFieldPanel('section_6'),
             StreamFieldPanel('section_7'),
             StreamFieldPanel('popup'),
+            StreamFieldPanel('office_hours'),
         ]
 
         promote_panels = [
@@ -2394,6 +2407,7 @@ class RoverPage(Page):
             APIField('section_6'),
             APIField('section_7'),
             APIField('popup'),
+            APIField('office_hours'),
             APIField('slug'),
             APIField('seo_title'),
             APIField('search_description'),
