@@ -24,9 +24,9 @@ class JSONResponse(HttpResponse):
 
 
 class ErrataFilter(FilterSet):
-    book_title = django_filters.CharFilter(name='book__title')
-    book_id = django_filters.CharFilter(name='book__id')
-    is_assessment_errata__not = django_filters.CharFilter(name='is_assessment_errata', exclude=True)
+    book_title = django_filters.CharFilter(field_name='book__title')
+    book_id = django_filters.CharFilter(field_name='book__id')
+    is_assessment_errata__not = django_filters.CharFilter(field_name='is_assessment_errata', exclude=True)
 
     class Meta:
         model = Errata
