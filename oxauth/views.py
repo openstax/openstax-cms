@@ -1,3 +1,5 @@
+import urllib.parse
+
 from django.shortcuts import redirect
 from django.http import request, JsonResponse
 from django.conf import settings
@@ -11,7 +13,7 @@ def login(request):
 
     next = request.GET.get("next", None)
     if next:
-        url = "/accounts/login/?r={}".format(next)
+        url = "/accounts/login/?r={}".format(urllib.parse.quote(next))
 
     return redirect(url)
 
@@ -44,6 +46,6 @@ def logout(request):
 
     next = request.GET.get("next", None)
     if next:
-        url = "/accounts/logout/?r={}".format(next)
+        url = "/accounts/logout/?r={}".format(urllib.parse.quote(next))
 
     return redirect(url)
