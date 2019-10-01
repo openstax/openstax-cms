@@ -13,7 +13,7 @@ def login(request):
 
     next = request.GET.get("next", None)
     if next:
-        url = "/accounts/login/?r={}".format(urllib.parse.quote(next))
+        url = "/accounts/login/?r={}".format(urllib.parse.urlencode(next))
 
     return redirect(url)
 
@@ -46,6 +46,6 @@ def logout(request):
 
     next = request.GET.get("next", None)
     if next:
-        url = "/accounts/logout/?r={}".format(urllib.parse.quote(next))
+        url = "/accounts/logout/?r={}".format(urllib.parse.urlencode(next))
 
     return redirect(url)
