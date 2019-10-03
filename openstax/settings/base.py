@@ -342,6 +342,10 @@ ImageFile.LOAD_TRUNCATED_IMAGES = True
 STATIC_HOST = 'https://d3bxy9euw4e147.cloudfront.net' if not DEBUG else ''
 STATIC_URL = STATIC_HOST + '/static/'
 
+AWS_HEADERS = {
+    'Access-Control-Allow-Origin': '*'
+}
+
 try:
     from local import *
 except ImportError:
