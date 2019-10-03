@@ -92,6 +92,7 @@ class FacultyResources(models.Model):
     link_document_title = property(get_document_title)
 
     link_text = models.CharField(max_length=255, help_text="Call to Action Text")
+    coming_soon_text = models.CharField(max_length=255, null=True, blank=True, help_text="If there is text in this field a coming soon banner will be added with this description.")
 
     api_fields = [
         APIField('resource_heading'),
@@ -102,7 +103,8 @@ class FacultyResources(models.Model):
         APIField('link_page'),
         APIField('link_document_url'),
         APIField('link_document_title'),
-        APIField('link_text')
+        APIField('link_text'),
+        APIField('coming_soon_text')
     ]
 
     panels = [
@@ -111,6 +113,7 @@ class FacultyResources(models.Model):
         PageChooserPanel('link_page'),
         DocumentChooserPanel('link_document'),
         FieldPanel('link_text'),
+        FieldPanel('coming_soon_text'),
     ]
 
 
@@ -162,6 +165,7 @@ class StudentResources(models.Model):
     link_document_title = property(get_document_title)
 
     link_text = models.CharField(max_length=255, help_text="Call to Action Text")
+    coming_soon_text = models.CharField(max_length=255, null=True, blank=True, help_text="If there is text in this field a coming soon banner will be added with this description.")
 
     api_fields = [
         APIField('resource_heading'),
@@ -172,6 +176,7 @@ class StudentResources(models.Model):
         APIField('link_document_url'),
         APIField('link_document_title'),
         APIField('link_text'),
+        APIField('coming_soon_text'),
     ]
 
     panels = [
@@ -180,6 +185,7 @@ class StudentResources(models.Model):
         PageChooserPanel('link_page'),
         DocumentChooserPanel('link_document'),
         FieldPanel('link_text'),
+        FieldPanel('coming_soon_text'),
     ]
 
 
@@ -546,7 +552,6 @@ class Book(Page):
     comp_copy_available = models.BooleanField(default=True, help_text='Whether free compy available for teachers.')
     comp_copy_content = StreamField(SharedContentBlock(), null=True, blank=True, help_text='Content of the free copy.')
     errata_content = StreamField(SharedContentBlock(), null=True, blank=True, help_text='Errata content.')
-    table_of_contents = JSONField(editable=False, blank=True, null=True, help_text='TOC.')
     tutor_marketing_book = models.BooleanField(default=False, help_text='Whether this is a Tutor marketing book.')
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
@@ -707,7 +712,6 @@ class Book(Page):
         APIField('comp_copy_available'),
         APIField('comp_copy_content'),
         APIField('errata_content'),
-        APIField('table_of_contents'),
         APIField('tutor_marketing_book'),
         APIField('seo_title'),
         APIField('search_description'),
@@ -753,33 +757,6 @@ class Book(Page):
             except(TypeError, AttributeError):
                 pass
         return book_urls
-
-    def clean(self):
-        errors = {}
-
-        if self.cnx_id:
-            try:
-                url = '{}/contents/{}.json'.format(
-                    settings.CNX_ARCHIVE_URL, self.cnx_id)
-                context = ssl._create_unverified_context()
-                response = urllib.request.urlopen(url, context=context).read()
-                result = json.loads(response.decode('utf-8'))
-
-                self.license_name = result['license']['name']
-                self.license_version = result['license']['version']
-                self.license_url = result['license']['url']
-
-                if result['collated']:
-                    htmlless_toc = cleanhtml(json.dumps(result['tree']))
-                    self.table_of_contents = json.loads(htmlless_toc)
-                else:
-                    self.table_of_contents = result['tree']
-
-            except urllib.error.HTTPError as err:
-                errors.setdefault('cnx_id', []).append(err)
-
-        if errors:
-            raise ValidationError(errors)
 
     def save(self, *args, **kwargs):
         if self.cnx_id:
