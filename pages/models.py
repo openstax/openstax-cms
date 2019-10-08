@@ -571,6 +571,7 @@ class HomePage(Page):
         'pages.InstitutionalPartnership',
         'pages.HeroJourneyPage',
         'pages.InstitutionalPartnerProgramPage',
+        'pages.CreatorFestPage',
         'books.BookIndex',
         'news.NewsIndex',
         'news.PressIndex',
@@ -2881,6 +2882,92 @@ class InstitutionalPartnerProgramPage(Page):
         APIField('section_9_form_prompt'),
         APIField('section_9_button_text'),
         APIField('section_9_contact_html'),
+    ]
+
+    parent_page_type = ['pages.HomePage']
+
+
+class PanelBlock(blocks.StreamBlock):
+    superheading = blocks.CharBlock()
+    heading = blocks.CharBlock()
+    background_image = ImageBlock()
+    video = blocks.RawHTMLBlock()
+    cards = blocks.StructBlock([
+        ('icon', ImageBlock()),
+        ('headline', blocks.CharBlock()),
+        ('description', blocks.RichTextBlock())
+    ])
+
+    class Meta:
+        icon='cogs'
+
+class PanelStruct(blocks.StructBlock):
+    superheading = blocks.CharBlock()
+    heading = blocks.CharBlock()
+    background_image = ImageBlock()
+    video = blocks.RawHTMLBlock()
+    cards = blocks.StructBlock([
+        ('icon', ImageBlock()),
+        ('headline', blocks.CharBlock()),
+        ('description', blocks.RichTextBlock())
+    ])
+
+    class Meta:
+        icon='cogs'
+
+
+class CreatorFestPage(Page):
+    banner_headline = models.CharField(max_length=255)
+    banner_content = RichTextField()
+    register = StreamField([
+        ('box', blocks.ListBlock(blocks.StructBlock([
+            ('headline', blocks.CharBlock()),
+            ('address', blocks.RichTextBlock()),
+            ('button_url', blocks.URLBlock()),
+            ('button_text', blocks.CharBlock()),
+        ])))
+    ])
+    navigator = StreamField([
+        ('menu_item', blocks.ListBlock(blocks.StructBlock([
+            ('text', blocks.CharBlock()),
+            ('slug', blocks.CharBlock()),
+        ])))
+    ], null=True)
+
+    page_panels = StreamField([
+        ('panel', blocks.StructBlock([
+            ('superheading', blocks.CharBlock()),
+            ('heading', blocks.CharBlock()),
+            ('background_image', ImageBlock()),
+            ('video', blocks.RawHTMLBlock(required=False)),
+            ('cards', blocks.ListBlock(blocks.StructBlock([
+                ('icon', ImageBlock()),
+                ('headline', blocks.CharBlock()),
+                ('description', blocks.RichTextBlock())
+            ], null=True)
+            ))
+        ]))
+    ], null=True)
+
+    content_panels = [
+        FieldPanel('title', classname='full title', help_text="Internal name for page."),
+        FieldPanel('banner_headline'),
+        FieldPanel('banner_content'),
+        StreamFieldPanel('register'),
+        StreamFieldPanel('navigator'),
+        StreamFieldPanel('page_panels'),
+    ]
+
+    api_fields = [
+        APIField('title'),
+        APIField('banner_headline'),
+        APIField('banner_content'),
+        APIField('register'),
+        APIField('navigator'),
+        APIField('page_panels'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
     ]
 
     parent_page_type = ['pages.HomePage']
