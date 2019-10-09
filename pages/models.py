@@ -2890,6 +2890,13 @@ class InstitutionalPartnerProgramPage(Page):
 class CreatorFestPage(Page):
     banner_headline = models.CharField(max_length=255)
     banner_content = RichTextField()
+    banner_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
     register = StreamField([
         ('box', blocks.ListBlock(blocks.StructBlock([
             ('headline', blocks.CharBlock()),
@@ -2925,6 +2932,7 @@ class CreatorFestPage(Page):
         FieldPanel('title', classname='full title', help_text="Internal name for page."),
         FieldPanel('banner_headline'),
         FieldPanel('banner_content'),
+        FieldPanel('banner_image'),
         StreamFieldPanel('register'),
         StreamFieldPanel('navigator'),
         StreamFieldPanel('page_panels'),
@@ -2934,6 +2942,7 @@ class CreatorFestPage(Page):
         APIField('title'),
         APIField('banner_headline'),
         APIField('banner_content'),
+        APIField('banner_image'),
         APIField('register'),
         APIField('navigator'),
         APIField('page_panels'),
