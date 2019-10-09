@@ -2887,35 +2887,6 @@ class InstitutionalPartnerProgramPage(Page):
     parent_page_type = ['pages.HomePage']
 
 
-class PanelBlock(blocks.StreamBlock):
-    superheading = blocks.CharBlock()
-    heading = blocks.CharBlock()
-    background_image = ImageBlock()
-    video = blocks.RawHTMLBlock()
-    cards = blocks.StructBlock([
-        ('icon', ImageBlock()),
-        ('headline', blocks.CharBlock()),
-        ('description', blocks.RichTextBlock())
-    ])
-
-    class Meta:
-        icon='cogs'
-
-class PanelStruct(blocks.StructBlock):
-    superheading = blocks.CharBlock()
-    heading = blocks.CharBlock()
-    background_image = ImageBlock()
-    video = blocks.RawHTMLBlock()
-    cards = blocks.StructBlock([
-        ('icon', ImageBlock()),
-        ('headline', blocks.CharBlock()),
-        ('description', blocks.RichTextBlock())
-    ])
-
-    class Meta:
-        icon='cogs'
-
-
 class CreatorFestPage(Page):
     banner_headline = models.CharField(max_length=255)
     banner_content = RichTextField()
@@ -2938,8 +2909,9 @@ class CreatorFestPage(Page):
         ('panel', blocks.StructBlock([
             ('superheading', blocks.CharBlock()),
             ('heading', blocks.CharBlock()),
-            ('background_image', ImageBlock()),
-            ('video', blocks.RawHTMLBlock(required=False)),
+            ('background_image', ImageBlock(required=False)),
+            ('embed', blocks.RawHTMLBlock(required=False)),
+            ('paragraph', blocks.RichTextBlock(required=False)),
             ('cards', blocks.ListBlock(blocks.StructBlock([
                 ('icon', ImageBlock()),
                 ('headline', blocks.CharBlock()),
