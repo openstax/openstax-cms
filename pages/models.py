@@ -2932,7 +2932,7 @@ class CreatorFestPage(Page):
         FieldPanel('title', classname='full title', help_text="Internal name for page."),
         FieldPanel('banner_headline'),
         FieldPanel('banner_content'),
-        FieldPanel('banner_image'),
+        ImageChooserPanel('banner_image'),
         StreamFieldPanel('register'),
         StreamFieldPanel('navigator'),
         StreamFieldPanel('page_panels'),
