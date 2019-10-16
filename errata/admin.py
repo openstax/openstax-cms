@@ -1,6 +1,6 @@
 import unicodecsv
 from import_export import resources
-from import_export.admin import ExportActionModelAdmin
+from import_export.admin import ExportActionModelAdmin, ExportActionMixin
 from import_export.formats import base_formats
 
 from django.contrib import admin
@@ -68,7 +68,7 @@ class ErrataAdmin(ExportActionModelAdmin):
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
     }
-    actions = ['mark_in_review', 'mark_reviewed', 'mark_archived']
+    actions = ['mark_in_review', 'mark_reviewed', 'mark_archived', ExportActionMixin.export_admin_action]
     inlines = [InlineInternalImage, ]
     raw_id_fields = ('submitted_by', 'duplicate_id')
 
