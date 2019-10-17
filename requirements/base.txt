@@ -86,3 +86,5 @@ wagtail-import-export-tool==0.9.5
 # sso stuff
 pycryptodome>=3.9.0
 django-cors-headers==2.4.1
+
+sentry-sdk==0.12.3
