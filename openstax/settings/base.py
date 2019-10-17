@@ -164,6 +164,7 @@ ROOT_URLCONF = 'openstax.urls'
 WSGI_APPLICATION = 'openstax.wsgi.application'
 
 INSTALLED_APPS = [
+    'scout_apm.django',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -340,6 +341,7 @@ if not DEBUG: # only send errors to Sentry in prod-like environments
         dsn='https://2e1ecafc60684f86b59c654de3032d83:7fbc901dcca04dc4a8220f7cce20fdd9@sentry.cnx.org/11',
         integrations=[DjangoIntegration()]
     )
+
 
 try:
     from local import *

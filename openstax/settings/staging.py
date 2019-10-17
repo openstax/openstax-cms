@@ -43,6 +43,9 @@ HOST_LINK = 'https://oscms-staging.openstax.org'
 #CNX URL for viewing book online
 CNX_URL = 'https://staging.cnx.org/'
 
+SCOUT_MONITOR = True
+SCOUT_NAME = "openstax-cms (staging)"
+
 try:
     from .local import *
 except ImportError:
