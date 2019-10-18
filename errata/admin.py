@@ -32,6 +32,11 @@ class BlockedUserAdmin(admin.ModelAdmin):
     list_display = ('account_id', 'fullname', 'reason',)
 
 class ErrataAdmin(ExportActionModelAdmin):
+    class Media:
+        js = (
+            '//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js',  # jquery
+            'errata/errata-admin-ui.js',  # custom errata javascript
+        )
     resource_class = ErrataResource
 
     form = ErrataForm
