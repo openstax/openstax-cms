@@ -35,6 +35,8 @@ HOST_LINK = 'https://oscms-qa.openstax.org'
 #CNX URL for viewing book online
 CNX_URL = 'https://qa.cnx.org/'
 
+SCOUT_MONITOR = True
+SCOUT_NAME = "openstax-cms (qa)"
 
 try:
     from .local import *

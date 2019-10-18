@@ -43,6 +43,9 @@ HOST_LINK = 'https://openstax.org'
 #CNX URL for viewing book online
 CNX_URL = 'https://cnx.org/'
 
+SCOUT_MONITOR = True
+SCOUT_NAME = "openstax-cms (prod)"
+
 try:
     from .local import *
 except ImportError:

@@ -164,6 +164,7 @@ ROOT_URLCONF = 'openstax.urls'
 WSGI_APPLICATION = 'openstax.wsgi.application'
 
 INSTALLED_APPS = [
+    'scout_apm.django',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -264,27 +265,20 @@ logging.config.dictConfig({
             'class': 'logging.StreamHandler',
             'formatter': 'default',
         },
-        # Add Handler for Sentry for `warning` and above
-        'sentry': {
-            'level': 'ERROR',
-            'class': 'raven.contrib.django.raven_compat.handlers.SentryHandler',
-        },
         'django.server': DEFAULT_LOGGING['handlers']['django.server'],
     },
     'loggers': {
         # default for all undefined Python modules
         '': {
             'level': 'ERROR',
-            'handlers': ['console', 'sentry'],
+            'handlers': ['console'],
         },
         # Our application code
         'openstax': {
             'level': LOGLEVEL,
-            'handlers': ['console', 'sentry'],
-            # Avoid double logging because of root logger
+            'handlers': ['console'],
             'propagate': False,
         },
-        # Prevent noisy modules from logging to Sentry
         'django.security.DisallowedHost': {
             'level': 'ERROR',
             'handlers': ['console'],
@@ -299,13 +293,6 @@ logging.config.dictConfig({
         'django.server': DEFAULT_LOGGING['loggers']['django.server'],
     },
 })
-# this is what sends tracebacks to Sentry
-RAVEN_CONFIG = {
-    'dsn': 'https://2e1ecafc60684f86b59c654de3032d83:7fbc901dcca04dc4a8220f7cce20fdd9@sentry.cnx.org/11',
-    # If you are using git, you can also automatically configure the
-    # release based on the git info.
-    'release': raven.fetch_git_sha(os.path.dirname(os.pardir)),
-}
 
 # FLAGS
 FLAGS = {
@@ -345,6 +332,15 @@ STATIC_URL = STATIC_HOST + '/static/'
 AWS_HEADERS = {
     'Access-Control-Allow-Origin': '*'
 }
+
+
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+sentry_sdk.init(
+    dsn='https://2e1ecafc60684f86b59c654de3032d83:7fbc901dcca04dc4a8220f7cce20fdd9@sentry.cnx.org/11',
+    integrations=[DjangoIntegration()]
+)
+
 
 try:
     from local import *
