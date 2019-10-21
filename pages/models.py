@@ -306,13 +306,6 @@ class ResourceAvailability(Orderable, Resource):
     marketing_video = ParentalKey(
         'pages.Marketing', related_name='resource_availability')
 
-class RoverCardsSection2(Orderable, Card):
-    rover_cards = ParentalKey('pages.Rover', related_name='rover_cards_section_2')
-
-class RoverCardsSection3(Orderable, Card):
-    rover_cards = ParentalKey('pages.Rover', related_name='rover_cards_section_3')
-
-
 ### Page Definitions ###
 
 class AboutUsPage(Page):
@@ -565,7 +558,6 @@ class HomePage(Page):
         'pages.PrintOrder',
         'pages.ResearchPage',
         'pages.Careers',
-        'pages.Rover',
         'pages.RoverPage',
         'pages.AnnualReportPage',
         'pages.InstitutionalPartnership',
@@ -2158,116 +2150,6 @@ class Careers(Page):
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
         ImageChooserPanel('promote_image')
-    ]
-
-    template = 'page.html'
-
-    parent_page_types = ['pages.HomePage']
-    max_count = 1
-
-
-class Rover(Page):
-    header_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-    def get_header_image(self):
-        return build_image_url(self.header_image)
-    header_image_url = property(get_header_image)
-
-    header_image_alt = models.CharField(max_length=255)
-    mobile_header_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-    def get_mobile_header_image(self):
-        return build_image_url(self.mobile_header_image)
-    mobile_header_image_url = property(get_mobile_header_image)
-
-    section_1_headline = models.CharField(max_length=255, null=True)
-    section_1_description = RichTextField(null=True)
-    section_1_button_text = models.CharField(max_length=255, null=True)
-    section_1_button_url = models.URLField(null=True)
-
-    section_2_headline = models.CharField(max_length=255, null=True)
-    #section 2 cards are an inline panel
-    
-    section_3_headline = models.CharField(max_length=255, null=True)
-    section_3_description = models.TextField(null=True)
-    #section 3 cards are an inline panel
-
-    form_headline = models.CharField(max_length=255)
-
-    section_4_headline = models.CharField(max_length=255, null=True)
-    section_4_faqs = StreamField([
-        ('headline', blocks.CharBlock()),
-        ('faqs', blocks.ListBlock(blocks.StructBlock([
-            ('question', blocks.CharBlock(required=False)),
-            ('answer', blocks.TextBlock(required=False))
-        ]))),
-    ], null=True, blank=True)
-
-    promote_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-
-    content_panels = [
-        FieldPanel('title', classname='full title', help_text="Internal name for page."),
-        ImageChooserPanel('header_image'),
-        FieldPanel('header_image_alt'),
-        ImageChooserPanel('mobile_header_image'),
-        FieldPanel('section_1_headline'),
-        FieldPanel('section_1_description'),
-        FieldPanel('section_1_button_text'),
-        FieldPanel('section_1_button_url'),
-        FieldPanel('section_2_headline'),
-        InlinePanel('rover_cards_section_2', label='Section 2 Cards'),
-        FieldPanel('section_3_headline'),
-        FieldPanel('section_3_description'),
-        InlinePanel('rover_cards_section_3', label='Section 3 Cards'),
-        FieldPanel('form_headline'),
-        FieldPanel('section_4_headline'),
-        StreamFieldPanel('section_4_faqs'),
-    ]
-
-    promote_panels = [
-        FieldPanel('slug'),
-        FieldPanel('seo_title'),
-        FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
-
-    ]
-
-    api_fields = [
-        APIField('header_image_url'),
-        APIField('header_image_alt'),
-        APIField('mobile_header_image_url'),
-        APIField('section_1_headline'),
-        APIField('section_1_description'),
-        APIField('section_1_button_text'),
-        APIField('section_1_button_url'),
-        APIField('section_2_headline'),
-        APIField('rover_cards_section_2'),
-        APIField('section_3_headline'),
-        APIField('section_3_description'),
-        APIField('rover_cards_section_3'),
-        APIField('form_headline'),
-        APIField('section_4_headline'),
-        APIField('section_4_faqs'),
-        APIField('slug'),
-        APIField('seo_title'),
-        APIField('search_description'),
-        APIField('promote_image')
     ]
 
     template = 'page.html'
