@@ -1959,18 +1959,32 @@ class PrintOrder(Page):
     providers = StreamField([
         ('provider', BookProviderBlock(icon='document')),
     ])
-    isbn_download = models.ForeignKey(
+    us_isbn_download = models.ForeignKey(
         'wagtaildocs.Document',
         on_delete=models.SET_NULL,
         null=True,
         related_name='+',
     )
 
-    def get_isbn_download(self):
-        return build_document_url(self.isbn_download.url)
+    def get_us_isbn_download(self):
+        return build_document_url(self.us_isbn_download.url)
 
-    isbn_download_url = property(get_isbn_download)
-    isbn_cta = models.CharField(max_length=255)
+    us_isbn_download_url = property(get_us_isbn_download)
+    us_isbn_cta = models.CharField(max_length=255)
+
+    canadian_isbn_download = models.ForeignKey(
+        'wagtaildocs.Document',
+        on_delete=models.SET_NULL,
+        null=True,
+        related_name='+',
+    )
+
+    def get_canadian_isbn_download(self):
+        return build_document_url(self.canadian_isbn_download.url)
+
+    canadian_isbn_download_url = property(get_canadian_isbn_download)
+    canadian_isbn_cta = models.CharField(max_length=255)
+
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -1987,8 +2001,10 @@ class PrintOrder(Page):
         APIField('featured_providers'),
         APIField('other_providers_intro_blurb'),
         APIField('providers'),
-        APIField('isbn_download_url'),
-        APIField('isbn_cta'),
+        APIField('us_isbn_download_url'),
+        APIField('us_isbn_cta'),
+        APIField('canadian_isbn_download_url'),
+        APIField('canadian_isbn_cta'),
         APIField('slug'),
         APIField('seo_title'),
         APIField('search_description'),
@@ -2003,8 +2019,10 @@ class PrintOrder(Page):
         StreamFieldPanel('featured_providers'),
         FieldPanel('other_providers_intro_blurb'),
         StreamFieldPanel('providers'),
-        FieldPanel('isbn_download'),
-        FieldPanel('isbn_cta'),
+        DocumentChooserPanel('us_isbn_download'),
+        FieldPanel('us_isbn_cta'),
+        DocumentChooserPanel('canadian_isbn_download'),
+        FieldPanel('canadian_isbn_cta'),
     ]
 
     promote_panels = [
