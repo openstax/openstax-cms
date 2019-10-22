@@ -2814,7 +2814,7 @@ class CreatorFestPage(Page):
 
     page_panels = StreamField([
         ('panel', blocks.StructBlock([
-            ('superheading', blocks.CharBlock()),
+            ('superheading', blocks.CharBlock(required=False)),
             ('heading', blocks.CharBlock()),
             ('background_image', ImageBlock(required=False)),
             ('embed', blocks.RawHTMLBlock(required=False)),
