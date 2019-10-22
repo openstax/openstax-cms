@@ -306,6 +306,7 @@ WAGTAIL_SITE_NAME = 'openstax'
 # Wagtail API number of results
 WAGTAILAPI_LIMIT_MAX = None
 WAGTAILUSERS_PASSWORD_ENABLED = False
+WAGTAIL_USAGE_COUNT_ENABLED = True
 
 # used in page.models to retrieve book information
 CNX_ARCHIVE_URL = 'https://archive.cnx.org'
