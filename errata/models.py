@@ -265,9 +265,14 @@ def send_status_update_email(sender, instance, created, **kwargs):
         send_email = False
         override_to = False
         if created:
-            subject = "We received your submission"
-            body = "Thanks for your help! Your errata submissions help keep OpenStax resources high quality and up to date."
-            send_email = True
+            if instance.created.month in (11, 12, 1, 2):
+                subject = "We received your submission"
+                body = 'Errata received from November to February will be reflected in the following formats for the fall semester: web view, OpenStax + SE app, Kindle, and iBook if applicable./n Instructor and student resources, such as test banks and student solution manuals, also follow the schedule above./n In an effort to keep PDF versions aligned with printed books, PDF versions of OpenStax textbooks are only updated, prior to the fall semester, if there are substantial errata updates to the book that year. Click the “Sign up to learn more” link on your book’s page to be notified of PDF updates and other news.'
+                send_email = True
+            else:
+                subject = "We received your submission"
+                body = 'Errata received from March to October will be reflected in the following formats for the spring semester: web view, OpenStax + SE app, Kindle, and iBook if applicable./n Instructor and student resources, such as test banks and student solution manuals, also follow the schedule above./n In an effort to keep PDF versions aligned with printed books, PDF versions of OpenStax textbooks are only updated, prior to the fall semester, if there are substantial errata updates to the book that year. Click the “Sign up to learn more” link on your book’s page to be notified of PDF updates and other news.'
+                send_email = True
         elif instance.status == 'Reviewed' and (instance.resolution == 'Will Not Fix' or instance.resolution == 'Duplicate' or instance.resolution == 'Not An Error' or instance.resolution == 'Major Book Revision'):
             subject = "We reviewed your erratum suggestion"
             body = "Thanks again for your submission. Our reviewers have evaluated it and have determined there will be no change made."
