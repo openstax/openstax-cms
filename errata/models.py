@@ -279,7 +279,7 @@ def send_status_update_email(sender, instance, created, **kwargs):
             send_email = True
         elif instance.status == 'Reviewed' and instance.resolution == 'Approved':
             subject = "We received your submission"
-            body = "Thanks again for your submission. Our reviewers have evaluated it and have determined that a change will be made. We will email you again when the appropriate resource has been updated."
+            body = "Thanks again for your submission. Our reviewers have evaluated it and have determined that a change will be made./n Please remember that errata submissions from March to October will be reflected for the spring semester, and submissions from November to February will be reflected for the fall semester for the following formats: web view, OpenStax + SE app, Kindle, and iBook if applicable."
             send_email = True
         elif instance.status == 'Completed' and instance.resolution == 'Approved':
             subject = "Your correction is live"
