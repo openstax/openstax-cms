@@ -284,7 +284,7 @@ def send_status_update_email(sender, instance, created, **kwargs):
         elif instance.status == 'Completed' and instance.resolution == 'Approved':
             subject = "Your correction is live"
             body = "The correction you suggested has been incorporated into the appropriate OpenStax resource. Thanks for your help!"
-            send_email = True
+            send_email = False
         elif instance.status == 'Completed' and instance.resolution == 'Sent to Customer Support':
             subject = "Errata report for Customer Support"
             body = "An errata report has been submitted that requires customer support attention."
