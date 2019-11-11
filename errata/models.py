@@ -281,10 +281,6 @@ class EmailText(models.Model):
     email_body_text = models.TextField()
     notes = models.CharField(max_length=255, blank=True, null=True)
 
-
-    def publish(self):
-        self.save()
-
     def __str__(self):
         return self.email_case
 
