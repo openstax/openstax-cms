@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import AdoptionOpportunityRecord, School, MapBoxDataset, SalesforceSettings
+from .models import AdoptionOpportunityRecord, School, MapBoxDataset, SalesforceSettings, Partner
 
 
 class SchoolAdmin(admin.ModelAdmin):
@@ -29,8 +29,12 @@ class SalesforceSettingsAdmin(admin.ModelAdmin):
         else:
             return True
 
+class PartnerAdmin(admin.ModelAdmin):
+    list_display = ['salesforce_id', 'partner_name', 'partner_type']
+
 
 admin.site.register(SalesforceSettings, SalesforceSettingsAdmin)
 admin.site.register(School, SchoolAdmin)
 admin.site.register(AdoptionOpportunityRecord, AdoptionOpportunityRecordAdmin)
 admin.site.register(MapBoxDataset)
+admin.site.register(Partner, PartnerAdmin)
