@@ -14,7 +14,7 @@ from django.utils.html import mark_safe
 
 from extraadminfilters.filters import UnionFieldListFilter
 
-from .models import Errata, BlockedUser, InternalDocumentation
+from .models import Errata, BlockedUser, EmailText, InternalDocumentation
 from .forms import ErrataForm
 
 
@@ -232,3 +232,4 @@ class ErrataAdmin(ExportActionModelAdmin):
 
 admin.site.register(Errata, ErrataAdmin)
 admin.site.register(BlockedUser, BlockedUserAdmin)
+admin.site.register(EmailText)

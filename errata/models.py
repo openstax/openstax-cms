@@ -88,6 +88,15 @@ BLOCK_TYPES = (
     ('Force Block', 'Force Block'),
 )
 
+EMAIL_CASES = (
+    ('Created in fall', 'Created in fall'),
+    ('Created in spring', 'Created in spring'),
+    ('Reviewed and (will not fix, or duplicate, or not an error, or major book revision)', 'Reviewed and (will not fix, or duplicate, or not an error, or major book revision)'),
+    ('Reviewed and Approved', 'Reviewed and Approved'),
+    ('Completed and Approved', 'Completed and Approved'),
+    ('Completed and Sent to Customer Support', 'Completed and Sent to Customer Support'),
+    ('More Information Requested', 'More Information Requested')
+)
 
 def is_user_blocked(account_id):
     block_query = BlockedUser.objects.filter(account_id=account_id)
@@ -260,40 +269,63 @@ class Errata(models.Model):
         verbose_name = "erratum"
         verbose_name_plural = "erratum"
 
+class EmailText(models.Model):
+
+    email_case = models.CharField(
+        max_length=100,
+        choices=EMAIL_CASES,
+        blank=True,
+        null=True
+    )
+    email_subject_text = models.CharField(max_length=255, blank=True, null=True)
+    email_body_text = models.TextField()
+    notes = models.CharField(max_length=255, blank=True, null=True)
+
+    def __str__(self):
+        return self.email_case
+
+    class Meta:
+        verbose_name = "email text"
+        verbose_name_plural = "email text"
+
+
 @receiver(post_save, sender=Errata, dispatch_uid="send_status_update_email")
 def send_status_update_email(sender, instance, created, **kwargs):
         send_email = False
         override_to = False
+
         if created:
             if instance.created.month in (11, 12, 1, 2):
-                subject = "We received your submission"
-                body = 'Errata received from November to February will be reflected in the following formats for the fall semester: web view, OpenStax + SE app, Kindle, and iBook if applicable./n Instructor and student resources, such as test banks and student solution manuals, also follow the schedule above./n In an effort to keep PDF versions aligned with printed books, PDF versions of OpenStax textbooks are only updated, prior to the fall semester, if there are substantial errata updates to the book that year. Click the “Sign up to learn more” link on your book’s page to be notified of PDF updates and other news.'
+                email_text = EmailText.objects.get(email_case='Created in fall')
+                subject = email_text.email_subject_text
+                body = email_text.email_body_text
                 send_email = True
             else:
-                subject = "We received your submission"
-                body = 'Errata received from March to October will be reflected in the following formats for the spring semester: web view, OpenStax + SE app, Kindle, and iBook if applicable./n Instructor and student resources, such as test banks and student solution manuals, also follow the schedule above./n In an effort to keep PDF versions aligned with printed books, PDF versions of OpenStax textbooks are only updated, prior to the fall semester, if there are substantial errata updates to the book that year. Click the “Sign up to learn more” link on your book’s page to be notified of PDF updates and other news.'
+                email_text = EmailText.objects.get(email_case='Created in fall')
+                subject = email_text.email_subject_text
+                body = email_text.email_body_text
                 send_email = True
         elif instance.status == 'Reviewed' and (instance.resolution == 'Will Not Fix' or instance.resolution == 'Duplicate' or instance.resolution == 'Not An Error' or instance.resolution == 'Major Book Revision'):
-            subject = "We reviewed your erratum suggestion"
-            body = "Thanks again for your submission. Our reviewers have evaluated it and have determined there will be no change made."
+            email_text = EmailText.objects.get(email_case='Reviewed and (will not fix, or duplicate, or not an error, or major book revision)')
+            subject = email_text.email_subject_text
+            body = email_text.email_body_text
             send_email = True
         elif instance.status == 'Reviewed' and instance.resolution == 'Approved':
-            subject = "We received your submission"
-            body = "Thanks again for your submission. Our reviewers have evaluated it and have determined that a change will be made./n Please remember that errata submissions from March to October will be reflected for the spring semester, and submissions from November to February will be reflected for the fall semester for the following formats: web view, OpenStax + SE app, Kindle, and iBook if applicable."
+            email_text = EmailText.objects.get(email_case='Reviewed and Approved')
+            subject = email_text.email_subject_text
+            body = email_text.email_body_text
             send_email = True
-        elif instance.status == 'Completed' and instance.resolution == 'Approved':
-            subject = "Your correction is live"
-            body = "The correction you suggested has been incorporated into the appropriate OpenStax resource. Thanks for your help!"
-            send_email = False
         elif instance.status == 'Completed' and instance.resolution == 'Sent to Customer Support':
-            subject = "Errata report for Customer Support"
-            body = "An errata report has been submitted that requires customer support attention."
+            email_text = EmailText.objects.get(email_case='Completed and Sent to Customer Support')
+            subject = email_text.email_subject_text
+            body = email_text.email_body_text
             send_email = True
             override_to = True
             to = "support@openstax.org"
         elif instance.resolution == 'More Information Requested':
-            subject = "More information requested on your errata report"
-            body = "Thank you for the feedback. Unfortunately, our reviewers were unable to locate this error. Please submit a new report with additional information, such as a link to the relevant content, or a screenshot."
+            email_text = EmailText.objects.get(email_case='More Information Requested')
+            subject = email_text.email_subject_text
+            body = email_text.email_body_text
             send_email = True
 
         if not override_to:

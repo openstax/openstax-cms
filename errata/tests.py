@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from errata.models import Errata
+from errata.models import Errata, EmailText
 from books.models import Book, BookIndex
 from pages.models import Page, HomePage
 
@@ -35,6 +35,18 @@ class ErrataTest(TestCase):
         book_index.add_child(instance=book)
 
     def test_can_create_errata(self):
+        EmailText.objects.create(
+            email_case = 'Created in fall',
+            email_subject_text = "test",
+            email_body_text = "test",
+            notes = "test",
+        )
+        EmailText.objects.create(
+            email_case = 'Created in spring',
+            email_subject_text = "test",
+            email_body_text = "test",
+            notes = "test",
+        )
         errata = Errata.objects.create(
             book=Book.objects.get(cnx_id='d50f6e32-0fda-46ef-a362-9bd36ca7c97d'),
             detail="This is a test.",
