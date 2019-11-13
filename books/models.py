@@ -554,6 +554,13 @@ class Book(Page):
     errata_content = StreamField(SharedContentBlock(), null=True, blank=True, help_text='Errata content.')
     table_of_contents = JSONField(editable=False, blank=True, null=True, help_text='TOC.')
     tutor_marketing_book = models.BooleanField(default=False, help_text='Whether this is a Tutor marketing book.')
+    videos = StreamField([
+        ('video', blocks.ListBlock(blocks.StructBlock([
+            ('title', blocks.CharBlock()),
+            ('description', blocks.RichTextBlock()),
+            ('embed', blocks.RawHTMLBlock()),
+        ])))
+    ], null=True, blank=True)
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -625,6 +632,7 @@ class Book(Page):
         StreamFieldPanel('errata_content'),
         FieldPanel('tutor_marketing_book'),
         FieldPanel('last_updated_pdf'),
+        StreamFieldPanel('videos')
     ]
     instructor_resources_panel = [
         InlinePanel('book_faculty_resources', label="Instructor Resources"),
@@ -715,6 +723,7 @@ class Book(Page):
         APIField('errata_content'),
         APIField('table_of_contents'),
         APIField('tutor_marketing_book'),
+        APIField('videos'),
         APIField('seo_title'),
         APIField('search_description'),
         APIField('promote_image'),
