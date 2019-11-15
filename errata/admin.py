@@ -145,6 +145,7 @@ class ErrataAdmin(ExportActionModelAdmin):
                            'number_of_errors',
                            'resource',
                            'user_name',
+                           'user_faculty_status',
                            'user_email',
                            'accounts_link',
                            'file_1',
@@ -153,6 +154,7 @@ class ErrataAdmin(ExportActionModelAdmin):
                                     'created',
                                     'modified',
                                     'user_name',
+                                    'user_faculty_status',
                                     'user_email',
                                     'accounts_link']
             self.save_as = True
