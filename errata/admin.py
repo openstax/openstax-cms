@@ -144,6 +144,8 @@ class ErrataAdmin(ExportActionModelAdmin):
                            'error_type',
                            'number_of_errors',
                            'resource',
+                           'user_name',
+                           'user_faculty_status',
                            'user_email',
                            'accounts_link',
                            'file_1',
@@ -151,6 +153,8 @@ class ErrataAdmin(ExportActionModelAdmin):
             self.readonly_fields = ['id',
                                     'created',
                                     'modified',
+                                    'user_name',
+                                    'user_faculty_status',
                                     'user_email',
                                     'accounts_link']
             self.save_as = True
@@ -200,7 +204,6 @@ class ErrataAdmin(ExportActionModelAdmin):
                            'error_type',
                            'number_of_errors',
                            'resource',
-                           'user_email',
                            'accounts_link',
                            'file_1',
                            'file_2']
@@ -222,7 +225,6 @@ class ErrataAdmin(ExportActionModelAdmin):
                                     'error_type',
                                     'number_of_errors',
                                     'resource',
-                                    'user_email',
                                     'accounts_link',
                                     'file_1',
                                     'file_2']

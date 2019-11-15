@@ -201,6 +201,22 @@ class Errata(models.Model):
             return None
 
     @property
+    def user_name(self):
+        try:
+            user = get_user_info(self.submitted_by_account_id)
+            return user['name']
+        except:
+            return None
+
+    @property
+    def user_faculty_status(self):
+        try:
+            user = get_user_info(self.submitted_by_account_id)
+            return user['faculty_status']
+        except:
+            return None
+
+    @property
     def accounts_link(self):
         try:
             return format_html('<a href="{}/admin/users/{}/edit" target="_blank">OpenStax Accounts Link</a>'.format(settings.ACCOUNTS_URL, self.submitted_by_account_id))
