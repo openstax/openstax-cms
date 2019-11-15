@@ -90,6 +90,7 @@ class Partner(models.Model):
     salesforce_id = models.CharField(max_length=255, blank=True, null=True)
     partner_name = models.CharField(max_length=255, blank=True, null=True)
     partner_type = models.CharField(max_length=255, blank=True, null=True)
+    books = models.TextField(blank=True, null=True)
     affordability_cost = models.BooleanField(default=False)
     affordability_institutional = models.BooleanField(default=False)
     app_available = models.BooleanField(default=False)

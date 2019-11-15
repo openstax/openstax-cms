@@ -21,6 +21,7 @@ class Command(BaseCommand):
                     "Id, " \
                     "Name, " \
                     "Partner_Type__c, " \
+                    "Books_Offered__c, " \
                     "Affordability_cost__c, " \
                     "Affordability_institutional__c, " \
                     "App_available__c, " \
@@ -107,6 +108,7 @@ class Command(BaseCommand):
                         salesforce_id=partner['Id'],
                         defaults={'partner_name': partner['Name'],
                                   'partner_type': partner['Partner_Type__c'],
+                                  'books': partner['Books_Offered__c'],
                                   'affordability_cost': self.str2bool(partner['Affordability_cost__c']),
                                   'affordability_institutional': self.str2bool(partner['Affordability_Institutional__c']),
                                   'app_available': self.str2bool(partner['App_available__c']),
