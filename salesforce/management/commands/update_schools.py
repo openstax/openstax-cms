@@ -62,7 +62,7 @@ class Command(BaseCommand):
                       "Testimonial__c," \
                       "Testimonial_Name__c, " \
                       "Testimonial_Position__c, " \
-                      "Number_of_Adoptions__c FROM Account WHERE RecordTypeId = '012U0000000MdzNIAS' AND Adoptions_in_District__c > 0 AND K_I_P__c = True"
+                      "Number_of_Adoptions__c FROM Account WHERE RecordTypeId = '012U0000000MdzNIAS' AND K_I_P__c = True"
             district_response = sf.query_all(query)
             sf_districts = response['records']
 
