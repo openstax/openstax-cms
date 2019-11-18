@@ -204,7 +204,7 @@ class Errata(models.Model):
     def user_name(self):
         try:
             user = get_user_info(self.submitted_by_account_id)
-            return user['name']
+            return user['fullname']
         except:
             return None
 
