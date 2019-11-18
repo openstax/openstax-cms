@@ -144,21 +144,25 @@ class ErrataAdmin(ExportActionModelAdmin):
                            'error_type',
                            'number_of_errors',
                            'resource',
-                           'user_name',
-                           'user_faculty_status',
-                           'user_email',
                            'accounts_link',
                            'file_1',
-                           'file_2'] # fields to show on the actual form
+                           'file_2',
+                           'user_faculty_status'] # fields to show on the actual form
             self.readonly_fields = ['id',
                                     'created',
                                     'modified',
-                                    'user_name',
                                     'user_faculty_status',
-                                    'user_email',
-                                    'accounts_link']
+                                    'accounts_link'] # readonly fields
+
+            # only displaying these fields when the erratum submitter is a verified faculty member
+            if self.get_fields(request, 'user_faculty_status') == 'confirmed_faculty':
+                self.fields += 'user_name'
+                self.fields += 'user_email'
+                self.readonly_fields += 'user_name'
+                self.readonly_fields += 'user_email'
+
             self.save_as = True
-        elif request.user.groups.filter(name__in=['Content Development Intern']).exists():
+        elif request.user.groups.filter(name__in=['Editorial Vendor']).exists():
             self.fields = ['id',
                            'created',
                            'modified',
@@ -177,13 +181,37 @@ class ErrataAdmin(ExportActionModelAdmin):
                            'error_type',
                            'number_of_errors',
                            'resource',
+                           'user_faculty_status',
                            'accounts_link',
                            'file_1',
                            'file_2']  # fields to show on the actual form
             self.readonly_fields = ['id',
                                     'created',
                                     'modified',
-                                    'accounts_link']
+                                    'accounts_link'
+                                    'book',
+                                    'is_assessment_errata',
+                                    'assessment_id',
+                                    'status',
+                                    'resolution',
+                                    'duplicate_id',
+                                    'archived',
+                                    'location',
+                                    'detail',
+                                    'error_type',
+                                    'number_of_errors',
+                                    'resource',
+                                    'user_faculty_status',
+                                    'accounts_link',
+                                    'file_1',
+                                    'file_2'] # readonly fields
+
+            # only displaying these fields when the erratum submitter is a verified faculty member
+            if self.get_fields(request, 'user_faculty_status') == 'confirmed_faculty':
+                self.fields += 'user_name'
+                self.fields += 'user_email'
+                self.readonly_fields += 'user_name'
+                self.readonly_fields += 'user_email'
             self.save_as = True
         else:
             self.fields = ['id',
@@ -227,7 +255,7 @@ class ErrataAdmin(ExportActionModelAdmin):
                                     'resource',
                                     'accounts_link',
                                     'file_1',
-                                    'file_2']
+                                    'file_2'] # readonly fields
             self.save_as = False
 
         return super(ErrataAdmin, self).get_form(request, obj, **kwargs)
