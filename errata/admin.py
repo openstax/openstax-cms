@@ -210,7 +210,6 @@ class ErrataAdmin(ExportActionModelAdmin):
                            'status',
                            'resolution',
                            'duplicate_id',
-                           'archived',
                            'location',
                            'detail',
                            'internal_notes',
@@ -221,7 +220,8 @@ class ErrataAdmin(ExportActionModelAdmin):
                            'resource',
                            'accounts_link',
                            'file_1',
-                           'file_2']
+                           'file_2',
+                           'archived',]
             self.readonly_fields = ['id',
                                     'created',
                                     'modified',
