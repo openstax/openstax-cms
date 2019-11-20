@@ -135,7 +135,6 @@ class ErrataAdmin(ExportActionModelAdmin):
                            'status',
                            'resolution',
                            'duplicate_id',
-                           'archived',
                            'location',
                            'detail',
                            'internal_notes',
@@ -147,7 +146,8 @@ class ErrataAdmin(ExportActionModelAdmin):
                            'accounts_link',
                            'file_1',
                            'file_2',
-                           'user_faculty_status'] # fields to show on the actual form
+                           'user_faculty_status',
+                           'archived',] # fields to show on the actual form
             self.readonly_fields = ['id',
                                     'created',
                                     'modified',
@@ -160,7 +160,6 @@ class ErrataAdmin(ExportActionModelAdmin):
                 self.fields += 'user_email'
                 self.readonly_fields += 'user_name'
                 self.readonly_fields += 'user_email'
-
             self.save_as = True
         elif request.user.groups.filter(name__in=['Editorial Vendor']).exists():
             self.fields = ['id',
@@ -172,7 +171,6 @@ class ErrataAdmin(ExportActionModelAdmin):
                            'status',
                            'resolution',
                            'duplicate_id',
-                           'archived',
                            'location',
                            'detail',
                            'internal_notes',
@@ -182,29 +180,18 @@ class ErrataAdmin(ExportActionModelAdmin):
                            'number_of_errors',
                            'resource',
                            'user_faculty_status',
-                           'accounts_link',
                            'file_1',
-                           'file_2']  # fields to show on the actual form
+                           'file_2',
+                           'archived',
+                            ]  # fields to show on the actual form
             self.readonly_fields = ['id',
                                     'created',
                                     'modified',
-                                    'accounts_link'
-                                    'book',
-                                    'is_assessment_errata',
-                                    'assessment_id',
-                                    'status',
-                                    'resolution',
-                                    'duplicate_id',
-                                    'archived',
-                                    'location',
-                                    'detail',
-                                    'error_type',
-                                    'number_of_errors',
-                                    'resource',
                                     'user_faculty_status',
-                                    'accounts_link',
-                                    'file_1',
-                                    'file_2'] # readonly fields
+                                    'book',
+                                    'archived',
+                                    'detail',
+                                    ] # readonly fields
 
             # only displaying these fields when the erratum submitter is a verified faculty member
             if self.get_fields(request, 'user_faculty_status') == 'confirmed_faculty':
@@ -223,7 +210,6 @@ class ErrataAdmin(ExportActionModelAdmin):
                            'status',
                            'resolution',
                            'duplicate_id',
-                           'archived',
                            'location',
                            'detail',
                            'internal_notes',
@@ -234,7 +220,8 @@ class ErrataAdmin(ExportActionModelAdmin):
                            'resource',
                            'accounts_link',
                            'file_1',
-                           'file_2']
+                           'file_2',
+                           'archived',]
             self.readonly_fields = ['id',
                                     'created',
                                     'modified',
