@@ -14,13 +14,19 @@ from news.search import search
 from news.feeds import RssBlogFeed, AtomBlogFeed
 
 from api import urls as api_urls
+from .api import admin_api
 from global_settings.views import throw_error
 
 admin.site.site_header = 'OpenStax'
 
+from wagtail.core import hooks
+for fn in hooks.get_hooks('construct_admin_api'):
+    fn(admin_api)
+
 urlpatterns = [
     url(r'^django-admin/login', RedirectView.as_view(url='/admin/login')),
     url(r'^django-admin/', admin.site.urls),
+    url(r'^admin/api/v2beta/', admin_api.urls),
     url(r'^admin/', include(wagtailadmin_urls)),
 
 
