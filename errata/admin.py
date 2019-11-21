@@ -73,7 +73,7 @@ class ErrataAdmin(ExportActionModelAdmin):
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
     }
-    actions = ['mark_in_review', 'mark_reviewed', 'mark_archived', ExportActionMixin.export_admin_action]
+    actions = ['mark_in_review', 'mark_reviewed', 'mark_completed', 'mark_archived', ExportActionMixin.export_admin_action]
     inlines = [InlineInternalImage, ]
     raw_id_fields = ('submitted_by', 'duplicate_id')
 
@@ -92,6 +92,10 @@ class ErrataAdmin(ExportActionModelAdmin):
     def mark_archived(self, request, queryset):
         queryset.update(archived=True)
     mark_archived.short_description = "Mark errata as archived"
+
+    def mark_completed(self, request, queryset):
+        queryset.update(status='Completed')
+    mark_completed.short_description = "Mark errata as completed"
 
     def get_actions(self, request):
         actions = super(ErrataAdmin, self).get_actions(request)
