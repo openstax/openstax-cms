@@ -8,7 +8,8 @@ django.jQuery(function ($) {
         let savebtn = $('input[name="_save"]')
         let savenewbtn = $('input[name="_saveasnew"]')
         let savecontbtn = $('input[name="_continue"]')
-        archived
+
+        //changing the button text based on status and resolution selection
         $('#id_status, #id_resolution').change(function(){
             if (status.options[status.selectedIndex].value == 'Reviewed' && (resolution.options[resolution.selectedIndex].value == 'Will Not Fix' || resolution.options[resolution.selectedIndex].value == 'Duplicate' || resolution.options[resolution.selectedIndex].value == 'Not An Error' || resolution.options[resolution.selectedIndex].value == 'Major Book Revision' || resolution.options[resolution.selectedIndex].value == 'Approved')) {
                 savebtn.val('Save AND EMAIL USER')
@@ -31,14 +32,5 @@ django.jQuery(function ($) {
               document.getElementById("id_archived").checked = true;
             }
         })
-        // Commented out as content team does not want to deal with popup.
-        // $('form').submit(function() {
-        //     if (!status.options[status.selectedIndex].defaultSelected || !resolution.options[resolution.selectedIndex].defaultSelected) {
-        //         var c = confirm("User who sent this errata will receive an email. Do you still want to continue?")
-        //         return c
-        //     } else {
-        //         return true
-        //     }
-        // })
     })
 })
