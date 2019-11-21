@@ -265,6 +265,11 @@ logging.config.dictConfig({
             'class': 'logging.StreamHandler',
             'formatter': 'default',
         },
+        'scout_apm': {
+            'level': 'DEBUG',
+            'class': 'logging.FileHandler',
+            'filename': 'scout_apm_debug.log',
+        },
         'django.server': DEFAULT_LOGGING['handlers']['django.server'],
     },
     'loggers': {
@@ -288,6 +293,11 @@ logging.config.dictConfig({
             'level': 'ERROR',
             'handlers': ['console'],
             'propagate': False,
+        },
+        'scout_apm': {
+            'handlers': ['scout_apm'],
+            'level': 'DEBUG',
+            'propagate': True,
         },
         # Default runserver request logging
         'django.server': DEFAULT_LOGGING['loggers']['django.server'],
