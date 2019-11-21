@@ -8,9 +8,12 @@ django.jQuery(function ($) {
         var savecontbtn = $('input[name="_continue"]');
 
         $('#id_status, #id_resolution').change(function(){
-            if (status.options[status.selectedIndex].value == 'Reviewed' && (resolution.options[resolution.selectedIndex].value == 'Will Not Fix' || resolution.options[resolution.selectedIndex].value == 'Duplicate' || resolution.options[resolution.selectedIndex].value == 'Not An Error' || resolution.options[resolution.selectedIndex].value == 'Major Book Revision' || resolution.options[resolution.selectedIndex].value == 'Approved')) || 
-            (status.options[status.selectedIndex].value == 'Completed' && (resolution.options[resolution.selectedIndex].value == 'Sent to Customer Support' || resolution.options[resolution.selectedIndex].value == 'More Information Requested')) {
-                savebtn.val('Save and email user');
+            if (status.options[status.selectedIndex].value == 'Reviewed' && (resolution.options[resolution.selectedIndex].value == 'Will Not Fix' || resolution.options[resolution.selectedIndex].value == 'Duplicate' || resolution.options[resolution.selectedIndex].value == 'Not An Error' || resolution.options[resolution.selectedIndex].value == 'Major Book Revision' || resolution.options[resolution.selectedIndex].value == 'Approved')) {
+                savebtn.val('Save AND EMAIL USER');
+                savenewbtn.val('Save as new and email user');
+                savecontbtn.val('Save, email user, and continue editing');
+            } else if ((status.options[status.selectedIndex].value == 'Completed') && (resolution.options[resolution.selectedIndex].value == 'Sent to Customer Support' || resolution.options[resolution.selectedIndex].value == 'More Information Requested')) {
+                savebtn.val('SAVE AND EMAIL USER');
                 savenewbtn.val('Save as new and email user');
                 savecontbtn.val('Save, email user, and continue editing');
             } else {

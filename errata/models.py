@@ -232,7 +232,7 @@ class Errata(models.Model):
 
         # prefill resolution notes based on certain status and resolutions
         if self.resolution == "Duplicate" and not self.resolution_notes:
-            self.resolution_notes = "This is a duplicate of report <a href='https://openstax.org/errata/" + str(self.duplicate_id.id) + "'> " + str(self.duplicate_id.id) + "</a>."
+            self.resolution_notes = "This is a duplicate of report <a href='https://openstax.org/errata/" + str(self.duplicate_id.id) + "'>" + str(self.duplicate_id.id) + "</a>."
         if self.resolution == "Not An Error" and not self.resolution_notes:
             self.resolution_notes = "Our reviewers determined this was not an error."
         if self.resolution == "Will Not Fix" and not self.resolution_notes:
