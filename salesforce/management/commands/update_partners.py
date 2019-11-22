@@ -22,6 +22,11 @@ class Command(BaseCommand):
                     "Name, " \
                     "Partner_Type__c, " \
                     "Books_Offered__c, " \
+                    "Description, " \
+                    "short_partner_description__c, " \
+                    "Verified_by_instructors__c, " \
+                    "Integrated_with_OpenStax_content__c, " \
+                    "Landing_page__c, " \
                     "Affordability_cost__c, " \
                     "Affordability_institutional__c, " \
                     "App_available__c, " \
@@ -109,6 +114,11 @@ class Command(BaseCommand):
                         defaults={'partner_name': partner['Name'],
                                   'partner_type': partner['Partner_Type__c'],
                                   'books': partner['Books_Offered__c'],
+                                  'partner_description': partner['Description'],
+                                  'short_partner_description': partner['Short_Partner_Description__c'],
+                                  'landing_page': partner['Landing_page__c'],
+                                  'verified_by_instructor': partner['Verified_by_instructors__c'],
+                                  'integrated': partner['Integrated_with_OpenStax_content__c'],
                                   'affordability_cost': self.str2bool(partner['Affordability_cost__c']),
                                   'affordability_institutional': self.str2bool(partner['Affordability_Institutional__c']),
                                   'app_available': self.str2bool(partner['App_available__c']),
