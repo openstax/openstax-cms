@@ -104,8 +104,10 @@ class ErrataAdmin(ExportActionModelAdmin):
             if 'delete_selected' in actions:
                 del actions['delete_selected']
 
-        if request.user.is_superuser or request.user.groups.filter(name__in=['Content Managers']).exists():
-            actions.append('mark_in_review', 'mark_reviewed', 'mark_completed', 'mark_archived')
+        if not request.user.groups.filter(name__in=['Content Managers']).exists():
+            for item in actions:
+                if not ExportActionMixin.export_admin_action:
+                    del actions[item]
         return actions
 
     def change_view(self, request, object_id, extra_context=None):
