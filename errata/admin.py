@@ -74,7 +74,7 @@ class ErrataAdmin(ExportActionModelAdmin):
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
     }
-    actions = ['mark_in_review', 'mark_reviewed', 'mark_archived', ExportActionMixin.export_admin_action]
+    actions = [ExportActionMixin.export_admin_action]
     inlines = [InlineInternalImage, ]
     raw_id_fields = ('submitted_by', 'duplicate_id')
 
@@ -94,15 +94,22 @@ class ErrataAdmin(ExportActionModelAdmin):
         queryset.update(archived=True)
     mark_archived.short_description = "Mark errata as archived"
 
+    def mark_completed(self, request, queryset):
+        queryset.update(status='Completed')
+    mark_completed.short_description = "Mark errata as completed"
+
     def get_actions(self, request):
         actions = super(ErrataAdmin, self).get_actions(request)
         if not request.user.is_superuser:
             if 'delete_selected' in actions:
                 del actions['delete_selected']
+
+        if request.user.is_superuser or request.user.groups.filter(name__in=['Content Managers']).exists():
+            actions.append('mark_in_review', 'mark_reviewed', 'mark_completed', 'mark_archived')
         return actions
 
     def change_view(self, request, object_id, extra_context=None):
-        if not request.user.is_superuser or request.user.groups.filter(name__in=['Content Managers', 'Content Development Intern']).exists():
+        if not request.user.is_superuser or request.user.groups.filter(name__in=['Content Managers']).exists():
             extra_context = extra_context or {}
             extra_context['readonly'] = True
         return super(ErrataAdmin, self).change_view(request, object_id, extra_context=extra_context)
@@ -118,6 +125,7 @@ class ErrataAdmin(ExportActionModelAdmin):
             self.list_display_links = ['_book_title']
             self.list_filter = (('book', UnionFieldListFilter), 'status', 'created', 'modified', 'is_assessment_errata', 'modified', 'error_type', 'resolution', 'archived', 'junk', 'resource')
             self.editable = ['resolution']
+
         else:
             self.list_display = ['id', '_book_title', 'created', 'short_detail', 'status', 'error_type', 'resource', 'location', 'created', 'archived'] # list of fields to show if user can approve the post
             self.list_display_links = ['_book_title']
