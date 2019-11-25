@@ -21,8 +21,8 @@ from .forms import ErrataForm
 class ErrataResource(resources.ModelResource):
     class Meta:
         model = Errata
-        fields = ('id', 'created', 'modified', 'book__title', 'is_assessment_errata', 'assessment_id', 'status', 'resolution', 'archived', 'junk', 'location', 'detail', 'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'resource', 'submitted_by_account_id', 'user_faculty_status')
-        export_order = ('id', 'created', 'modified', 'book__title', 'is_assessment_errata', 'assessment_id', 'status', 'resolution', 'archived', 'junk', 'location', 'detail', 'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'resource', 'submitted_by_account_id', 'user_faculty_status')
+        fields = ('id', 'created', 'modified', 'book__title', 'is_assessment_errata', 'assessment_id', 'status', 'resolution', 'archived', 'location', 'detail', 'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'resource', 'submitted_by_account_id')
+        export_order = ('id', 'created', 'modified', 'book__title', 'is_assessment_errata', 'assessment_id', 'status', 'resolution', 'archived', 'location', 'detail', 'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'resource', 'submitted_by_account_id')
 
 
 class InlineInternalImage(admin.TabularInline):
@@ -53,7 +53,6 @@ class ErrataAdmin(ExportActionModelAdmin):
               'resolution',
               'duplicate_id',
               'archived',
-              'junk',
               'location',
               'detail',
               'internal_notes',
@@ -74,7 +73,7 @@ class ErrataAdmin(ExportActionModelAdmin):
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
     }
-    actions = [ExportActionMixin.export_admin_action]
+    actions = ['mark_in_review', 'mark_reviewed', 'mark_archived', ExportActionMixin.export_admin_action]
     inlines = [InlineInternalImage, ]
     raw_id_fields = ('submitted_by', 'duplicate_id')
 
@@ -94,22 +93,15 @@ class ErrataAdmin(ExportActionModelAdmin):
         queryset.update(archived=True)
     mark_archived.short_description = "Mark errata as archived"
 
-    def mark_completed(self, request, queryset):
-        queryset.update(status='Completed')
-    mark_completed.short_description = "Mark errata as completed"
-
     def get_actions(self, request):
         actions = super(ErrataAdmin, self).get_actions(request)
         if not request.user.is_superuser:
             if 'delete_selected' in actions:
                 del actions['delete_selected']
-
-        if request.user.is_superuser or request.user.groups.filter(name__in=['Content Managers']).exists():
-            actions = ['mark_in_review', 'mark_reviewed', 'mark_completed', 'mark_archived']
         return actions
 
     def change_view(self, request, object_id, extra_context=None):
-        if not request.user.is_superuser or request.user.groups.filter(name__in=['Content Managers']).exists():
+        if not request.user.is_superuser or request.user.groups.filter(name__in=['Content Managers', 'Content Development Intern']).exists():
             extra_context = extra_context or {}
             extra_context['readonly'] = True
         return super(ErrataAdmin, self).change_view(request, object_id, extra_context=extra_context)
@@ -120,14 +112,13 @@ class ErrataAdmin(ExportActionModelAdmin):
     """Model permissions"""
     @method_decorator(csrf_protect)
     def changelist_view(self, request, extra_context=None):
-        if request.user.is_superuser or request.user.groups.filter(name__in=['Content Managers']).exists():
-            self.list_display = ['id', '_book_title', 'created', 'modified', 'short_detail', 'status', 'error_type', 'resource', 'location', 'resolution', 'archived', 'junk'] # list of fields to show if user can't approve the post
+        if request.user.is_superuser or request.user.groups.filter(name__in=['Content Managers', 'Content Development Intern']).exists():
+            self.list_display = ['id', '_book_title', 'created', 'is_assessment_errata', 'short_detail', 'status', 'error_type', 'resource', 'location', 'resolution', 'archived'] # list of fields to show if user can't approve the post
             self.list_display_links = ['_book_title']
-            self.list_filter = (('book', UnionFieldListFilter), 'status', 'created', 'modified', 'is_assessment_errata', 'modified', 'error_type', 'resolution', 'archived', 'junk', 'resource')
+            self.list_filter = (('book', UnionFieldListFilter), 'status', 'created', 'is_assessment_errata', 'modified', 'error_type', 'resolution', 'archived', 'resource')
             self.editable = ['resolution']
-
         else:
-            self.list_display = ['id', '_book_title', 'created', 'short_detail', 'status', 'error_type', 'resource', 'location', 'created', 'archived'] # list of fields to show if user can approve the post
+            self.list_display = ['id', '_book_title', 'created', 'is_assessment_errata', 'short_detail', 'status', 'error_type', 'resource', 'location', 'created', 'archived'] # list of fields to show if user can approve the post
             self.list_display_links = ['_book_title']
             self.list_filter = (('book', UnionFieldListFilter), 'status', 'created', 'modified', 'is_assessment_errata', 'error_type', 'resolution', 'archived', 'resource')
         return super(ErrataAdmin, self).changelist_view(request, extra_context)
@@ -156,8 +147,7 @@ class ErrataAdmin(ExportActionModelAdmin):
                            'file_1',
                            'file_2',
                            'user_faculty_status',
-                           'archived',
-                           'junk'] # fields to show on the actual form
+                           'archived',] # fields to show on the actual form
             self.readonly_fields = ['id',
                                     'created',
                                     'modified',
