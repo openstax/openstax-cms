@@ -163,6 +163,7 @@ class Errata(models.Model):
     reviewed_date = models.DateField(blank=True, null=True, editable=False)
     corrected_date = models.DateField(blank=True, null=True)
     archived = models.BooleanField(default=False)
+    junk = models.BooleanField(default=False)
     location = models.TextField(blank=True, null=True)
     detail = models.TextField()
     resolution_notes = models.TextField(blank=True, null=True)
@@ -248,7 +249,7 @@ class Errata(models.Model):
 
         # prefill resolution notes based on certain status and resolutions
         if self.resolution == "Duplicate" and not self.resolution_notes:
-            self.resolution_notes = "This is a duplicate of report <a href='https://openstax.org/errata/" + str(self.duplicate_id.id) + "'> " + str(self.duplicate_id.id) + "</a>."
+            self.resolution_notes = "This is a duplicate of report <a href='https://openstax.org/errata/" + str(self.duplicate_id.id) + "'>" + str(self.duplicate_id.id) + "</a>."
         if self.resolution == "Not An Error" and not self.resolution_notes:
             self.resolution_notes = "Our reviewers determined this was not an error."
         if self.resolution == "Will Not Fix" and not self.resolution_notes:
@@ -267,7 +268,7 @@ class Errata(models.Model):
         # set to archived if user is shadow banned
         if(is_user_shadow_blocked(self.submitted_by_account_id)):
             self.archived = True
-
+            
         super(Errata, self).save(*args, **kwargs)
 
     @hooks.register('register_admin_menu_item')
