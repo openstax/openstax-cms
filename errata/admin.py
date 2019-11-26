@@ -173,6 +173,7 @@ class ErrataAdmin(ExportActionModelAdmin):
                                     'created',
                                     'modified',
                                     'user_faculty_status',
+                                    'accounts_link',
                                     ]
 
             self.save_as = True
