@@ -1,5 +1,6 @@
 import unicodecsv
 from import_export import resources
+from import_export.fields import Field
 from import_export.admin import ExportActionModelAdmin, ExportActionMixin
 from import_export.formats import base_formats
 
@@ -19,11 +20,14 @@ from .forms import ErrataForm
 
 
 class ErrataResource(resources.ModelResource):
+    user_faculty_status = Field()
     class Meta:
         model = Errata
         fields = ('id', 'created', 'modified', 'book__title', 'is_assessment_errata', 'assessment_id', 'status', 'resolution', 'archived', 'junk', 'location', 'detail', 'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'resource', 'submitted_by_account_id', 'user_faculty_status')
         export_order = ('id', 'created', 'modified', 'book__title', 'is_assessment_errata', 'assessment_id', 'status', 'resolution', 'archived', 'junk', 'location', 'detail', 'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'resource', 'submitted_by_account_id', 'user_faculty_status')
 
+        def dehydrate_user_faculty_status(self, errata):
+            return errata.user_faculty_status
 
 class InlineInternalImage(admin.TabularInline):
     model = InternalDocumentation
@@ -74,7 +78,7 @@ class ErrataAdmin(ExportActionModelAdmin):
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
     }
-    actions = [ExportActionMixin.export_admin_action]
+    actions = ['mark_in_review', 'mark_reviewed', 'mark_archived', 'mark_completed', ExportActionMixin.export_admin_action]
     inlines = [InlineInternalImage, ]
     raw_id_fields = ('submitted_by', 'duplicate_id')
 
@@ -105,9 +109,14 @@ class ErrataAdmin(ExportActionModelAdmin):
                 del actions['delete_selected']
 
         if not request.user.groups.filter(name__in=['Content Managers']).exists():
-            for item in actions:
-                if not ExportActionMixin.export_admin_action:
-                    del actions[item]
+            if 'mark_in_review' in actions:
+                del actions['mark_in_review']
+            if 'mark_reviewed' in actions:
+                del actions['mark_reviewed']
+            if 'mark_archived' in actions:
+                del actions['mark_archived']
+            if 'mark_completed' in actions:
+                del actions['mark_completed']
         return actions
 
     def change_view(self, request, object_id, extra_context=None):
@@ -164,7 +173,7 @@ class ErrataAdmin(ExportActionModelAdmin):
                                     'created',
                                     'modified',
                                     'user_faculty_status',
-                                    'accounts_link'
+                                    'accounts_link',
                                     ]
 
             self.save_as = True
