@@ -78,7 +78,7 @@ class ErrataAdmin(ExportActionModelAdmin):
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
     }
-    actions = [ExportActionMixin.export_admin_action]
+    actions = ['mark_in_review', 'mark_reviewed', 'mark_archived', 'mark_completed', ExportActionMixin.export_admin_action]
     inlines = [InlineInternalImage, ]
     raw_id_fields = ('submitted_by', 'duplicate_id')
 
@@ -109,9 +109,14 @@ class ErrataAdmin(ExportActionModelAdmin):
                 del actions['delete_selected']
 
         if not request.user.groups.filter(name__in=['Content Managers']).exists():
-            for item in actions:
-                if not ExportActionMixin.export_admin_action:
-                    del actions[item]
+            if 'mark_in_review' in actions:
+                del actions['mark_in_review']
+            if 'mark_reviewed' in actions:
+                del actions['mark_reviewed']
+            if 'mark_archived' in actions:
+                del actions['mark_archived']
+            if 'mark_completed' in actions:
+                del actions['mark_completed']
         return actions
 
     def change_view(self, request, object_id, extra_context=None):
