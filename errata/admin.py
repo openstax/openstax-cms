@@ -1,5 +1,6 @@
 import unicodecsv
 from import_export import resources
+from import_export.fields import Field
 from import_export.admin import ExportActionModelAdmin, ExportActionMixin
 from import_export.formats import base_formats
 
@@ -19,11 +20,14 @@ from .forms import ErrataForm
 
 
 class ErrataResource(resources.ModelResource):
+    user_faculty_status = Field()
     class Meta:
         model = Errata
         fields = ('id', 'created', 'modified', 'book__title', 'is_assessment_errata', 'assessment_id', 'status', 'resolution', 'archived', 'junk', 'location', 'detail', 'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'resource', 'submitted_by_account_id', 'user_faculty_status')
         export_order = ('id', 'created', 'modified', 'book__title', 'is_assessment_errata', 'assessment_id', 'status', 'resolution', 'archived', 'junk', 'location', 'detail', 'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'resource', 'submitted_by_account_id', 'user_faculty_status')
 
+        def dehydrate_user_faculty_status(self, errata):
+            return errata.user_faculty_status
 
 class InlineInternalImage(admin.TabularInline):
     model = InternalDocumentation
