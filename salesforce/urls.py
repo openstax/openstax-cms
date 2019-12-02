@@ -5,6 +5,7 @@ from . import views
 router = routers.SimpleRouter()
 router.register(r'schools', views.SchoolViewSet, basename='School')
 router.register(r'renewal', views.AdoptionOpportunityRecordViewSet, basename='AdoptionOpportunityRecord')
+router.register(r'partners', views.PartnerViewSet, basename='Partner')
 
 urlpatterns = [
     url(r'', include(router.urls)),

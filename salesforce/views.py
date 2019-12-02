@@ -6,8 +6,8 @@ from rest_framework.response import Response
 from django.http import JsonResponse
 from django.utils import timezone
 
-from .models import School, AdoptionOpportunityRecord
-from .serializers import SchoolSerializer, AdoptionOpportunityRecordSerializer
+from .models import School, AdoptionOpportunityRecord, Partner
+from .serializers import SchoolSerializer, AdoptionOpportunityRecordSerializer, PartnerSerializer
 
 from salesforce.salesforce import Salesforce
 
@@ -15,6 +15,9 @@ class SchoolViewSet(viewsets.ModelViewSet):
     queryset = School.objects.all()
     serializer_class = SchoolSerializer
 
+class PartnerViewSet(viewsets.ModelViewSet):
+    queryset = Partner.objects.all()
+    serializer_class = PartnerSerializer
 
 class AdoptionOpportunityRecordViewSet(viewsets.ModelViewSet):
     serializer_class = AdoptionOpportunityRecordSerializer
