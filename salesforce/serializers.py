@@ -126,14 +126,14 @@ class PartnerSerializer(serializers.ModelSerializer):
         'reporting_competency',
         'reporting_student_workload',
         'scaffolding_hints',
-        'scaffolding_learner_explanations'
+        'scaffolding_learner_explanations',
         'scaffolding_mental_practice',
         'scaffolding_narrative',
         'scaffolding_social_intervention',
         'usability_design_orients_users',
         'usability_glossary',
         'usability_partial_progress',
-        'accessibility_language_UI'
+        'accessibility_language_UI',
         'accessibility_language_content',
         'accessibility_VPAT',
         'accessibility_WCAG',
@@ -211,14 +211,14 @@ class PartnerSerializer(serializers.ModelSerializer):
         'reporting_competency',
         'reporting_student_workload',
         'scaffolding_hints',
-        'scaffolding_learner_explanations'
+        'scaffolding_learner_explanations',
         'scaffolding_mental_practice',
         'scaffolding_narrative',
         'scaffolding_social_intervention',
         'usability_design_orients_users',
         'usability_glossary',
         'usability_partial_progress',
-        'accessibility_language_UI'
+        'accessibility_language_UI',
         'accessibility_language_content',
         'accessibility_VPAT',
         'accessibility_WCAG',
