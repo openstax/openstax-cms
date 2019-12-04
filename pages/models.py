@@ -564,6 +564,7 @@ class HomePage(Page):
         'pages.HeroJourneyPage',
         'pages.InstitutionalPartnerProgramPage',
         'pages.CreatorFestPage',
+        'pages.PartnersPage',
         'books.BookIndex',
         'news.NewsIndex',
         'news.PressIndex',
@@ -2852,3 +2853,26 @@ class CreatorFestPage(Page):
     ]
 
     parent_page_type = ['pages.HomePage']
+
+
+class PartnersPage(Page):
+    heading = models.CharField(max_length=255)
+    description = RichTextField()
+
+    content_panels = [
+        FieldPanel('title', classname='full title', help_text="Internal name for page."),
+        FieldPanel('heading'),
+        FieldPanel('description'),
+    ]
+
+    api_fields = [
+        APIField('title'),
+        APIField('heading'),
+        APIField('description'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+    ]
+
+    parent_page_type = ['pages.HomePage']
+
