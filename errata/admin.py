@@ -210,6 +210,7 @@ class ErrataAdmin(ExportActionModelAdmin):
                                     'modified',
                                     'user_faculty_status',
                                     'archived',
+                                    'junk',
                                     'detail',
                                     ]
 
