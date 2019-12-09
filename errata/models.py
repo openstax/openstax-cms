@@ -163,12 +163,12 @@ class Errata(models.Model):
     reviewed_date = models.DateField(blank=True, null=True, editable=False)
     corrected_date = models.DateField(blank=True, null=True)
     archived = models.BooleanField(default=False)
-    junk = models.BooleanField(default=False)
+    junk = models.BooleanField(default=False, help_text='Flagging the erratum as junk will automatically flag it for archive as well.')
     location = models.TextField(blank=True, null=True)
     detail = models.TextField()
-    resolution_notes = models.TextField(blank=True, null=True)
+    resolution_notes = models.TextField(blank=True, null=True, help_text='Leaving the resolution notes blank will allow the field to auto-fill with the appropriate text based on status/resolution selections.')
     resolution_date = models.DateField(blank=True, null=True)
-    internal_notes = models.TextField(blank=True, null=True)
+    internal_notes = models.TextField(blank=True, null=True, help_text='This is not visible to the user.')
     error_type = models.CharField(
         max_length=100,
         choices=ERRATA_ERROR_TYPES,
@@ -268,7 +268,7 @@ class Errata(models.Model):
         # set to archived if user is shadow banned
         if(is_user_shadow_blocked(self.submitted_by_account_id)):
             self.archived = True
-            
+
         super(Errata, self).save(*args, **kwargs)
 
     @hooks.register('register_admin_menu_item')
