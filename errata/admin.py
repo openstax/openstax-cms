@@ -166,12 +166,17 @@ class ErrataAdmin(ExportActionModelAdmin):
                            'accounts_link',
                            'file_1',
                            'file_2',
+                           'user_name',
+                           'user_email',
                            'user_faculty_status',
                            'archived',
-                           'junk'] # fields to show on the actual form
+                           'junk',
+                           ] # fields to show on the actual form
             self.readonly_fields = ['id',
                                     'created',
                                     'modified',
+                                    'user_name',
+                                    'user_email',
                                     'user_faculty_status',
                                     'accounts_link',
                                     ]
@@ -204,7 +209,6 @@ class ErrataAdmin(ExportActionModelAdmin):
                                     'created',
                                     'modified',
                                     'user_faculty_status',
-                                    'book',
                                     'archived',
                                     'detail',
                                     ]
