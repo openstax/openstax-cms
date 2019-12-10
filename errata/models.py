@@ -268,7 +268,7 @@ class Errata(models.Model):
         # set to archived if user is shadow banned
         if(is_user_shadow_blocked(self.submitted_by_account_id)):
             self.archived = True
-            
+
         super(Errata, self).save(*args, **kwargs)
 
     @hooks.register('register_admin_menu_item')

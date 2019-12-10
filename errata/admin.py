@@ -20,14 +20,12 @@ from .forms import ErrataForm
 
 
 class ErrataResource(resources.ModelResource):
-    user_faculty_status = Field()
+    user_faculty_status = Field(attribute='user_faculty_status')
     class Meta:
         model = Errata
         fields = ('id', 'created', 'modified', 'book__title', 'is_assessment_errata', 'assessment_id', 'status', 'resolution', 'archived', 'junk', 'location', 'detail', 'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'resource', 'submitted_by_account_id', 'user_faculty_status')
         export_order = ('id', 'created', 'modified', 'book__title', 'is_assessment_errata', 'assessment_id', 'status', 'resolution', 'archived', 'junk', 'location', 'detail', 'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'resource', 'submitted_by_account_id', 'user_faculty_status')
 
-        def dehydrate_user_faculty_status(self, errata):
-            return errata.user_faculty_status
 
 class InlineInternalImage(admin.TabularInline):
     model = InternalDocumentation
@@ -166,12 +164,17 @@ class ErrataAdmin(ExportActionModelAdmin):
                            'accounts_link',
                            'file_1',
                            'file_2',
+                           'user_name',
+                           'user_email',
                            'user_faculty_status',
                            'archived',
-                           'junk'] # fields to show on the actual form
+                           'junk',
+                           ] # fields to show on the actual form
             self.readonly_fields = ['id',
                                     'created',
                                     'modified',
+                                    'user_name',
+                                    'user_email',
                                     'user_faculty_status',
                                     'accounts_link',
                                     ]
@@ -204,8 +207,8 @@ class ErrataAdmin(ExportActionModelAdmin):
                                     'created',
                                     'modified',
                                     'user_faculty_status',
-                                    'book',
                                     'archived',
+                                    'junk',
                                     'detail',
                                     ]
 
