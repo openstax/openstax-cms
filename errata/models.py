@@ -168,7 +168,7 @@ class Errata(models.Model):
     detail = models.TextField()
     resolution_notes = models.TextField(blank=True, null=True, help_text='Leaving the resolution notes blank will allow the field to auto-fill with the appropriate text based on status/resolution selections.')
     resolution_date = models.DateField(blank=True, null=True)
-    internal_notes = models.TextField(blank=True, null=True, help_text='This is not visible to the user.')
+    internal_notes = models.TextField(blank=True, null=True, help_text='Only users with errata admin access can view and edit the contents of this field.')
     error_type = models.CharField(
         max_length=100,
         choices=ERRATA_ERROR_TYPES,
