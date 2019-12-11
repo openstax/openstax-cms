@@ -163,12 +163,12 @@ class Errata(models.Model):
     reviewed_date = models.DateField(blank=True, null=True, editable=False)
     corrected_date = models.DateField(blank=True, null=True)
     archived = models.BooleanField(default=False)
-    junk = models.BooleanField(default=False)
+    junk = models.BooleanField(default=False, help_text='Flagging the erratum as junk will automatically flag it for archive as well.')
     location = models.TextField(blank=True, null=True)
     detail = models.TextField()
-    resolution_notes = models.TextField(blank=True, null=True)
+    resolution_notes = models.TextField(blank=True, null=True, help_text='Leaving the resolution notes blank will allow the field to auto-fill with the appropriate text based on status/resolution selections.')
     resolution_date = models.DateField(blank=True, null=True)
-    internal_notes = models.TextField(blank=True, null=True)
+    internal_notes = models.TextField(blank=True, null=True, help_text='Only users with errata admin access can view and edit the contents of this field.')
     error_type = models.CharField(
         max_length=100,
         choices=ERRATA_ERROR_TYPES,
