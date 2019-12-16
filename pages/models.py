@@ -2860,8 +2860,30 @@ class PartnersPage(Page):
     description = RichTextField()
 
     @staticmethod
+    def category_mapping():
+        return {
+            'Type': 'partner_type',
+            'Integrated with OpenStax': 'integrated',
+            'Verified by instructors': 'verified_',
+            'Affordability': 'affordability_',
+            'App Available': 'app_',
+            'Book': 'books',
+            'Adaptivity': 'adaptivity_',
+            'Assignment Management': 'assignment_',
+            'Feedback to students and instructors': 'feedback_',
+            'Grading': 'grading_',
+            'Interactivity': 'interactivity_',
+            'LMS integration': 'LMS_',
+        }
+
+    @staticmethod
     def field_name_mapping():
         return {
+         'partner_name': 'Name',
+         'partner_type': 'Type',
+         'books': 'Books',
+         'partner_description': 'Description',
+         'short_partner_description': 'Short Description',
          'landing_page': "Landing Page",
          'verified_by_instructor': "Verified by Instructor",
          'integrated': "Integrated",
@@ -2953,6 +2975,7 @@ class PartnersPage(Page):
         APIField('heading'),
         APIField('description'),
         APIField('field_name_mapping'),
+        APIField('category_mapping'),
         APIField('slug'),
         APIField('seo_title'),
         APIField('search_description'),
