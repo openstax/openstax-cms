@@ -1,6 +1,9 @@
+from collections import OrderedDict
+from operator import itemgetter
 from .models import School, AdoptionOpportunityRecord, Partner
 
 from rest_framework import serializers
+from rest_framework.relations import PKOnlyObject
 
 
 class SchoolSerializer(serializers.ModelSerializer):
@@ -54,8 +57,16 @@ class AdoptionOpportunityRecordSerializer(serializers.ModelSerializer):
 class PartnerSerializer(serializers.ModelSerializer):
     def __init__(self, *args, **kwargs):
         super(PartnerSerializer, self).__init__(*args, **kwargs)
+
         for field in self.fields:
             self.fields[field].read_only = True
+
+    def to_representation(self, instance):
+        ret = super().to_representation(instance)
+        # Here we filter the null values and creates a new dictionary
+        # We use OrderedDict like in original method
+        ret = OrderedDict(filter(lambda x: x[1] is not False, ret.items()))
+        return ret
 
     class Meta:
         model = Partner
