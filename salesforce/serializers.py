@@ -1,9 +1,7 @@
 from collections import OrderedDict
-from operator import itemgetter
 from .models import School, AdoptionOpportunityRecord, Partner
 
 from rest_framework import serializers
-from rest_framework.relations import PKOnlyObject
 
 
 class SchoolSerializer(serializers.ModelSerializer):
