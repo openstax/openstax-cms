@@ -115,7 +115,7 @@ class Command(BaseCommand):
                                   'partner_type': partner['Partner_Type__c'],
                                   'books': partner['Books_Offered__c'],
                                   'partner_description': partner['Description'],
-                                  'short_partner_description': partner['Short_Partner_Description__c'],
+                                  'short_partner_description': partner['short_partner_description__c'],
                                   'landing_page': partner['Landing_page__c'],
                                   'verified_by_instructor': partner['Verified_by_instructors__c'],
                                   'integrated': partner['Integrated_with_OpenStax_content__c'],

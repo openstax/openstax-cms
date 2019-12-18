@@ -19,6 +19,7 @@ class PartnerViewSet(viewsets.ModelViewSet):
     queryset = Partner.objects.all()
     serializer_class = PartnerSerializer
 
+
 class AdoptionOpportunityRecordViewSet(viewsets.ModelViewSet):
     serializer_class = AdoptionOpportunityRecordSerializer
 
