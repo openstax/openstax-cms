@@ -89,6 +89,7 @@ class SalesforceSettings(models.Model):
 class Partner(models.Model):
     salesforce_id = models.CharField(max_length=255, blank=True, null=True)
     partner_name = models.CharField(max_length=255, blank=True, null=True)
+    partner_logo = models.ImageField(upload_to='partner_logos/', null=True, blank=True)
     partner_type = models.CharField(max_length=255, blank=True, null=True)
     partner_description = models.TextField(blank=True, null=True)
     short_partner_description = models.TextField(blank=True, null=True)
