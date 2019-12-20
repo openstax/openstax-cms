@@ -98,7 +98,7 @@ class Partner(models.Model):
     landing_page = models.CharField(max_length=255, blank=True, null=True)
     verified_by_instructor = models.BooleanField(default=False)
     integrated = models.BooleanField(default=False)
-    affordability_cost = models.BooleanField(default=False)
+    affordability_cost = models.CharField(max_length=255, blank=True, null=True)
     affordability_institutional = models.BooleanField(default=False)
     app_available = models.BooleanField(default=False)
     adaptivity_adaptive_presentation = models.BooleanField(default=False)
