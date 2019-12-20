@@ -16,7 +16,7 @@ class SchoolViewSet(viewsets.ModelViewSet):
     serializer_class = SchoolSerializer
 
 class PartnerViewSet(viewsets.ModelViewSet):
-    queryset = Partner.objects.all()
+    queryset = Partner.objects.filter(visible_on_website=True)
     serializer_class = PartnerSerializer
 
 
