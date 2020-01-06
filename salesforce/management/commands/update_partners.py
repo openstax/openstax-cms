@@ -119,7 +119,7 @@ class Command(BaseCommand):
                                   'landing_page': partner['Landing_page__c'],
                                   'verified_by_instructor': partner['Verified_by_instructors__c'],
                                   'integrated': partner['Integrated_with_OpenStax_content__c'],
-                                  'affordability_cost': self.str2bool(partner['Affordability_cost__c']),
+                                  'affordability_cost': partner['Affordability_cost__c'],
                                   'affordability_institutional': self.str2bool(partner['Affordability_Institutional__c']),
                                   'app_available': self.str2bool(partner['App_available__c']),
                                   'adaptivity_adaptive_presentation': self.str2bool(partner['Adaptivity_adaptive_presentation__c']),
