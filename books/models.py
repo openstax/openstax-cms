@@ -570,7 +570,7 @@ class Book(Page):
         help_text='Promote image.'
     )
 
-    last_updated_pdf = models.DateTimeField(blank=True, null=True, help_text="Last time PDF is updated. This field is NOT managed by CMS.")
+    last_updated_pdf = models.DateTimeField(blank=True, null=True, help_text="Last time PDF was revised.", verbose_name='PDF Content Revision Date')
     last_updated_web = models.DateTimeField(blank=True, null=True, help_text="Last time webview is updated. This field is automatically managed by CMS.")
 
     book_detail_panel = Page.content_panels + [
