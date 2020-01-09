@@ -35,6 +35,7 @@ class PartnerAdmin(admin.ModelAdmin):
         'salesforce_id',
     'partner_name',
     'partner_type',
+    'rich_description',
     'partner_description',
     'short_partner_description',
     'books',

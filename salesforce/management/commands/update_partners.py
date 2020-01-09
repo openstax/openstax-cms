@@ -23,7 +23,9 @@ class Command(BaseCommand):
                     "Partner_Type__c, " \
                     "Books_Offered__c, " \
                     "Description, " \
+                    "Rich_Description__c, " \
                     "short_partner_description__c, " \
+                    "Website, " \
                     "Verified_by_instructors__c, " \
                     "Integrated_with_OpenStax_content__c, " \
                     "Landing_page__c, " \
@@ -114,8 +116,10 @@ class Command(BaseCommand):
                         defaults={'partner_name': partner['Name'],
                                   'partner_type': partner['Partner_Type__c'],
                                   'books': partner['Books_Offered__c'],
+                                  'rich_description': partner['Rich_Description__c'],
                                   'partner_description': partner['Description'],
                                   'short_partner_description': partner['short_partner_description__c'],
+                                  'website': partner['Website'],
                                   'landing_page': partner['Landing_page__c'],
                                   'verified_by_instructor': partner['Verified_by_instructors__c'],
                                   'integrated': partner['Integrated_with_OpenStax_content__c'],
