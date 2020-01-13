@@ -93,6 +93,7 @@ class Partner(models.Model):
     image_1 = models.ImageField(upload_to='partner_images/', null=True, blank=True)
     image_2 = models.ImageField(upload_to='partner_images/', null=True, blank=True)
     image_3 = models.ImageField(upload_to='partner_images/', null=True, blank=True)
+    partner_list_label = models.CharField(max_length=255, null=True, blank=True)
     visible_on_website = models.BooleanField(default=True)
     partner_type = models.CharField(max_length=255, blank=True, null=True)
     rich_description = models.TextField(blank=True, null=True)
