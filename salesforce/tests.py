@@ -5,7 +5,6 @@ from django.core.management import call_command
 from django.test import LiveServerTestCase, TestCase
 from django.utils.six import StringIO
 from django.core.exceptions import ValidationError
-from django.core.management import call_command
 
 from salesforce.models import Adopter, SalesforceSettings, MapBoxDataset, Partner
 from salesforce.views import Salesforce
