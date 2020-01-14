@@ -1,6 +1,5 @@
 from django.conf import settings
 from storages.backends.s3boto import S3BotoStorage
-from whitenoise.storage import CompressedManifestStaticFilesStorage
 
 
 class StaticStorage(S3BotoStorage):

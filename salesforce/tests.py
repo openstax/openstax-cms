@@ -5,9 +5,14 @@ from django.core.management import call_command
 from django.test import LiveServerTestCase, TestCase
 from django.utils.six import StringIO
 from django.core.exceptions import ValidationError
-from salesforce.models import Adopter, SalesforceSettings, MapBoxDataset
+
+from salesforce.models import Adopter, SalesforceSettings, MapBoxDataset, Partner
 from salesforce.views import Salesforce
 from simple_salesforce import Salesforce as SimpleSalesforce
+from salesforce.serializers import PartnerSerializer
+
+from rest_framework import status
+from rest_framework.test import APITestCase
 from wagtail.tests.utils import WagtailPageTests
 
 class AdopterTest(TestCase):
@@ -19,6 +24,34 @@ class AdopterTest(TestCase):
         adopter = self.create_adopter()
         self.assertTrue(isinstance(adopter, Adopter))
         self.assertEqual(adopter.__str__(), adopter.name)
+
+
+class PartnerTest(APITestCase, TestCase):
+
+    def setUp(self):
+        call_command('update_partners')
+
+    def test_did_update_partners(self):
+        self.assertGreater(Partner.objects.all().count(), 0)
+
+    def test_partners_api_get_all_partners(self):
+        response = self.client.get('/apps/cms/api/salesforce/partners/', format='json')
+        partners = Partner.objects.all()
+        serializer = PartnerSerializer(partners, many=True)
+        self.assertEqual(response.data, serializer.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_partners_api_get_one_partner(self):
+        random_partner = Partner.objects.order_by("?").first()
+        response = self.client.get('/apps/cms/api/salesforce/partners/{}/'.format(random_partner.pk), format='json')
+        serializer = PartnerSerializer(random_partner)
+        self.assertEqual(response.data, serializer.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_partners_invalid_partner(self):
+        invalid_partner_id = Partner.objects.order_by("id").last().id + 1
+        response = self.client.get('/apps/cms/api/salesforce/partners/{}/'.format(invalid_partner_id), format='json')
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
 
 class SalesforceTest(LiveServerTestCase, WagtailPageTests):

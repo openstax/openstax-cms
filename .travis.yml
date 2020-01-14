@@ -5,7 +5,7 @@ cache: pip
 addons:
   postgresql: '9.4'
 before_install:
-- openssl aes-256-cbc -K $encrypted_d465acc7bda9_key -iv $encrypted_d465acc7bda9_iv -in openstax/settings/local.py.travis -out openstax/settings/local.py -d
+- openssl aes-256-cbc -K $encrypted_1a9b00072244_key -iv $encrypted_1a9b00072244_iv -in openstax/settings/local.py.enc -out openstax/settings/local.py -d
 - pip install coverage
 - pip install codecov
 install:
