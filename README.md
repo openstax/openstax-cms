@@ -119,3 +119,7 @@ To debug tests, you can insert the normal `import pdb; pdb.set_trace()` lines in
 API Endpoints
 =======================
 [View the Wiki Page](https://github.com/openstax/openstax-cms/wiki/API-Endpoints) for the list of all available API endpoints and their descriptions.
+
+Documentation
+=============
+[CMS Application Documentation](docs/app-design.md)
