@@ -119,7 +119,7 @@ class Command(BaseCommand):
                                   'rich_description': partner['Rich_Description__c'],
                                   'partner_description': partner['Description'],
                                   'short_partner_description': partner['short_partner_description__c'],
-                                  'website': partner['Website'],
+                                  'partner_website': partner['Website'],
                                   'landing_page': partner['Landing_page__c'],
                                   'verified_by_instructor': partner['Verified_by_instructors__c'],
                                   'integrated': partner['Integrated_with_OpenStax_content__c'],
