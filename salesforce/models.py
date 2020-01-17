@@ -93,6 +93,8 @@ class Partner(models.Model):
     image_1 = models.ImageField(upload_to='partner_images/', null=True, blank=True)
     image_2 = models.ImageField(upload_to='partner_images/', null=True, blank=True)
     image_3 = models.ImageField(upload_to='partner_images/', null=True, blank=True)
+    image_4 = models.ImageField(upload_to='partner_images/', null=True, blank=True)
+    image_5 = models.ImageField(upload_to='partner_images/', null=True, blank=True)
     video_1 = models.FileField(upload_to='partner_videos/', null=True, blank=True)
     video_2 = models.FileField(upload_to='partner_videos/', null=True, blank=True)
     partner_list_label = models.CharField(max_length=255, null=True, blank=True)
