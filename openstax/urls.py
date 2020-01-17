@@ -50,6 +50,7 @@ urlpatterns = [
     url(r'^blog-feed/atom/$', AtomBlogFeed()),
     url(r'^errata/', include('errata.urls')),
     url(r'^apps/cms/api/errata/', include('errata.urls')),
+    url(r'^apps/cms/api/events/', include('events.urls')),
 
     # route everything to /api/spike also...
     url(r'^apps/cms/api/spike/', include(wagtail_urls)),
