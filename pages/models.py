@@ -71,6 +71,7 @@ class BookProviderBlock(blocks.StructBlock):
     icon = ImageChooserBlock()
     cta = blocks.CharBlock()
     url = blocks.URLBlock()
+    canadian = blocks.BooleanBlock(required=False)
 
     class Meta:
         icon = 'document'
@@ -82,7 +83,8 @@ class BookProviderBlock(blocks.StructBlock):
                 'blurb': value['blurb'],
                 'icon': build_image_url(value['icon']),
                 'cta': value['cta'],
-                'url': value['url']
+                'url': value['url'],
+                'canadian': value['canadian']
             }
 
 
