@@ -14,6 +14,7 @@
 
 ### Admin Templates
 * Contains templates for Wagtail login and for adding a redirect URL.
+* The Redirect template is used to add Javascript to add validation that the URL contains a `/l/` or `/r/`
 * Redirect URLs are used in books and are short openstax URLs used for third party sites
 * Redirects are available from the Settings menu
 
@@ -26,10 +27,10 @@
 
 ### API
 * APIs for various data
-  * images - images used on OS site - is this correct? Cloudfront?
+  * images - images used on OS site. Images are defined here to add the URL to the image, since it's stored on cloudfront. It reduces one API call for the FE. Also,SVGs, since those are not considered images by Wagtail.
   * documents - PDFs, PowerPoints, text files, etc.
-  * adopters - is this correct? cloudfront?
-  * progress - what is this?
+  * adopters - 
+  * progress - an API to hold progress for the adoptor quiz. The FE writes progress to it and retrieves it when needed.
   * sticky note - a time limited banner that displays at the top of the site
   * schools - list of schools using OpenStax books. Used for map display on OS site. Data comes from Salesforce
   * mapbox - data for mapbox. Data comes from Salesforce
@@ -72,7 +73,7 @@
   * Broken link
   * Typo
   * Other
-* Emails are sent to users who entered the errata as it moves through the workflow. users can opt out of receiving the emails.
+* Emails are sent to users who entered the errata as it moves through the workflow. 
 * Errata can be filtered in the UI
 
 ### Extra Admin Filters
@@ -83,10 +84,11 @@
 * Views and models for items on the Admin Settings menu
   * Sticky Note
   * Footer
-  * Cloudfront Distribution 
+  * Cloudfront Distribution - this holds a cloudfront distribution id. When it's filled in, a call is made to dump the cache of cloudfront for this distribution on each wagtail page save (using a post-save hook). This is not currently in use because REX has not figured out all the details needed. 
 
 ### Mail
-* Mainly used to send the redirect report email to the Content team
+* Used to send the redirect report email to the Content team
+* Used for the contact form in the OS UI.
 * There could be some dead code in this app
 
 ### News
@@ -99,7 +101,7 @@
 ### OpenStax
 * The application used for settings and general items
 * APIs for accessing Documents and Images
-* Document API checks if faculty documents should be hidden or not
+* Document API checks if faculty documents should be hidden or not. This is the one feature with a feature flag in the CMS.
 * Routing for other APIs
 
 ### OXAuth
@@ -140,7 +142,7 @@
 * There are APIs for Roles and Subjects
 
 ## Other
-* **Import-Export:** Admin has a feature to import or export a page. This uses the Wagtail import-export package. It is used to move pages from one environment to another.
+* **Import-Export:** Admin has a feature to import or export a page. This uses the [Wagtail import-export package](https://pypi.org/project/wagtail-import-export-tool/). It is used to move pages from one environment to another.
 
 ## Database
 Below is a link to an image of the database scema as of 1-13-2020. The image might need to be downloaded for proper viewing.
