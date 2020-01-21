@@ -202,6 +202,7 @@ INSTALLED_APPS = [
     'extraadminfilters',
     'redirects',
     'oxauth',
+    'events',
     # wagtail
     'wagtail.core',
     'wagtail.admin',
