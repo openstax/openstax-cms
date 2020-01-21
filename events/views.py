@@ -1,9 +1,5 @@
-import json
-import requests
-from pprint import pprint
 from eventbrite import Eventbrite
 
-from django.shortcuts import render
 from django.conf import settings
 from django.http import JsonResponse
 

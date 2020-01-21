@@ -1,4 +1,3 @@
-from collections import OrderedDict
 from .models import Session
 
 from rest_framework import serializers
