@@ -70,6 +70,7 @@ class Command(BaseCommand):
                     "Feedback_learner_progress_tasks__c, " \
                     "Feedback_multipart__c, " \
                     "Feedback_understanding__c, " \
+                    "Formstack_URL__c, " \
                     "Grading_change_scores__c, " \
                     "Grading_class_and_student_level__c, " \
                     "Grading_group_work__c, " \
@@ -164,6 +165,7 @@ class Command(BaseCommand):
                                   'feedback_learner_progress_tasks': self.str2bool(partner['Feedback_learner_progress_tasks__c']),
                                   'feedback_multipart': self.str2bool(partner['Feedback_multipart__c']),
                                   'feedback_understanding': self.str2bool(partner['Feedback_understanding__c']),
+                                  'formstack_url': partner['Formstack_URL__c'],
                                   'grading_change_scores': self.str2bool(partner['Grading_change_scores__c']),
                                   'grading_class_and_student_level': self.str2bool(partner['Grading_class_and_student_level__c']),
                                   'grading_group_work': self.str2bool(partner['Grading_group_work__c']),
