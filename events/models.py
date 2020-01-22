@@ -10,9 +10,13 @@ class Event(models.Model):
 
 class Session(models.Model):
     event = models.ForeignKey(Event, on_delete=models.PROTECT)
+    name = models.CharField(max_length=255)
+    date = models.DateTimeField()
+    location = models.CharField(max_length=255, null=True, blank=True)
+    seats_remaining = models.SmallIntegerField()
 
     def __str__(self):
-        return self.event
+        return self.name
 
 
 class Registration(models.Model):
