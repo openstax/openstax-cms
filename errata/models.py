@@ -318,7 +318,7 @@ def send_status_update_email(sender, instance, created, **kwargs):
                 body = email_text.email_body_text
                 send_email = True
             else:
-                email_text = EmailText.objects.get(email_case='Created in fall')
+                email_text = EmailText.objects.get(email_case='Created in spring')
                 subject = email_text.email_subject_text
                 body = email_text.email_body_text
                 send_email = True
