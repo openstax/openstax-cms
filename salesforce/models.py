@@ -150,6 +150,7 @@ class Partner(models.Model):
     feedback_learner_progress_tasks = models.BooleanField(default=False)
     feedback_multipart = models.BooleanField(default=False)
     feedback_understanding = models.BooleanField(default=False)
+    formstack_url = models.CharField(max_length=255, null=True, blank=True)
     grading_change_scores = models.BooleanField(default=False)
     grading_class_and_student_level = models.BooleanField(default=False)
     grading_group_work = models.BooleanField(default=False)
