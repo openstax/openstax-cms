@@ -63,8 +63,6 @@ class RegistrationTest(APITestCase, TestCase):
                                                                      'registration_email': 'mwharrison@rice.edu'},
                                format='json', follow=True)
 
-        print(response.content.decode("utf-8"))
 
         response = self.client.get('/apps/cms/api/events/registration', follow=True)
-        print(response.status_code)
-        print(response)
+        #TODO: This is not a complete test yet.
