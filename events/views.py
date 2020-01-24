@@ -5,7 +5,7 @@ from django.http import JsonResponse
 
 from rest_framework import viewsets
 
-from .models import Event, Session, Registration
+from .models import Session, Registration
 from .serializers import SessionSerializer, RegistrationSerializer
 from .functions import check_eventbrite_registration
 
