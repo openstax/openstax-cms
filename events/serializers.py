@@ -1,4 +1,5 @@
-from .models import Session
+from .models import Session, Registration
+from .functions import check_eventbrite_registration
 
 from rest_framework import serializers
 
@@ -13,3 +14,21 @@ class SessionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Session
         fields = '__all__'
+
+
+class RegistrationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Registration
+        fields = ('session', 'first_name', 'last_name', 'registration_email')
+
+    def validate(self, data):
+        if check_eventbrite_registration(data['registration_email']):
+            return data
+        else:
+            raise serializers.ValidationError("Email address not registered for event.")
+
+    def create(self, validated_data):
+        registration_instance = Registration.objects.create(**validated_data)
+        return registration_instance
+

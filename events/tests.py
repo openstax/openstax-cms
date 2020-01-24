@@ -1,7 +1,7 @@
 from django.utils import timezone
 from django.test import TestCase
 from events.models import Event, Session
-from rest_framework.test import APITestCase, APIClient
+from rest_framework.test import APITestCase, APIClient, APIRequestFactory
 
 class EventBriteTest(APITestCase, TestCase):
     client = APIClient()
@@ -42,3 +42,27 @@ class SessionTest(APITestCase, TestCase):
 
         response = self.client.post('/apps/cms/api/events/sessions', follow=True)
         self.assertContains(response, 'Doing OER Right')
+
+
+class RegistrationTest(APITestCase, TestCase):
+    factory = APIRequestFactory()
+    client = APIClient()
+
+    def setUp(self):
+        self.event = Event.objects.create(eventbrite_event_id='89893504893')
+        self.session = Session.objects.create(event=self.event,
+                                         name='Doing OER Right',
+                                         date=timezone.now(),
+                                         location='Rice Memorial Center',
+                                         seats_remaining=15)
+
+    def test_can_register_via_api(self):
+        request = self.client.post('/apps/cms/api/events/registration', {'session': self.session.id,
+                                                                     'first_name': 'George',
+                                                                     'last_name': 'McFly',
+                                                                     'registration_email': 'mwharrison@rice.edu'},
+                               format='json', follow=True)
+
+
+        response = self.client.get('/apps/cms/api/events/registration', follow=True)
+        #TODO: This is not a complete test yet.

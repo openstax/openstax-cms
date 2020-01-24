@@ -5,23 +5,21 @@ from django.http import JsonResponse
 
 from rest_framework import viewsets
 
-from .models import Event, Session
-from .serializers import SessionSerializer
+from .models import Session, Registration
+from .serializers import SessionSerializer, RegistrationSerializer
+from .functions import check_eventbrite_registration
 
 def check_reg_status(request):
-    eventbrite = Eventbrite(settings.EVENTBRITE_API_PRIVATE_TOKEN)
-    event_id = Event.objects.all()[0].eventbrite_event_id
-    attendees = eventbrite.get_event_attendees(event_id=event_id)
-
     email = request.GET.get('email', None)
 
-    attendee_emails = []
-    for attendee in attendees['attendees']:
-        attendee_emails.append(attendee['profile']['email'])
-
-    return JsonResponse({'registered': email in attendee_emails})
+    return JsonResponse({'registered': check_eventbrite_registration(email)})
 
 
 class SessionViewSet(viewsets.ModelViewSet):
     queryset = Session.objects.all()
     serializer_class = SessionSerializer
+
+
+class RegistrationViewSet(viewsets.ModelViewSet):
+    queryset = Registration.objects.all()
+    serializer_class = RegistrationSerializer
