@@ -1,6 +1,5 @@
 import unicodecsv
 from import_export import resources
-from import_export.fields import Field
 from import_export.admin import ExportActionModelAdmin, ExportActionMixin
 from import_export.formats import base_formats
 
@@ -20,7 +19,6 @@ from .forms import ErrataForm
 
 
 class ErrataResource(resources.ModelResource):
-    user_faculty_status = Field(attribute='user_faculty_status')
     class Meta:
         model = Errata
         fields = ('id',
@@ -42,7 +40,7 @@ class ErrataResource(resources.ModelResource):
                   'error_type',
                   'resource',
                   'submitted_by_account_id',
-                  'user_faculty_status')
+                  'accounts_user_faculty_status')
         export_order = ('id',
                         'created',
                         'modified',
@@ -62,7 +60,7 @@ class ErrataResource(resources.ModelResource):
                         'error_type',
                         'resource',
                         'submitted_by_account_id',
-                        'user_faculty_status')
+                        'accounts_user_faculty_status')
 
 
 class InlineInternalImage(admin.TabularInline):
@@ -177,15 +175,14 @@ class ErrataAdmin(ExportActionModelAdmin):
 
     @method_decorator(csrf_protect)
     def get_form(self, request, obj=None, **kwargs):
-        self.exclude = ['openstax_book', 'reviewed_date']
         # CONTENT MANAGERS AND ADMINS
         if request.user.is_superuser or request.user.groups.filter(name__in=['Content Managers']).exists():
             self.readonly_fields = ['id',
                                     'created',
                                     'modified',
-                                    'user_name',
-                                    'user_email',
-                                    'user_faculty_status',
+                                    'accounts_user_name',
+                                    'accounts_user_email',
+                                    'accounts_user_faculty_status',
                                     'accounts_link',
                                     ]
 
@@ -196,7 +193,7 @@ class ErrataAdmin(ExportActionModelAdmin):
             self.readonly_fields = ['id',
                                     'created',
                                     'modified',
-                                    'user_faculty_status',
+                                    'accounts_user_faculty_status',
                                     'archived',
                                     'junk',
                                     'detail',

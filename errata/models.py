@@ -188,34 +188,38 @@ class Errata(models.Model):
     # TODO: We are keeping the Foreign Key to the local user until the migrations to production are complete, then remove submitted_by and submitter_email_address
     submitted_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
     submitter_email_address = models.EmailField(blank=True, null=True)
+
     submitted_by_account_id = models.IntegerField(blank=True, null=True, validators=[MinValueValidator(0), is_user_blocked])
+    accounts_user_email = models.CharField(max_length=255, null=True, blank=True)
+    accounts_user_name = models.CharField(max_length=255, null=True, blank=True)
+    accounts_user_faculty_status = models.CharField(max_length=255, null=True, blank=True)
 
     file_1 = models.FileField(upload_to='errata/user_uploads/1/', blank=True, null=True)
     file_2 = models.FileField(upload_to='errata/user_uploads/2/', blank=True, null=True)
 
-    @property
-    def user_email(self):
-        try:
-            user = get_user_info(self.submitted_by_account_id)
-            return user['email']
-        except:
-            return None
-
-    @property
-    def user_name(self):
-        try:
-            user = get_user_info(self.submitted_by_account_id)
-            return user['fullname']
-        except:
-            return None
-
-    @property
-    def user_faculty_status(self):
-        try:
-            user = get_user_info(self.submitted_by_account_id)
-            return user['faculty_status']
-        except:
-            return None
+    # @property
+    # def user_email(self):
+    #     try:
+    #         user = get_user_info(self.submitted_by_account_id)
+    #         return user['email']
+    #     except:
+    #         return None
+    #
+    # @property
+    # def user_name(self):
+    #     try:
+    #         user = get_user_info(self.submitted_by_account_id)
+    #         return user['fullname']
+    #     except:
+    #         return None
+    #
+    # @property
+    # def user_faculty_status(self):
+    #     try:
+    #         user = get_user_info(self.submitted_by_account_id)
+    #         return user['faculty_status']
+    #     except:
+    #         return None
 
     @property
     def accounts_link(self):
