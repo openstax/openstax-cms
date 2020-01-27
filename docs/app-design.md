@@ -27,8 +27,8 @@
 
 ### API
 * APIs for various data
-  * images - images used on OS site. Images are defined here to add the URL to the image, since it's stored on cloudfront. It reduces one API call for the FE. Also,SVGs, since those are not considered images by Wagtail.
-  * documents - PDFs, PowerPoints, text files, etc.
+  * images - images used on OS site. Images are defined here to add the URL to the image, since it's stored on cloudfront. It reduces one API call for the FE. 
+  * documents - PDFs, PowerPoints, text files, etc. SVGs are also under documents since they are not considered images by Wagtail.
   * adopters - 
   * progress - an API to hold progress for the adoptor quiz. The FE writes progress to it and retrieves it when needed.
   * sticky note - a time limited banner that displays at the top of the site
