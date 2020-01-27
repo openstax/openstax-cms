@@ -387,3 +387,6 @@ def send_status_update_email(sender, instance, created, **kwargs):
 class InternalDocumentation(models.Model):
     errata = models.ForeignKey(Errata, on_delete=models.PROTECT)
     file = models.FileField(upload_to='errata/internal/')
+
+    def __str__(self):
+        return self.file.name
