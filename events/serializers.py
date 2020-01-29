@@ -25,7 +25,7 @@ class RegistrationSerializer(serializers.ModelSerializer):
     def validate(self, data):
         if check_eventbrite_registration(data['registration_email']):
             try:
-                print(Registration.objects.get(registration_email=data['registration_email']))
+                Registration.objects.get(registration_email=data['registration_email'])
                 raise serializers.ValidationError("You can only register for one session.")
             except Registration.DoesNotExist:
                 return data
