@@ -11,8 +11,10 @@ from .functions import check_eventbrite_registration
 
 def check_reg_status(request):
     email = request.GET.get('email', None)
+    session_registrations = Registration.objects.filter(registration_email=email)
 
-    return JsonResponse({'registered': check_eventbrite_registration(email)})
+    return JsonResponse({'eventbrite_registered': check_eventbrite_registration(email),
+                         'session_registered': session_registrations.exists()})
 
 
 class SessionViewSet(viewsets.ModelViewSet):
