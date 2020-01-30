@@ -1,6 +1,5 @@
 import unicodecsv
 from import_export import resources
-from import_export.fields import Field
 from import_export.admin import ExportActionModelAdmin, ExportActionMixin
 from import_export.formats import base_formats
 
@@ -20,7 +19,6 @@ from .forms import ErrataForm
 
 
 class ErrataResource(resources.ModelResource):
-    user_faculty_status = Field(attribute='user_faculty_status')
     class Meta:
         model = Errata
         fields = ('id', 'created', 'modified', 'book__title', 'number_of_errors', 'is_assessment_errata', 'assessment_id', 'status', 'resolution', 'archived', 'junk', 'location', 'detail', 'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'resource', 'submitted_by_account_id', 'user_faculty_status')
@@ -143,6 +141,7 @@ class ErrataAdmin(ExportActionModelAdmin):
 
     @method_decorator(csrf_protect)
     def get_form(self, request, obj=None, **kwargs):
+        # CONTENT MANAGERS AND ADMINS
         if request.user.is_superuser or request.user.groups.filter(name__in=['Content Managers']).exists():
             self.fields = ['id',
                            'created',
@@ -173,9 +172,9 @@ class ErrataAdmin(ExportActionModelAdmin):
             self.readonly_fields = ['id',
                                     'created',
                                     'modified',
-                                    'user_name',
-                                    'user_email',
-                                    'user_faculty_status',
+                                    'accounts_user_name',
+                                    'accounts_user_email',
+                                    'accounts_user_faculty_status',
                                     'accounts_link',
                                     ]
 
@@ -206,7 +205,7 @@ class ErrataAdmin(ExportActionModelAdmin):
             self.readonly_fields = ['id',
                                     'created',
                                     'modified',
-                                    'user_faculty_status',
+                                    'accounts_user_faculty_status',
                                     'archived',
                                     'junk',
                                     'detail',
