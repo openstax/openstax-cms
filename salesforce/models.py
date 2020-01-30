@@ -1,6 +1,9 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 
+from wagtail.core import hooks
+from wagtail.admin.menu import MenuItem
+
 class Adopter(models.Model):
     sales_id = models.CharField(max_length=255, primary_key=True)
     name = models.CharField(max_length=255, null=False)
@@ -187,3 +190,7 @@ class Partner(models.Model):
 
     def __str__(self):
         return self.partner_name
+
+    @hooks.register('register_admin_menu_item')
+    def register_partner_menu_item():
+        return MenuItem('Partners', '/django-admin/salesforce/partner/', classnames='icon icon-group', order=10000)
