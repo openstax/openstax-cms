@@ -208,7 +208,6 @@ class ErrataAdmin(ExportActionModelAdmin):
                                     'accounts_user_faculty_status',
                                     'archived',
                                     'junk',
-                                    'detail',
                                     ]
 
             self.save_as = True
