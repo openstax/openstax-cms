@@ -1,5 +1,5 @@
 from wagtail.contrib.modeladmin.options import ModelAdmin, modeladmin_register
-from .models import Event, Session, Registration
+from .models import Session
 
 
 class SessionAdmin(ModelAdmin):
