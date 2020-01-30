@@ -1,4 +1,5 @@
 from eventbrite import Eventbrite
+from collections import OrderedDict
 
 from django.conf import settings
 from django.http import JsonResponse
@@ -13,8 +14,10 @@ def check_reg_status(request):
     email = request.GET.get('email', None)
     session_registrations = Registration.objects.filter(registration_email=email)
 
-    return JsonResponse({'eventbrite_registered': check_eventbrite_registration(email),
-                         'session_registered': session_registrations.exists()})
+    response = OrderedDict(eventbrite_registered=check_eventbrite_registration(email),
+                           session_registered=session_registrations.exists())
+
+    return JsonResponse(response)
 
 
 class SessionViewSet(viewsets.ModelViewSet):
