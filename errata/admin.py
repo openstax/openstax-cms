@@ -21,8 +21,8 @@ from .forms import ErrataForm
 class ErrataResource(resources.ModelResource):
     class Meta:
         model = Errata
-        fields = ('id', 'created', 'modified', 'book__title', 'number_of_errors', 'is_assessment_errata', 'assessment_id', 'status', 'resolution', 'archived', 'junk', 'location', 'detail', 'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'resource', 'submitted_by_account_id', 'user_faculty_status')
-        export_order = ('id', 'created', 'modified', 'book__title', 'number_of_errors', 'is_assessment_errata', 'assessment_id', 'status', 'resolution', 'archived', 'junk', 'location', 'detail', 'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'resource', 'submitted_by_account_id', 'user_faculty_status')
+        fields = ('id', 'created', 'modified', 'book__title', 'number_of_errors', 'is_assessment_errata', 'assessment_id', 'status', 'resolution', 'archived', 'junk', 'location', 'detail', 'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'resource', 'submitted_by_account_id', 'accounts_user_faculty_status')
+        export_order = ('id', 'created', 'modified', 'book__title', 'number_of_errors', 'is_assessment_errata', 'assessment_id', 'status', 'resolution', 'archived', 'junk', 'location', 'detail', 'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'resource', 'submitted_by_account_id', 'accounts_user_faculty_status')
 
 
 class InlineInternalImage(admin.TabularInline):
@@ -68,9 +68,8 @@ class ErrataAdmin(ExportActionModelAdmin):
                      'book__title',
                      'detail',
                      'location',
-                     'submitted_by__first_name',
-                     'submitted_by__last_name',
-                     'submitted_by__email')
+                     'accounts_user_name',
+                     'accounts_user_email')
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
     }
@@ -165,7 +164,7 @@ class ErrataAdmin(ExportActionModelAdmin):
                            'file_2',
                            'user_name',
                            'user_email',
-                           'user_faculty_status',
+                           'accounts_user_faculty_status',
                            'archived',
                            'junk',
                            ] # fields to show on the actual form
@@ -197,7 +196,7 @@ class ErrataAdmin(ExportActionModelAdmin):
                            'error_type',
                            'number_of_errors',
                            'resource',
-                           'user_faculty_status',
+                           'accounts_user_faculty_status',
                            'file_1',
                            'file_2',
                            'archived',
