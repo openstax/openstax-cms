@@ -16,7 +16,6 @@ from wagtail.images.edit_handlers import ImageChooserPanel
 from openstax.functions import build_image_url, build_document_url
 from wagtail.api import APIField
 
-from allies.models import Ally
 from books.models import Book
 from api.serializers import ImageSerializer
 
@@ -538,7 +537,6 @@ class HomePage(Page):
         'pages.AboutUsPage',
         'pages.TeamPage',
         'pages.GeneralPage',
-        'pages.EcosystemAllies',
         'pages.FoundationSupport',
         'pages.OurImpact',
         'pages.MapPage',
@@ -569,8 +567,7 @@ class HomePage(Page):
         'pages.PartnersPage',
         'books.BookIndex',
         'news.NewsIndex',
-        'news.PressIndex',
-        'allies.Ally',
+        'news.PressIndex'
     ]
 
     max_count = 1
@@ -782,61 +779,6 @@ class GeneralPage(Page):
         FieldPanel('search_description'),
         ImageChooserPanel('promote_image')
     ]
-
-
-class EcosystemAllies(Page):
-    page_description = models.TextField()
-    promote_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-
-    @property
-    def allies(self):
-        allies = Ally.objects.all()
-        ally_data = {}
-        for ally in allies:
-            ally_data[ally.slug] = {
-                'title': ally.title,
-                'subjects': ally.ally_subject_list(),
-                'short_description': ally.short_description,
-                'long_description': ally.long_description,
-                'heading': ally.heading,
-                'is_ap': ally.is_ap,
-                'do_not_display': ally.do_not_display,
-                'ally_bw_logo': ally.ally_bw_logo,
-            }
-        return ally_data
-
-    api_fields = [
-        APIField('title'),
-        APIField('page_description'),
-        APIField('allies'),
-        APIField('slug'),
-        APIField('seo_title'),
-        APIField('search_description'),
-        APIField('promote_image')
-    ]
-
-    content_panels = [
-        FieldPanel('title', classname="full title"),
-        FieldPanel('page_description'),
-    ]
-
-    promote_panels = [
-        FieldPanel('slug'),
-        FieldPanel('seo_title'),
-        FieldPanel('search_description'),
-        ImageChooserPanel('promote_image'),
-    ]
-
-    template = 'page.html'
-
-    parent_page_types = ['pages.HomePage']
-    max_count = 1
 
 
 class FoundationSupport(Page):
