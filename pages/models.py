@@ -2230,7 +2230,7 @@ class RoverPage(Page):
             ('nav_text', blocks.CharBlock(required=False)),
             ('see_more_text', blocks.CharBlock(required=False)),
             ('see_more_url', blocks.URLBlock(required=False))
-        ])
+        ], null=True, blank=True)
         section_6 = StreamField([
             ('heading', blocks.CharBlock()),
             ('blurb', blocks.RichTextBlock()),
@@ -2269,7 +2269,7 @@ class RoverPage(Page):
                 ('link_url', blocks.URLBlock()),
                 ('link_text', blocks.CharBlock())
             ])))
-        ], null=True)
+        ], null=True, blank=True)
         promote_image = models.ForeignKey(
             'wagtailimages.Image',
             null=True,
