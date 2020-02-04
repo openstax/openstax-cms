@@ -191,6 +191,15 @@ class Partner(models.Model):
     def __str__(self):
         return self.partner_name
 
+    def partner_logo_tag(self):
+        from django.utils.html import escape, mark_safe
+        if self.partner_logo:
+            return mark_safe(u'<img src="%s" height=100 />' % escape(self.partner_logo.url))
+        else:
+            return mark_safe(u'<img src="" />')
+        image_tag.short_description = 'Image'
+        image_tag.allow_tags = True
+
     @hooks.register('register_admin_menu_item')
     def register_partner_menu_item():
         return MenuItem('Partners', '/django-admin/salesforce/partner/', classnames='icon icon-group', order=3000)

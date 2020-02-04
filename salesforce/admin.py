@@ -30,13 +30,17 @@ class SalesforceSettingsAdmin(admin.ModelAdmin):
             return True
 
 class PartnerAdmin(admin.ModelAdmin):
-    list_display = ['salesforce_id', 'partner_name', 'partner_type', 'visible_on_website']
+    list_display = ['partner_logo_tag', 'salesforce_id', 'partner_name', 'partner_type', 'visible_on_website']
+    list_display_links = ('partner_name', )
+    list_filter = ('visible_on_website', 'partner_type')
+    search_fields = ('partner_name', 'salesforce_id')
     readonly_fields = (
         'salesforce_id',
     'partner_name',
     'partner_type',
     'rich_description',
     'partner_description',
+    'partner_website',
     'short_partner_description',
     'books',
     'landing_page',
@@ -84,6 +88,7 @@ class PartnerAdmin(admin.ModelAdmin):
     'feedback_learner_progress_tasks',
     'feedback_multipart',
     'feedback_understanding',
+    'formstack_url',
     'grading_change_scores',
     'grading_class_and_student_level',
     'grading_group_work',
@@ -116,7 +121,8 @@ class PartnerAdmin(admin.ModelAdmin):
     'accessibility_language_content',
     'accessibility_VPAT',
     'accessibility_WCAG',
-    'accessibility_universal_design')
+    'accessibility_universal_design',
+    'partner_logo_tag')
 
 
 admin.site.register(SalesforceSettings, SalesforceSettingsAdmin)
