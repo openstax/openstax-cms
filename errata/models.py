@@ -93,7 +93,6 @@ EMAIL_CASES = (
     ('Created in spring', 'Created in spring'),
     ('Reviewed and (will not fix, or duplicate, or not an error, or major book revision)', 'Reviewed and (will not fix, or duplicate, or not an error, or major book revision)'),
     ('Reviewed and Approved', 'Reviewed and Approved'),
-    ('Completed and Approved', 'Completed and Approved'),
     ('Completed and Sent to Customer Support', 'Completed and Sent to Customer Support'),
     ('More Information Requested', 'More Information Requested')
 )
