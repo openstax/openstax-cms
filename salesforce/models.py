@@ -194,7 +194,7 @@ class Partner(models.Model):
     def partner_logo_tag(self):
         from django.utils.html import escape, mark_safe
         if self.partner_logo:
-            return mark_safe(u'<img src="%s" height=100 />' % escape(self.partner_logo.url))
+            return mark_safe(u'<img src="%s" height=100 width=100 />' % escape(self.partner_logo.url))
         else:
             return mark_safe(u'<img src="" />')
         image_tag.short_description = 'Image'
