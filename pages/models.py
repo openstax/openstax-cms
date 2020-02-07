@@ -2860,6 +2860,7 @@ class CreatorFestPage(Page):
 class PartnersPage(Page):
     heading = models.CharField(max_length=255)
     description = RichTextField()
+    partner_list_label = models.CharField(max_length=255, null=True, blank=True, help_text="Controls the heading text on the book detail page.")
 
     @staticmethod
     def category_mapping():
@@ -2928,12 +2929,14 @@ class PartnersPage(Page):
         FieldPanel('title', classname='full title', help_text="Internal name for page."),
         FieldPanel('heading'),
         FieldPanel('description'),
+        FieldPanel('partner_list_label'),
     ]
 
     api_fields = [
         APIField('title'),
         APIField('heading'),
         APIField('description'),
+        APIField('partner_list_label'),
         APIField('field_name_mapping'),
         APIField('category_mapping'),
         APIField('slug'),
