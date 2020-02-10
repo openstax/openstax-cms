@@ -6,7 +6,6 @@ from pages.models import (HomePage,
                           ContactUs,
                           AboutUsPage,
                           GeneralPage,
-                          EcosystemAllies,
                           FoundationSupport,
                           OurImpact,
                           MapPage,
@@ -36,7 +35,6 @@ from pages.models import (HomePage,
                           InstitutionalPartnerProgramPage,
                           CreatorFestPage,
                           PartnersPage)
-from allies.models import Ally
 from news.models import NewsIndex, PressIndex
 from books.models import BookIndex
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
@@ -67,8 +65,6 @@ class HomePageTests(WagtailPageTests):
             ContactUs,
             AboutUsPage,
             GeneralPage,
-            EcosystemAllies,
-            Ally,
             NewsIndex,
             PressIndex,
             BookIndex,
