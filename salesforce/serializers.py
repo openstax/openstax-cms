@@ -1,6 +1,6 @@
 from collections import OrderedDict
 from .models import School, AdoptionOpportunityRecord, Partner
-
+from books.models import Book
 from rest_framework import serializers
 
 
@@ -53,6 +53,8 @@ class AdoptionOpportunityRecordSerializer(serializers.ModelSerializer):
                   'yearly_students')
 
 class PartnerSerializer(serializers.ModelSerializer):
+    partner_list_label = serializers.SerializerMethodField()
+
     def __init__(self, *args, **kwargs):
         super(PartnerSerializer, self).__init__(*args, **kwargs)
 
@@ -65,6 +67,10 @@ class PartnerSerializer(serializers.ModelSerializer):
         # We use OrderedDict like in original method
         ret = OrderedDict(filter(lambda x: x[1] is not False, ret.items()))
         return ret
+
+    def get_partner_list_label(self, obj):
+        book = Book.objects.only('partner_list_label')[0]
+        return book.partner_list_label
 
     class Meta:
         model = Partner

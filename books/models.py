@@ -509,6 +509,7 @@ class Book(Page):
     errata_content = StreamField(SharedContentBlock(), null=True, blank=True, help_text='Errata content.')
     table_of_contents = JSONField(editable=False, blank=True, null=True, help_text='TOC.')
     tutor_marketing_book = models.BooleanField(default=False, help_text='Whether this is a Tutor marketing book.')
+    partner_list_label = models.CharField(max_length=255, null=True, blank=True, help_text="Controls the heading text on the book detail page for partners. This will update ALL books to use this value!")
     videos = StreamField([
         ('video', blocks.ListBlock(blocks.StructBlock([
             ('title', blocks.CharBlock()),
@@ -585,6 +586,7 @@ class Book(Page):
         StreamFieldPanel('comp_copy_content'),
         StreamFieldPanel('errata_content'),
         FieldPanel('tutor_marketing_book'),
+        FieldPanel('partner_list_label'),
         FieldPanel('last_updated_pdf'),
         StreamFieldPanel('videos')
     ]
@@ -676,6 +678,7 @@ class Book(Page):
         APIField('errata_content'),
         APIField('table_of_contents'),
         APIField('tutor_marketing_book'),
+        APIField('field_name_mapping'),
         APIField('videos'),
         APIField('seo_title'),
         APIField('search_description'),
@@ -752,6 +755,9 @@ class Book(Page):
     def save(self, *args, **kwargs):
         if self.cnx_id:
             self.webview_link = '{}contents/{}'.format(settings.CNX_URL, self.cnx_id)
+
+        if self.partner_list_label:
+            Book.objects.all().update(partner_list_label=self.partner_list_label)
 
         return super(Book, self).save(*args, **kwargs)
 
