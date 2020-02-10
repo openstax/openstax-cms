@@ -68,7 +68,8 @@ class PartnerSerializer(serializers.ModelSerializer):
         ret = OrderedDict(filter(lambda x: x[1] is not False, ret.items()))
         return ret
 
-    def get_partner_list_label(self, obj):
+    @staticmethod
+    def get_partner_list_label(self):
         book = Book.objects.only('partner_list_label')[0]
         return book.partner_list_label
 
