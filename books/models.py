@@ -27,7 +27,6 @@ from wagtail.admin.edit_handlers import TabbedInterface, ObjectList
 from wagtail.api import APIField
 from wagtail.snippets.models import register_snippet
 
-from allies.models import Ally
 from openstax.functions import build_document_url, build_image_url
 from snippets.models import FacultyResource, StudentResource, Subject, SharedContent
 
@@ -226,46 +225,6 @@ class AuthorBlock(blocks.StructBlock):
             icon = 'user'
 
 
-class BookAlly(models.Model):
-    ally = models.ForeignKey(
-        Ally,
-        null=True,
-        help_text="Manage allies through snippets.",
-        on_delete=models.SET_NULL,
-        related_name='allies_ally'
-    )
-
-    def get_ally_heading(self):
-        return self.ally.heading
-    ally_heading = property(get_ally_heading)
-
-    def get_ally_short_description(self):
-        return self.ally.short_description
-    ally_short_description = property(get_ally_short_description)
-
-    def get_ally_color_logo(self):
-        return build_image_url(self.ally.logo_color)
-    ally_color_logo = property(get_ally_color_logo)
-
-    book_link_url = models.URLField(
-        blank=True, help_text="Call to Action Link")
-    book_link_text = models.CharField(
-        max_length=255, help_text="Call to Action Text")
-
-    api_fields = [
-        APIField('ally_heading'),
-        APIField('ally_short_description'),
-        APIField('ally_color_logo'),
-        APIField('book_link_url'),
-        APIField('book_link_text'),
-    ]
-
-    panels = [
-        FieldPanel('ally'),
-        FieldPanel('book_link_url'),
-        FieldPanel('book_link_text'),
-    ]
-
 class SubjectBooks(models.Model):
     subject = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True, related_name='subjects_subject')
 
@@ -320,10 +279,6 @@ class BookFacultyResources(Orderable, FacultyResources):
 
 class BookStudentResources(Orderable, StudentResources):
     book_student_resource = ParentalKey('books.Book', related_name='book_student_resources')
-
-
-class BookAllies(Orderable, BookAlly):
-    book_ally = ParentalKey('books.Book', related_name='book_allies')
 
 
 class BookSubjects(Orderable, SubjectBooks):
@@ -587,7 +542,6 @@ class Book(Page):
         FieldPanel('cover_color'),
         FieldPanel('book_cover_text_color'),
         FieldPanel('reverse_gradient'),
-        InlinePanel('book_allies', label="Allies"),
         FieldPanel('print_isbn_10'),
         FieldPanel('print_isbn_13'),
         FieldPanel('digital_isbn_10'),
@@ -670,7 +624,6 @@ class Book(Page):
         APIField('cover_color'),
         APIField('book_cover_text_color'),
         APIField('reverse_gradient'),
-        APIField('book_allies'),
         APIField('book_student_resources'),
         APIField('book_faculty_resources'),
         APIField('publish_date'),

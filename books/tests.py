@@ -1,9 +1,7 @@
 from wagtail.tests.utils import WagtailPageTests
 from wagtail.core.models import Page
 from pages.models import HomePage
-from books.models import BookIndex, Book, BookAllies
-#from snippets.models import Subject
-from allies.models import Ally
+from books.models import BookIndex, Book
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
 
 
