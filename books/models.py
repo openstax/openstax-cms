@@ -678,7 +678,7 @@ class Book(Page):
         APIField('errata_content'),
         APIField('table_of_contents'),
         APIField('tutor_marketing_book'),
-        APIField('field_name_mapping'),
+        APIField('partner_list_label'),
         APIField('videos'),
         APIField('seo_title'),
         APIField('search_description'),
