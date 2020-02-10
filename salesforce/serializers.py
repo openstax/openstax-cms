@@ -1,6 +1,5 @@
 from collections import OrderedDict
 from .models import School, AdoptionOpportunityRecord, Partner
-
 from rest_framework import serializers
 
 
@@ -65,6 +64,7 @@ class PartnerSerializer(serializers.ModelSerializer):
         # We use OrderedDict like in original method
         ret = OrderedDict(filter(lambda x: x[1] is not False, ret.items()))
         return ret
+
 
     class Meta:
         model = Partner

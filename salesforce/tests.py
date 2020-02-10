@@ -13,6 +13,7 @@ from salesforce.serializers import PartnerSerializer
 
 from rest_framework import status
 from rest_framework.test import APITestCase
+
 from wagtail.tests.utils import WagtailPageTests
 
 class AdopterTest(TestCase):
