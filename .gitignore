@@ -12,3 +12,4 @@ openstax/settings/local.py
 .DS_STORE
 
 *.bk
+admin_templates/templates/wagtailadmin/login.html*
