@@ -2877,6 +2877,7 @@ class PartnersPage(Page):
         APIField('heading'),
         APIField('description'),
         APIField('category_mapping'),
+        APIField('field_name_mapping'),
         APIField('slug'),
         APIField('seo_title'),
         APIField('search_description'),
