@@ -85,8 +85,7 @@ class BookTests(WagtailPageTests):
                 slug="prealgebra",
                 salesforce_abbreviation='Prealgebra',
                 salesforce_name='Prealgebra',
-                description="This is Prealgebra. Next, you learn Algebra!",
-                amazon_price=False
+                description="This is Prealgebra. Next, you learn Algebra!"
                 )
         book_index.add_child(instance=book)
         self.assertEqual(book.salesforce_abbreviation, 'Prealgebra')

@@ -497,8 +497,6 @@ class Book(Page):
     bookshare_link = models.URLField(blank=True, help_text="Link to Bookshare resources")
     amazon_coming_soon = models.BooleanField(default=False, help_text='Whether this book is coming to Amazon bookstore.')
     amazon_link = models.URLField(blank=True, help_text="Link to Amazon")
-    amazon_price = models.DecimalField(default=0.00, max_digits=6, decimal_places=2)
-    amazon_price_softcover = models.DecimalField(default=0.00, max_digits=6, decimal_places=2)
     kindle_link = models.URLField(blank=True, help_text="Link to Kindle version")
     chegg_link = models.URLField(blank=True, null=True, help_text="Link to Chegg e-reader")
     chegg_link_text = models.CharField(max_length=255, blank=True, null=True, help_text='Text for Chegg link.')
@@ -575,8 +573,6 @@ class Book(Page):
         FieldPanel('bookshare_link'),
         FieldPanel('amazon_coming_soon'),
         FieldPanel('amazon_link'),
-        FieldPanel('amazon_price'),
-        FieldPanel('amazon_price_softcover'),
         FieldPanel('kindle_link'),
         FieldPanel('chegg_link'),
         FieldPanel('chegg_link_text'),
@@ -666,8 +662,6 @@ class Book(Page):
         APIField('bookshare_link'),
         APIField('amazon_coming_soon'),
         APIField('amazon_link'),
-        APIField('amazon_price'),
-        APIField('amazon_price_softcover'),
         APIField('kindle_link'),
         APIField('chegg_link'),
         APIField('chegg_link_text'),
@@ -813,8 +807,6 @@ class BookIndex(Page):
                     'kindle_link': book.kindle_link,
                     'amazon_coming_soon': book.amazon_coming_soon,
                     'amazon_link': book.amazon_link,
-                    'amazon_price': book.amazon_price,
-                    'amazon_price_softcover': book.amazon_price_softcover,
                     'bookstore_coming_soon': book.bookstore_coming_soon,
                     'bookstore_content': book.bookstore_content.stream_data,
                     'comp_copy_available': book.comp_copy_available,
