@@ -7,7 +7,7 @@ CacheControl==0.12.5
 certifi==2019.11.28
 chardet==3.0.4
 defusedxml==0.6.0
-Django==2.2.8
+Django==2.2.10
 django-appconf==1.0.1
 django-compressor==2.0
 django-extensions==2.0.7
