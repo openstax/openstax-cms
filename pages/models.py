@@ -2884,25 +2884,3 @@ class PartnersPage(Page):
 
     parent_page_type = ['pages.HomePage']
 
-class WebinarPage(Page):
-    headline = models.CharField(max_length=255)
-    description = models.TextField()
-    hero_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-
-    content_panels = [
-        FieldPanel('headline'),
-        FieldPanel('description'),
-        ImageChooserPanel('hero_image')
-    ]
-
-    api_fields = [
-        APIField('headline'),
-        APIField('description'),
-        APIField('hero_image')
-    ]
