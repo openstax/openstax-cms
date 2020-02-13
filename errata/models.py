@@ -245,9 +245,9 @@ class Errata(models.Model):
         if self.resolution:
             self.resolution_date = timezone.now()
         if self.status == "Reviewed":
-            self.reviewed_date = now()
+            self.reviewed_date = timezone.now()
         if self.status == "Completed" and self.resolution != "Will Not Fix":
-            self.corrected_date = now()
+            self.corrected_date = timezone.now()
 
             Book.objects.filter(pk=self.book.pk).update(last_updated_web=now())
 
