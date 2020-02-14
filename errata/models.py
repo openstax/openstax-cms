@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.timezone import now
+from django.utils import timezone
 from django.template.defaultfilters import truncatewords
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
@@ -246,11 +247,11 @@ class Errata(models.Model):
     def save(self, *args, **kwargs):
         # update instance dates
         if self.resolution:
-            self.resolution_date = now()
+            self.resolution_date = timezone.now()
         if self.status == "Reviewed":
-            self.reviewed_date = now()
+            self.reviewed_date = timezone.now()
         if self.status == "Completed" and self.resolution != "Will Not Fix":
-            self.corrected_date = now()
+            self.corrected_date = timezone.now()
 
             Book.objects.filter(pk=self.book.pk).update(last_updated_web=now())
 
