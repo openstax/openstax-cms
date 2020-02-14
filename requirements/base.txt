@@ -24,7 +24,8 @@ django-flags==4.1.2
 djangorestframework==3.10.3
 docutils==0.15.2
 draftjs-exporter==2.1.7
-eventbrite==3.3.3
+# Eventbrite does not support pagination (PR submitted to their repo) moving to project until fixed.
+# eventbrite==3.3.3
 future==0.17.1
 google-compute-engine==2.8.3
 html2text==2016.9.19

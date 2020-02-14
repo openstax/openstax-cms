@@ -2,6 +2,7 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.timezone import now
+from django.utils import timezone
 from django.template.defaultfilters import truncatewords
 from django.core.exceptions import ValidationError
 from django.contrib.auth.models import User
@@ -41,6 +42,7 @@ WILL_NOT_FIX = 'Will Not Fix'
 APPROVED = 'Approved'
 MAJOR_BOOK_REVISION = 'Major Book Revision'
 TECHNICAL_ERROR = 'Technical Error'
+PARTNER_PRODUCT = 'Partner Product'
 CUSTOMER_SUPPORT = 'Sent to Customer Support'
 MORE_INFO_REQUESTED = 'More Information Requested'
 ERRATA_RESOLUTIONS = (
@@ -50,8 +52,9 @@ ERRATA_RESOLUTIONS = (
     (APPROVED, 'Approved'),
     (MAJOR_BOOK_REVISION, 'Major Book Revision'),
     (TECHNICAL_ERROR, 'Technical Error'),
+    (PARTNER_PRODUCT, 'Partner Product'),
     (CUSTOMER_SUPPORT, 'Sent to Customer Support'),
-    (MORE_INFO_REQUESTED, 'More Information Requested')
+    (MORE_INFO_REQUESTED, 'More Information Requested'),
 )
 
 FACTUAL = 'Other factual inaccuracy in content'
@@ -94,7 +97,9 @@ EMAIL_CASES = (
     ('Reviewed and (will not fix, or duplicate, or not an error, or major book revision)', 'Reviewed and (will not fix, or duplicate, or not an error, or major book revision)'),
     ('Reviewed and Approved', 'Reviewed and Approved'),
     ('Completed and Sent to Customer Support', 'Completed and Sent to Customer Support'),
-    ('More Information Requested', 'More Information Requested')
+    ('More Information Requested', 'More Information Requested'),
+    ('Getting new edition', 'Getting new edition'),
+    ('Partner product', 'Partner product'),
 )
 
 def is_user_blocked(account_id):
@@ -242,11 +247,11 @@ class Errata(models.Model):
     def save(self, *args, **kwargs):
         # update instance dates
         if self.resolution:
-            self.resolution_date = now()
+            self.resolution_date = timezone.now()
         if self.status == "Reviewed":
-            self.reviewed_date = now()
+            self.reviewed_date = timezone.now()
         if self.status == "Completed" and self.resolution != "Will Not Fix":
-            self.corrected_date = now()
+            self.corrected_date = timezone.now()
 
             Book.objects.filter(pk=self.book.pk).update(last_updated_web=now())
 
@@ -315,16 +320,22 @@ def send_status_update_email(sender, instance, created, **kwargs):
         override_to = False
 
         if created:
-            if instance.created.month in (11, 12, 1, 2):
-                email_text = EmailText.objects.get(email_case='Created in fall')
+            if instance.book.title == "Introduction to Sociology 2e" or instance.book.title == "American Government 2e":
+                email_text = EmailText.objects.get(email_case='Getting new edition')
                 subject = email_text.email_subject_text
                 body = email_text.email_body_text
                 send_email = True
             else:
-                email_text = EmailText.objects.get(email_case='Created in spring')
-                subject = email_text.email_subject_text
-                body = email_text.email_body_text
-                send_email = True
+                if instance.created.month in (11, 12, 1, 2):
+                    email_text = EmailText.objects.get(email_case='Created in fall')
+                    subject = email_text.email_subject_text
+                    body = email_text.email_body_text
+                    send_email = True
+                else:
+                    email_text = EmailText.objects.get(email_case='Created in spring')
+                    subject = email_text.email_subject_text
+                    body = email_text.email_body_text
+                    send_email = True
         elif instance.status == 'Reviewed' and (instance.resolution == 'Will Not Fix' or instance.resolution == 'Duplicate' or instance.resolution == 'Not An Error' or instance.resolution == 'Major Book Revision'):
             email_text = EmailText.objects.get(email_case='Reviewed and (will not fix, or duplicate, or not an error, or major book revision)')
             subject = email_text.email_subject_text
@@ -342,6 +353,11 @@ def send_status_update_email(sender, instance, created, **kwargs):
             send_email = True
             override_to = True
             to = "support@openstax.org"
+        elif instance.status == 'Completed' and instance.resolution == 'Partner product':
+            email_text = EmailText.objects.get(email_case='Partner product')
+            subject = email_text.email_subject_text
+            body = email_text.email_body_text
+            send_email = True
         elif instance.resolution == 'More Information Requested':
             email_text = EmailText.objects.get(email_case='More Information Requested')
             subject = email_text.email_subject_text
