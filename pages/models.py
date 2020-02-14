@@ -565,6 +565,7 @@ class HomePage(Page):
         'pages.InstitutionalPartnerProgramPage',
         'pages.CreatorFestPage',
         'pages.PartnersPage',
+        'pages.WebinarPage',
         'books.BookIndex',
         'news.NewsIndex',
         'news.PressIndex'
@@ -2908,3 +2909,5 @@ class WebinarPage(Page):
         APIField('description'),
         APIField('hero_image')
     ]
+
+    parent_page_type = ['pages.HomePage']
