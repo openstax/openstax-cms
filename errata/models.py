@@ -41,6 +41,7 @@ WILL_NOT_FIX = 'Will Not Fix'
 APPROVED = 'Approved'
 MAJOR_BOOK_REVISION = 'Major Book Revision'
 TECHNICAL_ERROR = 'Technical Error'
+PARTNER_PRODUCT = 'Partner Product'
 CUSTOMER_SUPPORT = 'Sent to Customer Support'
 MORE_INFO_REQUESTED = 'More Information Requested'
 ERRATA_RESOLUTIONS = (
@@ -50,8 +51,9 @@ ERRATA_RESOLUTIONS = (
     (APPROVED, 'Approved'),
     (MAJOR_BOOK_REVISION, 'Major Book Revision'),
     (TECHNICAL_ERROR, 'Technical Error'),
+    (PARTNER_PRODUCT, 'Partner Product'),
     (CUSTOMER_SUPPORT, 'Sent to Customer Support'),
-    (MORE_INFO_REQUESTED, 'More Information Requested')
+    (MORE_INFO_REQUESTED, 'More Information Requested'),
 )
 
 FACTUAL = 'Other factual inaccuracy in content'
@@ -96,6 +98,7 @@ EMAIL_CASES = (
     ('Completed and Sent to Customer Support', 'Completed and Sent to Customer Support'),
     ('More Information Requested', 'More Information Requested'),
     ('Getting new edition', 'Getting new edition'),
+    ('Partner product', 'Partner product'),
 )
 
 def is_user_blocked(account_id):
@@ -349,6 +352,11 @@ def send_status_update_email(sender, instance, created, **kwargs):
             send_email = True
             override_to = True
             to = "support@openstax.org"
+        elif instance.status == 'Completed' and instance.resolution == 'Partner product':
+            email_text = EmailText.objects.get(email_case='Partner product')
+            subject = email_text.email_subject_text
+            body = email_text.email_body_text
+            send_email = True
         elif instance.resolution == 'More Information Requested':
             email_text = EmailText.objects.get(email_case='More Information Requested')
             subject = email_text.email_subject_text
