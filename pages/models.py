@@ -2898,6 +2898,7 @@ class WebinarPage(Page):
     )
 
     content_panels = [
+        FieldPanel('title', classname='full title', help_text="Internal name for page."),
         FieldPanel('heading'),
         FieldPanel('description'),
         ImageChooserPanel('hero_image')
@@ -2907,7 +2908,10 @@ class WebinarPage(Page):
         APIField('title'),
         APIField('heading'),
         APIField('description'),
-        APIField('hero_image')
+        APIField('hero_image'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
     ]
 
     parent_page_type = ['pages.HomePage']
