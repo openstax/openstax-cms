@@ -51,6 +51,7 @@ urlpatterns = [
     url(r'^errata/', include('errata.urls')),
     url(r'^apps/cms/api/errata/', include('errata.urls')),
     url(r'^apps/cms/api/events/', include('events.urls')),
+    url(r'^apps/cms/api/', include('webinars.urls')),
 
     # route everything to /api/spike also...
     url(r'^apps/cms/api/spike/', include(wagtail_urls)),
