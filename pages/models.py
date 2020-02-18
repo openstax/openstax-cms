@@ -2810,7 +2810,7 @@ class PartnersPage(Page):
             'Type': 'partner_type',
             'Integrated with OpenStax': 'integrated',
             'Verified by instructors': 'verified_',
-            'Affordability': 'affordability_',
+            'Cost': 'affordability_',
             'App Available': 'app_',
             'Book': 'books',
             'Adaptivity': 'adaptivity_',
