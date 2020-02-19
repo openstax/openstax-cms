@@ -2805,6 +2805,8 @@ class CreatorFestPage(Page):
 class PartnersPage(Page):
     heading = models.CharField(max_length=255)
     description = RichTextField()
+    partner_landing_page_link = models.CharField(max_length=255, null=True, blank=True, help_text="Link text to partner landing page.")
+    partner_request_info_link = models.CharField(max_length=255, null=True, blank=True, help_text="Forstack form link text")
 
     @staticmethod
     def category_mapping():
@@ -2831,7 +2833,6 @@ class PartnersPage(Page):
                 'Grading': 'grading_',
                 'Interactivity': 'interactivity_',
                 'LMS integration': 'LMS_',
-                '1':'1'
             }
 
     @staticmethod
@@ -2911,12 +2912,16 @@ class PartnersPage(Page):
         FieldPanel('title', classname='full title', help_text="Internal name for page."),
         FieldPanel('heading'),
         FieldPanel('description'),
+        FieldPanel('partner_landing_page_link'),
+        FieldPanel('partner_request_info_link'),
     ]
 
     api_fields = [
         APIField('title'),
         APIField('heading'),
         APIField('description'),
+        APIField('partner_landing_page_link'),
+        APIField('partner_request_info_link'),
         APIField('category_mapping'),
         APIField('field_name_mapping'),
         APIField('type_mapping'),
