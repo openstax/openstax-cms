@@ -1,6 +1,13 @@
 from django.contrib import admin
 
-from .models import AdoptionOpportunityRecord, School, MapBoxDataset, SalesforceSettings, Partner
+from .models import AdoptionOpportunityRecord, \
+    School, \
+    MapBoxDataset, \
+    SalesforceSettings, \
+    Partner, \
+    PartnerCategoryMapping, \
+    PartnerFieldNameMapping, \
+    PartnerTypeMapping
 
 
 class SchoolAdmin(admin.ModelAdmin):
@@ -125,8 +132,22 @@ class PartnerAdmin(admin.ModelAdmin):
     'partner_logo_tag')
 
 
+class PartnerCategoryMappingAdmin(admin.ModelAdmin):
+    list_display = ('display_name', 'salesforce_name')
+
+
+class PartnerFieldNameMappingAdmin(admin.ModelAdmin):
+    list_display = ('display_name', 'salesforce_name')
+
+
+class PartnerTypeMappingAdmin(admin.ModelAdmin):
+    list_display = ('display_name', 'salesforce_name')
+
 admin.site.register(SalesforceSettings, SalesforceSettingsAdmin)
 admin.site.register(School, SchoolAdmin)
 admin.site.register(AdoptionOpportunityRecord, AdoptionOpportunityRecordAdmin)
 admin.site.register(MapBoxDataset)
 admin.site.register(Partner, PartnerAdmin)
+admin.site.register(PartnerCategoryMapping, PartnerCategoryMappingAdmin)
+admin.site.register(PartnerFieldNameMapping, PartnerFieldNameMappingAdmin)
+admin.site.register(PartnerTypeMapping, PartnerTypeMappingAdmin)
