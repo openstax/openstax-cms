@@ -508,6 +508,8 @@ class Book(Page):
     table_of_contents = JSONField(editable=False, blank=True, null=True, help_text='TOC.')
     tutor_marketing_book = models.BooleanField(default=False, help_text='Whether this is a Tutor marketing book.')
     partner_list_label = models.CharField(max_length=255, null=True, blank=True, help_text="Controls the heading text on the book detail page for partners. This will update ALL books to use this value!")
+    partner_page_link_text = models.CharField(max_length=255, null=True, blank=True, help_text="Link to partners page on top right of list.")
+
     videos = StreamField([
         ('video', blocks.ListBlock(blocks.StructBlock([
             ('title', blocks.CharBlock()),
@@ -583,6 +585,7 @@ class Book(Page):
         StreamFieldPanel('errata_content'),
         FieldPanel('tutor_marketing_book'),
         FieldPanel('partner_list_label'),
+        FieldPanel('partner_page_link_text'),
         FieldPanel('last_updated_pdf'),
         StreamFieldPanel('videos')
     ]
@@ -673,6 +676,7 @@ class Book(Page):
         APIField('table_of_contents'),
         APIField('tutor_marketing_book'),
         APIField('partner_list_label'),
+        APIField('partner_page_link_text'),
         APIField('videos'),
         APIField('seo_title'),
         APIField('search_description'),
