@@ -203,3 +203,25 @@ class Partner(models.Model):
     @hooks.register('register_admin_menu_item')
     def register_partner_menu_item():
         return MenuItem('Partners', '/django-admin/salesforce/partner/', classnames='icon icon-group', order=3000)
+
+
+class PartnerFieldNameMapping(models.Model):
+    salesforce_name = models.CharField(max_length=255)
+    display_name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.display_name
+
+class PartnerCategoryMapping(models.Model):
+    salesforce_name = models.CharField(max_length=255)
+    display_name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.display_name
+
+class PartnerTypeMapping(models.Model):
+    salesforce_name = models.CharField(max_length=255)
+    display_name = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.display_name
