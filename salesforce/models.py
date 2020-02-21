@@ -220,7 +220,6 @@ class PartnerCategoryMapping(models.Model):
         return self.display_name
 
 class PartnerTypeMapping(models.Model):
-    salesforce_name = models.CharField(max_length=255)
     display_name = models.CharField(max_length=255)
 
     def __str__(self):
