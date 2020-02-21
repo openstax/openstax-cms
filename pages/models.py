@@ -2814,7 +2814,7 @@ class PartnersPage(Page):
         mapping_dict = {}
 
         for field in field_mappings:
-            mapping_dict[field.salesforce_name] = field.display_name
+            mapping_dict[field.display_name] = field.salesforce_name
 
         ## TODO: This scary bit of code allows us to take our time to populate this on production - remove at next release!
         if len(mapping_dict) > 11:
@@ -2841,7 +2841,7 @@ class PartnersPage(Page):
         mapping_dict = {}
 
         for field in field_mappings:
-            mapping_dict[field.salesforce_name] = field.display_name
+            mapping_dict[field.display_name] = field.salesforce_name
 
         ## TODO: This scary bit of code allows us to take our time to populate this on production - remove at next release!
         if len(mapping_dict) > 39:
@@ -2895,7 +2895,7 @@ class PartnersPage(Page):
         mapping_dict = {}
 
         for field in field_mappings:
-            mapping_dict[field.salesforce_name] = field.display_name
+            mapping_dict[field.display_name] = field.salesforce_name
 
         ## TODO: This scary bit of code allows us to take our time to populate this on production - remove at next release!
         if len(mapping_dict) > 3:
