@@ -2890,23 +2890,8 @@ class PartnersPage(Page):
              'Accessibility WCAG': 'accessibility_WCAG'}
 
     @staticmethod
-    def type_mapping():
-        field_mappings = PartnerTypeMapping.objects.all()
-        mapping_dict = {}
-
-        for field in field_mappings:
-            mapping_dict[field.display_name] = field.salesforce_name
-
-        ## TODO: This scary bit of code allows us to take our time to populate this on production - remove at next release!
-        if len(mapping_dict) > 3:
-            return mapping_dict
-        else:
-            return {
-                'Content customization': 'Content customization',
-                'Online homework': 'Online homework',
-                'Clicker / classroom': 'Clicker/classroom engagement',
-                'Adaptive courseware': 'Adaptive Courseware'
-            }
+    def partner_type_choices():
+        return [x.display_name for x in PartnerTypeMapping.objects.all()]
 
     content_panels = [
         FieldPanel('title', classname='full title', help_text="Internal name for page."),
@@ -2924,7 +2909,7 @@ class PartnersPage(Page):
         APIField('partner_request_info_link'),
         APIField('category_mapping'),
         APIField('field_name_mapping'),
-        APIField('type_mapping'),
+        APIField('partner_type_choices'),
         APIField('slug'),
         APIField('seo_title'),
         APIField('search_description'),

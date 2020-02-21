@@ -141,7 +141,7 @@ class PartnerFieldNameMappingAdmin(admin.ModelAdmin):
 
 
 class PartnerTypeMappingAdmin(admin.ModelAdmin):
-    list_display = ('display_name', 'salesforce_name')
+    list_display = ('display_name',)
 
 admin.site.register(SalesforceSettings, SalesforceSettingsAdmin)
 admin.site.register(School, SchoolAdmin)

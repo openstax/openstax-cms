@@ -7,21 +7,24 @@ CacheControl==0.12.5
 certifi==2019.11.28
 chardet==3.0.4
 defusedxml==0.6.0
-Django==2.2.8
+Django==2.2.10
+django-admin-view-permission==1.5
 django-appconf==1.0.1
+django-cachalot==1.5.0
 django-compressor==2.0
 django-extensions==2.0.7
 django-filter==2.2.0
+django-flags==4.1.2
 django-inline-actions==2.3.0
 django-libsass==0.6
-django-modelcluster==5.0
+django-modelcluster==5.0.1
 django-overextends==0.4.2
 django-rest-auth==0.6.0
 django-taggit==1.2.0
-django-treebeard==4.3
+django-treebeard==4.3.1
 django-storages==1.5.1
 django-flags==4.1.2
-djangorestframework==3.10.3
+djangorestframework==3.11.0
 docutils==0.15.2
 draftjs-exporter==2.1.7
 # Eventbrite does not support pagination (PR submitted to their repo) moving to project until fixed.
@@ -34,16 +37,19 @@ idna==2.8
 iso3166==1.0
 jmespath==0.9.4
 jsonfield==1.0.3
-l18n==2016.6.4
-lxml>=4.4.1
+l18n==2018.5
+libsass==0.19.4
+lxml>=4.4.2
 mapbox==0.16.2
 msgpack==0.6.1
 oauthlib==2.1.0
 olefile==0.45.1
-Pillow==6.2.1
+Pillow==6.2.2
 polyline==1.4.0
-psycopg2>=2.8.3
+psycopg2>=2.8.4
+pydot==1.4.1
 PyJWT==1.7.1
+pyparsing==2.4.6
 pytz==2019.3
 python-dateutil==2.4.2
 python-social-auth==0.3.6
@@ -54,11 +60,11 @@ requests==2.22.0
 requests-oauthlib==1.1.0
 rjsmin==1.0.12
 s3transfer==0.2.1
-six==1.13.0
+six==1.14.0
 sphinx-me==0.3
 sqlparse==0.3.0
 Unidecode==1.1.1
-wagtail==2.7.1
+wagtail==2.8
 wheel==0.24.0
 whitenoise==4.1.3
 Willow==1.3
@@ -70,7 +76,7 @@ django-ses==0.8.7
 PyYAML==4.2b1
 unicodecsv==0.14.1
 uritemplate==3.0.0
-urllib3==1.25.7
+urllib3==1.25.8
 webencodings==0.5.1
 
 #django-import-export stuff
@@ -87,7 +93,7 @@ xlwt==1.3.0
 wagtail-import-export-tool==0.9.5
 
 # sso stuff
-pycryptodome>=3.9.0
+pycryptodome>=3.9.4
 django-cors-headers==2.4.1
 
 # reporting
