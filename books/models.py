@@ -757,6 +757,9 @@ class Book(Page):
         if self.partner_list_label:
             Book.objects.all().update(partner_list_label=self.partner_list_label)
 
+        if self.partner_page_link_text:
+            Book.objects.all().update(partner_page_link_text=self.partner_page_link_text)
+
         return super(Book, self).save(*args, **kwargs)
 
     def __str__(self):
