@@ -19,7 +19,7 @@ from wagtail.api import APIField
 from books.models import Book
 from api.serializers import ImageSerializer
 
-from salesforce.models import PartnerTypeMapping, PartnerFieldNameMapping, PartnerCategoryMapping
+from salesforce.models import PartnerTypeMapping, PartnerFieldNameMapping, PartnerCategoryMapping, Partner
 
 
 ### Custom Block Definitions ###
@@ -568,6 +568,7 @@ class HomePage(Page):
         'pages.CreatorFestPage',
         'pages.PartnersPage',
         'pages.WebinarPage',
+        'pages.MathQuizPage',
         'books.BookIndex',
         'news.NewsIndex',
         'news.PressIndex'
@@ -2940,6 +2941,65 @@ class WebinarPage(Page):
         APIField('heading'),
         APIField('description'),
         APIField('hero_image'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+    ]
+
+    parent_page_type = ['pages.HomePage']
+
+
+class PartnerChooserBlock(blocks.ChooserBlock):
+    target_model = Partner
+    widget = forms.Select
+
+    # Return the key value for the select field
+    def value_for_form(self, value):
+        if isinstance(value, self.target_model):
+            return value.pk
+        else:
+            return value
+
+    def get_api_representation(self, value, context=None):
+        if value.partner_logo:
+            return {
+                'id': value.id,
+                'name': value.partner_name,
+                'logo': value.partner_logo.url
+            }
+        else:
+            return {
+                'id': value.id,
+                'name': value.partner_name,
+                'logo': None
+            }
+
+class MathQuizPage(Page):
+    heading = models.CharField(max_length=255)
+    description = models.TextField()
+    results = StreamField([
+        ('result', blocks.ListBlock(blocks.StructBlock([
+            ('image', ImageBlock()),
+            ('headline', blocks.CharBlock()),
+            ('description', blocks.TextBlock()),
+            ('partners', blocks.ListBlock(blocks.StructBlock([
+                ('partner', PartnerChooserBlock()),
+             ]))),
+        ])))
+    ])
+
+    content_panels = [
+        FieldPanel('title', classname='full title', help_text="Internal name for page."),
+        FieldPanel('heading'),
+        FieldPanel('description'),
+        StreamFieldPanel('results')
+    ]
+
+    api_fields = [
+        APIField('title'),
+        APIField('heading'),
+        APIField('description'),
+        APIField('results'),
         APIField('slug'),
         APIField('seo_title'),
         APIField('search_description'),
