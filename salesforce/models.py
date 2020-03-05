@@ -102,6 +102,7 @@ class Partner(models.Model):
     video_2 = models.FileField(upload_to='partner_videos/', null=True, blank=True)
     partner_list_label = models.CharField(max_length=255, null=True, blank=True)
     visible_on_website = models.BooleanField(default=True)
+    lead_sharing = models.BooleanField(default=False)
     partner_type = models.CharField(max_length=255, blank=True, null=True)
     rich_description = models.TextField(blank=True, null=True)
     partner_description = models.TextField(blank=True, null=True)
@@ -194,7 +195,7 @@ class Partner(models.Model):
     def partner_logo_tag(self):
         from django.utils.html import escape, mark_safe
         if self.partner_logo:
-            return mark_safe(u'<img src="%s" height=100 width=100 />' % escape(self.partner_logo.url))
+            return mark_safe(u'<img src="%s" height=50 />' % escape(self.partner_logo.url))
         else:
             return mark_safe(u'<img src="" />')
         image_tag.short_description = 'Image'
