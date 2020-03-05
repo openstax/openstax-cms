@@ -60,6 +60,11 @@ class PartnerSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         ret = super().to_representation(instance)
+
+        # if lead sharing is checked in salesforce, we hide the formstack_url (which hides request info button on FE)
+        if ret['lead_sharing']:
+            ret['formstack_url'] = False
+
         # Here we filter the null values and creates a new dictionary
         # We use OrderedDict like in original method
         ret = OrderedDict(filter(lambda x: x[1] is not False, ret.items()))
