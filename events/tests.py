@@ -17,6 +17,10 @@ class EventBriteTest(APITestCase, TestCase):
         response = self.client.post('/apps/cms/api/events/check?email=not_registered@openstax.org', follow=True)
         self.assertContains(response, '"eventbrite_registered": false')
 
+    def test_email_is_case_insensitive(self):
+        response = self.client.post('/apps/cms/api/events/check?email=mwharrison@RICE.edu', follow=True)
+        self.assertContains(response, '"eventbrite_registered": true')
+
 
 class SessionTest(APITestCase, TestCase):
     client = APIClient()
