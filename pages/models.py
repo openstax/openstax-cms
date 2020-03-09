@@ -2838,7 +2838,7 @@ class PartnersPage(Page):
 
     @staticmethod
     def field_name_mapping():
-        field_mappings = PartnerFieldNameMapping.objects.all()
+        field_mappings = PartnerFieldNameMapping.objects.filter(hidden=False)
         mapping_dict = {}
 
         for field in field_mappings:
