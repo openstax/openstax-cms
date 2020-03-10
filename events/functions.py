@@ -16,6 +16,6 @@ def check_eventbrite_registration(email):
         attendees = eventbrite.get_event_attendees(event_id=event_id, page=page)
 
         for attendee in attendees['attendees']:
-            attendee_emails.append(attendee['profile']['email'])
+            attendee_emails.append(attendee['profile']['email'].lower())
 
-    return email in attendee_emails
+    return email.lower() in attendee_emails
