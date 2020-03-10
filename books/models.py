@@ -92,6 +92,7 @@ class FacultyResources(models.Model):
 
     link_text = models.CharField(max_length=255, help_text="Call to Action Text")
     coming_soon_text = models.CharField(max_length=255, null=True, blank=True, help_text="If there is text in this field a coming soon banner will be added with this description.")
+    updated = models.DateTimeField(blank=True, null=True, help_text='Late date resource was updated')
 
     api_fields = [
         APIField('resource_heading'),
@@ -103,7 +104,8 @@ class FacultyResources(models.Model):
         APIField('link_document_url'),
         APIField('link_document_title'),
         APIField('link_text'),
-        APIField('coming_soon_text')
+        APIField('coming_soon_text'),
+        APIField('updated')
     ]
 
     panels = [
@@ -113,6 +115,7 @@ class FacultyResources(models.Model):
         DocumentChooserPanel('link_document'),
         FieldPanel('link_text'),
         FieldPanel('coming_soon_text'),
+        FieldPanel('updated'),
     ]
 
 
@@ -165,6 +168,7 @@ class StudentResources(models.Model):
 
     link_text = models.CharField(max_length=255, help_text="Call to Action Text")
     coming_soon_text = models.CharField(max_length=255, null=True, blank=True, help_text="If there is text in this field a coming soon banner will be added with this description.")
+    updated = models.DateTimeField(blank=True, null=True, help_text='Late date resource was updated')
 
     api_fields = [
         APIField('resource_heading'),
@@ -176,6 +180,7 @@ class StudentResources(models.Model):
         APIField('link_document_title'),
         APIField('link_text'),
         APIField('coming_soon_text'),
+        APIField('updated')
     ]
 
     panels = [
@@ -185,6 +190,7 @@ class StudentResources(models.Model):
         DocumentChooserPanel('link_document'),
         FieldPanel('link_text'),
         FieldPanel('coming_soon_text'),
+        FieldPanel('updated'),
     ]
 
 
