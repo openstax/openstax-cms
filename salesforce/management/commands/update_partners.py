@@ -26,6 +26,7 @@ class Command(BaseCommand):
                     "Rich_Description__c, " \
                     "short_partner_description__c, " \
                     "Website, " \
+                    "Lead_Sharing__c, " \
                     "Verified_by_instructors__c, " \
                     "Integrated_with_OpenStax_content__c, " \
                     "Landing_page__c, " \
@@ -121,8 +122,9 @@ class Command(BaseCommand):
                                   'partner_description': partner['Description'],
                                   'short_partner_description': partner['short_partner_description__c'],
                                   'partner_website': partner['Website'],
+                                  'lead_sharing': self.str2bool(partner['Lead_Sharing__c']),
                                   'landing_page': partner['Landing_page__c'],
-                                  'verified_by_instructor': partner['Verified_by_instructors__c'],
+                                  'verified_by_instructor': self.str2bool(partner['Verified_by_instructors__c']),
                                   'integrated': partner['Integrated_with_OpenStax_content__c'],
                                   'affordability_cost': partner['Affordability_cost__c'],
                                   'affordability_institutional': self.str2bool(partner['Affordability_Institutional__c']),

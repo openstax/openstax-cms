@@ -19,7 +19,7 @@ from wagtail.api import APIField
 from books.models import Book
 from api.serializers import ImageSerializer
 
-from salesforce.models import PartnerTypeMapping, PartnerFieldNameMapping, PartnerCategoryMapping
+from salesforce.models import PartnerTypeMapping, PartnerFieldNameMapping, PartnerCategoryMapping, Partner
 
 
 ### Custom Block Definitions ###
@@ -568,6 +568,7 @@ class HomePage(Page):
         'pages.CreatorFestPage',
         'pages.PartnersPage',
         'pages.WebinarPage',
+        'pages.MathQuizPage',
         'books.BookIndex',
         'news.NewsIndex',
         'news.PressIndex'
@@ -2820,7 +2821,7 @@ class PartnersPage(Page):
 
     @staticmethod
     def field_name_mapping():
-        field_mappings = PartnerFieldNameMapping.objects.all()
+        field_mappings = PartnerFieldNameMapping.objects.filter(hidden=False)
         mapping_dict = {}
 
         for field in field_mappings:
@@ -2829,23 +2830,8 @@ class PartnersPage(Page):
         return mapping_dict
 
     @staticmethod
-    def type_mapping():
-        field_mappings = PartnerTypeMapping.objects.all()
-        mapping_dict = {}
-
-        for field in field_mappings:
-            mapping_dict[field.display_name] = field.salesforce_name
-
-        ## TODO: This scary bit of code allows us to take our time to populate this on production - remove at next release!
-        if len(mapping_dict) > 3:
-            return mapping_dict
-        else:
-            return {
-                'Content customization': 'Content customization',
-                'Online homework': 'Online homework',
-                'Clicker / classroom': 'Clicker/classroom engagement',
-                'Adaptive courseware': 'Adaptive Courseware'
-            }
+    def partner_type_choices():
+        return [x.display_name for x in PartnerTypeMapping.objects.all()]
 
     content_panels = [
         FieldPanel('title', classname='full title', help_text="Internal name for page."),
@@ -2863,7 +2849,7 @@ class PartnersPage(Page):
         APIField('partner_request_info_link'),
         APIField('category_mapping'),
         APIField('field_name_mapping'),
-        APIField('type_mapping'),
+        APIField('partner_type_choices'),
         APIField('slug'),
         APIField('seo_title'),
         APIField('search_description'),
@@ -2894,6 +2880,65 @@ class WebinarPage(Page):
         APIField('heading'),
         APIField('description'),
         APIField('hero_image'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+    ]
+
+    parent_page_type = ['pages.HomePage']
+
+
+class PartnerChooserBlock(blocks.ChooserBlock):
+    target_model = Partner
+    widget = forms.Select
+
+    # Return the key value for the select field
+    def value_for_form(self, value):
+        if isinstance(value, self.target_model):
+            return value.pk
+        else:
+            return value
+
+    def get_api_representation(self, value, context=None):
+        if value.partner_logo:
+            return {
+                'id': value.id,
+                'name': value.partner_name,
+                'logo': value.partner_logo.url
+            }
+        else:
+            return {
+                'id': value.id,
+                'name': value.partner_name,
+                'logo': None
+            }
+
+class MathQuizPage(Page):
+    heading = models.CharField(max_length=255)
+    description = models.TextField()
+    results = StreamField([
+        ('result', blocks.ListBlock(blocks.StructBlock([
+            ('image', ImageBlock()),
+            ('headline', blocks.CharBlock()),
+            ('description', blocks.TextBlock()),
+            ('partners', blocks.ListBlock(blocks.StructBlock([
+                ('partner', PartnerChooserBlock()),
+             ]))),
+        ])))
+    ])
+
+    content_panels = [
+        FieldPanel('title', classname='full title', help_text="Internal name for page."),
+        FieldPanel('heading'),
+        FieldPanel('description'),
+        StreamFieldPanel('results')
+    ]
+
+    api_fields = [
+        APIField('title'),
+        APIField('heading'),
+        APIField('description'),
+        APIField('results'),
         APIField('slug'),
         APIField('seo_title'),
         APIField('search_description'),

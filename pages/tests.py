@@ -35,7 +35,8 @@ from pages.models import (HomePage,
                           InstitutionalPartnerProgramPage,
                           CreatorFestPage,
                           PartnersPage,
-                          WebinarPage)
+                          WebinarPage,
+                          MathQuizPage)
 from news.models import NewsIndex, PressIndex
 from books.models import BookIndex
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
@@ -98,7 +99,8 @@ class HomePageTests(WagtailPageTests):
             InstitutionalPartnerProgramPage,
             CreatorFestPage,
             PartnersPage,
-            WebinarPage
+            WebinarPage,
+            MathQuizPage
         })
 
 class PageTests(WagtailPageTests):

@@ -37,7 +37,7 @@ class SalesforceSettingsAdmin(admin.ModelAdmin):
             return True
 
 class PartnerAdmin(admin.ModelAdmin):
-    list_display = ['partner_logo_tag', 'salesforce_id', 'partner_name', 'partner_type', 'visible_on_website']
+    list_display = ['partner_logo_tag', 'salesforce_id', 'partner_name', 'partner_type', 'visible_on_website', 'lead_sharing']
     list_display_links = ('partner_name', )
     list_filter = ('visible_on_website', 'partner_type')
     search_fields = ('partner_name', 'salesforce_id')
@@ -50,6 +50,7 @@ class PartnerAdmin(admin.ModelAdmin):
     'partner_website',
     'short_partner_description',
     'books',
+    'lead_sharing',
     'landing_page',
     'verified_by_instructor',
     'integrated',
@@ -141,7 +142,7 @@ class PartnerFieldNameMappingAdmin(admin.ModelAdmin):
 
 
 class PartnerTypeMappingAdmin(admin.ModelAdmin):
-    list_display = ('display_name', 'salesforce_name')
+    list_display = ('display_name',)
 
 admin.site.register(SalesforceSettings, SalesforceSettingsAdmin)
 admin.site.register(School, SchoolAdmin)
