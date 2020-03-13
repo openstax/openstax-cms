@@ -31,6 +31,9 @@ class PartnerTest(APITestCase, TestCase):
 
     def setUp(self):
         call_command('update_partners')
+        for partner in Partner.objects.all():
+            partner.visible_on_website = True
+            partner.save()
 
     def test_did_update_partners(self):
         self.assertGreater(Partner.objects.all().count(), 0)
