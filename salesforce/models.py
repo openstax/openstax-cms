@@ -101,7 +101,7 @@ class Partner(models.Model):
     video_1 = models.FileField(upload_to='partner_videos/', null=True, blank=True)
     video_2 = models.FileField(upload_to='partner_videos/', null=True, blank=True)
     partner_list_label = models.CharField(max_length=255, null=True, blank=True)
-    visible_on_website = models.BooleanField(default=True)
+    visible_on_website = models.BooleanField(default=False)
     lead_sharing = models.BooleanField(default=False)
     partner_type = models.CharField(max_length=255, blank=True, null=True)
     rich_description = models.TextField(blank=True, null=True)
