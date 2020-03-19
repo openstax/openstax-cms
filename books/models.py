@@ -92,6 +92,7 @@ class FacultyResources(models.Model):
 
     link_text = models.CharField(max_length=255, help_text="Call to Action Text")
     coming_soon_text = models.CharField(max_length=255, null=True, blank=True, help_text="If there is text in this field a coming soon banner will be added with this description.")
+    updated = models.DateTimeField(blank=True, null=True, help_text='Late date resource was updated')
 
     api_fields = [
         APIField('resource_heading'),
@@ -103,7 +104,8 @@ class FacultyResources(models.Model):
         APIField('link_document_url'),
         APIField('link_document_title'),
         APIField('link_text'),
-        APIField('coming_soon_text')
+        APIField('coming_soon_text'),
+        APIField('updated')
     ]
 
     panels = [
@@ -113,6 +115,7 @@ class FacultyResources(models.Model):
         DocumentChooserPanel('link_document'),
         FieldPanel('link_text'),
         FieldPanel('coming_soon_text'),
+        FieldPanel('updated'),
     ]
 
 
@@ -165,6 +168,7 @@ class StudentResources(models.Model):
 
     link_text = models.CharField(max_length=255, help_text="Call to Action Text")
     coming_soon_text = models.CharField(max_length=255, null=True, blank=True, help_text="If there is text in this field a coming soon banner will be added with this description.")
+    updated = models.DateTimeField(blank=True, null=True, help_text='Late date resource was updated')
 
     api_fields = [
         APIField('resource_heading'),
@@ -176,6 +180,7 @@ class StudentResources(models.Model):
         APIField('link_document_title'),
         APIField('link_text'),
         APIField('coming_soon_text'),
+        APIField('updated')
     ]
 
     panels = [
@@ -185,6 +190,7 @@ class StudentResources(models.Model):
         DocumentChooserPanel('link_document'),
         FieldPanel('link_text'),
         FieldPanel('coming_soon_text'),
+        FieldPanel('updated'),
     ]
 
 
@@ -361,7 +367,7 @@ class Book(Page):
         blank=True, null=True)
     salesforce_abbreviation = models.CharField(max_length=255, blank=True, null=True)
     salesforce_name = models.CharField(max_length=255, blank=True, null=True)
-    updated = models.DateTimeField(auto_now=True)
+    updated = models.DateTimeField(blank=True, null=True, help_text='Late date web content was updated')
     is_ap = models.BooleanField(default=False, help_text='Whether this book is an AP (Advanced Placement) book.')
     description = RichTextField(
         blank=True, help_text="Description shown on Book Detail page.")
@@ -527,13 +533,13 @@ class Book(Page):
     )
 
     last_updated_pdf = models.DateTimeField(blank=True, null=True, help_text="Last time PDF was revised.", verbose_name='PDF Content Revision Date')
-    last_updated_web = models.DateTimeField(blank=True, null=True, help_text="Last time webview is updated. This field is automatically managed by CMS.")
 
     book_detail_panel = Page.content_panels + [
         FieldPanel('book_state'),
         FieldPanel('cnx_id'),
         FieldPanel('salesforce_abbreviation'),
         FieldPanel('salesforce_name'),
+        FieldPanel('updated'),
         FieldPanel('publish_date'),
         InlinePanel('book_subjects', label='Subjects'),
         FieldPanel('is_ap'),
@@ -682,7 +688,6 @@ class Book(Page):
         APIField('search_description'),
         APIField('promote_image'),
         APIField('last_updated_pdf'),
-        APIField('last_updated_web'),
     ]
 
     template = 'page.html'
@@ -821,7 +826,6 @@ class BookIndex(Page):
                     'salesforce_name': book.salesforce_name,
                     'urls': book.book_urls(),
                     'last_updated_pdf': book.last_updated_pdf,
-                    'last_updated_web': book.last_updated_web,
                 })
             except Exception as e:
                 print("Error: {}".format(e))

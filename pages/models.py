@@ -2817,24 +2817,7 @@ class PartnersPage(Page):
         for field in field_mappings:
             mapping_dict[field.display_name] = field.salesforce_name
 
-        ## TODO: This scary bit of code allows us to take our time to populate this on production - remove at next release!
-        if len(mapping_dict) > 11:
-            return mapping_dict
-        else:
-            return {
-                'Type': 'partner_type',
-                'Integrated with OpenStax': 'integrated',
-                'Verified by instructors': 'verified_',
-                'Cost': 'affordability_',
-                'App Available': 'app_',
-                'Book': 'books',
-                'Adaptivity': 'adaptivity_',
-                'Assignment Management': 'assignment_',
-                'Feedback to students and instructors': 'feedback_',
-                'Grading': 'grading_',
-                'Interactivity': 'interactivity_',
-                'LMS integration': 'LMS_',
-            }
+        return mapping_dict
 
     @staticmethod
     def field_name_mapping():
@@ -2844,51 +2827,7 @@ class PartnersPage(Page):
         for field in field_mappings:
             mapping_dict[field.display_name] = field.salesforce_name
 
-        ## TODO: This scary bit of code allows us to take our time to populate this on production - remove at next release!
-        if len(mapping_dict) > 39:
-            return mapping_dict
-        else:
-            return {
-             'Name': 'partner_name',
-             'Type': 'partner_type',
-             'Books': 'books',
-             'Description': 'partner_description',
-             'Short Description': 'short_partner_description',
-             'landing_page': "Landing Page",
-             "Verified by Instructor": 'verified_by_instructor',
-             "Integrated": 'integrated',
-             "Cost per semester": 'affordability_cost',
-             "Institutional pricing available": 'affordability_institutional',
-             "App Available": 'app_available',
-             'Adaptive presentation of content based on learner goals': 'adaptivity_adaptive_presentation',
-             'Ability to offer variation in level of content and/or depth of coverage': 'adaptivity_breadth_and_depth',
-             'Customized learning paths based on student input': 'adaptivity_customized_path',
-             'Ability for instructor to control adaptivity and personalization': 'adaptivity_instructor_control',
-             'System generates multiple versions of quantitative questions': 'adaptivity_quantitative_randomization',
-             'Ability for students to upload outside resources': 'assigment_outside_resources',
-             'Ability to edit assignments': 'assignment_editing',
-             'Ability to include multimedia content in assignments or assessments': 'assignment_multimedia',
-             'Offers pre-tests that give students feedback': 'assignment_pretest',
-             'Ability to construct scientific structures (e.g., molecular drawing tools)': 'assignment_scientific_structures',
-             'Ability to generate, administer, and proctor summative assessments': 'assignment_summative_assessments',
-             'Early warning system for instructors identifying students with performance issues': 'feedback_early_warning',
-             'Students receive feedback on knowledge gaps': 'feedback_knowledge_gaps',
-             'Feedback Learner Progress Tasks': 'feedback_learner_progress_tasks',
-             'Multiple-step feedback for students': 'feedback_multipart',
-             'Ability to measure student\'s level of understanding': 'feedback_understanding',
-             'Ability to change or add scores in gradebook': 'grading_change_scores',
-             'Analytics on both class-level and student-level competencies': 'grading_class_and_student_level',
-             'Ability for students to work and be graded as a group': 'grading_group_work',
-             'Grading Learning Portfolio': 'grading_learning_portfolio',
-             'Ability to add scores using standards- or rubric-based grading': 'grading_rubric_based',
-             'Ability to adjust grading tolerances; e.g., significant figure adjustments': 'grading_tolerances_sig_fig',
-             'Ability for students to annotate content': 'interactivity_annotate',
-             'Built-in assessments that prompt students to apply knowledge from previous assignments': 'interactivity_previous_knowledge',
-             'Simulations that allow students to predict outcomes and analyze data': 'interactivity_simulations',
-             'Gives analytics back to my LMS': 'LMS_analytics',
-             'Sends grade information to my LMS': 'LMS_sends_grades',
-             'Single sign-on (Lets students log in with their college account information)': 'LMS_SSO',
-             'Accessibility WCAG': 'accessibility_WCAG'}
+        return mapping_dict
 
     @staticmethod
     def partner_type_choices():
