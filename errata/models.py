@@ -253,7 +253,7 @@ class Errata(models.Model):
         if self.status == "Completed" and self.resolution != "Will Not Fix":
             self.corrected_date = timezone.now()
 
-            Book.objects.filter(pk=self.book.pk).update(last_updated_web=now())
+            Book.objects.filter(pk=self.book.pk).update(updated=now())
 
         # prefill resolution notes based on certain status and resolutions
         if self.resolution == "Duplicate" and not self.resolution_notes:
