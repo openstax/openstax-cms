@@ -104,3 +104,4 @@ class MapboxTest(TestCase):
         setting = self.create_mapbox_setting()
         self.assertTrue(isinstance(setting, MapBoxDataset))
         self.assertEqual(setting.__str__(), setting.name)
+        
