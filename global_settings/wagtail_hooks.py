@@ -36,20 +36,23 @@ def register_strikethrough_feature(features):
 
 @hooks.register('after_edit_page')
 def purge_cloudfront_caches(page, request):
-    distribution = CloudfrontDistribution.objects.all()[0]
-    client = boto3.client('cloudfront')
-    response = client.create_invalidation(
-        DistributionId=distribution.distribution_id,
-        InvalidationBatch={
-            'Paths': {
-                'Quantity': 1,
-                'Items': [
-                    'apps/cms/api/*'
-                ],
-            },
-            'CallerReference': str(time()).replace(".", "")
-        }
-    )
+    try:
+        distribution = CloudfrontDistribution.objects.all()[0]
+        client = boto3.client('cloudfront')
+        response = client.create_invalidation(
+            DistributionId=distribution.distribution_id,
+            InvalidationBatch={
+                'Paths': {
+                    'Quantity': 1,
+                    'Items': [
+                        '/apps/cms/api/*'
+                    ],
+                },
+                'CallerReference': str(time()).replace(".", "")
+            }
+        )
+    except CloudfrontDistribution.DoesNotExist:
+        return
 
 @hooks.register('register_settings_menu_item')
 def register_500_menu_item():
