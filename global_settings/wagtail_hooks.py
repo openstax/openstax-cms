@@ -45,7 +45,7 @@ def purge_cloudfront_caches(page, request):
                 'Paths': {
                     'Quantity': 1,
                     'Items': [
-                        '/apps/cms/api/*'
+                        '/apps/cms/api/*' # invalidate the entire cache for the website
                     ],
                 },
                 'CallerReference': str(time()).replace(".", "")
