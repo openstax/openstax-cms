@@ -1,10 +1,11 @@
 import boto
-import time
+from time import time
 import wagtail.admin.rich_text.editors.draftail.features as draftail_features
 from wagtail.admin.rich_text.converters.html_to_contentstate import InlineStyleElementHandler
 from wagtail.core import hooks
 from django.urls import reverse
 from wagtail.admin.menu import MenuItem
+from botocore.exceptions import NoCredentialsError
 
 from .models import CloudfrontDistribution
 
@@ -54,6 +55,8 @@ def purge_cloudfront_caches(page, request):
         )
     except CloudfrontDistribution.DoesNotExist:
         return
+    except NoCredentialsError:
+        print('No AWS credentials set - unable to invalidate cache')
 
 @hooks.register('register_settings_menu_item')
 def register_500_menu_item():
