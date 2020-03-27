@@ -38,10 +38,21 @@ def register_strikethrough_feature(features):
 def purge_cloudfront_caches(page, request):
     try:
         distribution = CloudfrontDistribution.objects.all()[0]
-        cf = boto.connect_cloudfront()
-        cf.create_invalidation_request(distribution.distribution_id, [])
-    except: #TODO: This is a broad exception - but we are having issues with the cache. Will tighten down once we start using it.
-        pass
+        client = boto3.client('cloudfront')
+        response = client.create_invalidation(
+            DistributionId=distribution.distribution_id,
+            InvalidationBatch={
+                'Paths': {
+                    'Quantity': 1,
+                    'Items': [
+                        '/apps/cms/api/*' # invalidate the entire cache for the website
+                    ],
+                },
+                'CallerReference': str(time()).replace(".", "")
+            }
+        )
+    except CloudfrontDistribution.DoesNotExist:
+        return
 
 @hooks.register('register_settings_menu_item')
 def register_500_menu_item():
