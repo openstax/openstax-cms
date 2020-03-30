@@ -169,6 +169,7 @@ class Errata(models.Model):
     archived = models.BooleanField(default=False)
     junk = models.BooleanField(default=False, help_text='Flagging the erratum as junk will automatically flag it for archive as well.')
     location = models.TextField(blank=True, null=True)
+    additional_location_information = models.TextField(blank=True, null=True)
     detail = models.TextField()
     resolution_notes = models.TextField(blank=True, null=True, help_text='Leaving the resolution notes blank will allow the field to auto-fill with the appropriate text based on status/resolution selections.')
     resolution_date = models.DateField(blank=True, null=True)

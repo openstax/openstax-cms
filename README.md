@@ -12,7 +12,7 @@ Dependencies
 ```bash
 brew install postgresql
 ```
-* [Python](https://www.python.org/) (≥ 3.6)
+* [Python](https://www.python.org/) (≥ 3.4)
 * [PIP](https://github.com/pypa/pip) (≥ 8.0.0)
 ```bash
 brew install python3
@@ -20,7 +20,7 @@ brew install python3
 
 Installation
 =======================
-Verify you have Python ≥ 3.6 installed:  
+Verify you have Python ≥ 3.4 installed:  
 ```bash
 python --version
 python3 --version

@@ -28,7 +28,7 @@ class Footer(BaseSetting):
 
 @register_setting(icon='cogs')
 class CloudfrontDistribution(BaseSetting):
-    distribution_id = models.CharField(max_length=255)
+    distribution_id = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
         verbose_name = 'CloudFront Distribution'
