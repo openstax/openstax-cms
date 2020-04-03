@@ -254,7 +254,7 @@ class Errata(models.Model):
             self.reviewed_date = timezone.now()
         if self.status == "Completed" and self.resolution != "Will Not Fix":
             self.corrected_date = timezone.now()
-
+            # book updated field is being used front-end to show google the content is being maintained
             Book.objects.filter(pk=self.book.pk).update(updated=now())
 
         # prefill resolution notes based on certain status and resolutions
