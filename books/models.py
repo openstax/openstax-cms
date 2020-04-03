@@ -93,6 +93,7 @@ class FacultyResources(models.Model):
     link_text = models.CharField(max_length=255, help_text="Call to Action Text")
     coming_soon_text = models.CharField(max_length=255, null=True, blank=True, help_text="If there is text in this field a coming soon banner will be added with this description.")
     updated = models.DateTimeField(blank=True, null=True, help_text='Late date resource was updated')
+    featured = models.BooleanField(default=False, help_text="Add to featured bar on resource page")
 
     api_fields = [
         APIField('resource_heading'),
@@ -105,7 +106,8 @@ class FacultyResources(models.Model):
         APIField('link_document_title'),
         APIField('link_text'),
         APIField('coming_soon_text'),
-        APIField('updated')
+        APIField('updated'),
+        APIField('featured')
     ]
 
     panels = [
@@ -116,6 +118,7 @@ class FacultyResources(models.Model):
         FieldPanel('link_text'),
         FieldPanel('coming_soon_text'),
         FieldPanel('updated'),
+        FieldPanel('featured')
     ]
 
 
@@ -515,6 +518,7 @@ class Book(Page):
     tutor_marketing_book = models.BooleanField(default=False, help_text='Whether this is a Tutor marketing book.')
     partner_list_label = models.CharField(max_length=255, null=True, blank=True, help_text="Controls the heading text on the book detail page for partners. This will update ALL books to use this value!")
     partner_page_link_text = models.CharField(max_length=255, null=True, blank=True, help_text="Link to partners page on top right of list.")
+    featured_resources_header = models.CharField(max_length=255, null=True, blank=True, help_text="Featured resource header on instructor resources tab.")
 
     videos = StreamField([
         ('video', blocks.ListBlock(blocks.StructBlock([
@@ -596,6 +600,7 @@ class Book(Page):
         StreamFieldPanel('videos')
     ]
     instructor_resources_panel = [
+        FieldPanel('featured_resources_header'),
         InlinePanel('book_faculty_resources', label="Instructor Resources"),
     ]
     student_resources_panel = [
@@ -688,6 +693,7 @@ class Book(Page):
         APIField('search_description'),
         APIField('promote_image'),
         APIField('last_updated_pdf'),
+        APIField('featured_resources_header')
     ]
 
     template = 'page.html'
