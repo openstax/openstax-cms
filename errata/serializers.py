@@ -19,6 +19,7 @@ class ErrataSerializer(serializers.ModelSerializer):
                   'archived',
                   'is_assessment_errata',
                   'location',
+                  'additional_location_information',
                   'detail',
                   'short_detail',
                   'resolution_date',

@@ -169,6 +169,7 @@ class Errata(models.Model):
     archived = models.BooleanField(default=False)
     junk = models.BooleanField(default=False, help_text='Flagging the erratum as junk will automatically flag it for archive as well.')
     location = models.TextField(blank=True, null=True)
+    additional_location_information = models.TextField(blank=True, null=True)
     detail = models.TextField()
     resolution_notes = models.TextField(blank=True, null=True, help_text='Leaving the resolution notes blank will allow the field to auto-fill with the appropriate text based on status/resolution selections.')
     resolution_date = models.DateField(blank=True, null=True)
@@ -253,7 +254,7 @@ class Errata(models.Model):
         if self.status == "Completed" and self.resolution != "Will Not Fix":
             self.corrected_date = timezone.now()
 
-            Book.objects.filter(pk=self.book.pk).update(last_updated_web=now())
+            Book.objects.filter(pk=self.book.pk).update(updated=now())
 
         # prefill resolution notes based on certain status and resolutions
         if self.resolution == "Duplicate" and not self.resolution_notes:
