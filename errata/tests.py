@@ -36,13 +36,13 @@ class ErrataTest(TestCase):
 
     def test_can_create_errata(self):
         EmailText.objects.create(
-            email_case = 'Created in fall',
+            email_case = 'Created in Fall',
             email_subject_text = "test",
             email_body_text = "test",
             notes = "test",
         )
         EmailText.objects.create(
-            email_case = 'Created in spring',
+            email_case = 'Created in Spring',
             email_subject_text = "test",
             email_body_text = "test",
             notes = "test",

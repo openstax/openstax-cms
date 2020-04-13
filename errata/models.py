@@ -92,14 +92,15 @@ BLOCK_TYPES = (
 )
 
 EMAIL_CASES = (
-    ('Created in fall', 'Created in fall'),
-    ('Created in spring', 'Created in spring'),
+    ('Created in Fall', 'Created in Fall'),
+    ('Created in Spring', 'Created in Spring'),
     ('Reviewed and (will not fix, or duplicate, or not an error, or major book revision)', 'Reviewed and (will not fix, or duplicate, or not an error, or major book revision)'),
     ('Reviewed and Approved', 'Reviewed and Approved'),
     ('Completed and Sent to Customer Support', 'Completed and Sent to Customer Support'),
     ('More Information Requested', 'More Information Requested'),
-    ('Getting new edition', 'Getting new edition'),
-    ('Partner product', 'Partner product'),
+    ('Getting New Edition', 'Getting New Edition'),
+    ('Partner Product', 'Partner Product'),
+    ('Generic Completed Response', 'Generic Completed Response'),
 )
 
 def is_user_blocked(account_id):
@@ -253,7 +254,7 @@ class Errata(models.Model):
             self.reviewed_date = timezone.now()
         if self.status == "Completed" and self.resolution != "Will Not Fix":
             self.corrected_date = timezone.now()
-
+            # book updated field is being used front-end to show google the content is being maintained
             Book.objects.filter(pk=self.book.pk).update(updated=now())
 
         # prefill resolution notes based on certain status and resolutions
@@ -271,8 +272,10 @@ class Errata(models.Model):
             self.resolution_notes = "Thank you for this feedback. Your report has been escalated to our Support team. A member of the Support team will contact you with further details."
         if self.resolution == 'Technical Error' and not self.resolution_notes:
             self.resolution_notes = 'This a technical error and the proper departments have been notified so that it can be fixed. Thank you for your submission.'
-        if self.resolution == 'More Information Requested':
+        if self.resolution == 'More Information Requested' and not self.resolution_notes:
             self.resolution_notes = 'Thank you for the feedback. Unfortunately, our reviewers were unable to locate this error. Please submit a new report with additional information, such as a link to the relevant content, or a screenshot.'
+        if self.resolution == 'Partner Product' and not self.resolution_notes:
+            self.resolution_notes = 'This issue is occurring on a platform that is not managed by OpenStax. We will make our best efforts to get this resolved; however, we suggest reporting this issue within the platform you are using.'
 
         # set to archived if user is shadow banned
         if(is_user_shadow_blocked(self.submitted_by_account_id)):
@@ -322,18 +325,18 @@ def send_status_update_email(sender, instance, created, **kwargs):
 
         if created:
             if instance.book.title == "Introduction to Sociology 2e" or instance.book.title == "American Government 2e":
-                email_text = EmailText.objects.get(email_case='Getting new edition')
+                email_text = EmailText.objects.get(email_case='Getting New Edition')
                 subject = email_text.email_subject_text
                 body = email_text.email_body_text
                 send_email = True
             else:
                 if instance.created.month in (11, 12, 1, 2):
-                    email_text = EmailText.objects.get(email_case='Created in fall')
+                    email_text = EmailText.objects.get(email_case='Created in Fall')
                     subject = email_text.email_subject_text
                     body = email_text.email_body_text
                     send_email = True
                 else:
-                    email_text = EmailText.objects.get(email_case='Created in spring')
+                    email_text = EmailText.objects.get(email_case='Created in Spring')
                     subject = email_text.email_subject_text
                     body = email_text.email_body_text
                     send_email = True
@@ -354,13 +357,23 @@ def send_status_update_email(sender, instance, created, **kwargs):
             send_email = True
             override_to = True
             to = "support@openstax.org"
-        elif instance.status == 'Completed' and instance.resolution == 'Partner product':
-            email_text = EmailText.objects.get(email_case='Partner product')
+        elif instance.status == 'Completed' and instance.resolution == 'Partner Product':
+            email_text = EmailText.objects.get(email_case='Partner Product')
+            subject = email_text.email_subject_text
+            body = email_text.email_body_text
+            send_email = True
+        elif instance.status == 'Completed' and instance.resolution == 'Technical Error':
+            email_text = EmailText.objects.get(email_case='Technical Error')
             subject = email_text.email_subject_text
             body = email_text.email_body_text
             send_email = True
         elif instance.resolution == 'More Information Requested':
             email_text = EmailText.objects.get(email_case='More Information Requested')
+            subject = email_text.email_subject_text
+            body = email_text.email_body_text
+            send_email = True
+        elif instance.status == 'Completed' and not send_email:
+            email_text = EmailText.objects.get(email_case='Generic Completed Response')
             subject = email_text.email_subject_text
             body = email_text.email_body_text
             send_email = True
@@ -380,7 +393,7 @@ def send_status_update_email(sender, instance, created, **kwargs):
             errata_email_info = {
                 'subject': subject,
                 'body': body,
-                'status': "In review",
+                'status': instance.status,
                 'resolution': instance.resolution,
                 'created': created,
                 'id': instance.id,
