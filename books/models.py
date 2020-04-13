@@ -357,8 +357,8 @@ RETIRED = 'retired'
 BOOK_STATES = (
     (LIVE, 'Live'),
     (COMING_SOON, 'Coming Soon'),
-    (DEPRECATED, 'Deprecated'),
-    (RETIRED, 'Retired')
+    (DEPRECATED, 'Deprecated (Disallow errata submissions)'),
+    (RETIRED, 'Retired (Remove from website)')
 )
 
 
