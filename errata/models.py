@@ -101,6 +101,7 @@ EMAIL_CASES = (
     ('Getting New Edition', 'Getting New Edition'),
     ('Partner Product', 'Partner Product'),
     ('Generic Completed Response', 'Generic Completed Response'),
+    ('Technical Error', 'Technical Error'),
 )
 
 def is_user_blocked(account_id):
