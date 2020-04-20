@@ -378,7 +378,6 @@ class Book(Page):
     cover = models.ForeignKey(
         'wagtaildocs.Document',
         null=True,
-        blank=True,
         on_delete=models.SET_NULL,
         related_name='+',
         help_text='The book cover to be shown on the website.'
@@ -390,7 +389,6 @@ class Book(Page):
     title_image = models.ForeignKey(
         'wagtaildocs.Document',
         null=True,
-        blank=True,
         on_delete=models.SET_NULL,
         related_name='+',
         help_text='The svg for title image to be shown on the website.'
@@ -402,10 +400,10 @@ class Book(Page):
     cover_color = models.CharField(max_length=255, choices=COVER_COLORS, default='blue', help_text='The color of the cover.')
     book_cover_text_color = models.CharField(max_length=255, choices=BOOK_COVER_TEXT_COLOR, default='yellow', help_text="Use by the Unified team - this will not change the text color on the book cover.")
     reverse_gradient = models.BooleanField(default=False)
-    publish_date = models.DateField(blank=True, null=True, help_text='Date the book is published on.')
+    publish_date = models.DateField(null=True, help_text='Date the book is published on.')
     authors = StreamField([
         ('author', AuthorBlock()),
-    ], blank=True, null=True)
+    ], null=True)
 
     print_isbn_10 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 10 for print version (hardcover).')
     print_isbn_13 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 13 for print version (hardcover).')

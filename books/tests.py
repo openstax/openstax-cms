@@ -3,9 +3,13 @@ from wagtail.core.models import Page
 from pages.models import HomePage
 from books.models import BookIndex, Book
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
+from django.core.files.uploadedfile import SimpleUploadedFile
+from wagtail.documents.models import Document
+import datetime
 
 
 class BookTests(WagtailPageTests):
+
     def setUp(self):
         pass
 
@@ -29,6 +33,9 @@ class BookTests(WagtailPageTests):
         # add book index to homepage
         homepage.add_child(instance=book_index)
 
+        test_image = SimpleUploadedFile(name='openstax.png', content=open("admin_templates/static/images/openstax.png", 'rb').read())
+        cls.test_doc = Document.objects.create(title='Test Doc', file=test_image)
+
         cls.book_index = Page.objects.get(id=book_index.id)
 
     def test_can_create_book(self):
@@ -39,6 +46,9 @@ class BookTests(WagtailPageTests):
                     salesforce_abbreviation='University Phys (Calc)',
                     salesforce_name='University Physics',
                     description="Test Book",
+                    cover=self.test_doc,
+                    title_image=self.test_doc,
+                    publish_date=datetime.date.today(),
                     )
         book_index.add_child(instance=book)
         self.assertEqual(book.salesforce_abbreviation, 'University Phys (Calc)')
@@ -50,7 +60,10 @@ class BookTests(WagtailPageTests):
                     salesforce_abbreviation='Prealgebra',
                     salesforce_name='Prealgebra',
                     description="This is Prealgebra. Next, you learn Algebra!",
-                    is_ap=True
+                    is_ap=True,
+                    cover=self.test_doc,
+                    title_image=self.test_doc,
+                    publish_date=datetime.date.today(),
                     )
         book_index.add_child(instance=book)
         self.assertEqual(book.salesforce_abbreviation, 'Prealgebra')
@@ -63,6 +76,9 @@ class BookTests(WagtailPageTests):
                     salesforce_abbreviation='Prealgebra',
                     salesforce_name='Prealgebra',
                     description="This is Prealgebra. Next, you learn Algebra!",
+                    cover=self.test_doc,
+                    title_image=self.test_doc,
+                    publish_date=datetime.date.today(),
                     )
         book_index.add_child(instance=book)
         self.assertEqual(book.salesforce_abbreviation, 'Prealgebra')
@@ -74,7 +90,10 @@ class BookTests(WagtailPageTests):
                     salesforce_abbreviation='Prealgebra',
                     salesforce_name='Prealgebra',
                     description="This is Prealgebra. Next, you learn Algebra!",
-                    coming_soon=True
+                    coming_soon=True,
+                    cover=self.test_doc,
+                    title_image=self.test_doc,
+                    publish_date=datetime.date.today(),
                     )
         book_index.add_child(instance=book)
         self.assertEqual(book.salesforce_abbreviation, 'Prealgebra')
@@ -85,7 +104,10 @@ class BookTests(WagtailPageTests):
                 slug="prealgebra",
                 salesforce_abbreviation='Prealgebra',
                 salesforce_name='Prealgebra',
-                description="This is Prealgebra. Next, you learn Algebra!"
+                description="This is Prealgebra. Next, you learn Algebra!",
+                cover=self.test_doc,
+                title_image=self.test_doc,
+                publish_date=datetime.date.today(),
                 )
         book_index.add_child(instance=book)
         self.assertEqual(book.salesforce_abbreviation, 'Prealgebra')
