@@ -1,13 +1,10 @@
-import boto3
-from time import time
 import wagtail.admin.rich_text.editors.draftail.features as draftail_features
 from wagtail.admin.rich_text.converters.html_to_contentstate import InlineStyleElementHandler
 from wagtail.core import hooks
 from django.urls import reverse
 from wagtail.admin.menu import MenuItem
-from botocore.exceptions import NoCredentialsError
 
-from .models import CloudfrontDistribution
+from .functions import invalidate_cloudfront_caches
 
 @hooks.register('register_rich_text_features')
 def register_strikethrough_feature(features):
@@ -37,26 +34,8 @@ def register_strikethrough_feature(features):
     features.register_converter_rule('contentstate', feature_name, db_conversion)
 
 @hooks.register('after_edit_page')
-def purge_cloudfront_caches(page, request):
-    try:
-        distribution = CloudfrontDistribution.objects.all()[0]
-        client = boto3.client('cloudfront')
-        response = client.create_invalidation(
-            DistributionId=distribution.distribution_id,
-            InvalidationBatch={
-                'Paths': {
-                    'Quantity': 1,
-                    'Items': [
-                        '/apps/cms/api/*' # invalidate the entire cache for the website
-                    ],
-                },
-                'CallerReference': str(time()).replace(".", "")
-            }
-        )
-    except CloudfrontDistribution.DoesNotExist:
-        return
-    except NoCredentialsError:
-        print('No AWS credentials set - unable to invalidate cache')
+def invalidate_cloudfront_cache_on_page_save(page, request):
+    invalidate_cloudfront_caches()
 
 @hooks.register('register_settings_menu_item')
 def register_500_menu_item():
