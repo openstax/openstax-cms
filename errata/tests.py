@@ -3,6 +3,9 @@ from django.test import TestCase
 from errata.models import Errata, EmailText
 from books.models import Book, BookIndex
 from pages.models import Page, HomePage
+from django.core.files.uploadedfile import SimpleUploadedFile
+from wagtail.documents.models import Document
+import datetime
 
 
 class ErrataTest(TestCase):
@@ -26,11 +29,16 @@ class ErrataTest(TestCase):
         # add book index to homepage
         homepage.add_child(instance=book_index)
         # create book (finally! needed for Errata reports)
+        test_image = SimpleUploadedFile(name='openstax.png', content=open("admin_templates/static/images/openstax.png", 'rb').read())
+        test_doc = Document.objects.create(title='Test Doc', file=test_image)
         book = Book(cnx_id='d50f6e32-0fda-46ef-a362-9bd36ca7c97d',
                             title='University Physics',
                             salesforce_abbreviation='University Phys (Calc)',
                             salesforce_name='University Physics',
                             description="Test Book",
+                            cover=test_doc,
+                            title_image=test_doc,
+                            publish_date=datetime.date.today(),
                             )
         book_index.add_child(instance=book)
 
