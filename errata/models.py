@@ -16,6 +16,7 @@ from wagtail.admin.menu import MenuItem
 from books.models import Book
 from django.conf import settings
 from oxauth.functions import get_user_info
+from global_settings.functions import invalidate_cloudfront_caches
 
 
 YES = 'Yes'
@@ -281,6 +282,9 @@ class Errata(models.Model):
         # set to archived if user is shadow banned
         if(is_user_shadow_blocked(self.submitted_by_account_id)):
             self.archived = True
+
+        # invalidate cloudfront cache so FE updates (remove when errata is no longer in CMS)
+        invalidate_cloudfront_caches()
 
         super(Errata, self).save(*args, **kwargs)
 
