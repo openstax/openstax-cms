@@ -64,7 +64,7 @@ class Command(BaseCommand):
                       "Testimonial_Position__c, " \
                       "Number_of_Adoptions__c FROM Account WHERE RecordTypeId = '012U0000000MdzNIAS' AND K_I_P__c = True"
             district_response = sf.query_all(district_query)
-            sf_districts = district_query['records']
+            sf_districts = district_response['records']
 
             updated_schools = 0
             created_schools = 0
