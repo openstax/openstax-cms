@@ -63,8 +63,8 @@ class Command(BaseCommand):
                       "Testimonial_Name__c, " \
                       "Testimonial_Position__c, " \
                       "Number_of_Adoptions__c FROM Account WHERE RecordTypeId = '012U0000000MdzNIAS' AND K_I_P__c = True"
-            district_response = sf.query_all(query)
-            sf_districts = response['records']
+            district_response = sf.query_all(district_query)
+            sf_districts = district_query['records']
 
             updated_schools = 0
             created_schools = 0
