@@ -129,7 +129,8 @@ class ErrataListTest(WagtailPageTests):
                             )
         root_page.add_child(instance=homepage)
         errata_list_page = ErrataList(title="Errata List Template",
-                                      correction_schedule="Some sample correction schedule text.")
+                                      correction_schedule="Some sample correction schedule text.",
+                                      alt_correction_schedule="Some alternate correction text.")
         homepage.add_child(instance=errata_list_page)
 
         retrieved_page = Page.objects.get(id=errata_list_page.id)
