@@ -37,7 +37,7 @@ class Command(BaseCommand):
             sf_schools = response['records']
 
             district_query = "SELECT Name, Id, Phone, " \
-                      "RecordTypeId" \
+                      "RecordTypeId, " \
                       "Website, " \
                       "Type, " \
                       "K_I_P__c, " \
@@ -51,7 +51,7 @@ class Command(BaseCommand):
                       "All_Time_Students2__c, " \
                       "Savings_Current_Year__c, " \
                       "All_Time_Savings2__c, " \
-                      "Adoptions_in_District__c" \
+                      "Adoptions_in_District__c, " \
                       "BillingStreet, " \
                       "BillingCity, " \
                       "BillingState, " \
