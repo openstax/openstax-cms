@@ -1824,6 +1824,7 @@ class Technology(Page):
 
 class ErrataList(Page):
     correction_schedule = RichTextField()
+    alt_correction_schedule = RichTextField(help_text="Alternative correction message for certain books, controlled via the book details pages.")
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -1834,6 +1835,7 @@ class ErrataList(Page):
 
     api_fields = [
         APIField('correction_schedule'),
+        APIField('alt_correction_schedule'),
         APIField('seo_title'),
         APIField('search_description'),
         APIField('promote_image')
@@ -1841,7 +1843,8 @@ class ErrataList(Page):
 
     content_panels = [
         FieldPanel('title', classname="full title"),
-        FieldPanel('correction_schedule')
+        FieldPanel('correction_schedule'),
+        FieldPanel('alt_correction_schedule')
     ]
 
     promote_panels = [

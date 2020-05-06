@@ -365,6 +365,7 @@ BOOK_STATES = (
 class Book(Page):
     created = models.DateTimeField(auto_now_add=True)
     book_state = models.CharField(max_length=255, choices=BOOK_STATES, default='live', help_text='The state of the book.')
+    use_alt_errata_schedule = models.BooleanField(default=False, help_text="Use the alt correction schedule, set on the errata page.")
     cnx_id = models.CharField(
         max_length=255, help_text="This is used to pull relevant information from CNX.",
         blank=True, null=True)
@@ -538,6 +539,7 @@ class Book(Page):
 
     book_detail_panel = Page.content_panels + [
         FieldPanel('book_state'),
+        FieldPanel('use_alt_errata_schedule'),
         FieldPanel('cnx_id'),
         FieldPanel('salesforce_abbreviation'),
         FieldPanel('salesforce_name'),
@@ -625,6 +627,7 @@ class Book(Page):
         APIField('slug'),
         APIField('title'),
         APIField('book_state'),
+        APIField('use_alt_errata_schedule'),
         APIField('cnx_id'),
         APIField('salesforce_abbreviation'),
         APIField('salesforce_name'),
