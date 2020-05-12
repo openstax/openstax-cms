@@ -1824,7 +1824,9 @@ class Technology(Page):
 
 class ErrataList(Page):
     correction_schedule = RichTextField()
-    alt_correction_schedule = RichTextField(help_text="Alternative correction message for certain books, controlled via the book details pages.")
+    deprecated_errata_message = RichTextField(help_text="Errata message for deprecated books, controlled via the book state field.")
+    new_edition_errata_message = RichTextField(help_text="Errata message for books with new editions, controlled via the book state field.")
+
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -1835,7 +1837,8 @@ class ErrataList(Page):
 
     api_fields = [
         APIField('correction_schedule'),
-        APIField('alt_correction_schedule'),
+        APIField('deprecated_errata_message'),
+        APIField('new_edition_errata_message'),
         APIField('seo_title'),
         APIField('search_description'),
         APIField('promote_image')
@@ -1844,7 +1847,8 @@ class ErrataList(Page):
     content_panels = [
         FieldPanel('title', classname="full title"),
         FieldPanel('correction_schedule'),
-        FieldPanel('alt_correction_schedule')
+        FieldPanel('deprecated_errata_message'),
+        FieldPanel('new_edition_errata_message')
     ]
 
     promote_panels = [
