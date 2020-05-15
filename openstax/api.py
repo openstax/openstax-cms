@@ -11,9 +11,9 @@ from wagtail.documents.api.v2.views import DocumentsAPIViewSet
 
 
 
-class OpenStaxPagesAPIEndpoint(PagesAPIEndpoint):
+class OpenstaxPagesAPIEndpoint(PagesAPIEndpoint):
     """
-    OpenStax custom Pages API endpoint that allows finding pages by pk or slug
+    OpenStax custom Pages API endpoint that allows finding pages and books by pk or slug
     """
 
     def detail_view(self, request, pk=None, slug=None):
@@ -50,6 +50,6 @@ api_router = WagtailAPIRouter('wagtailapi')
 # The first parameter is the name of the endpoint (eg. pages, images). This
 # is used in the URL of the endpoint
 # The second parameter is the endpoint class that handles the requests
-api_router.register_endpoint('pages', OpenStaxPagesAPIEndpoint)
+api_router.register_endpoint('pages', OpenstaxPagesAPIEndpoint)
 api_router.register_endpoint('images', ImagesAPIViewSet)
 api_router.register_endpoint('documents', DocumentsAPIViewSet)
