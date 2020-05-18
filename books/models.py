@@ -352,12 +352,14 @@ BOOK_COVER_TEXT_COLOR = (
 
 LIVE = 'live'
 COMING_SOON = 'coming_soon'
+NEW_EDITION_AVAILABLE = 'new_edition_available'
 DEPRECATED = 'deprecated'
 RETIRED = 'retired'
 BOOK_STATES = (
     (LIVE, 'Live'),
     (COMING_SOON, 'Coming Soon'),
-    (DEPRECATED, 'Deprecated (Disallow errata submissions)'),
+    (NEW_EDITION_AVAILABLE, 'New Edition Available (Show new edition correction schedule)'),
+    (DEPRECATED, 'Deprecated (Disallow errata submissions and show deprecated schedule)'),
     (RETIRED, 'Retired (Remove from website)')
 )
 
