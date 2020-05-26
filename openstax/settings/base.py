@@ -283,8 +283,7 @@ logging.config.dictConfig({
             'propagate': False,
         },
         'django.security.DisallowedHost': {
-            'level': 'ERROR',
-            'handlers': ['console'],
+            'handlers': ['null'],
             'propagate': False,
         },
         'django.request': {
