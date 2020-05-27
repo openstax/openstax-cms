@@ -263,6 +263,10 @@ logging.config.dictConfig({
         'django.server': DEFAULT_LOGGING['formatters']['django.server'],
     },
     'handlers': {
+        #disable logs set with null handler
+        'null': {
+            'class': 'logging.NullHandler',
+        },
         # console logs to stderr
         'console': {
             'class': 'logging.StreamHandler',
@@ -283,8 +287,7 @@ logging.config.dictConfig({
             'propagate': False,
         },
         'django.security.DisallowedHost': {
-            'level': 'ERROR',
-            'handlers': ['console'],
+            'handlers': ['null'],
             'propagate': False,
         },
         'django.request': {
@@ -336,14 +339,6 @@ STATIC_URL = STATIC_HOST + '/static/'
 AWS_HEADERS = {
     'Access-Control-Allow-Origin': '*'
 }
-
-
-import sentry_sdk
-from sentry_sdk.integrations.django import DjangoIntegration
-sentry_sdk.init(
-    dsn='https://2e1ecafc60684f86b59c654de3032d83:7fbc901dcca04dc4a8220f7cce20fdd9@sentry.cnx.org/11',
-    integrations=[DjangoIntegration()]
-)
 
 
 try:
