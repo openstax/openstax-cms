@@ -263,6 +263,10 @@ logging.config.dictConfig({
         'django.server': DEFAULT_LOGGING['formatters']['django.server'],
     },
     'handlers': {
+        #disable logs set with null handler
+        'null': {
+            'class': 'logging.NullHandler',
+        },
         # console logs to stderr
         'console': {
             'class': 'logging.StreamHandler',
