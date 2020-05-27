@@ -94,6 +94,7 @@ class FacultyResources(models.Model):
     coming_soon_text = models.CharField(max_length=255, null=True, blank=True, help_text="If there is text in this field a coming soon banner will be added with this description.")
     updated = models.DateTimeField(blank=True, null=True, help_text='Late date resource was updated')
     featured = models.BooleanField(default=False, help_text="Add to featured bar on resource page")
+    k12 = models.BooleanField(default=False, help_text="Add K12 banner to resource")
 
     api_fields = [
         APIField('resource_heading'),
@@ -107,7 +108,8 @@ class FacultyResources(models.Model):
         APIField('link_text'),
         APIField('coming_soon_text'),
         APIField('updated'),
-        APIField('featured')
+        APIField('featured'),
+        APIField('k12')
     ]
 
     panels = [
@@ -118,7 +120,8 @@ class FacultyResources(models.Model):
         FieldPanel('link_text'),
         FieldPanel('coming_soon_text'),
         FieldPanel('updated'),
-        FieldPanel('featured')
+        FieldPanel('featured'),
+        FieldPanel('k12')
     ]
 
 
