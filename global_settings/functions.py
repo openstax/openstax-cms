@@ -1,6 +1,6 @@
 import boto3
 from time import time
-from botocore.exceptions import NoCredentialsError
+from botocore.exceptions import NoCredentialsError, ClientError
 from .models import CloudfrontDistribution
 
 def invalidate_cloudfront_caches():
@@ -25,3 +25,5 @@ def invalidate_cloudfront_caches():
         return
     except NoCredentialsError:
         print('No AWS credentials set - unable to invalidate cache')
+    except ClientError as e:
+            print("Unexpected AWS error: %s" % e)
