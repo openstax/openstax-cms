@@ -4,6 +4,10 @@ from wagtail.core import hooks
 from django.urls import reverse
 from wagtail.admin.menu import MenuItem
 
+from django.core.signals import request_finished
+from django.db.models.signals import post_save
+from django.dispatch import receiver
+
 from .functions import invalidate_cloudfront_caches
 
 @hooks.register('register_rich_text_features')
@@ -33,11 +37,10 @@ def register_strikethrough_feature(features):
     features.default_features.append(feature_name)
     features.register_converter_rule('contentstate', feature_name, db_conversion)
 
-@hooks.register('after_edit_page')
-def invalidate_cloudfront_cache_on_page_save(page, request):
-    invalidate_cloudfront_caches()
-
 @hooks.register('register_settings_menu_item')
 def register_500_menu_item():
   return MenuItem('Generate 500', reverse('throw_error'), classnames='icon icon-warning', order=10000)
 
+@receiver(post_save)
+def invalidate_cloudfront_caches_post_save(sender, instance, **kwargs):
+    invalidate_cloudfront_caches()
