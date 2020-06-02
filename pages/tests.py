@@ -113,11 +113,11 @@ class PageTests(WagtailPageTests):
     def test_api_redirect(self):
         pages = Page.objects.all()
         for page in pages:
-            response = self.client.get('/apps/cms/api/pages/{}'.format(page.slug))
+            response = self.client.get('/apps/cms/api/v2/pages/{}'.format(page.slug))
             self.assertNotEquals(response.status_code, 404)
 
     def test_slashless_apis_are_good(self):
-        assertPathDoesNotRedirectToTrailingSlash(self, '/apps/cms/api/pages/slug')
+        assertPathDoesNotRedirectToTrailingSlash(self, '/apps/cms/api/v2/pages/slug')
 
 
 class ErrataListTest(WagtailPageTests):
