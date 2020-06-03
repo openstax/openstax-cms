@@ -1,6 +1,6 @@
 from django.core.exceptions import MultipleObjectsReturned
 from django.shortcuts import redirect
-from django.urls import reverse, path
+from django.urls import reverse, path, re_path
 
 from wagtail.api.v2.endpoints import PagesAPIEndpoint
 from wagtail.api.v2.router import WagtailAPIRouter
@@ -37,10 +37,10 @@ class OpenstaxPagesAPIEndpoint(PagesAPIEndpoint):
         This returns a list of URL patterns for the endpoint
         """
         return [
-            path('', cls.as_view({'get': 'listing_view'}), name='listing'),
-            path('<int:pk>/', cls.as_view({'get': 'detail_view'}), name='detail'),
-            path('<slug:slug>/', cls.as_view({'get': 'detail_view'}), name='detail'),
-            path('find/', cls.as_view({'get': 'find_view'}), name='find'),
+            re_path('', cls.as_view({'get': 'listing_view'}), name='listing'),
+            re_path('(?P<pk>[0-9]+)/?$', cls.as_view({'get': 'detail_view'}), name='detail'),
+            re_path('(?P<slug>[-\w]+)/?$', cls.as_view({'get': 'detail_view'}), name='detail'),
+            re_path('find/?$', cls.as_view({'get': 'find_view'}), name='find'),
         ]
 
 # Create the router. “wagtailapi” is the URL namespace
