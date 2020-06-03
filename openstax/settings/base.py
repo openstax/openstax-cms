@@ -10,16 +10,8 @@ BASE_DIR = PROJECT_ROOT
 
 DEBUG = True
 
-# Ideally, we'd never append a slash and have all of our URLs be able to work
-# with or without a slash.  However, some URLs are out of our control (e.g.
-# django admin URLs).  So we will leave the APPEND_SLASH setting to True, which
-# will append a slash if the incoming URL doesn't match any of our URL patterns.
-# (If it does match, it shouldn't append a slash, which is good and which means
-# we can work to make our URLs match either without or without slashes to avoid
-# extra redirects).  We tried to set WAGTAIL_APPEND_SLASH=False for wagtail but
-# it wasn't handling unslashed paths as it should have (maybe because we are
-# wrapping wagtail paths ourselves under /api?)
-
+# These should both be set to true. The openstax.middleware will handle resolving the URL
+# without a redirect if needed.
 APPEND_SLASH = True
 WAGTAIL_APPEND_SLASH=True
 

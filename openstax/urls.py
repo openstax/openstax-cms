@@ -1,6 +1,5 @@
 from django.conf import settings
 from django.conf.urls import include, url
-from django.urls import path, re_path
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.views.generic.base import RedirectView
@@ -20,36 +19,40 @@ from global_settings.views import throw_error
 admin.site.site_header = 'OpenStax'
 
 urlpatterns = [
-    # django admin/auth urls
-    re_path(r'^django-admin/login/?', RedirectView.as_view(url='/admin/login')),
-    re_path(r'^django-admin/?', admin.site.urls),
-    re_path(r'^admin/?', include(wagtailadmin_urls)),
-    re_path(r'^django-admin/error/?', throw_error, name='throw_error'),
+    url(r'^django-admin/login', RedirectView.as_view(url='/admin/login')),
+    url(r'^django-admin/', admin.site.urls),
+    url(r'^admin/', include(wagtailadmin_urls)),
 
-    re_path(r'^oxauth/?', include('oxauth.urls')), # new auth package
-    re_path(r'^documents/?', include(wagtaildocs_urls)),
-    re_path(r'^images/([^/]*)/(\d*)/([^/]*)/[^/]*$/?', ServeView.as_view(action='redirect'), name='wagtailimages_serve'),
-    re_path(r'^accounts/?', include(accounts_urls)), # non-CloudFront Accounts redirects
-    re_path(r'^errata/?', include('errata.urls')),
 
-    #api urls
-    re_path(r'^apps/cms/api/mail', include('mail.urls')),
-    re_path(r'^apps/cms/api/?', include(api_urls)),
-    re_path(r'^apps/cms/api/search/$', search, name='search'),
-    re_path(r'^apps/cms/api/v2/?', api_router.urls),
-    re_path(r'^apps/cms/api/salesforce/?', include('salesforce.urls')),
-    re_path(r'^apps/cms/api/snippets/?', include('snippets.urls')),
-    re_path(r'^apps/cms/api/books/?', include('books.urls')),
-    re_path(r'^apps/cms/api/?', include('news.urls')),
-    re_path(r'^blog-feed/rss/$', RssBlogFeed()),
-    re_path(r'^blog-feed/atom/$', AtomBlogFeed()),
-    re_path(r'^apps/cms/api/errata/?', include('errata.urls')),
-    re_path(r'^apps/cms/api/events/?', include('events.urls')),
-    re_path(r'^apps/cms/api/?', include('webinars.urls')),
-    re_path(r'^apps/cms/api/spike/?', include(wagtail_urls)),
+    url(r'^django-admin/error/', throw_error, name='throw_error'),
 
-    # everything else to wagtail serve mechanism
-    path(r'', include(wagtail_urls)),
+    url(r'^oxauth', include('oxauth.urls')), # new auth package
+    url(r'^documents/', include(wagtaildocs_urls)),
+    url(r'^images/([^/]*)/(\d*)/([^/]*)/[^/]*$', ServeView.as_view(action='redirect'), name='wagtailimages_serve'),
+    url(r'^accounts', include(accounts_urls)), # non-CloudFront Accounts redirects
+
+    url(r'^apps/cms/api/mail', include('mail.urls')),
+    url(r'^apps/cms/api/', include(api_urls)),
+    url(r'^apps/cms/api/search/$', search, name='search'),
+    url(r'^apps/cms/api/v2/', api_router.urls),
+    url(r'^apps/cms/api/salesforce/', include('salesforce.urls')),
+    url(r'^apps/cms/api/snippets/', include('snippets.urls')),
+    url(r'^apps/cms/api/books', include('books.urls')),
+    url(r'^apps/cms/api', include('news.urls')),
+    url(r'^blog-feed/rss/$', RssBlogFeed()),
+    url(r'^blog-feed/atom/$', AtomBlogFeed()),
+    url(r'^errata/', include('errata.urls')),
+    url(r'^apps/cms/api/errata/', include('errata.urls')),
+    url(r'^apps/cms/api/events/', include('events.urls')),
+    url(r'^apps/cms/api/', include('webinars.urls')),
+
+    # route everything to /api/spike also...
+    url(r'^apps/cms/api/spike/', include(wagtail_urls)),
+
+    # For anything not caught by a more specific rule above, hand over to
+    # Wagtail's serving mechanism
+
+    url(r'', include(wagtail_urls)),
 ]
 
 if settings.DEBUG:

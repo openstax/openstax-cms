@@ -44,20 +44,6 @@ class AccountsTestCase(TestCase):
         response = self.client.get(reverse('social:begin', args=['openstax']))
         self.assertNotEqual(response.status_code, 404)
 
-    def test_login(self):
-        response = self.client.get(reverse('login'))
-        self.assertRedirects(response, "/accounts/login/", fetch_redirect_response=False)
-
-        response = self.client.get(reverse('login') + "?next=foo")
-        self.assertRedirects(response, "/accounts/login/?r=foo", fetch_redirect_response=False)
-
-    def test_logout(self):
-        response = self.client.get(reverse('logout'))
-        self.assertRedirects(response, "/accounts/logout/", fetch_redirect_response=False)
-
-        response = self.client.get(reverse('logout') + "?next=foo")
-        self.assertRedirects(response, "/accounts/logout/?r=foo", fetch_redirect_response=False)
-
     def test_user_notloggedin(self):
         response = self.client.get(reverse('user'))
 
