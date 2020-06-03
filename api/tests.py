@@ -84,18 +84,18 @@ class APITests(TestCase, WagtailTestUtils):
         self.login()
         self.client = Client()
 
-    def test_footer_api_redirect(self):
+    def test_footer_api(self):
         response = self.client.get('/apps/cms/api/footer')
-        self.assertEqual(response.status_code, 301)
+        self.assertEqual(response.status_code, 200)
 
-    def test_school_api_redirect(self):
+    def test_school_api(self):
         response = self.client.get('/apps/cms/api/schools')
-        self.assertEqual(response.status_code, 301)
+        self.assertEqual(response.status_code, 200)
 
-    def test_mapbox_api_redirect(self):
+    def test_mapbox_api(self):
         response = self.client.get('/apps/cms/api/mapbox')
-        self.assertEqual(response.status_code, 301)
+        self.assertEqual(response.status_code, 200)
     
-    def test_flags_api_redirect(self):
+    def test_flags_api(self):
         response = self.client.get('/apps/cms/api/flags')
-        self.assertEqual(response.status_code, 301)
+        self.assertEqual(response.status_code, 200)
