@@ -21,6 +21,7 @@ DEBUG = True
 # wrapping wagtail paths ourselves under /api?)
 
 APPEND_SLASH = True
+WAGTAIL_APPEND_SLASH=True
 
 # urls.W002 warns about slashes at the start of URLs.  But we need those so
 #   we don't have to have slashes at the end of URLs.  So ignore.
@@ -99,6 +100,7 @@ SECRET_KEY = 'wq21wtjo3@d_qfjvd-#td!%7gfy2updj2z+nev^k$iy%=m4_tr'
 
 MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
+    'openstax.middleware.CommonMiddlewareAppendSlashWithoutRedirect',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
