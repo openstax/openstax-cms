@@ -1,6 +1,6 @@
 from django.core.exceptions import MultipleObjectsReturned
 from django.shortcuts import redirect
-from django.urls import reverse, path, re_path
+from django.urls import reverse, re_path
 
 from wagtail.api.v2.endpoints import PagesAPIEndpoint
 from wagtail.api.v2.router import WagtailAPIRouter

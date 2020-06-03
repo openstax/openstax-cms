@@ -1,4 +1,4 @@
-from django.http import HttpResponsePermanentRedirect, HttpRequest
+from django.http import HttpResponsePermanentRedirect
 from django.core.handlers.base import BaseHandler
 from django.middleware.common import CommonMiddleware
 from django.conf import settings
