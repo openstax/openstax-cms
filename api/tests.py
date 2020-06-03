@@ -4,6 +4,21 @@ from wagtail.tests.utils import WagtailTestUtils
 from wagtail.images.tests.utils import Image, get_test_image_file
 from wagtail.documents.models import Document
 
+from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
+
+class PagesAPI(TestCase, WagtailTestUtils):
+    def setUp(self):
+        self.login()
+
+    def test_api_v2_pages_urls(self):
+        #make sure we get a 200 with or without a slash, no 3xx
+        response = self.client.get('/apps/cms/api/v2/pages/')
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.get('/apps/cms/api/v2/pages')
+        self.assertEqual(response.status_code, 200)
+
+
 class ImageAPI(TestCase, WagtailTestUtils):
 
     def setUp(self):
@@ -85,17 +100,25 @@ class APITests(TestCase, WagtailTestUtils):
         self.client = Client()
 
     def test_footer_api(self):
+        response = self.client.get('/apps/cms/api/footer/')
+        self.assertEqual(response.status_code, 200)
         response = self.client.get('/apps/cms/api/footer')
         self.assertEqual(response.status_code, 200)
 
     def test_school_api(self):
+        response = self.client.get('/apps/cms/api/schools/')
+        self.assertEqual(response.status_code, 200)
         response = self.client.get('/apps/cms/api/schools')
         self.assertEqual(response.status_code, 200)
 
     def test_mapbox_api(self):
+        response = self.client.get('/apps/cms/api/mapbox/')
+        self.assertEqual(response.status_code, 200)
         response = self.client.get('/apps/cms/api/mapbox')
         self.assertEqual(response.status_code, 200)
     
     def test_flags_api(self):
+        response = self.client.get('/apps/cms/api/flags/')
+        self.assertEqual(response.status_code, 200)
         response = self.client.get('/apps/cms/api/flags')
         self.assertEqual(response.status_code, 200)

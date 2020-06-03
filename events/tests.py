@@ -44,7 +44,7 @@ class SessionTest(APITestCase, TestCase):
                                          location='Rice Memorial Center',
                                          seats_remaining=15)
 
-        response = self.client.post('/apps/cms/api/events/sessions', follow=True)
+        response = self.client.get('/apps/cms/api/events/sessions/{}'.format(session.id), follow=True)
         self.assertContains(response, 'Doing OER Right')
 
 
