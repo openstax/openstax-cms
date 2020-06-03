@@ -117,7 +117,7 @@ class PageTests(WagtailPageTests):
             self.assertNotEquals(response.status_code, 404)
 
     def test_slashless_apis_are_good(self):
-        assertPathDoesNotRedirectToTrailingSlash(self, '/apps/cms/api/v2/pages/slug')
+        assertPathDoesNotRedirectToTrailingSlash(self, '/apps/cms/api/v2/pages/home')
 
 
 class ErrataListTest(WagtailPageTests):
