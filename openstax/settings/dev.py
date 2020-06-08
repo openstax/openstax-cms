@@ -52,9 +52,6 @@ sentry_sdk.init(
     integrations=[DjangoIntegration()]
 )
 
-from scout_apm.api import Config
-Config.set(revision_sha=os.popen("git rev-parse HEAD").read().strip())
-
 try:
     from .local import *
 except ImportError:
