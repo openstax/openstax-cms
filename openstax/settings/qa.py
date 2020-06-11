@@ -42,7 +42,8 @@ import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 sentry_sdk.init(
     dsn='https://2e1ecafc60684f86b59c654de3032d83:7fbc901dcca04dc4a8220f7cce20fdd9@sentry.cnx.org/11',
-    integrations=[DjangoIntegration()]
+    integrations=[DjangoIntegration()],
+    environment='qa'
 )
 
 from scout_apm.api import Config
