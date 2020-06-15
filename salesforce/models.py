@@ -92,6 +92,7 @@ class SalesforceSettings(models.Model):
 
 class SalesforceForms(models.Model):
     oid = models.CharField(max_length=255, help_text="OID value to use for FE forms")
+    posting_url = models.URLField()
     debug = models.BooleanField(default=False)
 
     def __str__(self):
