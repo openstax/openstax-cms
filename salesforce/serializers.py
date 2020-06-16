@@ -79,5 +79,5 @@ class PartnerSerializer(serializers.ModelSerializer):
 class SalesforceFormsSerializer(serializers.ModelSerializer):
     class Meta:
         model = SalesforceForms
-        fields = ('oid', 'debug')
-        read_only_fields = ('oid', 'debug')
+        fields = ('oid', 'debug', 'posting_url')
+        read_only_fields = ('oid', 'debug', 'posting_url')
