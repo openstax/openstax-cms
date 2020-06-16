@@ -1,4 +1,3 @@
-from pprint import pprint
 from django.core.management.base import BaseCommand
 from salesforce.models import Partner
 from salesforce.salesforce import Salesforce
@@ -111,7 +110,7 @@ class Command(BaseCommand):
 
             updated_partners = 0
             created_partners = 0
-            pprint(sf_marketplace_partners[3])
+
             for partner in sf_marketplace_partners:
                 partner, created = Partner.objects.update_or_create(
                         salesforce_id=partner['Id'],

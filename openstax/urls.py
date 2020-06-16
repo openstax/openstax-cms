@@ -36,7 +36,6 @@ urlpatterns = [
     url(r'^apps/cms/api/search/$', search, name='search'),
     url(r'^apps/cms/api/v2/', api_router.urls),
     url(r'^apps/cms/api/salesforce/', include('salesforce.urls')),
-    url(r'^apps/cms/api/pages', include('pages.urls')),
     url(r'^apps/cms/api/snippets/', include('snippets.urls')),
     url(r'^apps/cms/api/books', include('books.urls')),
     url(r'^apps/cms/api', include('news.urls')),
