@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from .models import School, AdoptionOpportunityRecord, Partner
+from .models import School, AdoptionOpportunityRecord, Partner, SalesforceForms
 from rest_framework import serializers
 
 
@@ -74,3 +74,10 @@ class PartnerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Partner
         fields = '__all__'
+
+
+class SalesforceFormsSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SalesforceForms
+        fields = ('oid', 'debug', 'posting_url')
+        read_only_fields = ('oid', 'debug', 'posting_url')

@@ -58,6 +58,7 @@ class School(models.Model):
     def __str__(self):
         return self.name
 
+
 class MapBoxDataset(models.Model):
     name = models.CharField(max_length=255)
     tileset_id = models.CharField(max_length=255)
@@ -88,6 +89,17 @@ class SalesforceSettings(models.Model):
 
     class Meta:
         verbose_name_plural = "Salesforce Settings"
+
+class SalesforceForms(models.Model):
+    oid = models.CharField(max_length=255, help_text="OID value to use for FE forms")
+    posting_url = models.URLField()
+    debug = models.BooleanField(default=False)
+
+    def __str__(self):
+        return self.oid
+
+    class Meta:
+        verbose_name_plural = "Salesforce Forms"
 
 class Partner(models.Model):
     salesforce_id = models.CharField(max_length=255, blank=True, null=True)
@@ -214,12 +226,14 @@ class PartnerFieldNameMapping(models.Model):
     def __str__(self):
         return self.display_name
 
+
 class PartnerCategoryMapping(models.Model):
     salesforce_name = models.CharField(max_length=255)
     display_name = models.CharField(max_length=255)
 
     def __str__(self):
         return self.display_name
+
 
 class PartnerTypeMapping(models.Model):
     display_name = models.CharField(max_length=255)
