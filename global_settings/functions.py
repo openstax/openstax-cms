@@ -1,5 +1,5 @@
 import boto3
-from time import time
+from datetime
 from botocore.exceptions import NoCredentialsError, ClientError
 from .models import CloudfrontDistribution
 
@@ -16,7 +16,7 @@ def invalidate_cloudfront_caches():
                         '/apps/cms/api/*' # invalidate the entire cache for the website
                     ],
                 },
-                'CallerReference': str(time()).replace(".", "")
+                'CallerReference': str(datetime.datetime.now().strftime('%m%d%Y%H%M'))
             }
         )
     except CloudfrontDistribution.DoesNotExist:
