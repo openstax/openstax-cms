@@ -4,6 +4,7 @@ from .models import AdoptionOpportunityRecord, \
     School, \
     MapBoxDataset, \
     SalesforceSettings, \
+    SalesforceForms, \
     Partner, \
     PartnerCategoryMapping, \
     PartnerFieldNameMapping, \
@@ -35,6 +36,17 @@ class SalesforceSettingsAdmin(admin.ModelAdmin):
             return False
         else:
             return True
+
+
+class SalesforceFormsAdmin(admin.ModelAdmin):
+    # only allow one SF Setting to exist
+    def has_add_permission(self, request):
+        num_objects = self.model.objects.count()
+        if num_objects >= 1:
+            return False
+        else:
+            return True
+
 
 class PartnerAdmin(admin.ModelAdmin):
     list_display = ['partner_logo_tag', 'salesforce_id', 'partner_name', 'partner_type', 'visible_on_website', 'lead_sharing']
@@ -145,6 +157,7 @@ class PartnerTypeMappingAdmin(admin.ModelAdmin):
     list_display = ('display_name',)
 
 admin.site.register(SalesforceSettings, SalesforceSettingsAdmin)
+admin.site.register(SalesforceForms, SalesforceFormsAdmin)
 admin.site.register(School, SchoolAdmin)
 admin.site.register(AdoptionOpportunityRecord, AdoptionOpportunityRecordAdmin)
 admin.site.register(MapBoxDataset)

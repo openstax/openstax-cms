@@ -110,16 +110,6 @@ class PageTests(WagtailPageTests):
     def test_can_create_ipp_page(self):
         self.assertCanCreateAt(HomePage, InstitutionalPartnerProgramPage)
 
-    def test_api_redirect(self):
-        pages = Page.objects.all()
-        for page in pages:
-            response = self.client.get('/apps/cms/api/pages/{}'.format(page.slug))
-            self.assertNotEquals(response.status_code, 404)
-
-    def test_slashless_apis_are_good(self):
-        assertPathDoesNotRedirectToTrailingSlash(self, '/apps/cms/api/pages/slug')
-
-
 class ErrataListTest(WagtailPageTests):
 
     def test_can_create_errata_list_page(self):
@@ -153,6 +143,9 @@ class AdminPages(TestCase, WagtailTestUtils):
 
     def test_admin_link(self):
         self.target('/admin/')
+
+    def test_slashless_admin_link(self):
+        self.target('/admin')
 
     def test_images_link(self):
         self.target('/admin/images/')

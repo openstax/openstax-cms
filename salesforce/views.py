@@ -6,8 +6,8 @@ from rest_framework.response import Response
 from django.http import JsonResponse
 from django.utils import timezone
 
-from .models import School, AdoptionOpportunityRecord, Partner
-from .serializers import SchoolSerializer, AdoptionOpportunityRecordSerializer, PartnerSerializer
+from .models import School, AdoptionOpportunityRecord, Partner, SalesforceForms
+from .serializers import SchoolSerializer, AdoptionOpportunityRecordSerializer, PartnerSerializer, SalesforceFormsSerializer
 
 from salesforce.salesforce import Salesforce
 
@@ -15,9 +15,15 @@ class SchoolViewSet(viewsets.ModelViewSet):
     queryset = School.objects.all()
     serializer_class = SchoolSerializer
 
+
 class PartnerViewSet(viewsets.ModelViewSet):
     queryset = Partner.objects.filter(visible_on_website=True)
     serializer_class = PartnerSerializer
+
+
+class SalesforceFormsViewSet(viewsets.ModelViewSet):
+    queryset = SalesforceForms.objects.all()
+    serializer_class = SalesforceFormsSerializer
 
 
 class AdoptionOpportunityRecordViewSet(viewsets.ModelViewSet):
@@ -31,6 +37,7 @@ class AdoptionOpportunityRecordViewSet(viewsets.ModelViewSet):
         else:
             queryset = None # if no account id, return nothing
         return queryset
+
 
 class AdoptionUpdated(APIView):
     def post(self, request, account_id):
