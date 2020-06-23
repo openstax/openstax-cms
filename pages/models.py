@@ -1915,31 +1915,6 @@ class PrintOrder(Page):
     providers = StreamField([
         ('provider', BookProviderBlock(icon='document')),
     ])
-    us_isbn_download = models.ForeignKey(
-        'wagtaildocs.Document',
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name='+',
-    )
-
-    def get_us_isbn_download(self):
-        return build_document_url(self.us_isbn_download.url)
-
-    us_isbn_download_url = property(get_us_isbn_download)
-    us_isbn_cta = models.CharField(max_length=255)
-
-    canadian_isbn_download = models.ForeignKey(
-        'wagtaildocs.Document',
-        on_delete=models.SET_NULL,
-        null=True,
-        related_name='+',
-    )
-
-    def get_canadian_isbn_download(self):
-        return build_document_url(self.canadian_isbn_download.url)
-
-    canadian_isbn_download_url = property(get_canadian_isbn_download)
-    canadian_isbn_cta = models.CharField(max_length=255)
 
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
@@ -1957,10 +1932,6 @@ class PrintOrder(Page):
         APIField('featured_providers'),
         APIField('other_providers_intro_blurb'),
         APIField('providers'),
-        APIField('us_isbn_download_url'),
-        APIField('us_isbn_cta'),
-        APIField('canadian_isbn_download_url'),
-        APIField('canadian_isbn_cta'),
         APIField('slug'),
         APIField('seo_title'),
         APIField('search_description'),
@@ -1975,10 +1946,6 @@ class PrintOrder(Page):
         StreamFieldPanel('featured_providers'),
         FieldPanel('other_providers_intro_blurb'),
         StreamFieldPanel('providers'),
-        DocumentChooserPanel('us_isbn_download'),
-        FieldPanel('us_isbn_cta'),
-        DocumentChooserPanel('canadian_isbn_download'),
-        FieldPanel('canadian_isbn_cta'),
     ]
 
     promote_panels = [
