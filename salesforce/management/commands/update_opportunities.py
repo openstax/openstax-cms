@@ -20,10 +20,8 @@ class Command(BaseCommand):
             response = sf.query_all(command)
             records = response['records']
 
-            if records:
-                AdoptionOpportunityRecord.objects.all().delete()
-
             num_created = 0
+            num_updated = 0
             for record in records:
 
                 opportunity, created = AdoptionOpportunityRecord.objects.update_or_create(
@@ -38,8 +36,10 @@ class Command(BaseCommand):
 
                 if created:
                     num_created = num_created + 1
+                else:
+                    num_updated = num_updated + 1
 
                 opportunity.save()
 
-            response = self.style.SUCCESS("Successfully updated opportunity records. {} were newly created.".format(num_created))
+            response = self.style.SUCCESS("Successfully updated opportunity records. {} were newly created and {} were updated.".format(num_created, num_updated))
         self.stdout.write(response)

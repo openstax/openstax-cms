@@ -14,7 +14,7 @@ class Adopter(models.Model):
         return self.name
 
 class AdoptionOpportunityRecord(models.Model):
-    opportunity_id = models.CharField(max_length=255)
+    opportunity_id = models.CharField(max_length=255, unique=True)
     account_id = models.CharField(max_length=255, null=True, blank=True)
     book_name = models.CharField(max_length=255)
     email = models.EmailField(null=True, blank=True)
