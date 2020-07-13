@@ -39,6 +39,29 @@ def cleanhtml(raw_html):
     return cleantext
 
 
+class VideoFacultyResource(models.Model):
+    resource_heading = models.CharField(max_length=255)
+    resource_description = RichTextField(blank=True, null=True)
+    video_title = models.CharField(max_length=255, blank=True, null=True)
+    video_url = models.URLField(blank=True, null=True)
+    video_file = models.FileField(upload_to='resource_videos', blank=True, null=True)
+
+    api_fields = [
+        APIField('resource_heading'),
+        APIField('resource_description'),
+        APIField('video_title'),
+        APIField('video_url'),
+        APIField('video_file'),
+    ]
+
+    panels = [
+        FieldPanel('resource_heading'),
+        FieldPanel('resource_description'),
+        FieldPanel('video_title'),
+        FieldPanel('video_url'),
+        FieldPanel('video_file'),
+    ]
+
 class FacultyResources(models.Model):
     resource = models.ForeignKey(
         FacultyResource,
@@ -92,6 +115,7 @@ class FacultyResources(models.Model):
 
     link_text = models.CharField(max_length=255, help_text="Call to Action Text")
     coming_soon_text = models.CharField(max_length=255, null=True, blank=True, help_text="If there is text in this field a coming soon banner will be added with this description.")
+    video_reference_number = models.IntegerField(blank=True, null=True)
     updated = models.DateTimeField(blank=True, null=True, help_text='Late date resource was updated')
     featured = models.BooleanField(default=False, help_text="Add to featured bar on resource page")
     k12 = models.BooleanField(default=False, help_text="Add K12 banner to resource")
@@ -107,6 +131,7 @@ class FacultyResources(models.Model):
         APIField('link_document_title'),
         APIField('link_text'),
         APIField('coming_soon_text'),
+        APIField('video_reference_number'),
         APIField('updated'),
         APIField('featured'),
         APIField('k12')
@@ -119,6 +144,7 @@ class FacultyResources(models.Model):
         DocumentChooserPanel('link_document'),
         FieldPanel('link_text'),
         FieldPanel('coming_soon_text'),
+        FieldPanel('video_reference_number'),
         FieldPanel('updated'),
         FieldPanel('featured'),
         FieldPanel('k12')
@@ -287,6 +313,10 @@ class SharedContentBlock(blocks.StreamBlock):
 
 class BookFacultyResources(Orderable, FacultyResources):
     book_faculty_resource = ParentalKey('books.Book', related_name='book_faculty_resources')
+
+
+class VideoFacultyResources(Orderable, VideoFacultyResource):
+    book_video_faculty_resource = ParentalKey('books.Book', related_name='book_video_faculty_resources')
 
 
 class BookStudentResources(Orderable, StudentResources):
@@ -606,6 +636,7 @@ class Book(Page):
     ]
     instructor_resources_panel = [
         FieldPanel('featured_resources_header'),
+        InlinePanel('book_video_faculty_resources', label='Video Resource', max_num=1),
         InlinePanel('book_faculty_resources', label="Instructor Resources"),
     ]
     student_resources_panel = [
@@ -642,6 +673,7 @@ class Book(Page):
         APIField('book_cover_text_color'),
         APIField('reverse_gradient'),
         APIField('book_student_resources'),
+        APIField('book_video_faculty_resources'),
         APIField('book_faculty_resources'),
         APIField('publish_date'),
         APIField('authors'),
