@@ -844,6 +844,8 @@ class BookIndex(Page):
         books = Book.objects.live().order_by('path')
         book_data = []
         for book in books:
+            has_faculty_resources = BookFacultyResources.objects.filter(book_faculty_resource=book).exists()
+            has_student_resources = BookStudentResources.objects.filter(book_student_resource=book).exists()
             try:
                 book_data.append({
                     'id': book.id,
@@ -854,6 +856,7 @@ class BookIndex(Page):
                     'is_ap': book.is_ap,
                     'coming_soon': book.coming_soon,
                     'cover_url': book.cover_url,
+                    'cover_color': book.cover_color,
                     'high_resolution_pdf_url': book.high_resolution_pdf_url,
                     'low_resolution_pdf_url': book.low_resolution_pdf_url,
                     'ibook_link': book.ibook_link,
@@ -871,6 +874,8 @@ class BookIndex(Page):
                     'salesforce_name': book.salesforce_name,
                     'urls': book.book_urls(),
                     'last_updated_pdf': book.last_updated_pdf,
+                    'has_faculty_resources': has_faculty_resources,
+                    'has_student_resources': has_student_resources
                 })
             except Exception as e:
                 print("Error: {}".format(e))
