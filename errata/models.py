@@ -28,11 +28,13 @@ YES_NO_CHOICES = (
 
 NEW = 'New'
 EDITORIAL_REVIEW = 'Editorial Review'
+K12_EDITORIAL_REVIEW = 'K-12 Editorial Review'
 REVIEWED = 'Reviewed'
 COMPLETED = 'Completed'
 ERRATA_STATUS = (
     (NEW, 'New'),
     (EDITORIAL_REVIEW, 'Editorial Review'),
+    (K12_EDITORIAL_REVIEW, 'K-12 Editorial Review'),
     (REVIEWED, 'Reviewed'),
     (COMPLETED, 'Completed'),
 )
@@ -243,7 +245,7 @@ class Errata(models.Model):
     def clean(self):
         if self.status == 'Completed' and not self.resolution or self.status == 'Reviewed' and not self.resolution:
             raise ValidationError({'resolution': 'Resolution is required if status is completed or reviewed.'})
-        if (self.status == 'Editorial Review' or self.status == 'Reviewed' or self.status == 'Completed') and not self.is_assessment_errata:
+        if (self.status == 'Editorial Review' or self.status == 'K-12 Editorial Review' or self.status == 'Reviewed' or self.status == 'Completed') and not self.is_assessment_errata:
             raise ValidationError({'is_assessment_errata': 'You must specify if this is an assessment errata.'})
         if (self.status == 'Completed' and self.resolution == 'Duplicate') and not self.duplicate_id:
             raise ValidationError({'duplicate_id': 'You must specify the duplicate report ID when resolution is marked duplicate.'})
