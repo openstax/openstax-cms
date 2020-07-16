@@ -11,6 +11,7 @@ class Migration(migrations.Migration):
         ('snippets', '0022_subject_page_content'),
         ('wagtaildocs', '0010_document_file_hash'),
         ('wagtailcore', '0045_assign_unlock_grouppagepermission'),
+        ('books', '0053_auto_20180409_1242'),
         ('books', '0100_videofacultyresources'),
     ]
 
