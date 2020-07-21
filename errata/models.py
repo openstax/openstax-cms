@@ -86,6 +86,7 @@ ERRATA_RESOURCES = (
     ('Rover by OpenStax', 'Rover by OpenStax'),
     ('OpenStax + SE', 'OpenStax + SE'),
     ('Kindle', 'Kindle'),
+    ('Study guide on openstax.org', 'Study guide on openstax.org'),
     ('Other', 'Other'),
 )
 
