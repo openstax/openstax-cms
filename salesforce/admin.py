@@ -8,7 +8,8 @@ from .models import AdoptionOpportunityRecord, \
     Partner, \
     PartnerCategoryMapping, \
     PartnerFieldNameMapping, \
-    PartnerTypeMapping
+    PartnerTypeMapping, \
+    ResourceDownload
 
 
 class SchoolAdmin(admin.ModelAdmin):
@@ -165,3 +166,4 @@ admin.site.register(Partner, PartnerAdmin)
 admin.site.register(PartnerCategoryMapping, PartnerCategoryMappingAdmin)
 admin.site.register(PartnerFieldNameMapping, PartnerFieldNameMappingAdmin)
 admin.site.register(PartnerTypeMapping, PartnerTypeMappingAdmin)
+admin.site.register(ResourceDownload)
