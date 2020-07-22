@@ -62,6 +62,75 @@ class VideoFacultyResource(models.Model):
         FieldPanel('video_file'),
     ]
 
+class OrientationFacultyResource(models.Model):
+    resource_heading = models.CharField(max_length=255, null=True)
+    resource_description = RichTextField(blank=True, null=True)
+    resource_unlocked = models.BooleanField(default=False)
+    creator_fest_resource = models.BooleanField(default=False)
+
+    link_external = models.URLField("External link", blank=True,
+                                    help_text="Provide an external URL starting with https:// (or fill out either one of the following two).")
+    link_page = models.ForeignKey(
+        'wagtailcore.Page',
+        null=True,
+        blank=True,
+        related_name='+',
+        on_delete=models.SET_NULL,
+        help_text="Or select an existing page to attach."
+    )
+    link_document = models.ForeignKey(
+        'wagtaildocs.Document',
+        null=True,
+        blank=True,
+        related_name='+',
+        on_delete=models.SET_NULL,
+        help_text="Or select a document for viewers to download."
+    )
+
+    def get_link_document(self):
+        return build_document_url(self.link_document.url)
+
+    link_document_url = property(get_link_document)
+
+    def get_document_title(self):
+        return self.link_document.title
+
+    link_document_title = property(get_document_title)
+
+    link_text = models.CharField(max_length=255, help_text="Call to Action Text")
+    video_reference_number = models.IntegerField(blank=True, null=True)
+    updated = models.DateTimeField(blank=True, null=True, help_text='Late date resource was updated')
+    featured = models.BooleanField(default=False, help_text="Add to featured bar on resource page")
+
+    api_fields = [
+        APIField('resource_heading'),
+        APIField('resource_description'),
+        APIField('resource_unlocked'),
+        APIField('creator_fest_resource'),
+        APIField('link_external'),
+        APIField('link_page'),
+        APIField('link_document_url'),
+        APIField('link_document_title'),
+        APIField('link_text'),
+        APIField('video_reference_number'),
+        APIField('updated'),
+        APIField('featured'),
+    ]
+
+    panels = [
+        FieldPanel('resource_heading'),
+        FieldPanel('resource_description'),
+        FieldPanel('resource_unlocked'),
+        FieldPanel('creator_fest_resource'),
+        FieldPanel('link_external'),
+        PageChooserPanel('link_page'),
+        DocumentChooserPanel('link_document'),
+        FieldPanel('link_text'),
+        FieldPanel('video_reference_number'),
+        FieldPanel('updated'),
+        FieldPanel('featured'),
+    ]
+
 class FacultyResources(models.Model):
     resource = models.ForeignKey(
         FacultyResource,
@@ -87,7 +156,7 @@ class FacultyResources(models.Model):
         return self.resource.creator_fest_resource
     creator_fest_resource = property(get_resource_creator_fest_resource)
 
-    link_external = models.URLField("External link", blank=True, help_text="Provide an external URL starting with http:// (or fill out either one of the following two).")
+    link_external = models.URLField("External link", blank=True, help_text="Provide an external URL starting with https:// (or fill out either one of the following two).")
     link_page = models.ForeignKey(
         'wagtailcore.Page',
         null=True,
@@ -318,6 +387,8 @@ class BookFacultyResources(Orderable, FacultyResources):
 class VideoFacultyResources(Orderable, VideoFacultyResource):
     book_video_faculty_resource = ParentalKey('books.Book', related_name='book_video_faculty_resources')
 
+class OrientationFacultyResources(Orderable, OrientationFacultyResource):
+    book_orientation_faculty_resource = ParentalKey('books.Book', related_name='book_orientation_faculty_resources')
 
 class BookStudentResources(Orderable, StudentResources):
     book_student_resource = ParentalKey('books.Book', related_name='book_student_resources')
@@ -637,6 +708,7 @@ class Book(Page):
     instructor_resources_panel = [
         FieldPanel('featured_resources_header'),
         InlinePanel('book_video_faculty_resources', label='Video Resource', max_num=1),
+        InlinePanel('book_orientation_faculty_resources', label='Instruction Orientation Resource', max_num=1),
         InlinePanel('book_faculty_resources', label="Instructor Resources"),
     ]
     student_resources_panel = [
@@ -674,6 +746,7 @@ class Book(Page):
         APIField('reverse_gradient'),
         APIField('book_student_resources'),
         APIField('book_video_faculty_resources'),
+        APIField('book_orientation_faculty_resources'),
         APIField('book_faculty_resources'),
         APIField('publish_date'),
         APIField('authors'),
