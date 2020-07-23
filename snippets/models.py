@@ -155,8 +155,7 @@ register_snippet(NewsSource)
 
 class GiveToday(models.Model):
     give_link_text = models.CharField(max_length=255)
-    give_link = models.URLField("Give link", blank=True,
-                                    help_text="URL to Rice Give page or something similar")
+    give_link = models.URLField("Give link", blank=True, help_text="URL to Rice Give page or something similar")
 
     api_fields = ('give_link_text',
                   'give_link')
