@@ -157,6 +157,10 @@ class PartnerFieldNameMappingAdmin(admin.ModelAdmin):
 class PartnerTypeMappingAdmin(admin.ModelAdmin):
     list_display = ('display_name',)
 
+class ResourceDownloadAdmin(admin.ModelAdmin):
+    list_display = ('id', 'created', 'last_access', 'salesforce_id', 'resource_name', 'book', 'book_format', 'account_id', 'number_of_times_accessed')
+    list_filter = ('created', 'book')
+
 admin.site.register(SalesforceSettings, SalesforceSettingsAdmin)
 admin.site.register(SalesforceForms, SalesforceFormsAdmin)
 admin.site.register(School, SchoolAdmin)
@@ -166,4 +170,4 @@ admin.site.register(Partner, PartnerAdmin)
 admin.site.register(PartnerCategoryMapping, PartnerCategoryMappingAdmin)
 admin.site.register(PartnerFieldNameMapping, PartnerFieldNameMappingAdmin)
 admin.site.register(PartnerTypeMapping, PartnerTypeMappingAdmin)
-admin.site.register(ResourceDownload)
+admin.site.register(ResourceDownload, ResourceDownloadAdmin)
