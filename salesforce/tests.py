@@ -9,6 +9,7 @@ from django.core.exceptions import ValidationError
 from salesforce.models import Adopter, SalesforceSettings, MapBoxDataset, Partner
 from salesforce.views import Salesforce
 from simple_salesforce import Salesforce as SimpleSalesforce
+from salesforce.salesforce import Salesforce as SF
 from salesforce.serializers import PartnerSerializer
 
 from rest_framework import status
@@ -80,7 +81,7 @@ class SalesforceTest(LiveServerTestCase, WagtailPageTests):
             self.create_salesforce_setting(username="test2", password="test2", security_token="test2", sandbox=False)
 
     def test_database_query(self):
-        sf = SimpleSalesforce(**settings.SALESFORCE)
+        sf = SF()
         contact_info = sf.query(
             "SELECT Id FROM Contact")
         self.assertIsNot(

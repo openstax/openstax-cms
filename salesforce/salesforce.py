@@ -14,19 +14,13 @@ class Salesforce(SimpleSalesforce, ContextDecorator):
         try:
             sf_settings = SalesforceSettings.objects.latest('id')
         except SalesforceSettings.DoesNotExist:
-            if settings.SALESFORCE['sandbox']:
-                sf_settings = SalesforceSettings.objects.create(
-                    username=settings.SALESFORCE['username'],
-                    password=settings.SALESFORCE['password'],
-                    security_token=settings.SALESFORCE['security_token'],
-                    domain='test',
-                )
-            else:
-                sf_settings = SalesforceSettings.objects.create(
-                    username=settings.SALESFORCE['username'],
-                    password=settings.SALESFORCE['password'],
-                    security_token=settings.SALESFORCE['security_token']
-                )
+            sf_settings = SalesforceSettings.objects.create(
+                username=settings.SALESFORCE['username'],
+                password=settings.SALESFORCE['password'],
+                security_token=settings.SALESFORCE['security_token'],
+                sandbox=settings.SALESFORCE['sandbox'],
+            )
+
 
         session_store = SessionStore(session_key=self._default_session_key)
         if 'sf_instance' in session_store.keys() and 'sf_session_id' in session_store.keys():
