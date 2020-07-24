@@ -262,7 +262,7 @@ class ResourceDownload(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     last_access = models.DateTimeField(auto_now=True)
     number_of_times_accessed = models.IntegerField()
-    resource_name = models.CharField(max_length=255)
+    resource_name = models.CharField(max_length=255, null=True, blank=False)
 
     def save(self, *args, **kwargs):
         if not self.pk:
