@@ -7,7 +7,7 @@ router.register(r'schools', views.SchoolViewSet, basename='School')
 router.register(r'renewal', views.AdoptionOpportunityRecordViewSet, basename='AdoptionOpportunityRecord')
 router.register(r'partners', views.PartnerViewSet, basename='Partner')
 router.register(r'forms', views.SalesforceFormsViewSet, basename='Forms')
-router.register(r'resource-download', views.ResourceDownloadViewSet, basename='ResourceDownload')
+router.register(r'download-tracking', views.ResourceDownloadViewSet, basename='DownloadTracking')
 
 urlpatterns = [
     url(r'', include(router.urls)),
