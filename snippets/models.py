@@ -152,3 +152,20 @@ class NewsSource(index.Indexed, models.Model):
         return self.name
 
 register_snippet(NewsSource)
+
+class GiveToday(models.Model):
+    give_link_text = models.CharField(max_length=255)
+    give_link = models.URLField("Give link", blank=True, help_text="URL to Rice Give page or something similar")
+
+    api_fields = ('give_link_text',
+                  'give_link')
+
+    panels = [
+        FieldPanel('give_link_text'),
+        FieldPanel('give_link'),
+    ]
+
+    def __str__(self):
+        return self.give_link_text
+
+register_snippet(GiveToday)
