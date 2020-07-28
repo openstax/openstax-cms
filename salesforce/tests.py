@@ -8,7 +8,6 @@ from django.core.exceptions import ValidationError
 
 from salesforce.models import Adopter, SalesforceSettings, MapBoxDataset, Partner
 from salesforce.views import Salesforce
-from simple_salesforce import Salesforce as SimpleSalesforce
 from salesforce.salesforce import Salesforce as SF
 from salesforce.serializers import PartnerSerializer
 
