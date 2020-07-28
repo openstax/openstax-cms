@@ -4,6 +4,8 @@ from django.core.exceptions import ValidationError
 from wagtail.core import hooks
 from wagtail.admin.menu import MenuItem
 
+from books.models import Book
+
 class Adopter(models.Model):
     sales_id = models.CharField(max_length=255, primary_key=True)
     name = models.CharField(max_length=255, null=False)
@@ -240,3 +242,38 @@ class PartnerTypeMapping(models.Model):
 
     def __str__(self):
         return self.display_name
+
+
+class ResourceDownload(models.Model):
+    BOOK_FORMATS = (
+        ('Online', 'Online'),
+        ('PDF', 'PDF'),
+        ('Print', 'Print'),
+        ('App', 'App'),
+        ('Kindle', 'Kindle'),
+        ('iBooks', 'iBooks'),
+        ('Bookshare', 'Bookshare'),
+        ('Chegg Reader', 'Chegg Reader'),
+    )
+    salesforce_id = models.CharField(max_length=100, blank=True, null=True)
+    book = models.ForeignKey(Book, on_delete=models.SET_NULL, null=True, blank=True)
+    book_format = models.CharField(max_length=100, choices=BOOK_FORMATS, null=True , blank=True)
+    account_id = models.IntegerField()
+    created = models.DateTimeField(auto_now_add=True)
+    last_access = models.DateTimeField(auto_now=True)
+    number_of_times_accessed = models.IntegerField()
+    resource_name = models.CharField(max_length=255, null=True, blank=False)
+
+    def save(self, *args, **kwargs):
+        if not self.pk:
+            self.number_of_times_accessed = 1
+        else:
+            self.number_of_times_accessed = self.number_of_times_accessed + 1
+        super().save(*args, **kwargs)
+
+
+    class Meta:
+        indexes = [
+            models.Index(fields=['account_id', ]),
+            models.Index(fields=['book', ]),
+        ]
