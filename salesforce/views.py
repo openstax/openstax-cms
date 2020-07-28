@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.utils import timezone
 
 from .models import School, AdoptionOpportunityRecord, Partner, SalesforceForms
@@ -67,3 +67,5 @@ def get_adoption_status(request):
             q = sf.query("SELECT Adoption_Status__c FROM Contact WHERE Accounts_ID__c = '{}'".format(account))
 
             return JsonResponse(q)
+    else:
+        raise Http404('Must supply account id for adoption.')

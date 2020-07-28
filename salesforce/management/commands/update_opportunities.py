@@ -5,7 +5,7 @@ from salesforce.salesforce import Salesforce
 
 
 class Command(BaseCommand):
-    help = "update book adoptions from salesforce.com for use on the renewal form"
+    help = "update book adoptions from salesforce.com for getting adoptions by account id"
 
     def handle(self, *args, **options):
         with Salesforce() as sf:
@@ -24,20 +24,26 @@ class Command(BaseCommand):
             num_updated = 0
             for record in records:
 
-                opportunity, created = AdoptionOpportunityRecord.objects.update_or_create(
-                    opportunity_id=record['Id'],
-                    defaults={'account_id': record['OS_Accounts_ID__c'],
-                              'book_name': record['Book_Text__c'],
-                              'email': record['Contact_Email__c'],
-                              'school': record['School_Name__c'],
-                              'yearly_students': record['Yearly_Students__c']
-                              },
-                )
-
-                if created:
-                    num_created = num_created + 1
-                else:
+                try:
+                    opportunity = AdoptionOpportunityRecord.objects.get(account_id=record['OS_Accounts_ID__c'])
+                    opportunity.opportunity_id = record['Id'],
+                    opportunity.account_id = record['OS_Accounts_ID__c'],
+                    opportunity.book_name = record['Book_Text__c'],
+                    opportunity.email = record['Contact_Email__c'],
+                    opportunity.school = record['School_Name__c'],
+                    opportunity.yearly_students = record['Yearly_Students__c']
                     num_updated = num_updated + 1
+                except AdoptionOpportunityRecord.DoesNotExist:
+                    opportunity = AdoptionOpportunityRecord.objects.create(
+                        opportunity_id=record['Id'],
+                        account_id=record['OS_Accounts_ID__c'],
+                        book_name= record['Book_Text__c'],
+                        email= record['Contact_Email__c'],
+                        school= record['School_Name__c'],
+                        yearly_students= record['Yearly_Students__c']
+                    )
+                    num_created = num_created + 1
+
 
                 opportunity.save()
 
