@@ -42,14 +42,18 @@ class AdoptionOpportunityRecordSerializer(serializers.ModelSerializer):
                   'book_name',
                   'email',
                   'school',
-                  'yearly_students',
-                  'updated')
+                  'verified',
+                  'created',
+                  'last_update')
         read_only_fields = ('opportunity_id',
                   'account_id',
                   'book_name',
                   'email',
                   'school',
-                  'yearly_students')
+                  'yearly_students',
+                  'created',
+                  'last_update',
+                  )
 
 class PartnerSerializer(serializers.ModelSerializer):
     def __init__(self, *args, **kwargs):

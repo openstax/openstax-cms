@@ -35,7 +35,7 @@ class AdoptionOpportunityRecordViewSet(viewsets.ModelViewSet):
     serializer_class = AdoptionOpportunityRecordSerializer
 
     def get_queryset(self):
-        queryset = AdoptionOpportunityRecord.objects.filter(updated=False)
+        queryset = AdoptionOpportunityRecord.objects.filter(verified=False)
         account_id = self.request.query_params.get('account_id', None)
         if account_id is not None:
             queryset = queryset.filter(account_id=account_id)
@@ -53,7 +53,7 @@ class AdoptionUpdated(APIView):
 
         for record in records:
             # this is the only field we want to update
-            data = {"updated": True}
+            data = {"verified": True}
             serializer = AdoptionOpportunityRecordSerializer(record, data=data, partial=True)
 
             if serializer.is_valid():

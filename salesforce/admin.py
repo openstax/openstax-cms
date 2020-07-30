@@ -21,8 +21,8 @@ class SchoolAdmin(admin.ModelAdmin):
         return False
 
 class AdoptionOpportunityRecordAdmin(admin.ModelAdmin):
-    list_display = ['email', 'book_name', 'school', 'yearly_students']
-    list_filter = ('book_name', 'school')
+    list_display = ['email', 'book_name', 'school', 'yearly_students', 'verified']
+    list_filter = ('book_name', 'school', 'verified', 'last_update')
     search_fields = ['email', 'account_id']
 
     def has_add_permission(self, request):
