@@ -31,29 +31,21 @@ class ResourceDownloadViewSet(viewsets.ModelViewSet):
     serializer_class = ResourceDownloadSerializer
 
 
-class AdoptionOpportunityRecordViewSet(viewsets.ModelViewSet):
-    serializer_class = AdoptionOpportunityRecordSerializer
+class AdoptionOpportunityRecordViewSet(viewsets.ViewSet):
+    def list(self, request, account_id):
+        #account_id = self.request.query_params.get('account_id', None)
+        queryset = AdoptionOpportunityRecord.objects.filter(account_id=account_id)
+        serializer = AdoptionOpportunityRecordSerializer(queryset, many=True)
+        return Response(serializer.data)
 
-    def get_queryset(self):
-        queryset = AdoptionOpportunityRecord.objects.filter(verified=False)
-        account_id = self.request.query_params.get('account_id', None)
-        if account_id is not None:
-            queryset = queryset.filter(account_id=account_id)
-        else:
-            queryset = None # if no account id, return nothing
-        return queryset
-
-
-class AdoptionUpdated(APIView):
-    def post(self, request, account_id):
-        # if no model exists by this PK, raise a 404 error
+    def post(self, request, account_id, format=None):
         records = AdoptionOpportunityRecord.objects.filter(account_id=account_id)
         if not records:
             return JsonResponse({'error': 'No records associated with that ID.'})
 
         for record in records:
-            # this is the only field we want to update
-            data = {"verified": True}
+            verified = self.request.data.get('verified', None)
+            data = {"verified": verified}
             serializer = AdoptionOpportunityRecordSerializer(record, data=data, partial=True)
 
             if serializer.is_valid():

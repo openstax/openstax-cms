@@ -4,7 +4,6 @@ from . import views
 
 router = routers.SimpleRouter()
 router.register(r'schools', views.SchoolViewSet, basename='School')
-router.register(r'renewal', views.AdoptionOpportunityRecordViewSet, basename='AdoptionOpportunityRecord')
 router.register(r'partners', views.PartnerViewSet, basename='Partner')
 router.register(r'forms', views.SalesforceFormsViewSet, basename='Forms')
 router.register(r'download-tracking', views.ResourceDownloadViewSet, basename='DownloadTracking')
@@ -12,5 +11,5 @@ router.register(r'download-tracking', views.ResourceDownloadViewSet, basename='D
 urlpatterns = [
     url(r'', include(router.urls)),
     url(r'^adoption-status/', views.get_adoption_status),
-    url(r'^renewal/update/(?P<account_id>\d+)', views.AdoptionUpdated.as_view(), name='adoption-updated'),
+    url(r'renewal/(?P<account_id>\d+)/', views.AdoptionOpportunityRecordViewSet.as_view({'get': 'list'}))
 ]
