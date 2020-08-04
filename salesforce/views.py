@@ -33,7 +33,6 @@ class ResourceDownloadViewSet(viewsets.ModelViewSet):
 
 class AdoptionOpportunityRecordViewSet(viewsets.ViewSet):
     def list(self, request, account_id):
-        #account_id = self.request.query_params.get('account_id', None)
         queryset = AdoptionOpportunityRecord.objects.filter(account_id=account_id)
         serializer = AdoptionOpportunityRecordSerializer(queryset, many=True)
         return Response(serializer.data)
@@ -45,7 +44,8 @@ class AdoptionOpportunityRecordViewSet(viewsets.ViewSet):
 
         for record in records:
             verified = self.request.data.get('verified', None)
-            data = {"verified": verified}
+            confirmed_yearly_students = self.request.data.get('confirmed_yearly_students', 0)
+            data = {"verified": verified, "confirmed_yearly_students": confirmed_yearly_students}
             serializer = AdoptionOpportunityRecordSerializer(record, data=data, partial=True)
 
             if serializer.is_valid():

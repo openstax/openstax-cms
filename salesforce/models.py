@@ -17,11 +17,12 @@ class Adopter(models.Model):
 
 class AdoptionOpportunityRecord(models.Model):
     opportunity_id = models.CharField(max_length=255, unique=True)
-    account_id = models.CharField(max_length=255, null=True, blank=True, unique=True)
+    account_id = models.CharField(max_length=255, null=True, blank=True)
     book_name = models.CharField(max_length=255)
     email = models.EmailField(null=True, blank=True)
     school = models.CharField(max_length=255)
     yearly_students = models.CharField(max_length=255)
+    confirmed_yearly_students = models.IntegerField(null=True, blank=True,)
     created = models.DateTimeField(auto_now_add=True)
     last_update = models.DateTimeField(auto_now=True)
     verified = models.BooleanField(default=False)

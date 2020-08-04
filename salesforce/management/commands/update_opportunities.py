@@ -34,7 +34,7 @@ class Command(BaseCommand):
 
 
             # then we will get any new records
-            command = "SELECT Id, OS_Accounts_ID__c, Book_Text__c, Contact_Email__c, School_Name__c, Yearly_Students__c, Type, Base_Year__c, IsWon from Opportunity WHERE OS_Accounts_ID__c != null AND Type = 'Renewal' AND Base_Year__c = {} AND IsWon = True".format(year)
+            command = "SELECT Id, OS_Accounts_ID__c, Book_Text__c, Contact_Email__c, School_Name__c, Yearly_Students__c, Confirmed_Yearly_Students__c, Type, Base_Year__c, IsWon from Opportunity WHERE OS_Accounts_ID__c != null AND Type = 'Renewal' AND Base_Year__c = {} AND IsWon = True".format(year)
 
             response = sf.query_all(command)
             records = response['records']
