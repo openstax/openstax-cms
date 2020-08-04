@@ -49,9 +49,12 @@ def sticky_note(request):
     sticky_note = StickyNote.for_site(request.site)
 
     return JsonResponse({
-        'show': sticky_note.show,
+        'start': sticky_note.start,
         'expires': sticky_note.expires,
-        'content': sticky_note.content,
+        'header': sticky_note.header,
+        'body': sticky_note.body,
+        'link_text': sticky_note.link_text,
+        'link': sticky_note.link,
         'emergency_expires': sticky_note.emergency_expires,
         'emergency_content': sticky_note.emergency_content,
     })

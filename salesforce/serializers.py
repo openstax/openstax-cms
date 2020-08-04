@@ -1,7 +1,7 @@
 from collections import OrderedDict
-from .models import School, AdoptionOpportunityRecord, Partner, SalesforceForms
+from .models import School, AdoptionOpportunityRecord, Partner, SalesforceForms, ResourceDownload
 from rest_framework import serializers
-
+from rest_framework.validators import UniqueTogetherValidator
 
 class SchoolSerializer(serializers.ModelSerializer):
 
@@ -81,3 +81,23 @@ class SalesforceFormsSerializer(serializers.ModelSerializer):
         model = SalesforceForms
         fields = ('oid', 'debug', 'posting_url')
         read_only_fields = ('oid', 'debug', 'posting_url')
+
+
+class ResourceDownloadSerializer(serializers.ModelSerializer):
+    def create(self, validated_data):
+        book = validated_data.get('book', None)
+        book_format = validated_data.get('book_format', None)
+        account_id = validated_data.get('account_id', None)
+        resource_name = validated_data.get('resource_name', None)
+        try:
+            rd = ResourceDownload.objects.get(book=book, account_id=account_id, resource_name=resource_name)
+            rd.save()
+        except:
+            rd = ResourceDownload.objects.create(**validated_data)
+
+        return rd
+
+    class Meta:
+        model = ResourceDownload
+        fields = ('id', 'book', 'book_format', 'account_id', 'last_access', 'number_of_times_accessed', 'resource_name', 'created')
+        read_only_fields = ('id', 'created', 'number_of_times_accessed')

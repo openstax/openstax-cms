@@ -21,6 +21,7 @@ class Salesforce(SimpleSalesforce, ContextDecorator):
                 sandbox=settings.SALESFORCE['sandbox'],
             )
 
+
         session_store = SessionStore(session_key=self._default_session_key)
         if 'sf_instance' in session_store.keys() and 'sf_session_id' in session_store.keys():
             try:
@@ -30,10 +31,16 @@ class Salesforce(SimpleSalesforce, ContextDecorator):
                 raise RuntimeError("salesforce session failed")
         else:
             try:
-                super(Salesforce, self).__init__(username=sf_settings.username,
-                                                 password=sf_settings.password,
-                                                 security_token=sf_settings.security_token,
-                                                 sandbox=sf_settings.sandbox)
+                if sf_settings.sandbox:
+                    super(Salesforce, self).__init__(username=sf_settings.username,
+                                                     password=sf_settings.password,
+                                                     security_token=sf_settings.security_token,
+                                                     domain='test')
+                else:
+                    super(Salesforce, self).__init__(username=sf_settings.username,
+                                                     password=sf_settings.password,
+                                                     security_token=sf_settings.security_token)
+
             except AttributeError:
                 super(Salesforce, self).__init__(*args, **kwargs)
             except TypeError:

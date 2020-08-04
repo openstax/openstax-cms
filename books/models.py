@@ -28,7 +28,7 @@ from wagtail.api import APIField
 from wagtail.snippets.models import register_snippet
 
 from openstax.functions import build_document_url, build_image_url
-from snippets.models import FacultyResource, StudentResource, Subject, SharedContent
+from snippets.models import FacultyResource, StudentResource, Subject, SharedContent, GiveToday
 
 
 def cleanhtml(raw_html):
@@ -380,6 +380,23 @@ class SharedContentBlock(blocks.StreamBlock):
         icon = 'document'
 
 
+class GiveTodayChooserBlock(SnippetChooserBlock):
+    def get_api_representation(self, value, context=None):
+        if value:
+            return {
+                'id': value.id,
+                'give_link_text': value.give_link_text,
+                'give_link': value.give_link,
+            }
+
+
+class GiveTodayBlock(blocks.StreamBlock):
+    content = GiveTodayChooserBlock(GiveToday)
+
+    class Meta:
+        icon = 'document'
+
+
 class BookFacultyResources(Orderable, FacultyResources):
     book_faculty_resource = ParentalKey('books.Book', related_name='book_faculty_resources')
 
@@ -641,6 +658,7 @@ class Book(Page):
     )
 
     last_updated_pdf = models.DateTimeField(blank=True, null=True, help_text="Last time PDF was revised.", verbose_name='PDF Content Revision Date')
+    give_today = StreamField(GiveTodayBlock(), null=True, blank=True, help_text='Give link text and url.')
 
     book_detail_panel = Page.content_panels + [
         FieldPanel('book_state'),
@@ -703,7 +721,8 @@ class Book(Page):
         FieldPanel('partner_list_label'),
         FieldPanel('partner_page_link_text'),
         FieldPanel('last_updated_pdf'),
-        StreamFieldPanel('videos')
+        StreamFieldPanel('videos'),
+        StreamFieldPanel('give_today'),
     ]
     instructor_resources_panel = [
         FieldPanel('featured_resources_header'),
@@ -805,7 +824,8 @@ class Book(Page):
         APIField('search_description'),
         APIField('promote_image'),
         APIField('last_updated_pdf'),
-        APIField('featured_resources_header')
+        APIField('featured_resources_header'),
+        APIField('give_today')
     ]
 
     template = 'page.html'
