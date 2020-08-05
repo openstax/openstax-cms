@@ -905,6 +905,28 @@ class Book(Page):
 
         return super(Book, self).save(*args, **kwargs)
 
+
+    def get_url_parts(self, *args, **kwargs):
+        # This overrides the "Live" link in admin to take you to proper FE page
+        url_parts = super(Book, self).get_url_parts(*args, **kwargs)
+
+        if url_parts is None:
+            return None
+
+        site_id, root_url, page_path = url_parts
+        page_path = '/details/books/' + self.slug
+
+        return (site_id, root_url, page_path)
+
+
+    def get_sitemap_urls(self, request=None):
+        return [
+            {
+                'location': '{}/details/books/{}'.format(request.site.root_url, self.slug),
+                'lastmod': (self.last_published_at or self.latest_revision_created_at),
+            }
+        ]
+
     def __str__(self):
         return self.book_title
 
