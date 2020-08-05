@@ -36,7 +36,7 @@ class AdoptionOpportunityRecordViewSet(viewsets.ViewSet):
     @action(methods=['get'], detail=True)
     def list(self, request, account_id):
         # a user can have many adoption records - one for each book
-        queryset = AdoptionOpportunityRecord.objects.filter(account_id=account_id)
+        queryset = AdoptionOpportunityRecord.objects.filter(account_id=account_id, verified=False)
         serializer = AdoptionOpportunityRecordSerializer(queryset, many=True)
         return Response(serializer.data)
 
