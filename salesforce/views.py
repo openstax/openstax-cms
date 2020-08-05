@@ -56,7 +56,7 @@ class AdoptionOpportunityRecordViewSet(viewsets.ViewSet):
                 return JsonResponse({'error': 'Invalid adoption id.'})
 
             confirmed_yearly_students = self.request.data.get('confirmed_yearly_students', 0)
-            data = {"verified": False, "confirmed_yearly_students": confirmed_yearly_students}
+            data = {"verified": True, "confirmed_yearly_students": confirmed_yearly_students}
 
             serializer = AdoptionOpportunityRecordSerializer(record, data=data, partial=True)
 
