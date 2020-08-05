@@ -142,6 +142,15 @@ class NewsIndex(Page):
     parent_page_types = ['pages.HomePage']
     max_count = 1
 
+    def get_sitemap_urls(self, request=None):
+        return [
+            {
+                'location': '{}/blog/'.format(request.site.root_url),
+                'lastmod': (self.last_published_at or self.latest_revision_created_at),
+            }
+        ]
+
+
 
 class NewsArticleTag(TaggedItemBase):
     content_object = ParentalKey('news.NewsArticle', related_name='tagged_items')
@@ -244,6 +253,14 @@ class NewsArticle(Page):
 
         return super(NewsArticle, self).save(*args, **kwargs)
 
+    def get_sitemap_urls(self, request=None):
+        return [
+            {
+                'location': '{}/blog/{}/'.format(request.site.root_url, self.slug),
+                'lastmod': (self.last_published_at or self.latest_revision_created_at),
+            }
+        ]
+
 
 class Experts(models.Model):
     name = models.CharField(max_length=255)
@@ -342,6 +359,14 @@ class PressIndex(Page):
         related_name='+'
     )
 
+    def get_sitemap_urls(self, request=None):
+        return [
+            {
+                'location': '{}/press/'.format(request.site.root_url),
+                'lastmod': (self.last_published_at or self.latest_revision_created_at),
+            }
+        ]
+
     @property
     def releases(self):
         releases = PressRelease.objects.live().child_of(self)
@@ -427,6 +452,14 @@ class PressRelease(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+
+    def get_sitemap_urls(self, request=None):
+        return [
+            {
+                'location': '{}/press/{}'.format(request.site.root_url, self.slug),
+                'lastmod': (self.last_published_at or self.latest_revision_created_at),
+            }
+        ]
 
     search_fields = Page.search_fields + [
         index.SearchField('body'),

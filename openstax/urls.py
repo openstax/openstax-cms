@@ -15,6 +15,7 @@ from news.feeds import RssBlogFeed, AtomBlogFeed
 
 from api import urls as api_urls
 from global_settings.views import throw_error
+from wagtail.contrib.sitemaps.views import sitemap
 
 admin.site.site_header = 'OpenStax'
 
@@ -48,6 +49,7 @@ urlpatterns = [
 
     # route everything to /api/spike also...
     url(r'^apps/cms/api/spike/', include(wagtail_urls)),
+    url('^sitemap\.xml$', sitemap),
 
     # For anything not caught by a more specific rule above, hand over to
     # Wagtail's serving mechanism
