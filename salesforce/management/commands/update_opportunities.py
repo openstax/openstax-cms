@@ -25,11 +25,11 @@ class Command(BaseCommand):
                     'CloseDate': adoption.last_update.strftime('%Y-%m-%d'),
                     'Type': 'Renewal - Verified'
                 }
-                adoptions_num_updated = adoptions_num_updated + 1
                 data.append(data_dict_item)
             results = sf.bulk.Opportunity.update(data)
             for result in results:
                 if result['success']: # we don't need to store these anymore, they are in SF now with a new opportunity type (so we don't get them in the next step)
+                    adoptions_num_updated = adoptions_num_updated + 1
                     adoptions.get(opportunity_id=result['id']).delete()
 
 
