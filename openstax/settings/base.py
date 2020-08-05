@@ -166,6 +166,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django.contrib.postgres',
     'django.contrib.admin',
+    'django.contrib.sitemaps',
     # contrib
     'compressor',
     'taggit',
