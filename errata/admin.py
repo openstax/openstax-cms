@@ -75,7 +75,7 @@ class ErrataAdmin(ExportActionModelAdmin):
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
     }
-    actions = ['mark_in_review', 'mark_reviewed', 'mark_archived', 'mark_completed', ExportActionMixin.export_admin_action]
+    actions = ['mark_in_review', 'mark_andrew_in_review', 'mark_anthony_in_review', 'mark_reviewed', 'mark_archived', 'mark_completed', ExportActionMixin.export_admin_action]
     inlines = [InlineInternalImage, ]
     raw_id_fields = ('submitted_by', 'duplicate_id')
 
@@ -85,6 +85,14 @@ class ErrataAdmin(ExportActionModelAdmin):
     """Actions for the Django Admin list view"""
     def mark_in_review(self, request, queryset):
         queryset.update(status='Editorial Review')
+    mark_in_review.short_description = "Mark errata as in-review"
+
+    def mark_andrew_in_review(self, request, queryset):
+        queryset.update(status='Andrew Editorial Review')
+    mark_in_review.short_description = "Mark errata as in-review"
+
+    def mark_anthony_in_review(self, request, queryset):
+        queryset.update(status='Anthony Editorial Review')
     mark_in_review.short_description = "Mark errata as in-review"
 
     def mark_reviewed(self, request, queryset):
