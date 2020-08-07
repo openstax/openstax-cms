@@ -6,13 +6,14 @@ from django.test import LiveServerTestCase, TestCase
 from six import StringIO
 from django.core.exceptions import ValidationError
 
-from salesforce.models import Adopter, SalesforceSettings, MapBoxDataset, Partner
+from salesforce.models import Adopter, SalesforceSettings, MapBoxDataset, Partner, AdoptionOpportunityRecord
 from salesforce.views import Salesforce
 from salesforce.salesforce import Salesforce as SF
-from salesforce.serializers import PartnerSerializer
+from salesforce.serializers import PartnerSerializer, AdoptionOpportunityRecordSerializer
 
 from rest_framework import status
 from rest_framework.test import APITestCase
+from rest_framework.test import APIRequestFactory
 
 from wagtail.tests.utils import WagtailPageTests
 
@@ -56,6 +57,32 @@ class PartnerTest(APITestCase, TestCase):
         invalid_partner_id = Partner.objects.order_by("id").last().id + 1
         response = self.client.get('/apps/cms/api/salesforce/partners/{}/'.format(invalid_partner_id), format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+class AdoptionOpportunityTest(APITestCase, TestCase):
+    def setUp(self):
+        call_command('update_opportunities')
+
+    def test_did_update_opportunities(self):
+        self.assertGreater(AdoptionOpportunityRecord.objects.all().count(), 0)
+
+    def test_get_opportunity(self):
+        random_adoption = AdoptionOpportunityRecord.objects.order_by("?").first()
+        response = self.client.get('/apps/cms/api/salesforce/renewal/{}/'.format(random_adoption.account_id), format='json')
+        self.assertEqual(response.status_code, 200)
+
+    def test_update_opportunity(self):
+        factory = APIRequestFactory()
+        random_adoption = AdoptionOpportunityRecord.objects.order_by("?").filter(verified=False).first()
+        initial_confirm_count = random_adoption.confirmed_yearly_students
+
+        data = {'confirmed_yearly_students': 1000, 'id': random_adoption.id}
+        response = self.client.post('/apps/cms/api/salesforce/renewal/{}/'.format(random_adoption.account_id), data, format='json')
+        self.assertEqual(response.status_code, 200)
+
+        updated_adoption = AdoptionOpportunityRecord.objects.get(id=random_adoption.id)
+        self.assertTrue(updated_adoption.verified)
+        self.assertNotEqual(updated_adoption.confirmed_yearly_students, initial_confirm_count)
+        self.assertEqual(updated_adoption.confirmed_yearly_students, 1000)
 
 
 class SalesforceTest(LiveServerTestCase, WagtailPageTests):

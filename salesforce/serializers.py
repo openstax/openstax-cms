@@ -37,19 +37,27 @@ class SchoolSerializer(serializers.ModelSerializer):
 class AdoptionOpportunityRecordSerializer(serializers.ModelSerializer):
     class Meta:
         model = AdoptionOpportunityRecord
-        fields = ('opportunity_id',
+        fields = ('id',
+                  'opportunity_id',
                   'account_id',
                   'book_name',
                   'email',
                   'school',
                   'yearly_students',
-                  'updated')
-        read_only_fields = ('opportunity_id',
+                  'confirmed_yearly_students',
+                  'verified',
+                  'created',
+                  'last_update')
+        read_only_fields = ('id',
+                  'opportunity_id',
                   'account_id',
                   'book_name',
                   'email',
                   'school',
-                  'yearly_students')
+                  'yearly_students',
+                  'created',
+                  'last_update',
+                  )
 
 class PartnerSerializer(serializers.ModelSerializer):
     def __init__(self, *args, **kwargs):
