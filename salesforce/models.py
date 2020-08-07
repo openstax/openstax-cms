@@ -22,7 +22,10 @@ class AdoptionOpportunityRecord(models.Model):
     email = models.EmailField(null=True, blank=True)
     school = models.CharField(max_length=255)
     yearly_students = models.CharField(max_length=255)
-    updated = models.BooleanField(default=False)
+    confirmed_yearly_students = models.IntegerField(null=True, blank=True,)
+    created = models.DateTimeField(auto_now_add=True)
+    last_update = models.DateTimeField(auto_now=True)
+    verified = models.BooleanField(default=False)
 
     def __str__(self):
         return self.opportunity_id

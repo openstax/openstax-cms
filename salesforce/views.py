@@ -2,8 +2,9 @@ from rest_framework import viewsets
 from rest_framework.views import APIView
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import action
 from rest_framework.response import Response
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
 from django.utils import timezone
 
 from .models import School, AdoptionOpportunityRecord, Partner, SalesforceForms, ResourceDownload
@@ -31,29 +32,32 @@ class ResourceDownloadViewSet(viewsets.ModelViewSet):
     serializer_class = ResourceDownloadSerializer
 
 
-class AdoptionOpportunityRecordViewSet(viewsets.ModelViewSet):
-    serializer_class = AdoptionOpportunityRecordSerializer
+class AdoptionOpportunityRecordViewSet(viewsets.ViewSet):
+    @action(methods=['get'], detail=True)
+    def list(self, request, account_id):
+        # a user can have many adoption records - one for each book
+        queryset = AdoptionOpportunityRecord.objects.filter(account_id=account_id, verified=False)
+        serializer = AdoptionOpportunityRecordSerializer(queryset, many=True)
+        return Response(serializer.data)
 
-    def get_queryset(self):
-        queryset = AdoptionOpportunityRecord.objects.filter(updated=False)
-        account_id = self.request.query_params.get('account_id', None)
-        if account_id is not None:
-            queryset = queryset.filter(account_id=account_id)
-        else:
-            queryset = None # if no account id, return nothing
-        return queryset
-
-
-class AdoptionUpdated(APIView):
-    def post(self, request, account_id):
-        # if no model exists by this PK, raise a 404 error
+    @action(methods=['post'], detail=True)
+    def post(self, request, account_id, format=None):
+        # this takes the adoption record as a post and looks it up, since a user can adopt more than one book
         records = AdoptionOpportunityRecord.objects.filter(account_id=account_id)
         if not records:
             return JsonResponse({'error': 'No records associated with that ID.'})
 
-        for record in records:
-            # this is the only field we want to update
-            data = {"updated": True}
+        # adoption id is included in the post request
+        id = self.request.data.get('id', None)
+        if id:
+            try:
+                record = AdoptionOpportunityRecord.objects.get(id=id)
+            except AdoptionOpportunityRecord.DoesNotExist:
+                return JsonResponse({'error': 'Invalid adoption id.'})
+
+            confirmed_yearly_students = self.request.data.get('confirmed_yearly_students', 0)
+            data = {"verified": True, "confirmed_yearly_students": confirmed_yearly_students}
+
             serializer = AdoptionOpportunityRecordSerializer(record, data=data, partial=True)
 
             if serializer.is_valid():
@@ -61,7 +65,9 @@ class AdoptionUpdated(APIView):
             else:
                 return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        return JsonResponse(data)
+            return JsonResponse(data)
+        else:
+            return JsonResponse({'error': 'Must include adoption ID to update'})
 
 
 def get_adoption_status(request):
@@ -72,3 +78,5 @@ def get_adoption_status(request):
             q = sf.query("SELECT Adoption_Status__c FROM Contact WHERE Accounts_ID__c = '{}'".format(account))
 
             return JsonResponse(q)
+    else:
+        raise Http404('Must supply account id for adoption.')
