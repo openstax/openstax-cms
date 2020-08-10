@@ -51,6 +51,7 @@ def sticky_note(request):
     return JsonResponse({
         'start': sticky_note.start,
         'expires': sticky_note.expires,
+        'show_popup': sticky_note.show_popup,
         'header': sticky_note.header,
         'body': sticky_note.body,
         'link_text': sticky_note.link_text,
