@@ -6,6 +6,7 @@ from wagtail.contrib.settings.models import BaseSetting, register_setting
 class StickyNote(BaseSetting):
     start = models.DateTimeField(null=True, help_text="Set the start date to override the content of the Give Sticky. Set the header and body below to change.")
     expires = models.DateTimeField(null=True, help_text="Set the date to expire overriding the content of the Give Sticky.")
+    show_popup = models.BooleanField(default=False, help_text="Replaces the top banner with a popup, start and expire dates still control timing.")
     header = models.TextField(max_length=255)
     body = models.TextField()
     link_text = models.CharField(max_length=255)
