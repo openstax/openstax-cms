@@ -21,8 +21,8 @@ from .forms import ErrataForm
 class ErrataResource(resources.ModelResource):
     class Meta:
         model = Errata
-        fields = ('id', 'created', 'modified', 'book__title', 'number_of_errors', 'is_assessment_errata', 'assessment_id', 'status', 'resolution', 'archived', 'junk', 'location', 'detail', 'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'resource', 'submitted_by_account_id', 'accounts_user_faculty_status')
-        export_order = ('id', 'created', 'modified', 'book__title', 'number_of_errors', 'is_assessment_errata', 'assessment_id', 'status', 'resolution', 'archived', 'junk', 'location', 'detail', 'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'resource', 'submitted_by_account_id', 'accounts_user_faculty_status')
+        fields = ('id', 'created', 'modified', 'book__title', 'number_of_errors', 'is_assessment_errata', 'assessment_id', 'status', 'resolution', 'archived', 'junk', 'location', 'additional_location_information', 'detail', 'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'resource', 'submitted_by_account_id', 'accounts_user_faculty_status')
+        export_order = ('id', 'created', 'modified', 'book__title', 'number_of_errors', 'is_assessment_errata', 'assessment_id', 'status', 'resolution', 'archived', 'junk', 'location', 'additional_location_information', 'detail', 'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'resource', 'submitted_by_account_id', 'accounts_user_faculty_status')
 
 
 class InlineInternalImage(admin.TabularInline):
