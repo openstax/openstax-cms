@@ -23,7 +23,8 @@ class Command(BaseCommand):
                 data_dict_item = {
                     'Id': adoption.opportunity_id,
                     'CloseDate': adoption.last_update.strftime('%Y-%m-%d'),
-                    'Type': 'Renewal - Verified'
+                    'Type': 'Renewal - Verified',
+                    'Students__c': adoption.confirmed_yearly_students
                 }
                 data.append(data_dict_item)
             results = sf.bulk.Opportunity.update(data)
@@ -34,7 +35,7 @@ class Command(BaseCommand):
 
 
             # then we will get any new records
-            command = "SELECT Id, OS_Accounts_ID__c, Book_Text__c, Contact_Email__c, School_Name__c, Yearly_Students__c, Confirmed_Yearly_Students__c, Type, Base_Year__c, IsWon from Opportunity WHERE OS_Accounts_ID__c != null AND Type = 'Renewal' AND Base_Year__c = {} AND IsWon = True".format(year)
+            command = "SELECT Id, OS_Accounts_ID__c, Book_Text__c, Contact_Email__c, School_Name__c, Yearly_Students__c, Students__c, Type, Base_Year__c, IsWon from Opportunity WHERE OS_Accounts_ID__c != null AND Type = 'Renewal' AND Base_Year__c = {} AND IsWon = True".format(year)
 
             response = sf.query_all(command)
             records = response['records']
