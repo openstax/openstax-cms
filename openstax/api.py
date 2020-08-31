@@ -2,16 +2,14 @@ from django.core.exceptions import MultipleObjectsReturned
 from django.shortcuts import redirect
 from django.urls import reverse, path
 
-from wagtail.api.v2.endpoints import PagesAPIEndpoint
 from wagtail.api.v2.router import WagtailAPIRouter
-
 from wagtail.api.v2.views import PagesAPIViewSet
 from wagtail.images.api.v2.views import ImagesAPIViewSet
 from wagtail.documents.api.v2.views import DocumentsAPIViewSet
 
 
 
-class OpenstaxPagesAPIEndpoint(PagesAPIEndpoint):
+class OpenstaxPagesAPIEndpoint(PagesAPIViewSet):
     """
     OpenStax custom Pages API endpoint that allows finding pages and books by pk or slug
     """
