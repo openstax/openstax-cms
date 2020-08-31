@@ -34,7 +34,6 @@ from pages.models import (HomePage,
                           HeroJourneyPage,
                           InstitutionalPartnerProgramPage,
                           CreatorFestPage,
-                          PartnersPage,
                           WebinarPage,
                           MathQuizPage)
 from news.models import NewsIndex, PressIndex
@@ -98,7 +97,6 @@ class HomePageTests(WagtailPageTests):
             HeroJourneyPage,
             InstitutionalPartnerProgramPage,
             CreatorFestPage,
-            PartnersPage,
             WebinarPage,
             MathQuizPage
         })
