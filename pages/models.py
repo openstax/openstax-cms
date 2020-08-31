@@ -566,7 +566,7 @@ class HomePage(Page):
         'pages.HeroJourneyPage',
         'pages.InstitutionalPartnerProgramPage',
         'pages.CreatorFestPage',
-        'pages.PartnersPage',
+        'pages.PartnersPage'
         'pages.WebinarPage',
         'pages.MathQuizPage',
         'books.BookIndex',
