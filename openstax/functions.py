@@ -5,7 +5,7 @@ from wagtail.core.models import Site
 def build_document_url(url):
     if url:
         site = Site.objects.get(is_default_site=True)
-        if site.port == 80:
+        if site.port == 80 or site.port == 443:
             folder = url.split('/')[1]
             filename = url.split('/')[-1]
             return "{}{}/{}".format(settings.MEDIA_URL, folder, filename)
@@ -18,7 +18,7 @@ def build_document_url(url):
 def build_image_url(image):
     if image:
         site = Site.objects.get(is_default_site=True)
-        if site.port == 80:
+        if site.port == 80 or site.port == 443:
             return "{}{}".format(settings.MEDIA_URL, image.file)
         else:
             return "http://{}:{}/api/v0/images/{}".format(site.hostname, site.port, image.pk)
