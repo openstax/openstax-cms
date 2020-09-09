@@ -27,7 +27,6 @@ class Command(BaseCommand):
                     'Number_of_times_accessed__c': rd.number_of_times_accessed,
                     'Last_accessed__c': rd.last_access.strftime('%Y-%m-%d')
                 }
-                print(data_dict_item)
                 data.append(data_dict_item)
                 number_updated = number_updated + 1
             sf.bulk.Resource__c.update(data)

@@ -205,6 +205,7 @@ class Partner(models.Model):
     accessibility_VPAT = models.BooleanField(default=False)
     accessibility_WCAG = models.BooleanField(default=False)
     accessibility_universal_design = models.BooleanField(default=False)
+    instructional_level_k12 = models.BooleanField(default=False)
 
     def __str__(self):
         return self.partner_name
