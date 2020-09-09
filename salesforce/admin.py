@@ -122,6 +122,7 @@ class PartnerAdmin(admin.ModelAdmin):
     'interactivity_previous_knowledge',
     'interactivity_simulations',
     'interactivity_varying_means',
+    'instructional_level_k12',
     'LMS_analytics',
     'LMS_sends_grades',
     'LMS_SSO',
