@@ -23,8 +23,7 @@ class Command(BaseCommand):
                 data_dict_item = {
                     'Id': adoption.opportunity_id,
                     'CloseDate': adoption.last_update.strftime('%Y-%m-%d'),
-                    'Type': 'Renewal - Verified',
-                    'Students__c': adoption.confirmed_yearly_students
+                    'Type': 'Renewal - Verified'
                 }
                 data.append(data_dict_item)
             results = sf.bulk.Opportunity.update(data)
