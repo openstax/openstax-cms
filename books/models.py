@@ -188,6 +188,7 @@ class FacultyResources(models.Model):
     updated = models.DateTimeField(blank=True, null=True, help_text='Late date resource was updated')
     featured = models.BooleanField(default=False, help_text="Add to featured bar on resource page")
     k12 = models.BooleanField(default=False, help_text="Add K12 banner to resource")
+    print_link = models.URLField(blank=True, null=True, help_text="Link for Buy Print link on resource")
 
     api_fields = [
         APIField('resource_heading'),
@@ -203,7 +204,8 @@ class FacultyResources(models.Model):
         APIField('video_reference_number'),
         APIField('updated'),
         APIField('featured'),
-        APIField('k12')
+        APIField('k12'),
+        APIField('print_link')
     ]
 
     panels = [
@@ -216,7 +218,8 @@ class FacultyResources(models.Model):
         FieldPanel('video_reference_number'),
         FieldPanel('updated'),
         FieldPanel('featured'),
-        FieldPanel('k12')
+        FieldPanel('k12'),
+        FieldPanel('print_link')
     ]
 
 
@@ -270,6 +273,7 @@ class StudentResources(models.Model):
     link_text = models.CharField(max_length=255, help_text="Call to Action Text")
     coming_soon_text = models.CharField(max_length=255, null=True, blank=True, help_text="If there is text in this field a coming soon banner will be added with this description.")
     updated = models.DateTimeField(blank=True, null=True, help_text='Late date resource was updated')
+    print_link = models.URLField(blank=True, null=True, help_text="Link for Buy Print link on resource")
 
     api_fields = [
         APIField('resource_heading'),
@@ -281,7 +285,8 @@ class StudentResources(models.Model):
         APIField('link_document_title'),
         APIField('link_text'),
         APIField('coming_soon_text'),
-        APIField('updated')
+        APIField('updated'),
+        APIField('print_link')
     ]
 
     panels = [
@@ -292,6 +297,7 @@ class StudentResources(models.Model):
         FieldPanel('link_text'),
         FieldPanel('coming_soon_text'),
         FieldPanel('updated'),
+        FieldPanel('print_link')
     ]
 
 
@@ -500,7 +506,7 @@ class Book(Page):
 
     cover = models.ForeignKey(
         'wagtaildocs.Document',
-        null=True,
+        null=True, blank=True,
         on_delete=models.SET_NULL,
         related_name='+',
         help_text='The book cover to be shown on the website.'
@@ -511,7 +517,7 @@ class Book(Page):
 
     title_image = models.ForeignKey(
         'wagtaildocs.Document',
-        null=True,
+        null=True, blank=True,
         on_delete=models.SET_NULL,
         related_name='+',
         help_text='The svg for title image to be shown on the website.'
