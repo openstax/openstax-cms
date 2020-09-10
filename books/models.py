@@ -506,7 +506,7 @@ class Book(Page):
 
     cover = models.ForeignKey(
         'wagtaildocs.Document',
-        null=True,
+        null=True, blank=True,
         on_delete=models.SET_NULL,
         related_name='+',
         help_text='The book cover to be shown on the website.'
@@ -517,7 +517,7 @@ class Book(Page):
 
     title_image = models.ForeignKey(
         'wagtaildocs.Document',
-        null=True,
+        null=True, blank=True,
         on_delete=models.SET_NULL,
         related_name='+',
         help_text='The svg for title image to be shown on the website.'
