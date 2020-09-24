@@ -133,3 +133,14 @@ class APITests(TestCase, WagtailTestUtils):
                                 json.dumps(data),
                                 content_type="application/json")
         self.assertEqual(response.status_code, 201)
+
+    def test_bad_submission_returns_400(self):
+        data = {'bad-key': 'no-data'}
+        response = self.client.post('/apps/cms/api/customize/',
+                                    json.dumps(data),
+                                    content_type="application/json")
+        self.assertEqual(response.status_code, 400)
+
+    def test_get_request_returns_nothing(self):
+        response = self.client.get('/apps/cms/api/customize/')
+        self.assertIn("Only post requests valid for this endpoint", response.content.decode("utf-8"))
