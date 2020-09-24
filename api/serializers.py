@@ -43,7 +43,6 @@ class ProgressSerializer(serializers.HyperlinkedModelSerializer):
         progress, created = ProgressTracker.objects.update_or_create(
             account_id=validated_data.get('account_id', None),
             defaults={'progress':validated_data.get('progress', None)})
-        print(created)
 
         return progress
 
@@ -56,7 +55,6 @@ class ProgressSerializer(serializers.HyperlinkedModelSerializer):
 
 class ModuleListingField(serializers.StringRelatedField):
     def to_internal_value(self, value):
-        print(value)
         return value
 
 class CustomizationRequestSerializer(serializers.ModelSerializer):
