@@ -1,3 +1,4 @@
+import json
 from django.test import TestCase, Client
 
 from wagtail.tests.utils import WagtailTestUtils
@@ -122,3 +123,24 @@ class APITests(TestCase, WagtailTestUtils):
         self.assertEqual(response.status_code, 200)
         response = self.client.get('/apps/cms/api/flags')
         self.assertEqual(response.status_code, 200)
+
+    def test_can_submit_customization_form(self):
+        data = {'email': 'test@rice.edu',
+                'num_students': 45,
+                'reason': 'I want to make a new book',
+                'modules': ['1-1-example', '2-2-example']}
+        response = self.client.post('/apps/cms/api/customize/',
+                                json.dumps(data),
+                                content_type="application/json")
+        self.assertEqual(response.status_code, 201)
+
+    def test_bad_submission_returns_400(self):
+        data = {'bad-key': 'no-data'}
+        response = self.client.post('/apps/cms/api/customize/',
+                                    json.dumps(data),
+                                    content_type="application/json")
+        self.assertEqual(response.status_code, 400)
+
+    def test_get_request_returns_nothing(self):
+        response = self.client.get('/apps/cms/api/customize/')
+        self.assertIn("Only post requests valid for this endpoint", response.content.decode("utf-8"))

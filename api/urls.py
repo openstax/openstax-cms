@@ -1,7 +1,8 @@
 from django.conf.urls import include, url
+from django.urls import path
 from rest_framework import routers
 
-from .views import AdopterViewSet, ImageViewSet, DocumentViewSet, ProgressViewSet, sticky_note, footer, schools, mapbox, flags, errata_fields
+from .views import AdopterViewSet, ImageViewSet, DocumentViewSet, ProgressViewSet, customize_request, sticky_note, footer, schools, mapbox, flags, errata_fields
 
 router = routers.DefaultRouter()
 router.register(r'images', ImageViewSet)
@@ -17,5 +18,6 @@ urlpatterns = [
     url(r'^mapbox/$', mapbox, name='mapbox'),
     url(r'^flags/$', flags, name='flags'),
     url(r'^errata-fields/', errata_fields, name='errata-fields'),
+    path('customize/', customize_request),
 ]
 
