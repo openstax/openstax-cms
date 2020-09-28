@@ -2,14 +2,18 @@ from django.core import serializers
 from django.http import JsonResponse, HttpResponse
 from django.db.models import Q
 from rest_framework import viewsets, generics
+from rest_framework import status
 from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework.decorators import parser_classes
+from rest_framework.parsers import JSONParser
 from salesforce.models import Adopter, School, MapBoxDataset
 from errata.models import ERRATA_RESOURCES
 from global_settings.models import StickyNote, Footer
 from wagtail.images.models import Image
 from wagtail.documents.models import Document
 from .models import ProgressTracker
-from .serializers import AdopterSerializer, ImageSerializer, DocumentSerializer, ProgressSerializer
+from .serializers import AdopterSerializer, ImageSerializer, DocumentSerializer, ProgressSerializer, CustomizationRequestSerializer
 from flags.sources import get_flags
 
 class AdopterViewSet(viewsets.ModelViewSet):
@@ -188,3 +192,21 @@ def flags(request):
             return JsonResponse(data, safe=False)
         else:
             return JsonResponse([{'error': 'The flag does not exist.'}], safe=False)
+
+
+
+@api_view(['GET', 'POST'])
+@parser_classes([JSONParser])
+def customize_request(request):
+    """
+    Only allow posts to this endpoint.
+    """
+    if request.method == 'POST':
+        serializer = CustomizationRequestSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    else:
+        return Response({'message': 'Only post requests valid for this endpoint'})
