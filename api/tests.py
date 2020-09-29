@@ -144,3 +144,9 @@ class APITests(TestCase, WagtailTestUtils):
     def test_get_request_returns_nothing(self):
         response = self.client.get('/apps/cms/api/customize/')
         self.assertIn("Only post requests valid for this endpoint", response.content.decode("utf-8"))
+
+    def test_give_today_api(self):
+        response = self.client.get('/apps/cms/api/give-today/')
+        self.assertEqual(response.status_code, 200)
+        response = self.client.get('/apps/cms/api/give-today')
+        self.assertEqual(response.status_code, 200)

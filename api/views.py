@@ -9,7 +9,7 @@ from rest_framework.decorators import parser_classes
 from rest_framework.parsers import JSONParser
 from salesforce.models import Adopter, School, MapBoxDataset
 from errata.models import ERRATA_RESOURCES
-from global_settings.models import StickyNote, Footer
+from global_settings.models import StickyNote, Footer, GiveToday
 from wagtail.images.models import Image
 from wagtail.documents.models import Document
 from .models import ProgressTracker
@@ -210,3 +210,14 @@ def customize_request(request):
 
     else:
         return Response({'message': 'Only post requests valid for this endpoint'})
+
+
+def give_today(request):
+    give_today = GiveToday.for_site(request.site)
+
+    return JsonResponse({
+        'give_link_text': give_today.give_link_text,
+        'give_link': give_today.give_link,
+        'start': give_today.start,
+        'expires': give_today.expires,
+    })

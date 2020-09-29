@@ -13,9 +13,9 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.AlterField(
-            model_name='book',
-            name='give_today',
-            field=wagtail.core.fields.StreamField([('content', books.models.GiveTodayChooserBlock(snippets.models.GiveToday))], blank=True, help_text='Give link text and url.', null=True),
-        ),
+        # migrations.AlterField(
+        #     model_name='book',
+        #     name='give_today',
+        #     field=wagtail.core.fields.StreamField([('content', books.models.GiveTodayChooserBlock(snippets.models.GiveToday))], blank=True, help_text='Give link text and url.', null=True),
+        # ),
     ]
