@@ -21,3 +21,8 @@ class SubjectList(viewsets.ReadOnlyModelViewSet):
         if name is not None:
             queryset = queryset.filter(name=name)
         return queryset
+
+
+class RoleViewSet(viewsets.ModelViewSet):
+    queryset = Role.objects.all()
+    serializer_class = RoleSerializer

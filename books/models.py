@@ -630,6 +630,13 @@ class Book(Page):
     partner_page_link_text = models.CharField(max_length=255, null=True, blank=True, help_text="Link to partners page on top right of list.")
     featured_resources_header = models.CharField(max_length=255, null=True, blank=True, help_text="Featured resource header on instructor resources tab.")
 
+    customization_form_heading = models.CharField(max_length=255, null=True, blank=True, help_text="Heading for the CE customization form. This will update ALL books to use this value!")
+    customization_form_subheading = models.CharField(max_length=255, null=True, blank=True, help_text="Subheading for the CE customization form. This will update ALL books to use this value!")
+    customization_form_disclaimer = RichTextField(blank=True, help_text="This will update ALL books to use this value!")
+    customization_form_next_steps = RichTextField(blank=True, help_text="This will update ALL books to use this value!")
+
+
+
     videos = StreamField([
         ('video', blocks.ListBlock(blocks.StructBlock([
             ('title', blocks.CharBlock()),
@@ -709,6 +716,10 @@ class Book(Page):
         FieldPanel('partner_list_label'),
         FieldPanel('partner_page_link_text'),
         FieldPanel('last_updated_pdf'),
+        FieldPanel('customization_form_heading'),
+        FieldPanel('customization_form_subheading'),
+        FieldPanel('customization_form_disclaimer'),
+        FieldPanel('customization_form_next_steps'),
         StreamFieldPanel('videos'),
     ]
     instructor_resources_panel = [
@@ -806,6 +817,10 @@ class Book(Page):
         APIField('tutor_marketing_book'),
         APIField('partner_list_label'),
         APIField('partner_page_link_text'),
+        APIField('customization_form_heading'),
+        APIField('customization_form_subheading'),
+        APIField('customization_form_disclaimer'),
+        APIField('customization_form_next_steps'),
         APIField('videos'),
         APIField('seo_title'),
         APIField('search_description'),
@@ -888,6 +903,16 @@ class Book(Page):
 
         if self.partner_page_link_text:
             Book.objects.all().update(partner_page_link_text=self.partner_page_link_text)
+
+        # sync customization form changes on all books
+        if self.customization_form_heading:
+            Book.objects.all().update(customization_form_heading=self.customization_form_heading)
+        if self.customization_form_subheading:
+            Book.objects.all().update(customization_form_subheading=self.customization_form_subheading)
+        if self.customization_form_disclaimer:
+            Book.objects.all().update(customization_form_disclaimer=self.customization_form_disclaimer)
+        if self.customization_form_next_steps:
+            Book.objects.all().update(customization_form_next_steps=self.customization_form_next_steps)
 
         return super(Book, self).save(*args, **kwargs)
 
