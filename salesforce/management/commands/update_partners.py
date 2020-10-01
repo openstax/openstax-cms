@@ -113,6 +113,8 @@ class Command(BaseCommand):
             created_partners = 0
 
             for partner in sf_marketplace_partners:
+                if partner['Affordability_cost__c']:
+                    affordability_cost=partner['Affordability_cost__c'].replace(";", "; ")
                 try:
                     p = Partner.objects.get(salesforce_id=partner['Id'])
                     p.partner_name=partner['Name']
@@ -126,7 +128,7 @@ class Command(BaseCommand):
                     p.landing_page=partner['Landing_page__c']
                     p.verified_by_instructor=self.str2bool(partner['Verified_by_instructors__c'])
                     p.integrated=partner['Integrated_with_OpenStax_content__c']
-                    p.affordability_cost=partner['Affordability_cost__c']
+                    p.affordability_cost=affordability_cost
                     p.affordability_institutional=self.str2bool(partner['Affordability_Institutional__c'])
                     p.app_available=self.str2bool(partner['App_available__c'])
                     p.adaptivity_adaptive_presentation=self.str2bool(partner['Adaptivity_adaptive_presentation__c'])
