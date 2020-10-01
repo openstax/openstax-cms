@@ -152,4 +152,3 @@ class NewsSource(index.Indexed, models.Model):
         return self.name
 
 register_snippet(NewsSource)
-
