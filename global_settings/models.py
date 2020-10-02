@@ -46,6 +46,10 @@ class GiveToday(BaseSetting):
                                  help_text="Set the start date for Give Today to display")
     expires = models.DateTimeField(null=True,
                                    help_text="Set the date to expire displaying Give Today")
+    menu_start = models.DateTimeField(null=True,
+                                 help_text="Set the start date for Give Today to display in the menu")
+    menu_expires = models.DateTimeField(null=True,
+                                   help_text="Set the date to expire displaying Give Today in the menu")
 
     class Meta:
         verbose_name = 'Give Today'

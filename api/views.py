@@ -220,4 +220,6 @@ def give_today(request):
         'give_link': give_today.give_link,
         'start': give_today.start,
         'expires': give_today.expires,
+        'menu_start': give_today.menu_start,
+        'menu_expires': give_today.menu_expires,
     })
