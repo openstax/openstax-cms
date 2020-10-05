@@ -614,8 +614,8 @@ class Book(Page):
     rex_callout_blurb = models.CharField(max_length=255, blank=True, null=True, help_text='Additional text for the REX callout.')
     enable_study_edge = models.BooleanField(default=False, help_text="This will cause the link to the Study Edge app appear on the book details page.")
     bookshare_link = models.URLField(blank=True, help_text="Link to Bookshare resources")
-    amazon_coming_soon = models.BooleanField(default=False, help_text='Whether this book is coming to Amazon bookstore.')
-    amazon_link = models.URLField(blank=True, help_text="Link to Amazon")
+    amazon_coming_soon = models.BooleanField(default=False, verbose_name="Individual Print Coming Soon")
+    amazon_link = models.URLField(blank=True, verbose_name="Individual Print Link")
     kindle_link = models.URLField(blank=True, help_text="Link to Kindle version")
     chegg_link = models.URLField(blank=True, null=True, help_text="Link to Chegg e-reader")
     chegg_link_text = models.CharField(max_length=255, blank=True, null=True, help_text='Text for Chegg link.')
@@ -629,6 +629,13 @@ class Book(Page):
     partner_list_label = models.CharField(max_length=255, null=True, blank=True, help_text="Controls the heading text on the book detail page for partners. This will update ALL books to use this value!")
     partner_page_link_text = models.CharField(max_length=255, null=True, blank=True, help_text="Link to partners page on top right of list.")
     featured_resources_header = models.CharField(max_length=255, null=True, blank=True, help_text="Featured resource header on instructor resources tab.")
+
+    customization_form_heading = models.CharField(max_length=255, null=True, blank=True, help_text="Heading for the CE customization form. This will update ALL books to use this value!", default="Customization Form")
+    customization_form_subheading = models.CharField(max_length=255, null=True, blank=True, help_text="Subheading for the CE customization form. This will update ALL books to use this value!", default="Please select the modules (up to 10), that you want to customize with Google Docs.")
+    customization_form_disclaimer = RichTextField(blank=True, help_text="This will update ALL books to use this value!", default="<p><b>Disclaimer</b></p><p>The following features and functionality are not available to teachers and students using Google Docs customized content:</p><ul><li><b>Errata updates</b>. OpenStax webview is updated at least twice yearly. Customized Google Docs will not receive these content updates.</li><li><b>Access to study tools</b>. OpenStax webview has in-book search, highlighting, study guides, and more available for free. This functionality will not be available in Google Docs versions.</li><li><b>Formatting. </b>Print books and webview have a specific design and structure format developed for those platforms. These functionalities are not available in the Google Docs versions.</li></ul>")
+    customization_form_next_steps = RichTextField(blank=True, help_text="This will update ALL books to use this value!", default="<p><b>Next Steps</b></p><ol><li>Within two business days, you will receive an email for each module that you have requested access to customize.</li><li>The link provided in the email will be your own copy of the Google Doc that OpenStax generated for you.</li><li>Once you have accessessed the document you can make the changes you desire and share with your students. We recommend using the &quot;Publish to the Web&quot; functionality under the file menu for sharing with students.</li></ol>")
+
+
 
     videos = StreamField([
         ('video', blocks.ListBlock(blocks.StructBlock([
@@ -709,6 +716,10 @@ class Book(Page):
         FieldPanel('partner_list_label'),
         FieldPanel('partner_page_link_text'),
         FieldPanel('last_updated_pdf'),
+        FieldPanel('customization_form_heading'),
+        FieldPanel('customization_form_subheading'),
+        FieldPanel('customization_form_disclaimer'),
+        FieldPanel('customization_form_next_steps'),
         StreamFieldPanel('videos'),
     ]
     instructor_resources_panel = [
@@ -806,6 +817,10 @@ class Book(Page):
         APIField('tutor_marketing_book'),
         APIField('partner_list_label'),
         APIField('partner_page_link_text'),
+        APIField('customization_form_heading'),
+        APIField('customization_form_subheading'),
+        APIField('customization_form_disclaimer'),
+        APIField('customization_form_next_steps'),
         APIField('videos'),
         APIField('seo_title'),
         APIField('search_description'),
@@ -888,6 +903,16 @@ class Book(Page):
 
         if self.partner_page_link_text:
             Book.objects.all().update(partner_page_link_text=self.partner_page_link_text)
+
+        # sync customization form changes on all books
+        if self.customization_form_heading:
+            Book.objects.all().update(customization_form_heading=self.customization_form_heading)
+        if self.customization_form_subheading:
+            Book.objects.all().update(customization_form_subheading=self.customization_form_subheading)
+        if self.customization_form_disclaimer:
+            Book.objects.all().update(customization_form_disclaimer=self.customization_form_disclaimer)
+        if self.customization_form_next_steps:
+            Book.objects.all().update(customization_form_next_steps=self.customization_form_next_steps)
 
         return super(Book, self).save(*args, **kwargs)
 
