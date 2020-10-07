@@ -8,8 +8,8 @@ from .models import CustomizationRequest
 class CustomizationRequestResource(resources.ModelResource):
     class Meta:
         model = CustomizationRequest
-        fields = ('id', 'email', 'num_students', 'reason', 'modules')
-        export_order = ('id', 'email', 'num_students', 'reason', 'modules')
+        fields = ('id', 'email', 'complete', 'num_students', 'reason', 'modules')
+        export_order = ('id', 'email', 'complete', 'num_students', 'reason', 'modules')
 
 
 class CustomizationRequestAdmin(ExportActionModelAdmin):
