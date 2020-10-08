@@ -13,3 +13,4 @@ class CustomizationRequest(models.Model):
     num_students = models.IntegerField()
     reason = models.TextField()
     modules = models.TextField()
+    complete = models.BooleanField(default=False)
