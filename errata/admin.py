@@ -1,7 +1,6 @@
 import unicodecsv
 from import_export import resources
 from import_export.admin import ExportActionModelAdmin, ExportActionMixin
-from import_export.formats import base_formats
 
 from django.contrib import admin
 from django.db import models
