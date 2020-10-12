@@ -104,7 +104,15 @@ class Command(BaseCommand):
                     "Accessibility_VPAT__c, " \
                     "Accessibility_WCAG__c, " \
                     "Accessibility_Universal_Design__c, " \
-                    "Instructional_level_K12__c " \
+                    "Instructional_level_K12__c, " \
+                    "Online_teaching_peer_discussion__c, " \
+                    "Online_teaching_lecture_streaming__c, " \
+                    "Online_teaching_in_lecture__c, " \
+                    "Online_teaching_asynchronous__c, " \
+                    "Online_teaching_audio_video__c, " \
+                    "Online_teaching_academic_integrity__c, " \
+                    "Online_teaching_labs__c, " \
+                    "International__c " \
                     "FROM Account WHERE RecordTypeId = '012U0000000MeAuIAK'"
             response = sf.query_all(query)
             sf_marketplace_partners = response['records']
@@ -204,6 +212,14 @@ class Command(BaseCommand):
                     p.accessibility_WCAG=self.str2bool(partner['Accessibility_WCAG__c'])
                     p.accessibility_universal_design=self.str2bool(partner['Accessibility_Universal_Design__c'])
                     p.instructional_level_k12=self.str2bool(partner['Instructional_level_K12__c'])
+                    p.online_teaching_peer_discussion=self.str2bool(partner['Online_teaching_peer_discussion__c'])
+                    p.online_teaching_lecture_streaming=self.str2bool(partner['Online_teaching_lecture_streaming__c'])
+                    p.online_teaching_in_lecture=self.str2bool(partner['Online_teaching_in_lecture__c'])
+                    p.online_teaching_asynchronous=self.str2bool(partner['Online_teaching_asynchronous__c'])
+                    p.online_teaching_audio_video=self.str2bool(partner['Online_teaching_audio_video__c'])
+                    p.online_teaching_academic_integrity=self.str2bool(partner['Online_teaching_academic_integrity__c'])
+                    p.online_teaching_teaching_labs=self.str2bool(partner['Online_teaching_labs__c'])
+                    p.international=self.str2bool(partner['International__c'])
                     p.save()
                     updated_partners = updated_partners + 1
                 except Partner.DoesNotExist:
@@ -296,6 +312,14 @@ class Command(BaseCommand):
                         accessibility_WCAG = self.str2bool(partner['Accessibility_WCAG__c']),
                         accessibility_universal_design = self.str2bool(partner['Accessibility_Universal_Design__c']),
                         instructional_level_k12 = self.str2bool(partner['Instructional_level_K12__c']),
+                        online_teaching_peer_discussion = self.str2bool(partner['Online_teaching_peer_discussion__c']),
+                        online_teaching_lecture_streaming = self.str2bool(partner['Online_teaching_lecture_streaming__c']),
+                        online_teaching_in_lecture = self.str2bool(partner['Online_teaching_in_lecture__c']),
+                        online_teaching_asynchronous = self.str2bool(partner['Online_teaching_asynchronous__c']),
+                        online_teaching_audio_video = self.str2bool(partner['Online_teaching_audio_video__c']),
+                        online_teaching_academic_integrity = self.str2bool(partner['Online_teaching_academic_integrity__c']),
+                        online_teaching_teaching_labs = self.str2bool(partner['Online_teaching_labs__c']),
+                        international = self.str2bool(partner['International__c']),
                     )
                     created_partners = created_partners + 1
 

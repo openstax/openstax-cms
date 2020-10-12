@@ -207,6 +207,14 @@ class Partner(models.Model):
     accessibility_WCAG = models.BooleanField(default=False)
     accessibility_universal_design = models.BooleanField(default=False)
     instructional_level_k12 = models.BooleanField(default=False)
+    online_teaching_peer_discussion = models.BooleanField(default=False)
+    online_teaching_lecture_streaming = models.BooleanField(default=False)
+    online_teaching_in_lecture = models.BooleanField(default=False)
+    online_teaching_asynchronous = models.BooleanField(default=False)
+    online_teaching_audio_video = models.BooleanField(default=False)
+    online_teaching_academic_integrity = models.BooleanField(default=False)
+    online_teaching_teaching_labs = models.BooleanField(default=False)
+    international = models.BooleanField(default=False)
 
     def __str__(self):
         return self.partner_name

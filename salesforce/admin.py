@@ -145,7 +145,15 @@ class PartnerAdmin(admin.ModelAdmin):
     'accessibility_VPAT',
     'accessibility_WCAG',
     'accessibility_universal_design',
-    'partner_logo_tag')
+    'partner_logo_tag',
+    'online_teaching_peer_discussion',
+    'online_teaching_lecture_streaming',
+    'online_teaching_in_lecture',
+    'online_teaching_asynchronous',
+    'online_teaching_audio_video',
+    'online_teaching_academic_integrity',
+    'online_teaching_teaching_labs',
+    'international')
 
 
 class PartnerCategoryMappingAdmin(admin.ModelAdmin):
