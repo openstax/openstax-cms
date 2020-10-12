@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.validators import MaxValueValidator, MinValueValidator
 from django.core.exceptions import ValidationError
 
 from wagtail.core import hooks
@@ -247,6 +248,34 @@ class PartnerTypeMapping(models.Model):
     def __str__(self):
         return self.display_name
 
+
+class PartnerReview(models.Model):
+    STATUS_OPTIONS = (
+        ('New', 'New'),
+        ('Approved', 'Approved'),
+        ('Rejected', 'Rejected')
+    )
+    REJECTION_REASONS = (
+        ('Content violates review standards', 'Content violates review standards'),
+        ('Content contains personally identifiable information', 'Content contains personally identifiable information'),
+        ('Content contains inappropriate language', 'Content contains inappropriate language'),
+        ('Review is not based on personal experience', 'Review is not based on personal experience'),
+        ('Content is not relevant to the product at hand', 'Content is not relevant to the product at hand'),
+    )
+    partner = models.ForeignKey(Partner, on_delete=models.SET_NULL, null=True)
+    rating = models.IntegerField(validators=[
+            MaxValueValidator(5),
+            MinValueValidator(0)
+        ])
+    review = models.TextField(null=True, blank=True)
+    partner_response = models.TextField(null=True, blank=True)
+    submitted_by_name = models.CharField(max_length=255)
+    submitted_by_account_id = models.IntegerField()
+    status = models.CharField(max_length=255, choices=STATUS_OPTIONS)
+    rejection_reason = models.CharField(max_length=255, choices=REJECTION_REASONS, null=True, blank=True)
+
+    def __str__(self):
+        return self.submitted_by_name
 
 class ResourceDownload(models.Model):
     BOOK_FORMATS = (
