@@ -9,6 +9,7 @@ from .models import AdoptionOpportunityRecord, \
     PartnerCategoryMapping, \
     PartnerFieldNameMapping, \
     PartnerTypeMapping, \
+    PartnerReview, \
     ResourceDownload
 
 
@@ -166,6 +167,13 @@ class PartnerFieldNameMappingAdmin(admin.ModelAdmin):
 class PartnerTypeMappingAdmin(admin.ModelAdmin):
     list_display = ('display_name',)
 
+
+class PartnerReviewAdmin(admin.ModelAdmin):
+    list_display = ('partner', 'submitted_by_name', 'rating', 'status')
+    list_filter = ('rating', 'partner')
+    search_fields = ['partner', 'submitted_by_name', 'submitted_by_account_id']
+
+
 class ResourceDownloadAdmin(admin.ModelAdmin):
     list_display = ('id', 'created', 'last_access', 'salesforce_id', 'resource_name', 'book', 'book_format', 'account_id', 'number_of_times_accessed')
     list_filter = ('created', 'book')
@@ -179,4 +187,5 @@ admin.site.register(Partner, PartnerAdmin)
 admin.site.register(PartnerCategoryMapping, PartnerCategoryMappingAdmin)
 admin.site.register(PartnerFieldNameMapping, PartnerFieldNameMappingAdmin)
 admin.site.register(PartnerTypeMapping, PartnerTypeMappingAdmin)
+admin.site.register(PartnerReview, PartnerReviewAdmin)
 admin.site.register(ResourceDownload, ResourceDownloadAdmin)
