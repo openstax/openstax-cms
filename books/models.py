@@ -384,6 +384,7 @@ class SharedContentBlock(blocks.StreamBlock):
 
     class Meta:
         icon = 'document'
+        required = False
 
 
 class BookFacultyResources(Orderable, FacultyResources):
