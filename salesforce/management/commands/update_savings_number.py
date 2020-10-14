@@ -1,7 +1,6 @@
 from django.core.management.base import BaseCommand
 from salesforce.models import SavingsNumber
 from salesforce.salesforce import Salesforce
-from pprint import pprint
 
 class Command(BaseCommand):
     help = "update schools from salesforce.com"
