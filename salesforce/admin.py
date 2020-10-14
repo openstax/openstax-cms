@@ -10,7 +10,8 @@ from .models import AdoptionOpportunityRecord, \
     PartnerFieldNameMapping, \
     PartnerTypeMapping, \
     PartnerReview, \
-    ResourceDownload
+    ResourceDownload, \
+    SavingsNumber
 
 
 class SchoolAdmin(admin.ModelAdmin):
@@ -189,3 +190,4 @@ admin.site.register(PartnerFieldNameMapping, PartnerFieldNameMappingAdmin)
 admin.site.register(PartnerTypeMapping, PartnerTypeMappingAdmin)
 admin.site.register(PartnerReview, PartnerReviewAdmin)
 admin.site.register(ResourceDownload, ResourceDownloadAdmin)
+admin.site.register(SavingsNumber)
