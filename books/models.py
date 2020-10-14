@@ -956,6 +956,9 @@ class BookIndex(Page):
     dev_standard_3_heading = models.CharField(
         max_length=255, blank=True, null=True)
     dev_standard_3_description = RichTextField()
+    dev_standard_4_heading = models.CharField(
+        max_length=255, blank=True, null=True)
+    dev_standard_4_description = models.TextField(help_text="Keep <span> in place to populate with Salesforce data. id=adoption_number for classrooms and id=savings for savings number.")
     subject_list_heading = models.CharField(
         max_length=255, blank=True, null=True)
     promote_image = models.ForeignKey(
@@ -1017,6 +1020,8 @@ class BookIndex(Page):
         FieldPanel('dev_standard_2_description'),
         FieldPanel('dev_standard_3_heading'),
         FieldPanel('dev_standard_3_description'),
+        FieldPanel('dev_standard_4_heading'),
+        FieldPanel('dev_standard_4_description'),
         FieldPanel('subject_list_heading'),
     ]
 
@@ -1037,6 +1042,8 @@ class BookIndex(Page):
         APIField('dev_standard_2_description'),
         APIField('dev_standard_3_heading'),
         APIField('dev_standard_3_description'),
+        APIField('dev_standard_4_heading'),
+        APIField('dev_standard_4_description'),
         APIField('subject_list_heading'),
         APIField('books'),
         APIField('seo_title'),
