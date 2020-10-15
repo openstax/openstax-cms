@@ -7,8 +7,8 @@ from rest_framework.response import Response
 from django.http import JsonResponse, Http404
 from django.utils import timezone
 
-from .models import School, AdoptionOpportunityRecord, Partner, SalesforceForms, ResourceDownload
-from .serializers import SchoolSerializer, AdoptionOpportunityRecordSerializer, PartnerSerializer, SalesforceFormsSerializer, ResourceDownloadSerializer
+from .models import School, AdoptionOpportunityRecord, Partner, SalesforceForms, ResourceDownload, SavingsNumber
+from .serializers import SchoolSerializer, AdoptionOpportunityRecordSerializer, PartnerSerializer, SalesforceFormsSerializer, ResourceDownloadSerializer, SavingsNumberSerializer
 
 from salesforce.salesforce import Salesforce
 from books.models import Book
@@ -27,9 +27,22 @@ class SalesforceFormsViewSet(viewsets.ModelViewSet):
     queryset = SalesforceForms.objects.all()
     serializer_class = SalesforceFormsSerializer
 
+
 class ResourceDownloadViewSet(viewsets.ModelViewSet):
     queryset = ResourceDownload.objects.all()
     serializer_class = ResourceDownloadSerializer
+
+
+class SavingsNumberViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    This endpoint will only ever return one item, the latest updated savings.
+    """
+    serializer_class = SavingsNumberSerializer
+
+    def list(self, request, *args, **kwargs):
+        instance = SavingsNumber.objects.latest('updated')
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
 
 
 class AdoptionOpportunityRecordViewSet(viewsets.ViewSet):

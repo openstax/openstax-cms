@@ -318,3 +318,12 @@ class ResourceDownload(models.Model):
             models.Index(fields=['account_id', ]),
             models.Index(fields=['book', ]),
         ]
+
+class SavingsNumber(models.Model):
+    adoptions_count = models.IntegerField(blank=True, null=True)
+    savings = models.DecimalField(blank=True, null=True, max_digits=50, decimal_places=2)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return str(self.updated)

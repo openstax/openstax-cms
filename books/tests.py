@@ -29,6 +29,7 @@ class BookTests(WagtailPageTests):
                                dev_standard_1_description="Test",
                                dev_standard_2_description="Test",
                                dev_standard_3_description="Test",
+                               dev_standard_4_description="Test",
                                )
         # add book index to homepage
         homepage.add_child(instance=book_index)
