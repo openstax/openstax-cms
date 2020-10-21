@@ -261,7 +261,6 @@ class PartnerReview(models.Model):
     # To track what we need to do with these re: syncing.
     # New = new to the cms (no SF ID)
     # Edited = edited by author, needs to be resynced with SF, set to NEW (SF Status) to reenter the approval queue
-    # 
     STATUS_OPTIONS = (
         ('New', 'New'),
         ('Edited', 'Edited'),
