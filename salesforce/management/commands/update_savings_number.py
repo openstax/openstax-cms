@@ -1,5 +1,6 @@
 from django.core.management.base import BaseCommand
 from books.models import Book
+from salesforce.models import SavingsNumber
 from salesforce.salesforce import Salesforce
 
 class Command(BaseCommand):
@@ -7,8 +8,26 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         with Salesforce() as sf:
-            books = Book.objects.all()
+            try:
+                sf_data = SavingsNumber.objects.latest('updated')
+            except SavingsNumber.DoesNotExist:
+                sf_data = SavingsNumber()
 
+            adoption_query = "SELECT COUNT(Id) FROM Adoption__c"
+            response = sf.query_all(adoption_query)
+            adoption_number = int(response['records'][0]['expr0'])
+            sf_data.adoptions_count = adoption_number
+
+            savings_query = "Select SUM(All_Time_Savings2__c) FROM Account"
+            response = sf.query_all(savings_query)
+            savings_number = int(response['records'][0]['expr0'])
+            sf_data.savings = savings_number
+
+            sf_data.save()
+
+
+            # Book specific updates
+            books = Book.objects.all()
             adoption_query = "SELECT Book__r.Name, Count(Id) FROM Adoption__c GROUP BY Book__r.Name"
             adoption_response = sf.query_all(adoption_query)
 
@@ -17,14 +36,13 @@ class Command(BaseCommand):
 
 
             for book in books:
-                print(book.title)
                 for record in adoption_response['records']:
                     if record['Name'] == book.salesforce_name:
                         book.adoptions = int(record['expr0'])
 
                 for record in savings_response['records']:
                     if record['Name'] == book.salesforce_name:
-                        book.savings = format(record['expr0'], '.2f')
+                        book.savings = int(record['expr0'])
 
                 book.save()
 
