@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from .models import School, AdoptionOpportunityRecord, Partner, SalesforceForms, ResourceDownload, SavingsNumber
+from .models import School, AdoptionOpportunityRecord, Partner, SalesforceForms, ResourceDownload, SavingsNumber, PartnerReview
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
@@ -115,3 +115,9 @@ class SavingsNumberSerializer(serializers.ModelSerializer):
     class Meta:
         model = SavingsNumber
         fields = ('adoptions_count', 'savings', 'updated')
+
+class PartnerReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PartnerReview
+        fields = ('id', 'partner', 'rating', 'submitted_by_name', 'submitted_by_account_id')
+

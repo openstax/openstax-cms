@@ -7,8 +7,8 @@ from rest_framework.response import Response
 from django.http import JsonResponse, Http404
 from django.utils import timezone
 
-from .models import School, AdoptionOpportunityRecord, Partner, SalesforceForms, ResourceDownload, SavingsNumber
-from .serializers import SchoolSerializer, AdoptionOpportunityRecordSerializer, PartnerSerializer, SalesforceFormsSerializer, ResourceDownloadSerializer, SavingsNumberSerializer
+from .models import School, AdoptionOpportunityRecord, Partner, SalesforceForms, ResourceDownload, SavingsNumber, PartnerReview
+from .serializers import SchoolSerializer, AdoptionOpportunityRecordSerializer, PartnerSerializer, SalesforceFormsSerializer, ResourceDownloadSerializer, SavingsNumberSerializer, PartnerReviewSerializer
 
 from salesforce.salesforce import Salesforce
 from books.models import Book
@@ -31,6 +31,11 @@ class SalesforceFormsViewSet(viewsets.ModelViewSet):
 class ResourceDownloadViewSet(viewsets.ModelViewSet):
     queryset = ResourceDownload.objects.all()
     serializer_class = ResourceDownloadSerializer
+
+
+class PartnerReviewViewSet(viewsets.ModelViewSet):
+    queryset = PartnerReview.objects.all()
+    serializer_class = PartnerReviewSerializer
 
 
 class SavingsNumberViewSet(viewsets.ReadOnlyModelViewSet):
