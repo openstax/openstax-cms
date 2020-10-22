@@ -34,7 +34,7 @@ class ResourceDownloadViewSet(viewsets.ModelViewSet):
 
 
 class PartnerReviewViewSet(viewsets.ModelViewSet):
-    queryset = PartnerReview.objects.filter(visible_on_website=True)
+    queryset = PartnerReview.objects.filter(partner__visible_on_website=True)
     serializer_class = PartnerReviewSerializer
 
 

@@ -228,6 +228,16 @@ class Partner(models.Model):
         image_tag.short_description = 'Image'
         image_tag.allow_tags = True
 
+    @property
+    def reviews(self):
+        reviews = list(PartnerReview.objects.filter(partner=self).values('id',
+                                                                         'rating',
+                                                                         'review',
+                                                                         'partner_response',
+                                                                         'submitted_by_name',
+                                                                         'submitted_by_account_id'))
+        return reviews
+
     @hooks.register('register_admin_menu_item')
     def register_partner_menu_item():
         return MenuItem('Partners', '/django-admin/salesforce/partner/', classnames='icon icon-group', order=3000)
