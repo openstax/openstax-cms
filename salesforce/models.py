@@ -258,19 +258,17 @@ class PartnerTypeMapping(models.Model):
 
 
 class PartnerReview(models.Model):
+    # To track what we need to do with these re: syncing.
+    # New = new to the cms (no SF ID)
+    # Edited = edited by author, needs to be resynced with SF, set to NEW (SF Status) to reenter the approval queue
     STATUS_OPTIONS = (
         ('New', 'New'),
-        ('Approved', 'Approved'),
+        ('Edited', 'Edited'),
         ('Rejected', 'Rejected')
     )
-    REJECTION_REASONS = (
-        ('Content violates review standards', 'Content violates review standards'),
-        ('Content contains personally identifiable information', 'Content contains personally identifiable information'),
-        ('Content contains inappropriate language', 'Content contains inappropriate language'),
-        ('Review is not based on personal experience', 'Review is not based on personal experience'),
-        ('Content is not relevant to the product at hand', 'Content is not relevant to the product at hand'),
-    )
+
     partner = models.ForeignKey(Partner, on_delete=models.SET_NULL, null=True)
+    review_salesforce_id = models.CharField(max_length=255, blank=True, null=True, unique=True)
     rating = models.IntegerField(validators=[
             MaxValueValidator(5),
             MinValueValidator(0)
@@ -280,10 +278,10 @@ class PartnerReview(models.Model):
     submitted_by_name = models.CharField(max_length=255)
     submitted_by_account_id = models.IntegerField()
     status = models.CharField(max_length=255, choices=STATUS_OPTIONS)
-    rejection_reason = models.CharField(max_length=255, choices=REJECTION_REASONS, null=True, blank=True)
 
     def __str__(self):
         return self.submitted_by_name
+
 
 class ResourceDownload(models.Model):
     BOOK_FORMATS = (
@@ -321,7 +319,7 @@ class ResourceDownload(models.Model):
 
 class SavingsNumber(models.Model):
     adoptions_count = models.IntegerField(blank=True, null=True)
-    savings = models.DecimalField(blank=True, null=True, max_digits=50, decimal_places=2)
+    savings = models.IntegerField(blank=True, null=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
