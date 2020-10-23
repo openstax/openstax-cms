@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Avg
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.core.exceptions import ValidationError
 
@@ -237,6 +238,11 @@ class Partner(models.Model):
                                                                          'submitted_by_name',
                                                                          'submitted_by_account_id'))
         return reviews
+
+    @property
+    def average_rating(self):
+        average_rating = PartnerReview.objects.filter(partner=self).aggregate(Avg('rating'))
+        return average_rating
 
     @hooks.register('register_admin_menu_item')
     def register_partner_menu_item():
