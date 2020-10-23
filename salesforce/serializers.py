@@ -76,6 +76,10 @@ class PartnerSerializer(serializers.ModelSerializer):
         if not ret['lead_sharing']:
             ret['formstack_url'] = False
 
+        # if looking at an individual partner instance, include the reviews - else, exclude
+        if not isinstance(self.instance, Partner):
+            ret['reviews'] = False
+
         # Here we filter the null values and creates a new dictionary
         # We use OrderedDict like in original method
         ret = OrderedDict(filter(lambda x: x[1] is not False, ret.items()))
