@@ -246,6 +246,11 @@ class Partner(models.Model):
         average_rating = PartnerReview.objects.filter(partner=self).aggregate(Avg('rating'))
         return average_rating
 
+    @property
+    def rating_count(self):
+        rating_count = PartnerReview.objects.filter(partner=self).count()
+        return rating_count
+
     @hooks.register('register_admin_menu_item')
     def register_partner_menu_item():
         return MenuItem('Partners', '/django-admin/salesforce/partner/', classnames='icon icon-group', order=3000)

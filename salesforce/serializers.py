@@ -62,6 +62,7 @@ class AdoptionOpportunityRecordSerializer(serializers.ModelSerializer):
 class PartnerSerializer(serializers.ModelSerializer):
     reviews = serializers.ReadOnlyField()
     average_rating = serializers.ReadOnlyField()
+    rating_count = serializers.ReadOnlyField()
 
     def __init__(self, *args, **kwargs):
         super(PartnerSerializer, self).__init__(*args, **kwargs)
