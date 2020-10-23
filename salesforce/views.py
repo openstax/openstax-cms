@@ -34,8 +34,18 @@ class ResourceDownloadViewSet(viewsets.ModelViewSet):
 
 
 class PartnerReviewViewSet(viewsets.ModelViewSet):
-    queryset = PartnerReview.objects.filter(partner__visible_on_website=True)
     serializer_class = PartnerReviewSerializer
+
+    def get_queryset(self):
+        """
+        Optionally restricts the returned reviews to a given user,
+        by filtering against a `user_id` query parameter in the URL.
+        """
+        queryset = PartnerReview.objects.filter(partner__visible_on_website=True)
+        user_id = self.request.query_params.get('user_id', None)
+        if user_id is not None:
+            queryset = queryset.filter(submitted_by_account_id=user_id)
+        return queryset
 
 
 class SavingsNumberViewSet(viewsets.ReadOnlyModelViewSet):
