@@ -236,7 +236,9 @@ class Partner(models.Model):
                                                                          'review',
                                                                          'partner_response',
                                                                          'submitted_by_name',
-                                                                         'submitted_by_account_id'))
+                                                                         'submitted_by_account_id',
+                                                                         'created',
+                                                                         'updated'))
         return reviews
 
     @property
@@ -294,6 +296,8 @@ class PartnerReview(models.Model):
     submitted_by_name = models.CharField(max_length=255)
     submitted_by_account_id = models.IntegerField()
     status = models.CharField(max_length=255, choices=STATUS_OPTIONS)
+    created = models.DateField(auto_now_add=True)
+    updated = models.DateField(auto_now=True)
 
     def __str__(self):
         return self.submitted_by_name
