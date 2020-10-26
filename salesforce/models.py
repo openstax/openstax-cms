@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Avg
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.core.exceptions import ValidationError
 
@@ -228,6 +229,28 @@ class Partner(models.Model):
         image_tag.short_description = 'Image'
         image_tag.allow_tags = True
 
+    @property
+    def reviews(self):
+        reviews = list(PartnerReview.objects.filter(partner=self).values('id',
+                                                                         'rating',
+                                                                         'review',
+                                                                         'partner_response',
+                                                                         'submitted_by_name',
+                                                                         'submitted_by_account_id',
+                                                                         'created',
+                                                                         'updated'))
+        return reviews
+
+    @property
+    def average_rating(self):
+        average_rating = PartnerReview.objects.filter(partner=self).aggregate(Avg('rating'))
+        return average_rating
+
+    @property
+    def rating_count(self):
+        rating_count = PartnerReview.objects.filter(partner=self).count()
+        return rating_count
+
     @hooks.register('register_admin_menu_item')
     def register_partner_menu_item():
         return MenuItem('Partners', '/django-admin/salesforce/partner/', classnames='icon icon-group', order=3000)
@@ -278,6 +301,8 @@ class PartnerReview(models.Model):
     submitted_by_name = models.CharField(max_length=255)
     submitted_by_account_id = models.IntegerField()
     status = models.CharField(max_length=255, choices=STATUS_OPTIONS)
+    created = models.DateField(auto_now_add=True)
+    updated = models.DateField(auto_now=True)
 
     def __str__(self):
         return self.submitted_by_name

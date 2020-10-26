@@ -6,7 +6,7 @@ from django.test import LiveServerTestCase, TestCase
 from six import StringIO
 from django.core.exceptions import ValidationError
 
-from salesforce.models import Adopter, SalesforceSettings, MapBoxDataset, Partner, AdoptionOpportunityRecord
+from salesforce.models import Adopter, SalesforceSettings, MapBoxDataset, Partner, AdoptionOpportunityRecord, PartnerReview
 from salesforce.views import Salesforce
 from salesforce.salesforce import Salesforce as SF
 from salesforce.serializers import PartnerSerializer, AdoptionOpportunityRecordSerializer
@@ -57,6 +57,27 @@ class PartnerTest(APITestCase, TestCase):
         invalid_partner_id = Partner.objects.order_by("id").last().id + 1
         response = self.client.get('/apps/cms/api/salesforce/partners/{}/'.format(invalid_partner_id), format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    def test_can_add_review(self):
+        review = PartnerReview.objects.create(partner=Partner.objects.first(),
+                                              rating=5,
+                                              review="This is a great resource.",
+                                              submitted_by_name="Test McTester",
+                                              submitted_by_account_id=2)
+        self.assertEqual(review.review, "This is a great resource.")
+
+    def test_partners_include_review_data(self):
+        random_partner = Partner.objects.order_by("?").first()
+        response = self.client.get('/apps/cms/api/salesforce/partners/{}/'.format(random_partner.pk), format='json')
+        self.assertIn('reviews', response.data)
+        self.assertIn('average_rating', response.data)
+        self.assertIn('rating_count', response.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+    def test_all_partners_no_reviews(self):
+        response = self.client.get('/apps/cms/api/salesforce/partners/', format='json')
+        self.assertNotIn('reviews', response.data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
 
 class AdoptionOpportunityTest(APITestCase, TestCase):
     def setUp(self):
