@@ -287,7 +287,8 @@ class PartnerReview(models.Model):
     STATUS_OPTIONS = (
         ('New', 'New'),
         ('Edited', 'Edited'),
-        ('Rejected', 'Rejected')
+        ('Awaiting Approval', 'Awaiting Approval'),
+        ('Approved', 'Approved')
     )
 
     partner = models.ForeignKey(Partner, on_delete=models.SET_NULL, null=True)
@@ -297,15 +298,21 @@ class PartnerReview(models.Model):
             MinValueValidator(0)
         ])
     review = models.TextField(null=True, blank=True)
+    approved_review_text = models.TextField(null=True, blank=True)
     partner_response = models.TextField(null=True, blank=True)
     submitted_by_name = models.CharField(max_length=255)
     submitted_by_account_id = models.IntegerField()
-    status = models.CharField(max_length=255, choices=STATUS_OPTIONS)
+    status = models.CharField(max_length=255, choices=STATUS_OPTIONS, default='New')
     created = models.DateField(auto_now_add=True)
     updated = models.DateField(auto_now=True)
 
     def __str__(self):
         return self.submitted_by_name
+
+    def save(self, *args, **kwargs):
+        if self.pk and (self.status == 'New' or self.status == 'Approved'): # this is not a new review, so we need to set the status to edited
+            self.status = 'Edited'
+        super().save(*args, **kwargs)
 
 
 class ResourceDownload(models.Model):
