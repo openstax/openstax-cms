@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand
-from salesforce.models import PartnerReview, Partner
+from salesforce.models import PartnerReview
 from salesforce.salesforce import Salesforce
 
 
