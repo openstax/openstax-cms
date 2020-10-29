@@ -309,11 +309,6 @@ class PartnerReview(models.Model):
     def __str__(self):
         return self.submitted_by_name
 
-    def save(self, *args, **kwargs):
-        if self.pk and (self.status == 'New' or self.status == 'Approved'): # this is not a new review, so we need to set the status to edited
-            self.status = 'Edited'
-        super().save(*args, **kwargs)
-
 
 class ResourceDownload(models.Model):
     BOOK_FORMATS = (
