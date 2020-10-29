@@ -49,6 +49,14 @@ class PartnerReviewViewSet(viewsets.ViewSet):
         serializer = PartnerReviewSerializer(queryset, many=True)
         return Response(serializer.data)
 
+    @action(methods=['post'], detail=True)
+    def post(self, request):
+        serializer = PartnerReviewSerializer(data=request.data)  # set partial=True to update a data partially
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(status=201, data=serializer.data)
+        return JsonResponse(status=400, data="wrong parameters")
+
     @action(methods=['patch'], detail=True)
     def patch(self, request):
         review_object = PartnerReview.objects.get(id=request.data['id'])
