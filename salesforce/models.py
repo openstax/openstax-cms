@@ -298,7 +298,6 @@ class PartnerReview(models.Model):
             MinValueValidator(0)
         ])
     review = models.TextField(null=True, blank=True)
-    approved_review_text = models.TextField(null=True, blank=True)
     partner_response = models.TextField(null=True, blank=True)
     submitted_by_name = models.CharField(max_length=255)
     submitted_by_account_id = models.IntegerField()
