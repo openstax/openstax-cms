@@ -1,5 +1,5 @@
 from collections import OrderedDict
-from .models import School, AdoptionOpportunityRecord, Partner, SalesforceForms, ResourceDownload
+from .models import School, AdoptionOpportunityRecord, Partner, SalesforceForms, ResourceDownload, SavingsNumber, PartnerReview
 from rest_framework import serializers
 from rest_framework.validators import UniqueTogetherValidator
 
@@ -60,6 +60,10 @@ class AdoptionOpportunityRecordSerializer(serializers.ModelSerializer):
                   )
 
 class PartnerSerializer(serializers.ModelSerializer):
+    reviews = serializers.ReadOnlyField()
+    average_rating = serializers.ReadOnlyField()
+    rating_count = serializers.ReadOnlyField()
+
     def __init__(self, *args, **kwargs):
         super(PartnerSerializer, self).__init__(*args, **kwargs)
 
@@ -72,6 +76,10 @@ class PartnerSerializer(serializers.ModelSerializer):
         # if lead sharing is unchecked in salesforce, we hide the formstack_url (which hides request info button on FE)
         if not ret['lead_sharing']:
             ret['formstack_url'] = False
+
+        # if looking at an individual partner instance, include the reviews - else, exclude
+        if not isinstance(self.instance, Partner):
+            ret['reviews'] = False
 
         # Here we filter the null values and creates a new dictionary
         # We use OrderedDict like in original method
@@ -109,3 +117,16 @@ class ResourceDownloadSerializer(serializers.ModelSerializer):
         model = ResourceDownload
         fields = ('id', 'book', 'book_format', 'account_id', 'last_access', 'number_of_times_accessed', 'resource_name', 'created')
         read_only_fields = ('id', 'created', 'number_of_times_accessed')
+
+
+class SavingsNumberSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SavingsNumber
+        fields = ('adoptions_count', 'savings', 'updated')
+
+class PartnerReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PartnerReview
+        fields = ('id', 'partner', 'rating', 'submitted_by_name', 'submitted_by_account_id', 'created', 'updated')
+        read_only_fields = ('created', 'updated')
+

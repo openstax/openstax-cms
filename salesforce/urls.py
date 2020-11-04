@@ -6,6 +6,8 @@ router = routers.SimpleRouter()
 router.register(r'schools', views.SchoolViewSet, basename='School')
 router.register(r'partners', views.PartnerViewSet, basename='Partner')
 router.register(r'forms', views.SalesforceFormsViewSet, basename='Forms')
+router.register(r'savings', views.SavingsNumberViewSet, basename='SavingsNumber')
+router.register(r'reviews', views.PartnerReviewViewSet, basename='PartnerReview')
 router.register(r'download-tracking', views.ResourceDownloadViewSet, basename='DownloadTracking')
 
 urlpatterns = [

@@ -7,8 +7,8 @@ from rest_framework.response import Response
 from django.http import JsonResponse, Http404
 from django.utils import timezone
 
-from .models import School, AdoptionOpportunityRecord, Partner, SalesforceForms, ResourceDownload
-from .serializers import SchoolSerializer, AdoptionOpportunityRecordSerializer, PartnerSerializer, SalesforceFormsSerializer, ResourceDownloadSerializer
+from .models import School, AdoptionOpportunityRecord, Partner, SalesforceForms, ResourceDownload, SavingsNumber, PartnerReview
+from .serializers import SchoolSerializer, AdoptionOpportunityRecordSerializer, PartnerSerializer, SalesforceFormsSerializer, ResourceDownloadSerializer, SavingsNumberSerializer, PartnerReviewSerializer
 
 from salesforce.salesforce import Salesforce
 from books.models import Book
@@ -27,9 +27,37 @@ class SalesforceFormsViewSet(viewsets.ModelViewSet):
     queryset = SalesforceForms.objects.all()
     serializer_class = SalesforceFormsSerializer
 
+
 class ResourceDownloadViewSet(viewsets.ModelViewSet):
     queryset = ResourceDownload.objects.all()
     serializer_class = ResourceDownloadSerializer
+
+
+class PartnerReviewViewSet(viewsets.ModelViewSet):
+    serializer_class = PartnerReviewSerializer
+
+    def get_queryset(self):
+        """
+        Optionally restricts the returned reviews to a given user,
+        by filtering against a `user_id` query parameter in the URL.
+        """
+        queryset = PartnerReview.objects.filter(partner__visible_on_website=True)
+        user_id = self.request.query_params.get('user_id', None)
+        if user_id is not None:
+            queryset = queryset.filter(submitted_by_account_id=user_id)
+        return queryset
+
+
+class SavingsNumberViewSet(viewsets.ReadOnlyModelViewSet):
+    """
+    This endpoint will only ever return one item, the latest updated savings.
+    """
+    serializer_class = SavingsNumberSerializer
+
+    def list(self, request, *args, **kwargs):
+        instance = SavingsNumber.objects.latest('updated')
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data)
 
 
 class AdoptionOpportunityRecordViewSet(viewsets.ViewSet):

@@ -635,7 +635,9 @@ class Book(Page):
     customization_form_subheading = models.CharField(max_length=255, null=True, blank=True, help_text="Subheading for the CE customization form. This will update ALL books to use this value!", default="Please select the modules (up to 10), that you want to customize with Google Docs.")
     customization_form_disclaimer = RichTextField(blank=True, help_text="This will update ALL books to use this value!", default="<p><b>Disclaimer</b></p><p>The following features and functionality are not available to teachers and students using Google Docs customized content:</p><ul><li><b>Errata updates</b>. OpenStax webview is updated at least twice yearly. Customized Google Docs will not receive these content updates.</li><li><b>Access to study tools</b>. OpenStax webview has in-book search, highlighting, study guides, and more available for free. This functionality will not be available in Google Docs versions.</li><li><b>Formatting. </b>Print books and webview have a specific design and structure format developed for those platforms. These functionalities are not available in the Google Docs versions.</li></ul>")
     customization_form_next_steps = RichTextField(blank=True, help_text="This will update ALL books to use this value!", default="<p><b>Next Steps</b></p><ol><li>Within two business days, you will receive an email for each module that you have requested access to customize.</li><li>The link provided in the email will be your own copy of the Google Doc that OpenStax generated for you.</li><li>Once you have accessessed the document you can make the changes you desire and share with your students. We recommend using the &quot;Publish to the Web&quot; functionality under the file menu for sharing with students.</li></ol>")
-
+    adoptions = models.IntegerField(blank=True, null=True)
+    savings = models.IntegerField(blank=True, null=True)
+    support_statement = models.TextField(blank=True, null=True, default="With philanthropic support, this book is used in <span id='adoption_number'></span> classrooms, saving students <span id='savings'></span> dollars this school year. <a href='/impact'>Learn more about our impact</a> and how you can help.", help_text="Updating this statement updates it for all book pages.")
 
 
     videos = StreamField([
@@ -721,6 +723,7 @@ class Book(Page):
         FieldPanel('customization_form_subheading'),
         FieldPanel('customization_form_disclaimer'),
         FieldPanel('customization_form_next_steps'),
+        FieldPanel('support_statement'),
         StreamFieldPanel('videos'),
     ]
     instructor_resources_panel = [
@@ -828,6 +831,9 @@ class Book(Page):
         APIField('promote_image'),
         APIField('last_updated_pdf'),
         APIField('featured_resources_header'),
+        APIField('support_statement'),
+        APIField('adoptions'),
+        APIField('savings')
     ]
 
     template = 'page.html'
@@ -914,6 +920,8 @@ class Book(Page):
             Book.objects.all().update(customization_form_disclaimer=self.customization_form_disclaimer)
         if self.customization_form_next_steps:
             Book.objects.all().update(customization_form_next_steps=self.customization_form_next_steps)
+        if self.support_statement:
+            Book.objects.all().update(support_statement=self.support_statement)
 
         return super(Book, self).save(*args, **kwargs)
 
@@ -956,6 +964,9 @@ class BookIndex(Page):
     dev_standard_3_heading = models.CharField(
         max_length=255, blank=True, null=True)
     dev_standard_3_description = RichTextField()
+    dev_standard_4_heading = models.CharField(
+        max_length=255, blank=True, null=True)
+    dev_standard_4_description = models.TextField(help_text="Keep <span> in place to populate with Salesforce data. id=adoption_number for classrooms and id=savings for savings number.")
     subject_list_heading = models.CharField(
         max_length=255, blank=True, null=True)
     promote_image = models.ForeignKey(
@@ -1017,6 +1028,8 @@ class BookIndex(Page):
         FieldPanel('dev_standard_2_description'),
         FieldPanel('dev_standard_3_heading'),
         FieldPanel('dev_standard_3_description'),
+        FieldPanel('dev_standard_4_heading'),
+        FieldPanel('dev_standard_4_description'),
         FieldPanel('subject_list_heading'),
     ]
 
@@ -1037,6 +1050,8 @@ class BookIndex(Page):
         APIField('dev_standard_2_description'),
         APIField('dev_standard_3_heading'),
         APIField('dev_standard_3_description'),
+        APIField('dev_standard_4_heading'),
+        APIField('dev_standard_4_description'),
         APIField('subject_list_heading'),
         APIField('books'),
         APIField('seo_title'),

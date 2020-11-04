@@ -4,7 +4,7 @@ from salesforce.salesforce import Salesforce
 
 
 class Command(BaseCommand):
-    help = "update partners from salesforce.com for use on the marketplace"
+    help = "update resource download records with SF"
 
     def handle(self, *args, **options):
         new_resource_downloads = ResourceDownload.objects.filter(salesforce_id__isnull=True) # ones to create
