@@ -232,6 +232,7 @@ class Partner(models.Model):
     @property
     def reviews(self):
         reviews = list(PartnerReview.objects.filter(partner=self).values('id',
+                                                                         'status',
                                                                          'rating',
                                                                          'review',
                                                                          'partner_response',
