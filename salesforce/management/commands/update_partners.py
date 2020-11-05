@@ -123,6 +123,9 @@ class Command(BaseCommand):
             for partner in sf_marketplace_partners:
                 if partner['Affordability_cost__c']:
                     affordability_cost=partner['Affordability_cost__c'].replace(";", "; ")
+                else:
+                    affordability_cost=None
+
                 try:
                     p = Partner.objects.get(salesforce_id=partner['Id'])
                     p.partner_name=partner['Name']
