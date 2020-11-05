@@ -35,7 +35,8 @@ from pages.models import (HomePage,
                           CreatorFestPage,
                           PartnersPage,
                           WebinarPage,
-                          MathQuizPage)
+                          MathQuizPage,
+                          LLPHPage)
 from news.models import NewsIndex, PressIndex
 from books.models import BookIndex
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
@@ -98,15 +99,36 @@ class HomePageTests(WagtailPageTests):
             CreatorFestPage,
             PartnersPage,
             WebinarPage,
-            MathQuizPage
+            MathQuizPage,
+            LLPHPage
         })
 
 class PageTests(WagtailPageTests):
     def setUp(self):
-        pass
+        root_page = Page.objects.get(title="Root")
+        self.homepage = HomePage(title="Hello World",
+                            slug="hello-world",
+                            )
+        root_page.add_child(instance=self.homepage)
 
     def test_can_create_ipp_page(self):
         self.assertCanCreateAt(HomePage, InstitutionalPartnerProgramPage)
+
+    def test_can_create_llph_page(self):
+        llph_page = LLPHPage(title="LLPH",
+                             heading="Heading",
+                             subheading="Subheading",
+                             signup_link_href="http://rice.edu",
+                             signup_link_text="Click me",
+                             info_link_slug="/llph-slug",
+                             info_link_text="Click me",
+                             book_heading="Book heading",
+                             book_description="I should accept <b>HTML</b>.")
+        self.homepage.add_child(instance=llph_page)
+        self.assertCanCreateAt(HomePage, LLPHPage)
+
+        retrieved_page = Page.objects.get(id=llph_page.id)
+        self.assertEqual(retrieved_page.title, "LLPH")
 
 class ErrataListTest(WagtailPageTests):
 
