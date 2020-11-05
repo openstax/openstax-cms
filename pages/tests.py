@@ -122,8 +122,10 @@ class PageTests(WagtailPageTests):
                              subheading="Subheading",
                              signup_link_href="http://rice.edu",
                              signup_link_text="Click me",
+                             info_link_slug="/llph-slug",
+                             info_link_text="Click me",
                              book_heading="Book heading",
-                             book_description="Book Description")
+                             book_description="I should accept <b>HTML</b>.")
         self.homepage.add_child(instance=llph_page)
         self.assertCanCreateAt(HomePage, LLPHPage)
 
