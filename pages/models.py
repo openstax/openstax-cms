@@ -569,6 +569,7 @@ class HomePage(Page):
         'pages.PartnersPage',
         'pages.WebinarPage',
         'pages.MathQuizPage',
+        'pages.LLPHPage',
         'books.BookIndex',
         'news.NewsIndex',
         'news.PressIndex'
@@ -2939,3 +2940,49 @@ class MathQuizPage(Page):
     ]
 
     parent_page_type = ['pages.HomePage']
+
+
+class LLPHPage(Page):
+    heading = models.CharField(max_length=255)
+    subheading = models.TextField()
+    signup_link_href = models.URLField()
+    signup_link_text = models.CharField(max_length=255)
+    book_cover = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    book_heading = models.CharField(max_length=255)
+    book_description = models.TextField()
+
+    content_panels = [
+        FieldPanel('title', classname='full title', help_text="Internal name for page."),
+        FieldPanel('heading'),
+        FieldPanel('subheading'),
+        FieldPanel('signup_link_href'),
+        FieldPanel('signup_link_text'),
+        ImageChooserPanel('book_cover'),
+        FieldPanel('book_heading'),
+        FieldPanel('book_description')
+    ]
+
+    api_fields = [
+        APIField('title'),
+        APIField('heading'),
+        APIField('subheading'),
+        APIField('signup_link_href'),
+        APIField('signup_link_text'),
+        APIField('book_cover'),
+        APIField('book_heading'),
+        APIField('book_description'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+    ]
+
+    parent_page_type = ['pages.HomePage']
+
+    class Meta:
+        verbose_name = "LLPH Page"
