@@ -2945,6 +2945,13 @@ class MathQuizPage(Page):
 class LLPHPage(Page):
     heading = models.CharField(max_length=255)
     subheading = models.TextField()
+    hero_background = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
     signup_link_href = models.URLField()
     signup_link_text = models.CharField(max_length=255)
     book_cover = models.ForeignKey(
@@ -2954,16 +2961,21 @@ class LLPHPage(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+    info_link_slug = models.CharField(max_length=255, default="/details/books/life-liberty-and-pursuit-happiness")
+    info_link_text = models.CharField(max_length=255, default="Not an educator? Take a look at the book here.")
     book_heading = models.CharField(max_length=255)
-    book_description = models.TextField()
+    book_description = RichTextField()
 
     content_panels = [
         FieldPanel('title', classname='full title', help_text="Internal name for page."),
         FieldPanel('heading'),
         FieldPanel('subheading'),
+        ImageChooserPanel('hero_background'),
         FieldPanel('signup_link_href'),
         FieldPanel('signup_link_text'),
         ImageChooserPanel('book_cover'),
+        FieldPanel('info_link_slug'),
+        FieldPanel('info_link_text'),
         FieldPanel('book_heading'),
         FieldPanel('book_description')
     ]
@@ -2972,9 +2984,12 @@ class LLPHPage(Page):
         APIField('title'),
         APIField('heading'),
         APIField('subheading'),
+        APIField('hero_background'),
         APIField('signup_link_href'),
         APIField('signup_link_text'),
         APIField('book_cover'),
+        APIField('info_link_slug'),
+        APIField('info_link_text'),
         APIField('book_heading'),
         APIField('book_description'),
         APIField('slug'),
