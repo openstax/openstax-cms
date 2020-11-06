@@ -7,7 +7,7 @@ class Command(BaseCommand):
     help = "update resource download records with SF"
 
     def handle(self, *args, **options):
-        new_resource_downloads = ResourceDownload.objects.filter(salesforce_id__isnull=True) # ones to create
+        new_resource_downloads = ResourceDownload.objects.select_related('book').filter(salesforce_id__isnull=True) # ones to create
         existing_resource_downloads = ResourceDownload.objects.exclude(salesforce_id__isnull=True) #ones to update (this can be done in bulk)
 
         number_to_create = new_resource_downloads.count()
@@ -18,12 +18,9 @@ class Command(BaseCommand):
         with Salesforce() as sf:
             data = []
             for rd in existing_resource_downloads:
+                # only update the items that should change on an existing resource download record (num of times and date)
                 data_dict_item = {
                     'Id': rd.salesforce_id,
-                    'Book__c': rd.book.title,
-                    'Book_Format__c': rd.book_format,
-                    'OS_Accounts_ID__c': rd.account_id,
-                    'Name': rd.resource_name,
                     'Number_of_times_accessed__c': rd.number_of_times_accessed,
                     'Last_accessed__c': rd.last_access.strftime('%Y-%m-%d')
                 }
