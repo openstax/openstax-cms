@@ -2955,11 +2955,11 @@ class LLPHPage(Page):
     signup_link_href = models.URLField()
     signup_link_text = models.CharField(max_length=255)
     book_cover = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
+        'wagtaildocs.Document',
+        null=True, blank=True,
         on_delete=models.SET_NULL,
-        related_name='+'
+        related_name='+',
+        help_text='The book cover to be shown on the website.'
     )
     info_link_slug = models.CharField(max_length=255, default="/details/books/life-liberty-and-pursuit-happiness")
     info_link_text = models.CharField(max_length=255, default="Not an educator? Take a look at the book here.")
@@ -2973,7 +2973,7 @@ class LLPHPage(Page):
         ImageChooserPanel('hero_background'),
         FieldPanel('signup_link_href'),
         FieldPanel('signup_link_text'),
-        ImageChooserPanel('book_cover'),
+        DocumentChooserPanel('book_cover'),
         FieldPanel('info_link_slug'),
         FieldPanel('info_link_text'),
         FieldPanel('book_heading'),
