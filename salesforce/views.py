@@ -33,19 +33,44 @@ class ResourceDownloadViewSet(viewsets.ModelViewSet):
     serializer_class = ResourceDownloadSerializer
 
 
-class PartnerReviewViewSet(viewsets.ModelViewSet):
-    serializer_class = PartnerReviewSerializer
-
-    def get_queryset(self):
+class PartnerReviewViewSet(viewsets.ViewSet):
+    @action(methods=['get'], detail=True)
+    def list(self, request):
         """
         Optionally restricts the returned reviews to a given user,
         by filtering against a `user_id` query parameter in the URL.
         """
+        # for a review to show up in the API, the partner should be visible and the review approved
         queryset = PartnerReview.objects.filter(partner__visible_on_website=True)
         user_id = self.request.query_params.get('user_id', None)
         if user_id is not None:
             queryset = queryset.filter(submitted_by_account_id=user_id)
-        return queryset
+
+        serializer = PartnerReviewSerializer(queryset, many=True)
+        return Response(serializer.data)
+
+    @action(methods=['post'], detail=True)
+    def post(self, request):
+        serializer = PartnerReviewSerializer(data=request.data)  # set partial=True to update a data partially
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(status=201, data=serializer.data)
+        return JsonResponse(status=400, data="wrong parameters")
+
+    @action(methods=['patch'], detail=True)
+    def patch(self, request):
+        review_object = PartnerReview.objects.get(id=request.data['id'])
+        serializer = PartnerReviewSerializer(review_object, data=request.data,
+                                         partial=True)  # set partial=True to update a data partially
+        if serializer.is_valid():
+            serializer.save()
+            # set review status to Edited so it will reenter the review queue
+            review_object.status = 'Edited'
+            review_object.save()
+            return JsonResponse(status=201, data=serializer.data)
+        return JsonResponse(status=400, data="wrong parameters")
+
+    serializer_class = PartnerReviewSerializer
 
 
 class SavingsNumberViewSet(viewsets.ReadOnlyModelViewSet):

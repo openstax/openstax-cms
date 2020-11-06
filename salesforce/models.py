@@ -232,6 +232,7 @@ class Partner(models.Model):
     @property
     def reviews(self):
         reviews = list(PartnerReview.objects.filter(partner=self).values('id',
+                                                                         'status',
                                                                          'rating',
                                                                          'review',
                                                                          'partner_response',
@@ -287,7 +288,8 @@ class PartnerReview(models.Model):
     STATUS_OPTIONS = (
         ('New', 'New'),
         ('Edited', 'Edited'),
-        ('Rejected', 'Rejected')
+        ('Awaiting Approval', 'Awaiting Approval'),
+        ('Approved', 'Approved')
     )
 
     partner = models.ForeignKey(Partner, on_delete=models.SET_NULL, null=True)
@@ -300,7 +302,7 @@ class PartnerReview(models.Model):
     partner_response = models.TextField(null=True, blank=True)
     submitted_by_name = models.CharField(max_length=255)
     submitted_by_account_id = models.IntegerField()
-    status = models.CharField(max_length=255, choices=STATUS_OPTIONS)
+    status = models.CharField(max_length=255, choices=STATUS_OPTIONS, default='New')
     created = models.DateField(auto_now_add=True)
     updated = models.DateField(auto_now=True)
 
