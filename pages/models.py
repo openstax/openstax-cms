@@ -2815,6 +2815,12 @@ class LLPHPage(Page):
         related_name='+',
         help_text='The book cover to be shown on the website.'
     )
+
+    def get_book_cover(self):
+        return build_document_url(self.book_cover.url)
+    book_cover_url = property(get_book_cover)
+
+
     info_link_slug = models.CharField(max_length=255, default="/details/books/life-liberty-and-pursuit-happiness")
     info_link_text = models.CharField(max_length=255, default="Not an educator? Take a look at the book here.")
     book_heading = models.CharField(max_length=255)
@@ -2841,7 +2847,7 @@ class LLPHPage(Page):
         APIField('hero_background'),
         APIField('signup_link_href'),
         APIField('signup_link_text'),
-        APIField('book_cover'),
+        APIField('book_cover_url'),
         APIField('info_link_slug'),
         APIField('info_link_text'),
         APIField('book_heading'),
