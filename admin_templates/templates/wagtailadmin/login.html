@@ -1,16 +1,16 @@
 {% extends "wagtailadmin/admin_base.html" %}
-{% load static i18n %}
+{% load i18n wagtailadmin_tags %}
 {% block titletag %}{% trans "Sign in" %}{% endblock %}
 {% block bodyclass %}login{% endblock %}
 
 {% block extra_css %}
     {{ block.super }}
 
-    <link rel="stylesheet" href="{% static 'wagtailadmin/css/layouts/login.css' %}" type="text/css" />
+    <link rel="stylesheet" href="{% versioned_static 'wagtailadmin/css/layouts/login.css' %}" type="text/css" />
 {% endblock %}
 
 {% block furniture %}
-    <div class="content-wrapper">
+    <main class="content-wrapper" role="main">
         {% if messages or form.errors %}
             <div class="messages">
                 <ul>
@@ -33,7 +33,7 @@
             {% url 'wagtailadmin_home' as home_url %}
             <input type="hidden" name="next" value="{{ next|default:home_url }}" />
 
-            <h1><img src="{% static 'images/openstax.png' %}" alt="Openstax" width="100" /></h1>
+            <h1>{% block branding_login %}<img src="{% versioned_static 'images/openstax.png' %}" alt="Openstax" width="100" />{% endblock %}</h1>
 
             {% if debug %}
             <ul class="fields">
@@ -53,9 +53,6 @@
                             {{ form.password }}
                         </div>
                     </div>
-                    {% if show_password_reset %}
-                        <p class="help"><a href="{% url 'wagtailadmin_password_reset' %}">{% trans "Forgotten it?" %}</a></p>
-                    {% endif %}
                 </li>
 
                 {% block extra_fields %}
@@ -80,11 +77,15 @@
                 {% endblock %}
                 <li class="submit">
                     {% block submit_buttons %}
-                    <button type="submit" class="button button-longrunning" tabindex="3" data-clicked-text="{% trans 'Signing in…' %}"><span class="icon icon-spinner"></span><em>{% trans 'Sign in' %}</em></button>
-                    <a href="{% url 'social:begin' 'openstax' %}?next=/admin" class="button">Login with OSAccounts</a>
+                    <button type="submit" class="button button-longrunning" data-clicked-text="{% trans 'Signing in…' %}">{% icon name="spinner" %}<em>{% trans 'Sign in' %}</em></button>
                     {% endblock %}
                 </li>
             </ul>
+
+            {% if show_password_reset %}
+                <p class="help"><a href="{% url 'wagtailadmin_password_reset' %}" aria-label="{% trans 'Reset your password' %}">{% trans "Forgotten it?" %}</a></p>
+            {% endif %}
+
             {% else %}
                 <a href="{% url 'social:begin' 'openstax' %}?next=/admin" class="button">Login with OSAccounts</a>
             {% endif %}
@@ -93,7 +94,7 @@
 
         {% block below_login %}{% endblock %}
 
-    </div>
+    </main>
 {% endblock %}
 
 {% block extra_js %}
