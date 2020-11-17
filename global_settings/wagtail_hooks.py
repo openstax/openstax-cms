@@ -36,7 +36,3 @@ def register_strikethrough_feature(features):
 @hooks.register('register_settings_menu_item')
 def register_500_menu_item():
   return MenuItem('Generate 500', reverse('throw_error'), classnames='icon icon-warning', order=10000)
-
-@hooks.register('after_edit_page')
-def invalidate_cloudfront_cache_on_page_save(page, request):
-    invalidate_cloudfront_caches()
