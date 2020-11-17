@@ -300,6 +300,7 @@ class PartnerReview(models.Model):
         ])
     review = models.TextField(null=True, blank=True)
     partner_response = models.TextField(null=True, blank=True)
+    partner_response_date = models.DateField()
     submitted_by_name = models.CharField(max_length=255)
     submitted_by_account_id = models.IntegerField()
     status = models.CharField(max_length=255, choices=STATUS_OPTIONS, default='New')
