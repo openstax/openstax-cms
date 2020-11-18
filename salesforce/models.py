@@ -300,7 +300,7 @@ class PartnerReview(models.Model):
         ])
     review = models.TextField(null=True, blank=True)
     partner_response = models.TextField(null=True, blank=True)
-    partner_response_date = models.DateField()
+    partner_response_date = models.DateField(null=True, blank=True)
     submitted_by_name = models.CharField(max_length=255)
     submitted_by_account_id = models.IntegerField()
     status = models.CharField(max_length=255, choices=STATUS_OPTIONS, default='New')
@@ -327,7 +327,8 @@ class ResourceDownload(models.Model):
     book_format = models.CharField(max_length=100, choices=BOOK_FORMATS, null=True , blank=True)
     account_id = models.IntegerField()
     created = models.DateTimeField(auto_now_add=True)
-    last_access = models.DateTimeField(auto_now=True)
+    edited = models.DateTimeField(auto_now=True)
+    last_access = models.DateTimeField()
     number_of_times_accessed = models.IntegerField()
     resource_name = models.CharField(max_length=255, null=True, blank=False)
 

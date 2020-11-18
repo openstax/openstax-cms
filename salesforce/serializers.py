@@ -116,7 +116,7 @@ class ResourceDownloadSerializer(serializers.ModelSerializer):
     class Meta:
         model = ResourceDownload
         fields = ('id', 'book', 'book_format', 'account_id', 'last_access', 'number_of_times_accessed', 'resource_name', 'created')
-        read_only_fields = ('id', 'created', 'number_of_times_accessed')
+        read_only_fields = ('id', 'created', 'last_access', 'number_of_times_accessed')
 
 
 class SavingsNumberSerializer(serializers.ModelSerializer):

@@ -32,6 +32,9 @@ class ResourceDownloadViewSet(viewsets.ModelViewSet):
     queryset = ResourceDownload.objects.all()
     serializer_class = ResourceDownloadSerializer
 
+    def perform_create(self, serializer):
+        serializer.save(last_access=timezone.now())
+
 
 class PartnerReviewViewSet(viewsets.ViewSet):
     @action(methods=['get'], detail=True)
