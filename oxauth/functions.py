@@ -19,6 +19,15 @@ def decrypt_cookie(cookie):
     payload = strategy.decrypt(cookie)
     return payload
 
+def get_logged_in_user_id(request):
+    """
+    This simplifies getting the logged in user id - since this happens often.
+    :param request:
+    :return: user_id from SSO cookie
+    """
+    decrypted_cookie = decrypt_cookie(request.COOKIES.get('oxa'))
+    return decrypted_cookie.user_id
+
 def get_token():
     client = BackendApplicationClient(client_id=settings.SOCIAL_AUTH_OPENSTAX_KEY)
     oauth = OAuth2Session(client=client)
