@@ -79,7 +79,7 @@ class PartnerReviewViewSet(viewsets.ViewSet):
         user_id = get_logged_in_user_id(request)
         review_object = PartnerReview.objects.get(id=request.data['id'])
         if self.user_id == review_object.submitted_by_account_id:
-            review_object.to_delete = True
+            review_object.status = 'Deleted'
             review_object.save()
 
     serializer_class = PartnerReviewSerializer
