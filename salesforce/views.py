@@ -77,11 +77,10 @@ class PartnerReviewViewSet(viewsets.ViewSet):
     @action(method=['delete'], detail=False)
     def delete(self, request):
         user_id = get_logged_in_user_id(request)
-        print(user_id)
-
         review_object = PartnerReview.objects.get(id=request.data['id'])
         if self.user_id == review_object.submitted_by_account_id:
             review_object.to_delete = True
+            review_object.save()
 
     serializer_class = PartnerReviewSerializer
 
