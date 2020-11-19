@@ -1,6 +1,7 @@
 # Django settings for openstax project.
 
 import os
+import sys
 import raven
 import logging.config
 from django.utils.log import DEFAULT_LOGGING
@@ -8,7 +9,7 @@ from django.utils.log import DEFAULT_LOGGING
 PROJECT_ROOT = os.path.join(os.path.dirname(__file__), '..', '..')
 BASE_DIR = PROJECT_ROOT
 
-DEBUG = True
+DEBUG = (sys.argv[1] == 'runserver')
 
 # These should both be set to true. The openstax.middleware will handle resolving the URL
 # without a redirect if needed.
