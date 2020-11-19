@@ -40,7 +40,7 @@ class Strategy2:
             )
 
             return Payload(decoded_payload)
-        except Exception as ee:
+        except Exception:
             if self.logging_enabled:
                 import logging
                 logging.exception("Could not decrypt cookie")

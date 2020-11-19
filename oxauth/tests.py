@@ -6,7 +6,7 @@ from django.test import TestCase, Client
 from django.conf import settings
 from django.urls import reverse
 
-from oxauth.functions import get_token, get_user_info, decrypt_cookie
+from oxauth.functions import get_token, decrypt_cookie
 from oxauth.views import login, logout
 from .auth import OXSessionDecryptor
 
