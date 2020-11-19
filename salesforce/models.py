@@ -306,6 +306,7 @@ class PartnerReview(models.Model):
     status = models.CharField(max_length=255, choices=STATUS_OPTIONS, default='New')
     created = models.DateField(auto_now_add=True)
     updated = models.DateField(auto_now=True)
+    to_delete = models.BooleanField(default=False, help_text="A form of soft-deletion. So we can sync deleted reviews with ")
 
     def __str__(self):
         return self.submitted_by_name
