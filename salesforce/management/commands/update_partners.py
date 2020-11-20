@@ -119,8 +119,11 @@ class Command(BaseCommand):
 
             updated_partners = 0
             created_partners = 0
+            partner_ids = []
 
             for partner in sf_marketplace_partners:
+                partner_ids.append(partner['Id'])
+
                 if partner['Affordability_cost__c']:
                     affordability_cost=partner['Affordability_cost__c'].replace(";", "; ")
                 else:
@@ -325,6 +328,10 @@ class Command(BaseCommand):
                         international = self.str2bool(partner['International__c']),
                     )
                     created_partners = created_partners + 1
+
+            # remove partners that have been deleted from Salesforce
+            stale_partners = Partner.objects.exclude(salesforce_id__in=partner_ids)
+            stale_partners.delete()
 
 
             response = self.style.SUCCESS("Successfully updated {} partners, created {} partners.".format(updated_partners, created_partners))
