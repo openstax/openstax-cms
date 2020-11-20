@@ -12,6 +12,7 @@ from .serializers import SchoolSerializer, AdoptionOpportunityRecordSerializer, 
 
 from salesforce.salesforce import Salesforce
 from books.models import Book
+from oxauth.functions import get_logged_in_user_id
 
 class SchoolViewSet(viewsets.ModelViewSet):
     queryset = School.objects.all()
@@ -72,6 +73,14 @@ class PartnerReviewViewSet(viewsets.ViewSet):
             review_object.save()
             return JsonResponse(status=201, data=serializer.data)
         return JsonResponse(status=400, data="wrong parameters")
+
+    @action(method=['delete'], detail=False)
+    def delete(self, request):
+        user_id = get_logged_in_user_id(request)
+        review_object = PartnerReview.objects.get(id=request.data['id'])
+        if user_id == review_object.submitted_by_account_id:
+            review_object.status = 'Deleted'
+            review_object.save()
 
     serializer_class = PartnerReviewSerializer
 

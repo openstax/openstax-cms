@@ -1,6 +1,7 @@
 # Django settings for openstax project.
 
 import os
+import sys
 import raven
 import logging.config
 from django.utils.log import DEFAULT_LOGGING
@@ -8,7 +9,7 @@ from django.utils.log import DEFAULT_LOGGING
 PROJECT_ROOT = os.path.join(os.path.dirname(__file__), '..', '..')
 BASE_DIR = PROJECT_ROOT
 
-DEBUG = True
+DEBUG = (sys.argv[1] == 'runserver')
 
 # These should both be set to true. The openstax.middleware will handle resolving the URL
 # without a redirect if needed.
@@ -319,9 +320,14 @@ WAGTAIL_GRAVATAR_PROVIDER_URL = '//www.gravatar.com/avatar'
 MAPBOX_TOKEN = '' # should be the sk from mapbox, put in the appropriate settings file
 
 # ACCOUNTS COOKIE AUTHENTICATION
-COOKIE_NAME = 'ox'
-ENCRYPTED_COOKIE_SALT = "ox-shared-salt"
-SIGNED_ENCRYPTED_COOKIE_SALT = "signed encrypted ox-shared-salt"
+#ENCRYPTED_COOKIE_SALT = "ox-shared-salt"
+#SIGNED_ENCRYPTED_COOKIE_SALT = "signed encrypted ox-shared-salt"
+
+SIGNATURE_PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDjvO/E8lO+ZJ7JMglbJyiF5/Ae\nIIS2NKbIAMLBMPVBQY7mSqo6j/yxdVNKZCzYAMDWc/VvEfXQQJ2ipIUuDvO+SOwz\nMewQ70hC71hC4s3dmOSLnixDJlnsVpcnKPEFXloObk/fcpK2Vw27e+yY+kIFmV2X\nzrvTnmm9UJERp6tVTQIDAQAB\n-----END PUBLIC KEY-----\n"
+ENCRYPTION_PRIVATE_KEY = "c6d9b8683fddce8f2a39ac0565cf18ee"
+COOKIE_NAME = 'oxa'
+ENCRYPTION_METHOD = 'A256GCM'
+SIGNATURE_ALGORITHM = 'RS256'
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
 

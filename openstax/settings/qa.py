@@ -1,6 +1,5 @@
 from .base import *
 
-DEBUG = False
 ALLOWED_HOSTS = ['.openstax.org']
 
 # Cloudfront static file settings

@@ -289,7 +289,8 @@ class PartnerReview(models.Model):
         ('New', 'New'),
         ('Edited', 'Edited'),
         ('Awaiting Approval', 'Awaiting Approval'),
-        ('Approved', 'Approved')
+        ('Approved', 'Approved'),
+        ('Deleted', 'Deleted')
     )
 
     partner = models.ForeignKey(Partner, on_delete=models.SET_NULL, null=True)
