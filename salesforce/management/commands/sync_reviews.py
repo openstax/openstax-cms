@@ -18,11 +18,12 @@ class Command(BaseCommand):
             for record in sf_reviews:
                 try:
                     review = PartnerReview.objects.get(review_salesforce_id=record['Id'])
-                    review.review = record['Approved_Customer_Review__c']
-                    review.partner_response = record['Partner_Response__c']
-                    review.partner_response_date = record['Partner_Response_Date__c']
-                    review.status = 'Approved'
-                    review.save()
+                    if review.status != 'Edited':
+                        review.review = record['Approved_Customer_Review__c']
+                        review.partner_response = record['Partner_Response__c']
+                        review.partner_response_date = record['Partner_Response_Date__c']
+                        review.status = 'Approved'
+                        review.save()
                 except PartnerReview.DoesNotExist:
                     print('Review does not exist for SF ID: {}'.format(record['Id']))
 
