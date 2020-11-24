@@ -9,7 +9,11 @@ from django.utils.log import DEFAULT_LOGGING
 PROJECT_ROOT = os.path.join(os.path.dirname(__file__), '..', '..')
 BASE_DIR = PROJECT_ROOT
 
-DEBUG = (sys.argv[1] == 'runserver')
+# check if running local dev server - else default to DEBUG=False
+if len(sys.argv) > 1:
+    DEBUG = (sys.argv[1] == 'runserver')
+else:
+    DEBUG = False
 
 # These should both be set to true. The openstax.middleware will handle resolving the URL
 # without a redirect if needed.
