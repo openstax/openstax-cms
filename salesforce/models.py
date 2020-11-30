@@ -290,6 +290,7 @@ class PartnerReview(models.Model):
         ('Edited', 'Edited'),
         ('Awaiting Approval', 'Awaiting Approval'),
         ('Approved', 'Approved'),
+        ('Rejected', 'Rejected'),
         ('Deleted', 'Deleted')
     )
 
