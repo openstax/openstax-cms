@@ -35,9 +35,8 @@ class Command(BaseCommand):
             for record in sf_reviews:
                 try:
                     review = PartnerReview.objects.get(review_salesforce_id=record['Id'])
-                    if review.status != 'Awaiting Approval':
-                        review.status = 'Rejected'
-                        review.save()
+                    review.status = 'Rejected'
+                    review.save()
                 except PartnerReview.DoesNotExist:
                     print('Review does not exist for SF ID: {}'.format(record['Id']))
 
