@@ -55,10 +55,15 @@ class PartnerReviewViewSet(viewsets.ViewSet):
 
     @action(methods=['post'], detail=True)
     def post(self, request):
-        serializer = PartnerReviewSerializer(data=request.data)  # set partial=True to update a data partially
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(status=201, data=serializer.data)
+        try:
+            review = PartnerReview.objects.filter(partner=request.data['partner'], submitted_by_account_id=request.data['submitted_by_account_id'])[0]
+            serializer = PartnerReviewSerializer(review)
+            return Response(serializer.data)
+        except PartnerReview.DoesNotExist:
+            serializer = PartnerReviewSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return JsonResponse(status=201, data=serializer.data)
         return JsonResponse(status=400, data="wrong parameters")
 
     @action(methods=['patch'], detail=True)
