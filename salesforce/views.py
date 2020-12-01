@@ -14,6 +14,8 @@ from .serializers import SchoolSerializer, AdoptionOpportunityRecordSerializer, 
 from salesforce.salesforce import Salesforce
 from books.models import Book
 from oxauth.functions import get_logged_in_user_id
+from global_settings.functions import invalidate_cloudfront_caches
+
 
 class SchoolViewSet(viewsets.ModelViewSet):
     queryset = School.objects.all()
@@ -70,6 +72,7 @@ class PartnerReviewViewSet(viewsets.ViewSet):
             serializer = PartnerReviewSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
+                invalidate_cloudfront_caches()
                 return JsonResponse(status=201, data=serializer.data)
         return JsonResponse(status=400, data="wrong parameters")
 
@@ -83,6 +86,7 @@ class PartnerReviewViewSet(viewsets.ViewSet):
             # set review status to Edited so it will reenter the review queue
             review_object.status = 'Edited'
             review_object.save()
+            invalidate_cloudfront_caches()
             return JsonResponse(status=201, data=serializer.data)
         return JsonResponse(status=400, data="wrong parameters")
 
@@ -93,6 +97,7 @@ class PartnerReviewViewSet(viewsets.ViewSet):
         if user_id == review_object.submitted_by_account_id:
             review_object.status = 'Deleted'
             review_object.save()
+            invalidate_cloudfront_caches()
         serializer = PartnerReviewSerializer(review_object)
         return Response(serializer.data)
 
