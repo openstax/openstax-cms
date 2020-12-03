@@ -23,6 +23,5 @@ class RequestMock(RequestFactory):
         handler.load_middleware()
         for middleware_method in handler._request_middleware:
             if middleware_method(request):
-                raise Exception("Couldn't create request mock object - "  
-                                "request middleware returned a response")
+                raise Exception("Couldn't create request mock object - request middleware returned a response")
         return request

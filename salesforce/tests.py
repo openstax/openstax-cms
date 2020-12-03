@@ -5,7 +5,6 @@ from django.core.management import call_command
 from django.test import LiveServerTestCase, TestCase
 from six import StringIO
 from django.core.exceptions import ValidationError
-from django.contrib.auth.models import User
 
 from salesforce.models import Adopter, SalesforceSettings, MapBoxDataset, Partner, AdoptionOpportunityRecord, PartnerReview
 from salesforce.views import Salesforce
