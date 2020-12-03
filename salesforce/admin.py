@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.core import management
 
 from .models import AdoptionOpportunityRecord, \
     School, \
@@ -168,11 +169,15 @@ class PartnerFieldNameMappingAdmin(admin.ModelAdmin):
 class PartnerTypeMappingAdmin(admin.ModelAdmin):
     list_display = ('display_name',)
 
-
 class PartnerReviewAdmin(admin.ModelAdmin):
     list_display = ('partner', 'submitted_by_name', 'rating', 'status')
     list_filter = ('rating', 'partner')
     search_fields = ['partner', 'submitted_by_name', 'submitted_by_account_id']
+    actions = ['sync_with_salesforce', ]
+
+    def sync_with_salesforce(self, request, queryset):
+        management.call_command('sync_reviews', verbosity=0)
+    sync_with_salesforce.short_description = "Sync Reviews with Salesforce"
 
 
 class ResourceDownloadAdmin(admin.ModelAdmin):
