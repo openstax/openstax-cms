@@ -102,17 +102,6 @@ class PartnerTest(APITestCase, TestCase):
         response = self.client.delete('/apps/cms/api/salesforce/reviews/', data, format='json')
         self.assertEqual(response.data['status'], 'Deleted')
 
-    def test_not_allowed_if_cant_delete_review(self):
-        settings.BYPASS_SSO_COOKIE_CHECK = False
-        review = PartnerReview.objects.create(
-            partner=Partner.objects.order_by("?").first(),
-            rating=4,
-            submitted_by_name="O. Staxly",
-            submitted_by_account_id=2
-        )
-        data = {"id": review.id}
-        response = self.client.delete('/apps/cms/api/salesforce/reviews/', data, format='json')
-        self.assertEqual(response.status_code, 403)
 
 class AdoptionOpportunityTest(APITestCase, TestCase):
     def setUp(self):
