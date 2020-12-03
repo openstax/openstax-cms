@@ -327,6 +327,7 @@ MAPBOX_TOKEN = '' # should be the sk from mapbox, put in the appropriate setting
 #ENCRYPTED_COOKIE_SALT = "ox-shared-salt"
 #SIGNED_ENCRYPTED_COOKIE_SALT = "signed encrypted ox-shared-salt"
 
+SSO_COOKIE_NAME = 'oxa'
 SIGNATURE_PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDjvO/E8lO+ZJ7JMglbJyiF5/Ae\nIIS2NKbIAMLBMPVBQY7mSqo6j/yxdVNKZCzYAMDWc/VvEfXQQJ2ipIUuDvO+SOwz\nMewQ70hC71hC4s3dmOSLnixDJlnsVpcnKPEFXloObk/fcpK2Vw27e+yY+kIFmV2X\nzrvTnmm9UJERp6tVTQIDAQAB\n-----END PUBLIC KEY-----\n"
 ENCRYPTION_PRIVATE_KEY = "c6d9b8683fddce8f2a39ac0565cf18ee"
 COOKIE_NAME = 'oxa'

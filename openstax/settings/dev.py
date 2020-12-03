@@ -35,6 +35,8 @@ USERS_QUERY = 'https://accounts-dev.openstax.org/api/users?'
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'https://oscms-dev.openstax.org'
 SOCIAL_AUTH_SANITIZE_REDIRECTS = False
 
+SSO_COOKIE_NAME = 'oxa_dev'
+
 # Server host (used to populate links in the email)
 HOST_LINK = 'https://oscms-dev.openstax.org'
 
