@@ -157,6 +157,13 @@ class PartnerAdmin(admin.ModelAdmin):
     'online_teaching_teaching_labs',
     'international')
 
+    actions = ['sync_with_salesforce', ]
+
+    def sync_with_salesforce(self, request, queryset):
+        management.call_command('update_partners', verbosity=0)
+    sync_with_salesforce.short_description = "Sync Partners with Salesforce"
+    sync_with_salesforce.allowed_permissions = ('change',)
+
 
 class PartnerCategoryMappingAdmin(admin.ModelAdmin):
     list_display = ('display_name', 'salesforce_name')
@@ -176,8 +183,10 @@ class PartnerReviewAdmin(admin.ModelAdmin):
     actions = ['sync_with_salesforce', ]
 
     def sync_with_salesforce(self, request, queryset):
+        print(request.data)
         management.call_command('sync_reviews', verbosity=0)
     sync_with_salesforce.short_description = "Sync Reviews with Salesforce"
+    sync_with_salesforce.allowed_permissions = ('change',)
 
 
 class ResourceDownloadAdmin(admin.ModelAdmin):
