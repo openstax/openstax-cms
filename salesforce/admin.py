@@ -176,6 +176,7 @@ class PartnerFieldNameMappingAdmin(admin.ModelAdmin):
 class PartnerTypeMappingAdmin(admin.ModelAdmin):
     list_display = ('display_name',)
 
+
 class PartnerReviewAdmin(admin.ModelAdmin):
     list_display = ('partner', 'submitted_by_name', 'rating', 'status')
     list_filter = ('rating', 'partner')
@@ -183,7 +184,6 @@ class PartnerReviewAdmin(admin.ModelAdmin):
     actions = ['sync_with_salesforce', ]
 
     def sync_with_salesforce(self, request, queryset):
-        print(request.data)
         management.call_command('sync_reviews', verbosity=0)
     sync_with_salesforce.short_description = "Sync Reviews with Salesforce"
     sync_with_salesforce.allowed_permissions = ('change',)
