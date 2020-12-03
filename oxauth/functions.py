@@ -22,10 +22,11 @@ def decrypt_cookie(cookie):
 def get_logged_in_user_id(request):
     """
     This simplifies getting the logged in user id - since this happens often.
+    Requires SSO_COOKIE_NAME to be set in settings file.
     :param request:
     :return: user_id from SSO cookie
     """
-    decrypted_cookie = decrypt_cookie(request.COOKIES.get('oxa'))
+    decrypted_cookie = decrypt_cookie(request.COOKIES.get(settings.SSO_COOKIE_NAME))
     if decrypted_cookie:
         return decrypted_cookie.user_id
     else:
