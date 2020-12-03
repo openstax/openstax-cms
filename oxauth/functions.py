@@ -26,7 +26,10 @@ def get_logged_in_user_id(request):
     :return: user_id from SSO cookie
     """
     decrypted_cookie = decrypt_cookie(request.COOKIES.get('oxa'))
-    return decrypted_cookie.user_id
+    if decrypted_cookie:
+        return decrypted_cookie.user_id
+    else:
+        return None
 
 def get_token():
     client = BackendApplicationClient(client_id=settings.SOCIAL_AUTH_OPENSTAX_KEY)
