@@ -30,7 +30,6 @@ def get_logged_in_user_id(request, bypass_sso_cookie_check=settings.BYPASS_SSO_C
     """
     if not bypass_sso_cookie_check:
         decrypted_cookie = decrypt_cookie(request.COOKIES.get(settings.SSO_COOKIE_NAME))
-        print(request.get_host())
         if decrypted_cookie:
             return decrypted_cookie.user_id
         else:
