@@ -95,7 +95,7 @@ class PartnerReviewViewSet(viewsets.ViewSet):
         user_id = get_logged_in_user_id(request)
         if user_id:
             review_object = PartnerReview.objects.get(id=request.data['id'])
-            if user_id == review_object.submitted_by_account_id or user_id == -1:
+            if (user_id == review_object.submitted_by_account_id) or user_id == -1:
                     review_object.status = 'Deleted'
                     review_object.save()
                     invalidate_cloudfront_caches()

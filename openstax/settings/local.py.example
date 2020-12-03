@@ -44,3 +44,6 @@ MAPBOX_TOKEN = '' # should be the sk from mapbox
 
 # SSO Cookie name (oxa-dev for accounts dev; oxa for local accounts)
 SSO_COOKIE_NAME = 'oxa-dev'
+
+# If you want to bypass the SSO cookie checks, set this to True - as of this writing, that only affects the delete method on reviews
+BYPASS_SSO_COOKIE_CHECK = True
