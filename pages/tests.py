@@ -20,7 +20,6 @@ from pages.models import (HomePage,
                           CompCopy,
                           AdoptForm,
                           InterestForm,
-                          Marketing,
                           Technology,
                           ErrataList,
                           PrivacyPolicy,
@@ -36,7 +35,8 @@ from pages.models import (HomePage,
                           PartnersPage,
                           WebinarPage,
                           MathQuizPage,
-                          LLPHPage)
+                          LLPHPage,
+                          TutorMarketing)
 from news.models import NewsIndex, PressIndex
 from books.models import BookIndex
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
@@ -84,7 +84,6 @@ class HomePageTests(WagtailPageTests):
             CompCopy,
             AdoptForm,
             InterestForm,
-            Marketing,
             Technology,
             ErrataList,
             PrivacyPolicy,
@@ -100,7 +99,8 @@ class HomePageTests(WagtailPageTests):
             PartnersPage,
             WebinarPage,
             MathQuizPage,
-            LLPHPage
+            LLPHPage,
+            TutorMarketing
         })
 
 class PageTests(WagtailPageTests):
