@@ -3,31 +3,26 @@ from django.db import models
 from django.http.response import JsonResponse
 
 from modelcluster.fields import ParentalKey
-from wagtail.admin.edit_handlers import (FieldPanel, InlinePanel, StreamFieldPanel)
+from wagtail.admin.edit_handlers import InlinePanel, StreamFieldPanel
 from wagtail.core import blocks
 from wagtail.core.blocks import FieldBlock, RawHTMLBlock, StructBlock
 from wagtail.core.fields import RichTextField, StreamField
 from wagtail.core.models import Orderable, Page
-from wagtail.images.blocks import ImageChooserBlock
-from wagtail.documents.blocks import DocumentChooserBlock
 from wagtail.documents.edit_handlers import DocumentChooserPanel
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.api import APIField
 
 from openstax.functions import build_image_url, build_document_url
 from books.models import Book
-from api.serializers import ImageSerializer
 from salesforce.models import PartnerTypeMapping, PartnerFieldNameMapping, PartnerCategoryMapping, Partner
 
-from .custom_blocks import ImageFormatChoiceBlock, \
-    ImageBlock, \
+from .custom_blocks import ImageBlock, \
     APIImageChooserBlock, \
     ColumnBlock, \
     FAQBlock, \
     BookProviderBlock
 
-from .custom_fields import Quote, \
-    Funder, \
+from .custom_fields import Funder, \
     Institutions, \
     MarketingVideoLink, \
     Resource, \
