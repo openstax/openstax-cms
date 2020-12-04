@@ -35,30 +35,6 @@ from .custom_fields import Quote, \
     Card
 
 
-### Orderable Through-Models ###
-
-class OpenStaxPeople(Orderable, Group):
-    marketing_video = ParentalKey(
-        'pages.TeamPage', related_name='openstax_people')
-
-class FoundationSupportFunders(Orderable, Funder):
-    page = ParentalKey('pages.FoundationSupport', related_name='funders')
-
-
-class OurImpactInstitutions(Orderable, Institutions):
-    page = ParentalKey('pages.OurImpact', related_name='institutions')
-
-class MarketingVideos(Orderable, MarketingVideoLink):
-    marketing_video = ParentalKey(
-        'pages.Marketing', related_name='marketing_videos')
-
-
-class ResourceAvailability(Orderable, Resource):
-    marketing_video = ParentalKey(
-        'pages.Marketing', related_name='resource_availability')
-
-### Page Definitions ###
-
 class AboutUsPage(Page):
     who_heading = models.CharField(max_length=255)
     who_paragraph = models.TextField()
@@ -148,6 +124,10 @@ class AboutUsPage(Page):
 
     parent_page_types = ['pages.HomePage']
     max_count = 1
+
+
+class OpenStaxPeople(Orderable, Group):
+    marketing_video = ParentalKey('pages.TeamPage', related_name='openstax_people')
 
 
 class TeamPage(Page):
@@ -553,6 +533,10 @@ class GeneralPage(Page):
     ]
 
 
+class FoundationSupportFunders(Orderable, Funder):
+    page = ParentalKey('pages.FoundationSupport', related_name='funders')
+
+
 class FoundationSupport(Page):
     page_description = models.TextField()
     promote_image = models.ForeignKey(
@@ -590,6 +574,10 @@ class FoundationSupport(Page):
 
     parent_page_types = ['pages.HomePage']
     max_count = 1
+
+
+class OurImpactInstitutions(Orderable, Institutions):
+    page = ParentalKey('pages.OurImpact', related_name='institutions')
 
 
 class OurImpact(Page):
@@ -1238,6 +1226,14 @@ class InterestForm(Page):
 
     parent_page_types = ['pages.HomePage']
     max_count = 1
+
+
+class MarketingVideos(Orderable, MarketingVideoLink):
+    marketing_video = ParentalKey('pages.Marketing', related_name='marketing_videos')
+
+
+class ResourceAvailability(Orderable, Resource):
+    marketing_video = ParentalKey('pages.Marketing', related_name='resource_availability')
 
 
 class Marketing(Page):
