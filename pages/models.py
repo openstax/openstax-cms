@@ -18,6 +18,7 @@ from wagtail.api import APIField
 
 from books.models import Book
 from api.serializers import ImageSerializer
+from webinars.models import Webinar
 
 from salesforce.models import PartnerTypeMapping, PartnerFieldNameMapping, PartnerCategoryMapping, Partner
 
@@ -63,7 +64,24 @@ class FAQBlock(blocks.StructBlock):
     document = DocumentChooserBlock(required=False)
 
     class Meta:
-        icon = 'placeholder'
+        icon = 'help'
+
+
+class CardBlock(blocks.StructBlock):
+    title = blocks.CharBlock(required=True)
+    description = blocks.RichTextBlock(required=True)
+
+    class Meta:
+        icon = 'form'
+
+
+class CardImageBlock(blocks.StructBlock):
+    icon = APIImageChooserBlock(required=False)
+    title = blocks.CharBlock(required=True)
+    description = blocks.RichTextBlock(required=True)
+
+    class Meta:
+        icon = 'image'
 
 
 class BookProviderBlock(blocks.StructBlock):
@@ -553,7 +571,6 @@ class HomePage(Page):
         'pages.CompCopy',
         'pages.AdoptForm',
         'pages.InterestForm',
-        'pages.Marketing',
         'pages.Technology',
         'pages.ErrataList',
         'pages.PrivacyPolicy',
@@ -569,6 +586,7 @@ class HomePage(Page):
         'pages.WebinarPage',
         'pages.MathQuizPage',
         'pages.LLPHPage',
+        'pages.TutorMarketing',
         'books.BookIndex',
         'news.NewsIndex',
         'news.PressIndex'
@@ -2861,3 +2879,168 @@ class LLPHPage(Page):
 
     class Meta:
         verbose_name = "LLPH Page"
+
+
+class TutorMarketing(Page):
+    # header section
+    header = models.CharField(max_length=255)
+    description = models.TextField()
+    header_cta_button_text = models.CharField(max_length=255)
+    header_cta_button_link = models.URLField()
+    quote = RichTextField()
+
+    #features
+    features_header = models.CharField(max_length=255)
+    features_cards = StreamField([
+        ('cards', CardImageBlock()),
+    ])
+
+    #availble books
+    available_books_header = models.CharField(max_length=255)
+
+    #cost
+    cost_header = models.CharField(max_length=255)
+    cost_description = models.TextField()
+    cost_cards = StreamField([
+        ('cards', CardBlock()),
+    ])
+    cost_institution_message = models.CharField(max_length=255)
+
+    #feedback
+    feedback_image = models.ForeignKey(
+        'wagtaildocs.Document',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='+',
+    )
+
+    def get_feedback_image(self):
+        return build_document_url(self.feedback_image.url)
+    feedback_image_url = property(get_feedback_image)
+
+    feedback_heading = models.CharField(max_length=255)
+    feedback_quote = models.TextField()
+    feedback_name = models.CharField(max_length=255)
+    feedback_occupation = models.CharField(max_length=255)
+    feedback_organization = models.CharField(max_length=255)
+
+    #webinars
+    webinars_header = models.CharField(max_length=255)
+
+    #faq
+    faq_header = models.CharField(max_length=255)
+    faqs = StreamField([
+        ('faq', FAQBlock()),
+    ])
+
+    demo_cta_text = models.CharField(max_length=255)
+    demo_cta_link = models.URLField()
+    tutor_login_link = models.URLField()
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    @property
+    def tutor_books(self):
+        books = Book.objects.filter(tutor_marketing_book=True).order_by('path')
+        book_data = []
+        for book in books:
+            book_data.append({
+                'id': book.id,
+                'slug': 'books/{}'.format(book.slug),
+                'title': book.title,
+                'cover_url': book.cover_url,
+            })
+        return book_data
+
+    @property
+    def webinars(self):
+        webinars = Webinar.objects.filter(display_on_tutor_page=True)
+        webinar_data = []
+        for webinar in webinars:
+            print(webinar)
+            webinar_data.append({
+                'id': webinar.id,
+                'description': webinar.description,
+                'link': webinar.registration_url,
+            })
+        return webinar_data
+
+    api_fields = [
+        APIField('title'),
+        APIField('header'),
+        APIField('description'),
+        APIField('header_cta_button_text'),
+        APIField('header_cta_button_link'),
+        APIField('quote'),
+        APIField('features_header'),
+        APIField('features_cards'),
+        APIField('available_books_header'),
+        APIField('tutor_books'),
+        APIField('cost_header'),
+        APIField('cost_description'),
+        APIField('cost_cards'),
+        APIField('cost_institution_message'),
+        APIField('feedback_image_url'),
+        APIField('feedback_heading'),
+        APIField('feedback_quote'),
+        APIField('feedback_name'),
+        APIField('feedback_occupation'),
+        APIField('feedback_organization'),
+        APIField('webinars_header'),
+        APIField('webinars'),
+        APIField('faq_header'),
+        APIField('faqs'),
+        APIField('demo_cta_text'),
+        APIField('demo_cta_link'),
+        APIField('tutor_login_link'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+    ]
+
+    content_panels = [
+        FieldPanel('title', classname="full title"),
+        FieldPanel('header'),
+        FieldPanel('description'),
+        FieldPanel('header_cta_button_text'),
+        FieldPanel('header_cta_button_link'),
+        FieldPanel('quote'),
+        FieldPanel('features_header'),
+        StreamFieldPanel('features_cards'),
+        FieldPanel('available_books_header'),
+        FieldPanel('cost_header'),
+        FieldPanel('cost_description'),
+        StreamFieldPanel('cost_cards'),
+        FieldPanel('cost_institution_message'),
+        ImageChooserPanel('feedback_image'),
+        FieldPanel('feedback_heading'),
+        FieldPanel('feedback_quote'),
+        FieldPanel('feedback_name'),
+        FieldPanel('feedback_occupation'),
+        FieldPanel('feedback_organization'),
+        FieldPanel('webinars_header'),
+        FieldPanel('faq_header'),
+        StreamFieldPanel('faqs'),
+        FieldPanel('demo_cta_text'),
+        FieldPanel('demo_cta_link'),
+        FieldPanel('tutor_login_link')
+    ]
+
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
+    ]
+
+    template = 'page.html'
+
+    parent_page_types = ['pages.HomePage']
+    max_count = 1
