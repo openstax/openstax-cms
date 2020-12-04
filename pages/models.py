@@ -26,7 +26,6 @@ from .custom_blocks import ImageFormatChoiceBlock, \
     FAQBlock, \
     BookProviderBlock
 
-        ('F', 'full'),
 from .custom_fields import Quote, \
     Funder, \
     Institutions, \
