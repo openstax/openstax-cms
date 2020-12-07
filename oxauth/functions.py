@@ -19,14 +19,23 @@ def decrypt_cookie(cookie):
     payload = strategy.decrypt(cookie)
     return payload
 
-def get_logged_in_user_id(request):
+def get_logged_in_user_id(request, bypass_sso_cookie_check=settings.BYPASS_SSO_COOKIE_CHECK):
     """
     This simplifies getting the logged in user id - since this happens often.
+    Requires SSO_COOKIE_NAME to be set in settings file.
+    Takes an optional bypass_cookie_check param to bypass cookie checking for local dev / testing
+    which returns -1 (a never valid user id)
     :param request:
     :return: user_id from SSO cookie
     """
-    decrypted_cookie = decrypt_cookie(request.COOKIES.get('oxa'))
-    return decrypted_cookie.user_id
+    if not bypass_sso_cookie_check:
+        decrypted_cookie = decrypt_cookie(request.COOKIES.get(settings.SSO_COOKIE_NAME))
+        if decrypted_cookie:
+            return decrypted_cookie.user_id
+        else:
+            return None
+    else:
+        return -1
 
 def get_token():
     client = BackendApplicationClient(client_id=settings.SOCIAL_AUTH_OPENSTAX_KEY)

@@ -90,6 +90,18 @@ class PartnerTest(APITestCase, TestCase):
         response = self.client.post('/apps/cms/api/salesforce/reviews/', data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
+    def test_can_delete_review(self):
+        review = PartnerReview.objects.create(
+            partner=Partner.objects.order_by("?").first(),
+            rating=5,
+            submitted_by_name="O. Staxly",
+            submitted_by_account_id=2
+        )
+        data = { "id": review.id }
+        response = self.client.delete('/apps/cms/api/salesforce/reviews/', data, format='json')
+        self.assertEqual(response.data['status'], 'Deleted')
+
+
 class AdoptionOpportunityTest(APITestCase, TestCase):
     def setUp(self):
         call_command('update_opportunities')

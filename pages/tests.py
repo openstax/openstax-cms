@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.core.management import call_command
 from wagtail.tests.utils import WagtailTestUtils, WagtailPageTests
 from wagtail.core.models import Page
 from pages.models import (HomePage,
@@ -20,7 +21,6 @@ from pages.models import (HomePage,
                           CompCopy,
                           AdoptForm,
                           InterestForm,
-                          Marketing,
                           Technology,
                           ErrataList,
                           PrivacyPolicy,
@@ -36,7 +36,8 @@ from pages.models import (HomePage,
                           PartnersPage,
                           WebinarPage,
                           MathQuizPage,
-                          LLPHPage)
+                          LLPHPage,
+                          TutorMarketing)
 from news.models import NewsIndex, PressIndex
 from books.models import BookIndex
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
@@ -84,7 +85,6 @@ class HomePageTests(WagtailPageTests):
             CompCopy,
             AdoptForm,
             InterestForm,
-            Marketing,
             Technology,
             ErrataList,
             PrivacyPolicy,
@@ -100,7 +100,8 @@ class HomePageTests(WagtailPageTests):
             PartnersPage,
             WebinarPage,
             MathQuizPage,
-            LLPHPage
+            LLPHPage,
+            TutorMarketing
         })
 
 class PageTests(WagtailPageTests):
@@ -129,6 +130,12 @@ class PageTests(WagtailPageTests):
 
         retrieved_page = Page.objects.get(id=llph_page.id)
         self.assertEqual(retrieved_page.title, "LLPH")
+
+    def test_can_create_tutor_page_with_management_command(self):
+        call_command('create_tutor_page')
+        page_exists = TutorMarketing.objects.all().exists()
+
+        self.assertEqual(page_exists, True)
 
 class ErrataListTest(WagtailPageTests):
 

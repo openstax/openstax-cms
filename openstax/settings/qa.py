@@ -28,6 +28,8 @@ USERS_QUERY = 'https://accounts-qa.openstax.org/api/users?'
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'https://oscms-qa.openstax.org'
 SOCIAL_AUTH_SANITIZE_REDIRECTS = False
 
+SSO_COOKIE_NAME = 'oxa_qa'
+
 # Server host (used to populate links in the email)
 HOST_LINK = 'https://oscms-qa.openstax.org'
 
