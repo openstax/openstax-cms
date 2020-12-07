@@ -27,6 +27,18 @@ class Command(BaseCommand):
                 except PartnerReview.DoesNotExist:
                     print('Review does not exist for SF ID: {}'.format(record['Id']))
 
+            # Update rejected reviews
+            command = "Select Id, Status__c, Approved_Customer_Review__c, Pending_Customer_Review__c, Partner_Response__c, Partner_Response_Date__c, Partner__c, Contact__c, Score__c, OS_Accounts_ID__c FROM Partner_Review__c WHERE Status__c = 'Rejected'"
+            response = sf.query_all(command)
+            sf_reviews = response['records']
+
+            for record in sf_reviews:
+                try:
+                    review = PartnerReview.objects.get(review_salesforce_id=record['Id'])
+                    review.status = 'Rejected'
+                    review.save()
+                except PartnerReview.DoesNotExist:
+                    print('Review does not exist for SF ID: {}'.format(record['Id']))
 
 
             # If a review does not have a Salesforce ID, it must be new. We'll upload those to SF and assign a SF ID.

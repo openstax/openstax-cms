@@ -6,6 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.http import JsonResponse, Http404
 from django.utils import timezone
+from django.core.exceptions import MultipleObjectsReturned
 
 from .models import School, AdoptionOpportunityRecord, Partner, SalesforceForms, ResourceDownload, SavingsNumber, PartnerReview
 from .serializers import SchoolSerializer, AdoptionOpportunityRecordSerializer, PartnerSerializer, SalesforceFormsSerializer, ResourceDownloadSerializer, SavingsNumberSerializer, PartnerReviewSerializer
@@ -13,6 +14,8 @@ from .serializers import SchoolSerializer, AdoptionOpportunityRecordSerializer, 
 from salesforce.salesforce import Salesforce
 from books.models import Book
 from oxauth.functions import get_logged_in_user_id
+from global_settings.functions import invalidate_cloudfront_caches
+
 
 class SchoolViewSet(viewsets.ModelViewSet):
     queryset = School.objects.all()
@@ -55,10 +58,22 @@ class PartnerReviewViewSet(viewsets.ViewSet):
 
     @action(methods=['post'], detail=True)
     def post(self, request):
-        serializer = PartnerReviewSerializer(data=request.data)  # set partial=True to update a data partially
-        if serializer.is_valid():
-            serializer.save()
-            return JsonResponse(status=201, data=serializer.data)
+        try:
+            try:
+                review_object = PartnerReview.objects.get(partner=request.data['partner'],
+                                                          submitted_by_account_id=request.data['submitted_by_account_id'])
+            except MultipleObjectsReturned: # just in case they somehow were able to create more than 1
+                review_object = PartnerReview.objects.filter(partner=request.data['partner'],
+                                                          submitted_by_account_id=request.data[
+                                                              'submitted_by_account_id']).first()
+            serializer = PartnerReviewSerializer(review_object)
+            return Response(serializer.data)
+        except PartnerReview.DoesNotExist:
+            serializer = PartnerReviewSerializer(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                invalidate_cloudfront_caches()
+                return JsonResponse(status=201, data=serializer.data)
         return JsonResponse(status=400, data="wrong parameters")
 
     @action(methods=['patch'], detail=True)
@@ -71,16 +86,20 @@ class PartnerReviewViewSet(viewsets.ViewSet):
             # set review status to Edited so it will reenter the review queue
             review_object.status = 'Edited'
             review_object.save()
+            invalidate_cloudfront_caches()
             return JsonResponse(status=201, data=serializer.data)
         return JsonResponse(status=400, data="wrong parameters")
 
-    @action(method=['delete'], detail=False)
+    @action(method=['delete'], detail=True)
     def delete(self, request):
         user_id = get_logged_in_user_id(request)
         review_object = PartnerReview.objects.get(id=request.data['id'])
         if user_id == review_object.submitted_by_account_id:
             review_object.status = 'Deleted'
             review_object.save()
+            invalidate_cloudfront_caches()
+        serializer = PartnerReviewSerializer(review_object)
+        return Response(serializer.data)
 
     serializer_class = PartnerReviewSerializer
 
