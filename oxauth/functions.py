@@ -5,7 +5,28 @@ from oauthlib.oauth2 import BackendApplicationClient
 from requests_oauthlib import OAuth2Session
 
 from django.conf import settings
+from .strategy_2 import Strategy2
 
+def decrypt_cookie(cookie):
+    strategy = Strategy2(
+        signature_public_key=settings.SIGNATURE_PUBLIC_KEY,
+        signature_algorithm = settings.SIGNATURE_ALGORITHM,
+        encryption_private_key = settings.ENCRYPTION_PRIVATE_KEY,
+        encryption_algorithm = settings.ENCRYPTION_METHOD,
+        encryption_method = "dir"
+    )
+
+    payload = strategy.decrypt(cookie)
+    return payload
+
+def get_logged_in_user_id(request):
+    """
+    This simplifies getting the logged in user id - since this happens often.
+    :param request:
+    :return: user_id from SSO cookie
+    """
+    decrypted_cookie = decrypt_cookie(request.COOKIES.get('oxa'))
+    return decrypted_cookie.user_id
 
 def get_token():
     client = BackendApplicationClient(client_id=settings.SOCIAL_AUTH_OPENSTAX_KEY)

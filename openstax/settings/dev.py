@@ -1,6 +1,5 @@
 from .base import *
 
-DEBUG = False
 ALLOWED_HOSTS = ['.openstax.org']
 
 # Allows you to test sending mail, output is logged to the console
