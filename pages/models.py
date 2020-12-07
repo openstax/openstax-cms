@@ -2618,9 +2618,9 @@ class TutorMarketing(Page):
         webinars = Webinar.objects.filter(display_on_tutor_page=True)
         webinar_data = []
         for webinar in webinars:
-            print(webinar)
             webinar_data.append({
                 'id': webinar.id,
+                'title': webinar.title,
                 'description': webinar.description,
                 'link': webinar.registration_url,
             })
