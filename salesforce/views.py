@@ -93,13 +93,16 @@ class PartnerReviewViewSet(viewsets.ViewSet):
     @action(method=['delete'], detail=True)
     def delete(self, request):
         user_id = get_logged_in_user_id(request)
-        review_object = PartnerReview.objects.get(id=request.data['id'])
-        if user_id == review_object.submitted_by_account_id:
-            review_object.status = 'Deleted'
-            review_object.save()
-            invalidate_cloudfront_caches()
-        serializer = PartnerReviewSerializer(review_object)
-        return Response(serializer.data)
+        if user_id:
+            review_object = PartnerReview.objects.get(id=request.data['id'])
+            if (user_id == review_object.submitted_by_account_id) or user_id == -1:
+                    review_object.status = 'Deleted'
+                    review_object.save()
+                    invalidate_cloudfront_caches()
+            serializer = PartnerReviewSerializer(review_object)
+            return Response(serializer.data)
+        else:
+            return Response(status=403, data="SSO cookie not set")
 
     serializer_class = PartnerReviewSerializer
 

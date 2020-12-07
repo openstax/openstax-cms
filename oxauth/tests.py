@@ -6,7 +6,8 @@ from django.test import TestCase, Client
 from django.conf import settings
 from django.urls import reverse
 
-from oxauth.functions import get_token, decrypt_cookie
+from shared.test_utilities import RequestMock
+from oxauth.functions import get_token, decrypt_cookie, get_logged_in_user_id
 from oxauth.views import login, logout
 from .auth import OXSessionDecryptor
 
@@ -50,3 +51,8 @@ class AccountsTestCase(TestCase):
     def test_can_decrypt_sso_cookie(self):
         decrypted_cookie = decrypt_cookie(self.sso_cookie)
         self.assertEqual(decrypted_cookie.user_uuid, '467cea6c-8159-40b1-90f1-e9b0dc26344c')
+
+    def test_can_bypass_cookie_checks(self):
+        mock = RequestMock()
+        user_id = get_logged_in_user_id(mock.request, bypass_sso_cookie_check=True)
+        self.assertEqual(user_id, -1) #bypassed cookie checks return -1 for a user id
