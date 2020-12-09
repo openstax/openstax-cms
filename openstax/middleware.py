@@ -57,6 +57,7 @@ class RedirectMiddleware(MiddlewareMixin):
 
         # Get the path
         path = models.Redirect.normalise_path(request.get_full_path())
+        print('***path: ' + path)
 
         # Find redirect
         redirect = middleware.get_redirect(request, path)
@@ -76,17 +77,17 @@ class RedirectMiddleware(MiddlewareMixin):
             return response
 
         if redirect.is_permanent:
-            self.send_google_analytics(redirect.link)
+            self.send_google_analytics(request.get_host(),path)
             return http.HttpResponsePermanentRedirect(redirect.link)
         else:
-            self.send_google_analytics(redirect.link)
+            self.send_google_analytics(request.get_host(),path)
             return http.HttpResponseRedirect(redirect.link)
 
-    def send_google_analytics(self, url):
-        escaped_url = requests.utils.quote(url)
+    def send_google_analytics(self, host, path):
+        escaped_url = requests.utils.quote('https://' + host + path)
         print('**[send_google_analytics] called: ' + escaped_url)
         payload = {'v':'1','t':'pageView','cid':str(int(time() * 1000)),'tid':'UA-73668038-3','ec':'Redirects','ea':'clicked',
-                   'dl':escaped_url}
+                   'dl':escaped_url, 'dp':path, 'dt':'Redirect'}
 
         print('**[send_google_analytics] payload: ' + str(payload))
         response = requests.post(
