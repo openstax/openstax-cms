@@ -116,26 +116,3 @@ class Group(models.Model):
         FieldPanel('heading'),
         StreamFieldPanel('people'),
     ]
-
-class Card(models.Model):
-    heading = models.CharField(max_length=255)
-    description = models.TextField(blank=True, null=True)
-    cards = StreamField([
-        ('card', blocks.StructBlock([
-            ('image', ImageBlock()),
-            ('headline', blocks.TextBlock(required=False)),
-            ('description', blocks.TextBlock(required=False)),
-            ('button_text', blocks.CharBlock(required=False)),
-            ('button_url', blocks.CharBlock(required=False))
-        ], icon='document')),
-    ])
-
-    api_fields = ('heading',
-                  'description',
-                  'cards')
-
-    panels = [
-        FieldPanel('heading'),
-        FieldPanel('description'),
-        StreamFieldPanel('cards')
-    ]

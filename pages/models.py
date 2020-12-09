@@ -28,8 +28,7 @@ from .custom_blocks import ImageBlock, \
 
 from .custom_fields import Funder, \
     Institutions, \
-    Group, \
-    Card
+    Group
 
 
 class AboutUsPage(Page):
