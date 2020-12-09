@@ -5,7 +5,6 @@ from django.http.response import JsonResponse
 from modelcluster.fields import ParentalKey
 from wagtail.admin.edit_handlers import FieldPanel, InlinePanel, StreamFieldPanel
 from wagtail.core import blocks
-from wagtail.core.blocks import RawHTMLBlock
 from wagtail.core.fields import RichTextField, StreamField
 from wagtail.core.models import Orderable, Page
 from wagtail.documents.edit_handlers import DocumentChooserPanel
@@ -477,7 +476,7 @@ class GeneralPage(Page):
         ('tagline', blocks.CharBlock(classname="full title")),
         ('paragraph', blocks.RichTextBlock()),
         ('image', APIImageChooserBlock()),
-        ('html', RawHTMLBlock()),
+        ('html', blocks.RawHTMLBlock()),
     ])
 
     def get_sitemap_urls(self, request=None):
