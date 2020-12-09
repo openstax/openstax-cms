@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 from salesforce.models import PartnerReview
 from salesforce.salesforce import Salesforce
 from simple_salesforce.exceptions import SalesforceGeneralError
-
+from global_settings.functions import invalidate_cloudfront_caches
 
 class Command(BaseCommand):
     help = "sync reviews with salesforce"
@@ -84,5 +84,6 @@ class Command(BaseCommand):
                 review.delete()
 
 
+            invalidate_cloudfront_caches()
             response = self.style.SUCCESS("Successfully updated partner reviews")
         self.stdout.write(response)
