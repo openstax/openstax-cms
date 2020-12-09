@@ -22,7 +22,9 @@ from .custom_blocks import ImageBlock, \
     APIImageChooserBlock, \
     ColumnBlock, \
     FAQBlock, \
-    BookProviderBlock
+    BookProviderBlock, \
+    CardBlock, \
+    CardImageBlock
 
 from .custom_fields import Funder, \
     Institutions, \

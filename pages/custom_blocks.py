@@ -70,3 +70,20 @@ class BookProviderBlock(blocks.StructBlock):
                 'url': value['url'],
                 'canadian': value['canadian']
             }
+
+
+class CardBlock(blocks.StructBlock):
+    title = blocks.CharBlock(required=True)
+    description = blocks.RichTextBlock(required=True)
+
+    class Meta:
+        icon = 'form'
+
+
+class CardImageBlock(blocks.StructBlock):
+    icon = APIImageChooserBlock(required=False)
+    title = blocks.CharBlock(required=True)
+    description = blocks.RichTextBlock(required=True)
+
+    class Meta:
+        icon = 'image'
