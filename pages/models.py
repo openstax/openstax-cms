@@ -2568,17 +2568,12 @@ class TutorMarketing(Page):
 
     #feedback
     feedback_image = models.ForeignKey(
-        'wagtaildocs.Document',
+        'wagtailimages.Image',
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
         related_name='+',
     )
-
-    def get_feedback_image(self):
-        return build_document_url(self.feedback_image.url)
-    feedback_image_url = property(get_feedback_image)
-
     feedback_heading = models.CharField(max_length=255)
     feedback_quote = models.TextField()
     feedback_name = models.CharField(max_length=255)
@@ -2623,9 +2618,9 @@ class TutorMarketing(Page):
         webinars = Webinar.objects.filter(display_on_tutor_page=True)
         webinar_data = []
         for webinar in webinars:
-            print(webinar)
             webinar_data.append({
                 'id': webinar.id,
+                'title': webinar.title,
                 'description': webinar.description,
                 'link': webinar.registration_url,
             })
@@ -2646,7 +2641,7 @@ class TutorMarketing(Page):
         APIField('cost_description'),
         APIField('cost_cards'),
         APIField('cost_institution_message'),
-        APIField('feedback_image_url'),
+        APIField('feedback_image'),
         APIField('feedback_heading'),
         APIField('feedback_quote'),
         APIField('feedback_name'),
