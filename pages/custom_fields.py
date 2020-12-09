@@ -30,9 +30,9 @@ class Quote(models.Model):
     quote_image_alignment = models.CharField(max_length=1,
                                              choices=IMAGE_ALIGNMENT_CHOICES,
                                              blank=True,
-                                             null=True)
-    quote_link = models.URLField(blank=True, null=True)
-    quote_link_text = models.CharField(max_length=255, blank=True, null=True)
+                                             default='')
+    quote_link = models.URLField(blank=True, default='')
+    quote_link_text = models.CharField(max_length=255, blank=True, default='')
 
     api_fields = (
         'quote_text',
@@ -64,7 +64,7 @@ class Funder(models.Model):
     def get_funder_logo(self):
         return build_image_url(self.logo)
     funder_logo = property(get_funder_logo)
-    description = models.TextField(blank=True, null=True)
+    description = models.TextField(blank=True, default='')
 
     api_fields = ('title', 'funder_logo', 'description', )
 
