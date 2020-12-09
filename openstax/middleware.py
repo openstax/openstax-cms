@@ -86,8 +86,15 @@ class RedirectMiddleware(MiddlewareMixin):
     def send_google_analytics(self, host, path):
         escaped_url = requests.utils.quote('https://' + host + path)
         print('**[send_google_analytics] called: ' + escaped_url)
-        payload = {'v':'1','t':'pageView','cid':str(int(time() * 1000)),'tid':'UA-73668038-3','ec':'Redirects','ea':'clicked',
-                   'dl':escaped_url, 'dp':path, 'dt':'Redirect'}
+        payload = {'v':'1', #api version
+                   't':'pageView', #hit type
+                   'cid':str(int(time() * 1000)), #client id (sending timestamp since we have no user)
+                   'tid':'UA-73668038-3', #Google Analytics id
+                   'ec':'Redirects', #event category
+                   'ea':'clicked', #event action
+                   'dl':escaped_url, #document location - sending short code
+                   'dp':path, #url minus domain - sending short code
+                   'dt':'Redirect' } #document title
 
         print('**[send_google_analytics] payload: ' + str(payload))
         response = requests.post(
