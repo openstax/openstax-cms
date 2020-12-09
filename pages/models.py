@@ -28,8 +28,6 @@ from .custom_blocks import ImageBlock, \
 
 from .custom_fields import Funder, \
     Institutions, \
-    MarketingVideoLink, \
-    Resource, \
     Group, \
     Card
 

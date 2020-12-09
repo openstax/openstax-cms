@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
                 ('header_cta_button_link', models.URLField()),
                 ('quote', wagtail.core.fields.RichTextField()),
                 ('features_header', models.CharField(max_length=255)),
-                ('features_cards', wagtail.core.fields.StreamField([('card', wagtail.core.blocks.StreamBlock([('icon', wagtail.core.blocks.StructBlock([('image', wagtail.images.blocks.ImageChooserBlock(required=False)), ('alt_text', wagtail.core.blocks.CharBlock(required=False)), ('link', wagtail.core.blocks.URLBlock(required=False)), ('alignment', pages.models.ImageFormatChoiceBlock()), ('identifier', wagtail.core.blocks.CharBlock(help_text='Used by the frontend for Google Analytics.', required=False))])), ('title', wagtail.core.blocks.TextBlock()), ('description', wagtail.core.blocks.TextBlock())], icon='placeholder'))])),
+                ('features_cards', wagtail.core.fields.StreamField([('card', wagtail.core.blocks.StreamBlock([('icon', wagtail.core.blocks.StructBlock([('image', wagtail.images.blocks.ImageChooserBlock(required=False)), ('alt_text', wagtail.core.blocks.CharBlock(required=False)), ('link', wagtail.core.blocks.URLBlock(required=False)), ('alignment', pages.custom_blocks.ImageFormatChoiceBlock()), ('identifier', wagtail.core.blocks.CharBlock(help_text='Used by the frontend for Google Analytics.', required=False))])), ('title', wagtail.core.blocks.TextBlock()), ('description', wagtail.core.blocks.TextBlock())], icon='placeholder'))])),
                 ('available_books_header', models.CharField(max_length=255)),
                 ('cost_header', models.CharField(max_length=255)),
                 ('cost_description', models.TextField()),

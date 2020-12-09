@@ -98,69 +98,6 @@ class Institutions(models.Model):
     ]
 
 
-class MarketingVideoLink(models.Model):
-    video_title = models.CharField(max_length=255, blank=True, null=True)
-    video_url = models.URLField(blank=True, null=True)
-    video_file = models.FileField(upload_to='marketing_videos', blank=True, null=True)
-    image_url = models.URLField(blank=True, null=True)
-    image_file = models.ForeignKey(
-        'wagtailimages.Image',
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name='+',
-    )
-    video_image_blurb = models.CharField(max_length=255, null=True, blank=True)
-
-    def get_image(self):
-        return build_image_url(self.image_file)
-    image = property(get_image)
-
-    api_fields = ('video_title',
-                  'video_url',
-                  'video_file',
-                  'image_url',
-                  'image',
-                  'video_image_blurb',)
-
-    panels = [
-        FieldPanel('video_title'),
-        FieldPanel('video_url'),
-        FieldPanel('video_file'),
-        FieldPanel('image_url'),
-        ImageChooserPanel('image_file'),
-        FieldPanel('video_image_blurb'),
-    ]
-
-class Resource(models.Model):
-    name = models.CharField(max_length=255, help_text="Resources should be added in pairs to display properly.")
-    available = models.BooleanField(default=False)
-    available_image = models.ForeignKey(
-        'wagtailimages.Image',
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name='+',
-    )
-
-    def get_available_image(self):
-        return build_image_url(self.available_image)
-    available_image_url = property(get_available_image)
-
-    alternate_text = models.CharField(max_length=255, null=True, blank=True, help_text="If this has text, availability is ignored.")
-
-    api_fields = ('name',
-                  'available',
-                  'available_image_url',
-                  'alternate_text')
-
-    panels = [
-        FieldPanel('name'),
-        FieldPanel('available'),
-        ImageChooserPanel('available_image'),
-        FieldPanel('alternate_text'),
-    ]
-
 class Group(models.Model):
     heading = models.CharField(max_length=255)
     people = StreamField([
