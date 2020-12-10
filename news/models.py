@@ -19,6 +19,7 @@ from wagtail.snippets.edit_handlers import SnippetChooserPanel
 from wagtail.snippets.models import register_snippet
 from wagtail.api import APIField
 from wagtail.images.api.fields import ImageRenditionField
+from wagtail.core.models import Site
 
 from modelcluster.fields import ParentalKey
 from modelcluster.contrib.taggit import ClusterTaggableManager
@@ -145,7 +146,7 @@ class NewsIndex(Page):
     def get_sitemap_urls(self, request=None):
         return [
             {
-                'location': '{}/blog/'.format(request.site.root_url),
+                'location': '{}/blog/'.format(Site.find_for_request(request).root_url),
                 'lastmod': (self.last_published_at or self.latest_revision_created_at),
             }
         ]
@@ -256,7 +257,7 @@ class NewsArticle(Page):
     def get_sitemap_urls(self, request=None):
         return [
             {
-                'location': '{}/blog/{}/'.format(request.site.root_url, self.slug),
+                'location': '{}/blog/{}/'.format(Site.find_for_request(request).root_url, self.slug),
                 'lastmod': (self.last_published_at or self.latest_revision_created_at),
             }
         ]
@@ -362,7 +363,7 @@ class PressIndex(Page):
     def get_sitemap_urls(self, request=None):
         return [
             {
-                'location': '{}/press/'.format(request.site.root_url),
+                'location': '{}/press/'.format(Site.find_for_request(request).root_url),
                 'lastmod': (self.last_published_at or self.latest_revision_created_at),
             }
         ]
@@ -456,7 +457,7 @@ class PressRelease(Page):
     def get_sitemap_urls(self, request=None):
         return [
             {
-                'location': '{}/press/{}'.format(request.site.root_url, self.slug),
+                'location': '{}/press/{}'.format(Site.find_for_request(request).root_url, self.slug),
                 'lastmod': (self.last_published_at or self.latest_revision_created_at),
             }
         ]
