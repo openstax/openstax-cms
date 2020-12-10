@@ -214,7 +214,7 @@ def customize_request(request):
 
 
 def give_today(request):
-    give_today = GiveToday.for_site(request.site)
+    give_today = GiveToday.for_site(Site.find_for_request(request))
 
     return JsonResponse({
         'give_link_text': give_today.give_link_text,
