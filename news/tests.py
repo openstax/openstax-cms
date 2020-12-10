@@ -7,6 +7,7 @@ from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
 from unittest.mock import MagicMock
 from news.models import NewsIndex, NewsArticle, PressIndex, PressRelease
 
+
 class NewsTests(WagtailPageTests, TestCase):
     def setUp(self):
         pass
@@ -39,7 +40,7 @@ class NewsTests(WagtailPageTests, TestCase):
         news_index.add_child(instance=article)
         self.assertEqual(article.heading, "Sample Article")
 
-    def bad_slug_returns_404(self):
+    def test_bad_slug_returns_404(self):
         response = self.client.get('/apps/cms/api/news/bad-slug/', format='json')
         self.assertEqual(response.status_code, 404)
 
@@ -55,3 +56,4 @@ class NewsTests(WagtailPageTests, TestCase):
 
         PressRelease.objects.get = MagicMock(return_value=MagicMock(pk=3))
         assertPathDoesNotRedirectToTrailingSlash(self, '/apps/cms/api/press/slug')
+

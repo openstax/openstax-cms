@@ -1,6 +1,7 @@
 from django.urls import resolve, Resolver404
 from django.core.handlers.base import BaseHandler
 from django.test.client import RequestFactory
+from django.http.response import HttpResponsePermanentRedirect
 
 def assertPathDoesNotRedirectToTrailingSlash(test, path):
     try:
@@ -10,8 +11,7 @@ def assertPathDoesNotRedirectToTrailingSlash(test, path):
 
     response = test.client.get(path)
 
-    if (type(response).__name__ == 'HttpResponsePermanentRedirect' or
-       type(response).__name__ == 'HttpResponsePermanentRedirect'):
+    if (isinstance(response, HttpResponsePermanentRedirect)):
        test.assertNotEqual(response.url, path + "/")
 
 
