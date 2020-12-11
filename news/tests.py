@@ -1,4 +1,5 @@
 from django.utils import timezone
+from django.test import TestCase
 from wagtail.tests.utils import WagtailPageTests
 from wagtail.core.models import Page
 from pages.models import HomePage
@@ -6,7 +7,8 @@ from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
 from unittest.mock import MagicMock
 from news.models import NewsIndex, NewsArticle, PressIndex, PressRelease
 
-class NewsTests(WagtailPageTests):
+
+class NewsTests(WagtailPageTests, TestCase):
     def setUp(self):
         pass
 
@@ -38,6 +40,10 @@ class NewsTests(WagtailPageTests):
         news_index.add_child(instance=article)
         self.assertEqual(article.heading, "Sample Article")
 
+    def test_bad_slug_returns_404(self):
+        response = self.client.get('/apps/cms/api/news/bad-slug/', format='json')
+        self.assertEqual(response.status_code, 404)
+
     def test_slashless_apis_are_good(self):
         NewsIndex.objects.all = MagicMock(return_value=MagicMock(pk=3))
         assertPathDoesNotRedirectToTrailingSlash(self, '/apps/cms/api/news')
@@ -50,3 +56,4 @@ class NewsTests(WagtailPageTests):
 
         PressRelease.objects.get = MagicMock(return_value=MagicMock(pk=3))
         assertPathDoesNotRedirectToTrailingSlash(self, '/apps/cms/api/press/slug')
+
