@@ -5,6 +5,7 @@ from wagtail.core.blocks import FieldBlock, StructBlock
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.documents.blocks import DocumentChooserBlock
 
+from api.serializers import ImageSerializer
 
 
 class ImageFormatChoiceBlock(FieldBlock):
