@@ -1,263 +1,35 @@
 from django import forms
 from django.db import models
 from django.http.response import JsonResponse
+
 from modelcluster.fields import ParentalKey
-from wagtail.admin.edit_handlers import (FieldPanel,
-                                                InlinePanel,
-                                                StreamFieldPanel)
+from wagtail.admin.edit_handlers import FieldPanel, InlinePanel, StreamFieldPanel
 from wagtail.core import blocks
-from wagtail.core.blocks import FieldBlock, RawHTMLBlock, StructBlock
 from wagtail.core.fields import RichTextField, StreamField
 from wagtail.core.models import Orderable, Page
-from wagtail.images.blocks import ImageChooserBlock
-from wagtail.documents.blocks import DocumentChooserBlock
 from wagtail.documents.edit_handlers import DocumentChooserPanel
 from wagtail.images.edit_handlers import ImageChooserPanel
-from openstax.functions import build_image_url, build_document_url
 from wagtail.api import APIField
 from wagtail.core.models import Site
 
+from openstax.functions import build_image_url, build_document_url
 from books.models import Book
-from api.serializers import ImageSerializer
 from webinars.models import Webinar
 
 from salesforce.models import PartnerTypeMapping, PartnerFieldNameMapping, PartnerCategoryMapping, Partner
 
+from .custom_blocks import ImageBlock, \
+    APIImageChooserBlock, \
+    ColumnBlock, \
+    FAQBlock, \
+    BookProviderBlock, \
+    CardBlock, \
+    CardImageBlock
 
-### Custom Block Definitions ###
+from .custom_fields import Funder, \
+    Institutions, \
+    Group
 
-class ImageFormatChoiceBlock(FieldBlock):
-    field = forms.ChoiceField(choices=(
-        ('left', 'Wrap left'), ('right', 'Wrap right'), ('mid', 'Mid width'), ('full', 'Full width'),))
-
-
-class ImageBlock(StructBlock):
-    image = ImageChooserBlock(required=False)
-    alt_text = blocks.CharBlock(required=False)
-    link = blocks.URLBlock(required=False)
-    alignment = ImageFormatChoiceBlock()
-    identifier = blocks.CharBlock(required=False, help_text="Used by the frontend for Google Analytics.")
-
-
-class APIImageChooserBlock(ImageChooserBlock): # Use this block to return the path in the page API, does not support alt_text and alignment
-    def get_api_representation(self, value, context=None):
-        try:
-            return ImageSerializer(context=context).to_representation(value)
-        except AttributeError:
-            return None
-
-class ColumnBlock(blocks.StructBlock):
-    heading = blocks.CharBlock(required=False)
-    content = blocks.RichTextBlock(required=False)
-    image = ImageBlock(required=False, help_text='Callout boxes 940x400, Home page boxes 1464x640')
-    document = DocumentChooserBlock(required=False)
-    cta = blocks.CharBlock(required=False)
-    link = blocks.URLBlock(required=False)
-
-    class Meta:
-        icon = 'placeholder'
-
-
-class FAQBlock(blocks.StructBlock):
-    question = blocks.RichTextBlock(required=True)
-    slug = blocks.CharBlock(required=True)
-    answer = blocks.RichTextBlock(required=True)
-    document = DocumentChooserBlock(required=False)
-
-    class Meta:
-        icon = 'help'
-
-
-class CardBlock(blocks.StructBlock):
-    title = blocks.CharBlock(required=True)
-    description = blocks.RichTextBlock(required=True)
-
-    class Meta:
-        icon = 'form'
-
-
-class CardImageBlock(blocks.StructBlock):
-    icon = APIImageChooserBlock(required=False)
-    title = blocks.CharBlock(required=True)
-    description = blocks.RichTextBlock(required=True)
-
-    class Meta:
-        icon = 'image'
-
-
-class BookProviderBlock(blocks.StructBlock):
-    name = blocks.CharBlock()
-    blurb = blocks.TextBlock(required=False)
-    icon = ImageChooserBlock()
-    cta = blocks.CharBlock()
-    url = blocks.URLBlock()
-    canadian = blocks.BooleanBlock(required=False)
-
-    class Meta:
-        icon = 'document'
-
-    def get_api_representation(self, value, context=None):
-        if value:
-            return {
-                'name': value['name'],
-                'blurb': value['blurb'],
-                'icon': build_image_url(value['icon']),
-                'cta': value['cta'],
-                'url': value['url'],
-                'canadian': value['canadian']
-            }
-
-
-### Secondary Model Definitions ###
-
-class Quote(models.Model):
-    IMAGE_ALIGNMENT_CHOICES = (
-        ('L', 'left'),
-        ('R', 'right'),
-        ('F', 'full'),
-    )
-    quote_text = RichTextField()
-
-    quote_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-
-    def get_quote_image(self):
-        return build_image_url(self.quote_image)
-    quote_image_url = property(get_quote_image)
-
-    quote_image_alignment = models.CharField(max_length=1,
-                                             choices=IMAGE_ALIGNMENT_CHOICES,
-                                             blank=True,
-                                             null=True)
-    quote_link = models.URLField(blank=True, null=True)
-    quote_link_text = models.CharField(max_length=255, blank=True, null=True)
-
-    api_fields = (
-        'quote_text',
-        'quote_image_url',
-        'get_quote_image_alignment_display',
-        'quote_link',
-        'quote_link_text',
-    )
-
-    panels = [
-        FieldPanel('quote_text'),
-        ImageChooserPanel('quote_image'),
-        FieldPanel('quote_image_alignment'),
-        FieldPanel('quote_link'),
-        FieldPanel('quote_link_text'),
-    ]
-
-
-class Funder(models.Model):
-    title = models.CharField(max_length=250)
-    logo = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-
-    def get_funder_logo(self):
-        return build_image_url(self.logo)
-    funder_logo = property(get_funder_logo)
-    description = models.TextField(blank=True, null=True)
-
-    api_fields = ('title', 'funder_logo', 'description', )
-
-    panels = [
-        FieldPanel('title'),
-        ImageChooserPanel('logo'),
-        FieldPanel('description'),
-    ]
-
-
-class Institutions(models.Model):
-    title = models.CharField(max_length=250)
-    logo = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+',
-        help_text='Image should be 340px wide, horizontal images are ideal'
-    )
-
-    def get_institution_logo(self):
-        return build_image_url(self.logo)
-    institution_logo = property(get_institution_logo)
-
-    api_fields = ('title', 'institution_logo')
-
-    panels = [
-        FieldPanel('title'),
-        ImageChooserPanel('logo'),
-    ]
-
-
-class Group(models.Model):
-    heading = models.CharField(max_length=255)
-    people = StreamField([
-        ('person', blocks.StructBlock([
-            ('name', blocks.CharBlock()),
-            ('title', blocks.CharBlock(required=False)),
-            ('bio', blocks.CharBlock(required=False)),
-            ('photo', APIImageChooserBlock(required=False)),
-        ], icon='user')),
-    ])
-
-    api_fields = ('heading',
-                  'people', )
-
-    panels = [
-        FieldPanel('heading'),
-        StreamFieldPanel('people'),
-    ]
-
-class Card(models.Model):
-    heading = models.CharField(max_length=255)
-    description = models.TextField(blank=True, null=True)
-    cards = StreamField([
-        ('card', blocks.StructBlock([
-            ('image', ImageBlock()),
-            ('headline', blocks.TextBlock(required=False)),
-            ('description', blocks.TextBlock(required=False)),
-            ('button_text', blocks.CharBlock(required=False)),
-            ('button_url', blocks.CharBlock(required=False))
-        ], icon='document')),
-    ])
-
-    api_fields = ('heading',
-                  'description',
-                  'cards')
-
-    panels = [
-        FieldPanel('heading'),
-        FieldPanel('description'),
-        StreamFieldPanel('cards')
-    ]
-
-### Orderable Through-Models ###
-
-class OpenStaxPeople(Orderable, Group):
-    marketing_video = ParentalKey(
-        'pages.TeamPage', related_name='openstax_people')
-
-class FoundationSupportFunders(Orderable, Funder):
-    page = ParentalKey('pages.FoundationSupport', related_name='funders')
-
-
-class OurImpactInstitutions(Orderable, Institutions):
-    page = ParentalKey('pages.OurImpact', related_name='institutions')
-
-
-### Page Definitions ###
 
 class AboutUsPage(Page):
     who_heading = models.CharField(max_length=255)
@@ -348,6 +120,10 @@ class AboutUsPage(Page):
 
     parent_page_types = ['pages.HomePage']
     max_count = 1
+
+
+class OpenStaxPeople(Orderable, Group):
+    marketing_video = ParentalKey('pages.TeamPage', related_name='openstax_people')
 
 
 class TeamPage(Page):
@@ -701,7 +477,7 @@ class GeneralPage(Page):
         ('tagline', blocks.CharBlock(classname="full title")),
         ('paragraph', blocks.RichTextBlock()),
         ('image', APIImageChooserBlock()),
-        ('html', RawHTMLBlock()),
+        ('html', blocks.RawHTMLBlock()),
     ])
 
     def get_sitemap_urls(self, request=None):
@@ -753,6 +529,10 @@ class GeneralPage(Page):
     ]
 
 
+class FoundationSupportFunders(Orderable, Funder):
+    page = ParentalKey('pages.FoundationSupport', related_name='funders')
+
+
 class FoundationSupport(Page):
     page_description = models.TextField()
     promote_image = models.ForeignKey(
@@ -790,6 +570,10 @@ class FoundationSupport(Page):
 
     parent_page_types = ['pages.HomePage']
     max_count = 1
+
+
+class OurImpactInstitutions(Orderable, Institutions):
+    page = ParentalKey('pages.OurImpact', related_name='institutions')
 
 
 class OurImpact(Page):

@@ -131,6 +131,21 @@ class PageTests(WagtailPageTests):
         retrieved_page = Page.objects.get(id=llph_page.id)
         self.assertEqual(retrieved_page.title, "LLPH")
 
+    def test_can_create_team_page(self):
+        team_page = TeamPage(title="Team Page",
+                             header="Heading",
+                             subheader="Subheading",
+                             team_header="Our Team")
+        self.homepage.add_child(instance=team_page)
+        self.assertCanCreateAt(HomePage, TeamPage)
+        revision = team_page.save_revision()
+        revision.publish()
+        team_page.save()
+
+        retrieved_page = Page.objects.get(id=team_page.id)
+
+        self.assertEqual(retrieved_page.title, "Team Page")
+
     def test_can_create_tutor_page_with_management_command(self):
         call_command('create_tutor_page')
         page_exists = TutorMarketing.objects.all().exists()
