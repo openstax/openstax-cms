@@ -103,25 +103,17 @@ class APITests(TestCase, WagtailTestUtils):
     def test_footer_api(self):
         response = self.client.get('/apps/cms/api/footer/')
         self.assertEqual(response.status_code, 200)
-        response = self.client.get('/apps/cms/api/footer')
-        self.assertEqual(response.status_code, 200)
 
     def test_school_api(self):
         response = self.client.get('/apps/cms/api/schools/')
-        self.assertEqual(response.status_code, 200)
-        response = self.client.get('/apps/cms/api/schools')
         self.assertEqual(response.status_code, 200)
 
     def test_mapbox_api(self):
         response = self.client.get('/apps/cms/api/mapbox/')
         self.assertEqual(response.status_code, 200)
-        response = self.client.get('/apps/cms/api/mapbox')
-        self.assertEqual(response.status_code, 200)
     
     def test_flags_api(self):
         response = self.client.get('/apps/cms/api/flags/')
-        self.assertEqual(response.status_code, 200)
-        response = self.client.get('/apps/cms/api/flags')
         self.assertEqual(response.status_code, 200)
 
     def test_can_submit_customization_form(self):
@@ -148,5 +140,7 @@ class APITests(TestCase, WagtailTestUtils):
     def test_give_today_api(self):
         response = self.client.get('/apps/cms/api/give-today/')
         self.assertEqual(response.status_code, 200)
-        response = self.client.get('/apps/cms/api/give-today')
+
+    def test_sticky_api(self):
+        response = self.client.get('/apps/cms/api/sticky/')
         self.assertEqual(response.status_code, 200)

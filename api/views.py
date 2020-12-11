@@ -12,6 +12,7 @@ from errata.models import ERRATA_RESOURCES
 from global_settings.models import StickyNote, Footer, GiveToday
 from wagtail.images.models import Image
 from wagtail.documents.models import Document
+from wagtail.core.models import Site
 from .models import ProgressTracker
 from .serializers import AdopterSerializer, ImageSerializer, DocumentSerializer, ProgressSerializer, CustomizationRequestSerializer
 from flags.sources import get_flags
@@ -50,7 +51,7 @@ class ProgressViewSet(viewsets.ModelViewSet):
         return queryset
 
 def sticky_note(request):
-    sticky_note = StickyNote.for_site(request.site)
+    sticky_note = StickyNote.for_site(Site.find_for_request(request))
 
     return JsonResponse({
         'start': sticky_note.start,
@@ -66,7 +67,7 @@ def sticky_note(request):
 
 
 def footer(request):
-    footer = Footer.for_site(request.site)
+    footer = Footer.for_site(Site.find_for_request(request))
 
     return JsonResponse({
         'supporters': footer.supporters,
@@ -213,7 +214,7 @@ def customize_request(request):
 
 
 def give_today(request):
-    give_today = GiveToday.for_site(request.site)
+    give_today = GiveToday.for_site(Site.find_for_request(request))
 
     return JsonResponse({
         'give_link_text': give_today.give_link_text,

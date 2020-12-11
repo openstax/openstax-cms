@@ -10,6 +10,7 @@ from wagtail.core.models import Orderable, Page
 from wagtail.documents.edit_handlers import DocumentChooserPanel
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.api import APIField
+from wagtail.core.models import Site
 
 from openstax.functions import build_image_url, build_document_url
 from books.models import Book
@@ -482,7 +483,7 @@ class GeneralPage(Page):
     def get_sitemap_urls(self, request=None):
         return [
             {
-                'location': '{}/general/{}'.format(request.site.root_url, self.slug),
+                'location': '{}/general/{}'.format(Site.find_for_request(request).root_url, self.slug),
                 'lastmod': (self.last_published_at or self.latest_revision_created_at),
             }
         ]
