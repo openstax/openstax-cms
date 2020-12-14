@@ -47,3 +47,7 @@ SSO_COOKIE_NAME = 'oxa-dev'
 
 # If you want to bypass the SSO cookie checks, set this to True - as of this writing, that only affects the delete method on reviews
 BYPASS_SSO_COOKIE_CHECK = True
+
+GOOGLE_ANALYTICS = {
+    'code':''
+
