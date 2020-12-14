@@ -6,6 +6,7 @@ from wagtail.admin.edit_handlers import FieldPanel, StreamFieldPanel
 from wagtail.images.edit_handlers import ImageChooserPanel
 
 from .custom_blocks import APIImageChooserBlock
+from openstax.functions import build_image_url
 
 class Quote(models.Model):
     IMAGE_ALIGNMENT_CHOICES = (
