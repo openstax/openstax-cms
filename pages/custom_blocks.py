@@ -6,6 +6,7 @@ from wagtail.images.blocks import ImageChooserBlock
 from wagtail.documents.blocks import DocumentChooserBlock
 
 from api.serializers import ImageSerializer
+from openstax.functions import build_image_url
 
 
 class ImageFormatChoiceBlock(FieldBlock):
