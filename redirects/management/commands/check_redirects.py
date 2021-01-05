@@ -14,6 +14,7 @@ class Command(BaseCommand):
         #get list of URLs
         redirects = Redirect.objects.all()
         bad_redirects = ''
+        dev_email_info = ''
 
         #Loop through and validate
         for re in redirects:
@@ -22,9 +23,21 @@ class Command(BaseCommand):
                 # if bad one is found, add short URL and redirect to list
                 if response.status_code != 200:
                     bad_redirects += re.old_path + ',' + re.redirect_link + '\n'
-            except:
+                    dev_email_info = self.add_to_dev_email(re, dev_email_info, response)
+            except Exception as e:
                 bad_redirects += re.old_path + ',' + re.redirect_link + '\n'
+                dev_email_info = self.add_to_dev_email(re, dev_email_info, response, e)
                 pass
 
         #email the list of bad URLs
         mail.send_redirect_report(bad_redirects)
+        mail.send_dev_email('Redirect Report Additional Info',dev_email_info)
+
+    def add_to_dev_email(self, redirect, dev_email_info, response, exception):
+        dev_email_info += redirect.old_path + ',' + redirect.redirect_link + ', code: '
+        if response is not None:
+            dev_email_info += str(response.status_code) + ', headers: ' + str(response.headers)
+        if exception is not None:
+            dev_email_info += ', Exception: ' + str(exception)
+        dev_email_info += '\n\n'
+        return dev_email_info

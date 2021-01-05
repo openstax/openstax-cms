@@ -36,6 +36,8 @@ USERS_QUERY = 'https://accounts-staging.openstax.org/api/users?'
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'https://oscms-staging.openstax.org'
 SOCIAL_AUTH_SANITIZE_REDIRECTS = False
 
+SSO_COOKIE_NAME = 'oxa_staging'
+
 # Server host (used to populate links in the email)
 HOST_LINK = 'https://oscms-staging.openstax.org'
 

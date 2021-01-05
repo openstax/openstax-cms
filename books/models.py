@@ -26,6 +26,7 @@ from wagtail.snippets.edit_handlers import SnippetChooserPanel
 from wagtail.admin.edit_handlers import TabbedInterface, ObjectList
 from wagtail.api import APIField
 from wagtail.snippets.models import register_snippet
+from wagtail.core.models import Site
 
 from openstax.functions import build_document_url, build_image_url
 from snippets.models import FacultyResource, StudentResource, Subject, SharedContent
@@ -914,7 +915,7 @@ class Book(Page):
     def get_sitemap_urls(self, request=None):
         return [
             {
-                'location': '{}/details/books/{}'.format(request.site.root_url, self.slug),
+                'location': '{}/details/books/{}'.format(Site.find_for_request(request).root_url, self.slug),
                 'lastmod': (self.last_published_at or self.latest_revision_created_at),
             }
         ]
