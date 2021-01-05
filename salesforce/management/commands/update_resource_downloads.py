@@ -1,7 +1,7 @@
 from django.core.management.base import BaseCommand
+from django.db import transaction
 from salesforce.models import ResourceDownload
 from salesforce.salesforce import Salesforce
-
 
 class Command(BaseCommand):
     help = "update resource download records with SF"
@@ -28,7 +28,6 @@ class Command(BaseCommand):
                 number_updated = number_updated + 1
             sf.bulk.Resource__c.update(data)
 
-
             for rd in new_resource_downloads:
                 sf_resource = sf.Resource__c.create({
                     'Book__c': rd.book.title,
@@ -40,8 +39,8 @@ class Command(BaseCommand):
                 })
                 number_created = number_created + 1
                 rd.salesforce_id = sf_resource['id']
-                rd.save()
-
+                with transaction.atomic():
+                    rd.save()
 
         response = self.style.SUCCESS("[SF Resource Download] Created {} of {}. Updated {} of {}.".format(number_created,
                                                                                                           number_to_create,
