@@ -284,6 +284,11 @@ class Errata(models.Model):
         if self.resolution == 'Partner Product' and not self.resolution_notes:
             self.resolution_notes = 'This issue is occurring on a platform that is not managed by OpenStax. We will make our best efforts to get this resolved; however, we suggest reporting this issue within the platform you are using.'
 
+        #auto filling a couple of fields if it is clear that it is an assessment errata based on the text that tutor fills into the additional_location_information field
+        if self.additional_location_information and self.resource == 'OpenStax Tutor' and ('@' in self.additional_location_information.split()[0]):
+            self.is_assessment_errata = 'Yes'
+            self.assessment_id = self.additional_location_information.split('@', )[0]
+
         # set to archived if user is shadow banned
         if(is_user_shadow_blocked(self.submitted_by_account_id)):
             self.archived = True
