@@ -1,4 +1,5 @@
 from django.core.management.base import BaseCommand
+from django.db import transaction
 from books.models import Book
 from salesforce.models import SavingsNumber
 from salesforce.salesforce import Salesforce
@@ -44,7 +45,8 @@ class Command(BaseCommand):
                     if record['Name'] == book.salesforce_name:
                         book.savings = int(record['expr0'])
 
-                book.save()
+                with transaction.atomic():
+                    book.save()
 
 
             response = self.style.SUCCESS("Updating savings numbers complete!")
