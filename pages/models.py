@@ -293,6 +293,7 @@ class HomePage(Page):
         'pages.MathQuizPage',
         'pages.LLPHPage',
         'pages.TutorMarketing',
+        'pages.TutorLanding',
         'books.BookIndex',
         'news.NewsIndex',
         'news.PressIndex'
@@ -2471,6 +2472,101 @@ class TutorMarketing(Page):
         FieldPanel('demo_cta_text'),
         FieldPanel('demo_cta_link'),
         FieldPanel('tutor_login_link')
+    ]
+
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
+    ]
+
+    template = 'page.html'
+
+    parent_page_types = ['pages.HomePage']
+    max_count = 1
+
+
+class TutorLanding(Page):
+    # header section
+    header = models.CharField(max_length=255)
+    description = models.TextField()
+    available_books_header = models.CharField(max_length=255)
+    case_study_cta = models.CharField(max_length=255)
+    case_study_file = models.ForeignKey(
+        'wagtaildocs.Document',
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    def get_case_study_file(self):
+        return build_document_url(self.case_study_file.url)
+    case_study_file_url = property(get_case_study_file)
+
+    #features
+    features_header = models.CharField(max_length=255)
+    features_cards = StreamField([
+        ('cards', CardImageBlock()),
+    ])
+
+    #other resource
+    other_resources_text = models.TextField()
+    other_resources_cta = models.CharField(max_length=255)
+    other_resources_link = models.URLField()
+
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    @property
+    def tutor_books(self):
+        books = Book.objects.filter(tutor_marketing_book=True).order_by('path')
+        book_data = []
+        for book in books:
+            book_data.append({
+                'id': book.id,
+                'slug': 'books/{}'.format(book.slug),
+                'title': book.title,
+                'cover_url': book.cover_url,
+            })
+        return book_data
+
+    api_fields = [
+        APIField('title'),
+        APIField('header'),
+        APIField('description'),
+        APIField('available_books_header'),
+        APIField('tutor_books'),
+        APIField('case_study_cta'),
+        APIField('case_study_file_url'),
+        APIField('features_header'),
+        APIField('features_cards'),
+        APIField('other_resources_text'),
+        APIField('other_resources_cta'),
+        APIField('other_resources_link'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+    ]
+
+    content_panels = [
+        FieldPanel('title', classname="full title"),
+        FieldPanel('header'),
+        FieldPanel('description'),
+        FieldPanel('available_books_header'),
+        FieldPanel('case_study_cta'),
+        DocumentChooserPanel('case_study_file'),
+        FieldPanel('features_header'),
+        StreamFieldPanel('features_cards'),
+        FieldPanel('other_resources_text'),
+        FieldPanel('other_resources_cta'),
+        FieldPanel('other_resources_link'),
     ]
 
     promote_panels = [
