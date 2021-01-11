@@ -13,7 +13,7 @@ from django.utils.encoding import smart_str
 from django.utils.html import mark_safe
 
 from extraadminfilters.filters import UnionFieldListFilter
-from rangefilter.filter import DateRangeFilter, DateTimeRangeFilter
+from rangefilter.filter import DateRangeFilter
 
 from .models import Errata, BlockedUser, EmailText, InternalDocumentation
 from .forms import ErrataForm
