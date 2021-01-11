@@ -199,6 +199,7 @@ INSTALLED_APPS = [
     'global_settings',
     'errata',
     'extraadminfilters',
+    'rangefilter',
     'redirects',
     'oxauth',
     'events',
