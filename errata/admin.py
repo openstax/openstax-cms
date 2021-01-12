@@ -1,6 +1,6 @@
 import unicodecsv
 from import_export import resources
-from import_export.admin import ExportActionModelAdmin, ExportActionMixin
+from import_export.admin import ExportActionMixin, ImportExportActionModelAdmin
 from import_export.formats import base_formats
 
 from django.contrib import admin
@@ -22,9 +22,9 @@ from .forms import ErrataForm
 class ErrataResource(resources.ModelResource):
     class Meta:
         model = Errata
-        fields = ('id', 'created', 'modified', 'book__title', 'number_of_errors', 'is_assessment_errata', 'assessment_id', 'status', 'resolution', 'archived', 'junk', 'location', 'additional_location_information', 'detail', 'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'resource', 'submitted_by_account_id', 'accounts_user_faculty_status')
-        export_order = ('id', 'created', 'modified', 'book__title', 'number_of_errors', 'is_assessment_errata', 'assessment_id', 'status', 'resolution', 'archived', 'junk', 'location', 'additional_location_information', 'detail', 'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'resource', 'submitted_by_account_id', 'accounts_user_faculty_status')
-
+        fields = ('id', 'created', 'modified', 'book__title', 'number_of_errors', 'is_assessment_errata', 'assessment_id', 'status', 'resolution', 'archived', 'junk', 'location', 'additional_location_information', 'detail', 'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'resource', 'file_1', 'file_2',)
+        export_order = ('id', 'created', 'modified', 'book__title', 'number_of_errors', 'is_assessment_errata', 'assessment_id', 'status', 'resolution', 'archived', 'junk', 'location', 'additional_location_information', 'detail', 'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'resource', 'file_1', 'file_2',)
+        skip_unchanged = True
 
 class InlineInternalImage(admin.TabularInline):
     model = InternalDocumentation
@@ -32,7 +32,7 @@ class InlineInternalImage(admin.TabularInline):
 class BlockedUserAdmin(admin.ModelAdmin):
     list_display = ('account_id', 'fullname', 'reason',)
 
-class ErrataAdmin(ExportActionModelAdmin):
+class ErrataAdmin(ImportExportActionModelAdmin):
     class Media:
         js = (
             '//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js',  # jquery
