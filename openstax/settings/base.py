@@ -200,6 +200,7 @@ INSTALLED_APPS = [
     'errata',
     'extraadminfilters',
     'rangefilter',
+    'reversion',
     'redirects',
     'oxauth',
     'events',
