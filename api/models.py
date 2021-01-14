@@ -14,3 +14,4 @@ class CustomizationRequest(models.Model):
     reason = models.TextField()
     modules = models.TextField()
     complete = models.BooleanField(default=False)
+    created = models.DateTimeField(auto_now_add=True)

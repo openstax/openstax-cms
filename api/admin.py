@@ -14,7 +14,7 @@ class CustomizationRequestResource(resources.ModelResource):
 class CustomizationRequestAdmin(ExportActionModelAdmin):
     resource_class = CustomizationRequestResource
     actions = ['mark_completed', ExportActionMixin.export_admin_action]
-    list_display = ['email', 'complete', 'num_students', "reason", "modules"]
+    list_display = ['email', 'created', 'complete', 'num_students', "reason", "modules"]
     search_fields = ['email', ]
     list_filter = ['complete']
 
