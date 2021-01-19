@@ -50,9 +50,11 @@ SCOUT_NAME = "openstax-cms (prod)"
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 sentry_sdk.init(
-    dsn='https://2e1ecafc60684f86b59c654de3032d83:7fbc901dcca04dc4a8220f7cce20fdd9@sentry.cnx.org/11',
+    dsn="https://0d1a267c383d4a2cb5f97bbf333073b3@o484761.ingest.sentry.io/5594444",
     integrations=[DjangoIntegration()],
-    environment='prod'
+    traces_sample_rate=0.4, # limit the number of errors sent from production - 40%
+    send_default_pii=True, # this will send the user id of admin users only to sentry to help with debugging
+    environment='qa'
 )
 
 from scout_apm.api import Config

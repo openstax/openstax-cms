@@ -25,13 +25,13 @@ AUTHORIZATION_URL = 'https://accounts-qa.openstax.org/oauth/authorize'
 ACCESS_TOKEN_URL = 'https://accounts-qa.openstax.org/oauth/token'
 USER_QUERY = 'https://accounts-qa.openstax.org/api/user?'
 USERS_QUERY = 'https://accounts-qa.openstax.org/api/users?'
-SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'https://oscms-qa.openstax.org'
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'https://cms-qa.openstax.org'
 SOCIAL_AUTH_SANITIZE_REDIRECTS = False
 
 SSO_COOKIE_NAME = 'oxa_qa'
 
 # Server host (used to populate links in the email)
-HOST_LINK = 'https://oscms-qa.openstax.org'
+HOST_LINK = 'https://cms-qa.openstax.org'
 
 #CNX URL for viewing book online
 CNX_URL = 'https://qa.cnx.org/'
@@ -42,8 +42,10 @@ SCOUT_NAME = "openstax-cms (qa)"
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 sentry_sdk.init(
-    dsn='https://2e1ecafc60684f86b59c654de3032d83:7fbc901dcca04dc4a8220f7cce20fdd9@sentry.cnx.org/11',
+    dsn="https://0d1a267c383d4a2cb5f97bbf333073b3@o484761.ingest.sentry.io/5594444",
     integrations=[DjangoIntegration()],
+    traces_sample_rate=1.0,
+    send_default_pii=True, # this will send the user id of admin users only to sentry to help with debugging
     environment='qa'
 )
 

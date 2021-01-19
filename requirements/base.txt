@@ -100,6 +100,6 @@ pycryptodome>=3.9.7
 django-cors-headers==2.4.1
 
 # reporting
-sentry-sdk==0.12.3
+sentry-sdk==0.19.5
 psutil==5.6.3
 scout-apm==2.14.3

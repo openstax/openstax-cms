@@ -323,10 +323,6 @@ WAGTAIL_GRAVATAR_PROVIDER_URL = '//www.gravatar.com/avatar'
 
 MAPBOX_TOKEN = '' # should be the sk from mapbox, put in the appropriate settings file
 
-# ACCOUNTS COOKIE AUTHENTICATION
-#ENCRYPTED_COOKIE_SALT = "ox-shared-salt"
-#SIGNED_ENCRYPTED_COOKIE_SALT = "signed encrypted ox-shared-salt"
-
 SSO_COOKIE_NAME = 'oxa'
 BYPASS_SSO_COOKIE_CHECK = False
 
