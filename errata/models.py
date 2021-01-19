@@ -406,6 +406,7 @@ def send_status_update_email(sender, instance, created, **kwargs):
                     send_email = False
             except TypeError:
                 print('User not found')
+                send_email = False
 
         if send_email:
             errata_email_info = {
