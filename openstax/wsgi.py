@@ -14,8 +14,19 @@ framework.
 
 """
 import os
+import socket
 
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "openstax.settings")
+socket_name = socket.gethostname()
+if "dev" in socket_name:
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'openstax.settings.dev')
+elif "qa" in socket_name:
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'openstax.settings.qa')
+elif "staging" in socket_name:
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'openstax.settings.staging')
+elif "prod" in socket_name:
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'openstax.settings.prod')
+else:
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'openstax.settings')
 
 # This application object is used by any WSGI server configured to use this
 # file. This includes Django's development server, if the WSGI_APPLICATION
