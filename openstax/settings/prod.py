@@ -54,7 +54,7 @@ sentry_sdk.init(
     integrations=[DjangoIntegration()],
     traces_sample_rate=0.4, # limit the number of errors sent from production - 40%
     send_default_pii=True, # this will send the user id of admin users only to sentry to help with debugging
-    environment='qa'
+    environment='prod'
 )
 
 from scout_apm.api import Config

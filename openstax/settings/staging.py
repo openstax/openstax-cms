@@ -13,7 +13,8 @@ AWS_S3_OBJECT_PARAMETERS = {
 # S3 static file storage using custom backend
 STATICFILES_LOCATION = '{}/static'.format(AWS_STORAGE_DIR)
 STATICFILES_STORAGE = 'openstax.custom_storages.StaticStorage'
-#STATIC_URL = "https://%s/%s/static/" % (AWS_S3_CUSTOM_DOMAIN, AWS_STORAGE_DIR)
+STATIC_URL = "https://%s/%s/static/" % (AWS_S3_CUSTOM_DOMAIN, AWS_STORAGE_DIR)
+
 # S3 media storage using custom backend
 MEDIAFILES_LOCATION = '{}/media'.format(AWS_STORAGE_DIR)
 MEDIA_URL = "https://%s/%s/media/" % (AWS_S3_CUSTOM_DOMAIN, AWS_STORAGE_DIR)
@@ -32,10 +33,8 @@ AUTHORIZATION_URL = 'https://accounts-staging.openstax.org/oauth/authorize'
 ACCESS_TOKEN_URL = 'https://accounts-staging.openstax.org/oauth/token'
 USER_QUERY = 'https://accounts-staging.openstax.org/api/user?'
 USERS_QUERY = 'https://accounts-staging.openstax.org/api/users?'
-####
 SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'https://cms-staging.openstax.org'
 SOCIAL_AUTH_SANITIZE_REDIRECTS = False
-
 SSO_COOKIE_NAME = 'oxa_staging'
 
 # Server host (used to populate links in the email)
@@ -44,8 +43,12 @@ HOST_LINK = 'https://cms-staging.openstax.org'
 #CNX URL for viewing book online
 CNX_URL = 'https://staging.cnx.org/'
 
+# Scout
 SCOUT_MONITOR = True
 SCOUT_NAME = "openstax-cms (staging)"
+
+from scout_apm.api import Config
+Config.set(revision_sha=os.popen("git rev-parse HEAD").read().strip())
 
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
@@ -56,9 +59,6 @@ sentry_sdk.init(
     send_default_pii=True, # this will send the user id of admin users only to sentry to help with debugging
     environment='staging'
 )
-
-from scout_apm.api import Config
-Config.set(revision_sha=os.popen("git rev-parse HEAD").read().strip())
 
 try:
     from .local import *
