@@ -354,6 +354,6 @@ AWS_HEADERS = {
 
 # to override any of the above settings use a local.py file in this directory
 try:
-    from local import *
+    from .local import *
 except ImportError:
     pass
