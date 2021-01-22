@@ -323,12 +323,20 @@ WAGTAIL_GRAVATAR_PROVIDER_URL = '//www.gravatar.com/avatar'
 
 MAPBOX_TOKEN = '' # should be the sk from mapbox, put in the appropriate settings file
 
+# Openstax Accounts
+ACCOUNTS_URL = 'https://accounts.openstax.org'
+AUTHORIZATION_URL = 'https://accounts.openstax.org/oauth/authorize'
+ACCESS_TOKEN_URL = 'https://accounts.openstax.org/oauth/token'
+USER_QUERY = 'https://accounts.openstax.org/api/user?'
+USERS_QUERY = 'https://accounts.openstax.org/api/users?'
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'https://openstax.org'
+SOCIAL_AUTH_SANITIZE_REDIRECTS = False
+
 SSO_COOKIE_NAME = 'oxa'
 BYPASS_SSO_COOKIE_CHECK = False
 
 SIGNATURE_PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDjvO/E8lO+ZJ7JMglbJyiF5/Ae\nIIS2NKbIAMLBMPVBQY7mSqo6j/yxdVNKZCzYAMDWc/VvEfXQQJ2ipIUuDvO+SOwz\nMewQ70hC71hC4s3dmOSLnixDJlnsVpcnKPEFXloObk/fcpK2Vw27e+yY+kIFmV2X\nzrvTnmm9UJERp6tVTQIDAQAB\n-----END PUBLIC KEY-----\n"
 ENCRYPTION_PRIVATE_KEY = "c6d9b8683fddce8f2a39ac0565cf18ee"
-COOKIE_NAME = 'oxa'
 ENCRYPTION_METHOD = 'A256GCM'
 SIGNATURE_ALGORITHM = 'RS256'
 
@@ -344,8 +352,8 @@ AWS_HEADERS = {
     'Access-Control-Allow-Origin': '*'
 }
 
-
+# to override any of the above settings use a local.py file in this directory
 try:
-    from local import *
+    from .local import *
 except ImportError:
     pass

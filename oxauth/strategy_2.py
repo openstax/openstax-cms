@@ -12,11 +12,11 @@ class Strategy2:
         # https://github.com/chrisseto/pyjwe#why-is-aes-256-gcm-the-only-encryption-methd
         # https://github.com/chrisseto/pyjwe#why-is-dir-the-only-algorithm-supported
 
-        if 'A256GCM' != encryption_algorithm:
-            raise ValueError('"A256GCM" is the only supported encryption algorithm')
+        if 'dir' != encryption_algorithm:
+            raise ValueError('"dir" is the only supported encryption algorithm')
 
-        if 'dir' != encryption_method:
-            raise ValueError('"dir" is the only supported encryption method')
+        if 'A256GCM' != encryption_method:
+            raise ValueError('"A256GCM" is the only supported encryption method')
 
         self.signature_public_key = signature_public_key
         self.signature_algorithm = signature_algorithm
