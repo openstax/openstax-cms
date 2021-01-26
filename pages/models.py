@@ -264,7 +264,6 @@ class HomePage(Page):
         'pages.TeamPage',
         'pages.GeneralPage',
         'pages.FoundationSupport',
-        'pages.OurImpact',
         'pages.MapPage',
         'pages.Give',
         'pages.TermsOfService',
@@ -558,58 +557,6 @@ class FoundationSupport(Page):
         FieldPanel('title', classname="full title"),
         FieldPanel('page_description'),
         InlinePanel('funders', label="Funders"),
-    ]
-
-    promote_panels = [
-        FieldPanel('slug'),
-        FieldPanel('seo_title'),
-        FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
-    ]
-
-    template = 'page.html'
-
-    parent_page_types = ['pages.HomePage']
-    max_count = 1
-
-
-class OurImpactInstitutions(Orderable, Institutions):
-    page = ParentalKey('pages.OurImpact', related_name='institutions')
-
-
-class OurImpact(Page):
-    intro_heading = models.CharField(max_length=255)
-    intro_description = models.TextField()
-
-    row_1 = StreamField([
-        ('column', ColumnBlock()),
-    ])
-    promote_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-
-    api_fields = [
-        APIField('title'),
-        APIField('intro_heading'),
-        APIField('intro_description'),
-        APIField('row_1'),
-        APIField('institutions'),
-        APIField('slug'),
-        APIField('seo_title'),
-        APIField('search_description'),
-        APIField('promote_image')
-    ]
-
-    content_panels = [
-        FieldPanel('title', classname='full title'),
-        FieldPanel('intro_heading'),
-        FieldPanel('intro_description'),
-        StreamFieldPanel('row_1'),
-        InlinePanel('institutions', label="Institutions"),
     ]
 
     promote_panels = [
