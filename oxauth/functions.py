@@ -12,8 +12,8 @@ def decrypt_cookie(cookie):
         signature_public_key=settings.SIGNATURE_PUBLIC_KEY,
         signature_algorithm = settings.SIGNATURE_ALGORITHM,
         encryption_private_key = settings.ENCRYPTION_PRIVATE_KEY,
-        encryption_algorithm = settings.ENCRYPTION_METHOD,
-        encryption_method = "dir"
+        encryption_method = 'A256GCM',
+        encryption_algorithm = 'dir'
     )
 
     payload = strategy.decrypt(cookie)
