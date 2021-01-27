@@ -24,7 +24,8 @@ from .custom_blocks import ImageBlock, \
     FAQBlock, \
     BookProviderBlock, \
     CardBlock, \
-    CardImageBlock
+    CardImageBlock, \
+    StoryBlock
 
 from .custom_fields import Funder, \
     Institutions, \
@@ -264,7 +265,6 @@ class HomePage(Page):
         'pages.TeamPage',
         'pages.GeneralPage',
         'pages.FoundationSupport',
-        'pages.OurImpact',
         'pages.MapPage',
         'pages.Give',
         'pages.TermsOfService',
@@ -283,7 +283,7 @@ class HomePage(Page):
         'pages.PrintOrder',
         'pages.ResearchPage',
         'pages.Careers',
-        'pages.AnnualReportPage',
+        'pages.Impact',
         'pages.InstitutionalPartnership',
         'pages.HeroJourneyPage',
         'pages.InstitutionalPartnerProgramPage',
@@ -558,58 +558,6 @@ class FoundationSupport(Page):
         FieldPanel('title', classname="full title"),
         FieldPanel('page_description'),
         InlinePanel('funders', label="Funders"),
-    ]
-
-    promote_panels = [
-        FieldPanel('slug'),
-        FieldPanel('seo_title'),
-        FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
-    ]
-
-    template = 'page.html'
-
-    parent_page_types = ['pages.HomePage']
-    max_count = 1
-
-
-class OurImpactInstitutions(Orderable, Institutions):
-    page = ParentalKey('pages.OurImpact', related_name='institutions')
-
-
-class OurImpact(Page):
-    intro_heading = models.CharField(max_length=255)
-    intro_description = models.TextField()
-
-    row_1 = StreamField([
-        ('column', ColumnBlock()),
-    ])
-    promote_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-
-    api_fields = [
-        APIField('title'),
-        APIField('intro_heading'),
-        APIField('intro_description'),
-        APIField('row_1'),
-        APIField('institutions'),
-        APIField('slug'),
-        APIField('seo_title'),
-        APIField('search_description'),
-        APIField('promote_image')
-    ]
-
-    content_panels = [
-        FieldPanel('title', classname='full title'),
-        FieldPanel('intro_heading'),
-        FieldPanel('intro_description'),
-        StreamFieldPanel('row_1'),
-        InlinePanel('institutions', label="Institutions"),
     ]
 
     promote_panels = [
@@ -1583,140 +1531,90 @@ class Careers(Page):
     max_count = 1
 
 
-class AnnualReportPage(Page):
-    improving_access = StreamField([
-        ('background_image', ImageBlock()),
-        ('heading', blocks.CharBlock()),
-        ('description', blocks.RichTextBlock()),
-        ('give_text', blocks.CharBlock())
-    ], null=True)
-    revolution = StreamField([
-        ('heading', blocks.CharBlock()),
-        ('letter_body', blocks.RichTextBlock()),
-        ('signature_image', ImageBlock()),
-        ('signature_alt_text', blocks.CharBlock()),
-        ('signature_text', blocks.RichTextBlock()),
-        ('portrait', ImageBlock()),
-        ('portrait_alt_text', blocks.CharBlock())
-    ], null=True)
-    founding = StreamField([
-        ('caption', blocks.RichTextBlock()),
-        ('portrait', ImageBlock()),
-        ('portrait_alt_text', blocks.CharBlock()),
-        ('heading', blocks.CharBlock()),
-        ('description', blocks.TextBlock()),
-    ], null=True)
-    reach = StreamField([
-        ('heading', blocks.CharBlock()),
-        ('description', blocks.RichTextBlock()),
-        ('facts', blocks.ListBlock(blocks.StructBlock([
-            ('number', blocks.DecimalBlock()),
-            ('unit', blocks.CharBlock()),
-            ('text', blocks.CharBlock())
-        ])))
-    ], null=True)
-    testimonials = StreamField([
-        ('heading', blocks.CharBlock()),
-        ('description', blocks.TextBlock()),
-        ('testimonials', blocks.ListBlock(blocks.StructBlock([
-            ('image', ImageBlock(required=False)),
-            ('image_alt_text', blocks.CharBlock()),
-            ('quote', blocks.CharBlock()),
-            ('link', blocks.URLBlock()),
+class Impact(Page):
+    improving_access = StreamField(
+        blocks.StreamBlock([
+        ('content', blocks.StructBlock([
+            ('image', ImageBlock()),
+            ('heading', blocks.CharBlock()),
+            ('description', blocks.RichTextBlock()),
+            ('button_text', blocks.CharBlock()),
+            ('button_href', blocks.URLBlock())
+         ]))], max_num=1))
+    reach = StreamField(
+        blocks.StreamBlock([
+        ('content', blocks.StructBlock([
+            ('heading', blocks.CharBlock()),
+            ('description', blocks.RichTextBlock()),
+            ('cards', blocks.ListBlock(blocks.StreamBlock([
+                ('image', APIImageChooserBlock()),
+                ('description', blocks.CharBlock()),
+                ('link_text', blocks.CharBlock()),
+                ('link_href', blocks.URLBlock())
+            ])))
+        ]))], max_num=1))
+    quote = StreamField(
+        blocks.StreamBlock([
+        ('content', blocks.StructBlock([
+            ('image', ImageBlock()),
+            ('quote', blocks.RichTextBlock())
+        ]))], max_num=1))
+    making_a_difference = StreamField(
+        blocks.StreamBlock([
+        ('content', blocks.StructBlock([
+            ('heading', blocks.CharBlock()),
+            ('description', blocks.RichTextBlock()),
+            ('stories', blocks.ListBlock(StoryBlock()))
+        ]))], max_num=1))
+    disruption = StreamField(
+        blocks.StreamBlock([
+        ('content', blocks.StructBlock([
+            ('heading', blocks.CharBlock()),
+            ('description', blocks.TextBlock()),
+            ('graph', blocks.StructBlock([
+                ('top_caption', blocks.CharBlock()),
+                ('bottom_caption', blocks.RichTextBlock()),
+                ('image', ImageBlock(required=False)),
+                ('image_alt_text', blocks.CharBlock(required=False)),
+            ]))
+        ]))], max_num=1))
+    supporter_community = StreamField(
+        blocks.StreamBlock([
+        ('content', blocks.StructBlock([
+            ('heading', blocks.CharBlock()),
+            ('image', ImageBlock()),
+            ('quote', blocks.RichTextBlock()),
             ('link_text', blocks.CharBlock()),
-        ])))
-    ], null=True)
-    sustainability = StreamField([
-        ('heading', blocks.CharBlock()),
-        ('description', blocks.TextBlock()),
-        ('partners', blocks.ListBlock(blocks.StructBlock([
-            ('image', ImageBlock(required=False)),
-            ('image_alt_text', blocks.CharBlock()),
-        ])))
-    ], null=True)
-    disruption = StreamField([
-        ('heading', blocks.CharBlock()),
-        ('description', blocks.TextBlock()),
-        ('graph', blocks.StructBlock([
-            ('top_caption', blocks.CharBlock()),
-            ('bottom_caption', blocks.RichTextBlock()),
-            ('image', ImageBlock(required=False)),
-            ('image_alt_text', blocks.CharBlock(required=False)),
-        ]))
-    ], null=True)
-    looking_ahead = StreamField([
-        ('heading', blocks.CharBlock()),
-        ('description', blocks.TextBlock()),
-        ('image', ImageBlock()),
-    ], null=True)
-    map = StreamField([
-        ('heading', blocks.CharBlock()),
-        ('description', blocks.TextBlock()),
-        ('link', blocks.CharBlock()),
-        ('link_text', blocks.CharBlock()),
-        ('background_image', ImageBlock()),
-        ('image_1', ImageBlock()),
-        ('image_2', ImageBlock()),
-    ], null=True)
-    tutor = StreamField([
-        ('heading', blocks.CharBlock()),
-        ('description', blocks.TextBlock()),
-        ('link', blocks.CharBlock()),
-        ('link_text', blocks.CharBlock()),
-        ('right_image', ImageBlock()),
-        ('bottom_image', ImageBlock()),
-    ], null=True)
-    philanthropic_partners = StreamField([
-        ('heading', blocks.CharBlock()),
-        ('description', blocks.TextBlock()),
-        ('image', ImageBlock()),
-        ('image_alt_text', blocks.CharBlock()),
-        ('link_1', blocks.CharBlock()),
-        ('link_1_text', blocks.CharBlock()),
-        ('link_2', blocks.CharBlock()),
-        ('link_2_text', blocks.CharBlock()),
-        ('quote', blocks.TextBlock()),
-        ('attribution_name', blocks.CharBlock()),
-        ('attribution_title', blocks.CharBlock())
-
-    ], null=True)
-    giving = StreamField([
-        ('heading', blocks.CharBlock()),
-        ('description', blocks.TextBlock()),
-        ('link', blocks.CharBlock()),
-        ('link_text', blocks.CharBlock()),
-    ], null=True)
-
+            ('link_href', blocks.URLBlock())
+        ]))], max_num=1))
+    giving = StreamField(
+        blocks.StreamBlock([
+        ('content', blocks.StructBlock([
+            ('heading', blocks.CharBlock()),
+            ('description', blocks.TextBlock()),
+            ('link', blocks.CharBlock()),
+            ('link_text', blocks.CharBlock()),
+        ]))], max_num=1))
 
     content_panels = [
         FieldPanel('title', classname='full title', help_text="Internal name for page."),
         StreamFieldPanel('improving_access'),
-        StreamFieldPanel('revolution'),
-        StreamFieldPanel('founding'),
         StreamFieldPanel('reach'),
-        StreamFieldPanel('testimonials'),
-        StreamFieldPanel('sustainability'),
+        StreamFieldPanel('quote'),
+        StreamFieldPanel('making_a_difference'),
         StreamFieldPanel('disruption'),
-        StreamFieldPanel('looking_ahead'),
-        StreamFieldPanel('map'),
-        StreamFieldPanel('tutor'),
-        StreamFieldPanel('philanthropic_partners'),
+        StreamFieldPanel('supporter_community'),
         StreamFieldPanel('giving'),
     ]
 
     api_fields = [
         APIField('title'),
         APIField('improving_access'),
-        APIField('revolution'),
-        APIField('founding'),
         APIField('reach'),
-        APIField('testimonials'),
-        APIField('sustainability'),
+        APIField('quote'),
+        APIField('making_a_difference'),
         APIField('disruption'),
-        APIField('looking_ahead'),
-        APIField('map'),
-        APIField('tutor'),
-        APIField('philanthropic_partners'),
+        APIField('supporter_community'),
         APIField('giving'),
         APIField('slug'),
         APIField('seo_title'),
@@ -1724,6 +1622,7 @@ class AnnualReportPage(Page):
     ]
 
     parent_page_type = ['pages.HomePage']
+    max_count = 1
 
 
 class InstitutionalPartnership(Page):
