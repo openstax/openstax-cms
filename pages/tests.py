@@ -8,7 +8,6 @@ from pages.models import (HomePage,
                           AboutUsPage,
                           GeneralPage,
                           FoundationSupport,
-                          OurImpact,
                           MapPage,
                           Give,
                           TermsOfService,
@@ -28,7 +27,7 @@ from pages.models import (HomePage,
                           ResearchPage,
                           TeamPage,
                           Careers,
-                          AnnualReportPage,
+                          Impact,
                           InstitutionalPartnership,
                           HeroJourneyPage,
                           InstitutionalPartnerProgramPage,
@@ -73,7 +72,6 @@ class HomePageTests(WagtailPageTests):
             PressIndex,
             BookIndex,
             FoundationSupport,
-            OurImpact,
             MapPage,
             Give,
             TermsOfService,
@@ -93,7 +91,7 @@ class HomePageTests(WagtailPageTests):
             ResearchPage,
             TeamPage,
             Careers,
-            AnnualReportPage,
+            Impact,
             InstitutionalPartnership,
             HeroJourneyPage,
             InstitutionalPartnerProgramPage,
@@ -151,6 +149,12 @@ class PageTests(WagtailPageTests):
     def test_can_create_tutor_page_with_management_command(self):
         call_command('create_tutor_page')
         page_exists = TutorMarketing.objects.all().exists()
+
+        self.assertEqual(page_exists, True)
+
+    def test_can_create_impact_page_with_management_command(self):
+        call_command('create_impact_page')
+        page_exists = Impact.objects.all().exists()
 
         self.assertEqual(page_exists, True)
 
