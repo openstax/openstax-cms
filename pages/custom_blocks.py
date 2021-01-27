@@ -1,4 +1,6 @@
 from django import forms
+from django.core.exceptions import ValidationError
+from django.forms.utils import ErrorList
 
 from wagtail.core import blocks
 from wagtail.core.blocks import FieldBlock, StructBlock
@@ -91,10 +93,25 @@ class CardImageBlock(blocks.StructBlock):
         icon = 'image'
 
 
-class StoryBlock(blocks.StreamBlock):
+class StoryBlock(blocks.StructBlock):
     image = APIImageChooserBlock(required=False)
     story_text = blocks.TextBlock(required=False)
-    embeded_video = blocks.RawHTMLBlock(required=False)
+    embedded_video = blocks.RawHTMLBlock(required=False)
+
+    def clean(self, value):
+        errors = {}
+
+        if (value.get('image') or value.get('story_text')) and value.get('embedded_video'):
+            errors['image'] = ErrorList(['You must only have an image and story text OR video.'])
+            errors['story_text'] = ErrorList(['You must only have an image and story text OR video.'])
+            errors['embedded_video'] = ErrorList(['You must only have an image and story text OR video.'])
+        elif value.get('image') and not value.get('story_text'):
+            errors['story_text'] = ErrorList(['An image requires story text.'])
+        elif value.get('story_text') and not value.get('image'):
+            errors['image'] = ErrorList(['A story requires and image.'])
+
+        if errors:
+            raise ValidationError('Validations in Story blocks', params=errors)
 
     class Meta:
         icon = 'openquote'
