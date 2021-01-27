@@ -606,7 +606,6 @@ class Book(Page):
 
 
     webinar_content = StreamField(SharedContentBlock(), null=True, blank=True)
-    coming_soon = models.BooleanField(default=False) #TODO: Remove after FE implements book_states
     ibook_link = models.URLField(blank=True, help_text="Link to iBook")
     ibook_link_volume_2 = models.URLField(blank=True, help_text="Link to secondary iBook")
     webview_link = models.URLField(blank=True, help_text="Link to CNX Webview book")
@@ -699,7 +698,6 @@ class Book(Page):
         DocumentChooserPanel('community_resource_feature_link'),
         FieldPanel('community_resource_feature_text'),
         StreamFieldPanel('webinar_content'),
-        FieldPanel('coming_soon'),
         FieldPanel('ibook_link'),
         FieldPanel('ibook_link_volume_2'),
         FieldPanel('bookshare_link'),
@@ -795,7 +793,6 @@ class Book(Page):
         APIField('community_resource_feature_link_url'),
         APIField('community_resource_feature_text'),
         APIField('webinar_content'),
-        APIField('coming_soon'),
         APIField('ibook_link'),
         APIField('ibook_link_volume_2'),
         APIField('webview_link'),
@@ -962,7 +959,6 @@ class BookIndex(Page):
                     'title': book.title,
                     'subjects': book.subjects(),
                     'is_ap': book.is_ap,
-                    'coming_soon': book.coming_soon,
                     'cover_url': book.cover_url,
                     'cover_color': book.cover_color,
                     'high_resolution_pdf_url': book.high_resolution_pdf_url,
