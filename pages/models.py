@@ -1544,6 +1544,7 @@ class Impact(Page):
     reach = StreamField(
         blocks.StreamBlock([
         ('content', blocks.StructBlock([
+            ('image', ImageBlock()),
             ('heading', blocks.CharBlock()),
             ('description', blocks.RichTextBlock()),
             ('cards', blocks.ListBlock(blocks.StreamBlock([
