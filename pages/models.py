@@ -1617,8 +1617,6 @@ class Impact(Page):
             ('heading', blocks.CharBlock()),
             ('description', blocks.TextBlock()),
             ('graph', blocks.StructBlock([
-                ('top_caption', blocks.CharBlock()),
-                ('bottom_caption', blocks.RichTextBlock()),
                 ('image', ImageBlock(required=False)),
                 ('image_alt_text', blocks.CharBlock(required=False)),
             ]))
@@ -1637,8 +1635,11 @@ class Impact(Page):
         ('content', blocks.StructBlock([
             ('heading', blocks.CharBlock()),
             ('description', blocks.TextBlock()),
-            ('link', blocks.CharBlock()),
             ('link_text', blocks.CharBlock()),
+            ('link_href', blocks.URLBlock()),
+            ('nonprofit_statement', blocks.TextBlock()),
+            ('annual_report_link_text', blocks.CharBlock()),
+            ('annual_report_link_href', blocks.URLBlock()),
         ]))], max_num=1))
 
     content_panels = [

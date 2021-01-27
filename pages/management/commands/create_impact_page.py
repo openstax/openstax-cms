@@ -60,7 +60,9 @@ class Command(BaseCommand):
             giving=json.dumps([
                 {"type": "content", "value": {"heading": "Students need your help today.",
                                                "description": "Together, we can increase educational equity and quality for millions of students worldwide.",
-                                               "link": "Give today", "link_text": "https://openstax.org/give"},
+                                               "link_text": "Give today", "link_href": "https://openstax.org/give",
+                                               "nonprofit_statement": "As a part of Rice University, a 501(c)(3) nonprofit, gifts to OpenStax are tax deductible to the fullest extent allowed by law. Our tax ID number is 74-1109620. Read our latest Annual Report",
+                                               "annual_report_link_text": "Read our latest Annual Report", "annual_report_link_href": "https://openstax.org/"},
                 }
             ])
         )
