@@ -1547,11 +1547,11 @@ class Impact(Page):
             ('image', ImageBlock()),
             ('heading', blocks.CharBlock()),
             ('description', blocks.RichTextBlock()),
-            ('cards', blocks.ListBlock(blocks.StreamBlock([
-                ('image', APIImageChooserBlock()),
+            ('cards', blocks.ListBlock(blocks.StructBlock([
+                ('icon', APIImageChooserBlock(required=False)),
                 ('description', blocks.CharBlock()),
-                ('link_text', blocks.CharBlock()),
-                ('link_href', blocks.URLBlock())
+                ('link_text', blocks.CharBlock(required=False)),
+                ('link_href', blocks.URLBlock(required=False))
             ])))
         ]))], max_num=1))
     quote = StreamField(
