@@ -15,6 +15,7 @@ from wagtail.core.models import Site
 from openstax.functions import build_image_url, build_document_url
 from books.models import Book
 from webinars.models import Webinar
+from news.models import BlogStreamBlock # for use on the ImpactStories
 
 from salesforce.models import PartnerTypeMapping, PartnerFieldNameMapping, PartnerCategoryMapping, Partner
 
@@ -1531,6 +1532,49 @@ class Careers(Page):
     max_count = 1
 
 
+class ImpactStory(Page):
+    date = models.DateField("Post date")
+    heading = models.CharField(max_length=250, help_text="Heading displayed on website")
+    subheading = models.CharField(max_length=250, blank=True, null=True)
+    author = models.CharField(max_length=250)
+    featured_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    featured_image_alt_text = models.CharField(max_length=250, blank=True, null=True)
+    body = StreamField(BlogStreamBlock())
+
+    content_panels = Page.content_panels + [
+        FieldPanel('date'),
+        FieldPanel('title'),
+        FieldPanel('heading'),
+        FieldPanel('subheading'),
+        FieldPanel('author'),
+        ImageChooserPanel('featured_image'),
+        FieldPanel('featured_image_alt_text'),
+        StreamFieldPanel('body'),
+    ]
+
+    api_fields = [
+        APIField('date'),
+        APIField('title'),
+        APIField('heading'),
+        APIField('subheading'),
+        APIField('author'),
+        APIField('featured_image'),
+        APIField('featured_image_alt_text'),
+        APIField('body'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+    ]
+
+    parent_page_types = ['pages.Impact']
+
+
 class Impact(Page):
     improving_access = StreamField(
         blocks.StreamBlock([
@@ -1544,13 +1588,14 @@ class Impact(Page):
     reach = StreamField(
         blocks.StreamBlock([
         ('content', blocks.StructBlock([
+            ('image', ImageBlock()),
             ('heading', blocks.CharBlock()),
             ('description', blocks.RichTextBlock()),
-            ('cards', blocks.ListBlock(blocks.StreamBlock([
-                ('image', APIImageChooserBlock()),
+            ('cards', blocks.ListBlock(blocks.StructBlock([
+                ('icon', APIImageChooserBlock(required=False)),
                 ('description', blocks.CharBlock()),
-                ('link_text', blocks.CharBlock()),
-                ('link_href', blocks.URLBlock())
+                ('link_text', blocks.CharBlock(required=False)),
+                ('link_href', blocks.URLBlock(required=False))
             ])))
         ]))], max_num=1))
     quote = StreamField(
@@ -1572,8 +1617,6 @@ class Impact(Page):
             ('heading', blocks.CharBlock()),
             ('description', blocks.TextBlock()),
             ('graph', blocks.StructBlock([
-                ('top_caption', blocks.CharBlock()),
-                ('bottom_caption', blocks.RichTextBlock()),
                 ('image', ImageBlock(required=False)),
                 ('image_alt_text', blocks.CharBlock(required=False)),
             ]))
@@ -1592,8 +1635,11 @@ class Impact(Page):
         ('content', blocks.StructBlock([
             ('heading', blocks.CharBlock()),
             ('description', blocks.TextBlock()),
-            ('link', blocks.CharBlock()),
             ('link_text', blocks.CharBlock()),
+            ('link_href', blocks.URLBlock()),
+            ('nonprofit_statement', blocks.TextBlock()),
+            ('annual_report_link_text', blocks.CharBlock()),
+            ('annual_report_link_href', blocks.URLBlock()),
         ]))], max_num=1))
 
     content_panels = [
@@ -1622,6 +1668,7 @@ class Impact(Page):
     ]
 
     parent_page_type = ['pages.HomePage']
+    subpage_types = ['pages.ImpactStory']
     max_count = 1
 
 

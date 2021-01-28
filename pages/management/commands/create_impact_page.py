@@ -16,20 +16,20 @@ class Command(BaseCommand):
                             "button_text": "Give today", "button_href": "https://openstax.org/give"}}
             ]),
             reach=json.dumps([
-                {"type": "content", "value": {"heading": "Our Reach",
-                                               "description": "<p><b>COVID-19 Impact:</b> Demand for OpenStax more than doubled in the pandemic, so our team rapidly increased learning resources to support instructors and their students with virtual learning. Please make a gift to help us continue to meet this urgent need.</p>",
-                                               "cards": [[{"type": "description",
-                                                           "value": "$1.2 billion saved in education costs since 2012"},
-                                                          {"type": "link_text", "value": "Read more >"},
-                                                          {"type": "link_href", "value": "https://openstax.org"}], [
-                                                             {"type": "description",
-                                                              "value": "4 million students from 120 countries use OpenStax"},
-                                                             {"type": "link_text", "value": "See the map >"},
-                                                             {"type": "link_href", "value": "https://openstax.org"}], [
-                                                             {"type": "description",
-                                                              "value": "60 percent of higher education institutions in US use OpenStax"}], [
-                                                             {"type": "description",
-                                                              "value": "4 thousand+ K-12 schools use OpenStax"}]]},
+                {"type": "content",
+                  "value": {"heading": "Our Reach",
+                            "description": "<p><b>COVID-19 Impact:</b> Demand for OpenStax more than doubled in the pandemic, so our team rapidly increased learning resources to support instructors and their students with virtual learning. Please make a gift to help us continue to meet this urgent need.</p>",
+                            "cards": [{"description": "$1.2 billion saved in education costs since 2012",
+                                       "link_text": "Read more", "link_href": "https://openstax.org"},
+                                      {"description": "4 million students from 120 countries use OpenStax",
+                                       "link_text": "See the map", "link_href": "https://openstax.org"
+                                       },
+                                      {"description": "60 percent of higher education institutions in US use OpenStax",
+                                       "link_text": "",  "link_href": ""
+                                       },
+                                      {"description": "4 thousand+ K-12 schools use OpenStax",
+                                       "link_text": "", "link_href": ""}]
+                            },
                 }
             ]),
             quote=json.dumps([
@@ -60,7 +60,9 @@ class Command(BaseCommand):
             giving=json.dumps([
                 {"type": "content", "value": {"heading": "Students need your help today.",
                                                "description": "Together, we can increase educational equity and quality for millions of students worldwide.",
-                                               "link": "Give today", "link_text": "https://openstax.org/give"},
+                                               "link_text": "Give today", "link_href": "https://openstax.org/give",
+                                               "nonprofit_statement": "As a part of Rice University, a 501(c)(3) nonprofit, gifts to OpenStax are tax deductible to the fullest extent allowed by law. Our tax ID number is 74-1109620. Read our latest Annual Report",
+                                               "annual_report_link_text": "Read our latest Annual Report", "annual_report_link_href": "https://openstax.org/"},
                 }
             ])
         )
