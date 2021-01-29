@@ -91,10 +91,11 @@ class CardImageBlock(blocks.StructBlock):
         icon = 'image'
 
 
-class StoryBlock(blocks.StreamBlock):
+class StoryBlock(blocks.StructBlock):
     image = APIImageChooserBlock(required=False)
     story_text = blocks.TextBlock(required=False)
-    embeded_video = blocks.RawHTMLBlock(required=False)
+    linked_story = blocks.PageChooserBlock(target_model='pages.ImpactStory')
+    embedded_video = blocks.RawHTMLBlock(required=False)
 
     class Meta:
         icon = 'openquote'
