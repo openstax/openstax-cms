@@ -60,6 +60,15 @@ class ModuleListingField(serializers.StringRelatedField):
 class CustomizationRequestSerializer(serializers.ModelSerializer):
     modules = ModuleListingField(many=True)
 
+    def create(self, validated_data):
+        modules = list(validated_data.get("modules", None))
+        validated_data.pop('modules')
+        # clean the modules so they are easier to read in the admin/export
+        modules = ', '.join(str(x) for x in modules)
+
+        return CustomizationRequest.objects.create(modules=modules, **validated_data)
+
+
     class Meta:
         model = CustomizationRequest
         fields = ('email', 'num_students', 'reason', 'modules', 'book')

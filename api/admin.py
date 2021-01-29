@@ -8,7 +8,7 @@ class CustomizationRequestResource(resources.ModelResource):
     class Meta:
         model = CustomizationRequest
         fields = ('id', 'email', 'complete', 'num_students', 'reason', 'modules')
-        export_order = ('id', 'email', 'complete', 'num_students', 'book', 'reason', 'modules')
+        export_order = ('id', 'email', 'created', 'complete', 'num_students', 'book', 'reason', 'modules')
 
 
 class CustomizationRequestAdmin(ExportActionModelAdmin):
