@@ -470,7 +470,7 @@ RETIRED = 'retired'
 BOOK_STATES = (
     (LIVE, 'Live'),
     (COMING_SOON, 'Coming Soon'),
-    (NEW_EDITION_AVAILABLE, 'New Edition Available (Show new edition correction schedule)'),
+    (NEW_EDITION_AVAILABLE, 'New Edition Forthcoming (Show new edition correction schedule)'),
     (DEPRECATED, 'Deprecated (Disallow errata submissions and show deprecated schedule)'),
     (RETIRED, 'Retired (Remove from website)')
 )
@@ -606,7 +606,6 @@ class Book(Page):
 
 
     webinar_content = StreamField(SharedContentBlock(), null=True, blank=True)
-    ally_content = StreamField(SharedContentBlock(), null=True, blank=True)
     coming_soon = models.BooleanField(default=False) #TODO: Remove after FE implements book_states
     ibook_link = models.URLField(blank=True, help_text="Link to iBook")
     ibook_link_volume_2 = models.URLField(blank=True, help_text="Link to secondary iBook")
@@ -701,7 +700,6 @@ class Book(Page):
         DocumentChooserPanel('community_resource_feature_link'),
         FieldPanel('community_resource_feature_text'),
         StreamFieldPanel('webinar_content'),
-        StreamFieldPanel('ally_content'),
         FieldPanel('coming_soon'),
         FieldPanel('ibook_link'),
         FieldPanel('ibook_link_volume_2'),
@@ -797,7 +795,6 @@ class Book(Page):
         APIField('community_resource_feature_link_url'),
         APIField('community_resource_feature_text'),
         APIField('webinar_content'),
-        APIField('ally_content'),
         APIField('coming_soon'),
         APIField('ibook_link'),
         APIField('ibook_link_volume_2'),
