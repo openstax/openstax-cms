@@ -62,4 +62,4 @@ class CustomizationRequestSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = CustomizationRequest
-        fields = ('email', 'num_students', 'reason', 'modules')
+        fields = ('email', 'num_students', 'reason', 'modules', 'book')
