@@ -84,21 +84,6 @@ class BookTests(WagtailPageTests):
         book_index.add_child(instance=book)
         self.assertEqual(book.salesforce_abbreviation, 'Prealgebra')
 
-    def test_can_create_coming_soon_book(self):
-        book_index = BookIndex.objects.all()[0]
-        book = Book(title="Prealgebra",
-                    slug="prealgebra",
-                    salesforce_abbreviation='Prealgebra',
-                    salesforce_name='Prealgebra',
-                    description="This is Prealgebra. Next, you learn Algebra!",
-                    coming_soon=True,
-                    cover=self.test_doc,
-                    title_image=self.test_doc,
-                    publish_date=datetime.date.today(),
-                    )
-        book_index.add_child(instance=book)
-        self.assertEqual(book.salesforce_abbreviation, 'Prealgebra')
-
     def test_only_numbers_for_price(self):
         book_index = BookIndex.objects.all()[0]
         book = Book(title="Prealgebra",
