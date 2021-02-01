@@ -16,13 +16,15 @@ class Command(BaseCommand):
         redirects = Redirect.objects.all()
         bad_redirects = ''
         dev_email_info = ''
+        USER_AGENT = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36'
+        BAD_HTML_CODES = [404, 410, 500, 503]
 
         #Loop through and validate
         for re in redirects:
             try:
-                response = requests.get(re.redirect_link, timeout=(10, 10), verify=certifi.where())
+                response = requests.get(re.redirect_link, timeout=(10, 10), verify=certifi.where(), headers={ "user-agent": USER_AGENT})
                 # if bad one is found, add short URL and redirect to list
-                if response.status_code != 200:
+                if response.status_code in BAD_HTML_CODES:
                     bad_redirects += re.old_path + ',' + re.redirect_link + '\n'
                     dev_email_info = self.add_to_dev_email(re, dev_email_info, response, exception=None)
             except Exception as e:
@@ -37,7 +39,7 @@ class Command(BaseCommand):
     def add_to_dev_email(self, redirect, dev_email_info, response, exception):
         dev_email_info += redirect.old_path + ',' + redirect.redirect_link + ', code: '
         if response is not None:
-            dev_email_info += str(response.status_code) + ', headers: ' + str(response.headers)
+            dev_email_info += str(response.status_code)
         if exception is not None:
             dev_email_info += ', Exception: ' + str(exception)
         dev_email_info += '\n\n'
