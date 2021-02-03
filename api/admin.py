@@ -7,7 +7,7 @@ from .models import CustomizationRequest
 class CustomizationRequestResource(resources.ModelResource):
     class Meta:
         model = CustomizationRequest
-        fields = ('id', 'email', 'complete', 'num_students', 'reason', 'modules')
+        fields = ('id', 'email', 'created', 'complete', 'num_students', 'book', 'reason', 'modules')
         export_order = ('id', 'email', 'created', 'complete', 'num_students', 'book', 'reason', 'modules')
 
 
