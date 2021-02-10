@@ -1,3 +1,4 @@
+import vcr
 import unittest
 
 from django.conf import settings
@@ -31,7 +32,8 @@ class AdopterTest(TestCase):
 class PartnerTest(APITestCase, TestCase):
 
     def setUp(self):
-        call_command('update_partners')
+        with vcr.use_cassette('fixtures/vcr_cassettes/partners.yaml'):
+            call_command('update_partners')
         for partner in Partner.objects.all():
             partner.visible_on_website = True
             partner.save()
@@ -99,12 +101,14 @@ class PartnerTest(APITestCase, TestCase):
         )
         data = { "id": review.id }
         response = self.client.delete('/apps/cms/api/salesforce/reviews/', data, format='json')
+        print(response.data)
         self.assertEqual(response.data['status'], 'Deleted')
 
 
 class AdoptionOpportunityTest(APITestCase, TestCase):
     def setUp(self):
-        call_command('update_opportunities')
+        with vcr.use_cassette('fixtures/vcr_cassettes/opportunities.yaml'):
+            call_command('update_opportunities')
 
     def test_did_update_opportunities(self):
         self.assertGreater(AdoptionOpportunityRecord.objects.all().count(), 0)
@@ -151,15 +155,17 @@ class SalesforceTest(LiveServerTestCase, WagtailPageTests):
             self.create_salesforce_setting(username="test2", password="test2", security_token="test2", sandbox=False)
 
     def test_database_query(self):
-        sf = SF()
-        contact_info = sf.query(
-            "SELECT Id FROM Contact")
-        self.assertIsNot(
-            contact_info, None)
+        with vcr.use_cassette('fixtures/vcr_cassettes/contact.yaml'):
+            sf = SF()
+            contact_info = sf.query(
+                "SELECT Id FROM Contact")
+            self.assertIsNot(
+                contact_info, None)
 
     def test_update_adopters_command(self):
         out = StringIO()
-        call_command('update_adopters', stdout=out)
+        with vcr.use_cassette('fixtures/vcr_cassettes/adopter.yaml'):
+            call_command('update_adopters', stdout=out)
         self.assertIn("Success", out.getvalue())
 
     def tearDown(self):
@@ -175,4 +181,3 @@ class MapboxTest(TestCase):
         setting = self.create_mapbox_setting()
         self.assertTrue(isinstance(setting, MapBoxDataset))
         self.assertEqual(setting.__str__(), setting.name)
-        

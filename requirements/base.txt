@@ -106,3 +106,6 @@ scout-apm==2.14.3
 
 # for supporting animated gifs
 Wand==0.6.5
+
+# for recording test interactions with third-party APIs
+vcrpy==4.1.1
