@@ -1,0 +1,107 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n        <env:Envelope\n                xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\n
+      \               xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n                xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\"\n
+      \               xmlns:urn=\"urn:partner.soap.sforce.com\">\n            <env:Header>\n
+      \               <urn:CallOptions>\n                    <urn:client>RestForce</urn:client>\n
+      \                   <urn:defaultNamespace>sf</urn:defaultNamespace>\n                </urn:CallOptions>\n
+      \           </env:Header>\n            <env:Body>\n                <n1:login
+      xmlns:n1=\"urn:partner.soap.sforce.com\">\n                    <n1:username>SALESFORCE_USERNAME</n1:username>\n
+      \                   <n1:password>SALESFORCE_PASSWORD</n1:password>\n
+      \               </n1:login>\n            </env:Body>\n        </env:Envelope>"
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Connection: [keep-alive]
+      Content-Length: ['888']
+      SOAPAction: [login]
+      User-Agent: [python-requests/2.22.0]
+      charset: [UTF-8]
+      content-type: [text/xml]
+    method: POST
+    uri: https://test.salesforce.com/services/Soap/u/42.0
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAK1VXXObOBT9K15mX4OIP9rUI6uljtO6idvGmF3PvuwoQtiaCIlIwl+/vkKAHZyk
+        sw/rB8bcc47uEbr3Cn7cZbyzoUozKUbepR94HSqITJhYjbx4cXNx5X1EUEucU7EZTsSGcpnTjlUJ
+        PazDI29tTD4EQJM1zbD2LVpCvlQrUP4BtNYBr1KOvEKJYY6VEVT5jqtTqQj1icxqznCn2XHl7Xbr
+        b3tuwW4QXILl7C5yyS6Y0AYLQr2Ty88y2SPI5YqJOdW5FJoiqKguuEEwowYn2OCIKrvtWHFUptA2
+        h/VXrrW7uDCFkeoJ+9ne15jTkzWgrYoRqkFUbisD/a4fgCC4DjaB+w0W72MIXuaAOdZ6K1Uy2eVM
+        0QSlmGsKwXkYaiySB7lDRhUWbt6g/h/cFm+4Pa1t0+iyEKYJOmP9Ed7fh/c/vpmQx8s0ue0fvvUH
+        BzXr7+Il9lfjGzGOZ92n9++2H55uC9ZXD1GadfcFvvq7d8v99PHn/JB8kLcbSSJj5o+9L/H3xUBf
+        zqOY0Mn99rq00eSGhbXkPAzi2sJsmWTT8AsENVRRRCoRxISUygfGmdnPZEKbb/sSgGSNjaFqsrMP
+        gXnDPA9DUihl22Af7bMHydGfltKOQFuJoTGYrDMqzA3jNGIHescyZtCg2+9eXQUQ/IZT6q9pim1J
+        juuVp1qOS5NxdO2kb8CvKO8kseeOqPg3jl6T1rhTMlsiXG6/moyfvOnmQ/yGUaq/Yv3TjgopQkJk
+        0da9xEoFFuyAzaslNQljJ3xOaUlmdgus2cOzTG8QWtrvOKPoh22RyLYImNsm6MSCuTln9u1VHBXm
+        Sqb2hJxNWldd8JTI3TQMbZseUahkzZoEnyvW47ulicMpBDXUdFFEiRSJ/gtzlqB+z86tY5G3IFfL
+        r592x87AoWB85JXzwAMVd5JhxpFOcZIx8akZBOVwrPqjwh31puDcbXChMHm0Q70T22hFO2L/td/u
+        sFgVeHWstFasYrQq8VnEoS6ZqY2UgU/KHoxPk8KvZ1ilOZlasIz+IwVFYUYtF4Px2j5XsuId0Yq7
+        zymyxy0SrJKaUIYcGLPIJkULe2XQXgXWoXqLbpSA5pIAZ5cHaF8t4Pw+RL8AKrvTfEgHAAA=
+    headers:
+      Cache-Control: ['no-cache,must-revalidate,max-age=0,no-store,private']
+      Content-Encoding: [gzip]
+      Content-Length: ['851']
+      Content-Type: [text/xml; charset=utf-8]
+      Date: ['Wed, 10 Feb 2021 17:26:27 GMT']
+      Set-Cookie: ['BrowserId=GypTvWvFEeu-O_MwBAruCw; domain=.salesforce.com; path=/;
+          expires=Thu, 10-Feb-2022 17:26:27 GMT; Max-Age=31536000']
+      Vary: [Accept-Encoding]
+    status: {code: 200, message: OK}
+- request:
+    body: null
+    headers:
+      Accept: ['*/*']
+      Accept-Encoding: ['gzip, deflate']
+      Authorization: [Bearer 00D0v0000005T7U!AQQAQOJtAlUXfdK4zJ45zrM4xUXa.gCFnCUM2q76w9qKui4rbSfm2yua8W3Kl.fkPRzd9oKvocSttRk3GUNT5s1RSUceEQwD]
+      Connection: [keep-alive]
+      Content-Type: [application/json]
+      Cookie: [BrowserId=GypTvWvFEeu-O_MwBAruCw]
+      User-Agent: [python-requests/2.22.0]
+      X-PrettyPrint: ['1']
+    method: GET
+    uri: https://openstax--tutorqa.my.salesforce.com/services/data/v42.0/query/?q=SELECT+Id%2C+Name%2C+Partner_Type__c%2C+Books_Offered__c%2C+Description%2C+Rich_Description__c%2C+short_partner_description__c%2C+Website%2C+Lead_Sharing__c%2C+Verified_by_instructors__c%2C+Integrated_with_OpenStax_content__c%2C+Landing_page__c%2C+Affordability_cost__c%2C+Affordability_institutional__c%2C+App_available__c%2C+Adaptivity_adaptive_presentation__c%2C+Adaptivity_affective_state__c%2C+Adaptivity_breadth_and_depth__c%2C+Adaptivity_customized_path__c%2C+Adaptivity_instructor_control__c%2C+Adaptivity_quantitative_randomization__c%2C+Adaptivity_varied_level__c%2C+Admin_calendar_links__c%2C+Admin_online_submission__c%2C+Admin_realtime_progress__c%2C+Admin_shared_students__c%2C+Admin_syllabus__c%2C+Assignment_outside_resources__c%2C+Assignment_editing__c%2C+Assignment_multimedia__c%2C+Assignment_multiple_quantitative__c%2C+Assignment_pretest__c%2C+Assignment_scientific_structures__c%2CAssignment_summative_assessments__c%2C+Autonomy_digital_badges__c%2C+Autonomy_on_demand_extras__c%2C+Autonomy_self_reflection__c%2C+Collaboration_peer_feedback__c%2C+Collaboration_peer_interaction__c%2C+Collaboration_teacher_learner_contact__c%2C+Collaboration_tutor__c%2C+Content_batch_uploads__c%2C+Content_resource_sharing__c%2C+Content_sharing_among_courses__c%2C+Customization_assessment_repository__c%2C+Customization_create_learning_outcomes__c%2C+Customization_reorder_content__c%2C+Customization_reorder_learning_outcomes__c%2C+Feedback_early_warning__c%2C+Feedback_knowledge_gaps__c%2C+Feedback_learner_progress_tasks__c%2C+Feedback_multipart__c%2C+Feedback_understanding__c%2C+Formstack_URL__c%2C+Grading_change_scores__c%2C+Grading_class_and_student_level__c%2C+Grading_group_work__c%2C+Grading_learning_portfolio__c%2C+Grading_rubric_based__c%2C+Grading_tolerances_sig_fig__c%2C+Interactivity_annotate__c%2C+Interactivity_different_representations__c%2C+Interactivity_gaming__c%2C+Interactivity_previous_knowledge__c%2C+Interactivity_simulations__c%2C+Interactivity_varying_means__c%2C+LMS_analytics__c%2C+LMS_sends_grades__c%2C+LMS_SSO__c%2C+Measure_alternate_assessment__c%2C+Measure_assessments_in_most__c%2C+Measure_mapping__c%2C+Reporting_competency__c%2C+Reporting_student_workload__c%2C+Scaffolding_hints__c%2C+Scaffolding_learner_explanations__c%2C+Scaffolding_mental_practice__c%2C+Scaffolding_narrative__c%2C+Scaffolding_social_intervention__c%2C+Usability_design_orients_users__c%2C+Usability_glossary__c%2C+Usability_partial_progress__c%2C+Accessibility_language_UI__c%2C+Accessibility_language_content__c%2C+Accessibility_VPAT__c%2C+Accessibility_WCAG__c%2C+Accessibility_Universal_Design__c%2C+Instructional_level_K12__c%2C+Online_teaching_peer_discussion__c%2C+Online_teaching_lecture_streaming__c%2C+Online_teaching_in_lecture__c%2C+Online_teaching_asynchronous__c%2C+Online_teaching_audio_video__c%2C+Online_teaching_academic_integrity__c%2C+Online_teaching_labs__c%2C+International__c+FROM+Account+WHERE+RecordTypeId+%3D+%27012U0000000MeAuIAK%27
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAI1XTW8bNxC951cIOgeVHbSX3hQHDYw6dWDZDoqiIGZJ7oo1l9zyQ7Ya5L/3kbtr
+        yTZXUg6OzXkzHM7Hm9nv72azebCB9Er9J+ezX2fn79ORsCb/FVyU+cBJbp3w6eyv2Xec4IxCcKqK
+        Qebj/jCZ23ZZd77k3EYT5u9HSXQ6CxZeuo3i0i8EBVpsfv7w09nC2+ofyYNfDGqLs7Pzs81Z+lf9
+        0tzfLpd/zrOhH729+aXIxgqwAfAHtb0jt9KH2VdywUg3Coc/2S28ZYwnnIlaD9KP1j54dl3X0kkx
+        iOcfldW22Y4WPknPneqCsuaV9o3ia7Ynfmvfr60LrBt8EIeg32TlVZCvTq8kCbZak1OmGXTGXEF6
+        L52qFTyvtkwZDwkP1vkBWJP2I/LSBNk4CsA+qrBm1500q0BPjFtITCioXJER6daOmkLklnWNQqFK
+        aRW2sOLDMcwlHFQhpteTLty37DpGG1KaKi1LckEI3SaZov5XyTonPbynvZBOqSDHPOt4wI/YrxzC
+        jighAkhah98Ownn0wbZoLIFgHQPv8pRj72wxFjv8v5EM4kbZdweP0k0nPHiDmoFDWm5k+YZWGcZJ
+        SyPIMa3MQ6luKMOsgRyRi1WrvJ+6OiEROB1UmzJjGySnZLNHehQ1/PMhCmRwGrfaalRELALgS2Pa
+        VL42Bq8EAiS9jQ6UcxguhQq7jpoAtTE/RSg6AdehZl+k6qAK6hZ0Wuq6PZDnCv+hwTnrSya6Y+/y
+        sW3768l7RL+dCm0M1th2y4Rq4LBmFYmmbHxEIulCtqkj5FNwdBDrpa6RilqnlitWy4VNWbWuL+RO
+        gh1rKUVF/OE0tAJtOTrNfJDE19DRklzi4dR3UD2uF1OXllA9Z1YUMABipy2JUjxG3FiUuebLZTdC
+        RwS1Fj8xIJ0vpuVioJze0V2ycVdnMUes2x7V4mhWMGGOSroTPcRte8J1ToLWhziWZ0cZf8pNv41V
+        AKzessdB4wDwwdhHLVG+rKHuoMkx/8/cFMgXWe9Zo29tjO9DoGjwOEyVflwWgNa1EAN5d3P1dkp+
+        dpQV+ZoMHuGxgBUj84zTSHceTQN3TnL8qNE4Gzv2aF2pt0bQc3I6rCy11coeALtYOdBSRf55bSrB
+        gtVoUpPoGBTFalUKz+XYyf2cNsZODOiXQKHy1taX/N4aMLX97DQbasuJegmD0Y2yGDy7Ajum4hUK
+        5kQvMJ+3yY1WUhF99WWFYJDeBsWn5Hg0iAd7nShWTIKsVtcFyRdJHtOEYVhLZ1K49yjkAHxvqGA0
+        t7Y4wkZ0S11XDvSNTEWWi9m2HUah4SW62sHGSk81nNi2AF5xrHhW57pbq/LY28eMZCCfOo04TyVt
+        XyU9HLOyy0nkpXLYRxtybmoV2Md5yxWs5oG2SQO/ONHu/LhHI9cY98w6lfMQ8ZFVcnyn0GjrPRUH
+        wg6USE7lx03vbRyN7NWggKA1MX0a3F2ejp2eGC8V7r8ub4+Cvl0sPx8F3RlkwHm87FMft1Jf9utV
+        /2HSk+nv5x8KyOt+D877RKbKtIkI5fEBMLEVv9ZIG1HqDdwop2jotQ46bVQ7Dia/NXztsIcVV+Y3
+        8ChA9BusziW6f4PmYJoWxK/y52SK7wlPpmqSDfu+e/k5CPGP2d/vfvwPmsY8wbQQAAA=
+    headers:
+      Cache-Control: ['no-cache,must-revalidate,max-age=0,no-store,private']
+      Content-Encoding: [gzip]
+      Content-Type: [application/json;charset=UTF-8]
+      Date: ['Wed, 10 Feb 2021 17:26:28 GMT']
+      Expect-CT: ['max-age=86400, report-uri="https://a.forcesslreports.com/Expect-CT-report/00D0v0000005T7Um"']
+      Public-Key-Pins-Report-Only: ['pin-sha256="9n0izTnSRF+W4W4JTq51avSXkWhQB8duS2bxVLfzXsY=";
+          pin-sha256="5kJvNEMw0KjrCAu7eXY5HZdvyCS13BbA0VJG1RSP91w="; pin-sha256="njN4rRG+22dNXAi+yb8e3UMypgzPUPHlv4+foULwl1g=";
+          max-age=86400; includeSubDomains; report-uri="https://a.forcesslreports.com/hpkp-report/00D0v0000005T7Um";']
+      Sforce-Limit-Info: [api-usage=1377/5000000]
+      Strict-Transport-Security: [max-age=31536002; includeSubDomains]
+      Transfer-Encoding: [chunked]
+      Vary: [Accept-Encoding]
+      X-B3-Sampled: ['0']
+      X-B3-SpanId: [5e9d11492c11b2b0]
+      X-B3-TraceId: [5e9d11492c11b2b0]
+      X-Robots-Tag: [none]
+    status: {code: 200, message: OK}
+version: 1

@@ -103,3 +103,9 @@ django-cors-headers==2.4.1
 sentry-sdk==0.19.5
 psutil==5.6.3
 scout-apm==2.14.3
+
+# for supporting animated gifs
+Wand==0.6.5
+
+# for recording test interactions with third-party APIs
+vcrpy==4.1.1
