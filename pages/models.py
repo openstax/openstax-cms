@@ -1296,6 +1296,9 @@ class ErrataList(Page):
     parent_page_types = ['pages.HomePage']
     max_count = 1
 
+    def get_sitemap_urls(self, request=None):
+        return []
+
 
 class PrivacyPolicy(Page):
     intro_heading = models.CharField(max_length=255)
