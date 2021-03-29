@@ -139,7 +139,7 @@ class ErrataAdmin(ImportExportActionModelAdmin, VersionAdmin):
     @method_decorator(csrf_protect)
     def changelist_view(self, request, extra_context=None):
         if request.user.is_superuser or request.user.groups.filter(name__in=['Content Managers']).exists():
-            self.list_display = ['id', '_book_title', 'created', 'modified', 'short_detail', 'number_of_errors', 'status', 'error_type', 'resource', 'location', 'resolution', 'archived', 'junk'] # list of fields to show if user is in Content Manager group or is a superuser
+            self.list_display = ['id', '_book_title', 'created', 'modified', 'short_detail', 'number_of_errors', 'status', 'error_type', 'resource', 'location', 'additional_location_information', 'resolution', 'archived', 'junk'] # list of fields to show if user is in Content Manager group or is a superuser
             self.list_display_links = ['_book_title']
             self.list_filter = (('created', DateRangeFilter), ('modified', DateRangeFilter), ('book', UnionFieldListFilter), 'status', 'created', 'modified', 'is_assessment_errata', 'modified', 'error_type', 'resolution', 'archived', 'junk', 'resource')
             self.editable = ['resolution']

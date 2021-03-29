@@ -50,12 +50,6 @@ class ImageFormatChoiceBlock(FieldBlock):
     ))
 
 
-class HTMLAlignmentChoiceBlock(FieldBlock):
-    field = forms.ChoiceField(choices=(
-        ('normal', 'Normal'), ('full', 'Full width'),
-    ))
-
-
 class ImageBlock(StructBlock):
     image = ImageChooserBlock()
     caption = RichTextBlock()
@@ -63,20 +57,11 @@ class ImageBlock(StructBlock):
     alt_text = blocks.CharBlock(required=False)
 
 
-
-class AlignedHTMLBlock(StructBlock):
-    html = RawHTMLBlock()
-    alignment = HTMLAlignmentChoiceBlock()
-
-    class Meta:
-        icon = "code"
-
-
 class BlogStreamBlock(StreamBlock):
     paragraph = RichTextBlock(icon="pilcrow")
     aligned_image = ImageBlock(label="Aligned image", icon="image")
     pullquote = PullQuoteBlock()
-    aligned_html = AlignedHTMLBlock(icon="code", label='Raw HTML')
+    aligned_html = RawHTMLBlock(icon="code", label='Raw HTML')
     document = DocumentChooserBlock(icon="doc-full-inverse")
     embed = EmbedBlock(icon="media", label="Embed Media URL")
 
