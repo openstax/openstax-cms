@@ -231,7 +231,7 @@ class Partner(models.Model):
 
     @property
     def reviews(self):
-        return list(PartnerReview.objects.filter(partner=self).exclude(status='Rejected').values('id',
+        return list(PartnerReview.objects.filter(partner=self, status='Approved').values('id',
                                                                          'status',
                                                                          'rating',
                                                                          'review',
@@ -243,11 +243,11 @@ class Partner(models.Model):
 
     @property
     def average_rating(self):
-        return PartnerReview.objects.filter(partner=self).exclude(status='Rejected').aggregate(Avg('rating'))
+        return PartnerReview.objects.filter(partner=self, status='Approved').aggregate(Avg('rating'))
 
     @property
     def rating_count(self):
-        return PartnerReview.objects.filter(partner=self).exclude(status='Rejected').count()
+        return PartnerReview.objects.filter(partner=self, status='Approved').count()
 
     @hooks.register('register_admin_menu_item')
     def register_partner_menu_item():
