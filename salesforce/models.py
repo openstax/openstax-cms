@@ -231,7 +231,7 @@ class Partner(models.Model):
 
     @property
     def reviews(self):
-        return list(PartnerReview.objects.filter(partner=self, status='Approved').values('id',
+        return list(PartnerReview.objects.filter(partner=self).values('id',
                                                                          'status',
                                                                          'rating',
                                                                          'review',
