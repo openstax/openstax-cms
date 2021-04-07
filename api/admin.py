@@ -3,12 +3,17 @@ from import_export.admin import ExportActionModelAdmin, ExportActionMixin
 
 from django.contrib import admin
 from .models import CustomizationRequest
+from wagtail.core.models import Page
 
 class CustomizationRequestResource(resources.ModelResource):
     class Meta:
         model = CustomizationRequest
         fields = ('id', 'email', 'created', 'complete', 'num_students', 'book', 'reason', 'modules')
         export_order = ('id', 'email', 'created', 'complete', 'num_students', 'book', 'reason', 'modules')
+
+    def dehydrate_book(self, export_item):
+        page = Page.objects.get(id=export_item.book_id)
+        return page.title
 
 
 class CustomizationRequestAdmin(ExportActionModelAdmin):
