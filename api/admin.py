@@ -1,19 +1,22 @@
-from import_export import resources
+from import_export import fields, resources
 from import_export.admin import ExportActionModelAdmin, ExportActionMixin
+from import_export.widgets import ForeignKeyWidget
 
 from django.contrib import admin
 from .models import CustomizationRequest
-from wagtail.core.models import Page
+from books.models import Book
+
 
 class CustomizationRequestResource(resources.ModelResource):
+    book = fields.Field(
+                column_name='book',
+                attribute='book',
+                widget=ForeignKeyWidget(Book, 'title'))
+
     class Meta:
         model = CustomizationRequest
         fields = ('id', 'email', 'created', 'complete', 'num_students', 'book', 'reason', 'modules')
         export_order = ('id', 'email', 'created', 'complete', 'num_students', 'book', 'reason', 'modules')
-
-    def dehydrate_book(self, export_item):
-        page = Page.objects.get(id=export_item.book_id)
-        return page.title
 
 
 class CustomizationRequestAdmin(ExportActionModelAdmin):
