@@ -73,7 +73,7 @@ Willow==1.4
 social-auth-app-django==3.1.0
 social-auth-core==3.0.0
 simple_salesforce==1.10.1
-django-ses==0.8.7
+django-ses==2.0.0
 PyYAML==4.2b1
 unicodecsv==0.14.1
 uritemplate==3.0.0
