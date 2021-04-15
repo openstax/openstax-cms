@@ -312,6 +312,7 @@ WAGTAIL_SITE_NAME = 'openstax'
 WAGTAILAPI_LIMIT_MAX = None
 WAGTAILUSERS_PASSWORD_ENABLED = False
 WAGTAIL_USAGE_COUNT_ENABLED = False
+WAGTAIL_USER_CUSTOM_FIELDS = ['is_staff', ]
 
 # used in page.models to retrieve book information
 CNX_ARCHIVE_URL = 'https://archive.cnx.org'
