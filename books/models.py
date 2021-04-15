@@ -734,13 +734,16 @@ class Book(Page):
     author_panel = [
         StreamFieldPanel('authors')
     ]
+    promote_panels = Page.promote_panels + [
+        ImageChooserPanel('promote_image'),
+    ]
 
     edit_handler = TabbedInterface([
         ObjectList(book_detail_panel, heading='Book Details'),
         ObjectList(instructor_resources_panel, heading='Instructor Resources'),
         ObjectList(student_resources_panel, heading='Student Resources'),
         ObjectList(author_panel, heading='Authors'),
-        ObjectList(Page.promote_panels, heading='Promote'),
+        ObjectList(promote_panels, heading='Promote'),
         ObjectList(Page.settings_panels, heading='Settings', classname="settings"),
     ])
 
@@ -832,13 +835,6 @@ class Book(Page):
     template = 'page.html'
 
     parent_page_types = ['books.BookIndex']
-
-    promote_panels = [
-        FieldPanel('slug'),
-        FieldPanel('seo_title'),
-        FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
-    ]
 
     @property
     def book_title(self):
