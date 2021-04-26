@@ -7,7 +7,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.filters import OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet
 from django.shortcuts import render, redirect
-from .models import Errata
+from .models import Errata, NEW
 from .serializers import ErrataSerializer
 from .forms import ErrataModelForm
 from oxauth.functions import get_user_info
@@ -27,10 +27,11 @@ class ErrataFilter(FilterSet):
     book_title = django_filters.CharFilter(field_name='book__title')
     book_id = django_filters.CharFilter(field_name='book__id')
     is_assessment_errata__not = django_filters.CharFilter(field_name='is_assessment_errata', exclude=True)
+    status__not = django_filters.CharFilter(field_name='status', exclude=True)
 
     class Meta:
         model = Errata
-        fields = ['book_title', 'book_id', 'archived', 'is_assessment_errata', 'is_assessment_errata__not']
+        fields = ['book_title', 'book_id', 'archived', 'is_assessment_errata', 'is_assessment_errata__not', 'status__not']
 
 
 class ErrataView(ModelViewSet):
