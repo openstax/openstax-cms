@@ -186,27 +186,7 @@ class TeamPage(Page):
 
 
 class HomePage(Page):
-    banner_images = StreamField([
-        ('image', ImageBlock())
-    ], null=True)
-    mobile_banner_images = StreamField([
-        ('image', ImageBlock())
-    ], null=True, blank=True)
-    row_1 = StreamField([
-        ('column', ColumnBlock()),
-    ])
-    row_2 = StreamField([
-        ('column', ColumnBlock()),
-    ])
-    row_3 = StreamField([
-        ('column', ColumnBlock()),
-    ])
-    row_4 = StreamField([
-        ('column', ColumnBlock()),
-    ])
-    row_5 = StreamField([
-        ('column', ColumnBlock()),
-    ])
+    header_title = models.CharField(max_length=255)
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -216,14 +196,7 @@ class HomePage(Page):
     )
 
     api_fields = [
-        APIField('title'),
-        APIField('mobile_banner_images'),
-        APIField('banner_images'),
-        APIField('row_1'),
-        APIField('row_2'),
-        APIField('row_3'),
-        APIField('row_4'),
-        APIField('row_5'),
+        APIField('header_title'),
         APIField('slug'),
         APIField('seo_title'),
         APIField('search_description'),
@@ -237,14 +210,7 @@ class HomePage(Page):
 
 
     content_panels = [
-        FieldPanel('title', classname="full title"),
-        StreamFieldPanel('mobile_banner_images'),
-        StreamFieldPanel('banner_images'),
-        StreamFieldPanel('row_1'),
-        StreamFieldPanel('row_2'),
-        StreamFieldPanel('row_3'),
-        StreamFieldPanel('row_4'),
-        StreamFieldPanel('row_5'),
+        FieldPanel('header_title'),
     ]
 
     promote_panels = [
