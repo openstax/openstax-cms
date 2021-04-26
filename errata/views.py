@@ -7,7 +7,7 @@ from rest_framework.viewsets import ModelViewSet
 from rest_framework.filters import OrderingFilter
 from django_filters.rest_framework import DjangoFilterBackend, FilterSet
 from django.shortcuts import render, redirect
-from .models import Errata, NEW
+from .models import Errata
 from .serializers import ErrataSerializer
 from .forms import ErrataModelForm
 from oxauth.functions import get_user_info
