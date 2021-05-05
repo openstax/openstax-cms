@@ -27,10 +27,11 @@ class ErrataFilter(FilterSet):
     book_title = django_filters.CharFilter(field_name='book__title')
     book_id = django_filters.CharFilter(field_name='book__id')
     is_assessment_errata__not = django_filters.CharFilter(field_name='is_assessment_errata', exclude=True)
+    status__not = django_filters.CharFilter(field_name='status', exclude=True)
 
     class Meta:
         model = Errata
-        fields = ['book_title', 'book_id', 'archived', 'is_assessment_errata', 'is_assessment_errata__not']
+        fields = ['book_title', 'book_id', 'archived', 'is_assessment_errata', 'is_assessment_errata__not', 'status__not']
 
 
 class ErrataView(ModelViewSet):
