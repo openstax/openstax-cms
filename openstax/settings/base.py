@@ -353,6 +353,10 @@ AWS_HEADERS = {
     'Access-Control-Allow-Origin': '*'
 }
 
+WAGTAILIMAGES_FORMAT_CONVERSIONS = {
+    'webp': 'webp',
+}
+
 # to override any of the above settings use a local.py file in this directory
 try:
     from .local import *

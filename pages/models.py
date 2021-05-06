@@ -241,10 +241,10 @@ class HomePage(Page):
     quotes_headline = models.CharField(default='', blank=True, max_length=255)
     quotes = StreamField(
         blocks.StreamBlock([
-            ('content', blocks.StructBlock([
+            ('quote', blocks.ListBlock(blocks.StructBlock([
                 ('testimonial', blocks.TextBlock(required=False)),
                 ('author', blocks.CharBlock(Required=False)),
-            ]))], max_num=2))
+            ])))], max_num=2))
     quotes_instructor_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,

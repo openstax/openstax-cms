@@ -3,58 +3,60 @@ from django.core.management.base import BaseCommand
 from pages.models import HomePage
 
 class Command(BaseCommand):
-    help="create initial home page after a deployment"
+    help="Populate home page after a deployment"
 
     def handle(self, *args, **options):
-        home_page = HomePage(
-            banner_headline='Free and flexible textbooks and resources.',
-            banner_description='<b>Create a free account</b> for full access to our free textbooks and resources.',
-            banner_get_started_text='Get started now',
-            banner_get_started_link='https://accounts.openstax.org/accounts/i/login/?r=https%3A%2F%2Fopenstax.org%2Ferror%2F404%3Fpath%3D%2Flogin',
-            banner_login_text='Login',
-            banner_login_link='https://accounts.openstax.org/accounts/i/login/?r=https%3A%2F%2Fopenstax.org%2Ferror%2F404%3Fpath%3D%2Flogin',
-            banner_logged_in_text='Explore Now',
-            banner_logged_in_link='https://openstax.org/subjects',
-            features_headline='More than just books.',
-            features_tab1_heading='For Instructors',
-            features_tab2_heading='For Students',
-            features_tab1_explore_text='Explore now',
-            features_tab1_explore_url='https://openstax.org/subjects',
-            features_tab1_explore_logged_in_text='Explore Now',
-            features_tab1_explore_logged_in_url='https://openstax.org/subjects',
-            features_tab2_explore_text='Explore Now',
-            features_tab2_explore_url='https://openstax.org/subjects',
-            quotes_headline='Improving education for students and instructors.',
-            quotes=json.dumps([
-                {"type": "content", "value": {"testimonial": "I was assigned the OpenStax Psychology textbook in my first psychology course. <b>I thought it was great that the book was free online.</b> I thought it was even better that I could get the physical book, brand new for $30 because that's how I learn best. <b>I feel like the book helped my instructor bring in more real world, relatable examples because it was so current.</b>",
-                                              "author": "Christine Mompoint, student at Houston Community College",
-                                              }
-                 },
-                {"type": "content", "value": {
-                    "testimonial": "OpenStax has changed the way I teach this subject and the way my students navigate the learning process.",
-                    "author": "Instructor at Midlands College",
-                    },
-                 }
-            ]),
-            tutor_description='OpenStax Tutor, our courseware platform, costs only $10 per student, and enables better learning for your students and easy course creation for you. With digital reading, personalized homework, a library of thousands of assessments, and LMS integration, OpenStax Tutorworks well for online, hybrid, and in-person courses.',
-            tutor_button_text='About Openstax Tutor',
-            tutor_button_link='https://openstax.org/openstax-tutor',
-            tutor_demo_text='Schedule a demo',
-            tutor_demo_link='https://calendly.com/creighton-2',
-            tutor_features_cards=json.dumps([
-                {"type": "cards", "value": {"title": "Title lorem ipsum", "description": "<p>We break textbook readings into easy to digest segments with videos, simulations, and conceptual questions.</p>"}},
-                {"type": "cards", "value": {"title": "Title lorem ipsum", "description": "<p>Spaced practice, personalized questions, and other features help students learn more efficiently and effectively.</p>"}},
-                {"type": "cards", "value": {"title": "Title lorem ipsum", "description": "<p>You can build homework assignments with questions from the book, additional assessments, and personalized questions.</p>"}},
-            ]),
-            whats_openstax_headline='What’s OpenStax',
-            whats_openstax_description='OpenStax is part of Rice University, which is a 501(c)(3) nonprofit charitable corporation. Our mission is to improve educational access and learning for everyone. We do this by publishing openly licensed books, developing and improving research-based courseware, establishing partnerships with educational resource companies, and more.',
-            whats_openstax_donate_text='We couldn’t do what we do without the help of our generous supporters.',
-            whats_openstax_give_text='Give today',
-            whats_openstax_give_link='https://openstax.org/give',
-            whats_openstax_learn_more_text='Learn more about OpenStax',
-            whats_openstax_learn_more_link='https://openstax.org/about'
-        )
+        homepage = HomePage.objects.first()
 
-        revision = home_page.save_revision()
+        homepage.banner_headline="Free and flexible textbooks and resources."
+        homepage.banner_description="<b>Create a free account</b> for full access to our free textbooks and resources."
+        homepage.banner_get_started_text="Get started now"
+        homepage.banner_get_started_link="https://accounts.openstax.org/accounts/i/login/?r=https://openstax.org/"
+        homepage.banner_login_text="Login"
+        homepage.banner_login_link="https://accounts.openstax.org/accounts/i/login/?r=https://openstax.org/"
+        homepage.banner_logged_in_text="Explore Now"
+        homepage.banner_logged_in_link="https://openstax.org/subjects"
+        homepage.features_headline="More than just books."
+        homepage.features_tab1_heading="For Instructors"
+        homepage.features_tab2_heading="For Students"
+        homepage.features_tab1_explore_text="Explore now"
+        homepage.features_tab1_explore_url="https://openstax.org/subjects"
+        homepage.features_tab1_explore_logged_in_text="Explore Now"
+        homepage.features_tab1_explore_logged_in_url="https://openstax.org/subjects"
+        homepage.features_tab2_explore_text="Explore Now"
+        homepage.features_tab2_explore_url="https://openstax.org/subjects"
+        homepage.quotes_headline="Improving education for students and instructors."
+        homepage.quotes=json.dumps(
+            [{"type": "quote",
+              "value": [{
+                         "testimonial": 'I was assigned the OpenStax Psychology textbook in my first psychology course. <b>I thought it was great that the book was free online.</b> I thought it was even better that I could get the physical book, brand new for $30 because that"s how I learn best. <b>I feel like the book helped my instructor bring in more real world, relatable examples because it was so current.</b>',
+                         "author": "Christine Mompoint, student at Houston Community College"
+                        },
+                        {
+                         "testimonial": "OpenStax has changed the way I teach this subject and the way my students navigate the learning process.",
+                         "author": "Instructor at Midlands College"
+                        }]
+
+              }
+            ])
+        homepage.tutor_description="OpenStax Tutor, our courseware platform, costs only $10 per student, and enables better learning for your students and easy course creation for you. With digital reading, personalized homework, a library of thousands of assessments, and LMS integration, OpenStax Tutorworks well for online, hybrid, and in-person courses."
+        homepage.tutor_button_text="About Openstax Tutor"
+        homepage.tutor_button_link="https://openstax.org/openstax-tutor"
+        homepage.tutor_demo_text="Schedule a demo"
+        homepage.tutor_demo_link="https://calendly.com/creighton-2"
+        homepage.tutor_features_cards=json.dumps([
+            {"type": "cards", "value": {"title": "Title lorem ipsum", "description": "<p>We break textbook readings into easy to digest segments with videos, simulations, and conceptual questions.</p>"}},
+            {"type": "cards", "value": {"title": "Title lorem ipsum", "description": "<p>Spaced practice, personalized questions, and other features help students learn more efficiently and effectively.</p>"}},
+            {"type": "cards", "value": {"title": "Title lorem ipsum", "description": "<p>You can build homework assignments with questions from the book, additional assessments, and personalized questions.</p>"}},
+        ])
+        homepage.whats_openstax_headline="What’s OpenStax"
+        homepage.whats_openstax_description="OpenStax is part of Rice University, which is a 501(c)(3) nonprofit charitable corporation. Our mission is to improve educational access and learning for everyone. We do this by publishing openly licensed books, developing and improving research-based courseware, establishing partnerships with educational resource companies, and more."
+        homepage.whats_openstax_donate_text="We couldn’t do what we do without the help of our generous supporters."
+        homepage.whats_openstax_give_text="Give today"
+        homepage.whats_openstax_give_link="https://openstax.org/give"
+        homepage.whats_openstax_learn_more_text="Learn more about OpenStax"
+        homepage.whats_openstax_learn_more_link="https://openstax.org/about"
+
+        homepage.save()
+        revision = homepage.save_revision()
         revision.publish()
-        home_page.save()
