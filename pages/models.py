@@ -215,7 +215,6 @@ class HomePage(Page):
     features_tab1_features = StreamField(
         blocks.StreamBlock([
                 ('resources', blocks.ListBlock(blocks.StructBlock([
-                    ('icon', APIImageChooserBlock(required=False)),
                     ('link_text', blocks.CharBlock(required=False)),
                 ])))], max_num=4))
     features_tab1_explore_text = models.CharField(default='', blank=True, max_length=255)
@@ -225,7 +224,6 @@ class HomePage(Page):
     features_tab2_features = StreamField(
         blocks.StreamBlock([
             ('resources', blocks.ListBlock(blocks.StructBlock([
-                ('icon', APIImageChooserBlock(required=False)),
                 ('link_text', blocks.CharBlock(required=False)),
             ])))], max_num=4))
     features_tab2_explore_text = models.CharField(default='', blank=True, max_length=255)
@@ -260,7 +258,7 @@ class HomePage(Page):
         related_name='+'
     )
 
-    tutor_logo_url = models.ForeignKey(
+    tutor_logo = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
         blank=True,
@@ -283,7 +281,7 @@ class HomePage(Page):
     whats_openstax_give_link = models.URLField(blank=True, default='')
     whats_openstax_learn_more_text = models.CharField(default='', blank=True, max_length=255)
     whats_openstax_learn_more_link = models.URLField(blank=True, default='')
-    whats_openstax_image_url = models.ForeignKey(
+    whats_openstax_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
         blank=True,
@@ -326,7 +324,7 @@ class HomePage(Page):
         APIField('quotes'),
         APIField('quotes_instructor_image'),
         APIField('quotes_student_image'),
-        APIField('tutor_logo_url'),
+        APIField('tutor_logo'),
         APIField('tutor_description'),
         APIField('tutor_button_text'),
         APIField('tutor_button_link'),
@@ -340,7 +338,7 @@ class HomePage(Page):
         APIField('whats_openstax_give_link'),
         APIField('whats_openstax_learn_more_text'),
         APIField('whats_openstax_learn_more_link'),
-        APIField('whats_openstax_image_url'),
+        APIField('whats_openstax_image'),
         APIField('slug'),
         APIField('seo_title'),
         APIField('search_description'),
@@ -362,8 +360,8 @@ class HomePage(Page):
         FieldPanel('banner_login_link'),
         FieldPanel('banner_logged_in_text'),
         FieldPanel('banner_logged_in_link'),
-        FieldPanel('banner_left_image'),
-        FieldPanel('banner_right_image'),
+        ImageChooserPanel('banner_left_image'),
+        ImageChooserPanel('banner_right_image'),
         FieldPanel('features_headline'),
         FieldPanel('features_tab1_heading'),
         FieldPanel('features_tab2_heading'),
@@ -375,12 +373,12 @@ class HomePage(Page):
         StreamFieldPanel('features_tab2_features'),
         FieldPanel('features_tab2_explore_text'),
         FieldPanel('features_tab2_explore_url'),
-        FieldPanel('features_bg_image'),
+        ImageChooserPanel('features_bg_image'),
         FieldPanel('quotes_headline'),
         StreamFieldPanel('quotes'),
-        FieldPanel('quotes_instructor_image'),
-        FieldPanel('quotes_student_image'),
-        FieldPanel('tutor_logo_url'),
+        ImageChooserPanel('quotes_instructor_image'),
+        ImageChooserPanel('quotes_student_image'),
+        ImageChooserPanel('tutor_logo'),
         FieldPanel('tutor_description'),
         FieldPanel('tutor_button_text'),
         FieldPanel('tutor_button_link'),
@@ -394,7 +392,7 @@ class HomePage(Page):
         FieldPanel('whats_openstax_give_link'),
         FieldPanel('whats_openstax_learn_more_text'),
         FieldPanel('whats_openstax_learn_more_link'),
-        FieldPanel('whats_openstax_image_url'),
+        ImageChooserPanel('whats_openstax_image'),
     ]
 
     promote_panels = [
