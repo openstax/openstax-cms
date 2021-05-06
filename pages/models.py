@@ -186,27 +186,111 @@ class TeamPage(Page):
 
 
 class HomePage(Page):
-    banner_images = StreamField([
-        ('image', ImageBlock())
-    ], null=True)
-    mobile_banner_images = StreamField([
-        ('image', ImageBlock())
-    ], null=True, blank=True)
-    row_1 = StreamField([
-        ('column', ColumnBlock()),
+    banner_headline = models.CharField(default='', blank=True, max_length=255)
+    banner_description = models.TextField(default='', blank=True)
+    banner_get_started_text = models.CharField(default='', blank=True, max_length=255)
+    banner_get_started_link = models.URLField(blank=True, default='')
+    banner_login_text = models.CharField(default='', blank=True, max_length=255)
+    banner_login_link = models.URLField(blank=True, default='')
+    banner_logged_in_text = models.CharField(default='', blank=True, max_length=255)
+    banner_logged_in_link = models.URLField(blank=True, default='')
+    banner_left_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    banner_right_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    features_headline = models.CharField(default='', blank=True, max_length=255)
+    features_tab1_heading = models.CharField(default='', blank=True, max_length=255)
+    features_tab2_heading = models.CharField(default='', blank=True, max_length=255)
+    features_tab1_features = StreamField(
+        blocks.StreamBlock([
+                ('resources', blocks.ListBlock(blocks.StructBlock([
+                    ('icon', APIImageChooserBlock(required=False)),
+                    ('link_text', blocks.CharBlock(required=False)),
+                ])))], max_num=4))
+    features_tab1_explore_text = models.CharField(default='', blank=True, max_length=255)
+    features_tab1_explore_url = models.URLField(blank=True, default='')
+    features_tab1_explore_logged_in_text = models.CharField(default='', blank=True, max_length=255)
+    features_tab1_explore_logged_in_url = models.URLField(blank=True, default='')
+    features_tab2_features = StreamField(
+        blocks.StreamBlock([
+            ('resources', blocks.ListBlock(blocks.StructBlock([
+                ('icon', APIImageChooserBlock(required=False)),
+                ('link_text', blocks.CharBlock(required=False)),
+            ])))], max_num=4))
+    features_tab2_explore_text = models.CharField(default='', blank=True, max_length=255)
+    features_tab2_explore_url = models.URLField(blank=True, default='')
+    features_bg_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    quotes_headline = models.CharField(default='', blank=True, max_length=255)
+    quotes = StreamField(
+        blocks.StreamBlock([
+            ('quote', blocks.ListBlock(blocks.StructBlock([
+                ('testimonial', blocks.TextBlock(required=False)),
+                ('author', blocks.CharBlock(Required=False)),
+            ])))], max_num=2))
+    quotes_instructor_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    quotes_student_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    tutor_logo_url = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    tutor_description = models.TextField(default='', blank=True)
+    tutor_button_text = models.CharField(default='', blank=True, max_length=255)
+    tutor_button_link = models.URLField(blank=True, default='')
+    tutor_demo_text = models.CharField(default='', blank=True, max_length=255)
+    tutor_demo_link = models.URLField(blank=True, default='')
+    tutor_features_cards = StreamField([
+        ('cards', CardBlock()),
     ])
-    row_2 = StreamField([
-        ('column', ColumnBlock()),
-    ])
-    row_3 = StreamField([
-        ('column', ColumnBlock()),
-    ])
-    row_4 = StreamField([
-        ('column', ColumnBlock()),
-    ])
-    row_5 = StreamField([
-        ('column', ColumnBlock()),
-    ])
+
+    whats_openstax_headline = models.CharField(default='', blank=True, max_length=255)
+    whats_openstax_description = models.TextField(default='', blank=True)
+    whats_openstax_donate_text = models.TextField(default='', blank=True)
+    whats_openstax_give_text = models.CharField(default='', blank=True, max_length=255)
+    whats_openstax_give_link = models.URLField(blank=True, default='')
+    whats_openstax_learn_more_text = models.CharField(default='', blank=True, max_length=255)
+    whats_openstax_learn_more_link = models.URLField(blank=True, default='')
+    whats_openstax_image_url = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -216,14 +300,47 @@ class HomePage(Page):
     )
 
     api_fields = [
-        APIField('title'),
-        APIField('mobile_banner_images'),
-        APIField('banner_images'),
-        APIField('row_1'),
-        APIField('row_2'),
-        APIField('row_3'),
-        APIField('row_4'),
-        APIField('row_5'),
+        APIField('banner_headline'),
+        APIField('banner_description'),
+        APIField('banner_get_started_text'),
+        APIField('banner_get_started_link'),
+        APIField('banner_login_text'),
+        APIField('banner_login_link'),
+        APIField('banner_logged_in_text'),
+        APIField('banner_logged_in_link'),
+        APIField('banner_left_image'),
+        APIField('banner_right_image'),
+        APIField('features_headline'),
+        APIField('features_tab1_heading'),
+        APIField('features_tab2_heading'),
+        APIField('features_tab1_features'),
+        APIField('features_tab1_explore_text'),
+        APIField('features_tab1_explore_url'),
+        APIField('features_tab1_explore_logged_in_text'),
+        APIField('features_tab1_explore_logged_in_url'),
+        APIField('features_tab2_features'),
+        APIField('features_tab2_explore_text'),
+        APIField('features_tab2_explore_url'),
+        APIField('features_bg_image'),
+        APIField('quotes_headline'),
+        APIField('quotes'),
+        APIField('quotes_instructor_image'),
+        APIField('quotes_student_image'),
+        APIField('tutor_logo_url'),
+        APIField('tutor_description'),
+        APIField('tutor_button_text'),
+        APIField('tutor_button_link'),
+        APIField('tutor_demo_text'),
+        APIField('tutor_demo_link'),
+        APIField('tutor_features_cards'),
+        APIField('whats_openstax_headline'),
+        APIField('whats_openstax_description'),
+        APIField('whats_openstax_donate_text'),
+        APIField('whats_openstax_give_text'),
+        APIField('whats_openstax_give_link'),
+        APIField('whats_openstax_learn_more_text'),
+        APIField('whats_openstax_learn_more_link'),
+        APIField('whats_openstax_image_url'),
         APIField('slug'),
         APIField('seo_title'),
         APIField('search_description'),
@@ -237,14 +354,47 @@ class HomePage(Page):
 
 
     content_panels = [
-        FieldPanel('title', classname="full title"),
-        StreamFieldPanel('mobile_banner_images'),
-        StreamFieldPanel('banner_images'),
-        StreamFieldPanel('row_1'),
-        StreamFieldPanel('row_2'),
-        StreamFieldPanel('row_3'),
-        StreamFieldPanel('row_4'),
-        StreamFieldPanel('row_5'),
+        FieldPanel('banner_headline'),
+        FieldPanel('banner_description'),
+        FieldPanel('banner_get_started_text'),
+        FieldPanel('banner_get_started_link'),
+        FieldPanel('banner_login_text'),
+        FieldPanel('banner_login_link'),
+        FieldPanel('banner_logged_in_text'),
+        FieldPanel('banner_logged_in_link'),
+        FieldPanel('banner_left_image'),
+        FieldPanel('banner_right_image'),
+        FieldPanel('features_headline'),
+        FieldPanel('features_tab1_heading'),
+        FieldPanel('features_tab2_heading'),
+        StreamFieldPanel('features_tab1_features'),
+        FieldPanel('features_tab1_explore_text'),
+        FieldPanel('features_tab1_explore_url'),
+        FieldPanel('features_tab1_explore_logged_in_text'),
+        FieldPanel('features_tab1_explore_logged_in_url'),
+        StreamFieldPanel('features_tab2_features'),
+        FieldPanel('features_tab2_explore_text'),
+        FieldPanel('features_tab2_explore_url'),
+        FieldPanel('features_bg_image'),
+        FieldPanel('quotes_headline'),
+        StreamFieldPanel('quotes'),
+        FieldPanel('quotes_instructor_image'),
+        FieldPanel('quotes_student_image'),
+        FieldPanel('tutor_logo_url'),
+        FieldPanel('tutor_description'),
+        FieldPanel('tutor_button_text'),
+        FieldPanel('tutor_button_link'),
+        FieldPanel('tutor_demo_text'),
+        FieldPanel('tutor_demo_link'),
+        StreamFieldPanel('tutor_features_cards'),
+        FieldPanel('whats_openstax_headline'),
+        FieldPanel('whats_openstax_description'),
+        FieldPanel('whats_openstax_donate_text'),
+        FieldPanel('whats_openstax_give_text'),
+        FieldPanel('whats_openstax_give_link'),
+        FieldPanel('whats_openstax_learn_more_text'),
+        FieldPanel('whats_openstax_learn_more_link'),
+        FieldPanel('whats_openstax_image_url'),
     ]
 
     promote_panels = [
