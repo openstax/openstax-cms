@@ -157,13 +157,22 @@ class PartnerAdmin(admin.ModelAdmin):
     'online_teaching_teaching_labs',
     'international')
 
-    actions = ['sync_with_salesforce', ]
+    actions = ['sync_with_salesforce', 'mark_visible', 'mark_not_visible' ]
 
     def sync_with_salesforce(self, request, queryset):
         management.call_command('update_partners', verbosity=0)
     sync_with_salesforce.short_description = "Sync Partners with Salesforce"
     sync_with_salesforce.allowed_permissions = ('change',)
 
+    def mark_visible(self, request, queryset):
+        queryset.update(visible_on_website=True)
+    mark_visible.short_description = "Mark partners as visible on website"
+    mark_visible.allowed_permissions = ('change',)
+
+    def mark_not_visible(self, request, queryset):
+        queryset.update(visible_on_website=False)
+    mark_not_visible.short_description = "Mark partners as not visible on website"
+    mark_not_visible.allowed_permissions = ('change',)
 
 class PartnerCategoryMappingAdmin(admin.ModelAdmin):
     list_display = ('display_name', 'salesforce_name')
