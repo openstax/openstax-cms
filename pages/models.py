@@ -214,18 +214,18 @@ class HomePage(Page):
     features_tab2_heading = models.CharField(default='', blank=True, max_length=255)
     features_tab1_features = StreamField(
         blocks.StreamBlock([
-                ('resources', blocks.ListBlock(blocks.StructBlock([
-                    ('link_text', blocks.CharBlock(required=False)),
-                ])))], max_num=4))
+            ('feature_text', blocks.CharBlock())
+        ], max_num=4)
+    )
     features_tab1_explore_text = models.CharField(default='', blank=True, max_length=255)
     features_tab1_explore_url = models.URLField(blank=True, default='')
     features_tab1_explore_logged_in_text = models.CharField(default='', blank=True, max_length=255)
     features_tab1_explore_logged_in_url = models.URLField(blank=True, default='')
     features_tab2_features = StreamField(
         blocks.StreamBlock([
-            ('resources', blocks.ListBlock(blocks.StructBlock([
-                ('link_text', blocks.CharBlock(required=False)),
-            ])))], max_num=4))
+            ('feature_text', blocks.CharBlock())
+        ], max_num=4)
+    )
     features_tab2_explore_text = models.CharField(default='', blank=True, max_length=255)
     features_tab2_explore_url = models.URLField(blank=True, default='')
     features_bg_image = models.ForeignKey(

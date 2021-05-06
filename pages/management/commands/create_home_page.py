@@ -19,10 +19,22 @@ class Command(BaseCommand):
         homepage.features_headline="More than just books."
         homepage.features_tab1_heading="For Instructors"
         homepage.features_tab2_heading="For Students"
+        homepage.features_tab1_features=json.dumps(
+            [{"type": "feature_text", "value": "LMS Integration"},
+             {"type": "feature_text", "value": "Test banks"},
+             {"type": "feature_text", "value": "Answer guides"},
+             {"type": "feature_text", "value": "Powerpoint slides"}]
+        )
         homepage.features_tab1_explore_text="Explore now"
         homepage.features_tab1_explore_url="https://openstax.org/subjects"
         homepage.features_tab1_explore_logged_in_text="Explore Now"
         homepage.features_tab1_explore_logged_in_url="https://openstax.org/subjects"
+        homepage.features_tab2_features = json.dumps(
+            [{"type": "feature_text", "value": "Highlighting"},
+             {"type": "feature_text", "value": "Note-taking"},
+             {"type": "feature_text", "value": "Multiple different book formats"},
+             {"type": "feature_text", "value": "Low cost or free"}]
+        )
         homepage.features_tab2_explore_text="Explore Now"
         homepage.features_tab2_explore_url="https://openstax.org/subjects"
         homepage.quotes_headline="Improving education for students and instructors."
