@@ -270,10 +270,12 @@ class HomePage(Page):
     tutor_button_link = models.URLField(blank=True, default='')
     tutor_demo_text = models.CharField(default='', blank=True, max_length=255)
     tutor_demo_link = models.URLField(blank=True, default='')
-    tutor_features_cards = StreamField([
-        ('cards', CardBlock()),
-    ])
-
+    tutor_features = StreamField(
+        blocks.StreamBlock([
+            ('features', blocks.ListBlock(blocks.StructBlock([
+                ('image', APIImageChooserBlock(required=False)),
+                ('title', blocks.CharBlock(required=False)),
+            ])))], max_num=4))
     whats_openstax_headline = models.CharField(default='', blank=True, max_length=255)
     whats_openstax_description = models.TextField(default='', blank=True)
     whats_openstax_donate_text = models.TextField(default='', blank=True)
@@ -330,7 +332,7 @@ class HomePage(Page):
         APIField('tutor_button_link'),
         APIField('tutor_demo_text'),
         APIField('tutor_demo_link'),
-        APIField('tutor_features_cards'),
+        APIField('tutor_features'),
         APIField('whats_openstax_headline'),
         APIField('whats_openstax_description'),
         APIField('whats_openstax_donate_text'),
@@ -384,7 +386,7 @@ class HomePage(Page):
         FieldPanel('tutor_button_link'),
         FieldPanel('tutor_demo_text'),
         FieldPanel('tutor_demo_link'),
-        StreamFieldPanel('tutor_features_cards'),
+        StreamFieldPanel('tutor_features'),
         FieldPanel('whats_openstax_headline'),
         FieldPanel('whats_openstax_description'),
         FieldPanel('whats_openstax_donate_text'),
