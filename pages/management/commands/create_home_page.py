@@ -19,10 +19,22 @@ class Command(BaseCommand):
         homepage.features_headline="More than just books."
         homepage.features_tab1_heading="For Instructors"
         homepage.features_tab2_heading="For Students"
+        homepage.features_tab1_features=json.dumps(
+            [{"type": "feature_text", "value": "LMS Integration"},
+             {"type": "feature_text", "value": "Test banks"},
+             {"type": "feature_text", "value": "Answer guides"},
+             {"type": "feature_text", "value": "Powerpoint slides"}]
+        )
         homepage.features_tab1_explore_text="Explore now"
         homepage.features_tab1_explore_url="https://openstax.org/subjects"
         homepage.features_tab1_explore_logged_in_text="Explore Now"
         homepage.features_tab1_explore_logged_in_url="https://openstax.org/subjects"
+        homepage.features_tab2_features = json.dumps(
+            [{"type": "feature_text", "value": "Highlighting"},
+             {"type": "feature_text", "value": "Note-taking"},
+             {"type": "feature_text", "value": "Multiple different book formats"},
+             {"type": "feature_text", "value": "Low cost or free"}]
+        )
         homepage.features_tab2_explore_text="Explore Now"
         homepage.features_tab2_explore_url="https://openstax.org/subjects"
         homepage.quotes_headline="Improving education for students and instructors."
@@ -44,11 +56,6 @@ class Command(BaseCommand):
         homepage.tutor_button_link="https://openstax.org/openstax-tutor"
         homepage.tutor_demo_text="Schedule a demo"
         homepage.tutor_demo_link="https://calendly.com/creighton-2"
-        homepage.tutor_features_cards=json.dumps([
-            {"type": "cards", "value": {"title": "Title lorem ipsum", "description": "<p>We break textbook readings into easy to digest segments with videos, simulations, and conceptual questions.</p>"}},
-            {"type": "cards", "value": {"title": "Title lorem ipsum", "description": "<p>Spaced practice, personalized questions, and other features help students learn more efficiently and effectively.</p>"}},
-            {"type": "cards", "value": {"title": "Title lorem ipsum", "description": "<p>You can build homework assignments with questions from the book, additional assessments, and personalized questions.</p>"}},
-        ])
         homepage.whats_openstax_headline="What’s OpenStax"
         homepage.whats_openstax_description="OpenStax is part of Rice University, which is a 501(c)(3) nonprofit charitable corporation. Our mission is to improve educational access and learning for everyone. We do this by publishing openly licensed books, developing and improving research-based courseware, establishing partnerships with educational resource companies, and more."
         homepage.whats_openstax_donate_text="We couldn’t do what we do without the help of our generous supporters."
