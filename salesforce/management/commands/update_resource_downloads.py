@@ -11,9 +11,16 @@ class Command(BaseCommand):
         #new_resource_downloads = ResourceDownload.objects.select_related('book').filter(salesforce_id__isnull=True) # ones to create
         #existing_resource_downloads = ResourceDownload.objects.exclude(salesforce_id__isnull=True) #ones to update (this can be done in bulk)
         yesterday = date.today() - timedelta(days=1)
-        print('***Yesterday: ' + str(yesterday))
-        new_resource_downloads = ResourceDownload.objects.filter(last_access=yesterday)
+        new_resource_downloads = ResourceDownload.objects.filter(last_access=yesterday).distinct()
         print(new_resource_downloads.count())
+
+        with Salesforce() as sf:
+            data = []
+            for nrd in new_resource_downloads:
+                data_dict_item = { 'Id': nrd.contact_id, 'last_resource_download': nrd.last_access.strftime('%Y-%m-%d')}
+                data.append(data_dict_item)
+            sf.bulk.Contact.update(data)
+
 
         # number_to_create = new_resource_downloads.count()
         # number_to_update = existing_resource_downloads.count()
@@ -47,8 +54,5 @@ class Command(BaseCommand):
         #         with transaction.atomic():
         #             rd.save()
         #
-        # response = self.style.SUCCESS("[SF Resource Download] Created {} of {}. Updated {} of {}.".format(number_created,
-        #                                                                                                   number_to_create,
-        #                                                                                                   number_updated,
-        #                                                                                                   number_to_update))
-        # self.stdout.write(response)
+        response = self.style.SUCCESS("[SF Resource Download] Updated {}.".format(new_resource_downloads.count(),))
+        self.stdout.write(response)
