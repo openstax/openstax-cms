@@ -10,16 +10,22 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         yesterday = date.today() - timedelta(days=1)
         new_resource_downloads = ResourceDownload.objects.filter(last_access=yesterday).distinct()
-        print(new_resource_downloads.count())
 
         with Salesforce() as sf:
             data = []
             for nrd in new_resource_downloads:
-                print('*** contact_id: ' + nrd.contact_id + ' date: ' + nrd.last_access.strftime('%Y-%m-%d'))
+                contact = sf.Contact.get(nrd.contact_id)
                 data_dict_item = { 'Id': nrd.contact_id, 'Last_Resource_Download_Date__c': nrd.last_access.strftime('%Y-%m-%d')}
-                print('*** data_dict_item: ' + str(data_dict_item))
                 data.append(data_dict_item)
-            sf.bulk.Contact.update(data)
 
-        response = self.style.SUCCESS("[SF Resource Download] Updated {}.".format(new_resource_downloads.count(),))
-        self.stdout.write(response)
+            results = sf.bulk.Contact.update(data)
+            num_updated = 0
+            num_failed = 0
+            for result in results:
+                if result['success']:
+                    num_updated += 1
+                else:
+                    num_failed += 1
+
+            response = self.style.SUCCESS("[SF Resource Download] Updated {} Failed {}.".format(num_updated, num_failed))
+            self.stdout.write(response)
