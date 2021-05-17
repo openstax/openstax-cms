@@ -2451,9 +2451,10 @@ class TutorMarketing(Page):
     cost_institution_message = models.CharField(max_length=255)
 
     #feedback
-    feedback_video = StreamField(
+    feedback_media = StreamField(
         blocks.StreamBlock([
-            ('html', blocks.RawHTMLBlock())
+            ('image', ImageBlock()),
+            ('video', blocks.RawHTMLBlock())
         ], max_num=1))
     feedback_heading = models.CharField(max_length=255)
     feedback_quote = models.TextField()
@@ -2522,7 +2523,7 @@ class TutorMarketing(Page):
         APIField('cost_description'),
         APIField('cost_cards'),
         APIField('cost_institution_message'),
-        APIField('feedback_video'),
+        APIField('feedback_media'),
         APIField('feedback_heading'),
         APIField('feedback_quote'),
         APIField('feedback_name'),
@@ -2555,7 +2556,7 @@ class TutorMarketing(Page):
         FieldPanel('cost_description'),
         StreamFieldPanel('cost_cards'),
         FieldPanel('cost_institution_message'),
-        StreamFieldPanel('feedback_video'),
+        StreamFieldPanel('feedback_media'),
         FieldPanel('feedback_heading'),
         FieldPanel('feedback_quote'),
         FieldPanel('feedback_name'),
