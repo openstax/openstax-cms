@@ -27,7 +27,6 @@ from .custom_blocks import ImageBlock, \
     CardBlock, \
     CardImageBlock, \
     StoryBlock
-
 from .custom_fields import Funder, \
     Institutions, \
     Group
@@ -2452,13 +2451,11 @@ class TutorMarketing(Page):
     cost_institution_message = models.CharField(max_length=255)
 
     #feedback
-    feedback_image = models.ForeignKey(
-        'wagtailimages.Image',
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name='+',
-    )
+    feedback_media = StreamField(
+        blocks.StreamBlock([
+            ('image', ImageBlock()),
+            ('video', blocks.RawHTMLBlock())
+        ], max_num=1))
     feedback_heading = models.CharField(max_length=255)
     feedback_quote = models.TextField()
     feedback_name = models.CharField(max_length=255)
@@ -2526,7 +2523,7 @@ class TutorMarketing(Page):
         APIField('cost_description'),
         APIField('cost_cards'),
         APIField('cost_institution_message'),
-        APIField('feedback_image'),
+        APIField('feedback_media'),
         APIField('feedback_heading'),
         APIField('feedback_quote'),
         APIField('feedback_name'),
@@ -2559,7 +2556,7 @@ class TutorMarketing(Page):
         FieldPanel('cost_description'),
         StreamFieldPanel('cost_cards'),
         FieldPanel('cost_institution_message'),
-        ImageChooserPanel('feedback_image'),
+        StreamFieldPanel('feedback_media'),
         FieldPanel('feedback_heading'),
         FieldPanel('feedback_quote'),
         FieldPanel('feedback_name'),
