@@ -357,6 +357,8 @@ WAGTAILIMAGES_FORMAT_CONVERSIONS = {
     'webp': 'webp',
 }
 
+WAGTAILIMAGES_MAX_UPLOAD_SIZE = 2 * 1024 * 1024  # 2MB
+
 # to override any of the above settings use a local.py file in this directory
 try:
     from .local import *
