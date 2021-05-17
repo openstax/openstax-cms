@@ -83,25 +83,6 @@ class NewsIndex(Page):
         related_name='+'
     )
 
-    @property
-    def articles(self):
-        articles = NewsArticle.objects.live().child_of(self)
-        article_data = {}
-        for article in articles:
-            article_data['{}'.format(article.slug)] = {
-                'detail_url': '/apps/cms/api/v2/pages/{}/'.format(article.pk),
-                'date': article.date,
-                'heading': article.heading,
-                'subheading': article.subheading,
-                'body_blurb': article.first_paragraph,
-                'pin_to_top': article.pin_to_top,
-                'article_image': article.article_image,
-                'article_image_alt': article.featured_image_alt_text,
-                'author': article.author,
-                'tags': [tag.name for tag in article.tags.all()],
-            }
-        return article_data
-
     content_panels = Page.content_panels + [
         FieldPanel('intro', classname="full"),
         DocumentChooserPanel('press_kit'),
@@ -117,7 +98,6 @@ class NewsIndex(Page):
     api_fields = [
         APIField('intro'),
         APIField('press_kit'),
-        APIField('articles'),
         APIField('slug'),
         APIField('seo_title'),
         APIField('search_description'),
@@ -171,7 +151,7 @@ class NewsArticle(Page):
     )
 
     @property
-    def first_paragraph(self):
+    def body_blurb(self):
         paragraphs = []
         for block in self.body:
             if block.block_type == 'paragraph':
@@ -219,6 +199,7 @@ class NewsArticle(Page):
         APIField('featured_image_small', serializer=ImageRenditionField('width-420', source='featured_image')),
         APIField('featured_image_alt_text'),
         APIField('tags'),
+        APIField('body_blurb'),
         APIField('body'),
         APIField('pin_to_top'),
         APIField('slug'),
