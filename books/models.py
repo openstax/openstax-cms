@@ -223,6 +223,17 @@ class FacultyResources(models.Model):
         FieldPanel('print_link')
     ]
 
+    def clean(self):
+        errors = {}
+        external = self.link_external
+        page = self.link_page
+        document = self.link_document
+        if not external and not page and not document:
+            errors.setdefault('link_external', []).append('One of these fields must be populated: External link, Link page or Link document.')
+
+        if errors:
+            raise ValidationError(errors)
+
 
 class StudentResources(models.Model):
     resource = models.ForeignKey(
@@ -300,6 +311,17 @@ class StudentResources(models.Model):
         FieldPanel('updated'),
         FieldPanel('print_link')
     ]
+
+    def clean(self):
+        errors = {}
+        external = self.link_external
+        page = self.link_page
+        document = self.link_document
+        if not external and not page and not document:
+            errors.setdefault('link_external', []).append('One of these fields must be populated: External link, Link page or Link document.')
+
+        if errors:
+            raise ValidationError(errors)
 
 
 class Authors(models.Model):
