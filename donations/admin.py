@@ -3,7 +3,7 @@ from django.core import management
 import csv
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
-from .models import ThankYouNote
+from .models import ThankYouNote, DonationPopup
 
 
 class ThankYouNoteAdmin(admin.ModelAdmin):
@@ -33,4 +33,20 @@ class ThankYouNoteAdmin(admin.ModelAdmin):
         return response
 
 
+class DonationPopupAdmin(admin.ModelAdmin):
+    display_list = ('download_image',
+                    'download_ready',
+                    'header_image',
+                    'header_title',
+                    'header_subtitle',
+                    'give_link_text',
+                    'give_link',
+                    'thank_you_link_text',
+                    'thank_you_link',
+                    'giving_optional',
+                    'go_to_pdf_link_text',
+                    'hide_donation_popup')
+
+
 admin.site.register(ThankYouNote, ThankYouNoteAdmin)
+admin.site.register(DonationPopup, DonationPopupAdmin)

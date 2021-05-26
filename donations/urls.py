@@ -1,10 +1,11 @@
 from django.conf.urls import include, url
-from rest_framework import routers
 from . import views
+from rest_framework import routers
 
 router = routers.SimpleRouter()
-router.register(r'thankyounote', views.ThankYouNoteViewSet, basename='ThankYouNote')
+router.register(r'donation-popup', views.DonationPopupViewSet, basename='DonationPopup')
 
 urlpatterns = [
-    url(r'', include(router.urls))
+    url(r'', include(router.urls)),
+    url(r'thankyounote', views.ThankYouNoteViewSet.as_view({'post': 'post'}))
 ]
