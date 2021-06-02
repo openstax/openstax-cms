@@ -47,10 +47,6 @@ class MailTest(TestCase):
         redirects = self.create_fake_redirects()
         mail_func.send_redirect_report(redirects)
 
-    def test_send_dev_email(self):
-        redirects = self.create_fake_redirects()
-        mail_func.send_dev_email('Dev Email Test', redirects)
-
     def create_fake_redirects(self):
         redirect = '/l/junk\thttps//:cnx.org\n'
         redirect += '/l/garbage\thttps://cnx.org/contents/HTmjSAcf@2.61:rrzms6rP@2/Introduction\n'
