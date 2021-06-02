@@ -75,7 +75,7 @@ def search(request):
             'id': result.id,
             'title': result.title,
             'subheading': result.subheading,
-            'body_blurb': result.first_paragraph,
+            'body_blurb': result.body_blurb,
             'article_image': result.article_image,
             'article_image_alt': result.featured_image_alt_text,
             'date': result.date,
