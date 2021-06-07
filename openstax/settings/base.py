@@ -205,6 +205,7 @@ INSTALLED_APPS = [
     'oxauth',
     'events',
     'webinars',
+    'donations',
     # wagtail
     'wagtail.core',
     'wagtail.admin',
@@ -223,8 +224,7 @@ INSTALLED_APPS = [
     'wagtail.contrib.modeladmin',
     'wagtailimportexport',
     'flags',
-    'duplicatebooks',
-    'donations'
+    'duplicatebooks'
 
 ]
 
