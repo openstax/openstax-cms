@@ -268,15 +268,15 @@ class Errata(models.Model):
         if self.resolution == "Duplicate" and not self.resolution_notes:
             self.resolution_notes = "This is a duplicate of report <a href='https://openstax.org/errata/" + str(self.duplicate_id.id) + "'>" + str(self.duplicate_id.id) + "</a>."
         if self.resolution == "Not An Error" and not self.resolution_notes:
-            self.resolution_notes = "Our reviewers determined this was not an error."
+            self.resolution_notes = "Our reviewers determined this was not an error in the most current version of the book’s content. It’s possible that you are using an old version of the content via a PDF or printed text. If possible, please double check that you see the error in the web version of the book, and provide a screenshot and more detail if you believe we have made a mistake."
         if self.resolution == "Will Not Fix" and not self.resolution_notes:
             self.resolution_notes = "Our reviewers determined the textbook meets scope, sequence, and accuracy requirements as is.  No change will be made."
         if self.resolution == "Major Book Revision" and not self.resolution_notes:
             self.resolution_notes = "Our reviewers determined this would require a significant book revision.  While we cannot make this change at this time, we will consider it for future editions of this book."
         if (self.status == "Reviewed" or self.status == "Completed") and self.resolution == "Approved" and not self.resolution_notes:
-            self.resolution_notes = "Our reviewers accepted this change."
+            self.resolution_notes = "Our reviewers accepted this change, and it will be included in the next print cycle."
         if self.status == "Completed" and self.resolution == "Sent to Customer Support" and not self.resolution_notes:
-            self.resolution_notes = "Thank you for this feedback. Your report has been escalated to our Support team. A member of the Support team will contact you with further details."
+            self.resolution_notes = "Thank you for this feedback. Your report has been escalated to our Customer Service team and they will contact you with further details."
         if self.resolution == 'Technical Error' and not self.resolution_notes:
             self.resolution_notes = 'This a technical error and the proper departments have been notified so that it can be fixed. Thank you for your submission.'
         if self.resolution == 'More Information Requested' and not self.resolution_notes:
