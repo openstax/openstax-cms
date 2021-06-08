@@ -205,6 +205,7 @@ INSTALLED_APPS = [
     'oxauth',
     'events',
     'webinars',
+    'donations',
     # wagtail
     'wagtail.core',
     'wagtail.admin',
