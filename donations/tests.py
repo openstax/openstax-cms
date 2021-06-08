@@ -37,7 +37,7 @@ class DonationPopupTest(APITestCase, TestCase):
 class ThankYouNoteTest(APITestCase, TestCase):
 
     def test_thank_you_note_api_post(self):
-        data = {"thank_you_note":"OpenStax is the best! Loved not paying for a book","user_info": "Jessica HCC", "created": "2021-05-25"}
+        data = {"thank_you_note":"OpenStax is the best! Loved not paying for a book","user_info": "Jessica HCC"}
         response = self.client.post('/apps/cms/api/donations/thankyounote/', data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         tyn = ThankYouNote.objects.filter(user_info='Jessica HCC').values()

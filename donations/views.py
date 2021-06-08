@@ -13,12 +13,8 @@ class ThankYouNoteViewSet(viewsets.ModelViewSet):
     def post(self, request):
         thank_you_note = request.data['thank_you_note']
         user_info = request.data['user_info']
-        created = timezone.now()
-        try:
-            ty_note = ThankYouNote(thank_you_note=thank_you_note, user_info=user_info, created=created)
-            ty_note.save()
-        except:
-            ty_note = ThankYouNote.objects.create(thank_you_note=thank_you_note, user_info=user_info, created=created)
+
+        ty_note = ThankYouNote.objects.create(thank_you_note=thank_you_note, user_info=user_info)
 
         serializer = ThankYouNoteSerializer(data=request.data)
         if serializer.is_valid():
