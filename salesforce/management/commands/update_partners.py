@@ -112,8 +112,8 @@ class Command(BaseCommand):
                     "Online_teaching_audio_video__c, " \
                     "Online_teaching_academic_integrity__c, " \
                     "Online_teaching_labs__c, " \
-                    "International__c " \
-                    "Full_partner__c " \
+                    "International__c, " \
+                    "Partnership_Level__c " \
                     "FROM Account WHERE RecordTypeId = '012U0000000MeAuIAK'"
             response = sf.query_all(query)
             sf_marketplace_partners = response['records']
@@ -226,7 +226,7 @@ class Command(BaseCommand):
                 p.online_teaching_academic_integrity=self.str2bool(partner['Online_teaching_academic_integrity__c'])
                 p.online_teaching_teaching_labs=self.str2bool(partner['Online_teaching_labs__c'])
                 p.international=self.str2bool(partner['International__c'])
-                p.full_partner = self.str2bool(partner['Full_partner__c'])
+                p.partnership_level=partner['Partnership_Level__c']
                 p.save()
                 updated_partners = updated_partners + 1
 

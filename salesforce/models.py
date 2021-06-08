@@ -216,7 +216,7 @@ class Partner(models.Model):
     online_teaching_academic_integrity = models.BooleanField(default=False)
     online_teaching_teaching_labs = models.BooleanField(default=False)
     international = models.BooleanField(default=False)
-    full_partner = models.BooleanField(default=False)
+    partnership_level = models.CharField(max_length=255, default='', null=True)
 
     def __str__(self):
         return self.partner_name
