@@ -101,7 +101,6 @@ class PartnerTest(APITestCase, TestCase):
         )
         data = { "id": review.id }
         response = self.client.delete('/apps/cms/api/salesforce/reviews/', data, format='json')
-        print(response.data)
         self.assertEqual(response.data['status'], 'Deleted')
 
 
