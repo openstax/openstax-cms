@@ -2,7 +2,9 @@ from django.db import models
 
 class ThankYouNote(models.Model):
     thank_you_note = models.TextField(default="", blank=True)
-    user_info = models.TextField(default="", blank=True)
+    first_name = models.CharField(max_length=255, default="", blank=True)
+    last_name = models.CharField(max_length=255, default="", blank=True)
+    institution = models.CharField(max_length=255, default="", blank=True)
     created = models.DateField(auto_now_add=True)
 
 class DonationPopup(models.Model):

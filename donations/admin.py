@@ -7,7 +7,7 @@ from .models import ThankYouNote, DonationPopup
 
 
 class ThankYouNoteAdmin(admin.ModelAdmin):
-    list_display = ['thank_you_note', 'user_info', 'created']
+    list_display = ['thank_you_note', 'first_name', 'last_name', 'institution', 'created']
     list_filter = ('created',)
     search_fields = ['user_info', 'created']
     actions = ['export_as_csv']
@@ -22,12 +22,16 @@ class ThankYouNoteAdmin(admin.ModelAdmin):
         writer = csv.writer(response)
         writer.writerow(["Id",
                          "Thank You Note",
-                         "User Info",
+                         "First Name",
+                         "Last Name",
+                         "Institution",
                          "Created Date"])
         for t in queryset:
             writer.writerow([t.pk,
                              t.thank_you_note,
-                             t.user_info,
+                             t.first_name,
+                             t.last_name,
+                             t.institution,
                              t.created])
 
         return response
