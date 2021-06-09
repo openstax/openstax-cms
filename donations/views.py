@@ -12,9 +12,11 @@ class ThankYouNoteViewSet(viewsets.ModelViewSet):
     @action(methods=['post'], detail=True)
     def post(self, request):
         thank_you_note = request.data['thank_you_note']
-        user_info = request.data['user_info']
+        first_name = request.data['first_name']
+        last_name = request.data['last_name']
+        institution = request.data['institution']
 
-        ty_note = ThankYouNote.objects.create(thank_you_note=thank_you_note, user_info=user_info)
+        ty_note = ThankYouNote.objects.create(thank_you_note=thank_you_note, first_name=first_name, last_name=last_name, institution=institution)
 
         serializer = ThankYouNoteSerializer(data=request.data)
         if serializer.is_valid():
