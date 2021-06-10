@@ -35,11 +35,15 @@ jobs:
         with:
           python-version: 3.8.2
       - name: Setup
+        env:
+          POSTGRES_HOST: localhost
+          POSTGRES_PORT: 5432
         run: |
           pip install --upgrade pip wheel pip-tools
           createdb -U postgres openstax
           pip-sync requirements/dev.txt
-          
+
       - name: Test
+
         run: |
           python manage.py test
