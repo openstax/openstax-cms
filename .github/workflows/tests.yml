@@ -1,8 +1,5 @@
 name: Tests
-env:
-  DATABASE_USER: postgres
-  DATABASE_PASSWORD: postgres
-  DATABASE_NAME: openstax
+
 on:
   pull_request:
   push:
@@ -40,10 +37,12 @@ jobs:
           POSTGRES_PORT: 5432
         run: |
           pip install --upgrade pip wheel pip-tools
-          createdb -U postgres openstax
           pip-sync requirements/dev.txt
 
       - name: Test
-
+        env:
+          DATABASE_USER: postgres
+          DATABASE_PASSWORD: postgres
+          DATABASE_NAME: openstax
         run: |
           python manage.py test
