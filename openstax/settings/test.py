@@ -20,6 +20,12 @@ CNX_URL = 'https://staging.cnx.org/'
 
 SCOUT_MONITOR = False
 
+POSTGRES_HOST = 'localhost'
+POSTGRES_PORT = 5432
+DATABASE_USER = 'postgres'
+DATABASE_PASSWORD = 'postgres'
+DATABASE_NAME = 'openstax'
+
 try:
     from .local import *
 except ImportError:

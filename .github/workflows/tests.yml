@@ -32,17 +32,11 @@ jobs:
         with:
           python-version: 3.8.2
       - name: Setup
-        env:
-          POSTGRES_HOST: localhost
-          POSTGRES_PORT: 5432
         run: |
           pip install --upgrade pip wheel pip-tools
           pip-sync requirements/dev.txt
+          createdb -U postgres openstax
 
       - name: Test
-        env:
-          DATABASE_USER: postgres
-          DATABASE_PASSWORD: postgres
-          DATABASE_NAME: openstax
         run: |
-          python manage.py test
+          python manage.py test --verbosity=2 --settings=openstax.settings.test
