@@ -20,11 +20,16 @@ CNX_URL = 'https://staging.cnx.org/'
 
 SCOUT_MONITOR = False
 
-POSTGRES_HOST = 'localhost'
-POSTGRES_PORT = 5432
-DATABASE_USER = 'postgres'
-DATABASE_PASSWORD = 'postgres'
-DATABASE_NAME = 'openstax'
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'postgres',
+        'USER': 'postgres',
+        'HOST': 'postgres',
+        'PASSWORD': 'password',
+        'PORT': 5432,
+    }
+}
 
 try:
     from .local import *
