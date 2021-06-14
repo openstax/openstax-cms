@@ -35,8 +35,7 @@ jobs:
         run: |
           pip install --upgrade pip wheel pip-tools
           pip-sync requirements/dev.txt
-          createdb -U postgres openstax
-
+          
       - name: Test
         run: |
           python manage.py test --verbosity=2 --settings=openstax.settings.test
