@@ -25,7 +25,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'openstax',
         'USER': 'postgres',
-        'HOST': 'postgres',
+        'HOST': 'localhost',
         'PASSWORD': 'password',
         'PORT': 5432,
     }
