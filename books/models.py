@@ -504,8 +504,8 @@ class Book(Page):
     cnx_id = models.CharField(
         max_length=255, help_text="This is used to pull relevant information from CNX.",
         blank=True, null=True)
-    salesforce_abbreviation = models.CharField(max_length=255, blank=True, null=True)
-    salesforce_name = models.CharField(max_length=255, blank=True, null=True)
+    salesforce_abbreviation = models.CharField(max_length=255, blank=True, null=True, verbose_name='Internal Salesforce Name')
+    salesforce_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Website Visible Salesforce Name')
     updated = models.DateTimeField(blank=True, null=True, help_text='Late date web content was updated')
     is_ap = models.BooleanField(default=False, help_text='Whether this book is an AP (Advanced Placement) book.')
     description = RichTextField(
