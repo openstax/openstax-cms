@@ -26,7 +26,7 @@ DATABASES = {
         'NAME': 'test_oscms_prodcms',
         #'USER': 'postgres',
         'HOST': 'localhost',
-        #'PASSWORD': 'password',
+        'PASSWORD': 'postgres',
         'PORT': 5432,
     }
 }
