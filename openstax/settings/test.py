@@ -24,9 +24,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'test_oscms_prodcms',
-        'USER': 'postgres',
+        #'USER': 'postgres',
         'HOST': 'localhost',
-        'PASSWORD': 'password',
+        #'PASSWORD': 'password',
         'PORT': 5432,
     }
 }
