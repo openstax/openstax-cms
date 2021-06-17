@@ -26,7 +26,7 @@ DATABASES = {
         'NAME': 'openstax',
         'USER': 'postgres',
         'HOST': 'localhost',
-        #'PASSWORD': 'password',
+        'PASSWORD': 'password',
         'PORT': 5432,
     }
 }
