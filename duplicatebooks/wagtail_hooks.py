@@ -15,6 +15,6 @@ def register_admin_urls():
     ]
 
 @hooks.register('register_page_listing_more_buttons')
-def page_listing_more_buttons(page, page_perms, is_parent=False):
+def page_listing_more_buttons(page, page_perms, is_parent=False, next_url=None):
     if page.__class__.__name__ == "Book":
         yield wagtailadmin_widgets.Button('Duplicate Book', reverse('duplicatebooks_admin:duplicate', args=[page.id]), priority=1)
