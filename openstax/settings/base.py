@@ -38,6 +38,8 @@ DATABASES = {
     }
 }
 
+DEFAULT_AUTO_FIELD='django.db.models.AutoField'
+
 # Local time zone for this installation.
 TIME_ZONE = 'America/Chicago'
 
