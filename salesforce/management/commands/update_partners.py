@@ -228,10 +228,11 @@ class Command(BaseCommand):
                 p.international=self.str2bool(partner['International__c'])
                 p.partnership_level=partner['Partnership_Level__c']
                 p.save()
-                updated_partners = updated_partners + 1
 
                 if created:
                     created_partners = created_partners + 1
+                else:
+                    updated_partners = updated_partners + 1
 
             # remove partners that have been deleted from Salesforce
             stale_partners = Partner.objects.exclude(salesforce_id__in=partner_ids)
