@@ -23,7 +23,7 @@ SCOUT_MONITOR = False
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'openstax',
+        'NAME': 'test_oscms_prodcms',
         'USER': 'postgres',
         'HOST': 'localhost',
         'PASSWORD': 'password',
