@@ -32,6 +32,7 @@ DATABASES = {
 }
 
 SALESFORCE = os.environ.get('SALESFORCE')
+print('***Salesforce: ' + str(SALESFORCE))
 
 try:
     from .local import *
