@@ -31,7 +31,7 @@ DATABASES = {
     }
 }
 
-SALESFORCE = os.environ.get('SALESFORCE')
+SALESFORCE = os.getenv('SALESFORCE')
 print('***Salesforce: ' + str(SALESFORCE))
 
 try:
