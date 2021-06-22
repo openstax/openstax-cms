@@ -32,18 +32,14 @@ jobs:
         with:
           python-version: 3.8.2
 
-      uses: actions/cache@v2
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements/dev.txt') }}
-          restore-keys: |
-            ${{ runner.os }}-pip-
+#      uses: actions/cache@v2
+#        with:
+#          path: ~/.cache/pip
+#          key: ${{ runner.os }}-pip-${{ hashFiles('requirements/dev.txt') }}
+#          restore-keys: |
+#            ${{ runner.os }}-pip-
 
       - name: Test
-        env:
-          DATABASE_USER: postgres
-          DATABASE_PASSWORD: postgres
-          DATABASE_NAME: postgres
         run: |
           pip install --upgrade pip wheel pip-tools
           pip-sync requirements/dev.txt
