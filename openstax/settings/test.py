@@ -23,9 +23,9 @@ SCOUT_MONITOR = False
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'postgres',
+        'NAME': 'test_oscms_prodcms',
         'USER': 'postgres',
-        'HOST': 'localhost',
+        #'HOST': 'localhost',
         'PASSWORD': 'postgres',
         'PORT': 5432,
     }
