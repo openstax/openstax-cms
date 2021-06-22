@@ -990,7 +990,6 @@ class BookIndex(Page):
                     'amazon_coming_soon': book.amazon_coming_soon,
                     'amazon_link': book.amazon_link,
                     'bookstore_coming_soon': book.bookstore_coming_soon,
-                    'bookstore_content': book.bookstore_content.value.raw_data,
                     'comp_copy_available': book.comp_copy_available,
                     'salesforce_abbreviation': book.salesforce_abbreviation,
                     'salesforce_name': book.salesforce_name,
