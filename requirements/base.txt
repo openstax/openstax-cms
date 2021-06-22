@@ -77,7 +77,7 @@ django-ses==2.0.0
 PyYAML==5.4
 unicodecsv==0.14.1
 uritemplate==3.0.0
-urllib3==1.25.8
+urllib3==1.26.5
 webencodings==0.5.1
 
 #django-import-export stuff
