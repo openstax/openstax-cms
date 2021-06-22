@@ -31,6 +31,8 @@ DATABASES = {
     }
 }
 
+SALESFORCE = os.environ.get('SALESFORCE')
+
 try:
     from .local import *
 except ImportError:

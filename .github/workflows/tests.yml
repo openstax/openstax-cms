@@ -40,6 +40,8 @@ jobs:
 #            ${{ runner.os }}-pip-
 
       - name: Test
+        env:
+          SALESFORCE=${{ secrets.SALESFORCE }}
         run: |
           pip install --upgrade pip wheel pip-tools
           pip-sync requirements/dev.txt
