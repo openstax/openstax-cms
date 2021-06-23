@@ -31,8 +31,7 @@ DATABASES = {
     }
 }
 
-SALESFORCE = os.getenv('SALESFORCE')
-print('***Salesforce: ' + str(SALESFORCE))
+SALESFORCE = {'username': os.getenv('SALESFORCE_USERNAME'), 'password': os.getenv('SALESFORCE_PWD'), 'security_token': os.getenv('SALESFORCE_TOKEN'), 'sandbox': True}
 
 try:
     from .local import *

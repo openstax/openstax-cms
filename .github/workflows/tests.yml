@@ -41,7 +41,9 @@ jobs:
 
       - name: Test
         env:
-          SALESFORCE: ${{ secrets.SALESFORCE }}
+          SALESFORCE_USERNAME: ${{ secrets.SALESFORCE_USERNAME }}
+          SALESFORCE_PWD: ${{ secrets.SALESFORCE_PWD }}
+          SALESFORCE_TOKEN: ${{ secrets.SALESFORCE_TOKEN }}
         run: |
           pip install --upgrade pip wheel pip-tools
           pip-sync requirements/dev.txt
