@@ -52,6 +52,7 @@ jobs:
           SOCIAL_AUTH_OPENSTAX_SECRET: ${{ secrets.SOCIAL_AUTH_TOKEN }}
           ACCESS_TOKEN_URL: ${{ secrets.ACCESS_TOKEN_URL }}
           USERS_QUERY: ${{ secrets.USERS_QUERY }}
+          AUTHORIZATION_URL: ${{ secrets.AUTHORIZATION_URL }}
         run: |
           pip install --upgrade pip wheel pip-tools
           pip-sync requirements/dev.txt
