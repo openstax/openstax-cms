@@ -5,13 +5,13 @@ DEBUG = True
 ###########################################
 #        OPENSTAX ACCOUNTS SETTINGS       #
 ###########################################
-AUTHORIZATION_URL = 'https://accounts-qa.openstax.org/oauth/authorize'
-ACCESS_TOKEN_URL = 'https://accounts-qa.openstax.org/oauth/token'
-USER_QUERY = 'https://accounts-qa.openstax.org/api/user?'
-USERS_QUERY = 'https://accounts-qa.openstax.org/api/users?'
-
-SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'http://cms-dev.openstax.org'
-SOCIAL_AUTH_SANITIZE_REDIRECTS = False
+# AUTHORIZATION_URL = 'https://accounts-qa.openstax.org/oauth/authorize'
+# ACCESS_TOKEN_URL = 'https://accounts-qa.openstax.org/oauth/token'
+# USER_QUERY = 'https://accounts-qa.openstax.org/api/user?'
+# USERS_QUERY = 'https://accounts-qa.openstax.org/api/users?'
+#
+# SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'http://cms-dev.openstax.org'
+# SOCIAL_AUTH_SANITIZE_REDIRECTS = False
 
 BYPASS_SSO_COOKIE_CHECK = True
 
@@ -44,6 +44,8 @@ EVENTBRITE_API_PUBLIC_TOKEN = os.getenv('EVENTBRITE_API_PUBLIC_TOKEN')
 USERS_QUERY = os.getenv('USERS_QUERY')
 ACCESS_TOKEN_URL = os.getenv('ACCESS_TOKEN_URL')
 AUTHORIZATION_URL = os.getenv('AUTHORIZATION_URL')
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'https://cms-dev.openstax.org'
+SOCIAL_AUTH_SANITIZE_REDIRECTS = False
 
 try:
     from .local import *
