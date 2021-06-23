@@ -44,6 +44,12 @@ jobs:
           SALESFORCE_USERNAME: ${{ secrets.SALESFORCE_USERNAME }}
           SALESFORCE_PWD: ${{ secrets.SALESFORCE_PWD }}
           SALESFORCE_TOKEN: ${{ secrets.SALESFORCE_TOKEN }}
+          EVENTBRITE_API_KEY: ${{ secrets.EVENTBRITE_KEY }}
+          EVENTBRITE_API_SECRET: ${{ secrets.EVENTBRITE_SECRET }}
+          EVENTBRITE_API_PRIVATE_TOKEN: ${{ secrets.EVENTBRITE_TOKEN }}
+          EVENTBRITE_API_PUBLIC_TOKEN: ${{ secrets.EVENTBRITE_PUBLIC_TOKEN }}
+          SOCIAL_AUTH_OPENSTAX_KEY: ${{ secrets.SOCIAL_AUTH_KEY }}
+          SOCIAL_AUTH_OPENSTAX_SECRET: ${{ secrets.SOCIAL_AUTH_TOKEN }}
         run: |
           pip install --upgrade pip wheel pip-tools
           pip-sync requirements/dev.txt
