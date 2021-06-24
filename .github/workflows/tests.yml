@@ -1,0 +1,59 @@
+name: Tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: '0 0 * * 0' # weekly
+
+jobs:
+  tests:
+    timeout-minutes: 30
+    runs-on: ubuntu-18.04
+    services:
+      postgres:
+        image: postgres:10
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        env:
+          POSTGRES_PASSWORD: postgres
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: 3.8.2
+
+#      uses: actions/cache@v2
+#        with:
+#          path: ~/.cache/pip
+#          key: ${{ runner.os }}-pip-${{ hashFiles('requirements/dev.txt') }}
+#          restore-keys: |
+#            ${{ runner.os }}-pip-
+
+      - name: Test
+        env:
+          SALESFORCE_USERNAME: ${{ secrets.SALESFORCE_USERNAME }}
+          SALESFORCE_PWD: ${{ secrets.SALESFORCE_PWD }}
+          SALESFORCE_TOKEN: ${{ secrets.SALESFORCE_TOKEN }}
+          EVENTBRITE_API_KEY: ${{ secrets.EVENTBRITE_KEY }}
+          EVENTBRITE_API_SECRET: ${{ secrets.EVENTBRITE_SECRET }}
+          EVENTBRITE_API_PRIVATE_TOKEN: ${{ secrets.EVENTBRITE_TOKEN }}
+          EVENTBRITE_API_PUBLIC_TOKEN: ${{ secrets.EVENTBRITE_PUBLIC_TOKEN }}
+          SOCIAL_AUTH_OPENSTAX_KEY: ${{ secrets.SOCIAL_AUTH_KEY }}
+          SOCIAL_AUTH_OPENSTAX_SECRET: ${{ secrets.SOCIAL_AUTH_TOKEN }}
+          ACCESS_TOKEN_URL: ${{ secrets.ACCESS_TOKEN_URL }}
+          USERS_QUERY: ${{ secrets.USERS_QUERY }}
+          AUTHORIZATION_URL: ${{ secrets.AUTHORIZATION_URL }}
+        run: |
+          pip install --upgrade pip wheel pip-tools
+          pip-sync requirements/dev.txt
+          python manage.py test --verbosity=2 --settings=openstax.settings.test
