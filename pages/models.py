@@ -2224,9 +2224,12 @@ class PartnersPage(Page):
     def category_mapping():
         field_mappings = PartnerCategoryMapping.objects.all()
         mapping_dict = {}
+        field_name_mappings = PartnerFieldNameMapping.objects.values_list('salesforce_name', flat=True).filter(hidden=False)
+        field_name_mappings = list(field_name_mappings)
 
         for field in field_mappings:
-            mapping_dict[field.display_name] = field.salesforce_name
+            if any(name.startswith(field.salesforce_name) for name in field_name_mappings):
+                mapping_dict[field.display_name] = field.salesforce_name
 
         return mapping_dict
 
