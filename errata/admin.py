@@ -73,7 +73,9 @@ class ErrataAdmin(ImportExportActionModelAdmin, VersionAdmin):
                      'location',
                      'additional_location_information',
                      'accounts_user_name',
-                     'accounts_user_email')
+                     'accounts_user_email',
+                     'submitted_by__username',
+                     'submitted_by__email')
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
     }
@@ -142,6 +144,7 @@ class ErrataAdmin(ImportExportActionModelAdmin, VersionAdmin):
             self.list_display = ['id', '_book_title', 'created', 'modified', 'short_detail', 'number_of_errors', 'status', 'error_type', 'resource', 'location', 'additional_location_information', 'resolution', 'archived', 'junk'] # list of fields to show if user is in Content Manager group or is a superuser
             self.list_display_links = ['_book_title']
             self.list_filter = (('created', DateRangeFilter), ('modified', DateRangeFilter), ('book', UnionFieldListFilter), 'status', 'created', 'modified', 'is_assessment_errata', 'modified', 'error_type', 'resolution', 'archived', 'junk', 'resource')
+            self.list_filter = (('created', DateRangeFilter), ('modified', DateRangeFilter), ('book', UnionFieldListFilter), 'status', 'created', 'modified', 'is_assessment_errata', 'modified', 'error_type', 'resolution', 'archived', 'junk', 'resource', 'submitted_by__username')
             self.editable = ['resolution']
 
         else:
