@@ -73,7 +73,9 @@ class ErrataAdmin(ImportExportActionModelAdmin, VersionAdmin):
                      'location',
                      'additional_location_information',
                      'accounts_user_name',
-                     'accounts_user_email')
+                     'accounts_user_email',
+                     'submitted_by__username',
+                     'submitted_by__email')
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
     }
