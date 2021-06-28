@@ -109,7 +109,7 @@ class ResourceDownloadSerializer(serializers.ModelSerializer):
         contact_id = validated_data.get('contact_id', None)
         try:
             # rd = (account and book) or (account and book and resource)
-            rd = ResourceDownload.objects.raw('SELECT * FROM salesforce_resourcedownload WHERE (account_id={account_id} AND book_id={book_id} AND resource_name={resource_name}}) OR (account_id={account_id} AND book_id={book_id}) LIMIT 1'.format(account_id=account_id, book_id=book.pk, resource_name=resource_name))
+            rd = ResourceDownload.objects.raw('SELECT * FROM salesforce_resourcedownload WHERE (account_id={account_id} AND book_id={book_id} AND resource_name={resource_name}) OR (account_id={account_id} AND book_id={book_id}) LIMIT 1'.format(account_id=account_id, book_id=book.pk, resource_name=resource_name))
             rd.contact_id = contact_id
             rd.save()
         except ResourceDownload.DoesNotExist:
