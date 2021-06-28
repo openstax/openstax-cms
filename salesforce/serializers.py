@@ -114,7 +114,7 @@ class ResourceDownloadSerializer(serializers.ModelSerializer):
             rd = rd[0] # we only need the first result - but there might already be duplicates so this should handle that
             rd.contact_id = contact_id
             rd.save()
-        except ResourceDownload.DoesNotExist:
+        except (ResourceDownload.DoesNotExist, IndexError):
             rd = ResourceDownload.objects.create(**validated_data)
 
         return rd
