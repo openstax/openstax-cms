@@ -21,10 +21,10 @@ class DonationPopup(models.Model):
     go_to_pdf_link_text = models.CharField(max_length=255)
     hide_donation_popup = models.BooleanField(default=False)
 
+    def __str__(self):
+        return 'Donation Popup'
+    
     def save(self, *args, **kwargs):
         if DonationPopup.objects.exists() and not self.pk:
             raise ValidationError('There is can be only one donation popup instance')
         return super(DonationPopup, self).save(*args, **kwargs)
-
-    def __str__(self):
-        return 'Donation Popup'
