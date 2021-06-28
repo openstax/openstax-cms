@@ -107,7 +107,7 @@ class ResourceDownloadSerializer(serializers.ModelSerializer):
         resource_name = validated_data.get('resource_name', None)
         contact_id = validated_data.get('contact_id', None)
         try:
-            rd = ResourceDownload.objects.get(book=book, account_id=account_id, resource_name=resource_name)
+            rd = ResourceDownload.objects.get(account_id=account_id, book=book, resource_name=resource_name) | ResourceDownload.objects.get(account_id=account_id, book=book)
             rd.contact_id = contact_id
             rd.save()
         except:
