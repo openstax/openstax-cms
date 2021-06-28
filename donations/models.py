@@ -23,7 +23,7 @@ class DonationPopup(models.Model):
 
     def __str__(self):
         return 'Donation Popup'
-    
+
     def save(self, *args, **kwargs):
         if DonationPopup.objects.exists() and not self.pk:
             raise ValidationError('There is can be only one donation popup instance')
