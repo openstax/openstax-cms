@@ -1,4 +1,3 @@
-from django.db.models import Q
 from collections import OrderedDict
 from .models import School, AdoptionOpportunityRecord, Partner, SalesforceForms, ResourceDownload, SavingsNumber, PartnerReview
 from rest_framework import serializers
