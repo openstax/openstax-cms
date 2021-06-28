@@ -1,3 +1,4 @@
+from django.db.models import Q
 from collections import OrderedDict
 from .models import School, AdoptionOpportunityRecord, Partner, SalesforceForms, ResourceDownload, SavingsNumber, PartnerReview
 from rest_framework import serializers
@@ -107,10 +108,11 @@ class ResourceDownloadSerializer(serializers.ModelSerializer):
         resource_name = validated_data.get('resource_name', None)
         contact_id = validated_data.get('contact_id', None)
         try:
-            rd = (ResourceDownload.objects.get(account_id=account_id, book=book, resource_name=resource_name) | ResourceDownload.objects.get(account_id=account_id, book=book))[0]
+            # rd = (account and book) or (account and book and resource)
+            rd = ResourceDownload.objects.raw('SELECT * FROM salesforce_resourcedownload WHERE (account_id={account_id} AND book_id={book_id} AND resource_name={resource_name}}) OR (account_id={account_id} AND book_id={book_id}) LIMIT 1'.format(account_id=account_id, book_id=book.pk, resource_name=resource_name))
             rd.contact_id = contact_id
             rd.save()
-        except:
+        except ResourceDownload.DoesNotExist:
             rd = ResourceDownload.objects.create(**validated_data)
 
         return rd
