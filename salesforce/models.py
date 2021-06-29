@@ -331,7 +331,7 @@ class ResourceDownload(models.Model):
     last_access = models.DateTimeField()
     number_of_times_accessed = models.IntegerField()
     resource_name = models.CharField(max_length=255, null=True, blank=False)
-    contact_id = models.CharField(max_length=100, null=True, default='')
+    contact_id = models.CharField(max_length=100, default='', blank=True)
 
     def save(self, *args, **kwargs):
         if not self.pk:
