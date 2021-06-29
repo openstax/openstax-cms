@@ -2219,6 +2219,10 @@ class PartnersPage(Page):
     description = RichTextField()
     partner_landing_page_link = models.CharField(max_length=255, null=True, blank=True, help_text="Link text to partner landing page.")
     partner_request_info_link = models.CharField(max_length=255, null=True, blank=True, help_text="Forstack form link text")
+    partner_full_partner_heading = models.CharField(max_length=255, null=True, blank=True)
+    partner_full_partner_description = models.TextField(null=True, blank=True)
+    partner_ally_heading = models.CharField(max_length=255, null=True, blank=True)
+    partner_ally_description = models.TextField(null=True, blank=True)
 
     @staticmethod
     def category_mapping():
@@ -2253,6 +2257,10 @@ class PartnersPage(Page):
         FieldPanel('description'),
         FieldPanel('partner_landing_page_link'),
         FieldPanel('partner_request_info_link'),
+        FieldPanel('partner_full_partner_heading'),
+        FieldPanel('partner_full_partner_description'),
+        FieldPanel('partner_ally_heading'),
+        FieldPanel('partner_ally_description'),
     ]
 
     api_fields = [
@@ -2261,6 +2269,10 @@ class PartnersPage(Page):
         APIField('description'),
         APIField('partner_landing_page_link'),
         APIField('partner_request_info_link'),
+        APIField('partner_full_partner_heading'),
+        APIField('partner_full_partner_description'),
+        APIField('partner_ally_heading'),
+        APIField('partner_ally_description'),
         APIField('category_mapping'),
         APIField('field_name_mapping'),
         APIField('partner_type_choices'),
