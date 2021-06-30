@@ -98,7 +98,6 @@ django-admin-rangefilter==0.6.3
 
 # sso stuff
 pycryptodome>=3.9.7
-django-cors-headers==2.4.1
 
 # reporting
 sentry-sdk==1.1.0
