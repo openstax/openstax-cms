@@ -1822,6 +1822,7 @@ class Impact(Page):
     parent_page_type = ['pages.HomePage']
     subpage_types = ['pages.ImpactStory']
     max_count = 1
+    template = 'page.html'
 
 
 class InstitutionalPartnership(Page):
@@ -2214,6 +2215,7 @@ class CreatorFestPage(Page):
     ]
 
     parent_page_type = ['pages.HomePage']
+    template = 'page.html'
 
 
 class PartnersPage(Page):
@@ -2284,6 +2286,7 @@ class PartnersPage(Page):
     ]
 
     parent_page_type = ['pages.HomePage']
+    template = 'page.html'
 
 class WebinarPage(Page):
     heading = models.CharField(max_length=255)
@@ -2314,6 +2317,7 @@ class WebinarPage(Page):
     ]
 
     parent_page_type = ['pages.HomePage']
+    template = 'page.html'
 
 
 class PartnerChooserBlock(blocks.ChooserBlock):
@@ -2437,6 +2441,7 @@ class LLPHPage(Page):
     ]
 
     parent_page_type = ['pages.HomePage']
+    template = 'page.html'
 
     class Meta:
         verbose_name = "LLPH Page"
