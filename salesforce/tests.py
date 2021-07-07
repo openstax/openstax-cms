@@ -18,6 +18,7 @@ from rest_framework.test import APIRequestFactory
 
 from wagtail.tests.utils import WagtailPageTests
 
+
 class AdopterTest(TestCase):
 
     def create_adopter(self, sales_id="123", name="test", description="test", website="https://rice.edu"):
@@ -92,7 +93,7 @@ class PartnerTest(APITestCase, TestCase):
         response = self.client.post('/apps/cms/api/salesforce/reviews/', data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
-    def test_can_delete_review(self):
+    def test_cannot_delete_review_without_sso_cookie(self):
         review = PartnerReview.objects.create(
             partner=Partner.objects.order_by("?").first(),
             rating=5,
@@ -101,35 +102,7 @@ class PartnerTest(APITestCase, TestCase):
         )
         data = { "id": review.id }
         response = self.client.delete('/apps/cms/api/salesforce/reviews/', data, format='json')
-        self.assertEqual(response.data['status'], 'Deleted')
-
-
-class AdoptionOpportunityTest(APITestCase, TestCase):
-    def setUp(self):
-        with vcr.use_cassette('fixtures/vcr_cassettes/opportunities.yaml'):
-            call_command('update_opportunities')
-
-    def test_did_update_opportunities(self):
-        self.assertGreater(AdoptionOpportunityRecord.objects.all().count(), 0)
-
-    def test_get_opportunity(self):
-        random_adoption = AdoptionOpportunityRecord.objects.order_by("?").first()
-        response = self.client.get('/apps/cms/api/salesforce/renewal/{}/'.format(random_adoption.account_id), format='json')
-        self.assertEqual(response.status_code, 200)
-
-    def test_update_opportunity(self):
-        factory = APIRequestFactory()
-        random_adoption = AdoptionOpportunityRecord.objects.order_by("?").filter(verified=False).first()
-        initial_confirm_count = random_adoption.confirmed_yearly_students
-
-        data = {'confirmed_yearly_students': 1000, 'id': random_adoption.id}
-        response = self.client.post('/apps/cms/api/salesforce/renewal/{}/'.format(random_adoption.account_id), data, format='json')
-        self.assertEqual(response.status_code, 200)
-
-        updated_adoption = AdoptionOpportunityRecord.objects.get(id=random_adoption.id)
-        self.assertTrue(updated_adoption.verified)
-        self.assertNotEqual(updated_adoption.confirmed_yearly_students, initial_confirm_count)
-        self.assertEqual(updated_adoption.confirmed_yearly_students, 1000)
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
 
 
 class SalesforceTest(LiveServerTestCase, WagtailPageTests):
