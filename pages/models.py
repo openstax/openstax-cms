@@ -1885,6 +1885,7 @@ class InstitutionalPartnership(Page):
     ]
 
     parent_page_type = ['pages.HomePage']
+    template = 'page.html'
     max_count = 1
 
 
@@ -2145,6 +2146,7 @@ class InstitutionalPartnerProgramPage(Page):
     ]
 
     parent_page_type = ['pages.HomePage']
+    template = 'page.html'
 
 
 class CreatorFestPage(Page):
