@@ -2253,7 +2253,14 @@ class PartnersPage(Page):
 
     @staticmethod
     def partner_type_choices():
-        return [x.display_name for x in PartnerTypeMapping.objects.all()]
+        partner_types_array = []
+        partner_type_mappings = PartnerTypeMapping.objects.all()
+        types_from_partners = Partner.objects.values_list('partner_type', flat=True).exclude(partner_type__isnull=True)
+        for partner_type in partner_type_mappings:
+            if any(p_type.lower().startswith(partner_type.display_name.lower()) for p_type in types_from_partners):
+                partner_types_array.append(partner_type.display_name)
+
+        return partner_types_array
 
     content_panels = [
         FieldPanel('title', classname='full title', help_text="Internal name for page."),
