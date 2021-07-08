@@ -98,6 +98,7 @@ STATICFILES_FINDERS = [
 SECRET_KEY = 'wq21wtjo3@d_qfjvd-#td!%7gfy2updj2z+nev^k$iy%=m4_tr'
 
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'openstax.middleware.CommonMiddlewareAppendSlashWithoutRedirect',
     'django.middleware.common.CommonMiddleware',
@@ -107,6 +108,14 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'wagtail.contrib.redirects.middleware.RedirectMiddleware',
+]
+
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000"
+]
+
+CORS_ALLOWED_ORIGIN_REGEXES = [
+    r"^https://\w+\.openstax\.org",
 ]
 
 AUTHENTICATION_BACKENDS = (
@@ -174,6 +183,7 @@ INSTALLED_APPS = [
     'django.contrib.sitemaps',
     # contrib
     'compressor',
+    'corsheaders',
     'taggit',
     'modelcluster',
     'rest_framework',
