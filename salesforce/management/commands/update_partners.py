@@ -248,8 +248,9 @@ class Command(BaseCommand):
                 partner_field_names = self.check_field_names(partner, partner_field_names)
                 if partner_field_names is None:
                     break
-            PartnerFieldNameMapping.objects.filter(salesforce_name__in=partner_field_names).update(hidden=True)
             hidden_fields_to_update = [x for x in hidden_field_names if x not in partner_field_names]
+            self.check_cost_fields(partner_field_names, hidden_fields_to_update)
+            PartnerFieldNameMapping.objects.filter(salesforce_name__in=partner_field_names).update(hidden=True)
             PartnerFieldNameMapping.objects.filter(salesforce_name__in=(list(hidden_fields_to_update))).update(hidden=False)
 
             response = self.style.SUCCESS("Successfully updated {} partners, created {} partners.".format(updated_partners, created_partners))
@@ -262,3 +263,19 @@ class Command(BaseCommand):
             if str(attr_value) == 'True':
                 attributes_to_remove.append(attribute)
         return [x for x in field_names if x not in attributes_to_remove]
+
+    def check_cost_fields(self, partner_field_names, hidden_fields_to_update):
+        # make sure affordability_institutional is hidden
+        if 'affordability_institutional' not in partner_field_names:
+            partner_field_names.append('affordability_institutional')
+
+        if 'affordability_institutional' in hidden_fields_to_update:
+            hidden_fields_to_update.remove('affordability_institutional')
+
+        # make sure affordability_cost is not hidden
+        if 'affordability_cost' in partner_field_names:
+            partner_field_names.remove('affordability_cost')
+
+        if 'affordability_cost' not in hidden_fields_to_update:
+            hidden_fields_to_update.append('affordability_cost')
+
