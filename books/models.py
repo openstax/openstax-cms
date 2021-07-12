@@ -29,7 +29,7 @@ from wagtail.snippets.models import register_snippet
 from wagtail.core.models import Site
 
 from openstax.functions import build_document_url, build_image_url
-from snippets.models import FacultyResource, StudentResource, Subject, SharedContent
+from snippets.models import FacultyResource, StudentResource, Subject, SharedContent, ErrataContent
 
 
 def cleanhtml(raw_html):
@@ -645,7 +645,6 @@ class Book(Page):
     bookstore_content = StreamField(SharedContentBlock(), null=True, blank=True, help_text='Bookstore content.')
     comp_copy_available = models.BooleanField(default=True, help_text='Whether free compy available for teachers.')
     comp_copy_content = StreamField(SharedContentBlock(), null=True, blank=True, help_text='Content of the free copy.')
-    errata_content = StreamField(SharedContentBlock(), null=True, blank=True, help_text='Errata content.')
     tutor_marketing_book = models.BooleanField(default=False, help_text='Whether this is a Tutor marketing book.')
     partner_list_label = models.CharField(max_length=255, null=True, blank=True, help_text="Controls the heading text on the book detail page for partners. This will update ALL books to use this value!")
     partner_page_link_text = models.CharField(max_length=255, null=True, blank=True, help_text="Link to partners page on top right of list.")
@@ -733,7 +732,6 @@ class Book(Page):
         StreamFieldPanel('bookstore_content'),
         FieldPanel('comp_copy_available'),
         StreamFieldPanel('comp_copy_content'),
-        StreamFieldPanel('errata_content'),
         FieldPanel('tutor_marketing_book'),
         FieldPanel('partner_list_label'),
         FieldPanel('partner_page_link_text'),
@@ -871,6 +869,10 @@ class Book(Page):
             subject_list.append(subject.subject_name)
         return subject_list
 
+    def errata_content(self):
+        e_content = ErrataContent.objects.filter(book_state=self.book_state)
+        return e_content.first().content
+
     def get_slug(self):
         return 'books/{}'.format(self.slug)
 
@@ -996,7 +998,8 @@ class BookIndex(Page):
                     'urls': book.book_urls(),
                     'last_updated_pdf': book.last_updated_pdf,
                     'has_faculty_resources': has_faculty_resources,
-                    'has_student_resources': has_student_resources
+                    'has_student_resources': has_student_resources,
+                    'errata_content': book.errata_content()
                 })
             except Exception as e:
                 print("Error: {}".format(e))
