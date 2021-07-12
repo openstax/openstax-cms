@@ -339,7 +339,7 @@ def send_status_update_email(sender, instance, created, **kwargs):
         override_to = False
 
         if created:
-            if instance.book.book_state == 'New Edition Forthcoming (Show new edition correction schedule)':
+            if instance.book.book_state == 'new_edition_available':
                 email_text = EmailText.objects.get(email_case='Getting New Edition')
                 subject = email_text.email_subject_text
                 body = email_text.email_body_text
