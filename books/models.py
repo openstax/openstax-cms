@@ -869,6 +869,7 @@ class Book(Page):
             subject_list.append(subject.subject_name)
         return subject_list
 
+    @property
     def errata_content(self):
         e_content = ErrataContent.objects.filter(book_state=self.book_state)
         return e_content.first().content
@@ -998,8 +999,7 @@ class BookIndex(Page):
                     'urls': book.book_urls(),
                     'last_updated_pdf': book.last_updated_pdf,
                     'has_faculty_resources': has_faculty_resources,
-                    'has_student_resources': has_student_resources,
-                    'errata_content': book.errata_content()
+                    'has_student_resources': has_student_resources
                 })
             except Exception as e:
                 print("Error: {}".format(e))

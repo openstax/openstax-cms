@@ -6,14 +6,14 @@ from wagtail.core.fields import RichTextField
 from wagtail.snippets.models import register_snippet
 from openstax.functions import build_image_url
 
-
 BOOK_STATES = [
-    ('live','Live'),
-    ('coming_soon','Coming soon'),
+    ('live', 'Live'),
+    ('coming_soon', 'Coming soon'),
     ('new_edition_available', 'New edition available'),
     ('deprecated', 'Deprecated'),
     ('retired', 'Retired')
 ]
+
 
 class Subject(models.Model):
     name = models.CharField(max_length=255)
