@@ -29,7 +29,9 @@ from wagtail.snippets.models import register_snippet
 from wagtail.core.models import Site
 
 from openstax.functions import build_document_url, build_image_url
-from snippets.models import FacultyResource, StudentResource, Subject, SharedContent, ErrataContent
+#from snippets.models import FacultyResource, StudentResource, Subject, SharedContent #, ErrataContent
+from books.constants import BOOK_STATES, BOOK_COVER_TEXT_COLOR, COVER_COLORS
+import snippets.models as snippets
 
 
 def cleanhtml(raw_html):
@@ -134,7 +136,7 @@ class OrientationFacultyResource(models.Model):
 
 class FacultyResources(models.Model):
     resource = models.ForeignKey(
-        FacultyResource,
+        snippets.FacultyResource,
         null=True,
         help_text="Manage resources through snippets.",
         related_name='+',
@@ -237,7 +239,7 @@ class FacultyResources(models.Model):
 
 class StudentResources(models.Model):
     resource = models.ForeignKey(
-        StudentResource,
+        snippets.StudentResource,
         null=True,
         help_text="Manage resources through snippets.",
         related_name='+',
@@ -362,7 +364,7 @@ class AuthorBlock(blocks.StructBlock):
 
 
 class SubjectBooks(models.Model):
-    subject = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True, related_name='subjects_subject')
+    subject = models.ForeignKey(snippets.Subject, on_delete=models.SET_NULL, null=True, related_name='subjects_subject')
 
     def get_subject_name(self):
         return self.subject.name
@@ -401,7 +403,7 @@ class SharedContentChooserBlock(SnippetChooserBlock):
 
 
 class SharedContentBlock(blocks.StreamBlock):
-    content = SharedContentChooserBlock(SharedContent)
+    content = SharedContentChooserBlock(snippets.SharedContent)
     link = blocks.URLBlock(required=False)
     link_text = blocks.CharBlock(required=False)
 
@@ -426,76 +428,6 @@ class BookStudentResources(Orderable, StudentResources):
 
 class BookSubjects(Orderable, SubjectBooks):
     book_subject = ParentalKey('books.Book', related_name='book_subjects')
-
-
-BLUE = 'blue'
-DEEP_GREEN = 'deep-green'
-GOLD = 'gold'
-GRAY = 'gray'
-GREEN = 'green'
-LIGHT_BLUE = 'light-blue'
-LIGHT_GRAY = 'light-gray'
-MEDIUM_BLUE = 'medium-blue'
-ORANGE = 'orange'
-RED = 'red'
-YELLOW = 'yellow'
-COVER_COLORS = (
-    (BLUE, 'Blue'),
-    (DEEP_GREEN, 'Deep Green'),
-    (GOLD, 'Gold'),
-    (GRAY, 'Gray'),
-    (GREEN, 'Green'),
-    (LIGHT_BLUE, 'Light Blue'),
-    (LIGHT_GRAY, 'Light Gray'),
-    (MEDIUM_BLUE, 'Medium Blue'),
-    (ORANGE, 'Orange'),
-    (RED, 'Red'),
-    (YELLOW, 'Yellow'),
-)
-
-YELLOW = 'yellow'
-LIGHT_BLUE = 'light_blue'
-DARK_BLUE = 'dark_blue'
-GREEN = 'green'
-WHITE = 'white'
-GREY = 'grey'
-RED = 'red'
-WHITE_RED = 'white_red'
-WHITE_BLUE = 'white_blue'
-GREEN_WHITE = 'green_white'
-YELLOW_WHITE = 'yellow_white'
-GREY_WHITE = 'grey_white'
-WHITE_GREY = 'white_grey'
-WHITE_ORANGE = 'white_orange'
-BOOK_COVER_TEXT_COLOR = (
-    (YELLOW, 'Yellow'),
-    (LIGHT_BLUE, 'Light Blue'),
-    (DARK_BLUE, 'Dark Blue'),
-    (GREEN, 'Green'),
-    (WHITE, 'White'),
-    (GREY, 'Grey'),
-    (RED, 'Red'),
-    (WHITE_RED, 'White/Red'),
-    (WHITE_BLUE, 'White/Blue'),
-    (GREEN_WHITE, 'Green/White'),
-    (YELLOW_WHITE, 'Yellow/White'),
-    (GREY_WHITE, 'Grey/White'),
-    (WHITE_GREY, 'White/Grey'),
-    (WHITE_ORANGE, 'White/Orange'),
-)
-
-LIVE = 'live'
-COMING_SOON = 'coming_soon'
-NEW_EDITION_AVAILABLE = 'new_edition_available'
-DEPRECATED = 'deprecated'
-RETIRED = 'retired'
-BOOK_STATES = (
-    (LIVE, 'Live'),
-    (COMING_SOON, 'Coming Soon'),
-    (NEW_EDITION_AVAILABLE, 'New Edition Forthcoming (Show new edition correction schedule)'),
-    (DEPRECATED, 'Deprecated (Disallow errata submissions and show deprecated schedule)'),
-    (RETIRED, 'Retired (Remove from website)')
-)
 
 
 class Book(Page):
@@ -871,7 +803,7 @@ class Book(Page):
 
     @property
     def errata_content(self):
-        e_content = ErrataContent.objects.filter(book_state=self.book_state)
+        e_content = snippets.ErrataContent.objects.filter(book_state=self.book_state)
         return e_content.first().content
 
     def get_slug(self):
