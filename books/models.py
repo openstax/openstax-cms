@@ -29,7 +29,6 @@ from wagtail.snippets.models import register_snippet
 from wagtail.core.models import Site
 
 from openstax.functions import build_document_url, build_image_url
-#from snippets.models import FacultyResource, StudentResource, Subject, SharedContent #, ErrataContent
 from books.constants import BOOK_STATES, BOOK_COVER_TEXT_COLOR, COVER_COLORS
 import snippets.models as snippets
 
