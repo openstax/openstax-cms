@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.conf.urls import include, url
 from django.conf.urls.static import static
+from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
 from django.views.generic.base import RedirectView
 from wagtail.admin import urls as wagtailadmin_urls
@@ -19,18 +20,24 @@ from wagtail.contrib.sitemaps.views import sitemap
 
 admin.site.site_header = 'OpenStax'
 
+# Non-Translatable URLs
 urlpatterns = [
     url(r'^django-admin/login', RedirectView.as_view(url='/admin/login')),
     url(r'^django-admin/', admin.site.urls),
     url(r'^admin/', include(wagtailadmin_urls)),
 
-
     url(r'^django-admin/error/', throw_error, name='throw_error'),
 
-    url(r'^oxauth', include('oxauth.urls')), # new auth package
+    url(r'^oxauth', include('oxauth.urls')),  # new auth package
     url(r'^documents/', include(wagtaildocs_urls)),
     url(r'^images/([^/]*)/(\d*)/([^/]*)/[^/]*$', ServeView.as_view(action='redirect'), name='wagtailimages_serve'),
-    url(r'^accounts', include(accounts_urls)), # non-CloudFront Accounts redirects
+    url(r'^accounts', include(accounts_urls)),  # non-CloudFront Accounts redirects
+    url('^sitemap\.xml$', sitemap),
+]
+
+# Translatable URLs
+# These will be available under a language code prefix.
+urlpatterns += i18n_patterns(
 
     url(r'^apps/cms/api/mail', include('mail.urls')),
     url(r'^apps/cms/api/', include(api_urls)),
@@ -50,13 +57,12 @@ urlpatterns = [
 
     # route everything to /api/spike also...
     url(r'^apps/cms/api/spike/', include(wagtail_urls)),
-    url('^sitemap\.xml$', sitemap),
 
     # For anything not caught by a more specific rule above, hand over to
     # Wagtail's serving mechanism
 
-    url(r'', include(wagtail_urls)),
-]
+    #url(r'', include(wagtail_urls)),
+)
 
 if settings.DEBUG:
     from django.contrib.staticfiles.urls import staticfiles_urlpatterns

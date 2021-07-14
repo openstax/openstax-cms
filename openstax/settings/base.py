@@ -52,18 +52,24 @@ SITE_ID = 1
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
 USE_I18N = True
+WAGTAIL_I18N_ENABLED = True
 
 # If you set this to False, Django will not format dates, numbers and
 # calendars according to the current locale.
 # Note that with this set to True, Wagtail will fall back on using numeric dates
 # in date fields, as opposed to 'friendly' dates like "24 Sep 2013", because
 # Python's strptime doesn't support localised month names: https://code.djangoproject.com/ticket/13339
-USE_L10N = False
+USE_L10N = True
 
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
 
 DATE_FORMAT = 'j F Y'
+
+WAGTAIL_CONTENT_LANGUAGES = LANGUAGES = [
+    ('en', "English"),
+    ('es', "Spanish"),
+]
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
@@ -108,6 +114,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'wagtail.contrib.redirects.middleware.RedirectMiddleware',
 ]
 
@@ -238,6 +245,8 @@ INSTALLED_APPS = [
     'wagtail.images',
     'wagtail.embeds',
     'wagtail.search',
+    'wagtail_localize',
+    'wagtail_localize.locales',
     'wagtail.contrib.redirects',
     'wagtail.contrib.forms',
     'wagtail.sites',
