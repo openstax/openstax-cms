@@ -5,6 +5,8 @@ from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.core.fields import RichTextField
 from wagtail.snippets.models import register_snippet
 from openstax.functions import build_image_url
+from books.constants import BOOK_STATES
+
 
 class Subject(models.Model):
     name = models.CharField(max_length=255)
@@ -152,3 +154,23 @@ class NewsSource(index.Indexed, models.Model):
         return self.name
 
 register_snippet(NewsSource)
+
+
+class ErrataContent(index.Indexed, models.Model):
+    heading = models.CharField(max_length=255, blank=True, null=True)
+    book_state = models.CharField(max_length=255, choices=BOOK_STATES, default='live', help_text='The state of the book.')
+    content = models.TextField()
+
+    panels = [
+        FieldPanel('heading'),
+        FieldPanel('book_state'),
+        FieldPanel('content')
+    ]
+
+    api_fields = ('heading', 'book_state', 'content')
+
+    def __str__(self):
+        return self.heading
+
+
+register_snippet(ErrataContent)
