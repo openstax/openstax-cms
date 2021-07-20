@@ -3,7 +3,7 @@ from django.shortcuts import redirect
 from django.urls import reverse, path
 
 from wagtail.api.v2.router import WagtailAPIRouter
-from wagtail.api.v2.views import PagesAPIViewSet
+from wagtail.api.v2.views import PagesAPIViewSet, BaseAPIViewSet
 from wagtail.images.api.v2.views import ImagesAPIViewSet
 from wagtail.documents.api.v2.views import DocumentsAPIViewSet
 
@@ -41,6 +41,11 @@ class OpenstaxPagesAPIEndpoint(PagesAPIViewSet):
             path('find/', cls.as_view({'get': 'find_view'}), name='find'),
         ]
 
+
+class OpenStaxImagesAPIViewSet(ImagesAPIViewSet):
+    meta_fields = BaseAPIViewSet.meta_fields + ['tags', 'download_url', 'height', 'width']
+    nested_default_fields = BaseAPIViewSet.nested_default_fields + ['title', 'download_url', 'height', 'width']
+
 # Create the router. “wagtailapi” is the URL namespace
 api_router = WagtailAPIRouter('wagtailapi')
 
@@ -49,5 +54,5 @@ api_router = WagtailAPIRouter('wagtailapi')
 # is used in the URL of the endpoint
 # The second parameter is the endpoint class that handles the requests
 api_router.register_endpoint('pages', OpenstaxPagesAPIEndpoint)
-api_router.register_endpoint('images', ImagesAPIViewSet)
+api_router.register_endpoint('images', OpenStaxImagesAPIViewSet)
 api_router.register_endpoint('documents', DocumentsAPIViewSet)
