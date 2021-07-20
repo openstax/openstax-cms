@@ -29,7 +29,7 @@ YES_NO_CHOICES = (
 NEW = 'New'
 EDITORIAL_REVIEW = 'Editorial Review'
 K12_EDITORIAL_REVIEW = 'K-12 Editorial Review'
-KELSEY_EDITORIAL_REVIEW = 'Kelsey Editorial Review'
+ASSOCIATE_EDITORIAL_REVIEW = 'Associate Editorial Review'
 ANTHONY_EDITORIAL_REVIEW = 'Anthony Editorial Review'
 REVIEWED = 'Reviewed'
 COMPLETED = 'Completed'
@@ -37,7 +37,7 @@ ERRATA_STATUS = (
     (NEW, 'New'),
     (EDITORIAL_REVIEW, 'Editorial Review'),
     (K12_EDITORIAL_REVIEW, 'K-12 Editorial Review'),
-    (KELSEY_EDITORIAL_REVIEW, 'Kelsey Editorial Review'),
+    (ASSOCIATE_EDITORIAL_REVIEW, 'Kelsey Editorial Review'),
     (ANTHONY_EDITORIAL_REVIEW,'Anthony Editorial Review'),
     (REVIEWED, 'Reviewed'),
     (COMPLETED, 'Completed'),
