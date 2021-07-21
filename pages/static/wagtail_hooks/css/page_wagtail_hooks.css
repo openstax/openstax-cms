@@ -1,0 +1,20 @@
+.modal-content .link-types :first-child {
+  /* hide the 'internal' link option from the page chooser */
+  display: none;
+}
+
+.modal-content .link-types {
+  /* ensure the 'before' element can be positioned absolute */
+  position: relative;
+}
+
+.modal-content .link-types::before {
+  /* hide the left '|' bar */
+  background: white;
+  bottom: 0;
+  content: '';
+  left: 0;
+  position: absolute;
+  top: 0;
+  width: 5px;
+}
