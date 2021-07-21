@@ -25,8 +25,7 @@ class SubjectList(viewsets.ReadOnlyModelViewSet):
         if name is not None:
             queryset = queryset.filter(name=name)
         if locale is not None:
-            converted_locale = convert_locale(locale)
-            queryset = queryset.filter(locale=converted_locale)
+            queryset = queryset.filter(locale=convert_locale(locale))
         return queryset
 
 
