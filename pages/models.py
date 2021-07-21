@@ -1849,6 +1849,7 @@ class InstitutionalPartnership(Page):
     application_quote_author = models.CharField(max_length=255, blank=True, null=True)
     application_quote_title = models.CharField(max_length=255, blank=True, null=True)
     application_quote_school = models.CharField(max_length=255, blank=True, null=True)
+    application_link = models.URLField(blank=True, null=True)
 
     content_panels = [
         FieldPanel('title'),
@@ -1864,6 +1865,7 @@ class InstitutionalPartnership(Page):
         FieldPanel('application_quote_author'),
         FieldPanel('application_quote_title'),
         FieldPanel('application_quote_school'),
+        FieldPanel('application_link'),
     ]
 
     api_fields = [
@@ -1879,6 +1881,7 @@ class InstitutionalPartnership(Page):
         APIField('application_quote_author'),
         APIField('application_quote_title'),
         APIField('application_quote_school'),
+        APIField('application_link'),
         APIField('title'),
         APIField('slug'),
         APIField('seo_title'),
