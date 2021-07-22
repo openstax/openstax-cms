@@ -802,8 +802,7 @@ class Book(Page):
 
     @property
     def errata_content(self):
-        e_content = snippets.ErrataContent.objects.filter(book_state=self.book_state)
-        return e_content.first().content
+        return snippets.ErrataContent.objects.filter(book_state=self.book_state, locale=self.locale).first().content
 
     def get_slug(self):
         return 'books/{}'.format(self.slug)
