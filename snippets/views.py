@@ -36,8 +36,11 @@ class ErrataContentViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         queryset = ErrataContent.objects.all()
         book_state = self.request.query_params.get('book_state', None)
+        locale = self.request.query_params.get('locale', None)
         if book_state is not None:
             queryset = queryset.filter(book_state=book_state)
+        if locale is not None:
+            queryset = queryset.filter(locale=convert_locale(locale))
         return queryset
 
 
