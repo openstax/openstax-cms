@@ -292,6 +292,13 @@ class PartnerReview(models.Model):
         ('Deleted', 'Deleted')
     )
 
+    FACULTY_STATUS_OPTIONS = (
+        ('no_faculty_info', 'No Faculty Info'),
+        ('confirmed_faculty', 'Confirmed Faculty'),
+        ('rejected_faculty', 'Rejected Faculty'),
+        ('pending_faculty', 'Pending Faculty')
+    )
+
     partner = models.ForeignKey(Partner, on_delete=models.SET_NULL, null=True)
     review_salesforce_id = models.CharField(max_length=255, blank=True, null=True, unique=True)
     rating = models.IntegerField(validators=[
@@ -303,6 +310,7 @@ class PartnerReview(models.Model):
     partner_response_date = models.DateField(null=True, blank=True)
     submitted_by_name = models.CharField(max_length=255)
     submitted_by_account_id = models.IntegerField()
+    user_faculty_status = models.CharField(max_length=255, choices=FACULTY_STATUS_OPTIONS, default='No Faculty Info')
     status = models.CharField(max_length=255, choices=STATUS_OPTIONS, default='New')
     created = models.DateField(auto_now_add=True)
     updated = models.DateField(auto_now=True)

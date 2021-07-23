@@ -133,6 +133,6 @@ class SavingsNumberSerializer(serializers.ModelSerializer):
 class PartnerReviewSerializer(serializers.ModelSerializer):
     class Meta:
         model = PartnerReview
-        fields = ('id', 'status', 'partner', 'partner_response', 'partner_response_date', 'review', 'rating', 'submitted_by_name', 'submitted_by_account_id', 'created', 'updated')
+        fields = ('id', 'status', 'partner', 'partner_response', 'partner_response_date', 'review', 'rating', 'submitted_by_name', 'submitted_by_account_id', 'user_faculty_status', 'created', 'updated')
         read_only_fields = ('partner_response', 'partner_response_date', 'created', 'updated', 'status')
 
