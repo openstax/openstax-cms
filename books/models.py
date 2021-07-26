@@ -605,6 +605,12 @@ class Book(Page):
         related_name='+',
         help_text='Promote image.'
     )
+    translations = StreamField([
+        ('translation', blocks.ListBlock(blocks.StructBlock([
+            ('locale', blocks.CharBlock()),
+            ('slug', blocks.CharBlock()),
+        ])))
+    ], null=True, blank=True)
 
     last_updated_pdf = models.DateTimeField(blank=True, null=True, help_text="Last time PDF was revised.", verbose_name='PDF Content Revision Date')
 
@@ -672,6 +678,7 @@ class Book(Page):
         FieldPanel('customization_form_next_steps'),
         FieldPanel('support_statement'),
         StreamFieldPanel('videos'),
+        StreamFieldPanel('translations'),
     ]
     instructor_resources_panel = [
         FieldPanel('featured_resources_header'),
@@ -773,6 +780,7 @@ class Book(Page):
         APIField('customization_form_disclaimer'),
         APIField('customization_form_next_steps'),
         APIField('videos'),
+        APIField('translations'),
         APIField('seo_title'),
         APIField('search_description'),
         APIField('promote_image'),
