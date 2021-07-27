@@ -260,7 +260,7 @@ class Command(BaseCommand):
         attributes_to_remove = []
         for attribute in field_names:
             attr_value = getattr(partner, str(attribute))
-            if str(attr_value) == 'True':
+            if str(attr_value) == 'True' and partner.visible_on_website:
                 attributes_to_remove.append(attribute)
         return [x for x in field_names if x not in attributes_to_remove]
 
