@@ -239,6 +239,7 @@ class Partner(models.Model):
                                                                          'partner_response',
                                                                          'submitted_by_name',
                                                                          'submitted_by_account_id',
+                                                                         'user_faculty_status',
                                                                          'created',
                                                                          'updated'))
 
