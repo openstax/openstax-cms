@@ -902,6 +902,12 @@ class BookIndex(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+    translations = StreamField([
+        ('translation', blocks.ListBlock(blocks.StructBlock([
+            ('locale', blocks.CharBlock()),
+            ('slug', blocks.CharBlock()),
+        ])))
+    ], null=True, blank=True)
 
     @property
     def books(self):
@@ -955,6 +961,7 @@ class BookIndex(Page):
         FieldPanel('dev_standard_4_heading'),
         FieldPanel('dev_standard_4_description'),
         FieldPanel('subject_list_heading'),
+        StreamFieldPanel('translations'),
     ]
 
     promote_panels = [
@@ -977,6 +984,7 @@ class BookIndex(Page):
         APIField('dev_standard_4_heading'),
         APIField('dev_standard_4_description'),
         APIField('subject_list_heading'),
+        APIField('translations'),
         APIField('books'),
         APIField('seo_title'),
         APIField('search_description'),
