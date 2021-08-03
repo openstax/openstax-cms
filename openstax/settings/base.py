@@ -5,7 +5,6 @@ import sys
 import raven
 import logging.config
 from django.utils.log import DEFAULT_LOGGING
-from corsheaders.defaults import default_headers
 
 PROJECT_ROOT = os.path.join(os.path.dirname(__file__), '..', '..')
 BASE_DIR = PROJECT_ROOT
@@ -124,16 +123,6 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOWED_ORIGIN_REGEXES = [
     r"^https://\w+\.openstax\.org",
 ]
-
-CORS_ALLOW_HEADERS = list(default_headers) + [
-    'X-CustomHeader',
-    'Keep-Alive',
-    'If-Modified-Since',
-    'Cache-Control'
-]
-
-CORS_ALLOW_CREDENTIALS = True
-SESSION_COOKIE_SAMESITE = None # to allow session cookies to pass from cms-dev to dev, etc.
 
 AUTHENTICATION_BACKENDS = (
     'oxauth.backend.OpenStax',
