@@ -3,10 +3,13 @@ from wagtail.search import index
 from wagtail.admin.edit_handlers import FieldPanel
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.core.fields import RichTextField
+from wagtail.core.models import TranslatableMixin
 from wagtail.snippets.models import register_snippet
 from openstax.functions import build_image_url
+from books.constants import BOOK_STATES
 
-class Subject(models.Model):
+
+class Subject(TranslatableMixin, models.Model):
     name = models.CharField(max_length=255)
     page_content = models.TextField(blank=True, help_text="Content that appears on the subjects page when looking at a subject.")
     seo_title = models.CharField(max_length=255, null=True, blank=True)
@@ -27,7 +30,7 @@ class Subject(models.Model):
 register_snippet(Subject)
 
 
-class FacultyResource(index.Indexed, models.Model):
+class FacultyResource(TranslatableMixin, index.Indexed, models.Model):
     heading = models.CharField(max_length=255)
     description = RichTextField(blank=True, null=True)
     unlocked_resource = models.BooleanField(default=False)
@@ -44,6 +47,7 @@ class FacultyResource(index.Indexed, models.Model):
 
     search_fields = [
         index.SearchField('heading', partial_match=True),
+        index.FilterField('locale_id'),
     ]
 
     def __str__(self):
@@ -52,7 +56,7 @@ class FacultyResource(index.Indexed, models.Model):
 register_snippet(FacultyResource)
 
 
-class StudentResource(index.Indexed, models.Model):
+class StudentResource(TranslatableMixin, index.Indexed, models.Model):
     heading = models.CharField(max_length=255)
     description = RichTextField(blank=True, null=True)
     unlocked_resource = models.BooleanField(default=True)
@@ -75,7 +79,7 @@ class StudentResource(index.Indexed, models.Model):
 register_snippet(StudentResource)
 
 
-class Role(models.Model):
+class Role(TranslatableMixin, models.Model):
     display_name = models.CharField(max_length=255)
     salesforce_name = models.CharField(max_length=255)
 
@@ -93,7 +97,7 @@ class Role(models.Model):
 register_snippet(Role)
 
 
-class SharedContent(index.Indexed, models.Model):
+class SharedContent(TranslatableMixin, index.Indexed, models.Model):
     title = models.CharField(max_length=255, help_text="Internal name for identification.")
     heading = models.CharField(max_length=255, null=True, blank=True)
     content = models.TextField(null=True, blank=True)
@@ -122,7 +126,7 @@ class SharedContent(index.Indexed, models.Model):
 register_snippet(SharedContent)
 
 
-class NewsSource(index.Indexed, models.Model):
+class NewsSource(TranslatableMixin, index.Indexed, models.Model):
     name = models.CharField(max_length=255)
     logo = models.ForeignKey(
         'wagtailimages.Image',
@@ -152,3 +156,23 @@ class NewsSource(index.Indexed, models.Model):
         return self.name
 
 register_snippet(NewsSource)
+
+
+class ErrataContent(TranslatableMixin, index.Indexed, models.Model):
+    heading = models.CharField(max_length=255, blank=True, null=True)
+    book_state = models.CharField(max_length=255, choices=BOOK_STATES, default='live', help_text='The state of the book.')
+    content = models.TextField()
+
+    panels = [
+        FieldPanel('heading'),
+        FieldPanel('book_state'),
+        FieldPanel('content')
+    ]
+
+    api_fields = ('heading', 'book_state', 'content')
+
+    def __str__(self):
+        return self.heading
+
+
+register_snippet(ErrataContent)

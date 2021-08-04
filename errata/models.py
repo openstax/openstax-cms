@@ -28,14 +28,16 @@ YES_NO_CHOICES = (
 
 NEW = 'New'
 EDITORIAL_REVIEW = 'Editorial Review'
-ANDREW_EDITORIAL_REVIEW = 'Andrew Editorial Review'
+K12_EDITORIAL_REVIEW = 'K-12 Editorial Review'
+ASSOCIATE_EDITORIAL_REVIEW = 'Associate Editorial Review'
 ANTHONY_EDITORIAL_REVIEW = 'Anthony Editorial Review'
 REVIEWED = 'Reviewed'
 COMPLETED = 'Completed'
 ERRATA_STATUS = (
     (NEW, 'New'),
     (EDITORIAL_REVIEW, 'Editorial Review'),
-    (ANDREW_EDITORIAL_REVIEW, 'Andrew Editorial Review'),
+    (K12_EDITORIAL_REVIEW, 'K-12 Editorial Review'),
+    (ASSOCIATE_EDITORIAL_REVIEW, 'Kelsey Editorial Review'),
     (ANTHONY_EDITORIAL_REVIEW,'Anthony Editorial Review'),
     (REVIEWED, 'Reviewed'),
     (COMPLETED, 'Completed'),
@@ -210,30 +212,6 @@ class Errata(models.Model):
     file_1 = models.FileField(upload_to='errata/user_uploads/1/', blank=True, null=True)
     file_2 = models.FileField(upload_to='errata/user_uploads/2/', blank=True, null=True)
 
-    # @property
-    # def user_email(self):
-    #     try:
-    #         user = get_user_info(self.submitted_by_account_id)
-    #         return user['email']
-    #     except:
-    #         return None
-    #
-    # @property
-    # def user_name(self):
-    #     try:
-    #         user = get_user_info(self.submitted_by_account_id)
-    #         return user['fullname']
-    #     except:
-    #         return None
-    #
-    # @property
-    # def user_faculty_status(self):
-    #     try:
-    #         user = get_user_info(self.submitted_by_account_id)
-    #         return user['faculty_status']
-    #     except:
-    #         return None
-
     @property
     def accounts_link(self):
         try:
@@ -248,7 +226,7 @@ class Errata(models.Model):
     def clean(self):
         if self.status == 'Completed' and not self.resolution or self.status == 'Reviewed' and not self.resolution:
             raise ValidationError({'resolution': 'Resolution is required if status is completed or reviewed.'})
-        if (self.status == 'Editorial Review' or self.status == 'Andrew Editorial Review' or self.status == 'Anthony Editorial Review' or self.status == 'Reviewed' or self.status == 'Completed') and not self.is_assessment_errata:
+        if (self.status == 'Editorial Review' or self.status == 'K-12 Editorial Review' or self.status == 'Associate Editorial Review' or self.status == 'Anthony Editorial Review' or self.status == 'Reviewed' or self.status == 'Completed') and not self.is_assessment_errata:
             raise ValidationError({'is_assessment_errata': 'You must specify if this is an assessment errata.'})
         if (self.status == 'Completed' and self.resolution == 'Duplicate') and not self.duplicate_id:
             raise ValidationError({'duplicate_id': 'You must specify the duplicate report ID when resolution is marked duplicate.'})

@@ -29,7 +29,8 @@ from wagtail.snippets.models import register_snippet
 from wagtail.core.models import Site
 
 from openstax.functions import build_document_url, build_image_url
-from snippets.models import FacultyResource, StudentResource, Subject, SharedContent
+from books.constants import BOOK_STATES, BOOK_COVER_TEXT_COLOR, COVER_COLORS
+import snippets.models as snippets
 
 
 def cleanhtml(raw_html):
@@ -134,7 +135,7 @@ class OrientationFacultyResource(models.Model):
 
 class FacultyResources(models.Model):
     resource = models.ForeignKey(
-        FacultyResource,
+        snippets.FacultyResource,
         null=True,
         help_text="Manage resources through snippets.",
         related_name='+',
@@ -237,7 +238,7 @@ class FacultyResources(models.Model):
 
 class StudentResources(models.Model):
     resource = models.ForeignKey(
-        StudentResource,
+        snippets.StudentResource,
         null=True,
         help_text="Manage resources through snippets.",
         related_name='+',
@@ -362,7 +363,7 @@ class AuthorBlock(blocks.StructBlock):
 
 
 class SubjectBooks(models.Model):
-    subject = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True, related_name='subjects_subject')
+    subject = models.ForeignKey(snippets.Subject, on_delete=models.SET_NULL, null=True, related_name='subjects_subject')
 
     def get_subject_name(self):
         return self.subject.name
@@ -401,7 +402,7 @@ class SharedContentChooserBlock(SnippetChooserBlock):
 
 
 class SharedContentBlock(blocks.StreamBlock):
-    content = SharedContentChooserBlock(SharedContent)
+    content = SharedContentChooserBlock(snippets.SharedContent)
     link = blocks.URLBlock(required=False)
     link_text = blocks.CharBlock(required=False)
 
@@ -426,76 +427,6 @@ class BookStudentResources(Orderable, StudentResources):
 
 class BookSubjects(Orderable, SubjectBooks):
     book_subject = ParentalKey('books.Book', related_name='book_subjects')
-
-
-BLUE = 'blue'
-DEEP_GREEN = 'deep-green'
-GOLD = 'gold'
-GRAY = 'gray'
-GREEN = 'green'
-LIGHT_BLUE = 'light-blue'
-LIGHT_GRAY = 'light-gray'
-MEDIUM_BLUE = 'medium-blue'
-ORANGE = 'orange'
-RED = 'red'
-YELLOW = 'yellow'
-COVER_COLORS = (
-    (BLUE, 'Blue'),
-    (DEEP_GREEN, 'Deep Green'),
-    (GOLD, 'Gold'),
-    (GRAY, 'Gray'),
-    (GREEN, 'Green'),
-    (LIGHT_BLUE, 'Light Blue'),
-    (LIGHT_GRAY, 'Light Gray'),
-    (MEDIUM_BLUE, 'Medium Blue'),
-    (ORANGE, 'Orange'),
-    (RED, 'Red'),
-    (YELLOW, 'Yellow'),
-)
-
-YELLOW = 'yellow'
-LIGHT_BLUE = 'light_blue'
-DARK_BLUE = 'dark_blue'
-GREEN = 'green'
-WHITE = 'white'
-GREY = 'grey'
-RED = 'red'
-WHITE_RED = 'white_red'
-WHITE_BLUE = 'white_blue'
-GREEN_WHITE = 'green_white'
-YELLOW_WHITE = 'yellow_white'
-GREY_WHITE = 'grey_white'
-WHITE_GREY = 'white_grey'
-WHITE_ORANGE = 'white_orange'
-BOOK_COVER_TEXT_COLOR = (
-    (YELLOW, 'Yellow'),
-    (LIGHT_BLUE, 'Light Blue'),
-    (DARK_BLUE, 'Dark Blue'),
-    (GREEN, 'Green'),
-    (WHITE, 'White'),
-    (GREY, 'Grey'),
-    (RED, 'Red'),
-    (WHITE_RED, 'White/Red'),
-    (WHITE_BLUE, 'White/Blue'),
-    (GREEN_WHITE, 'Green/White'),
-    (YELLOW_WHITE, 'Yellow/White'),
-    (GREY_WHITE, 'Grey/White'),
-    (WHITE_GREY, 'White/Grey'),
-    (WHITE_ORANGE, 'White/Orange'),
-)
-
-LIVE = 'live'
-COMING_SOON = 'coming_soon'
-NEW_EDITION_AVAILABLE = 'new_edition_available'
-DEPRECATED = 'deprecated'
-RETIRED = 'retired'
-BOOK_STATES = (
-    (LIVE, 'Live'),
-    (COMING_SOON, 'Coming Soon'),
-    (NEW_EDITION_AVAILABLE, 'New Edition Forthcoming (Show new edition correction schedule)'),
-    (DEPRECATED, 'Deprecated (Disallow errata submissions and show deprecated schedule)'),
-    (RETIRED, 'Retired (Remove from website)')
-)
 
 
 class Book(Page):
@@ -645,7 +576,6 @@ class Book(Page):
     bookstore_content = StreamField(SharedContentBlock(), null=True, blank=True, help_text='Bookstore content.')
     comp_copy_available = models.BooleanField(default=True, help_text='Whether free compy available for teachers.')
     comp_copy_content = StreamField(SharedContentBlock(), null=True, blank=True, help_text='Content of the free copy.')
-    errata_content = StreamField(SharedContentBlock(), null=True, blank=True, help_text='Errata content.')
     tutor_marketing_book = models.BooleanField(default=False, help_text='Whether this is a Tutor marketing book.')
     partner_list_label = models.CharField(max_length=255, null=True, blank=True, help_text="Controls the heading text on the book detail page for partners. This will update ALL books to use this value!")
     partner_page_link_text = models.CharField(max_length=255, null=True, blank=True, help_text="Link to partners page on top right of list.")
@@ -675,6 +605,12 @@ class Book(Page):
         related_name='+',
         help_text='Promote image.'
     )
+    translations = StreamField([
+        ('translation', blocks.ListBlock(blocks.StructBlock([
+            ('locale', blocks.CharBlock()),
+            ('slug', blocks.CharBlock()),
+        ])))
+    ], null=True, blank=True)
 
     last_updated_pdf = models.DateTimeField(blank=True, null=True, help_text="Last time PDF was revised.", verbose_name='PDF Content Revision Date')
 
@@ -733,7 +669,6 @@ class Book(Page):
         StreamFieldPanel('bookstore_content'),
         FieldPanel('comp_copy_available'),
         StreamFieldPanel('comp_copy_content'),
-        StreamFieldPanel('errata_content'),
         FieldPanel('tutor_marketing_book'),
         FieldPanel('partner_list_label'),
         FieldPanel('partner_page_link_text'),
@@ -743,6 +678,7 @@ class Book(Page):
         FieldPanel('customization_form_next_steps'),
         FieldPanel('support_statement'),
         StreamFieldPanel('videos'),
+        StreamFieldPanel('translations'),
     ]
     instructor_resources_panel = [
         FieldPanel('featured_resources_header'),
@@ -844,6 +780,7 @@ class Book(Page):
         APIField('customization_form_disclaimer'),
         APIField('customization_form_next_steps'),
         APIField('videos'),
+        APIField('translations'),
         APIField('seo_title'),
         APIField('search_description'),
         APIField('promote_image'),
@@ -870,6 +807,10 @@ class Book(Page):
         for subject in self.book_subjects.all():
             subject_list.append(subject.subject_name)
         return subject_list
+
+    @property
+    def errata_content(self):
+        return snippets.ErrataContent.objects.filter(book_state=self.book_state, locale=self.locale).first().content
 
     def get_slug(self):
         return 'books/{}'.format(self.slug)
@@ -961,10 +902,16 @@ class BookIndex(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+    translations = StreamField([
+        ('translation', blocks.ListBlock(blocks.StructBlock([
+            ('locale', blocks.CharBlock()),
+            ('slug', blocks.CharBlock()),
+        ])))
+    ], null=True, blank=True)
 
     @property
     def books(self):
-        books = Book.objects.live().order_by('path')
+        books = Book.objects.live().filter(locale=self.locale).order_by('path')
         book_data = []
         for book in books:
             has_faculty_resources = BookFacultyResources.objects.filter(book_faculty_resource=book).exists()
@@ -1014,6 +961,7 @@ class BookIndex(Page):
         FieldPanel('dev_standard_4_heading'),
         FieldPanel('dev_standard_4_description'),
         FieldPanel('subject_list_heading'),
+        StreamFieldPanel('translations'),
     ]
 
     promote_panels = [
@@ -1036,6 +984,7 @@ class BookIndex(Page):
         APIField('dev_standard_4_heading'),
         APIField('dev_standard_4_description'),
         APIField('subject_list_heading'),
+        APIField('translations'),
         APIField('books'),
         APIField('seo_title'),
         APIField('search_description'),

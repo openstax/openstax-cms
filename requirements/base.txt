@@ -14,7 +14,6 @@ django-admin-view-permission==1.5
 django-appconf==1.0.3
 django-cachalot==1.5.0
 django-compressor==2.4
-django-cors-headers==3.7.0
 django-extensions==2.0.7
 django-filter==2.4.0
 django-inline-actions==2.3.0
@@ -98,6 +97,7 @@ django-admin-rangefilter==0.6.3
 
 # sso stuff
 pycryptodome>=3.9.7
+django-cors-headers==2.4.1
 
 # reporting
 sentry-sdk==1.1.0
@@ -105,7 +105,7 @@ psutil==5.6.3
 scout-apm==2.14.3
 
 # for supporting animated gifs
-Wand==0.6.5
+Wand==0.6.6
 
 # for recording test interactions with third-party APIs
 vcrpy==4.1.1

@@ -5,7 +5,6 @@ import sys
 import raven
 import logging.config
 from django.utils.log import DEFAULT_LOGGING
-from corsheaders.defaults import default_headers
 
 PROJECT_ROOT = os.path.join(os.path.dirname(__file__), '..', '..')
 BASE_DIR = PROJECT_ROOT
@@ -52,13 +51,19 @@ SITE_ID = 1
 # If you set this to False, Django will make some optimizations so as not
 # to load the internationalization machinery.
 USE_I18N = True
+WAGTAIL_I18N_ENABLED = True
+
+WAGTAIL_CONTENT_LANGUAGES = [
+    ('en', "English"),
+    ('es', "Spanish"),
+]
 
 # If you set this to False, Django will not format dates, numbers and
 # calendars according to the current locale.
 # Note that with this set to True, Wagtail will fall back on using numeric dates
 # in date fields, as opposed to 'friendly' dates like "24 Sep 2013", because
 # Python's strptime doesn't support localised month names: https://code.djangoproject.com/ticket/13339
-USE_L10N = False
+USE_L10N = True
 
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
@@ -99,7 +104,6 @@ STATICFILES_FINDERS = [
 SECRET_KEY = 'wq21wtjo3@d_qfjvd-#td!%7gfy2updj2z+nev^k$iy%=m4_tr'
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'openstax.middleware.CommonMiddlewareAppendSlashWithoutRedirect',
     'django.middleware.common.CommonMiddleware',
@@ -110,24 +114,6 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'wagtail.contrib.redirects.middleware.RedirectMiddleware',
 ]
-
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000"
-]
-
-CORS_ALLOWED_ORIGIN_REGEXES = [
-    r"^https://\w+\.openstax\.org",
-]
-
-CORS_ALLOW_HEADERS = list(default_headers) + [
-    'X-CustomHeader',
-    'Keep-Alive',
-    'If-Modified-Since',
-    'Cache-Control'
-]
-
-CORS_ALLOW_CREDENTIALS = True
-SESSION_COOKIE_SAMESITE = None # to allow session cookies to pass from cms-dev to dev, etc.
 
 AUTHENTICATION_BACKENDS = (
     'oxauth.backend.OpenStax',
@@ -194,7 +180,6 @@ INSTALLED_APPS = [
     'django.contrib.sitemaps',
     # contrib
     'compressor',
-    'corsheaders',
     'taggit',
     'modelcluster',
     'rest_framework',
@@ -239,6 +224,8 @@ INSTALLED_APPS = [
     'wagtail.embeds',
     'wagtail.search',
     'wagtail.contrib.redirects',
+    'wagtail.contrib.simple_translation',
+    'wagtail.locales',
     'wagtail.contrib.forms',
     'wagtail.sites',
     #'wagtail.contrib.wagtailapi',
@@ -326,7 +313,7 @@ logging.config.dictConfig({
 
 # FLAGS
 FLAGS = {
-    'hide_faculty_resources': [],
+    'enable_my_openstax': [],
 }
 
 
