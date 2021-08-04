@@ -313,7 +313,7 @@ logging.config.dictConfig({
 
 # FLAGS
 FLAGS = {
-    'hide_faculty_resources': [],
+    'enable_my_openstax': [],
 }
 
 
