@@ -10,7 +10,7 @@ class Command(BaseCommand):
 
         for review in reviews:
             user = get_user_info(review.submitted_by_account_id)
-            if user is not False:
+            if user:
                 if review.user_faculty_status is not user['faculty_status']:
                     review.user_faculty_status = user['faculty_status']
                     review.save()
