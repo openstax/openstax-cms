@@ -810,6 +810,8 @@ class Book(Page):
 
     @property
     def errata_content(self):
+        if self.locale == 'es':
+            return snippets.ErrataContent.objects.filter(locale=self.locale).first().content
         return snippets.ErrataContent.objects.filter(book_state=self.book_state, locale=self.locale).first().content
 
     def get_slug(self):
