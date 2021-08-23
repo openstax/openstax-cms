@@ -5,9 +5,9 @@ from django.contrib.auth.decorators import permission_required
 from rest_framework.renderers import JSONRenderer
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.filters import OrderingFilter
-from django_filters.rest_framework import DjangoFilterBackend, FilterSet
+from django_filters.rest_framework import DjangoFilterBackend, FilterSet, MultipleChoiceFilter
 from django.shortcuts import render, redirect
-from .models import Errata
+from .models import Errata, ERRATA_STATUS
 from .serializers import ErrataSerializer
 from .forms import ErrataModelForm
 from oxauth.functions import get_user_info
@@ -27,7 +27,7 @@ class ErrataFilter(FilterSet):
     book_title = django_filters.CharFilter(field_name='book__title')
     book_id = django_filters.CharFilter(field_name='book__id')
     is_assessment_errata__not = django_filters.CharFilter(field_name='is_assessment_errata', exclude=True)
-    status__not = django_filters.CharFilter(field_name='status', exclude=True)
+    status__not = MultipleChoiceFilter(field_name='status', choices=ERRATA_STATUS, exclude=True)
 
     class Meta:
         model = Errata
