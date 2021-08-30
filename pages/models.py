@@ -1408,6 +1408,10 @@ class ErrataList(Page):
     correction_schedule = RichTextField()
     deprecated_errata_message = RichTextField(help_text="Errata message for deprecated books, controlled via the book state field.")
     new_edition_errata_message = RichTextField(help_text="Errata message for books with new editions, controlled via the book state field.")
+    about_header = models.CharField(max_length=255, help_text="About our correction schedule")
+    about_text = RichTextField(help_text="Errata received from March through...\" the stuff that will show on the page")
+    about_popup = RichTextField(help_text= "Instructor and student resources...\" the stuff that will be in the popup")
+
 
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
@@ -1423,14 +1427,20 @@ class ErrataList(Page):
         APIField('new_edition_errata_message'),
         APIField('seo_title'),
         APIField('search_description'),
-        APIField('promote_image')
+        APIField('promote_image'),
+        APIField('about_header'),
+        APIField('about_text'),
+        APIField('about_popup')
     ]
 
     content_panels = [
         FieldPanel('title', classname="full title"),
         FieldPanel('correction_schedule'),
         FieldPanel('deprecated_errata_message'),
-        FieldPanel('new_edition_errata_message')
+        FieldPanel('new_edition_errata_message'),
+        FieldPanel('about_header'),
+        FieldPanel('about_text'),
+        FieldPanel('about_popup')
     ]
 
     promote_panels = [
