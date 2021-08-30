@@ -169,7 +169,11 @@ class ErrataListTest(WagtailPageTests):
         errata_list_page = ErrataList(title="Errata List Template",
                                       correction_schedule="Some sample correction schedule text.",
                                       new_edition_errata_message="New edition correction text.",
-                                      deprecated_errata_message="Deprecated errata message.")
+                                      deprecated_errata_message="Deprecated errata message.",
+                                      about_header="About our correction schedule.",
+                                      about_text="Errata receieved from March through...",
+                                      about_popup="Instructor and student resources..."
+                                      )
         homepage.add_child(instance=errata_list_page)
 
         retrieved_page = Page.objects.get(id=errata_list_page.id)
