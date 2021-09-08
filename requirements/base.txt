@@ -22,7 +22,6 @@ django-filter==2.4.0
 django-inline-actions==2.3.0
 django-libsass==0.6
 django-modelcluster==5.1
-django-overextends==0.4.2
 django-rest-auth==0.6.0
 django-taggit==1.2.0
 django-treebeard==4.3.1
