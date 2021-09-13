@@ -834,22 +834,22 @@ class Book(Page):
             self.webview_link = '{}contents/{}'.format(settings.CNX_URL, self.cnx_id)
 
         if self.partner_list_label:
-            Book.objects.all().update(partner_list_label=self.partner_list_label)
+            Book.objects.filter(locale=self.locale).update(partner_list_label=self.partner_list_label)
 
         if self.partner_page_link_text:
-            Book.objects.all().update(partner_page_link_text=self.partner_page_link_text)
+            Book.objects.filter(locale=self.locale).update(partner_page_link_text=self.partner_page_link_text)
 
         # sync customization form changes on all books
         if self.customization_form_heading:
-            Book.objects.all().update(customization_form_heading=self.customization_form_heading)
+            Book.objects.filter(locale=self.locale).update(customization_form_heading=self.customization_form_heading)
         if self.customization_form_subheading:
-            Book.objects.all().update(customization_form_subheading=self.customization_form_subheading)
+            Book.objects.filter(locale=self.locale).update(customization_form_subheading=self.customization_form_subheading)
         if self.customization_form_disclaimer:
-            Book.objects.all().update(customization_form_disclaimer=self.customization_form_disclaimer)
+            Book.objects.filter(locale=self.locale).update(customization_form_disclaimer=self.customization_form_disclaimer)
         if self.customization_form_next_steps:
-            Book.objects.all().update(customization_form_next_steps=self.customization_form_next_steps)
+            Book.objects.filter(locale=self.locale).update(customization_form_next_steps=self.customization_form_next_steps)
         if self.support_statement:
-            Book.objects.all().update(support_statement=self.support_statement)
+            Book.objects.filter(locale=self.locale).update(support_statement=self.support_statement)
 
         return super(Book, self).save(*args, **kwargs)
 

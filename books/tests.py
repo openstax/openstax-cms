@@ -41,6 +41,7 @@ class BookTests(WagtailPageTests):
 
     def test_can_create_book(self):
         book_index = BookIndex.objects.all()[0]
+        root_page = Page.objects.get(title="Root")
         book = Book(title="University Physics",
                     slug="university-physics",
                     cnx_id='031da8d3-b525-429c-80cf-6c8ed997733a',
@@ -50,12 +51,14 @@ class BookTests(WagtailPageTests):
                     cover=self.test_doc,
                     title_image=self.test_doc,
                     publish_date=datetime.date.today(),
+                    locale=root_page.locale
                     )
         book_index.add_child(instance=book)
         self.assertEqual(book.salesforce_abbreviation, 'University Phys (Calc)')
 
     def test_can_create_ap_book(self):
         book_index = BookIndex.objects.all()[0]
+        root_page = Page.objects.get(title="Root")
         book = Book(title="Prealgebra",
                     slug="prealgebra",
                     salesforce_abbreviation='Prealgebra',
@@ -65,6 +68,7 @@ class BookTests(WagtailPageTests):
                     cover=self.test_doc,
                     title_image=self.test_doc,
                     publish_date=datetime.date.today(),
+                    locale=root_page.locale
                     )
         book_index.add_child(instance=book)
         self.assertEqual(book.salesforce_abbreviation, 'Prealgebra')
@@ -72,6 +76,7 @@ class BookTests(WagtailPageTests):
 
     def test_can_create_book_without_cnx_id(self):
         book_index = BookIndex.objects.all()[0]
+        root_page = Page.objects.get(title="Root")
         book = Book(title="Prealgebra",
                     slug="prealgebra",
                     salesforce_abbreviation='Prealgebra',
@@ -80,12 +85,14 @@ class BookTests(WagtailPageTests):
                     cover=self.test_doc,
                     title_image=self.test_doc,
                     publish_date=datetime.date.today(),
+                    locale=root_page.locale
                     )
         book_index.add_child(instance=book)
         self.assertEqual(book.salesforce_abbreviation, 'Prealgebra')
 
     def test_only_numbers_for_price(self):
         book_index = BookIndex.objects.all()[0]
+        root_page = Page.objects.get(title="Root")
         book = Book(title="Prealgebra",
                 slug="prealgebra",
                 salesforce_abbreviation='Prealgebra',
@@ -94,6 +101,7 @@ class BookTests(WagtailPageTests):
                 cover=self.test_doc,
                 title_image=self.test_doc,
                 publish_date=datetime.date.today(),
+                locale=root_page.locale
                 )
         book_index.add_child(instance=book)
         self.assertEqual(book.salesforce_abbreviation, 'Prealgebra')
