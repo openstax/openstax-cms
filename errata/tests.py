@@ -40,6 +40,7 @@ class ErrataTest(TestCase):
                             cover=test_doc,
                             title_image=test_doc,
                             publish_date=datetime.date.today(),
+                            locale=root_page.locale
                             )
         book_index.add_child(instance=book)
 
