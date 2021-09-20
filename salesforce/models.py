@@ -39,6 +39,7 @@ class School(models.Model):
     phone = models.CharField(max_length=255, null=True, blank=True)
     website = models.CharField(max_length=255, null=True, blank=True)
     type = models.CharField(max_length=255, null=True, blank=True)
+    location = models.CharField(max_length=255, null=True, blank=True)
     adoption_date = models.CharField(max_length=255, null=True, blank=True)
     key_institutional_partner = models.BooleanField(default=False)
     achieving_the_dream_school = models.BooleanField(default=False)

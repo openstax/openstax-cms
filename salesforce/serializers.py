@@ -12,6 +12,7 @@ class SchoolSerializer(serializers.ModelSerializer):
                   'phone',
                   'website',
                   'type',
+                  'location',
                   'adoption_date',
                   'key_institutional_partner',
                   'achieving_the_dream_school',
