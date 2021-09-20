@@ -372,13 +372,16 @@ def send_status_update_email(sender, instance, created, **kwargs):
             send_email = True
 
         if not override_to:
-            if instance.submitted_by_account_id:
-                user = get_user_info(instance.submitted_by_account_id)
-                to = user['email']
-            elif instance.submitter_email_address:
-                to = instance.submitter_email_address
-            elif instance.submitted_by:
-                to = instance.submitted_by.email
+            try:
+                if instance.submitted_by_account_id:
+                    user = get_user_info(instance.submitted_by_account_id)
+                    to = user['email']
+                elif instance.submitter_email_address:
+                    to = instance.submitter_email_address
+                elif instance.submitted_by:
+                    to = instance.submitted_by.email
+            except TypeError:
+                send_email = False
             else:
                 send_email = False
 
