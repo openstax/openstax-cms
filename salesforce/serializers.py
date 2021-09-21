@@ -23,6 +23,7 @@ class SchoolSerializer(serializers.ModelSerializer):
                   'percent_students_pell_grant',
                   'current_year_students',
                   'all_time_students',
+                  'total_school_enrollment',
                   'current_year_savings',
                   'all_time_savings',
                   'physical_country',

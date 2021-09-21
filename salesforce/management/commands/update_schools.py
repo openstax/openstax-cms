@@ -21,6 +21,7 @@ class Command(BaseCommand):
                       "Students_Pell_Grant__c, " \
                       "Students_Current_Year__c, " \
                       "All_Time_Students2__c, " \
+                      "Total_School_Enrollment__c, " \
                       "Savings_Current_Year__c, " \
                       "All_Time_Savings2__c, " \
                       "BillingStreet, " \
@@ -51,6 +52,7 @@ class Command(BaseCommand):
                       "Students_Pell_Grant__c, " \
                       "Students_Current_Year__c, " \
                       "All_Time_Students2__c, " \
+                      "Total_School_Enrollment__c, " \
                       "Savings_Current_Year__c, " \
                       "All_Time_Savings2__c, " \
                       "Adoptions_in_District__c, " \
@@ -89,6 +91,7 @@ class Command(BaseCommand):
                                   'percent_students_pell_grant': sf_district['Students_Pell_Grant__c'],
                                   'current_year_students': sf_district['Students_Current_Year__c'],
                                   'all_time_students': sf_district['All_Time_Students2__c'],
+                                  'total_school_enrollment': sf_district['Total_School_Enrollment__c'],
                                   'current_year_savings': sf_district['Savings_Current_Year__c'],
                                   'all_time_savings': sf_district['All_Time_Savings2__c'],
                                   'physical_country': sf_district['BillingCountry'],
@@ -126,6 +129,7 @@ class Command(BaseCommand):
                               'percent_students_pell_grant': sf_school['Students_Pell_Grant__c'],
                               'current_year_students': sf_school['Students_Current_Year__c'],
                               'all_time_students': sf_school['All_Time_Students2__c'],
+                              'total_school_enrollment': sf_district['Total_School_Enrollment__c'],
                               'current_year_savings': sf_school['Savings_Current_Year__c'],
                               'all_time_savings': sf_school['All_Time_Savings2__c'],
                               'physical_country': sf_school['BillingCountry'],
