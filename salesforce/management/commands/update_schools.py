@@ -11,6 +11,7 @@ class Command(BaseCommand):
             query = "SELECT Name, Id, Phone, " \
                       "Website, " \
                       "Type, " \
+                      "School_Location__c, " \
                       "K_I_P__c, " \
                       "Achieving_the_Dream_School__c, " \
                       "HBCU__c, " \
@@ -20,6 +21,7 @@ class Command(BaseCommand):
                       "Students_Pell_Grant__c, " \
                       "Students_Current_Year__c, " \
                       "All_Time_Students2__c, " \
+                      "Total_School_Enrollment__c, " \
                       "Savings_Current_Year__c, " \
                       "All_Time_Savings2__c, " \
                       "BillingStreet, " \
@@ -40,6 +42,7 @@ class Command(BaseCommand):
                       "RecordTypeId, " \
                       "Website, " \
                       "Type, " \
+                      "School_Location__c, " \
                       "K_I_P__c, " \
                       "Achieving_the_Dream_School__c, " \
                       "HBCU__c, " \
@@ -49,6 +52,7 @@ class Command(BaseCommand):
                       "Students_Pell_Grant__c, " \
                       "Students_Current_Year__c, " \
                       "All_Time_Students2__c, " \
+                      "Total_School_Enrollment__c, " \
                       "Savings_Current_Year__c, " \
                       "All_Time_Savings2__c, " \
                       "Adoptions_in_District__c, " \
@@ -65,6 +69,8 @@ class Command(BaseCommand):
                       "Number_of_Adoptions__c FROM Account WHERE RecordTypeId = '012U0000000MdzNIAS' AND K_I_P__c = True"
             district_response = sf.query_all(district_query)
             sf_districts = district_response['records']
+            #remove duplicates
+            sf_schools_to_update = [x for x in sf_schools if x not in sf_districts]
 
             updated_schools = 0
             created_schools = 0
@@ -75,6 +81,7 @@ class Command(BaseCommand):
                                   'phone': sf_district['Phone'],
                                   'website': sf_district['Website'],
                                   'type': sf_district['Type'],
+                                  'location': sf_district['School_Location__c'],
                                   'key_institutional_partner': sf_district['K_I_P__c'],
                                   'achieving_the_dream_school': sf_district['Achieving_the_Dream_School__c'],
                                   'hbcu': sf_district['HBCU__c'],
@@ -84,6 +91,7 @@ class Command(BaseCommand):
                                   'percent_students_pell_grant': sf_district['Students_Pell_Grant__c'],
                                   'current_year_students': sf_district['Students_Current_Year__c'],
                                   'all_time_students': sf_district['All_Time_Students2__c'],
+                                  'total_school_enrollment': sf_district['Total_School_Enrollment__c'],
                                   'current_year_savings': sf_district['Savings_Current_Year__c'],
                                   'all_time_savings': sf_district['All_Time_Savings2__c'],
                                   'physical_country': sf_district['BillingCountry'],
@@ -104,13 +112,14 @@ class Command(BaseCommand):
                 else:
                     updated_schools = updated_schools + 1
 
-            for sf_school in sf_schools:
+            for sf_school in sf_schools_to_update:
                 school, created = School.objects.update_or_create(
                     salesforce_id=sf_school['Id'],
                     defaults={'name': sf_school['Name'],
                               'phone': sf_school['Phone'],
                               'website': sf_school['Website'],
                               'type': sf_school['Type'],
+                              'location': sf_district['School_Location__c'],
                               'key_institutional_partner': sf_school['K_I_P__c'],
                               'achieving_the_dream_school': sf_school['Achieving_the_Dream_School__c'],
                               'hbcu': sf_school['HBCU__c'],
@@ -120,6 +129,7 @@ class Command(BaseCommand):
                               'percent_students_pell_grant': sf_school['Students_Pell_Grant__c'],
                               'current_year_students': sf_school['Students_Current_Year__c'],
                               'all_time_students': sf_school['All_Time_Students2__c'],
+                              'total_school_enrollment': sf_district['Total_School_Enrollment__c'],
                               'current_year_savings': sf_school['Savings_Current_Year__c'],
                               'all_time_savings': sf_school['All_Time_Savings2__c'],
                               'physical_country': sf_school['BillingCountry'],
