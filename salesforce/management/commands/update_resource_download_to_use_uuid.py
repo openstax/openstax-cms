@@ -7,13 +7,13 @@ class Command(BaseCommand):
     help = "update resource download to store the uuid instead of the id"
 
     def handle(self, *args, **options):
-        resource_downloads = ResourceDownload.objects.all()
+        resource_downloads = ResourceDownload.objects.filter(account_uuid__isnull=True)
+
+        self.stdout.write(self.style.NOTICE("Updating {} records. This might take awhile.".format(resource_downloads.count())))
 
         for rd in resource_downloads:
-            if not rd.account_uuid:
-                rd.account_uuid = get_user_info(rd.account_id)['account_uuid']
-                rd.account_id =None
-                rd.save()
+            rd.account_uuid = get_user_info(rd.account_id)['uuid']
+            rd.account_id =None
+            rd.save()
 
-        response = self.style.SUCCESS("[SF Resource Download] Updated UUID fields on resource download records.".format(num_updated, num_failed))
-        self.stdout.write(response)
+        self.stdout.write(self.style.SUCCESS("Updated UUID fields on {} resource download records.".format(resource_downloads.count())))
