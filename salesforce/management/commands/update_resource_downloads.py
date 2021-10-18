@@ -2,6 +2,7 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 from salesforce.models import ResourceDownload
 from salesforce.salesforce import Salesforce
+from simple_salesforce.exceptions import SalesforceResourceNotFound
 from django.utils import timezone
 from datetime import timedelta
 
@@ -22,9 +23,12 @@ class Command(BaseCommand):
         with Salesforce() as sf:
             data = []
             for nrd in new_resource_downloads:
-                contact = sf.Contact.get(nrd.contact_id)
-                data_dict_item = { 'Id': nrd.contact_id, 'Last_Resource_Download_Date__c': nrd.last_access.strftime('%Y-%m-%d')}
-                data.append(data_dict_item)
+                try:
+                    contact = sf.Contact.get(nrd.contact_id)
+                    data_dict_item = { 'Id': nrd.contact_id, 'Last_Resource_Download_Date__c': nrd.last_access.strftime('%Y-%m-%d')}
+                    data.append(data_dict_item)
+                except SalesforceResourceNotFound:
+                    self.stdout.write(self.style.ERROR("Contact Id not found: {}".format(nrd.contact_id)))
 
             results = sf.bulk.Contact.update(data)
             num_updated = 0
