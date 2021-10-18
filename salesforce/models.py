@@ -8,6 +8,8 @@ from wagtail.admin.menu import MenuItem
 
 from books.models import Book
 
+from oxauth.functions import get_user_info
+
 class Adopter(models.Model):
     sales_id = models.CharField(max_length=255, primary_key=True)
     name = models.CharField(max_length=255, null=False)
@@ -340,7 +342,8 @@ class ResourceDownload(models.Model):
     salesforce_id = models.CharField(max_length=100, blank=True, null=True)
     book = models.ForeignKey(Book, on_delete=models.SET_NULL, null=True, blank=True)
     book_format = models.CharField(max_length=100, choices=BOOK_FORMATS, null=True , blank=True)
-    account_id = models.IntegerField()
+    account_id = models.IntegerField(blank=True, null=True)
+    account_uuid = models.UUIDField(null=True)
     created = models.DateTimeField(auto_now_add=True)
     edited = models.DateTimeField(auto_now=True)
     last_access = models.DateTimeField()
@@ -359,6 +362,7 @@ class ResourceDownload(models.Model):
     class Meta:
         indexes = [
             models.Index(fields=['account_id', ]),
+            models.Index(fields=['account_uuid', ]),
             models.Index(fields=['book', ]),
         ]
 
