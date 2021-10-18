@@ -2,14 +2,22 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 from salesforce.models import ResourceDownload
 from salesforce.salesforce import Salesforce
-from datetime import timedelta, date
+from django.utils import timezone
+from datetime import timedelta
+
 
 class Command(BaseCommand):
     help = "update resource download records with SF"
 
+    def add_arguments(self, parser):
+        parser.add_argument('--days_to_upload', nargs='?', default=1, type=int)
+
     def handle(self, *args, **options):
-        yesterday = date.today() - timedelta(days=1)
-        new_resource_downloads = ResourceDownload.objects.filter(last_access=yesterday).distinct()
+        upload_from_date = timezone.now() - timedelta(days=options['days_to_upload'])
+        new_resource_downloads = ResourceDownload.objects.filter(last_access__gte=upload_from_date).distinct()
+
+        self.stdout.write(self.style.WARNING("Uploading records from {} to today".format(upload_from_date.strftime("%m/%d/%Y"))))
+        self.stdout.write(self.style.WARNING("Found {} records. Uploading to Salesforce...".format(new_resource_downloads.count())))
 
         with Salesforce() as sf:
             data = []
