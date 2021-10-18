@@ -101,8 +101,12 @@ class SalesforceSettings(models.Model):
 
 class SalesforceForms(models.Model):
     oid = models.CharField(max_length=255, help_text="OID value to use for FE forms")
-    posting_url = models.URLField()
+    posting_url = models.URLField(help_text="Used for posting testamonials")
     debug = models.BooleanField(default=False)
+    adoption_form_posting_url = models.URLField(help_text="Used for posting adoption form. Can be different in each environment", null=True, blank=True)
+    interest_form_posting_url = models.URLField(help_text="Used for posting interest form. Can be different in each environment", null=True, blank=True)
+    tech_scout_form_posting_url = models.URLField(
+        help_text="Used for posting tech scout form. Can be different in each environment", null=True, blank=True)
 
     def __str__(self):
         return self.oid
