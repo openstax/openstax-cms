@@ -78,7 +78,8 @@ def get_user_info(uid=None):
                     'self_reported_role': data['items'][0]['self_reported_role'],
                     'faculty_status': data['items'][0]['faculty_status'],
                     'applications': data['items'][0]['applications'],
-                    'fullname': fullname
+                    'fullname': fullname,
+                    'uuid': data['items'][0]['uuid']
                 }
             except IndexError:
                 return False

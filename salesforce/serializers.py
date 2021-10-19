@@ -105,11 +105,11 @@ class ResourceDownloadSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         book = validated_data.get('book', None)
         book_format = validated_data.get('book_format', None)
-        account_id = validated_data.get('account_id', None)
+        account_uuid = validated_data.get('account_uuid', None)
         resource_name = validated_data.get('resource_name', None)
         contact_id = validated_data.get('contact_id', None)
         try:
-            rd = ResourceDownload.objects.filter(account_id=account_id, book=book)
+            rd = ResourceDownload.objects.filter(account_uuid=account_uuid, book=book)
             if resource_name:
                 rd.filter(resource_name=resource_name)
 
@@ -123,7 +123,7 @@ class ResourceDownloadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ResourceDownload
-        fields = ('id', 'book', 'book_format', 'account_id', 'contact_id', 'last_access', 'number_of_times_accessed', 'resource_name', 'created')
+        fields = ('id', 'book', 'book_format', 'account_uuid', 'contact_id', 'last_access', 'number_of_times_accessed', 'resource_name', 'created')
         read_only_fields = ('id', 'created', 'last_access', 'number_of_times_accessed')
 
 
