@@ -24,29 +24,29 @@ class Command(BaseCommand):
         self.stdout.write(self.style.WARNING("Found {} records. Uploading to Salesforce...".format(new_resource_downloads.count())))
 
         with Salesforce() as sf:
-            data = []
+            new_data = []
+            update_data = []
             for nrd in new_resource_downloads:
-                try:
-                    contact = sf.Contact.get(nrd.contact_id)
-                    data_dict_item = { 'Id': nrd.salesforce_id,
-                                       'Contact__c': nrd.contact_id,
-                                       'Last_Resource_Download_Date__c': nrd.last_access.strftime('%Y-%m-%d'),
-                                       'Accounts_UUID__c': nrd.account_uuid,
-                                       'Name': nrd.resource_name,
-                                       'Book__c': nrd.book.salesforce_name,
-                                       'Book_Format__c': nrd.book_format,
-                                       'Number_of_times_accessed__c': nrd.number_of_times_accessed }
-                    data.append(data_dict_item)
-                except SalesforceResourceNotFound:
-                    num_failed += 1
-                    self.stdout.write(self.style.ERROR("Contact Id not found: {}".format(nrd.contact_id)))
-
-            results = sf.bulk.Contact.upsert(data, 'Id', batch_size=10000, use_serial=True)
-            for result in results:
-                if result['success']:
-                    num_updated += 1
+                if not nrd.salesforce_id:
+                    data_dict_item = {'Contact__c': nrd.contact_id,
+                                      'Last_Resource_Download_Date__c': nrd.last_access.strftime('%Y-%m-%d'),
+                                      'Name': nrd.resource_name,
+                                      'Book__c': nrd.book.salesforce_name,
+                                      'Book_Format__c': nrd.book_format,
+                                      'Number_of_times_accessed__c': nrd.number_of_times_accessed}
+                    new_data.append(data_dict_item)
                 else:
-                    num_failed += 1
+                    data_dict_item = { 'Id': nrd.salesforce_id,
+                                       'Last_Resource_Download_Date__c': nrd.last_access.strftime('%Y-%m-%d'),
+                                       'Number_of_times_accessed__c': nrd.number_of_times_accessed }
+                    update_data.append(data_dict_item)
 
-            response = self.style.SUCCESS("[SF Resource Download] Updated {} Failed {}.".format(num_updated, num_failed))
+            print(new_data)
+            new_results = sf.bulk.Resource__c.insert(new_data)
+            print(new_results)
+
+            upsert_results = sf.bulk.Resource__c.update(update_data)
+
+
+            response = self.style.SUCCESS("[SF Resource Download] Failed: {}.".format(num_failed))
             self.stdout.write(response)
