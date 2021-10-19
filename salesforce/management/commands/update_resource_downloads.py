@@ -41,10 +41,7 @@ class Command(BaseCommand):
                                        'Number_of_times_accessed__c': nrd.number_of_times_accessed }
                     update_data.append(data_dict_item)
 
-            print(new_data)
             new_results = sf.bulk.Resource__c.insert(new_data)
-            print(new_results)
-
             upsert_results = sf.bulk.Resource__c.update(update_data)
 
 
