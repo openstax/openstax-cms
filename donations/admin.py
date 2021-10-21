@@ -8,8 +8,8 @@ from .models import ThankYouNote, DonationPopup
 
 class ThankYouNoteAdmin(admin.ModelAdmin):
     list_display = ['thank_you_note', 'first_name', 'last_name', 'institution', 'created']
-    list_filter = ('created',)
-    search_fields = ['user_info', 'created']
+    list_filter = (['created', 'consent_to_share_or_contact'])
+    search_fields = ['created', 'consent_to_share_or_contact']
     actions = ['export_as_csv']
 
     def has_add_permission(self, request):
@@ -25,14 +25,18 @@ class ThankYouNoteAdmin(admin.ModelAdmin):
                          "First Name",
                          "Last Name",
                          "Institution",
-                         "Created Date"])
+                         "Created Date",
+                         "Consent To Share Or Contact",
+                         "Contact Email Address"])
         for t in queryset:
             writer.writerow([t.pk,
                              t.thank_you_note,
                              t.first_name,
                              t.last_name,
                              t.institution,
-                             t.created])
+                             t.created,
+                             t.consent_to_share_or_contact,
+                             t.contact_email_address])
 
         return response
 

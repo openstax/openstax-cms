@@ -5,8 +5,20 @@ from rest_framework import serializers
 class ThankYouNoteSerializer(serializers.ModelSerializer):
     class Meta:
         model = ThankYouNote
-        fields = ('thank_you_note', 'first_name', 'last_name', 'institution', 'created')
-        read_only_fields = ('thank_you_note', 'first_name', 'last_name', 'institution', 'created')
+        fields = ('thank_you_note',
+                  'first_name',
+                  'last_name',
+                  'institution',
+                  'created',
+                  'consent_to_share_or_contact',
+                  'contact_email_address')
+        read_only_fields = ('thank_you_note',
+                            'first_name',
+                            'last_name',
+                            'institution',
+                            'created',
+                            'consent_to_share_or_contact',
+                            'contact_email_address')
 
 
 class DonationPopupSerializer(serializers.ModelSerializer):

@@ -6,6 +6,8 @@ class ThankYouNote(models.Model):
     last_name = models.CharField(max_length=255, default="", blank=True)
     institution = models.CharField(max_length=255, default="", blank=True)
     created = models.DateField(auto_now_add=True)
+    consent_to_share_or_contact = models.BooleanField(default=False)
+    contact_email_address = models.EmailField(blank=True, null=True)
 
 class DonationPopup(models.Model):
     download_image = models.ImageField(null=True, blank=True)
