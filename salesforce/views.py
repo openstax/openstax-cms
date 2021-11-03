@@ -13,7 +13,7 @@ from .serializers import SchoolSerializer, AdoptionOpportunityRecordSerializer, 
 
 from salesforce.salesforce import Salesforce
 from books.models import Book
-from oxauth.functions import get_logged_in_user_id
+from oxauth.functions import get_logged_in_user_uuid
 from global_settings.functions import invalidate_cloudfront_caches
 
 
@@ -49,9 +49,9 @@ class PartnerReviewViewSet(viewsets.ViewSet):
         """
         # for a review to show up in the API, the partner should be visible and the review approved
         queryset = PartnerReview.objects.filter(partner__visible_on_website=True)
-        user_id = self.request.query_params.get('user_id', None)
+        user_uuid = self.request.query_params.get('user_uuid', None)
         if user_id is not None:
-            queryset = queryset.filter(submitted_by_account_id=user_id)
+            queryset = queryset.filter(submitted_by_account_uuid=user_uuid)
 
         serializer = PartnerReviewSerializer(queryset, many=True)
         return Response(serializer.data)
@@ -61,11 +61,11 @@ class PartnerReviewViewSet(viewsets.ViewSet):
         try:
             try:
                 review_object = PartnerReview.objects.get(partner=request.data['partner'],
-                                                          submitted_by_account_id=request.data['submitted_by_account_id'])
+                                                          submitted_by_account_uuid=request.data['submitted_by_account_uuid'])
             except MultipleObjectsReturned: # just in case they somehow were able to create more than 1
                 review_object = PartnerReview.objects.filter(partner=request.data['partner'],
-                                                          submitted_by_account_id=request.data[
-                                                              'submitted_by_account_id']).first()
+                                                          submitted_by_account_uuid=request.data[
+                                                              'submitted_by_account_uuid']).first()
             serializer = PartnerReviewSerializer(review_object)
             return Response(serializer.data)
         except PartnerReview.DoesNotExist:
@@ -92,10 +92,11 @@ class PartnerReviewViewSet(viewsets.ViewSet):
 
     @action(method=['delete'], detail=True)
     def delete(self, request):
-        user_id = get_logged_in_user_id(request)
-        if user_id:
+        user_uuid = get_logged_in_user_uuid(request)
+        print(user_uuid)
+        if user_uuid:
             review_object = PartnerReview.objects.get(id=request.data['id'])
-            if (user_id == review_object.submitted_by_account_id) or user_id == -1:
+            if (user_uuid == review_object.submitted_by_account_uuid) or user_uuid == -1: # -1 is returned by get_logged_in_user_uuid when bypass_sso_cookie_check = True
                     review_object.status = 'Deleted'
                     review_object.save()
                     invalidate_cloudfront_caches()
