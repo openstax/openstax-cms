@@ -318,7 +318,8 @@ class PartnerReview(models.Model):
     partner_response = models.TextField(null=True, blank=True)
     partner_response_date = models.DateField(null=True, blank=True)
     submitted_by_name = models.CharField(max_length=255)
-    submitted_by_account_id = models.IntegerField()
+    submitted_by_account_id = models.IntegerField(null=True, blank=True) # TODO: remove this field after migrating data and FE sending UUID instead of id
+    submitted_by_account_uuid = models.UUIDField(null=True)
     user_faculty_status = models.CharField(max_length=255, choices=FACULTY_STATUS_OPTIONS, default='No Faculty Info')
     status = models.CharField(max_length=255, choices=STATUS_OPTIONS, default='New')
     created = models.DateField(auto_now_add=True)

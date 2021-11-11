@@ -66,7 +66,7 @@ class PartnerTest(APITestCase, TestCase):
                                               rating=5,
                                               review="This is a great resource.",
                                               submitted_by_name="Test McTester",
-                                              submitted_by_account_id=2)
+                                              submitted_by_account_uuid='aaa560a1-e828-48fb-b9a8-d01e9aec71d0')
         self.assertEqual(review.review, "This is a great resource.")
 
     def test_partners_include_review_data(self):
@@ -84,12 +84,12 @@ class PartnerTest(APITestCase, TestCase):
 
     def test_can_only_submit_one_review_per_user(self):
         random_partner = Partner.objects.order_by("?").first()
-        data = {"partner": random_partner.id, "rating": 4, "submitted_by_name": "Some User", "submitted_by_account_id": 2}
+        data = {"partner": random_partner.id, "rating": 4, "submitted_by_name": "Some User", "submitted_by_account_uuid": 'aaa560a1-e828-48fb-b9a8-d01e9aec71d0'}
         response = self.client.post('/apps/cms/api/salesforce/reviews/', data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         data = {"partner": random_partner.id, "rating": 4, "submitted_by_name": "Some User",
-                "submitted_by_account_id": 2}
+                "submitted_by_account_uuid": 'aaa560a1-e828-48fb-b9a8-d01e9aec71d0'}
         response = self.client.post('/apps/cms/api/salesforce/reviews/', data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
@@ -98,7 +98,7 @@ class PartnerTest(APITestCase, TestCase):
             partner=Partner.objects.order_by("?").first(),
             rating=5,
             submitted_by_name="O. Staxly",
-            submitted_by_account_id=2
+            submitted_by_account_uuid='aaa560a1-e828-48fb-b9a8-d01e9aec71d0' # accounts dev admin user uuid - special case to bypass SSO cookie check
         )
         data = { "id": review.id }
         response = self.client.delete('/apps/cms/api/salesforce/reviews/', data, format='json')
