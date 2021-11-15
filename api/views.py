@@ -99,7 +99,8 @@ def errata_fields(request):
 
     if request.GET.get('field', None) == 'resources':
         for field, verbose in ERRATA_RESOURCES:
-            if field != 'OpenStax Concept Coach': # This is not my favorite way to do this but we need to keep the data on existing errata
+            # This is not my favorite way to do this but we need to keep the data on existing errata
+            if field != 'OpenStax Concept Coach' and field != 'Rover by OpenStax':
                 response.append({'field': field, 'verbose': verbose})
 
     return JsonResponse(response, safe=False)
