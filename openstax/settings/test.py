@@ -5,12 +5,12 @@ DEBUG = True
 ###########################################
 #        OPENSTAX ACCOUNTS SETTINGS       #
 ###########################################
-AUTHORIZATION_URL = 'https://accounts-dev.openstax.org/oauth/authorize'
-ACCESS_TOKEN_URL = 'https://accounts-dev.openstax.org/oauth/token'
-USER_QUERY = 'https://accounts-dev.openstax.org/api/user?'
-USERS_QUERY = 'https://accounts-dev.openstax.org/api/users?'
+AUTHORIZATION_URL = 'https://dev.openstax.org/accounts/oauth/authorize'
+ACCESS_TOKEN_URL = 'https://dev.openstax.org/accounts/oauth/token'
+USER_QUERY = 'https://dev.openstax.org/accounts/api/user?'
+USERS_QUERY = 'https://dev.openstax.org/accounts/api/users?'
 
-SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'http://cms-dev.openstax.org'
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'http://dev.openstax.org'
 SOCIAL_AUTH_SANITIZE_REDIRECTS = False
 
 BYPASS_SSO_COOKIE_CHECK = True
