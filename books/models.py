@@ -849,6 +849,12 @@ class Book(Page):
         if self.support_statement:
             Book.objects.filter(locale=self.locale).update(support_statement=self.support_statement)
 
+        # if book is new, clear out isbn 10 fields
+        if self._state.adding:
+            self.print_isbn_10 = None
+            self.digital_isbn_10 = None
+
+
         return super(Book, self).save(*args, **kwargs)
 
 
