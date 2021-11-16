@@ -245,7 +245,7 @@ class Partner(models.Model):
 
     @property
     def reviews(self):
-        return list(PartnerReview.objects.filter(partner=self, status='Approved').values('id',
+        return list(PartnerReview.objects.filter(partner=self).values('id',
                                                                          'status',
                                                                          'rating',
                                                                          'review',
@@ -261,7 +261,6 @@ class Partner(models.Model):
         ratings = PartnerReview.objects.filter(partner=self, status='Approved').aggregate(Avg('rating'))
         print('***ratings: ' + str(ratings))
         if None in ratings.values():
-            print('returning zero')
             return {'rating__avg': 0.0}
         else:
             return ratings
