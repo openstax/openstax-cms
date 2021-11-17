@@ -147,7 +147,6 @@ class APITests(TestCase, WagtailTestUtils):
 
     def test_errata_resource_api(self):
         response = self.client.get('/apps/cms/api/errata-fields?field=resources')
-        print('***Resources: ' + str(response.content))
         self.assertNotIn('content', 'OpenStax Concept Coach')
         self.assertNotIn('content', 'Rover by OpenStax')
         self.assertEqual(response.status_code, 200)
