@@ -34,7 +34,7 @@ class Command(BaseCommand):
 
 
             # then we will get any new records
-            command = "SELECT Id, OS_Accounts_ID__c, Book_Text__c, Contact_Email__c, School_Name__c, Yearly_Students__c, Students__c, Type, Base_Year__c, IsWon from Opportunity WHERE OS_Accounts_ID__c != null AND Type = 'Renewal' AND Base_Year__c = {} AND IsWon = True".format(year)
+            command = "SELECT Id, Accounts_UUID__c, Book_Text__c, Contact_Email__c, School_Name__c, Yearly_Students__c, Students__c, Type, Base_Year__c, IsWon from Opportunity WHERE OS_Accounts_ID__c != null AND Type = 'Renewal' AND Base_Year__c = {} AND IsWon = True".format(year)
 
             response = sf.query_all(command)
             records = response['records']
@@ -44,7 +44,7 @@ class Command(BaseCommand):
             for record in records:
                 try:
                     opportunity = AdoptionOpportunityRecord.objects.get(opportunity_id=record['Id'])
-                    opportunity.account_id = record['OS_Accounts_ID__c']
+                    opportunity.account_uuid = record['Accounts_UUID__c']
                     opportunity.book_name = record['Book_Text__c']
                     opportunity.email = record['Contact_Email__c']
                     opportunity.school = record['School_Name__c']
@@ -53,7 +53,7 @@ class Command(BaseCommand):
                 except AdoptionOpportunityRecord.DoesNotExist:
                     opportunity = AdoptionOpportunityRecord.objects.create(
                         opportunity_id=record['Id'],
-                        account_id=record['OS_Accounts_ID__c'],
+                        account_uuid=record['Accounts_UUID__c'],
                         book_name= record['Book_Text__c'],
                         email= record['Contact_Email__c'],
                         school= record['School_Name__c'],
