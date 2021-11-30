@@ -8,7 +8,8 @@ from wagtail.admin.menu import MenuItem
 
 from books.models import Book
 
-from oxauth.functions import get_user_info
+from oxauth.functions import get_user_info_by_uuid
+
 
 class Adopter(models.Model):
     sales_id = models.CharField(max_length=255, primary_key=True)
@@ -18,6 +19,7 @@ class Adopter(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class AdoptionOpportunityRecord(models.Model):
     opportunity_id = models.CharField(max_length=255, unique=True)
@@ -102,6 +104,7 @@ class SalesforceSettings(models.Model):
     class Meta:
         verbose_name_plural = "Salesforce Settings"
 
+
 class SalesforceForms(models.Model):
     oid = models.CharField(max_length=255, help_text="OID value to use for FE forms")
     posting_url = models.URLField(help_text="Used for posting testamonials")
@@ -116,6 +119,7 @@ class SalesforceForms(models.Model):
 
     class Meta:
         verbose_name_plural = "Salesforce Forms"
+
 
 class Partner(models.Model):
     salesforce_id = models.CharField(max_length=255, blank=True, null=True)
@@ -329,6 +333,13 @@ class PartnerReview(models.Model):
     def __str__(self):
         return self.submitted_by_name
 
+    def save(self, *args, **kwargs):
+        user = get_user_info_by_uuid(self.submitted_by_account_uuid)
+        if user:
+            if self.user_faculty_status is not user['faculty_status']:
+                self.user_faculty_status = user['faculty_status']
+                super().save(*args, **kwargs)
+
 
 class ResourceDownload(models.Model):
     BOOK_FORMATS = (
@@ -360,13 +371,13 @@ class ResourceDownload(models.Model):
             self.number_of_times_accessed = self.number_of_times_accessed + 1
         super().save(*args, **kwargs)
 
-
     class Meta:
         indexes = [
             models.Index(fields=['account_id', ]),
             models.Index(fields=['account_uuid', ]),
             models.Index(fields=['book', ]),
         ]
+
 
 class SavingsNumber(models.Model):
     adoptions_count = models.IntegerField(blank=True, null=True)

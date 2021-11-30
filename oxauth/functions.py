@@ -7,6 +7,7 @@ from requests_oauthlib import OAuth2Session
 from django.conf import settings
 from .strategy_2 import Strategy2
 
+
 def decrypt_cookie(cookie):
     strategy = Strategy2(
         signature_public_key=settings.SIGNATURE_PUBLIC_KEY,
@@ -18,6 +19,7 @@ def decrypt_cookie(cookie):
 
     payload = strategy.decrypt(cookie)
     return payload
+
 
 def get_logged_in_user_id(request, bypass_sso_cookie_check=settings.BYPASS_SSO_COOKIE_CHECK):
     """
@@ -37,6 +39,7 @@ def get_logged_in_user_id(request, bypass_sso_cookie_check=settings.BYPASS_SSO_C
     else:
         return -1
 
+
 def get_logged_in_user_uuid(request, bypass_sso_cookie_check=settings.BYPASS_SSO_COOKIE_CHECK):
     """
     This simplifies getting the logged in user id - since this happens often.
@@ -55,6 +58,7 @@ def get_logged_in_user_uuid(request, bypass_sso_cookie_check=settings.BYPASS_SSO
     else:
         return -1
 
+
 def get_token():
     client = BackendApplicationClient(client_id=settings.SOCIAL_AUTH_OPENSTAX_KEY)
     oauth = OAuth2Session(client=client)
@@ -72,7 +76,25 @@ def get_user_info(uid=None):
             'q': 'id:{}'.format(uid),
             'access_token': token['access_token']
         })
+        return retrieve_user_data(url)
+    else:
+        return False
 
+
+def get_user_info_by_uuid(uuid=None):
+    if uuid:
+        token = get_token()
+        url = settings.USERS_QUERY + urlencode({
+            'q': 'uuid:{}'.format(uuid),
+            'access_token': token['access_token']
+        })
+        return retrieve_user_data(url)
+    else:
+        return False
+
+
+def retrieve_user_data(url=None):
+    if url:
         with urlopen(url) as url:
             data = json.loads(url.read().decode())
 
@@ -104,4 +126,5 @@ def get_user_info(uid=None):
 
             return user_data
     else:
-        return False
+        return {}
+
