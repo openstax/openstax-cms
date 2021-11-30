@@ -1,15 +1,9 @@
-name: Test
+name: CI
 
-on:
-  pull_request:
-  push:
-    branches:
-      - main
-  schedule:
-    - cron: '0 0 * * 0' # weekly
+on: [push]
 
 jobs:
-  build:
+  test:
     timeout-minutes: 30
     runs-on: ubuntu-latest
     services:
@@ -27,14 +21,29 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Setup Python
+      with:
+        fetch-depth: 1
+
+    - name: Setup Python 3.8
       uses: actions/setup-python@v2
       with:
-        python-version: '3.x'
+        python-version: 3.8
+
+    - uses: actions/cache@v1
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements/dev.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+
     - name: Install dependencies
-      run: pip install -r requirements/dev.txt
+      run: |
+        python -m pip install --upgrade pip
+        python -m pip install -r requirements/dev.txt
+      if: steps.cache.outputs.cache-hit != 'true'
+
     - name: Run Django tests
-      run: python manage.py test --verbosity=2 --settings=openstax.settings.test
+      run: python manage.py test --settings=openstax.settings.test
       env:
         SALESFORCE_USERNAME: ${{ secrets.SALESFORCE_USERNAME }}
         SALESFORCE_PASSWORD: ${{ secrets.SALESFORCE_PASSWORD }}
