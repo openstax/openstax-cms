@@ -98,7 +98,6 @@ def retrieve_user_data(url=None):
         with urlopen(url) as url:
             data = json.loads(url.read().decode())
 
-            # update email address if possible
             try:
                 contact_infos = data['items'][0]['contact_infos']
                 most_recent_email = max(contact_infos, key=lambda x: x['id'])
@@ -106,7 +105,6 @@ def retrieve_user_data(url=None):
             except (ValueError, IndexError, KeyError):
                 email = None  # no saved emails
 
-            # update full name if possible
             try:
                 fullname = data['items'][0]['full_name']
             except (ValueError, IndexError, KeyError):
