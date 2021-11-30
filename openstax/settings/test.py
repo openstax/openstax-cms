@@ -41,6 +41,9 @@ EVENTBRITE_API_SECRET = os.getenv('EVENTBRITE_API_SECRET')
 EVENTBRITE_API_PRIVATE_TOKEN = os.getenv('EVENTBRITE_API_PRIVATE_TOKEN')
 EVENTBRITE_API_PUBLIC_TOKEN = os.getenv('EVENTBRITE_API_PUBLIC_TOKEN')
 
+# silence whitenoise warnings for CI
+import warnings
+warnings.filterwarnings("ignore", message="No directory at", module="whitenoise.base" )
 
 try:
     from .local import *
