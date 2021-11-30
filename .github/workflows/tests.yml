@@ -6,6 +6,7 @@ jobs:
   test:
     timeout-minutes: 30
     runs-on: ubuntu-latest
+    environment: Test
     services:
       postgres:
         image: postgres:10
