@@ -50,9 +50,9 @@ jobs:
           EVENTBRITE_API_PUBLIC_TOKEN: ${{ secrets.EVENTBRITE_PUBLIC_TOKEN }}
           SOCIAL_AUTH_OPENSTAX_KEY: ${{ secrets.SOCIAL_AUTH_KEY }}
           SOCIAL_AUTH_OPENSTAX_SECRET: ${{ secrets.SOCIAL_AUTH_TOKEN }}
-          AUTHORIZATION_URL: ${{ openstax.settings.test.AUTHORIZATION_URL }}
-          ACCESS_TOKEN_URL: ${{ openstax.settings.test.ACCESS_TOKEN_URL }}
-          USERS_QUERY: ${{ openstax.settings.test.USERS_QUERY }}
+          ACCESS_TOKEN_URL: ${{ secrets.ACCESS_TOKEN_URL }}
+          USERS_QUERY: ${{ secrets.USERS_QUERY }}
+          AUTHORIZATION_URL: ${{ secrets.AUTHORIZATION_URL }}
         run: |
           pip install --upgrade pip wheel pip-tools
           pip-sync requirements/dev.txt
