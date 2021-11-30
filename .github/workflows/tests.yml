@@ -1,4 +1,4 @@
-name: Tests
+name: Test
 
 on:
   pull_request:
@@ -8,10 +8,12 @@ on:
   schedule:
     - cron: '0 0 * * 0' # weekly
 
+permissions: read-all
+
 jobs:
   tests:
     timeout-minutes: 30
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-latest
     services:
       postgres:
         image: postgres:10
@@ -28,29 +30,29 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Set up Python
+          uses: actions/setup-python@v2
+          with:
+            python-version: '3.x'
+            cache: 'pip'
+
+      - name: Install dependencies
+          run: pip install -r requirements/dev.txt
+
       - uses: actions/setup-python@v2
         with:
           python-version: 3.8.2
 
-#      uses: actions/cache@v2
-#        with:
-#          path: ~/.cache/pip
-#          key: ${{ runner.os }}-pip-${{ hashFiles('requirements/dev.txt') }}
-#          restore-keys: |
-#            ${{ runner.os }}-pip-
-
-      - name: Test
-        env:
-          SALESFORCE_USERNAME: ${{ secrets.SALESFORCE_USERNAME }}
-          SALESFORCE_PWD: ${{ secrets.SALESFORCE_PWD }}
-          SALESFORCE_TOKEN: ${{ secrets.SALESFORCE_TOKEN }}
-          EVENTBRITE_API_KEY: ${{ secrets.EVENTBRITE_KEY }}
-          EVENTBRITE_API_SECRET: ${{ secrets.EVENTBRITE_SECRET }}
-          EVENTBRITE_API_PRIVATE_TOKEN: ${{ secrets.EVENTBRITE_TOKEN }}
-          EVENTBRITE_API_PUBLIC_TOKEN: ${{ secrets.EVENTBRITE_PUBLIC_TOKEN }}
-          SOCIAL_AUTH_OPENSTAX_KEY: ${{ secrets.SOCIAL_AUTH_KEY }}
-          SOCIAL_AUTH_OPENSTAX_SECRET: ${{ secrets.SOCIAL_AUTH_TOKEN }}
-        run: |
-          pip install --upgrade pip wheel pip-tools
-          pip-sync requirements/dev.txt
-          python manage.py test --verbosity=2 --settings=openstax.settings.test
+      - name: Run Django tests
+          env:
+            SALESFORCE_USERNAME: ${{ secrets.SALESFORCE_USERNAME }}
+            SALESFORCE_PASSWORD: ${{ secrets.SALESFORCE_PASSWORD }}
+            SALESFORCE_SECURITY_TOKEN: ${{ secrets.SALESFORCE_SECURITY_TOKEN }}
+            EVENTBRITE_API_KEY: ${{ secrets.EVENTBRITE_API_KEY }}
+            EVENTBRITE_API_SECRET: ${{ secrets.EVENTBRITE_API_SECRET }}
+            EVENTBRITE_API_PRIVATE_TOKEN: ${{ secrets.EVENTBRITE_API_PRIVATE_TOKEN }}
+            EVENTBRITE_API_PUBLIC_TOKEN: ${{ secrets.EVENTBRITE_PUBLIC_TOKEN }}
+            SOCIAL_AUTH_OPENSTAX_KEY: ${{ secrets.SOCIAL_AUTH_OPENSTAX_KEY }}
+            SOCIAL_AUTH_OPENSTAX_SECRET: ${{ secrets.SOCIAL_AUTH_OPENSTAX_SECRET }}
+            run: |
+              python manage.py test --verbosity=2 --settings=openstax.settings.test
