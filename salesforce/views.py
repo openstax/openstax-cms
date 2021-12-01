@@ -48,9 +48,9 @@ class PartnerReviewViewSet(viewsets.ViewSet):
         by filtering against a `user_id` query parameter in the URL.
         """
         # for a review to show up in the API, the partner should be visible and the review approved
-        queryset = PartnerReview.objects.filter(partner__visible_on_website=True)
+        queryset = PartnerReview.objects.filter(partner__visible_on_website=True).exclude(status='Rejected')
         user_uuid = self.request.query_params.get('user_uuid', None)
-        if user_id is not None:
+        if user_uuid is not None:
             queryset = queryset.filter(submitted_by_account_uuid=user_uuid)
 
         serializer = PartnerReviewSerializer(queryset, many=True)

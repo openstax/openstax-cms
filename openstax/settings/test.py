@@ -31,7 +31,7 @@ DATABASES = {
     }
 }
 
-SALESFORCE = {'username': os.getenv('SALESFORCE_USERNAME'), 'password': os.getenv('SALESFORCE_PWD'), 'security_token': os.getenv('SALESFORCE_TOKEN'), 'sandbox': True}
+SALESFORCE = {'username': os.getenv('SALESFORCE_USERNAME'), 'password': os.getenv('SALESFORCE_PASSWORD'), 'security_token': os.getenv('SALESFORCE_SECURITY_TOKEN'), 'sandbox': True}
 
 SOCIAL_AUTH_OPENSTAX_KEY = os.getenv('SOCIAL_AUTH_OPENSTAX_KEY')
 SOCIAL_AUTH_OPENSTAX_SECRET = os.getenv('SOCIAL_AUTH_OPENSTAX_SECRET')
@@ -41,6 +41,9 @@ EVENTBRITE_API_SECRET = os.getenv('EVENTBRITE_API_SECRET')
 EVENTBRITE_API_PRIVATE_TOKEN = os.getenv('EVENTBRITE_API_PRIVATE_TOKEN')
 EVENTBRITE_API_PUBLIC_TOKEN = os.getenv('EVENTBRITE_API_PUBLIC_TOKEN')
 
+# silence whitenoise warnings for CI
+import warnings
+warnings.filterwarnings("ignore", message="No directory at", module="whitenoise.base" )
 
 try:
     from .local import *
