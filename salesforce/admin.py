@@ -191,12 +191,17 @@ class PartnerReviewAdmin(admin.ModelAdmin):
     list_display = ('partner', 'submitted_by_name', 'rating', 'status')
     list_filter = ('rating', 'partner')
     search_fields = ['partner', 'submitted_by_name', 'submitted_by_account_id']
-    actions = ['sync_with_salesforce', ]
+    actions = ['sync_with_salesforce', 'populate_review_faculty_status']
 
     def sync_with_salesforce(self, request, queryset):
         management.call_command('sync_reviews', verbosity=0)
     sync_with_salesforce.short_description = "Sync Reviews with Salesforce"
     sync_with_salesforce.allowed_permissions = ('change',)
+
+    def populate_review_faculty_status(self, request, queryset):
+        management.call_command('update_review_faculty_status', verbosity=0)
+    populate_review_faculty_status.short_description = "sync review faculty status with accounts"
+    populate_review_faculty_status.allowed_permissions = ('change',)
 
 
 class ResourceDownloadAdmin(admin.ModelAdmin):
