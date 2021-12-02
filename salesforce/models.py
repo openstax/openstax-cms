@@ -341,7 +341,7 @@ class PartnerReview(models.Model):
     def save(self, *args, **kwargs):
         user = get_user_info_by_uuid(self.submitted_by_account_uuid)
         if user:
-            if self.user_faculty_status is not user['faculty_status']:
+            if self.user_faculty_status != user['faculty_status']:
                 self.user_faculty_status = user['faculty_status']
                 super().save(*args, **kwargs)
 
