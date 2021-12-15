@@ -15,7 +15,7 @@ colorama==0.4.4
 cryptography>=36.0.0
 defusedxml==0.6.0
 distro==1.5.0
-Django==3.2.9
+Django==3.2.10
 django-admin-view-permission==1.5
 django-appconf==1.0.3
 django-cachalot==1.5.0
