@@ -93,7 +93,6 @@ class PartnerReviewViewSet(viewsets.ViewSet):
     @action(method=['delete'], detail=True)
     def delete(self, request):
         user_uuid = get_logged_in_user_uuid(request)
-        print(user_uuid)
         if user_uuid:
             review_object = PartnerReview.objects.get(id=request.data['id'])
             if (user_uuid == review_object.submitted_by_account_uuid) or user_uuid == -1: # -1 is returned by get_logged_in_user_uuid when bypass_sso_cookie_check = True
