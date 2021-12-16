@@ -188,9 +188,9 @@ class HomePage(Page):
     banner_headline = models.CharField(default='', blank=True, max_length=255)
     banner_description = models.TextField(default='', blank=True)
     banner_get_started_text = models.CharField(default='', blank=True, max_length=255)
-    banner_get_started_link = models.CharField(default='', blank=True, max_length=255)
+    banner_get_started_link = models.URLField(blank=True, default='')
     banner_login_text = models.CharField(default='', blank=True, max_length=255)
-    banner_login_link = models.CharField(default='', blank=True, max_length=255)
+    banner_login_link = models.URLField(blank=True, default='')
     banner_logged_in_text = models.CharField(default='', blank=True, max_length=255)
     banner_logged_in_link = models.URLField(blank=True, default='')
     banner_left_image = models.ForeignKey(
