@@ -1,6 +1,6 @@
 from rest_framework import viewsets
-from .models import ThankYouNote, DonationPopup
-from .serializers import ThankYouNoteSerializer, DonationPopupSerializer
+from .models import ThankYouNote, DonationPopup, Fundraiser
+from .serializers import ThankYouNoteSerializer, DonationPopupSerializer, FundraiserSerializer
 from rest_framework.decorators import action
 from django.utils import timezone
 from django.http import JsonResponse
@@ -33,4 +33,10 @@ class ThankYouNoteViewSet(viewsets.ModelViewSet):
 class DonationPopupViewSet(viewsets.ModelViewSet):
     serializer_class = DonationPopupSerializer
     queryset = DonationPopup.objects.all()
+    http_method_names = ['get']
+
+
+class FundraiserViewSet(viewsets.ModelViewSet):
+    serializer_class = FundraiserSerializer
+    queryset = Fundraiser.objects.all()
     http_method_names = ['get']

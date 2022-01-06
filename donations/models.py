@@ -1,5 +1,18 @@
 from django.db import models
 
+COLOR_SCHEME_CHOICES = (
+    ('red', 'Red'),
+    ('blue', 'Blue'),
+    ('green', 'Green'),
+    ('orange', 'Orange'),
+)
+
+MESSAGE_TYPE_CHOICES = (
+    ('goal', 'Goal'),
+    ('message', 'Message'),
+)
+
+
 class ThankYouNote(models.Model):
     thank_you_note = models.TextField(default="", blank=True)
     first_name = models.CharField(max_length=255, default="", blank=True)
@@ -28,5 +41,27 @@ class DonationPopup(models.Model):
 
     def save(self, *args, **kwargs):
         if DonationPopup.objects.exists() and not self.pk:
-            raise ValidationError('There is can be only one donation popup instance')
+            raise ValidationError('There can be only one donation popup instance')
         return super(DonationPopup, self).save(*args, **kwargs)
+
+
+class Fundraiser(models.Model):
+    color_scheme = models.CharField(max_length=255,
+                                             choices=COLOR_SCHEME_CHOICES,
+                                             blank=True,
+                                             default='')
+    message_type = models.CharField(max_length=255,
+                                    choices=MESSAGE_TYPE_CHOICES,
+                                    blank=True,
+                                    default='')
+    headline = models.TextField(blank=True, null=True, default="")
+    message = models.TextField(blank=True, null=True, default="")
+    button_text = models.CharField(max_length=255)
+    button_url = models.CharField(max_length=255)
+    box_headline = models.TextField(blank=True, null=True, default="")
+    box_html = models.TextField(blank=True, null=True, default="")
+    fundraiser_image = models.ImageField(null=True, blank=True)
+    goal_amount = models.IntegerField(blank=True, null=True)
+    goal_time = models.DateTimeField(blank=True, null=True)
+
+
