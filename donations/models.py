@@ -2,7 +2,7 @@ from django.db import models
 
 COLOR_SCHEME_CHOICES = (
     ('red', 'Red'),
-    ('blue', 'Blue'),
+    ('deep-green', 'Deep Green'),
     ('green', 'Green'),
     ('orange', 'Orange'),
 )
