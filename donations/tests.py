@@ -1,7 +1,7 @@
 from django.test import TestCase
 
-from donations.models import DonationPopup, ThankYouNote
-from donations.serializers import DonationPopupSerializer
+from donations.models import DonationPopup, ThankYouNote, Fundraiser
+from donations.serializers import DonationPopupSerializer, FundraiserSerializer
 
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -44,3 +44,29 @@ class ThankYouNoteTest(APITestCase, TestCase):
         self.assertEqual(tyn[0]['first_name'], 'Jessica')
         self.assertEqual(tyn[0]['consent_to_share_or_contact'], True)
         self.assertEqual(tyn[0]['contact_email_address'], 'jess@example.com')
+
+
+class FundraiserTest(APITestCase, TestCase):
+
+    def setUp(self):
+        fr = Fundraiser.objects.create(
+            color_scheme="blue",
+            message_type="goal",
+            headline="this is a headline",
+            message="Test message",
+            button_text="Give Today",
+            button_url="https://openstax.org/give",
+            box_headline="This is a box headline",
+            box_html="this goes <strong>in</strong> a box",
+            fundraiser_image="data-science3x.max-165x165.png",
+            goal_amount=2314,
+            goal_time="2022-01-12T09:07:01-06:00"
+        )
+        fr.save()
+
+    def test_fundraiser_api_get(self):
+        response = self.client.get('/apps/cms/api/donations/fundraiser/', format='json')
+        fundraiser = Fundraiser.objects.all()
+        serializer = FundraiserSerializer(fundraiser, many=True)
+        self.assertEqual(response.data[0]['headline'], serializer.data[0]['headline'])
+        self.assertEqual(response.status_code, status.HTTP_200_OK)

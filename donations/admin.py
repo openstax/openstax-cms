@@ -3,7 +3,7 @@ from django.core import management
 import csv
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
-from .models import ThankYouNote, DonationPopup
+from .models import ThankYouNote, DonationPopup, Fundraiser
 
 
 class ThankYouNoteAdmin(admin.ModelAdmin):
@@ -56,5 +56,20 @@ class DonationPopupAdmin(admin.ModelAdmin):
                     'hide_donation_popup')
 
 
+class FundraiserAdmin(admin.ModelAdmin):
+    display_list = ('color_scheme',
+                    'message_type',
+                    'headline',
+                    'message',
+                    'button_text',
+                    'button_url',
+                    'box_headline',
+                    'box_html',
+                    'fundraiser_image',
+                    'goal_amount',
+                    'goal_time',)
+
+
 admin.site.register(ThankYouNote, ThankYouNoteAdmin)
 admin.site.register(DonationPopup, DonationPopupAdmin)
+admin.site.register(Fundraiser, FundraiserAdmin)
