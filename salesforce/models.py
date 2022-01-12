@@ -334,6 +334,20 @@ class PartnerReview(models.Model):
     created = models.DateField(auto_now_add=True)
     updated = models.DateField(auto_now=True)
 
+    def _synced_with_salesforce(self):
+        if self.review_salesforce_id:
+            return True
+        return False
+    _synced_with_salesforce.boolean = True
+    synced_with_salesforce = property(_synced_with_salesforce)
+
+    def _partner_responded(self):
+        if self.partner_response:
+            return True
+        return False
+    _partner_responded.boolean = True
+    partner_responded = property(_partner_responded)
+
     def __str__(self):
         return self.submitted_by_name
 
