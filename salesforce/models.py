@@ -251,7 +251,7 @@ class Partner(models.Model):
                                                                          'review',
                                                                          'partner_response',
                                                                          'submitted_by_name',
-                                                                         'submitted_by_account_id',
+                                                                         'submitted_by_account_uuid',
                                                                          'user_faculty_status',
                                                                          'created',
                                                                          'updated'))
@@ -259,7 +259,6 @@ class Partner(models.Model):
     @property
     def average_rating(self):
         ratings = PartnerReview.objects.filter(partner=self, status='Approved').aggregate(Avg('rating'))
-        print('***ratings: ' + str(ratings))
         if None in ratings.values():
             return {'rating__avg': 0.0}
         else:
@@ -334,6 +333,20 @@ class PartnerReview(models.Model):
     status = models.CharField(max_length=255, choices=STATUS_OPTIONS, default='New')
     created = models.DateField(auto_now_add=True)
     updated = models.DateField(auto_now=True)
+
+    def _synced_with_salesforce(self):
+        if self.review_salesforce_id:
+            return True
+        return False
+    _synced_with_salesforce.boolean = True
+    synced_with_salesforce = property(_synced_with_salesforce)
+
+    def _partner_responded(self):
+        if self.partner_response:
+            return True
+        return False
+    _partner_responded.boolean = True
+    partner_responded = property(_partner_responded)
 
     def __str__(self):
         return self.submitted_by_name

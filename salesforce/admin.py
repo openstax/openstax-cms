@@ -188,10 +188,31 @@ class PartnerTypeMappingAdmin(admin.ModelAdmin):
 
 
 class PartnerReviewAdmin(admin.ModelAdmin):
-    list_display = ('partner', 'submitted_by_name', 'rating', 'status')
-    list_filter = ('rating', 'partner')
-    search_fields = ['partner', 'submitted_by_name', 'submitted_by_account_id']
+    list_display = ('submitted_by_name',
+                    'partner',
+                    'created',
+                    'updated',
+                    '_synced_with_salesforce',
+                    '_partner_responded',
+                    'status')
+    list_filter = ('rating',
+                   'partner',
+                   'status')
+    search_fields = ['review_salesforce_id', 'submitted_by_name', 'submitted_by_account_uuid', ]
     actions = ['sync_with_salesforce', 'populate_review_faculty_status']
+    readonly_fields = ('partner',
+                       'review_salesforce_id',
+                       'rating',
+                       'review',
+                       'partner_response',
+                       'partner_response_date',
+                       'submitted_by_name',
+                       'submitted_by_account_id',
+                       'submitted_by_account_uuid',
+                       'user_faculty_status',
+                       'status',
+                       'created',
+                       'updated' )
 
     def sync_with_salesforce(self, request, queryset):
         management.call_command('sync_reviews', verbosity=0)

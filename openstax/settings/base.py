@@ -366,6 +366,9 @@ AWS_HEADERS = {
 
 WAGTAILIMAGES_FORMAT_CONVERSIONS = {
     'webp': 'webp',
+    'jpeg': 'webp',
+    'jpg': 'webp',
+    'png': 'webp',
 }
 
 WAGTAILIMAGES_MAX_UPLOAD_SIZE = 2 * 1024 * 1024  # 2MB
