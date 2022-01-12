@@ -356,7 +356,7 @@ class PartnerReview(models.Model):
         if user:
             if self.user_faculty_status != user['faculty_status']:
                 self.user_faculty_status = user['faculty_status']
-                super().save(*args, **kwargs)
+        super().save(*args, **kwargs)
 
 
 class ResourceDownload(models.Model):
