@@ -251,7 +251,7 @@ class Partner(models.Model):
                                                                          'review',
                                                                          'partner_response',
                                                                          'submitted_by_name',
-                                                                         'submitted_by_account_id',
+                                                                         'submitted_by_account_uuid',
                                                                          'user_faculty_status',
                                                                          'created',
                                                                          'updated'))
