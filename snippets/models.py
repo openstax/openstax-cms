@@ -1,9 +1,11 @@
 from django.db import models
+from modelcluster.fields import ParentalKey
 from wagtail.search import index
-from wagtail.admin.edit_handlers import FieldPanel
+from wagtail.admin.edit_handlers import FieldPanel, InlinePanel
+from wagtail.snippets.edit_handlers import SnippetChooserPanel
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.core.fields import RichTextField
-from wagtail.core.models import TranslatableMixin
+from wagtail.core.models import TranslatableMixin, Orderable
 from wagtail.snippets.models import register_snippet
 from openstax.functions import build_image_url
 from books.constants import BOOK_STATES
@@ -14,18 +16,32 @@ class Subject(TranslatableMixin, models.Model):
     page_content = models.TextField(blank=True, help_text="Content that appears on the subjects page when looking at a subject.")
     seo_title = models.CharField(max_length=255, null=True, blank=True)
     search_description = models.CharField(max_length=255, null=True, blank=True)
+    icon = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
-    api_fields = ('name', 'page_content', 'seo_title', 'search_description' )
+    def get_subject_icon(self):
+        return build_image_url(self.icon)
+
+    subject_icon = property(get_subject_icon)
+
+    api_fields = ('name', 'page_content', 'seo_title', 'search_description', 'subject_icon')
 
     panels = [
         FieldPanel('name'),
         FieldPanel('page_content'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
+        ImageChooserPanel('icon'),
     ]
 
     def __str__(self):
         return self.name
+
 
 register_snippet(Subject)
 
@@ -53,6 +69,7 @@ class FacultyResource(TranslatableMixin, index.Indexed, models.Model):
     def __str__(self):
         return self.heading
 
+
 register_snippet(FacultyResource)
 
 
@@ -76,6 +93,7 @@ class StudentResource(TranslatableMixin, index.Indexed, models.Model):
     def __str__(self):
         return self.heading
 
+
 register_snippet(StudentResource)
 
 
@@ -93,6 +111,7 @@ class Role(TranslatableMixin, models.Model):
 
     def __str__(self):
         return self.display_name
+
 
 register_snippet(Role)
 
@@ -122,6 +141,7 @@ class SharedContent(TranslatableMixin, index.Indexed, models.Model):
 
     def __str__(self):
         return self.title
+
 
 register_snippet(SharedContent)
 
@@ -155,6 +175,7 @@ class NewsSource(TranslatableMixin, index.Indexed, models.Model):
     def __str__(self):
         return self.name
 
+
 register_snippet(NewsSource)
 
 
@@ -176,3 +197,26 @@ class ErrataContent(TranslatableMixin, index.Indexed, models.Model):
 
 
 register_snippet(ErrataContent)
+
+
+class SubjectCategory(TranslatableMixin, models.Model):
+    subject = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True, related_name='+')
+    subject_category = models.CharField(max_length=255, null=True, blank=True, help_text="category for selected subject.")
+
+    @property
+    def subject_name(self):
+        return self.subject.name
+
+    panels = [
+        SnippetChooserPanel('subject'),
+        FieldPanel('subject_category'),
+    ]
+
+    api_fields = ('subject_name', 'subject_category')
+
+    def __str__(self):
+        return self.subject_category
+
+
+register_snippet(SubjectCategory)
+

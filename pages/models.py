@@ -11,6 +11,8 @@ from wagtail.documents.edit_handlers import DocumentChooserPanel
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.api import APIField
 from wagtail.core.models import Site
+from wagtail.core import hooks
+from wagtail.admin.menu import MenuItem
 
 from openstax.functions import build_image_url, build_document_url
 from books.models import Book
@@ -30,6 +32,7 @@ from .custom_blocks import ImageBlock, \
 from .custom_fields import Funder, \
     Institutions, \
     Group
+import snippets.models as snippets
 
 
 class AboutUsPage(Page):
@@ -444,6 +447,7 @@ class HomePage(Page):
         'pages.LLPHPage',
         'pages.TutorMarketing',
         'pages.TutorLanding',
+        'pages.Subjects',
         'books.BookIndex',
         'news.NewsIndex',
         'news.PressIndex'
@@ -2718,3 +2722,118 @@ class TutorLanding(Page):
 
     parent_page_types = ['pages.HomePage']
     max_count = 1
+
+
+class Subjects(Page):
+    heading = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    heading_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    tutor_ad = StreamField(
+        blocks.StreamBlock([
+            ('content', blocks.StructBlock([
+                ('heading', blocks.CharBlock()),
+                ('image', ImageBlock()),
+                ('ad_html', blocks.TextBlock()),
+                ('link_text', blocks.CharBlock()),
+                ('link_href', blocks.URLBlock())
+            ]))], max_num=1))
+
+    about_os = StreamField(
+        blocks.StreamBlock([
+            ('content', blocks.StructBlock([
+                ('heading', blocks.CharBlock()),
+                ('image', ImageBlock()),
+                ('os_text', blocks.TextBlock()),
+                ('link_text', blocks.CharBlock()),
+                ('link_href', blocks.URLBlock())
+            ]))], max_num=1))
+
+    info_boxes = StreamField([
+        ('info_box', blocks.ListBlock(blocks.StructBlock([
+            ('image', ImageBlock()),
+            ('heading', blocks.CharBlock()),
+            ('text', blocks.CharBlock()),
+        ])))
+    ], null=True, blank=True)
+
+    philanthropic_support = models.TextField(blank=True, null=True)
+    translations = StreamField([
+        ('translation', blocks.ListBlock(blocks.StructBlock([
+            ('locale', blocks.CharBlock()),
+            ('slug', blocks.CharBlock()),
+        ])))
+    ], null=True, blank=True)
+
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    @property
+    def subjects(self):
+        subject_list = {}
+        for subject in snippets.Subject.objects.filter(locale=self.locale):
+            subject_categories = {}
+            categories = []
+            subject_categories['icon'] = subject.subject_icon
+            for category in snippets.SubjectCategory.objects.filter(subject_id=subject.id):
+                categories.append(category.subject_category)
+            subject_categories['categories'] = categories
+            subject_list[subject.name] = subject_categories
+
+        return subject_list
+
+    api_fields = [
+        APIField('heading'),
+        APIField('description'),
+        APIField('heading_image'),
+        APIField('tutor_ad'),
+        APIField('about_os'),
+        APIField('info_boxes'),
+        APIField('philanthropic_support'),
+        APIField('subjects'),
+        APIField('translations'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+    ]
+
+    content_panels = Page.content_panels + [
+        FieldPanel('heading'),
+        FieldPanel('description'),
+        ImageChooserPanel('heading_image'),
+        StreamFieldPanel('tutor_ad'),
+        StreamFieldPanel('about_os'),
+        StreamFieldPanel('info_boxes'),
+        FieldPanel('philanthropic_support'),
+        StreamFieldPanel('translations'),
+    ]
+
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
+    ]
+
+    template = 'page.html'
+
+    parent_page_types = ['pages.HomePage']
+    max_count = 1
+
+    class Meta:
+        verbose_name = "New Subjects Page"
+
+
+
+
+

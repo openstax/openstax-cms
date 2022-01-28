@@ -1,13 +1,14 @@
 from rest_framework import viewsets
 
-from .models import Role, Subject, ErrataContent
-from .serializers import RoleSerializer, SubjectSerializer, ErrataContentSerializer
+from .models import Role, Subject, ErrataContent, SubjectCategory
+from .serializers import RoleSerializer, SubjectSerializer, ErrataContentSerializer, SubjectCategorySerializer
 
 from rest_framework import generics, viewsets
 from django_filters.rest_framework import DjangoFilterBackend
 
 SPANISH_LOCALE_ID = 2
 ENGLISH_LOCALE_ID = 1
+
 
 class RoleViewSet(viewsets.ModelViewSet):
     queryset = Role.objects.all()
@@ -44,7 +45,31 @@ class ErrataContentViewSet(viewsets.ModelViewSet):
         return queryset
 
 
+class SubjectCategoryViewSet(viewsets.ModelViewSet):
+    serializer_class = SubjectCategorySerializer
+    filter_backends = (DjangoFilterBackend,)
+
+    def get_queryset(self):
+        queryset = SubjectCategory.objects.all()
+        subject = self.request.query_params.get('subject', None)
+        locale = self.request.query_params.get('locale', None)
+        if subject is not None:
+            subject_id = convert_subject_name(subject)
+            queryset = queryset.filter(subject=subject_id)
+        if locale is not None:
+            queryset = queryset.filter(locale=convert_locale(locale))
+        return queryset
+
+
 def convert_locale(locale):
     if locale == 'es':
         return SPANISH_LOCALE_ID
     return ENGLISH_LOCALE_ID
+
+
+def convert_subject_name(subject):
+    subjects = Subject.objects.all()
+    result = subjects.filter(name=subject)
+    print('subject: ' + str(result))
+    return result[0].id
+
