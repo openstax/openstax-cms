@@ -70,6 +70,5 @@ def convert_locale(locale):
 def convert_subject_name(subject):
     subjects = Subject.objects.all()
     result = subjects.filter(name=subject)
-    print('subject: ' + str(result))
     return result[0].id
 
