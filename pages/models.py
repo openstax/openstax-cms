@@ -2896,15 +2896,45 @@ class Subject(Page):
         for subject in snippets.Subject.objects.filter(name=str(self.selected_subject[0].subject_name)):
             subject_categories = {}
             categories = {}
-            books = []
+
             subject_categories['icon'] = subject.subject_icon
-            print('***subject id: ' + str(subject.id))
+            all_books = Book.objects.all()
             for category in snippets.SubjectCategory.objects.filter(subject_id=subject.id):
-                print('***category: ' + str(category.subject_category))
-                # for book in Book.objects.filter(book_ptr=category.id):
-                #     print('***book: ' + str(book))
-                #     books.append(book.title)
-                categories[category.subject_category] = books
+                books = {}
+                book_list = {}
+                for book in all_books:
+                    if category.subject_category in book.subject_categories:
+                        book_data = []
+                        book_data.append({
+                            'id': book.id,
+                            'slug': 'books/{}'.format(book.slug),
+                            'book_state': book.book_state,
+                            'title': book.title,
+                            'subjects': book.subjects(),
+                            'subject_categories': book.subject_categories,
+                            'is_ap': book.is_ap,
+                            'cover_url': book.cover_url,
+                            'cover_color': book.cover_color,
+                            'high_resolution_pdf_url': book.high_resolution_pdf_url,
+                            'low_resolution_pdf_url': book.low_resolution_pdf_url,
+                            'ibook_link': book.ibook_link,
+                            'ibook_link_volume_2': book.ibook_link_volume_2,
+                            'webview_link': book.webview_link,
+                            'webview_rex_link': book.webview_rex_link,
+                            'bookshare_link': book.bookshare_link,
+                            'kindle_link': book.kindle_link,
+                            'amazon_coming_soon': book.amazon_coming_soon,
+                            'amazon_link': book.amazon_link,
+                            'bookstore_coming_soon': book.bookstore_coming_soon,
+                            'comp_copy_available': book.comp_copy_available,
+                            'salesforce_abbreviation': book.salesforce_abbreviation,
+                            'salesforce_name': book.salesforce_name,
+                            'urls': book.book_urls(),
+                            'last_updated_pdf': book.last_updated_pdf,
+                        })
+                        books[book.title] = book_data
+                book_list['books'] = books
+                categories[category.subject_category] = book_list
             subject_categories['categories'] = categories
             subject_list[subject.name] = subject_categories
 

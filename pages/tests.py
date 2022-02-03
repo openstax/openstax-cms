@@ -38,7 +38,8 @@ from pages.models import (HomePage,
                           LLPHPage,
                           TutorMarketing,
                           TutorLanding,
-                          Subjects)
+                          Subjects,
+                          Subject)
 from news.models import NewsIndex, PressIndex
 from books.models import BookIndex
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
@@ -180,6 +181,49 @@ class ErrataListTest(WagtailPageTests):
 
         retrieved_page = Page.objects.get(id=errata_list_page.id)
         self.assertEqual(retrieved_page.title, "Errata List Template")
+
+
+class SubjectsPageTest(WagtailPageTests):
+
+    def test_can_create_subjects_page(self):
+        root_page = Page.objects.get(title="Root")
+        homepage = HomePage(title="Hello World",
+                            slug="hello-world",
+                            )
+        root_page.add_child(instance=homepage)
+        subjects_page = Subjects(title="Subjects",
+                                      heading="Testing Subjects Page",
+                                      description="This is a Subjects page test",
+                                      philanthropic_support="Please support us",
+                                      )
+        homepage.add_child(instance=subjects_page)
+
+        retrieved_page = Page.objects.get(id=subjects_page.id)
+        self.assertEqual(retrieved_page.title, "Subjects")
+
+
+class SubjectPageTest(WagtailPageTests):
+
+    def test_can_create_subject_page(self):
+        root_page = Page.objects.get(title="Root")
+        homepage = HomePage(title="Hello World",
+                            slug="hello-world",
+                            )
+        root_page.add_child(instance=homepage)
+        subjects_page = Subjects(title="Subjects",
+                                      heading="Testing Subjects Page",
+                                      description="This is a Subjects page test",
+                                      philanthropic_support="Please support us",
+                                      )
+        homepage.add_child(instance=subjects_page)
+        subject_page = Subject(title="Business",
+                               os_textbook_heading="OpenStax Business Textbooks",
+                               philanthropic_support="Please support us",
+                               )
+        subjects_page.add_child(instance=subject_page)
+
+        retrieved_page = Page.objects.get(id=subject_page.id)
+        self.assertEqual(retrieved_page.title, "Business")
 
 
 class AdminPages(TestCase, WagtailTestUtils):
