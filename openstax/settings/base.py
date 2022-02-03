@@ -233,7 +233,6 @@ INSTALLED_APPS = [
     'wagtail.contrib.settings',
     'wagtail.contrib.modeladmin',
     'wagtailimportexport',
-    'flags',
     'duplicatebooks'
 
 ]
@@ -310,12 +309,6 @@ logging.config.dictConfig({
         'django.server': DEFAULT_LOGGING['loggers']['django.server'],
     },
 })
-
-# FLAGS
-FLAGS = {
-    'enable_my_openstax': [],
-}
-
 
 # WAGTAIL SETTINGS
 WAGTAIL_SITE_NAME = 'openstax'

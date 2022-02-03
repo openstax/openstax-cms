@@ -3,7 +3,7 @@ from import_export.admin import ExportActionModelAdmin, ExportActionMixin
 from import_export.widgets import ForeignKeyWidget
 
 from django.contrib import admin
-from .models import CustomizationRequest
+from .models import CustomizationRequest, FeatureFlag
 from books.models import Book
 
 
@@ -33,4 +33,11 @@ class CustomizationRequestAdmin(ExportActionModelAdmin):
     def has_add_permission(self, request):
         return False
 
+
+class FeatureFlagAdmin(admin.ModelAdmin):
+    list_display = ['name', 'feature_active']
+    search_fields = ['name', ]
+    list_filter = ['feature_active', ]
+
 admin.site.register(CustomizationRequest, CustomizationRequestAdmin)
+admin.site.register(FeatureFlag, FeatureFlagAdmin)

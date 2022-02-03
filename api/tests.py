@@ -5,6 +5,8 @@ from wagtail.tests.utils import WagtailTestUtils
 from wagtail.images.tests.utils import Image, get_test_image_file
 from wagtail.documents.models import Document
 
+from api.models import FeatureFlag
+
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
 
 class PagesAPI(TestCase, WagtailTestUtils):
@@ -112,9 +114,22 @@ class APITests(TestCase, WagtailTestUtils):
         response = self.client.get('/apps/cms/api/mapbox/')
         self.assertEqual(response.status_code, 200)
     
+    def test_can_create_flag(self):
+        flag = FeatureFlag.objects.create(name='test_flag', feature_active=True)
+        self.assertEqual(FeatureFlag.objects.all().count(), 1)
+        self.assertEqual(FeatureFlag.objects.first().name, 'test_flag')
+        self.assertEqual(FeatureFlag.objects.first().feature_active, True)
+
     def test_flags_api(self):
         response = self.client.get('/apps/cms/api/flags/')
         self.assertEqual(response.status_code, 200)
+
+    def test_flags_api_one_result(self):
+        flag = FeatureFlag.objects.create(name='super_feature', feature_active=True)
+        response = self.client.get('/apps/cms/api/flags/?flag=super_feature')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("\"name\": \"super_feature\"", response.content.decode("utf-8"))
+        self.assertIn("\"feature_active\": true", response.content.decode("utf-8"))
 
     def test_can_submit_customization_form(self):
         data = {'email': 'test@rice.edu',
