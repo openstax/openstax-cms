@@ -16,7 +16,7 @@ from wagtail.admin.menu import MenuItem
 from wagtail.snippets.edit_handlers import SnippetChooserPanel
 
 from openstax.functions import build_image_url, build_document_url
-from books.models import Book
+from books.models import Book, SubjectBooks
 from webinars.models import Webinar
 from news.models import BlogStreamBlock # for use on the ImpactStories
 
@@ -2741,40 +2741,14 @@ class Subjects(Page):
     tutor_ad = StreamField([
         ('content', TutorAdBlock()),
     ])
-    # tutor_ad = StreamField(
-    #     blocks.StreamBlock([
-    #         ('content', blocks.StructBlock([
-    #             ('heading', blocks.CharBlock()),
-    #             ('image', APIImageChooserBlock()),
-    #             ('ad_html', blocks.TextBlock()),
-    #             ('link_text', blocks.CharBlock()),
-    #             ('link_href', blocks.URLBlock())
-    #         ]))], max_num=1))
 
     about_os = StreamField([
         ('content', AboutOpenStaxBlock()),
     ])
-    # about_os = StreamField(
-    #     blocks.StreamBlock([
-    #         ('content', blocks.StructBlock([
-    #             ('heading', blocks.CharBlock()),
-    #             ('image', APIImageChooserBlock()),
-    #             ('os_text', blocks.TextBlock()),
-    #             ('link_text', blocks.CharBlock()),
-    #             ('link_href', blocks.URLBlock())
-    #         ]))], max_num=1))
 
     info_boxes = StreamField([
         ('info_box', blocks.ListBlock(InfoBoxBlock())),
     ])
-
-    # info_boxes = StreamField([
-    #     ('info_box', blocks.ListBlock(blocks.StructBlock([
-    #         ('image', APIImageChooserBlock()),
-    #         ('heading', blocks.CharBlock()),
-    #         ('text', blocks.CharBlock()),
-    #     ])))
-    # ], null=True, blank=True)
 
     philanthropic_support = models.TextField(blank=True, null=True)
     translations = StreamField([
@@ -2849,9 +2823,8 @@ class Subjects(Page):
         verbose_name = "New Subjects Page"
 
 
-class SubjectOrderable(Orderable):
+class SubjectOrderable(Orderable, SubjectBooks):
     page = ParentalKey("pages.Subject", related_name="subject")
-    subject = models.ForeignKey(snippets.Subject, on_delete=models.SET_NULL, null=True, related_name='+')
 
     panels = [
         SnippetChooserPanel("subject"),
@@ -2914,17 +2887,24 @@ class Subject(Page):
     )
 
     @property
+    def selected_subject(self):
+        return self.subject.all()
+
+    @property
     def subjects(self):
         subject_list = {}
-        print('***subject: ' + str(self.title))
-        for subject in snippets.Subject.objects.filter(locale=self.locale, name=self.title):
+        for subject in snippets.Subject.objects.filter(name=str(self.selected_subject[0].subject_name)):
             subject_categories = {}
-            categories = []
-            #books = []
+            categories = {}
+            books = []
             subject_categories['icon'] = subject.subject_icon
+            print('***subject id: ' + str(subject.id))
             for category in snippets.SubjectCategory.objects.filter(subject_id=subject.id):
-                # fetch books with category and loop through
-                categories.append(category.subject_category)
+                print('***category: ' + str(category.subject_category))
+                # for book in Book.objects.filter(book_ptr=category.id):
+                #     print('***book: ' + str(book))
+                #     books.append(book.title)
+                categories[category.subject_category] = books
             subject_categories['categories'] = categories
             subject_list[subject.name] = subject_categories
 
