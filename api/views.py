@@ -1,5 +1,6 @@
 from django.core import serializers
-from django.http import JsonResponse, HttpResponse
+from django.http import JsonResponse, HttpResponse, Http404
+from django.forms.models import model_to_dict
 from django.db.models import Q
 from rest_framework import viewsets, generics
 from rest_framework import status
@@ -13,9 +14,8 @@ from global_settings.models import StickyNote, Footer, GiveToday
 from wagtail.images.models import Image
 from wagtail.documents.models import Document
 from wagtail.core.models import Site
-from .models import ProgressTracker
+from .models import ProgressTracker, FeatureFlag
 from .serializers import AdopterSerializer, ImageSerializer, DocumentSerializer, ProgressSerializer, CustomizationRequestSerializer
-from flags.sources import get_flags
 
 class AdopterViewSet(viewsets.ModelViewSet):
     queryset = Adopter.objects.all()
@@ -169,33 +169,17 @@ def schools(request):
         return JsonResponse({'error': 'Invalid format requested.'})
 
 def flags(request):
-    q_flag = request.GET.get('flag', False)
+    flag_name_query_string = request.GET.get('flag', False)
 
-    list_flags = get_flags(sources=None, ignore_errors=False)
-
-    if not q_flag:
-        # We return the list of all flags.
-        data = []
-        for (flag, fobject) in list_flags.items():
-            data.append({
-                'name': flag
-            })
-        return JsonResponse(data, safe=False)
+    if not flag_name_query_string:
+        data = list(FeatureFlag.objects.values('name', 'feature_active'))
+        return JsonResponse({"all_flags": data})
     else:
-        # We return the enabled settings for the set flag.
-        if q_flag in list_flags:
-            data = [{'name': q_flag, "conditions": []}]
-            for condition in list_flags[q_flag].conditions:
-                data[0]['conditions'].append({
-                    'required': condition.__dict__['required'],
-                    'type': condition.__dict__['condition'],
-                    'value': condition.__dict__['value']
-                })
+        try:
+            data = model_to_dict(FeatureFlag.objects.get(name=flag_name_query_string))
             return JsonResponse(data, safe=False)
-        else:
-            return JsonResponse([{'error': 'The flag does not exist.'}], safe=False)
-
-
+        except FeatureFlag.DoesNotExist:
+            raise Http404('Flag does not exist')
 
 @api_view(['GET', 'POST'])
 @parser_classes([JSONParser])
