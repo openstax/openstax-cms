@@ -52,6 +52,7 @@ TECHNICAL_ERROR = 'Technical Error'
 PARTNER_PRODUCT = 'Partner Product'
 CUSTOMER_SUPPORT = 'Sent to Customer Support'
 MORE_INFO_REQUESTED = 'More Information Requested'
+DEPRECATED = 'Deprecated'
 ERRATA_RESOLUTIONS = (
     (DUPLICATE, 'Duplicate'),
     (NOT_AN_ERROR, 'Not An Error'),
@@ -62,6 +63,7 @@ ERRATA_RESOLUTIONS = (
     (PARTNER_PRODUCT, 'Partner Product'),
     (CUSTOMER_SUPPORT, 'Sent to Customer Support'),
     (MORE_INFO_REQUESTED, 'More Information Requested'),
+    (DEPRECATED, 'Deprecated'),
 )
 
 FACTUAL = 'Other factual inaccuracy in content'
@@ -110,6 +112,7 @@ EMAIL_CASES = (
     ('Partner Product', 'Partner Product'),
     ('Generic Completed Response', 'Generic Completed Response'),
     ('Technical Error', 'Technical Error'),
+    ('Deprecated', 'Deprecated'),
 )
 
 def is_user_blocked(account_id):
@@ -261,6 +264,8 @@ class Errata(models.Model):
             self.resolution_notes = 'Thank you for the feedback. Unfortunately, our reviewers were unable to locate this error. Please submit a new report with additional information, such as a link to the relevant content, or a screenshot.'
         if self.resolution == 'Partner Product' and not self.resolution_notes:
             self.resolution_notes = 'This issue is occurring on a platform that is not managed by OpenStax. We will make our best efforts to get this resolved; however, we suggest reporting this issue within the platform you are using.'
+        if self.resolution == 'Deprecated' and not self.resolution_notes:
+            self.resolution_notes = 'This issue is occurring within a deprecated product that OpenStax no longer maintains. For updated content, please refer to openstax.org and view online or download a free PDF that may be used on your device.'
 
         #auto filling a couple of fields if it is clear that it is an assessment errata based on the text that tutor fills into the additional_location_information field
         if self.additional_location_information and self.resource == 'OpenStax Tutor' and ('@' in self.additional_location_information.split()[0]):
@@ -367,6 +372,11 @@ def send_status_update_email(sender, instance, created, **kwargs):
             send_email = True
         elif instance.status == 'Completed' and not send_email:
             email_text = EmailText.objects.get(email_case='Generic Completed Response')
+            subject = email_text.email_subject_text
+            body = email_text.email_body_text
+            send_email = True
+        elif instance.status == 'Completed' and instance.resolution == 'Deprecated':
+            email_text = EmailText.objects.get(email_case='Deprecated')
             subject = email_text.email_subject_text
             body = email_text.email_body_text
             send_email = True
