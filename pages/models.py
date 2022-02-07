@@ -708,6 +708,7 @@ class Supporters(Page):
                 ('funders', blocks.ListBlock(blocks.StructBlock([
                     ('funder_name', blocks.CharBlock(required=True)),
                     ('url', blocks.URLBlock(required=False))
+
                 ])))
             ]))]))
 
