@@ -132,3 +132,4 @@ class InfoBoxBlock(blocks.StructBlock):
 
     class Meta:
         icon = 'placeholder'
+

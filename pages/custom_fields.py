@@ -52,28 +52,16 @@ class Quote(models.Model):
     ]
 
 
-class Funder(models.Model):
-    title = models.CharField(max_length=250)
-    logo = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-
-    def get_funder_logo(self):
-        return build_image_url(self.logo)
-    funder_logo = property(get_funder_logo)
-    description = models.TextField(blank=True, default='')
-
-    api_fields = ('title', 'funder_logo', 'description', )
-
-    panels = [
-        FieldPanel('title'),
-        ImageChooserPanel('logo'),
-        FieldPanel('description'),
-    ]
+# class Funder(models.Model):
+#     title = models.CharField(max_length=250)
+#     funder_link = models.URLField(blank=True, default='')
+#
+#     api_fields = ('title', 'funder_link' )
+#
+#     panels = [
+#         FieldPanel('title'),
+#         FieldPanel('funder_link'),
+#     ]
 
 
 class Institutions(models.Model):

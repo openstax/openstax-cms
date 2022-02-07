@@ -33,7 +33,8 @@ from .custom_blocks import ImageBlock, \
     TutorAdBlock, \
     AboutOpenStaxBlock, \
     InfoBoxBlock
-from .custom_fields import Funder, \
+
+from .custom_fields import \
     Institutions, \
     Group
 import snippets.models as snippets
@@ -421,7 +422,7 @@ class HomePage(Page):
         'pages.AboutUsPage',
         'pages.TeamPage',
         'pages.GeneralPage',
-        'pages.FoundationSupport',
+        'pages.Supporters',
         'pages.MapPage',
         'pages.Give',
         'pages.TermsOfService',
@@ -688,12 +689,30 @@ class GeneralPage(Page):
     ]
 
 
-class FoundationSupportFunders(Orderable, Funder):
-    page = ParentalKey('pages.FoundationSupport', related_name='funders')
+class Supporters(Page):
+    banner_heading = models.CharField(default='', max_length=255)
+    banner_description = models.TextField(default='')
+    banner_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
+    funder_groups = StreamField(
+        blocks.StreamBlock([
+            ('content', blocks.StructBlock([
+                ('group_title', blocks.CharBlock(classname="name of funder group")),
+                ('description', blocks.TextBlock(classname="description of funder group")),
+                ('funders', blocks.ListBlock(blocks.StructBlock([
+                    ('funder_name', blocks.CharBlock(required=True)),
+                    ('url', blocks.URLBlock(required=False))
+                ])))
+            ]))]))
 
-class FoundationSupport(Page):
-    page_description = models.TextField()
+    disclaimer = models.TextField(default='')
+
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -704,8 +723,11 @@ class FoundationSupport(Page):
 
     api_fields = [
         APIField('title'),
-        APIField('page_description'),
-        APIField('funders'),
+        APIField('banner_heading'),
+        APIField('banner_description'),
+        APIField('banner_image'),
+        APIField('funder_groups'),
+        APIField('disclaimer'),
         APIField('slug'),
         APIField('seo_title'),
         APIField('search_description'),
@@ -714,8 +736,11 @@ class FoundationSupport(Page):
 
     content_panels = [
         FieldPanel('title', classname="full title"),
-        FieldPanel('page_description'),
-        InlinePanel('funders', label="Funders"),
+        FieldPanel('banner_heading'),
+        FieldPanel('banner_description'),
+        ImageChooserPanel('banner_image'),
+        StreamFieldPanel('funder_groups'),
+        FieldPanel('disclaimer')
     ]
 
     promote_panels = [
