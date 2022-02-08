@@ -52,18 +52,6 @@ class Quote(models.Model):
     ]
 
 
-# class Funder(models.Model):
-#     title = models.CharField(max_length=250)
-#     funder_link = models.URLField(blank=True, default='')
-#
-#     api_fields = ('title', 'funder_link' )
-#
-#     panels = [
-#         FieldPanel('title'),
-#         FieldPanel('funder_link'),
-#     ]
-
-
 class Institutions(models.Model):
     title = models.CharField(max_length=250)
     logo = models.ForeignKey(
