@@ -959,7 +959,6 @@ class BookIndex(Page):
                     'book_state': book.book_state,
                     'title': book.title,
                     'subjects': book.subjects(),
-                    'subject_categories': book.subject_categories(),
                     'is_ap': book.is_ap,
                     'cover_url': book.cover_url,
                     'cover_color': book.cover_color,
