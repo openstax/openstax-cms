@@ -1,4 +1,4 @@
-from .models import Role, Subject, ErrataContent
+from .models import Role, Subject, ErrataContent, SubjectCategory
 
 from rest_framework import serializers, generics
 
@@ -20,7 +20,8 @@ class SubjectSerializer(serializers.ModelSerializer):
                   'name',
                   'page_content',
                   'seo_title',
-                  'search_description')
+                  'search_description',
+                  'subject_icon')
 
 
 class ErrataContentSerializer(serializers.ModelSerializer):
@@ -29,3 +30,10 @@ class ErrataContentSerializer(serializers.ModelSerializer):
         fields = ('heading',
                   'book_state',
                   'content')
+
+
+class SubjectCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SubjectCategory
+        fields = ('subject_name',
+                  'subject_category')

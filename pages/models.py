@@ -3,7 +3,7 @@ from django.db import models
 from django.http.response import JsonResponse
 
 from modelcluster.fields import ParentalKey
-from wagtail.admin.edit_handlers import FieldPanel, InlinePanel, StreamFieldPanel
+from wagtail.admin.edit_handlers import FieldPanel, InlinePanel, StreamFieldPanel, MultiFieldPanel
 from wagtail.core import blocks
 from wagtail.core.fields import RichTextField, StreamField
 from wagtail.core.models import Orderable, Page
@@ -11,9 +11,12 @@ from wagtail.documents.edit_handlers import DocumentChooserPanel
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.api import APIField
 from wagtail.core.models import Site
+from wagtail.core import hooks
+from wagtail.admin.menu import MenuItem
+from wagtail.snippets.edit_handlers import SnippetChooserPanel
 
 from openstax.functions import build_image_url, build_document_url
-from books.models import Book
+from books.models import Book, SubjectBooks
 from webinars.models import Webinar
 from news.models import BlogStreamBlock # for use on the ImpactStories
 
@@ -26,10 +29,14 @@ from .custom_blocks import ImageBlock, \
     BookProviderBlock, \
     CardBlock, \
     CardImageBlock, \
-    StoryBlock
+    StoryBlock, \
+    TutorAdBlock, \
+    AboutOpenStaxBlock, \
+    InfoBoxBlock
 from .custom_fields import Funder, \
     Institutions, \
     Group
+import snippets.models as snippets
 
 
 class AboutUsPage(Page):
@@ -444,6 +451,7 @@ class HomePage(Page):
         'pages.LLPHPage',
         'pages.TutorMarketing',
         'pages.TutorLanding',
+        'pages.Subjects',
         'books.BookIndex',
         'news.NewsIndex',
         'news.PressIndex'
@@ -2718,3 +2726,264 @@ class TutorLanding(Page):
 
     parent_page_types = ['pages.HomePage']
     max_count = 1
+
+
+class Subjects(Page):
+    heading = models.CharField(max_length=255)
+    description = models.TextField(blank=True, null=True)
+    heading_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    tutor_ad = StreamField([
+        ('content', TutorAdBlock()),
+    ])
+
+    about_os = StreamField([
+        ('content', AboutOpenStaxBlock()),
+    ])
+
+    info_boxes = StreamField([
+        ('info_box', blocks.ListBlock(InfoBoxBlock())),
+    ])
+
+    philanthropic_support = models.TextField(blank=True, null=True)
+    translations = StreamField([
+        ('translation', blocks.ListBlock(blocks.StructBlock([
+            ('locale', blocks.CharBlock()),
+            ('slug', blocks.CharBlock()),
+        ])))
+    ], null=True, blank=True)
+
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    @property
+    def subjects(self):
+        subject_list = {}
+        for subject in snippets.Subject.objects.filter(locale=self.locale):
+            subject_categories = {}
+            categories = []
+            subject_categories['icon'] = subject.subject_icon
+            for category in snippets.SubjectCategory.objects.filter(subject_id=subject.id):
+                categories.append(category.subject_category)
+            subject_categories['categories'] = categories
+            subject_list[subject.name] = subject_categories
+
+        return subject_list
+
+    api_fields = [
+        APIField('heading'),
+        APIField('description'),
+        APIField('heading_image'),
+        APIField('tutor_ad'),
+        APIField('about_os'),
+        APIField('info_boxes'),
+        APIField('philanthropic_support'),
+        APIField('subjects'),
+        APIField('translations'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+    ]
+
+    content_panels = Page.content_panels + [
+        FieldPanel('heading'),
+        FieldPanel('description'),
+        ImageChooserPanel('heading_image'),
+        StreamFieldPanel('tutor_ad'),
+        StreamFieldPanel('about_os'),
+        StreamFieldPanel('info_boxes'),
+        FieldPanel('philanthropic_support'),
+        StreamFieldPanel('translations'),
+    ]
+
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
+    ]
+
+    template = 'page.html'
+
+    parent_page_types = ['pages.HomePage']
+    subpage_types = ['pages.Subject']
+    max_count = 1
+
+    class Meta:
+        verbose_name = "New Subjects Page"
+
+
+class SubjectOrderable(Orderable, SubjectBooks):
+    page = ParentalKey("pages.Subject", related_name="subject")
+
+    panels = [
+        SnippetChooserPanel("subject"),
+    ]
+
+
+class Subject(Page):
+    tutor_ad = StreamField([
+        ('content', TutorAdBlock()),
+    ])
+
+    blog_header = StreamField(
+        blocks.StreamBlock([
+            ('content', blocks.StructBlock([
+                ('heading', blocks.CharBlock()),
+                ('blog_description', blocks.TextBlock()),
+                ('link_text', blocks.CharBlock()),
+                ('link_href', blocks.URLBlock())
+            ]))], max_num=1))
+
+    webinar_header = StreamField(
+        blocks.StreamBlock([
+            ('content', blocks.StructBlock([
+                ('heading', blocks.CharBlock()),
+                ('webinar_description', blocks.TextBlock()),
+                ('link_text', blocks.CharBlock()),
+                ('link_href', blocks.URLBlock())
+            ]))], max_num=1))
+
+    os_textbook_heading = models.TextField(blank=True, null=True)
+    os_textbook_categories = StreamField([
+        ('category', blocks.ListBlock(blocks.StructBlock([
+            ('heading', blocks.CharBlock()),
+            ('text', blocks.TextBlock()),
+        ])))
+    ], null=True, blank=True)
+
+    about_os = StreamField([
+        ('content', AboutOpenStaxBlock()),
+    ])
+
+    info_boxes = StreamField([
+        ('info_box', blocks.ListBlock(InfoBoxBlock())),
+    ])
+
+    philanthropic_support = models.TextField(blank=True, null=True)
+    translations = StreamField([
+        ('translation', blocks.ListBlock(blocks.StructBlock([
+            ('locale', blocks.CharBlock()),
+            ('slug', blocks.CharBlock()),
+        ])))
+    ], null=True, blank=True)
+
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    @property
+    def selected_subject(self):
+        return self.subject.all()
+
+    @property
+    def subjects(self):
+        subject_list = {}
+        for subject in snippets.Subject.objects.filter(name=str(self.selected_subject[0].subject_name)):
+            subject_categories = {}
+            categories = {}
+
+            subject_categories['icon'] = subject.subject_icon
+            all_books = Book.objects.all()
+            for category in snippets.SubjectCategory.objects.filter(subject_id=subject.id):
+                books = {}
+                book_list = {}
+                for book in all_books:
+                    if category.subject_category in book.subject_categories:
+                        book_data = []
+                        book_data.append({
+                            'id': book.id,
+                            'slug': 'books/{}'.format(book.slug),
+                            'book_state': book.book_state,
+                            'title': book.title,
+                            'subjects': book.subjects(),
+                            'subject_categories': book.subject_categories,
+                            'is_ap': book.is_ap,
+                            'cover_url': book.cover_url,
+                            'cover_color': book.cover_color,
+                            'high_resolution_pdf_url': book.high_resolution_pdf_url,
+                            'low_resolution_pdf_url': book.low_resolution_pdf_url,
+                            'ibook_link': book.ibook_link,
+                            'ibook_link_volume_2': book.ibook_link_volume_2,
+                            'webview_link': book.webview_link,
+                            'webview_rex_link': book.webview_rex_link,
+                            'bookshare_link': book.bookshare_link,
+                            'kindle_link': book.kindle_link,
+                            'amazon_coming_soon': book.amazon_coming_soon,
+                            'amazon_link': book.amazon_link,
+                            'bookstore_coming_soon': book.bookstore_coming_soon,
+                            'comp_copy_available': book.comp_copy_available,
+                            'salesforce_abbreviation': book.salesforce_abbreviation,
+                            'salesforce_name': book.salesforce_name,
+                            'urls': book.book_urls(),
+                            'last_updated_pdf': book.last_updated_pdf,
+                        })
+                        books[book.title] = book_data
+                book_list['books'] = books
+                categories[category.subject_category] = book_list
+            subject_categories['categories'] = categories
+            subject_list[subject.name] = subject_categories
+
+        return subject_list
+
+    api_fields = [
+        APIField('tutor_ad'),
+        APIField('blog_header'),
+        APIField('webinar_header'),
+        APIField('os_textbook_heading'),
+        APIField('os_textbook_categories'),
+        APIField('about_os'),
+        APIField('info_boxes'),
+        APIField('philanthropic_support'),
+        APIField('subjects'),
+        APIField('translations'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+    ]
+
+    content_panels = Page.content_panels + [
+        MultiFieldPanel([InlinePanel("subject", label="Subject", min_num=1, max_num=1)], heading="Subject(s)"),
+        StreamFieldPanel('tutor_ad'),
+        StreamFieldPanel('blog_header'),
+        StreamFieldPanel('webinar_header'),
+        FieldPanel('os_textbook_heading'),
+        StreamFieldPanel('os_textbook_categories'),
+        StreamFieldPanel('about_os'),
+        StreamFieldPanel('info_boxes'),
+        FieldPanel('philanthropic_support'),
+        StreamFieldPanel('translations'),
+    ]
+
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
+    ]
+
+    template = 'page.html'
+
+    parent_page_types = ['pages.Subjects']
+
+    class Meta:
+        verbose_name = "Subject Page"
+
+
+
+
+

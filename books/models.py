@@ -388,6 +388,23 @@ class SubjectBooks(models.Model):
     ]
 
 
+class BookCategory(models.Model):
+    category = models.ForeignKey(snippets.SubjectCategory, on_delete=models.SET_NULL, null=True, related_name='subjects_subjectcategory')
+
+    def get_subject_name(self):
+        return self.category.subject_name
+    subject_name = property(get_subject_name)
+
+    def get_subject_category(self):
+        return self.category.subject_category
+    subject_category = property(get_subject_category)
+
+    api_fields = [
+        APIField('subject_name'),
+        APIField('subject_category')
+    ]
+
+
 class SharedContentChooserBlock(SnippetChooserBlock):
     def get_api_representation(self, value, context=None):
         if value:
@@ -427,6 +444,10 @@ class BookStudentResources(Orderable, StudentResources):
 
 class BookSubjects(Orderable, SubjectBooks):
     book_subject = ParentalKey('books.Book', related_name='book_subjects')
+
+
+class BookCategories(Orderable, BookCategory):
+    book_category = ParentalKey('books.Book', related_name='book_categories')
 
 
 class Book(Page):
@@ -622,6 +643,7 @@ class Book(Page):
         FieldPanel('updated'),
         FieldPanel('publish_date'),
         InlinePanel('book_subjects', label='Subjects'),
+        InlinePanel('book_categories', label='Subject Categories'),
         FieldPanel('is_ap'),
         FieldPanel('description', classname="full"),
         DocumentChooserPanel('cover'),
@@ -713,6 +735,7 @@ class Book(Page):
         APIField('salesforce_abbreviation'),
         APIField('salesforce_name'),
         APIField('book_subjects'),
+        APIField('book_categories'),
         APIField('is_ap'),
         APIField('description'),
         APIField('cover_url'),
@@ -805,6 +828,13 @@ class Book(Page):
         for subject in self.book_subjects.all():
             subject_list.append(subject.subject_name)
         return subject_list
+
+    @property
+    def subject_categories(self):
+        category_list = []
+        for category in self.book_categories.all():
+            category_list.append(category.subject_category)
+        return category_list
 
     @property
     def errata_content(self):
@@ -929,6 +959,7 @@ class BookIndex(Page):
                     'book_state': book.book_state,
                     'title': book.title,
                     'subjects': book.subjects(),
+                    'subject_categories': book.subject_categories(),
                     'is_ap': book.is_ap,
                     'cover_url': book.cover_url,
                     'cover_color': book.cover_color,

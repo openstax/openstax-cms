@@ -99,3 +99,36 @@ class StoryBlock(blocks.StructBlock):
 
     class Meta:
         icon = 'openquote'
+
+
+class TutorAdBlock(blocks.StructBlock):
+    heading = blocks.CharBlock()
+    image = APIImageChooserBlock()
+    ad_html = blocks.TextBlock()
+    link_text = blocks.CharBlock()
+    link_href = blocks.URLBlock()
+
+    class Meta:
+        icon = 'placeholder'
+        max_num = 1
+
+
+class AboutOpenStaxBlock(blocks.StructBlock):
+    heading = blocks.CharBlock()
+    image = APIImageChooserBlock()
+    os_text = blocks.TextBlock()
+    link_text = blocks.CharBlock()
+    link_href = blocks.URLBlock()
+
+    class Meta:
+        icon = 'placeholder'
+        max_num = 1
+
+
+class InfoBoxBlock(blocks.StructBlock):
+    image = APIImageChooserBlock()
+    heading = blocks.CharBlock()
+    text = blocks.CharBlock()
+
+    class Meta:
+        icon = 'placeholder'
