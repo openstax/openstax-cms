@@ -100,8 +100,8 @@ class PartnerTest(APITestCase, TestCase):
             submitted_by_name="O. Staxly",
             submitted_by_account_uuid='aaa560a1-e828-48fb-b9a8-d01e9aec71d0' # accounts dev admin user uuid - special case to bypass SSO cookie check
         )
-        data = { "id": review.id }
-        response = self.client.delete('/apps/cms/api/salesforce/reviews/', data, format='json')
+        #data = { "id": review.id }
+        response = self.client.delete('/apps/cms/api/salesforce/reviews/?id=' + str(review.id), format='json')
         self.assertEqual(response.data['status'], 'Deleted')
 
 
