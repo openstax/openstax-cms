@@ -2959,6 +2959,7 @@ class Subject(Page):
                             'last_updated_pdf': book.last_updated_pdf,
                         })
                         books[book.title] = book_data
+                book_list['category_description'] = category.description
                 book_list['books'] = books
                 categories[category.subject_category] = book_list
             subject_categories['categories'] = categories

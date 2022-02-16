@@ -202,6 +202,7 @@ register_snippet(ErrataContent)
 class SubjectCategory(TranslatableMixin, models.Model):
     subject = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True, related_name='+')
     subject_category = models.CharField(max_length=255, null=True, blank=True, help_text="category for selected subject.")
+    description = models.TextField(default='')
 
     @property
     def subject_name(self):
@@ -210,9 +211,10 @@ class SubjectCategory(TranslatableMixin, models.Model):
     panels = [
         SnippetChooserPanel('subject'),
         FieldPanel('subject_category'),
+        FieldPanel('description'),
     ]
 
-    api_fields = ('subject_name', 'subject_category')
+    api_fields = ('subject_name', 'subject_category', 'description')
 
     def __str__(self):
         return self.subject_category
