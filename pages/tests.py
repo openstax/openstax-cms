@@ -217,6 +217,7 @@ class SubjectPageTest(WagtailPageTests):
                                       )
         homepage.add_child(instance=subjects_page)
         subject_page = Subject(title="Business",
+                               page_description="Business page",
                                os_textbook_heading="OpenStax Business Textbooks",
                                philanthropic_support="Please support us",
                                )
