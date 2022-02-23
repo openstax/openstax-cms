@@ -36,4 +36,5 @@ class SubjectCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = SubjectCategory
         fields = ('subject_name',
-                  'subject_category')
+                  'subject_category',
+                  'description')

@@ -2858,6 +2858,7 @@ class SubjectOrderable(Orderable, SubjectBooks):
 
 
 class Subject(Page):
+    page_description = models.TextField(default='')
     tutor_ad = StreamField([
         ('content', TutorAdBlock()),
     ])
@@ -2959,6 +2960,7 @@ class Subject(Page):
                             'last_updated_pdf': book.last_updated_pdf,
                         })
                         books[book.title] = book_data
+                book_list['category_description'] = category.description
                 book_list['books'] = books
                 categories[category.subject_category] = book_list
             subject_categories['categories'] = categories
@@ -2967,6 +2969,7 @@ class Subject(Page):
         return subject_list
 
     api_fields = [
+        APIField('page_description'),
         APIField('tutor_ad'),
         APIField('blog_header'),
         APIField('webinar_header'),
@@ -2984,6 +2987,7 @@ class Subject(Page):
 
     content_panels = Page.content_panels + [
         MultiFieldPanel([InlinePanel("subject", label="Subject", min_num=1, max_num=1)], heading="Subject(s)"),
+        FieldPanel('page_description'),
         StreamFieldPanel('tutor_ad'),
         StreamFieldPanel('blog_header'),
         StreamFieldPanel('webinar_header'),
