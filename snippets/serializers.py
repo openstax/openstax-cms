@@ -21,7 +21,8 @@ class SubjectSerializer(serializers.ModelSerializer):
                   'page_content',
                   'seo_title',
                   'search_description',
-                  'subject_icon')
+                  'subject_icon',
+                  'subject_color')
 
 
 class ErrataContentSerializer(serializers.ModelSerializer):

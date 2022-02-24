@@ -2861,7 +2861,7 @@ class Subject(Page):
     page_description = models.TextField(default='')
     tutor_ad = StreamField([
         ('content', TutorAdBlock()),
-    ])
+    ], null=True, blank=True)
 
     blog_header = StreamField(
         blocks.StreamBlock([
