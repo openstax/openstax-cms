@@ -8,7 +8,7 @@ from wagtail.core.fields import RichTextField
 from wagtail.core.models import TranslatableMixin, Orderable
 from wagtail.snippets.models import register_snippet
 from openstax.functions import build_image_url
-from books.constants import BOOK_STATES
+from books.constants import BOOK_STATES, COVER_COLORS
 
 
 class Subject(TranslatableMixin, models.Model):
@@ -23,13 +23,15 @@ class Subject(TranslatableMixin, models.Model):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+    subject_color = models.CharField(max_length=255, choices=COVER_COLORS, default='blue',
+                                   help_text='The color of the vertical stripe on Subject page.')
 
     def get_subject_icon(self):
         return build_image_url(self.icon)
 
     subject_icon = property(get_subject_icon)
 
-    api_fields = ('name', 'page_content', 'seo_title', 'search_description', 'subject_icon')
+    api_fields = ('name', 'page_content', 'seo_title', 'search_description', 'subject_icon', 'subject_color')
 
     panels = [
         FieldPanel('name'),
@@ -37,6 +39,7 @@ class Subject(TranslatableMixin, models.Model):
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
         ImageChooserPanel('icon'),
+        FieldPanel('subject_color'),
     ]
 
     def __str__(self):
