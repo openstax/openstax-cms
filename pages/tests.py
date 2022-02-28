@@ -149,17 +149,6 @@ class PageTests(WagtailPageTests):
 
         self.assertEqual(retrieved_page.title, "Team Page")
 
-    def test_can_create_tutor_page_with_management_command(self):
-        call_command('create_tutor_page')
-        page_exists = TutorMarketing.objects.all().exists()
-
-        self.assertEqual(page_exists, True)
-
-    def test_can_create_impact_page_with_management_command(self):
-        call_command('create_impact_page')
-        page_exists = Impact.objects.all().exists()
-
-        self.assertEqual(page_exists, True)
 
 class ErrataListTest(WagtailPageTests):
 
