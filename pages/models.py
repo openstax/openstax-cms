@@ -705,6 +705,7 @@ class Supporters(Page):
             ('content', blocks.StructBlock([
                 ('group_title', blocks.CharBlock(classname="name of funder group")),
                 ('description', blocks.TextBlock(classname="description of funder group")),
+                ('image', APIImageChooserBlock(required=False)),
                 ('funders', blocks.ListBlock(blocks.StructBlock([
                     ('funder_name', blocks.CharBlock(required=True)),
                     ('url', blocks.URLBlock(required=False))
