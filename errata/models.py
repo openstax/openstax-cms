@@ -296,6 +296,7 @@ class Errata(models.Model):
         verbose_name = "erratum"
         verbose_name_plural = "erratum"
 
+
 class EmailText(models.Model):
 
     email_case = models.CharField(
@@ -318,109 +319,109 @@ class EmailText(models.Model):
 
 @receiver(post_save, sender=Errata, dispatch_uid="send_status_update_email")
 def send_status_update_email(sender, instance, created, **kwargs):
-        send_email = False
-        override_to = False
+    send_email = False
+    override_to = False
 
-        if created:
-            if instance.book.book_state == 'new_edition_available':
-                email_text = EmailText.objects.get(email_case='Getting New Edition')
+    if instance.status == 'New':
+        if instance.book.book_state == 'new_edition_available':
+            email_text = EmailText.objects.get(email_case='Getting New Edition')
+            subject = email_text.email_subject_text
+            body = email_text.email_body_text
+            send_email = True
+        else:
+            if instance.created.month in (11, 12, 1, 2):
+                email_text = EmailText.objects.get(email_case='Created in Fall')
                 subject = email_text.email_subject_text
                 body = email_text.email_body_text
                 send_email = True
             else:
-                if instance.created.month in (11, 12, 1, 2):
-                    email_text = EmailText.objects.get(email_case='Created in Fall')
-                    subject = email_text.email_subject_text
-                    body = email_text.email_body_text
-                    send_email = True
-                else:
-                    email_text = EmailText.objects.get(email_case='Created in Spring')
-                    subject = email_text.email_subject_text
-                    body = email_text.email_body_text
-                    send_email = True
-        elif instance.status == 'Reviewed' and (instance.resolution == 'Will Not Fix' or instance.resolution == 'Duplicate' or instance.resolution == 'Not An Error' or instance.resolution == 'Major Book Revision'):
-            email_text = EmailText.objects.get(email_case='Reviewed and (will not fix, or duplicate, or not an error, or major book revision)')
-            subject = email_text.email_subject_text
-            body = email_text.email_body_text
-            send_email = True
-        elif instance.status == 'Reviewed' and instance.resolution == 'Approved':
-            email_text = EmailText.objects.get(email_case='Reviewed and Approved')
-            subject = email_text.email_subject_text
-            body = email_text.email_body_text
-            send_email = True
-        elif instance.status == 'Completed' and instance.resolution == 'Sent to Customer Support':
-            email_text = EmailText.objects.get(email_case='Completed and Sent to Customer Support')
-            subject = email_text.email_subject_text
-            body = email_text.email_body_text
-            send_email = True
-            override_to = True
-            to = "support@openstax.org"
-        elif instance.status == 'Completed' and instance.resolution == 'Partner Product':
-            email_text = EmailText.objects.get(email_case='Partner Product')
-            subject = email_text.email_subject_text
-            body = email_text.email_body_text
-            send_email = True
-        elif instance.status == 'Completed' and instance.resolution == 'Technical Error':
-            email_text = EmailText.objects.get(email_case='Technical Error')
-            subject = email_text.email_subject_text
-            body = email_text.email_body_text
-            send_email = True
-        elif instance.resolution == 'More Information Requested':
-            email_text = EmailText.objects.get(email_case='More Information Requested')
-            subject = email_text.email_subject_text
-            body = email_text.email_body_text
-            send_email = True
-        elif instance.status == 'Completed' and not send_email:
-            email_text = EmailText.objects.get(email_case='Generic Completed Response')
-            subject = email_text.email_subject_text
-            body = email_text.email_body_text
-            send_email = True
-        elif instance.status == 'Completed' and instance.resolution == 'Deprecated':
-            email_text = EmailText.objects.get(email_case='Deprecated')
-            subject = email_text.email_subject_text
-            body = email_text.email_body_text
-            send_email = True
+                email_text = EmailText.objects.get(email_case='Created in Spring')
+                subject = email_text.email_subject_text
+                body = email_text.email_body_text
+                send_email = True
+    elif instance.status == 'Reviewed' and (instance.resolution == 'Will Not Fix' or instance.resolution == 'Duplicate' or instance.resolution == 'Not An Error' or instance.resolution == 'Major Book Revision'):
+        email_text = EmailText.objects.get(email_case='Reviewed and (will not fix, or duplicate, or not an error, or major book revision)')
+        subject = email_text.email_subject_text
+        body = email_text.email_body_text
+        send_email = True
+    elif instance.status == 'Reviewed' and instance.resolution == 'Approved':
+        email_text = EmailText.objects.get(email_case='Reviewed and Approved')
+        subject = email_text.email_subject_text
+        body = email_text.email_body_text
+        send_email = True
+    elif instance.status == 'Completed' and instance.resolution == 'Sent to Customer Support':
+        email_text = EmailText.objects.get(email_case='Completed and Sent to Customer Support')
+        subject = email_text.email_subject_text
+        body = email_text.email_body_text
+        send_email = True
+        override_to = True
+        to = "support@openstax.org"
+    elif instance.status == 'Completed' and instance.resolution == 'Partner Product':
+        email_text = EmailText.objects.get(email_case='Partner Product')
+        subject = email_text.email_subject_text
+        body = email_text.email_body_text
+        send_email = True
+    elif instance.status == 'Completed' and instance.resolution == 'Technical Error':
+        email_text = EmailText.objects.get(email_case='Technical Error')
+        subject = email_text.email_subject_text
+        body = email_text.email_body_text
+        send_email = True
+    elif instance.resolution == 'More Information Requested':
+        email_text = EmailText.objects.get(email_case='More Information Requested')
+        subject = email_text.email_subject_text
+        body = email_text.email_body_text
+        send_email = True
+    elif instance.status == 'Completed' and not send_email:
+        email_text = EmailText.objects.get(email_case='Generic Completed Response')
+        subject = email_text.email_subject_text
+        body = email_text.email_body_text
+        send_email = True
+    elif instance.status == 'Completed' and instance.resolution == 'Deprecated':
+        email_text = EmailText.objects.get(email_case='Deprecated')
+        subject = email_text.email_subject_text
+        body = email_text.email_body_text
+        send_email = True
 
-        if not override_to:
-            try:
-                if instance.submitted_by_account_id:
-                    user = get_user_info(instance.submitted_by_account_id)
-                    to = user['email']
-                elif instance.submitter_email_address:
-                    to = instance.submitter_email_address
-                elif instance.submitted_by:
-                    to = instance.submitted_by.email
-            except TypeError:
-                send_email = False
+    if not override_to:
+        try:
+            if instance.submitted_by_account_id:
+                user = get_user_info(instance.submitted_by_account_id)
+                to = user['email']
+            elif instance.submitter_email_address:
+                to = instance.submitter_email_address
+            elif instance.submitted_by:
+                to = instance.submitted_by.email
             else:
                 send_email = False
+        except TypeError:
+            send_email = False
 
-        if send_email:
-            errata_email_info = {
-                'subject': subject,
-                'body': body,
-                'status': instance.status,
-                'resolution': instance.resolution,
-                'created': created,
-                'id': instance.id,
-                'title': instance.book.title,
-                'source': instance.resource,
-                'error_type': instance.error_type,
-                'location': instance.location,
-                'description': instance.detail,
-                'date_submitted': instance.created,
-                'host': settings.HOST_LINK,
-            }
-            msg_plain = render_to_string('templates/email.txt', errata_email_info)
-            msg_html = render_to_string('templates/email.html', errata_email_info)
+    if send_email:
+        errata_email_info = {
+            'subject': subject,
+            'body': body,
+            'status': instance.status,
+            'resolution': instance.resolution,
+            'created': created,
+            'id': instance.id,
+            'title': instance.book.title,
+            'source': instance.resource,
+            'error_type': instance.error_type,
+            'location': instance.location,
+            'description': instance.detail,
+            'date_submitted': instance.created,
+            'host': settings.HOST_LINK,
+        }
+        msg_plain = render_to_string('templates/email.txt', errata_email_info)
+        msg_html = render_to_string('templates/email.html', errata_email_info)
 
-            send_mail(
-                subject,
-                msg_plain,
-                'noreply@openstax.org',
-                [to],
-                html_message=msg_html,
-            )
+        send_mail(
+            subject,
+            msg_plain,
+            'noreply@openstax.org',
+            [to],
+            html_message=msg_html,
+        )
 
 
 class InternalDocumentation(models.Model):
