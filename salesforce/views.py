@@ -98,6 +98,7 @@ class PartnerReviewViewSet(viewsets.ViewSet):
         if user_uuid:
             capture_message('views: got uuid: ' + str(user_uuid))
             review_object = PartnerReview.objects.get(id=request.query_params['id'])
+            capture_message('views: review uuid: ' + str(review_object.submitted_by_account_uuid))
             if (user_uuid == review_object.submitted_by_account_uuid) or user_uuid == -1: # -1 is returned by get_logged_in_user_uuid when bypass_sso_cookie_check = True
                 capture_message('views: inside delete if stmt')
                 review_object.status = 'Deleted'
