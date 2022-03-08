@@ -6,7 +6,7 @@ from rest_framework.decorators import action
 from rest_framework.response import Response
 from django.http import JsonResponse, Http404
 from django.utils import timezone
-from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
+from django.core.exceptions import MultipleObjectsReturned
 
 from .models import School, AdoptionOpportunityRecord, Partner, SalesforceForms, ResourceDownload, SavingsNumber, PartnerReview
 from .serializers import SchoolSerializer, AdoptionOpportunityRecordSerializer, PartnerSerializer, SalesforceFormsSerializer, ResourceDownloadSerializer, SavingsNumberSerializer, PartnerReviewSerializer
@@ -92,22 +92,18 @@ class PartnerReviewViewSet(viewsets.ViewSet):
 
     @action(method=['delete'], detail=True)
     def delete(self, request):
-        #user_uuid = get_logged_in_user_uuid(request)
-        #if user_uuid:
-            #print('*** id: ' + str(request.query_params['id']))
-        try:
+        user_uuid = get_logged_in_user_uuid(request)
+        if user_uuid:
             review_object = PartnerReview.objects.get(id=request.query_params['id'])
-            #if (user_uuid == review_object.submitted_by_account_uuid) or user_uuid == -1: # -1 is returned by get_logged_in_user_uuid when bypass_sso_cookie_check = True
-            #if review_object:
-            review_object.status = 'Deleted'
-            review_object.save()
-            invalidate_cloudfront_caches()
-            print('***review deleted and saved')
+            if (user_uuid == review_object.submitted_by_account_uuid) or user_uuid == -1: # -1 is returned by get_logged_in_user_uuid when bypass_sso_cookie_check = True
+                review_object.status = 'Deleted'
+                review_object.save()
+                invalidate_cloudfront_caches()
+                print('***review deleted and saved')
             serializer = PartnerReviewSerializer(review_object)
             return Response(serializer.data)
-        #else:
-        except ObjectDoesNotExist:
-            return Response(status=403, data="Invalid parameter")
+        else:
+            return Response(status=403, data="SSO cookie not set")
 
     serializer_class = PartnerReviewSerializer
 

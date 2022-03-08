@@ -7,9 +7,10 @@ from django.conf import settings
 from django.urls import reverse
 
 from shared.test_utilities import RequestMock
-from oxauth.functions import get_token, decrypt_cookie, get_logged_in_user_id
+from oxauth.functions import get_token, decrypt_cookie, get_logged_in_user_id, get_logged_in_user_uuid
 from oxauth.views import login, logout
 from .auth import OXSessionDecryptor
+from http import cookies
 
 
 class AccountsTestCase(TestCase):
@@ -43,3 +44,12 @@ class AccountsTestCase(TestCase):
         mock = RequestMock()
         user_id = get_logged_in_user_id(mock.request, bypass_sso_cookie_check=True)
         self.assertEqual(user_id, -1) #bypassed cookie checks return -1 for a user id
+
+    def test_can_get_logged_in_user_uuid(self):
+        biscuits = cookies.SimpleCookie()
+        biscuits['oxa'] = self.sso_cookie
+        self.client.cookies = biscuits
+        response = self.client.get('/admin')
+        request = response.wsgi_request
+        uuid = get_logged_in_user_uuid(request, bypass_sso_cookie_check=False)
+        self.assertEqual(uuid, '467cea6c-8159-40b1-90f1-e9b0dc26344c')
