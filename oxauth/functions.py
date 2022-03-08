@@ -56,7 +56,7 @@ def get_logged_in_user_uuid(request, bypass_sso_cookie_check=settings.BYPASS_SSO
         else:
             return None
     else:
-        return '-1'
+        return -1
 
 
 def get_token():

@@ -1,7 +1,6 @@
 import jwe
 import jwt
 
-from sentry_sdk import capture_message
 
 class Strategy2:
 
@@ -43,7 +42,6 @@ class Strategy2:
 
             return Payload(decoded_payload)
         except Exception:
-            capture_message('Could not decrypt cookie')
             if self.logging_enabled:
                 import logging
                 logging.exception("Could not decrypt cookie")
