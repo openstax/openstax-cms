@@ -16,6 +16,8 @@ from books.models import Book
 from oxauth.functions import get_logged_in_user_uuid
 from global_settings.functions import invalidate_cloudfront_caches
 
+from sentry_sdk import capture_message
+
 
 class SchoolViewSet(viewsets.ModelViewSet):
     queryset = School.objects.all()
@@ -94,12 +96,14 @@ class PartnerReviewViewSet(viewsets.ViewSet):
     def delete(self, request):
         user_uuid = get_logged_in_user_uuid(request)
         if user_uuid:
+            capture_message('views: got uuid')
             review_object = PartnerReview.objects.get(id=request.query_params['id'])
             if (user_uuid == review_object.submitted_by_account_uuid) or user_uuid == -1: # -1 is returned by get_logged_in_user_uuid when bypass_sso_cookie_check = True
+                capture_message('views: inside delete if stmt')
                 review_object.status = 'Deleted'
                 review_object.save()
+                capture_message('views: review deleted')
                 invalidate_cloudfront_caches()
-                print('***review deleted and saved')
             serializer = PartnerReviewSerializer(review_object)
             return Response(serializer.data)
         else:
