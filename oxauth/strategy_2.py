@@ -1,6 +1,7 @@
 import jwe
 import jwt
 
+
 class Strategy2:
 
     def __init__(self, signature_public_key, signature_algorithm,

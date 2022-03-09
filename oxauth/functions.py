@@ -47,7 +47,7 @@ def get_logged_in_user_uuid(request, bypass_sso_cookie_check=settings.BYPASS_SSO
     Takes an optional bypass_cookie_check param to bypass cookie checking for local dev / testing
     which returns -1 (a never valid user id)
     :param request:
-    :return: user_id from SSO cookie
+    :return: user_uuid from SSO cookie
     """
     if not bypass_sso_cookie_check:
         decrypted_cookie = decrypt_cookie(request.COOKIES.get(settings.SSO_COOKIE_NAME))

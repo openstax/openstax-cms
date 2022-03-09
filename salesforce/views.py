@@ -95,10 +95,10 @@ class PartnerReviewViewSet(viewsets.ViewSet):
         user_uuid = get_logged_in_user_uuid(request)
         if user_uuid:
             review_object = PartnerReview.objects.get(id=request.query_params['id'])
-            if (user_uuid == review_object.submitted_by_account_uuid) or user_uuid == -1: # -1 is returned by get_logged_in_user_uuid when bypass_sso_cookie_check = True
-                    review_object.status = 'Deleted'
-                    review_object.save()
-                    invalidate_cloudfront_caches()
+            if user_uuid == str(review_object.submitted_by_account_uuid) or user_uuid == -1: # -1 is returned by get_logged_in_user_uuid when bypass_sso_cookie_check = True
+                review_object.status = 'Deleted'
+                review_object.save()
+                invalidate_cloudfront_caches()
             serializer = PartnerReviewSerializer(review_object)
             return Response(serializer.data)
         else:
