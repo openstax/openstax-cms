@@ -6,7 +6,7 @@ from django.test import TestCase, Client
 from django.conf import settings
 from django.urls import reverse
 
-from snippets.models import Subject, ErrataContent
+from snippets.models import Subject, ErrataContent, GiveBanner
 
 
 class SnippetsTestCase(TestCase):
@@ -25,6 +25,9 @@ class SnippetsTestCase(TestCase):
 
         self.deprecated = ErrataContent(heading='Errata Content - Deprecated', book_state='deprecated', content='No more corrections will be made')
         self.deprecated.save()
+
+        self.give_banner = GiveBanner(html_message="Help students around the world succeed with <strong>contributions of $5, $10 or $20</strong>", link_text="Make a difference now", link_url='https://example.com')
+        self.give_banner.save()
 
     def test_can_create_subject(self):
         subject = Subject(name="Science", page_content="Science page content.", seo_title="Science SEO Title",
@@ -50,3 +53,7 @@ class SnippetsTestCase(TestCase):
     def test_can_query_errata_content_by_book_state(self):
         response = self.client.get('/apps/cms/api/snippets/erratacontent/?book_state=deprecated&format=json')
         self.assertIn(b"deprecated", response.content)
+
+    def test_can_fetch_all_give_banners(self):
+        response = self.client.get('/apps/cms/api/snippets/givebanner/?format=json')
+        self.assertIn(b"Help students", response.content)

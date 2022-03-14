@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 
-from .models import Role, Subject, ErrataContent, SubjectCategory
-from .serializers import RoleSerializer, SubjectSerializer, ErrataContentSerializer, SubjectCategorySerializer
+from .models import Role, Subject, ErrataContent, SubjectCategory, GiveBanner
+from .serializers import RoleSerializer, SubjectSerializer, ErrataContentSerializer, SubjectCategorySerializer, GiveBannerSerializer
 
 from rest_framework import generics, viewsets
 from django_filters.rest_framework import DjangoFilterBackend
@@ -59,6 +59,11 @@ class SubjectCategoryViewSet(viewsets.ModelViewSet):
         if locale is not None:
             queryset = queryset.filter(locale=convert_locale(locale))
         return queryset
+
+
+class GiveBannerViewSet(viewsets.ModelViewSet):
+    queryset = GiveBanner.objects.all()
+    serializer_class = GiveBannerSerializer
 
 
 def convert_locale(locale):

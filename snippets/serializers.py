@@ -1,4 +1,4 @@
-from .models import Role, Subject, ErrataContent, SubjectCategory
+from .models import Role, Subject, ErrataContent, SubjectCategory, GiveBanner
 
 from rest_framework import serializers, generics
 
@@ -39,3 +39,12 @@ class SubjectCategorySerializer(serializers.ModelSerializer):
         fields = ('subject_name',
                   'subject_category',
                   'description')
+
+
+class GiveBannerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = GiveBanner
+        fields = ('html_message',
+                  'link_text',
+                  'link_url',
+                  'banner_thumbnail')
