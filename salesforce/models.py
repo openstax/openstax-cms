@@ -127,7 +127,7 @@ class SalesforceForms(models.Model):
 
     def save(self, *args, **kwargs):
         self.clean()
-        super().save(*args, **kwargs)
+        super(SalesforceForms, self).save(*args, **kwargs)
 
 
     class Meta:
