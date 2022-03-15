@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 from modelcluster.fields import ParentalKey
 from wagtail.search import index
 from wagtail.admin.edit_handlers import FieldPanel, InlinePanel
@@ -254,6 +255,14 @@ class GiveBanner(TranslatableMixin, models.Model):
 
     def __str__(self):
         return 'Give Banner'
+
+    def clean(self):
+        if GiveBanner.objects.exists() and not self.pk:
+            raise ValidationError('There can be only one Give Banner instance')
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        return super(GiveBanner, self).save(*args, **kwargs)
 
 
 register_snippet(GiveBanner)

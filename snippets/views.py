@@ -62,7 +62,8 @@ class SubjectCategoryViewSet(viewsets.ModelViewSet):
 
 
 class GiveBannerViewSet(viewsets.ModelViewSet):
-    queryset = GiveBanner.objects.all()[0]
+    # validation prevents multiple Give Banners, so this is safe
+    queryset = GiveBanner.objects.all()
     serializer_class = GiveBannerSerializer
 
 
