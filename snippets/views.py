@@ -62,7 +62,7 @@ class SubjectCategoryViewSet(viewsets.ModelViewSet):
 
 
 class GiveBannerViewSet(viewsets.ModelViewSet):
-    queryset = GiveBanner.objects.all()
+    queryset = GiveBanner.objects.all()[0]
     serializer_class = GiveBannerSerializer
 
 
