@@ -109,6 +109,7 @@ class SalesforceForms(models.Model):
     oid = models.CharField(max_length=255, help_text="OID value to use for FE forms")
     posting_url = models.URLField(help_text="Used for posting testamonials")
     debug = models.BooleanField(default=False)
+    debug_email = models.EmailField(blank=True, null=True, help_text="Only required if Debug is selected")
     adoption_form_posting_url = models.URLField(help_text="Used for posting adoption form. Can be different in each environment", null=True, blank=True)
     interest_form_posting_url = models.URLField(help_text="Used for posting interest form. Can be different in each environment", null=True, blank=True)
     tech_scout_form_posting_url = models.URLField(
@@ -116,6 +117,18 @@ class SalesforceForms(models.Model):
 
     def __str__(self):
         return self.oid
+
+    def clean(self):
+        if self.debug:
+            if self.debug_email is None:
+                raise ValidationError({'debug_email':'Debug Email is required if Debug is selected'})
+        else:
+            self.debug_email = None
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)
+
 
     class Meta:
         verbose_name_plural = "Salesforce Forms"
@@ -269,7 +282,7 @@ class Partner(models.Model):
         return PartnerReview.objects.filter(partner=self, status='Approved').count()
 
     @hooks.register('register_admin_menu_item')
-    def register_partner_menu_item():
+    def register_partner_menu_item(self):
         return MenuItem('Partners', '/django-admin/salesforce/partner/', classnames='icon icon-group', order=3000)
 
 
