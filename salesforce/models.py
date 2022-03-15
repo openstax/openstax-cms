@@ -282,7 +282,7 @@ class Partner(models.Model):
         return PartnerReview.objects.filter(partner=self, status='Approved').count()
 
     @hooks.register('register_admin_menu_item')
-    def register_partner_menu_item(self):
+    def register_partner_menu_item():
         return MenuItem('Partners', '/django-admin/salesforce/partner/', classnames='icon icon-group', order=3000)
 
 
