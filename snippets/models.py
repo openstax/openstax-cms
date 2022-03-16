@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 from modelcluster.fields import ParentalKey
 from wagtail.search import index
 from wagtail.admin.edit_handlers import FieldPanel, InlinePanel
@@ -224,4 +225,46 @@ class SubjectCategory(TranslatableMixin, models.Model):
 
 
 register_snippet(SubjectCategory)
+
+
+class GiveBanner(TranslatableMixin, models.Model):
+    html_message = models.TextField(default='')
+    link_text = models.CharField(max_length=255, null=True, blank=True)
+    link_url = models.URLField(null=True, blank=True)
+    thumbnail = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    def get_banner_thumbnail(self):
+        return build_image_url(self.thumbnail)
+
+    banner_thumbnail = property(get_banner_thumbnail)
+
+    api_fields = ('html_message', 'link_text', 'link_url', 'banner_thumbnail')
+
+    panels = [
+        FieldPanel('html_message'),
+        FieldPanel('link_text'),
+        FieldPanel('link_url'),
+        ImageChooserPanel('thumbnail'),
+    ]
+
+    def __str__(self):
+        return 'Give Banner'
+
+    def clean(self):
+        if GiveBanner.objects.exists() and not self.pk:
+            raise ValidationError('There can be only one Give Banner instance')
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        return super(GiveBanner, self).save(*args, **kwargs)
+
+
+register_snippet(GiveBanner)
+
 
