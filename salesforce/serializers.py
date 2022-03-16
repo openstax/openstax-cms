@@ -97,8 +97,8 @@ class PartnerSerializer(serializers.ModelSerializer):
 class SalesforceFormsSerializer(serializers.ModelSerializer):
     class Meta:
         model = SalesforceForms
-        fields = ('oid', 'debug', 'posting_url', 'adoption_form_posting_url', 'interest_form_posting_url', 'tech_scout_form_posting_url')
-        read_only_fields = ('oid', 'debug', 'posting_url', 'adoption_form_posting_url', 'interest_form_posting_url', 'tech_scout_form_posting_url')
+        fields = ('oid', 'debug', 'debug_email', 'posting_url', 'adoption_form_posting_url', 'interest_form_posting_url', 'tech_scout_form_posting_url')
+        read_only_fields = ('oid', 'debug', 'debug_email', 'posting_url', 'adoption_form_posting_url', 'interest_form_posting_url', 'tech_scout_form_posting_url')
 
 
 class ResourceDownloadSerializer(serializers.ModelSerializer):

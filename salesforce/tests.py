@@ -7,7 +7,7 @@ from django.test import LiveServerTestCase, TestCase
 from six import StringIO
 from django.core.exceptions import ValidationError
 
-from salesforce.models import Adopter, SalesforceSettings, MapBoxDataset, Partner, AdoptionOpportunityRecord, PartnerReview
+from salesforce.models import Adopter, SalesforceSettings, MapBoxDataset, Partner, AdoptionOpportunityRecord, PartnerReview, SalesforceForms
 from salesforce.views import Salesforce
 from salesforce.salesforce import Salesforce as SF
 from salesforce.serializers import PartnerSerializer, AdoptionOpportunityRecordSerializer
@@ -138,6 +138,19 @@ class SalesforceTest(LiveServerTestCase, WagtailPageTests):
         with vcr.use_cassette('fixtures/vcr_cassettes/adopter.yaml'):
             call_command('update_adopters', stdout=out)
         self.assertIn("Success", out.getvalue())
+
+    def test_salesforce_forms_no_debug(self):
+        form = SalesforceForms(oid='thisisanoid', posting_url='https://nowhereto.salesforce.com/nothing')
+        form.save()
+        response = self.client.get('/apps/cms/api/salesforce/forms/?format=json')
+        self.assertIn(b"thisisanoid", response.content)
+
+    def test_salesforce_forms_debug_validation_error(self):
+        form = SalesforceForms(oid='thisisanoid', posting_url='https://nowhereto.salesforce.com/nothing', debug=True)
+        try:
+            form.save()
+        except ValidationError as e:
+            self.assertTrue('debug_email' in e.message_dict)
 
     def tearDown(self):
         super(WagtailPageTests, self).tearDown()
