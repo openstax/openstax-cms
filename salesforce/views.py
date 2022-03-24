@@ -1,4 +1,4 @@
-from rest_framework import viewsets
+from rest_framework import viewsets, filters
 from rest_framework.views import APIView
 from rest_framework.authentication import SessionAuthentication, BasicAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -20,6 +20,8 @@ from global_settings.functions import invalidate_cloudfront_caches
 class SchoolViewSet(viewsets.ModelViewSet):
     queryset = School.objects.all()
     serializer_class = SchoolSerializer
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name',]
 
 
 class PartnerViewSet(viewsets.ModelViewSet):
