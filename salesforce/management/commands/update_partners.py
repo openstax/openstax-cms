@@ -21,10 +21,10 @@ class Command(BaseCommand):
                     "Name, " \
                     "Partner_Type__c, " \
                     "Books_Offered__c, " \
-                    "Description, " \
+                    "Description__c, " \
                     "Rich_Description__c, " \
                     "short_partner_description__c, " \
-                    "Website, " \
+                    "Website__c, " \
                     "Lead_Sharing__c, " \
                     "Verified_by_instructors__c, " \
                     "Integrated_with_OpenStax_content__c, " \
@@ -40,7 +40,7 @@ class Command(BaseCommand):
                     "Adaptivity_quantitative_randomization__c, " \
                     "Adaptivity_varied_level__c, " \
                     "Admin_calendar_links__c, " \
-                    "Admin_online_submission__c, " \
+                    "admin_online_submission__c, " \
                     "Admin_realtime_progress__c, " \
                     "Admin_shared_students__c, " \
                     "Admin_syllabus__c, " \
@@ -66,17 +66,18 @@ class Command(BaseCommand):
                     "Customization_reorder_content__c, " \
                     "Customization_reorder_learning_outcomes__c, " \
                     "Feedback_early_warning__c, " \
+                    "Feedback_individual_and_group__c, " \
                     "Feedback_knowledge_gaps__c, " \
                     "Feedback_learner_progress_tasks__c, " \
                     "Feedback_multipart__c, " \
                     "Feedback_understanding__c, " \
-                    "Formstack_URL__c, " \
                     "Grading_change_scores__c, " \
                     "Grading_class_and_student_level__c, " \
                     "Grading_group_work__c, " \
                     "Grading_learning_portfolio__c, " \
                     "Grading_rubric_based__c, " \
                     "Grading_tolerances_sig_fig__c, " \
+                    "Instructional_level_higher_ed__c, " \
                     "Interactivity_annotate__c, " \
                     "Interactivity_different_representations__c, " \
                     "Interactivity_gaming__c, " \
