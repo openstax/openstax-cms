@@ -18,7 +18,7 @@ class Command(BaseCommand):
             for record in sf_reviews:
                 try:
                     review = PartnerReview.objects.get(review_salesforce_id=record['Id'])
-                    if review.status != 'Edited':
+                    if review.status != 'Edited' and review.status != 'Deleted':
                         review.review = record['Approved_Customer_Review__c']
                         review.partner_response = record['Partner_Response__c']
                         review.partner_response_date = record['Partner_Response_Date__c']
