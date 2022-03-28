@@ -29,11 +29,12 @@ class Command(BaseCommand):
             for nrd in new_resource_downloads:
                 if not nrd.salesforce_id:
                     data_dict_item = {'Contact__c': nrd.contact_id,
-                                      'Last_Resource_Download_Date__c': nrd.last_access.strftime('%Y-%m-%d'),
+                                      'Last_accessed__c': nrd.last_access.strftime('%Y-%m-%d'),
                                       'Name': nrd.resource_name,
-                                      'Book__c': nrd.book.salesforce_name,
+                                      'Book__c': nrd.book.salesforce_abbreviation,
                                       'Book_Format__c': nrd.book_format,
-                                      'Number_of_times_accessed__c': nrd.number_of_times_accessed}
+                                      'Number_of_times_accessed__c': nrd.number_of_times_accessed,
+                                      'Accounts_UUID__c': str(nrd.account_uuid)}
                     new_data.append(data_dict_item)
                 else:
                     data_dict_item = { 'Id': nrd.salesforce_id,
