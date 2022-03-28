@@ -2,7 +2,7 @@ from django.conf.urls import include, url
 from django.urls import path
 from rest_framework import routers
 
-from .views import AdopterViewSet, ImageViewSet, DocumentViewSet, ProgressViewSet, customize_request, sticky_note, footer, schools, mapbox, flags, errata_fields, give_today
+from .views import AdopterViewSet, ImageViewSet, DocumentViewSet, ProgressViewSet, customize_request, sticky_note, footer, schools, mapbox, flags, errata_fields, give_today, webview_settings
 
 router = routers.DefaultRouter()
 router.register(r'images', ImageViewSet)
@@ -19,6 +19,7 @@ urlpatterns = [
     url(r'^flags/$', flags, name='flags'),
     url(r'^errata-fields/', errata_fields, name='errata-fields'),
     url(r'^give-today/$', give_today, name='give_today'),
+    url(r'^webview-settings/$', webview_settings, name='webview_settings'),
     path('customize/', customize_request),
 ]
 
