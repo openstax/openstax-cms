@@ -75,10 +75,6 @@ class PartnerSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         ret = super().to_representation(instance)
 
-        # if lead sharing is unchecked in salesforce, we hide the formstack_url (which hides request info button on FE)
-        if not ret['lead_sharing']:
-            ret['formstack_url'] = False
-
         # if looking at an individual partner instance, include the reviews - else, exclude
         if not isinstance(self.instance, Partner):
             ret['reviews'] = False
