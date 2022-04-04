@@ -29,7 +29,7 @@ class Command(BaseCommand):
                     "Verified_by_instructors__c, " \
                     "Integrated_with_OpenStax_content__c, " \
                     "Landing_page__c, " \
-                    "Affordability_cost__c, " \
+                    "Affordability_Cost__c, " \
                     "Affordability_institutional__c, " \
                     "App_available__c, " \
                     "Adaptivity_adaptive_presentation__c, " \
@@ -54,6 +54,7 @@ class Command(BaseCommand):
                     "Autonomy_digital_badges__c, " \
                     "Autonomy_on_demand_extras__c, " \
                     "Autonomy_self_reflection__c, " \
+                    "Autonomy_summative_assessments__c, " \
                     "Collaboration_peer_feedback__c, " \
                     "Collaboration_peer_interaction__c, " \
                     "Collaboration_teacher_learner_contact__c, " \
@@ -63,6 +64,7 @@ class Command(BaseCommand):
                     "Content_sharing_among_courses__c, " \
                     "Customization_assessment_repository__c, " \
                     "Customization_create_learning_outcomes__c, " \
+                    "Customization_content_repository__c, " \
                     "Customization_reorder_content__c, " \
                     "Customization_reorder_learning_outcomes__c, " \
                     "Feedback_early_warning__c, " \
@@ -115,7 +117,7 @@ class Command(BaseCommand):
                     "Online_teaching_labs__c, " \
                     "International__c, " \
                     "Partnership_Level__c " \
-                    "FROM Account WHERE RecordTypeId = '012U0000000MeAuIAK'"
+                    "FROM Partner__c"
             response = sf.query_all(query)
             sf_marketplace_partners = response['records']
 
@@ -126,8 +128,8 @@ class Command(BaseCommand):
             for partner in sf_marketplace_partners:
                 partner_ids.append(partner['Id'])
 
-                if partner['Affordability_cost__c']:
-                    affordability_cost=partner['Affordability_cost__c'].replace(";", "; ")
+                if partner['Affordability_Cost__c']:
+                    affordability_cost=partner['Affordability_Cost__c'].replace(";", "; ")
                 else:
                     affordability_cost=None
 
@@ -136,9 +138,9 @@ class Command(BaseCommand):
                 p.partner_type=partner['Partner_Type__c']
                 p.books=partner['Books_Offered__c']
                 p.rich_description=partner['Rich_Description__c']
-                p.partner_description=partner['Description']
+                p.partner_description=partner['Description__c']
                 p.short_partner_description=partner['short_partner_description__c']
-                p.partner_website=partner['Website']
+                p.partner_website=partner['Website__c']
                 p.lead_sharing=self.str2bool(partner['Lead_Sharing__c'])
                 p.landing_page=partner['Landing_page__c']
                 p.verified_by_instructor=self.str2bool(partner['Verified_by_instructors__c'])
@@ -168,6 +170,7 @@ class Command(BaseCommand):
                 p.autonomy_digital_badges=self.str2bool(partner['Autonomy_digital_badges__c'])
                 p.autonomy_on_demand_extras=self.str2bool(partner['Autonomy_on_demand_extras__c'])
                 p.autonomy_self_reflection=self.str2bool(partner['Autonomy_self_reflection__c'])
+                p.autonomy_summative_assessments=self.str2bool(partner['Autonomy_summative_assessments__c'])
                 p.collaboration_peer_feedback=self.str2bool(partner['Collaboration_peer_feedback__c'])
                 p.collaboration_peer_interaction=self.str2bool(partner['Collaboration_peer_interaction__c'])
                 p.collaboration_teacher_learner_contact=self.str2bool(partner['Collaboration_teacher_learner_contact__c'])
@@ -176,15 +179,16 @@ class Command(BaseCommand):
                 p.content_resource_sharing=self.str2bool(partner['Content_resource_sharing__c'])
                 p.content_sharing_among_courses=self.str2bool(partner['Content_sharing_among_courses__c'])
                 p.customization_assessement_repository=self.str2bool(partner['Customization_assessment_repository__c'])
+                p.customization_content_repository = self.str2bool(partner['Customization_content_repository__c'])
                 p.customization_create_learning_outcomes=self.str2bool(partner['Customization_create_learning_outcomes__c'])
                 p.customization_reorder_content=self.str2bool(partner['Customization_reorder_content__c'])
                 p.customization_reorder_learning_outcomes=self.str2bool(partner['Customization_reorder_learning_outcomes__c'])
                 p.feedback_early_warning=self.str2bool(partner['Feedback_early_warning__c'])
+                p.feedback_individual_and_groups=self.str2bool(partner['Feedback_individual_and_group__c'])
                 p.feedback_knowledge_gaps=self.str2bool(partner['Feedback_knowledge_gaps__c'])
                 p.feedback_learner_progress_tasks=self.str2bool(partner['Feedback_learner_progress_tasks__c'])
                 p.feedback_multipart=self.str2bool(partner['Feedback_multipart__c'])
                 p.feedback_understanding=self.str2bool(partner['Feedback_understanding__c'])
-                p.formstack_url=partner['Formstack_URL__c']
                 p.grading_change_scores=self.str2bool(partner['Grading_change_scores__c'])
                 p.grading_class_and_student_level=self.str2bool(partner['Grading_class_and_student_level__c'])
                 p.grading_group_work=self.str2bool(partner['Grading_group_work__c'])
@@ -219,6 +223,7 @@ class Command(BaseCommand):
                 p.accessibility_WCAG=self.str2bool(partner['Accessibility_WCAG__c'])
                 p.accessibility_universal_design=self.str2bool(partner['Accessibility_Universal_Design__c'])
                 p.instructional_level_k12=self.str2bool(partner['Instructional_level_K12__c'])
+                p.instructional_level_higher_ed = self.str2bool(partner['Instructional_level_higher_ed__c'])
                 p.online_teaching_peer_discussion=self.str2bool(partner['Online_teaching_peer_discussion__c'])
                 p.online_teaching_lecture_streaming=self.str2bool(partner['Online_teaching_lecture_streaming__c'])
                 p.online_teaching_in_lecture=self.str2bool(partner['Online_teaching_in_lecture__c'])

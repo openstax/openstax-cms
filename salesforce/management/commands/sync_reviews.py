@@ -47,7 +47,7 @@ class Command(BaseCommand):
                 data = {
                     'Status__c': 'New',
                     'Pending_Customer_Review__c': review.review,
-                    'Partner__c': review.partner.salesforce_id,
+                    'Partner_Object__c': review.partner.salesforce_id,
                     'OS_Accounts_UUID__c': str(review.submitted_by_account_uuid),
                     'Score__c': review.rating,
                 }
