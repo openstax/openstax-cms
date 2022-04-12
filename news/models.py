@@ -25,7 +25,7 @@ from modelcluster.fields import ParentalKey
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from taggit.models import TaggedItemBase
 from openstax.functions import build_image_url
-from snippets.models import NewsSource
+from snippets.models import NewsSource, BlogContentType
 
 class ImageChooserBlock(ImageChooserBlock):
     def get_api_representation(self, value, context=None):
@@ -122,6 +122,22 @@ class NewsArticleTag(TaggedItemBase):
     content_object = ParentalKey('news.NewsArticle', related_name='tagged_items')
 
 
+class ContentType(models.Model):
+    blog_content_type = models.ForeignKey(BlogContentType, on_delete=models.SET_NULL, null=True, related_name='newsarticle_content_type')
+
+    def get_content_type(self):
+        return self.blog_content_type.content_type
+    content_type = property(get_content_type)
+
+    api_fields = [
+        APIField('content_type'),
+    ]
+
+
+class BlogType(Orderable, ContentType):
+    blog_category = ParentalKey('news.NewsArticle', related_name='blog_type')
+
+
 class NewsArticle(Page):
     date = models.DateField("Post date")
     heading = models.CharField(max_length=250, help_text="Heading displayed on website")
@@ -178,6 +194,7 @@ class NewsArticle(Page):
         ImageChooserPanel('featured_image'),
         FieldPanel('featured_image_alt_text'),
         FieldPanel('tags'),
+        InlinePanel('blog_type', label='Content Type'),
         StreamFieldPanel('body'),
         FieldPanel('pin_to_top'),
     ]
@@ -199,6 +216,7 @@ class NewsArticle(Page):
         APIField('featured_image_small', serializer=ImageRenditionField('width-420', source='featured_image')),
         APIField('featured_image_alt_text'),
         APIField('tags'),
+        APIField('blog_type'),
         APIField('body_blurb'),
         APIField('body'),
         APIField('pin_to_top'),

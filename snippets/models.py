@@ -268,3 +268,17 @@ class GiveBanner(TranslatableMixin, models.Model):
 register_snippet(GiveBanner)
 
 
+class BlogContentType(TranslatableMixin, models.Model):
+    content_type = models.CharField(max_length=255, null=True, blank=True,help_text="content type for blog posts")
+
+    api_fields = ('content_type')
+
+    panels = [
+        FieldPanel('content_type'),
+    ]
+
+    def __str__(self):
+        return self.content_type
+
+
+register_snippet(BlogContentType)
