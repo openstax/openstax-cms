@@ -30,7 +30,7 @@ SECRET_KEY = 'enter-a-long-unguessable-string-here'
 # }
 
 SALESFORCE = { 'username' : '',
-               'password' : '', # password might need to be concatinated with security_token e.g. 'mypass1231' 
+               'password' : '', # password might need to be concatenated with security_token e.g. 'mypass1231'
                'security_token' : '',
                'sandbox': True }
 
@@ -47,3 +47,12 @@ SSO_COOKIE_NAME = 'oxa-dev'
 
 # If you want to bypass the SSO cookie checks, set this to True - as of this writing, that only affects the delete method on reviews
 BYPASS_SSO_COOKIE_CHECK = True
+
+# URL that handles the media served from MEDIA_ROOT. Make sure to use a
+# trailing slash.
+# Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
+MEDIA_URL = '/media/'
+
+# URL prefix for static files.
+# Example: "http://media.lawrence.com/static/"
+STATIC_URL = STATIC_HOST + '/static/'

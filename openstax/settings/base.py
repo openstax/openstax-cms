@@ -1,5 +1,6 @@
 # Django settings for openstax project.
 
+import json
 import os
 import sys
 import raven
@@ -28,17 +29,36 @@ ADMINS = (
     ('Michael Harrison', 'mwharrison@rice.edu'),
 )
 
+# Amazon SES mail settings
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
+SERVER_EMAIL = os.getenv('SERVER_EMAIL')
 # Default to dummy email backend. Configure dev/production/local backend
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
+AWS_SES_REGION_NAME = os.getenv('AWS_SES_REGION_NAME')
+AWS_SES_REGION_ENDPOINT = os.getenv('AWS_SES_REGION_ENDPOINT')
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'oscms_prodcms',
+        'ENGINE': "django.db.backends.postgresql",
+        'NAME': os.getenv('DATABASE_NAME', 'oscms_prodcms'),
+        'USER': os.getenv('DATABASE_USER'),
+        'PASSWORD': os.getenv('DATABASE_PASSWORD'),
+        'HOST': os.getenv('DATABASE_HOST', 'localhost'),
+        'PORT': os.getenv('DATABASE_PORT', '5432'),
     }
 }
 
-DEFAULT_AUTO_FIELD='django.db.models.AutoField'
+SOUTH_DATABASE_ADAPTERS = {
+    'default': 'south.db.postgresql_psycopg2'
+}
+
+SALESFORCE = { 'username' : os.getenv('SALESFORCE_USERNAME'),
+               'password' : os.getenv('SALESFORCE_PASSWORD'),
+               'security_token' : os.getenv('SALESFORCE_SECURITY_TOKEN'),
+               'sandbox': os.getenv('SALESFORCE_SANDBOX', 'False') == 'True',
+}
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 
 # Local time zone for this installation.
 TIME_ZONE = 'America/Chicago'
@@ -74,20 +94,11 @@ DATE_FORMAT = 'j F Y'
 # Example: "/home/media/media.lawrence.com/media/"
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'media')
 
-# URL that handles the media served from MEDIA_ROOT. Make sure to use a
-# trailing slash.
-# Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
-MEDIA_URL = '/media/'
-
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
 STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
-
-# URL prefix for static files.
-# Example: "http://media.lawrence.com/static/"
-STATIC_URL = '/static/'
 
 # List of finder classes that know how to find static files in
 # various locations.
@@ -97,11 +108,9 @@ STATICFILES_FINDERS = [
     'compressor.finders.CompressorFinder',
 ]
 
-# ** You would never normally put the SECRET_KEY in a public repository,
-# ** however this is a demo app so we're using the default settings.
-# ** Don't use this key in any non-demo usage!
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = 'wq21wtjo3@d_qfjvd-#td!%7gfy2updj2z+nev^k$iy%=m4_tr'
+# The default secret key is for local use only
+# Make this unique, and don't share it with anybody
+SECRET_KEY = os.getenv('SECRET_KEY', 'wq21wtjo3@d_qfjvd-#td!%7gfy2updj2z+nev^k$iy%=m4_tr')
 
 MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -140,7 +149,6 @@ IMPORT_USER_PIPELINE = (
     'social_django.pipeline.social_auth.associate_user',
     'social_django.pipeline.user.user_details',
 )
-SOCIAL_AUTH_LOGIN_REDIRECT_URL = '/'
 
 TEMPLATES = [
     {
@@ -310,13 +318,45 @@ logging.config.dictConfig({
     },
 })
 
+ENVIRONMENT = os.getenv('ENVIRONMENT')
+
+BASE_URL = os.getenv('BASE_URL')
+if BASE_URL is None:
+    APPLICATION_DOMAIN = os.getenv('APPLICATION_DOMAIN')
+    if APPLICATION_DOMAIN is None:
+        if ENVIRONMENT == 'prod':
+            APPLICATION_DOMAIN = 'openstax.org'
+        else:
+            APPLICATION_DOMAIN = f'{ENVIRONMENT}.openstax.org'
+    BASE_URL = f'https://{APPLICATION_DOMAIN}'
+
 # WAGTAIL SETTINGS
 WAGTAIL_SITE_NAME = 'openstax'
+WAGTAILAPI_BASE_URL = os.getenv('WAGTAILAPI_BASE_URL', BASE_URL)
 # Wagtail API number of results
 WAGTAILAPI_LIMIT_MAX = None
 WAGTAILUSERS_PASSWORD_ENABLED = False
 WAGTAIL_USAGE_COUNT_ENABLED = False
 WAGTAIL_USER_CUSTOM_FIELDS = ['is_staff', ]
+
+NEW_USER_REDIRECT = os.getenv('NEW_USER_REDIRECT', f'{BASE_URL}/finish-profile')
+
+ALLOWED_HOSTS = json.loads(os.getenv('ALLOWED_HOSTS', '[]'))
+
+# S3 settings
+AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
+AWS_STORAGE_DIR = os.getenv('AWS_STORAGE_DIR')
+AWS_S3_CUSTOM_DOMAIN = os.getenv('AWS_S3_CUSTOM_DOMAIN')
+#S3 static file storage using custom backend
+STATICFILES_LOCATION = '{}/static'.format(AWS_STORAGE_DIR)
+STATICFILES_STORAGE = 'openstax.custom_storages.StaticStorage'
+STATIC_URL = "https://%s/%s/static/" % (AWS_S3_CUSTOM_DOMAIN, AWS_STORAGE_DIR)
+#S3 media storage using custom backend
+MEDIAFILES_LOCATION = '{}/media'.format(AWS_STORAGE_DIR)
+MEDIA_URL = "https://%s/%s/media/" % (AWS_S3_CUSTOM_DOMAIN, AWS_STORAGE_DIR)
+DEFAULT_FILE_STORAGE = 'openstax.custom_storages.MediaStorage'
+
+CNX_URL = os.getenv('CNX_URL')
 
 # used in page.models to retrieve book information
 CNX_ARCHIVE_URL = 'https://archive.cnx.org'
@@ -326,24 +366,28 @@ HOST_LINK = 'https://openstax.org'
 
 WAGTAIL_GRAVATAR_PROVIDER_URL = '//www.gravatar.com/avatar'
 
-MAPBOX_TOKEN = '' # should be the sk from mapbox, put in the appropriate settings file
+MAPBOX_TOKEN = os.getenv('MAPBOX_KEY', '') # should be the sk from mapbox
 
 # Openstax Accounts
-ACCOUNTS_URL = 'https://accounts.openstax.org'
-AUTHORIZATION_URL = 'https://accounts.openstax.org/oauth/authorize'
-ACCESS_TOKEN_URL = 'https://accounts.openstax.org/oauth/token'
-USER_QUERY = 'https://accounts.openstax.org/api/user?'
-USERS_QUERY = 'https://accounts.openstax.org/api/users?'
-SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'https://openstax.org'
-SOCIAL_AUTH_SANITIZE_REDIRECTS = False
+ACCOUNTS_URL = os.getenv('ACCOUNTS_DOMAIN', f'{BASE_URL}/accounts')
+AUTHORIZATION_URL = os.getenv('ACCOUNTS_AUTHORIZATION_URL', f'{ACCOUNTS_URL}/oauth/authorize')
+ACCESS_TOKEN_URL = os.getenv('ACCOUNTS_ACCESS_TOKEN_URL', f'{ACCOUNTS_URL}/oauth/token')
+USER_QUERY = os.getenv('ACCOUNTS_USER_QUERY', f'{ACCOUNTS_URL}/api/user?')
+USERS_QUERY = os.getenv('ACCOUNTS_USERS_QUERY', f'{ACCOUNTS_URL}/api/users?')
+SOCIAL_AUTH_OPENSTAX_KEY = os.getenv('ACCOUNTS_SOCIAL_AUTH_KEY')
+SOCIAL_AUTH_OPENSTAX_SECRET = os.getenv('ACCOUNTS_SOCIAL_AUTH_SECRET')
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = os.getenv('SOCIAL_AUTH_LOGIN_REDIRECT_URL', BASE_URL)
+SOCIAL_AUTH_SANITIZE_REDIRECTS = os.getenv('SOCIAL_AUTH_SANITIZE_REDIRECTS') == 'True'
 
-SSO_COOKIE_NAME = 'oxa'
-BYPASS_SSO_COOKIE_CHECK = False
+SSO_COOKIE_NAME = os.getenv('SSO_COOKIE_NAME', 'oxa')
+BYPASS_SSO_COOKIE_CHECK = os.getenv('BYPASS_SSO_COOKIE_CHECK') == 'True'
 
-SIGNATURE_PUBLIC_KEY = "-----BEGIN PUBLIC KEY-----\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDjvO/E8lO+ZJ7JMglbJyiF5/Ae\nIIS2NKbIAMLBMPVBQY7mSqo6j/yxdVNKZCzYAMDWc/VvEfXQQJ2ipIUuDvO+SOwz\nMewQ70hC71hC4s3dmOSLnixDJlnsVpcnKPEFXloObk/fcpK2Vw27e+yY+kIFmV2X\nzrvTnmm9UJERp6tVTQIDAQAB\n-----END PUBLIC KEY-----\n"
-ENCRYPTION_PRIVATE_KEY = "c6d9b8683fddce8f2a39ac0565cf18ee"
-ENCRYPTION_METHOD = 'A256GCM'
-SIGNATURE_ALGORITHM = 'RS256'
+SIGNATURE_PUBLIC_KEY = os.getenv('SSO_SIGNATURE_PUBLIC_KEY', "-----BEGIN PUBLIC KEY-----\nMIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDjvO/E8lO+ZJ7JMglbJyiF5/Ae\nIIS2NKbIAMLBMPVBQY7mSqo6j/yxdVNKZCzYAMDWc/VvEfXQQJ2ipIUuDvO+SOwz\nMewQ70hC71hC4s3dmOSLnixDJlnsVpcnKPEFXloObk/fcpK2Vw27e+yY+kIFmV2X\nzrvTnmm9UJERp6tVTQIDAQAB\n-----END PUBLIC KEY-----\n")
+ENCRYPTION_PRIVATE_KEY = os.getenv('SSO_ENCRYPTION_PRIVATE_KEY', "c6d9b8683fddce8f2a39ac0565cf18ee")
+ENCRYPTION_METHOD = os.getenv('SSO_ENCRYPTION_METHOD', 'A256GCM')
+SIGNATURE_ALGORITHM = os.getenv('SSO_SIGNATURE_ALGORITHM', 'RS256')
+
+HOST_LINK = os.getenv('HOST_LINK', BASE_URL)
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
 
@@ -351,7 +395,6 @@ from PIL import ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 STATIC_HOST = 'https://d3bxy9euw4e147.cloudfront.net' if not DEBUG else ''
-STATIC_URL = STATIC_HOST + '/static/'
 
 AWS_HEADERS = {
     'Access-Control-Allow-Origin': '*'
@@ -365,6 +408,28 @@ WAGTAILIMAGES_FORMAT_CONVERSIONS = {
 }
 
 WAGTAILIMAGES_MAX_UPLOAD_SIZE = 2 * 1024 * 1024  # 2MB
+
+# Scout
+SCOUT_KEY = os.getenv('SCOUT_KEY', '')
+SCOUT_MONITOR = bool(SCOUT_KEY)
+SCOUT_NAME = os.getenv('SCOUT_NAME', f"openstax-cms ({ENVIRONMENT})")
+
+# Sentry
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
+sentry_sdk.init(
+    dsn=os.getenv('SENTRY_DSN'),
+    integrations=[DjangoIntegration()],
+    traces_sample_rate=0.4, # limit the number of errors sent from production - 40%
+    send_default_pii=True, # this will send the user id of admin users only to sentry to help with debugging
+    environment=ENVIRONMENT
+)
+
+# Eventbrite
+EVENTBRITE_API_KEY = os.getenv('EVENTBRITE_API_KEY', '')
+EVENTBRITE_API_SECRET = os.getenv('EVENTBRITE_API_SECRET', '')
+EVENTBRITE_API_PRIVATE_TOKEN = os.getenv('EVENTBRITE_API_PRIVATE_TOKEN', '')
+EVENTBRITE_API_PUBLIC_TOKEN = os.getenv('EVENTBRITE_API_PUBLIC_TOKEN', '')
 
 # to override any of the above settings use a local.py file in this directory
 try:
