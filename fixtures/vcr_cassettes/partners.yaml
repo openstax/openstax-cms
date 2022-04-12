@@ -60,6 +60,7 @@ interactions:
       Set-Cookie:
       - BrowserId=-g86McuvEeyC27kAhR557w; domain=.salesforce.com; path=/; expires=Thu,
         04-May-2023 13:42:01 GMT; Max-Age=31536000
+      - Tue, 12 Apr 2022 15:47:41 GMT
       Vary:
       - Accept-Encoding
     status:
