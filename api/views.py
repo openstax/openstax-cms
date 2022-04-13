@@ -14,7 +14,7 @@ from global_settings.models import StickyNote, Footer, GiveToday
 from wagtail.images.models import Image
 from wagtail.documents.models import Document
 from wagtail.core.models import Site
-from .models import ProgressTracker, FeatureFlag
+from .models import ProgressTracker, FeatureFlag, WebviewSettings
 from .serializers import AdopterSerializer, ImageSerializer, DocumentSerializer, ProgressSerializer, CustomizationRequestSerializer
 
 class AdopterViewSet(viewsets.ModelViewSet):
@@ -209,3 +209,9 @@ def give_today(request):
         'menu_start': give_today.menu_start,
         'menu_expires': give_today.menu_expires,
     })
+
+
+def webview_settings(request):
+    data = list(WebviewSettings.objects.values('name', 'value'))
+    return JsonResponse({"settings": data})
+

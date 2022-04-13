@@ -3,7 +3,7 @@ from import_export.admin import ExportActionModelAdmin, ExportActionMixin
 from import_export.widgets import ForeignKeyWidget
 
 from django.contrib import admin
-from .models import CustomizationRequest, FeatureFlag
+from .models import CustomizationRequest, FeatureFlag, WebviewSettings
 from books.models import Book
 
 
@@ -39,5 +39,11 @@ class FeatureFlagAdmin(admin.ModelAdmin):
     search_fields = ['name', ]
     list_filter = ['feature_active', ]
 
+
+class WebviewSettingsAdmin(admin.ModelAdmin):
+    list_display = ['name', 'value']
+    search_fields = ['name', ]
+
 admin.site.register(CustomizationRequest, CustomizationRequestAdmin)
 admin.site.register(FeatureFlag, FeatureFlagAdmin)
+admin.site.register(WebviewSettings, WebviewSettingsAdmin)
