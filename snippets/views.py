@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 
-from .models import Role, Subject, ErrataContent, SubjectCategory, GiveBanner, BlogContentType
-from .serializers import RoleSerializer, SubjectSerializer, ErrataContentSerializer, SubjectCategorySerializer, GiveBannerSerializer, BlogContentTypeSerializer
+from .models import Role, Subject, ErrataContent, SubjectCategory, GiveBanner, BlogContentType, BlogCollection
+from .serializers import RoleSerializer, SubjectSerializer, ErrataContentSerializer, SubjectCategorySerializer, GiveBannerSerializer, BlogContentTypeSerializer, BlogCollectionSerializer
 
 from rest_framework import generics, viewsets
 from django_filters.rest_framework import DjangoFilterBackend
@@ -70,6 +70,11 @@ class GiveBannerViewSet(viewsets.ModelViewSet):
 class BlogContentTypeViewSet(viewsets.ModelViewSet):
     queryset = BlogContentType.objects.all()
     serializer_class = BlogContentTypeSerializer
+
+
+class BlogCollectionViewSet(viewsets.ModelViewSet):
+    queryset = BlogCollection.objects.all()
+    serializer_class = BlogCollectionSerializer
 
 
 def convert_locale(locale):

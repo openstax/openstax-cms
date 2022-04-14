@@ -1,4 +1,4 @@
-from .models import Role, Subject, ErrataContent, SubjectCategory, GiveBanner, BlogContentType
+from .models import Role, Subject, ErrataContent, SubjectCategory, GiveBanner, BlogContentType, BlogCollection
 
 from rest_framework import serializers, generics
 
@@ -54,3 +54,11 @@ class BlogContentTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = BlogContentType
         fields = ('content_type',)
+
+
+class BlogCollectionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BlogCollection
+        fields = ('name',
+                  'description',
+                  'collection_image')
