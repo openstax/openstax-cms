@@ -34,8 +34,13 @@ SALESFORCE = { 'username' : '',
                'security_token' : '',
                'sandbox': True }
 
-# locally, we want to use local storage for uploaded files
+# locally, we want to use local storage for uploaded (media) files
 DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+
+# URL that handles the media served from MEDIA_ROOT. Make sure to use a
+# trailing slash.
+# Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
+MEDIA_URL = '/media/'
 
 # As of Django 1.10, we need to be explicit with localhost being allowed
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0']
@@ -47,12 +52,3 @@ SSO_COOKIE_NAME = 'oxa-dev'
 
 # If you want to bypass the SSO cookie checks, set this to True - as of this writing, that only affects the delete method on reviews
 BYPASS_SSO_COOKIE_CHECK = True
-
-# URL that handles the media served from MEDIA_ROOT. Make sure to use a
-# trailing slash.
-# Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
-MEDIA_URL = '/media/'
-
-# URL prefix for static files.
-# Example: "http://media.lawrence.com/static/"
-STATIC_URL = STATIC_HOST + '/static/'

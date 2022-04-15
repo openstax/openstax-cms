@@ -90,15 +90,36 @@ USE_TZ = True
 
 DATE_FORMAT = 'j F Y'
 
+# A "public" directory is used so it can be set as the root directory for nginx
+
+# Media (uploaded) files are stored in S3
+
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'media')
+# Note: used only if media is set to local storage (local config)
+MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'public', 'media')
+
+# S3 settings
+AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
+AWS_STORAGE_DIR = os.getenv('AWS_STORAGE_DIR')
+AWS_S3_CUSTOM_DOMAIN = os.getenv('AWS_S3_CUSTOM_DOMAIN')
+
+# S3 media storage using custom backend
+MEDIAFILES_LOCATION = '{}/media'.format(AWS_STORAGE_DIR)
+MEDIA_URL = "https://%s/%s/media/" % (AWS_S3_CUSTOM_DOMAIN, AWS_STORAGE_DIR)
+DEFAULT_FILE_STORAGE = 'openstax.custom_storages.MediaStorage'
+
+# Static files are stored on the server and served by nginx
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = os.path.join(PROJECT_ROOT, 'static')
+STATIC_ROOT = os.path.join(PROJECT_ROOT, 'public', 'static')
+
+# URL prefix for static files.
+# Example: "http://media.lawrence.com/static/"
+STATIC_URL = '/static/'
 
 # List of finder classes that know how to find static files in
 # various locations.
@@ -344,19 +365,6 @@ NEW_USER_REDIRECT = os.getenv('NEW_USER_REDIRECT', f'{BASE_URL}/finish-profile')
 
 ALLOWED_HOSTS = json.loads(os.getenv('ALLOWED_HOSTS', '[]'))
 
-# S3 settings
-AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
-AWS_STORAGE_DIR = os.getenv('AWS_STORAGE_DIR')
-AWS_S3_CUSTOM_DOMAIN = os.getenv('AWS_S3_CUSTOM_DOMAIN')
-#S3 static file storage using custom backend
-STATICFILES_LOCATION = '{}/static'.format(AWS_STORAGE_DIR)
-STATICFILES_STORAGE = 'openstax.custom_storages.StaticStorage'
-STATIC_URL = "https://%s/%s/static/" % (AWS_S3_CUSTOM_DOMAIN, AWS_STORAGE_DIR)
-#S3 media storage using custom backend
-MEDIAFILES_LOCATION = '{}/media'.format(AWS_STORAGE_DIR)
-MEDIA_URL = "https://%s/%s/media/" % (AWS_S3_CUSTOM_DOMAIN, AWS_STORAGE_DIR)
-DEFAULT_FILE_STORAGE = 'openstax.custom_storages.MediaStorage'
-
 CNX_URL = os.getenv('CNX_URL')
 
 # used in page.models to retrieve book information
@@ -394,8 +402,6 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
 
 from PIL import ImageFile
 ImageFile.LOAD_TRUNCATED_IMAGES = True
-
-STATIC_HOST = 'https://d3bxy9euw4e147.cloudfront.net' if not DEBUG else ''
 
 AWS_HEADERS = {
     'Access-Control-Allow-Origin': '*'
