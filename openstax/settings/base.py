@@ -35,7 +35,7 @@ SERVER_EMAIL = os.getenv('SERVER_EMAIL')
 # Default to dummy email backend. Configure dev/production/local backend
 EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
 AWS_SES_REGION_NAME = os.getenv('AWS_SES_REGION_NAME')
-AWS_SES_REGION_ENDPOINT = os.getenv('AWS_SES_REGION_ENDPOINT')
+AWS_SES_REGION_ENDPOINT = os.getenv('AWS_SES_REGION_ENDPOINT', '')
 
 DATABASES = {
     'default': {
