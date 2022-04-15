@@ -832,9 +832,10 @@ class Book(Page):
     @property
     def subject_categories(self):
         category_list = []
+        print('category book: ' + str(self.title))
         if self.book_categories is not None:
             for category in self.book_categories.all():
-                if category.subject_category is not None:
+                if category is not None:
                     category_list.append(category.subject_category)
         return category_list
 
