@@ -313,4 +313,5 @@ class BlogCollection(TranslatableMixin, models.Model):
     def __str__(self):
         return self.name
 
+
 register_snippet(BlogCollection)
