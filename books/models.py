@@ -396,7 +396,7 @@ class BookCategory(models.Model):
     subject_name = property(get_subject_name)
 
     def get_subject_category(self):
-        return self.category.subject_category
+        return self.category.subject_category if self.category is not None else ''
     subject_category = property(get_subject_category)
 
     api_fields = [
@@ -832,8 +832,10 @@ class Book(Page):
     @property
     def subject_categories(self):
         category_list = []
-        for category in self.book_categories.all():
-            category_list.append(category.subject_category)
+        if self.book_categories is not None:
+            for category in self.book_categories.all():
+                if category is not None:
+                    category_list.append(category.subject_category)
         return category_list
 
     @property
