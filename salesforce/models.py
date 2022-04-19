@@ -386,7 +386,6 @@ class ResourceDownload(models.Model):
         ('Bookshare', 'Bookshare'),
         ('Chegg Reader', 'Chegg Reader'),
     )
-    salesforce_id = models.CharField(max_length=100, blank=True, null=True)
     book = models.ForeignKey(Book, on_delete=models.SET_NULL, null=True, blank=True)
     book_format = models.CharField(max_length=100, choices=BOOK_FORMATS, null=True , blank=True)
     account_id = models.IntegerField(blank=True, null=True) # TODO: remove this field after migrating data to UUID (see management command)
