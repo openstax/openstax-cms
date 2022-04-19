@@ -393,16 +393,8 @@ class ResourceDownload(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     edited = models.DateTimeField(auto_now=True)
     last_access = models.DateTimeField()
-    number_of_times_accessed = models.IntegerField()
     resource_name = models.CharField(max_length=255, null=True, blank=False)
     contact_id = models.CharField(max_length=100, null=True, blank=True)
-
-    def save(self, *args, **kwargs):
-        if not self.pk:
-            self.number_of_times_accessed = 1
-        else:
-            self.number_of_times_accessed = self.number_of_times_accessed + 1
-        super().save(*args, **kwargs)
 
     class Meta:
         indexes = [
