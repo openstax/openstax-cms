@@ -137,8 +137,8 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'wq21wtjo3@d_qfjvd-#td!%7gfy2updj2z+nev^k$i
 
 MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
-    'openstax.middleware.CommonMiddlewareAppendSlashWithoutRedirect',
     'healthcheck.middleware.HealthCheckMiddleware', # has to be before CommonMiddleware
+    'openstax.middleware.CommonMiddlewareAppendSlashWithoutRedirect',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
