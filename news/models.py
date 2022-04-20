@@ -11,7 +11,7 @@ from wagtail.documents.edit_handlers import DocumentChooserPanel
 from wagtail.embeds.blocks import EmbedBlock
 from wagtail.search import index
 from wagtail.core import blocks
-from wagtail.core.blocks import TextBlock, StructBlock, StreamBlock, FieldBlock, CharBlock, RichTextBlock, RawHTMLBlock
+from wagtail.core.blocks import TextBlock, StructBlock, StreamBlock, FieldBlock, CharBlock, RichTextBlock, RawHTMLBlock, BooleanBlock
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.documents.blocks import DocumentChooserBlock
 from wagtail.snippets.blocks import SnippetChooserBlock
@@ -64,6 +64,34 @@ class BlogStreamBlock(StreamBlock):
     aligned_html = RawHTMLBlock(icon="code", label='Raw HTML')
     document = DocumentChooserBlock(icon="doc-full-inverse")
     embed = EmbedBlock(icon="media", label="Embed Media URL")
+
+
+class BlogCollectionChooserBlock(SnippetChooserBlock):
+    def get_api_representation(self, value, context=None):
+        if value:
+            return {
+                'name': value.name,
+                #'description': value.description,
+                #'image': build_image_url(value.image),
+            }
+
+
+class SubjectChooserBlock(SnippetChooserBlock):
+    def get_api_representation(self, value, context=None):
+        if value:
+            return {
+                'name': value.name,
+            }
+
+
+class SubjectBlock(StructBlock):
+    subject = BlogCollectionChooserBlock(required=True, label='Blog Subject', target_model='snippets.Subject')
+
+
+class BlogCollectionBlock(StructBlock):
+    collection = BlogCollectionChooserBlock(required=True, label='Blog Collection', target_model='snippets.BlogCollection')
+    featured = BooleanBlock(label="Featured", required=False)
+    popular = BooleanBlock(label="Popular", required=False)
 
 
 class NewsIndex(Page):
@@ -138,34 +166,6 @@ class BlogType(Orderable, ContentType):
     blog_category = ParentalKey('news.NewsArticle', related_name='blog_type')
 
 
-class BlogPostCollection(models.Model):
-    blog_collection = models.ForeignKey(BlogCollection, on_delete=models.SET_NULL, null=True, related_name='newsarticle_collection')
-
-    def get_collection_name(self):
-        return self.blog_collection.name
-    collection_name = property(get_collection_name)
-
-    def get_collection_description(self):
-        return self.blog_collection.description
-    collection_description = property(get_collection_description)
-
-    def get_collection_image(self):
-        return self.blog_collection.collection_image
-    collection_logo = property(get_collection_image)
-
-    api_fields = [
-        APIField('collection_name'),
-        APIField('collection_description'),
-        APIField('collection_logo'),
-    ]
-
-
-class NewsCollections(Orderable, BlogPostCollection):
-    blog_post_collection = ParentalKey('news.NewsArticle', related_name='blog_collections')
-
-
-
-
 class NewsArticle(Page):
     date = models.DateField("Post date")
     heading = models.CharField(max_length=250, help_text="Heading displayed on website")
@@ -186,6 +186,12 @@ class NewsArticle(Page):
     tags = ClusterTaggableManager(through=NewsArticleTag, blank=True)
     body = StreamField(BlogStreamBlock())
     pin_to_top = models.BooleanField(default=False)
+    collections = StreamField(blocks.StreamBlock([
+            ('collection', blocks.ListBlock(BlogCollectionBlock())
+             )]), null=True)
+    article_subjects = StreamField(blocks.StreamBlock([
+            ('subject', blocks.ListBlock(SubjectBlock())
+             )]), null=True)
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -225,6 +231,8 @@ class NewsArticle(Page):
         InlinePanel('blog_type', label='Content Type'),
         StreamFieldPanel('body'),
         FieldPanel('pin_to_top'),
+        StreamFieldPanel('collections'),
+        StreamFieldPanel('article_subjects'),
     ]
 
     promote_panels = [
@@ -251,6 +259,8 @@ class NewsArticle(Page):
         APIField('slug'),
         APIField('seo_title'),
         APIField('search_description'),
+        APIField('collections'),
+        APIField('article_subjects'),
         APIField('promote_image')
     ]
 
