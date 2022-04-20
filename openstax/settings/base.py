@@ -3,9 +3,11 @@
 import json
 import os
 import sys
-import raven
 import logging.config
 from django.utils.log import DEFAULT_LOGGING
+
+import sentry_sdk
+from sentry_sdk.integrations.django import DjangoIntegration
 
 PROJECT_ROOT = os.path.join(os.path.dirname(__file__), '..', '..')
 BASE_DIR = PROJECT_ROOT
@@ -215,7 +217,6 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'rest_auth',
-    'raven.contrib.django.raven_compat',
     'django_filters',
     'social_django',
     'storages',
@@ -422,8 +423,6 @@ SCOUT_MONITOR = bool(SCOUT_KEY)
 SCOUT_NAME = os.getenv('SCOUT_NAME', f"openstax-cms ({ENVIRONMENT})")
 
 # Sentry
-import sentry_sdk
-from sentry_sdk.integrations.django import DjangoIntegration
 sentry_sdk.init(
     dsn=os.getenv('SENTRY_DSN'),
     integrations=[DjangoIntegration()],
