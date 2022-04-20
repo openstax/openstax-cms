@@ -302,7 +302,7 @@ class BlogCollection(TranslatableMixin, models.Model):
 
     api_fields = ('name',
                   'description',
-                  collection_image)
+                  'collection_image')
 
     panels = [
         FieldPanel('name'),

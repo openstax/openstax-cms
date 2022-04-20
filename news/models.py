@@ -149,9 +149,21 @@ class BlogPostCollection(models.Model):
         return self.blog_collection.description
     collection_description = property(get_collection_description)
 
+    def get_collection_image(self):
+        return self.blog_collection.collection_image
+    collection_logo = property(get_collection_image)
+
     api_fields = [
-        APIField('content_type'),
+        APIField('collection_name'),
+        APIField('collection_description'),
+        APIField('collection_logo'),
     ]
+
+
+class NewsCollections(Orderable, BlogPostCollection):
+    blog_post_collection = ParentalKey('news.NewsArticle', related_name='blog_collections')
+
+
 
 
 class NewsArticle(Page):
