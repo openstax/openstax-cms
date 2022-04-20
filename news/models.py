@@ -25,7 +25,7 @@ from modelcluster.fields import ParentalKey
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from taggit.models import TaggedItemBase
 from openstax.functions import build_image_url
-from snippets.models import NewsSource, BlogContentType
+from snippets.models import NewsSource, BlogContentType, BlogCollection
 
 class ImageChooserBlock(ImageChooserBlock):
     def get_api_representation(self, value, context=None):
@@ -136,6 +136,22 @@ class ContentType(models.Model):
 
 class BlogType(Orderable, ContentType):
     blog_category = ParentalKey('news.NewsArticle', related_name='blog_type')
+
+
+class BlogPostCollection(models.Model):
+    blog_collection = models.ForeignKey(BlogCollection, on_delete=models.SET_NULL, null=True, related_name='newsarticle_collection')
+
+    def get_collection_name(self):
+        return self.blog_collection.name
+    collection_name = property(get_collection_name)
+
+    def get_collection_description(self):
+        return self.blog_collection.description
+    collection_description = property(get_collection_description)
+
+    api_fields = [
+        APIField('content_type'),
+    ]
 
 
 class NewsArticle(Page):
