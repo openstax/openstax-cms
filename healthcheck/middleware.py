@@ -6,6 +6,6 @@ class HealthCheckMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
-        if request.path == '/ping':
-            return HttpResponse('ok')
+        if request.path in ['/ping', '/ping/']:
+            return HttpResponse(status=204)
         return self.get_response(request)
