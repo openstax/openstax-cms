@@ -229,7 +229,7 @@ class PartnerReviewAdmin(admin.ModelAdmin):
 
 
 class ResourceDownloadAdmin(admin.ModelAdmin):
-    list_display = ('id', 'created', 'last_access', 'salesforce_id', 'resource_name', 'book', 'book_format', 'account_uuid', 'number_of_times_accessed')
+    list_display = ('id', 'created', 'last_access', 'resource_name', 'book', 'book_format', 'account_uuid')
     list_filter = ('created', 'book')
 
 admin.site.register(SalesforceSettings, SalesforceSettingsAdmin)

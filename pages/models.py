@@ -285,11 +285,9 @@ class HomePage(Page):
             ])))], max_num=4))
     whats_openstax_headline = models.CharField(default='', blank=True, max_length=255)
     whats_openstax_description = models.TextField(default='', blank=True)
-    whats_openstax_donate_text = models.TextField(default='', blank=True)
-    whats_openstax_give_text = models.CharField(default='', blank=True, max_length=255)
-    whats_openstax_give_link = models.URLField(blank=True, default='')
-    whats_openstax_learn_more_text = models.CharField(default='', blank=True, max_length=255)
-    whats_openstax_learn_more_link = models.URLField(blank=True, default='')
+    whats_openstax_interest_headline = models.CharField(default='', blank=True, max_length=255)
+    whats_openstax_interest_text = models.TextField(default='', blank=True)
+    whats_openstax_interest_link_text = models.CharField(default='', blank=True, max_length=255)
     whats_openstax_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -298,6 +296,8 @@ class HomePage(Page):
         related_name='+'
     )
 
+    map_text = models.TextField(default='', blank=True)
+    map_button_text = models.CharField(default='', blank=True, max_length=255)
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -342,12 +342,12 @@ class HomePage(Page):
         APIField('tutor_features'),
         APIField('whats_openstax_headline'),
         APIField('whats_openstax_description'),
-        APIField('whats_openstax_donate_text'),
-        APIField('whats_openstax_give_text'),
-        APIField('whats_openstax_give_link'),
-        APIField('whats_openstax_learn_more_text'),
-        APIField('whats_openstax_learn_more_link'),
+        APIField('whats_openstax_interest_headline'),
+        APIField('whats_openstax_interest_text'),
+        APIField('whats_openstax_interest_link_text'),
         APIField('whats_openstax_image'),
+        APIField('map_text'),
+        APIField('map_button_text'),
         APIField('slug'),
         APIField('seo_title'),
         APIField('search_description'),
@@ -396,12 +396,12 @@ class HomePage(Page):
         StreamFieldPanel('tutor_features'),
         FieldPanel('whats_openstax_headline'),
         FieldPanel('whats_openstax_description'),
-        FieldPanel('whats_openstax_donate_text'),
-        FieldPanel('whats_openstax_give_text'),
-        FieldPanel('whats_openstax_give_link'),
-        FieldPanel('whats_openstax_learn_more_text'),
-        FieldPanel('whats_openstax_learn_more_link'),
+        FieldPanel('whats_openstax_interest_headline'),
+        FieldPanel('whats_openstax_interest_text'),
+        FieldPanel('whats_openstax_interest_link_text'),
         ImageChooserPanel('whats_openstax_image'),
+        FieldPanel('map_text'),
+        FieldPanel('map_button_text'),
     ]
 
     promote_panels = [
@@ -2931,7 +2931,7 @@ class Subject(Page):
                 books = {}
                 book_list = {}
                 for book in all_books:
-                    if category.subject_category in book.subject_categories:
+                    if book.subject_categories is not None and category.subject_category in book.subject_categories:
                         book_data = []
                         book_data.append({
                             'id': book.id,
