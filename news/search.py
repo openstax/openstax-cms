@@ -74,7 +74,7 @@ def search(request):
         if ('types' in request.GET) and request.GET['types'].strip():
             types = request.GET['types'].split(',')
             # convert type names to ids
-            type_ids = convert_subject_category_names_to_ids(types)
+            type_ids = convert_blog_type_names_to_ids(types)
 
         if ('subjects' in request.GET) and request.GET['subjects'].strip():
             subjects = request.GET['subjects'].split(',')
