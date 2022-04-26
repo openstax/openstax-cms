@@ -6,11 +6,23 @@ from pages.models import HomePage
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
 from unittest.mock import MagicMock
 from news.models import NewsIndex, NewsArticle, PressIndex, PressRelease
+from news.search import convert_subject_names_to_ids, convert_blog_type_names_to_ids
+from snippets.models import Subject, BlogContentType
 
 
 class NewsTests(WagtailPageTests, TestCase):
     def setUp(self):
-        pass
+        self.math = Subject(name="Math", page_content="Math page content.", seo_title="Math SEO Title",
+                            search_description="Math page description.")
+        self.math.save()
+
+        self.economics = Subject(name="Economics", page_content="Economics page content.",
+                                 seo_title="Economics SEO Title",
+                                 search_description="Economics page description.")
+        self.economics.save()
+
+        self.case_study = BlogContentType(content_type='Case Study')
+        self.case_study.save()
 
     @classmethod
     def setUpTestData(cls):
@@ -56,4 +68,34 @@ class NewsTests(WagtailPageTests, TestCase):
 
         PressRelease.objects.get = MagicMock(return_value=MagicMock(pk=3))
         assertPathDoesNotRedirectToTrailingSlash(self, '/apps/cms/api/press/slug')
+
+    def test_convert_subject_names_to_ids_none(self):
+        self.assertEqual(convert_subject_names_to_ids(None), [])
+
+    def test_convert_subject_names_to_ids(self):
+        converted_ids = convert_subject_names_to_ids(['Math'])
+        math_id = Subject.objects.filter(name='Math').first()
+        self.assertEqual(math_id.id, converted_ids[0])
+
+    def test_convert_blog_type_names_to_ids_none(self):
+        self.assertEqual(convert_blog_type_names_to_ids(None), [])
+
+    def test_convert_blog_type_names_to_ids(self):
+        converted_ids = convert_blog_type_names_to_ids(['Case Study'])
+        type_id = BlogContentType.objects.filter(content_type='Case Study').first()
+        self.assertEqual(type_id.id, converted_ids[0])
+
+
+# class SearchTest(TestCase):
+#     def setUp(self):
+#        # create category types
+#        # create subjects
+#        # create news articles
+#
+#     def test_search_collection(self):
+#         # query data for results
+#
+#         # call search URL
+#
+#         # compare results
 
