@@ -69,6 +69,7 @@ def search(request):
 
     if ('collection' in request.GET) and request.GET['collection'].strip():
         query_string = request.GET['collection']
+        print('***query: ' + str(query_string))
         type_ids = []
         subject_ids = []
         if ('types' in request.GET) and request.GET['types'].strip():
@@ -85,10 +86,10 @@ def search(request):
         collection_entries = NewsArticle.objects.filter(collections__in=query_string)
         # if there are both types and subjects
         if len(type_ids) > 0 and len(subject_ids) > 0:
-            found_entries = collection_entries.objects.filter(Q(blog_type__in=type_ids) | Q(article_subjects__in=subject_ids))
+            found_entries = collection_entries.objects.filter(Q(content_types__in=type_ids) | Q(article_subjects__in=subject_ids))
         elif len(type_ids) > 0 and len(subject_ids) == 0:
             # types, but no subjects
-            found_entries = collection_entries.objects.filter(blog_type__in=type_ids)
+            found_entries = collection_entries.objects.filter(content_types__in=type_ids)
         elif len(type_ids) == 0 and len(subject_ids) > 0:
             # subjects, but no types
             found_entries = collection_entries.objects.filter(article_subjects__in=subject_ids)
@@ -103,7 +104,6 @@ def search(request):
         
         search_results_shown.add(result.slug)
 
-        # Add subject and categories
         search_results_json.append({
             'id': result.id,
             'title': result.title,
@@ -115,6 +115,9 @@ def search(request):
             'author': result.author,
             'pin_to_top': result.pin_to_top,
             'tags': list(result.tags.names()),
+            'collections': result.collections,
+            'article_subjects': result.article_subjects,
+            'content_types': result.content_types,
             'slug': result.slug,
             'seo_title': result.seo_title,
             'search_description': result.search_description,

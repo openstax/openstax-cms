@@ -71,8 +71,6 @@ class BlogCollectionChooserBlock(SnippetChooserBlock):
         if value:
             return {
                 'name': value.name,
-                #'description': value.description,
-                #'image': build_image_url(value.image),
             }
 
 
@@ -84,6 +82,14 @@ class SubjectChooserBlock(SnippetChooserBlock):
             }
 
 
+class ContentTypeChooserBlock(SnippetChooserBlock):
+    def get_api_representation(self, value, context=None):
+        if value:
+            return {
+                'content_type': value.content_type,
+            }
+
+
 class SubjectBlock(StructBlock):
     subject = BlogCollectionChooserBlock(required=True, label='Blog Subject', target_model='snippets.Subject')
 
@@ -92,6 +98,10 @@ class BlogCollectionBlock(StructBlock):
     collection = BlogCollectionChooserBlock(required=True, label='Blog Collection', target_model='snippets.BlogCollection')
     featured = BooleanBlock(label="Featured", required=False)
     popular = BooleanBlock(label="Popular", required=False)
+
+
+class BlogContentTypeBlock(StructBlock):
+    content_type = ContentTypeChooserBlock(required=True, label='Blog Content Type', target_model='snippets.BlogContentType')
 
 
 class NewsIndex(Page):
@@ -150,22 +160,6 @@ class NewsArticleTag(TaggedItemBase):
     content_object = ParentalKey('news.NewsArticle', related_name='tagged_items')
 
 
-class ContentType(models.Model):
-    blog_content_type = models.ForeignKey(BlogContentType, on_delete=models.SET_NULL, null=True, related_name='newsarticle_content_type')
-
-    def get_content_type(self):
-        return self.blog_content_type.content_type
-    content_type = property(get_content_type)
-
-    api_fields = [
-        APIField('content_type'),
-    ]
-
-
-class BlogType(Orderable, ContentType):
-    blog_category = ParentalKey('news.NewsArticle', related_name='blog_type')
-
-
 class NewsArticle(Page):
     date = models.DateField("Post date")
     heading = models.CharField(max_length=250, help_text="Heading displayed on website")
@@ -192,6 +186,9 @@ class NewsArticle(Page):
     article_subjects = StreamField(blocks.StreamBlock([
             ('subject', blocks.ListBlock(SubjectBlock())
              )]), null=True)
+    content_types = StreamField(blocks.StreamBlock([
+        ('content_type', blocks.ListBlock(BlogContentTypeBlock())
+         )]), null=True)
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -214,6 +211,10 @@ class NewsArticle(Page):
 
         return str(first_paragraph_parsed[0])
 
+    @property
+    def blog_content_types(self):
+        return self.content_types.value_list()
+
     search_fields = Page.search_fields + [
         index.SearchField('body'),
         index.SearchField('tags'),
@@ -228,11 +229,11 @@ class NewsArticle(Page):
         ImageChooserPanel('featured_image'),
         FieldPanel('featured_image_alt_text'),
         FieldPanel('tags'),
-        InlinePanel('blog_type', label='Content Type'),
         StreamFieldPanel('body'),
         FieldPanel('pin_to_top'),
         StreamFieldPanel('collections'),
         StreamFieldPanel('article_subjects'),
+        StreamFieldPanel('content_types'),
     ]
 
     promote_panels = [
@@ -252,7 +253,6 @@ class NewsArticle(Page):
         APIField('featured_image_small', serializer=ImageRenditionField('width-420', source='featured_image')),
         APIField('featured_image_alt_text'),
         APIField('tags'),
-        APIField('blog_type'),
         APIField('body_blurb'),
         APIField('body'),
         APIField('pin_to_top'),
@@ -261,6 +261,7 @@ class NewsArticle(Page):
         APIField('search_description'),
         APIField('collections'),
         APIField('article_subjects'),
+        APIField('content_types'),
         APIField('promote_image')
     ]
 
