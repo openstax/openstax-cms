@@ -60,7 +60,6 @@ pytz==2019.3
 python-dateutil==2.8.1
 python-social-auth==0.3.6
 python3-openid==3.1.0
-raven==6.6.0
 rcssmin==1.0.6
 requests>=2.26.0
 requests-oauthlib==1.1.0

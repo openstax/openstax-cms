@@ -7,5 +7,5 @@ def accounts(request):
     # because Cloudfront proxies all `/accounts*` traffic straight to Accounts.  It is only
     # for test and dev environments.
 
-    url = "{}{}".format(settings.ACCOUNTS_SERVER_URL, request.get_full_path())
+    url = "{}{}".format(settings.ACCOUNTS_URL, request.get_full_path())
     return redirect(url)

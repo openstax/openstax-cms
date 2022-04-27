@@ -9,7 +9,6 @@ from django.urls import reverse
 from shared.test_utilities import RequestMock
 from oxauth.functions import get_token, decrypt_cookie, get_logged_in_user_id, get_logged_in_user_uuid
 from oxauth.views import login, logout
-from .auth import OXSessionDecryptor
 from http import cookies
 
 

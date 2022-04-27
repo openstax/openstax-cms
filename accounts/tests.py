@@ -3,8 +3,8 @@ from django.test.utils import override_settings
 
 class AccountsTestCase(TestCase):
 
-    @override_settings(ACCOUNTS_SERVER_URL='https://fakeaccounts.org')
-    def test_accounts_redirects_to_accounts_server_url(self):
+    @override_settings(ACCOUNTS_URL='https://fakeaccounts.org')
+    def test_accounts_redirects_to_accounts_url(self):
         path = "/accounts/login?blah=whatever"
         response = self.client.get(path)
         self.assertRedirects(response,
