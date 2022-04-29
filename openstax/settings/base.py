@@ -372,7 +372,7 @@ HOST_LINK = 'https://openstax.org'
 
 WAGTAIL_GRAVATAR_PROVIDER_URL = '//www.gravatar.com/avatar'
 
-MAPBOX_TOKEN = os.getenv('MAPBOX_KEY', '') # should be the sk from mapbox
+MAPBOX_TOKEN = os.getenv('MAPBOX_TOKEN', '') # should be the sk from mapbox
 
 # Openstax Accounts
 ACCOUNTS_URL = os.getenv('ACCOUNTS_DOMAIN', f'{BASE_URL}/accounts')
