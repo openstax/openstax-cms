@@ -72,27 +72,29 @@ def search(request):
         print('***query: ' + str(query_string))
         type_ids = []
         subject_ids = []
+        types = []
+        subjects = []
         if ('types' in request.GET) and request.GET['types'].strip():
             types = request.GET['types'].split(',')
             # convert type names to ids
-            type_ids = convert_blog_type_names_to_ids(types)
+            #type_ids = convert_blog_type_names_to_ids(types)
 
         if ('subjects' in request.GET) and request.GET['subjects'].strip():
             subjects = request.GET['subjects'].split(',')
             # convert subject names to ids
-            subject_ids = convert_subject_names_to_ids(subjects)
+            #subject_ids = convert_subject_names_to_ids(subjects)
 
         # get articles in collection
-        collection_entries = NewsArticle.objects.filter(collections__in=query_string)
+        collection_entries = NewsArticle.objects.filter(blog_collections__in=query_string)
         # if there are both types and subjects
-        if len(type_ids) > 0 and len(subject_ids) > 0:
-            found_entries = collection_entries.objects.filter(Q(content_types__in=type_ids) | Q(article_subjects__in=subject_ids))
-        elif len(type_ids) > 0 and len(subject_ids) == 0:
+        if len(types) > 0 and len(subjects) > 0:
+            found_entries = collection_entries.objects.filter(Q(blog_content_types__in=types) | Q(blog_subjects__in=subjects))
+        elif len(types) > 0 and len(subjects) == 0:
             # types, but no subjects
-            found_entries = collection_entries.objects.filter(content_types__in=type_ids)
-        elif len(type_ids) == 0 and len(subject_ids) > 0:
+            found_entries = collection_entries.objects.filter(blog_content_types__in=types)
+        elif len(types) == 0 and len(subjects) > 0:
             # subjects, but no types
-            found_entries = collection_entries.objects.filter(article_subjects__in=subject_ids)
+            found_entries = collection_entries.objects.filter(blog_subjects__in=subjects)
         else:
             found_entries = collection_entries
 

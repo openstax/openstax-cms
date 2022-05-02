@@ -25,7 +25,8 @@ from modelcluster.fields import ParentalKey
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from taggit.models import TaggedItemBase
 from openstax.functions import build_image_url
-from snippets.models import NewsSource, BlogContentType, BlogCollection
+from snippets.models import NewsSource, BlogContentType, BlogCollection, Subject
+
 
 class ImageChooserBlock(ImageChooserBlock):
     def get_api_representation(self, value, context=None):
@@ -213,7 +214,42 @@ class NewsArticle(Page):
 
     @property
     def blog_content_types(self):
-        return self.content_types.value_list()
+        prep_value = self.content_types.get_prep_value()
+        types = []
+        for t in prep_value:
+            print(str(t))
+            type_id = t['value'][0]['content_type']
+            print(str(type_id))
+            type = BlogContentType.objects.filter(id=type_id)
+            print(str(type[0]))
+            types.append(str(type[0]))
+        return types
+
+    @property
+    def blog_subjects(self):
+        prep_value = self.article_subjects.get_prep_value()
+        subjects = []
+        for s in prep_value:
+            print(str(s))
+            subject_id = s['value'][0]['subject']
+            print(str(subject_id))
+            subject = Subject.objects.filter(id=subject_id)
+            print(str(subject[0]))
+            subjects.append(str(subject[0]))
+        return subjects
+
+    @property
+    def blog_collections(self):
+        prep_value = self.collections.get_prep_value()
+        cols = []
+        for c in prep_value:
+            print(str(c))
+            collection_id = c['value'][0]['collection']
+            print(str(collection_id))
+            collection = BlogCollection.objects.filter(id=collection_id)
+            print(str(collection[0]))
+            cols.append(str(collection[0]))
+        return cols
 
     search_fields = Page.search_fields + [
         index.SearchField('body'),
