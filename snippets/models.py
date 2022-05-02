@@ -221,7 +221,7 @@ class SubjectCategory(TranslatableMixin, models.Model):
     api_fields = ('subject_name', 'subject_category', 'description')
 
     def __str__(self):
-        return self.subject_category
+        return self.subject_category + ' - ' + self.subject_name
 
 
 register_snippet(SubjectCategory)
