@@ -292,6 +292,11 @@ LOGLEVEL = os.environ.get('LOGLEVEL', 'error').upper()
 logging.config.dictConfig({
     'version': 1,
     'disable_existing_loggers': False,
+    'filters': {
+        'healthcheck_filter': {
+            '()': 'healthcheck.filter.HealthCheckFilter'
+        },
+    },
     'formatters': {
         'default': {
             # exact format is not important, this is the minimum information
@@ -300,7 +305,7 @@ logging.config.dictConfig({
         'django.server': DEFAULT_LOGGING['formatters']['django.server'],
     },
     'handlers': {
-        #disable logs set with null handler
+        # disable logs set with null handler
         'null': {
             'class': 'logging.NullHandler',
         },
@@ -309,7 +314,10 @@ logging.config.dictConfig({
             'class': 'logging.StreamHandler',
             'formatter': 'default',
         },
-        'django.server': DEFAULT_LOGGING['handlers']['django.server'],
+        'django.server': {
+            **DEFAULT_LOGGING['handlers']['django.server'],
+            'filters': ['healthcheck_filter']
+        },
     },
     'loggers': {
         # default for all undefined Python modules
