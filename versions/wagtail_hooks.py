@@ -8,7 +8,7 @@ from versions import views
 
 
 @hooks.register('register_admin_urls')
-def register_status_admin_url():
+def register_versions_admin_url():
     return [url(r'^versions/', views.versions, name='versions')]
 
 @hooks.register('register_admin_menu_item')
