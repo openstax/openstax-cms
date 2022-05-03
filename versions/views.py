@@ -7,7 +7,8 @@ from urllib.error import URLError
 
 def versions(request):
     try:
-        osweb_version = urlopen('{}/dist/fe-version.txt'.format(settings.BASE_URL)).read()
+        with urlopen('{}/dist/fe-version.txt'.format(settings.BASE_URL)) as connection:
+            osweb_version = connection.read().decode('utf-8')
     except URLError:
         osweb_version = 'local'
 
