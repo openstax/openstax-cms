@@ -5,12 +5,12 @@
     {% include "wagtailadmin/shared/header.html" with title=title icon="view" %}
 
     <div class="nice-padding">
-        OpenStax CMS (backend) version: {{cms_version}}
-    </div>
-    <div class="nice-padding">
         OpenStax Webview (frontend) version: {{osweb_version}}
     </div>
     <div class="nice-padding">
-        Deployment version: {{deployment_version}}
+        OpenStax CMS (backend) version: {{cms_version}}
+    </div>
+    <div class="nice-padding">
+        OpenStax CMS AMI built with bit-deployment version: {{deployment_version}}
     </div>
 {% endblock %}

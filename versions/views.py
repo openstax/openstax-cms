@@ -13,7 +13,7 @@ def versions(request):
 
     return render(request, 'versions.html', {
         'cms_version': settings.RELEASE_VERSION or 'local',
-        'deployment_version': settings.DEPLOYMENT_VERSION or 'local',
+        'deployment_version': settings.DEPLOYMENT_VERSION or 'none',
         'osweb_version': osweb_version,
         'title': "OpenStax CMS Deployment Versions ({})".format(settings.ENVIRONMENT or 'local')
     })
