@@ -260,8 +260,8 @@ INSTALLED_APPS = [
     'wagtail.contrib.settings',
     'wagtail.contrib.modeladmin',
     'wagtailimportexport',
-    'duplicatebooks'
-
+    'duplicatebooks',
+    'status',
 ]
 
 EMAIL_SUBJECT_PREFIX = '[openstax] '
@@ -346,6 +346,8 @@ logging.config.dictConfig({
 })
 
 ENVIRONMENT = os.getenv('ENVIRONMENT')
+RELEASE_VERSION = os.getenv('RELEASE_VERSION')
+DEPLOYMENT_VERSION = os.getenv('DEPLOYMENT_VERSION')
 
 BASE_URL = os.getenv('BASE_URL')
 if BASE_URL is None:
