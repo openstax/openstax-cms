@@ -43,7 +43,7 @@ jobs:
       if: steps.cache.outputs.cache-hit != 'true'
 
     - name: Run Django tests
-      run: python manage.py test --settings=openstax.settings.test
+      run: coverage run manage.py test --settings=openstax.settings.test
       env:
         SALESFORCE_USERNAME: ${{ secrets.SALESFORCE_USERNAME }}
         SALESFORCE_PASSWORD: ${{ secrets.SALESFORCE_PASSWORD }}
