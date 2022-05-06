@@ -5,7 +5,7 @@ import sys
 def main():
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "openstax.settings")
 
-    # MyProject Customization: run coverage.py around tests automatically
+    # run coverage.py around tests automatically
     try:
         command = sys.argv[1]
     except IndexError:
