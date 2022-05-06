@@ -54,6 +54,6 @@ jobs:
         EVENTBRITE_API_PUBLIC_TOKEN: ${{ secrets.EVENTBRITE_PUBLIC_TOKEN }}
         SOCIAL_AUTH_OPENSTAX_KEY: ${{ secrets.SOCIAL_AUTH_OPENSTAX_KEY }}
         SOCIAL_AUTH_OPENSTAX_SECRET: ${{ secrets.SOCIAL_AUTH_OPENSTAX_SECRET }}
-    - uses: codecov/codecov-action@v3.1.0
+    - uses: codecov/codecov-action@v2
       with:
         token: ${{ secrets.CODECOV_TOKEN }}

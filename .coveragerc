@@ -4,8 +4,9 @@ branch = True
 
 [report]
 fail_under=80
-skip_covered = true
-show_missing = true
+skip_covered=true
+show_missing=true
+fail_ci_if_error=false
 
 # Regexes for lines to exclude from consideration
 exclude_lines =
