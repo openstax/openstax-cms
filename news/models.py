@@ -161,6 +161,50 @@ class NewsArticleTag(TaggedItemBase):
     content_object = ParentalKey('news.NewsArticle', related_name='tagged_items')
 
 
+def news_article_search(collection, content_types=None, subjects=None):
+    if subjects is None:
+        subjects = []
+    if content_types is None:
+        content_types = []
+    news_articles = NewsArticle.objects.all()
+    collection_articles = []
+    articles_to_return = []
+
+    for na in news_articles:
+        if collection is not None and collection in na.blog_collections:
+            collection_articles.append(na)
+
+    if len(collection_articles) > 0:
+        if len(content_types) > 0 and len(subjects) > 0:
+            for article in collection_articles:
+                blog_types = article.blog_content_types
+                blog_subjects = article.blog_subjects
+                added = False
+                for item in content_types:
+                    if item in blog_types:
+                        articles_to_return.append(article)
+                        added = True
+                for item in subjects:
+                    if item in blog_subjects and not added:
+                        articles_to_return.append(article)
+        elif len(content_types) > 0 and len(subjects) == 0:
+            for article in collection_articles:
+                blog_types = article.blog_content_types
+                for item in content_types:
+                    if item in blog_types:
+                        articles_to_return.append(article)
+        elif len(content_types) == 0 and len(subjects) > 0:
+            for article in collection_articles:
+                blog_subjects = article.blog_subjects
+                for item in subjects:
+                    if item in blog_subjects:
+                        articles_to_return.append(article)
+        else:
+            articles_to_return = collection_articles
+
+    return articles_to_return
+
+
 class NewsArticle(Page):
     date = models.DateField("Post date")
     heading = models.CharField(max_length=250, help_text="Heading displayed on website")
@@ -217,11 +261,8 @@ class NewsArticle(Page):
         prep_value = self.content_types.get_prep_value()
         types = []
         for t in prep_value:
-            print(str(t))
             type_id = t['value'][0]['content_type']
-            print(str(type_id))
             type = BlogContentType.objects.filter(id=type_id)
-            print(str(type[0]))
             types.append(str(type[0]))
         return types
 
@@ -230,11 +271,8 @@ class NewsArticle(Page):
         prep_value = self.article_subjects.get_prep_value()
         subjects = []
         for s in prep_value:
-            print(str(s))
             subject_id = s['value'][0]['subject']
-            print(str(subject_id))
             subject = Subject.objects.filter(id=subject_id)
-            print(str(subject[0]))
             subjects.append(str(subject[0]))
         return subjects
 
@@ -243,11 +281,8 @@ class NewsArticle(Page):
         prep_value = self.collections.get_prep_value()
         cols = []
         for c in prep_value:
-            print(str(c))
             collection_id = c['value'][0]['collection']
-            print(str(collection_id))
             collection = BlogCollection.objects.filter(id=collection_id)
-            print(str(collection[0]))
             cols.append(str(collection[0]))
         return cols
 

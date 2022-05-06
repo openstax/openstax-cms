@@ -8,7 +8,6 @@ from pages.models import HomePage
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
 from unittest.mock import MagicMock
 from news.models import NewsIndex, NewsArticle, PressIndex, PressRelease
-from news.search import convert_subject_names_to_ids, convert_blog_type_names_to_ids
 from snippets.models import Subject, BlogContentType, BlogCollection
 
 
@@ -71,46 +70,36 @@ class NewsTests(WagtailPageTests, TestCase):
         PressRelease.objects.get = MagicMock(return_value=MagicMock(pk=3))
         assertPathDoesNotRedirectToTrailingSlash(self, '/apps/cms/api/press/slug')
 
-    def test_convert_subject_names_to_ids_none(self):
-        self.assertEqual(convert_subject_names_to_ids(None), [])
-
-    def test_convert_subject_names_to_ids(self):
-        converted_ids = convert_subject_names_to_ids(['Math'])
-        math_id = Subject.objects.filter(name='Math').first()
-        self.assertEqual(math_id.id, converted_ids[0])
-
-    def test_convert_blog_type_names_to_ids_none(self):
-        self.assertEqual(convert_blog_type_names_to_ids(None), [])
-
-    def test_convert_blog_type_names_to_ids(self):
-        converted_ids = convert_blog_type_names_to_ids(['Case Study'])
-        type_id = BlogContentType.objects.filter(content_type='Case Study').first()
-        self.assertEqual(type_id.id, converted_ids[0])
-
 
 class SearchTest(TestCase):
     def setUp(self):
-        # create collection
+        # create collections
         self.learning = BlogCollection(name='Teaching and Learning', description='this is a collection')
         self.learning.save()
+        learning_id = self.learning.id
 
         self.updates = BlogCollection(name='OpenStax Updates', description='this is a collection')
         self.updates.save()
+        update_id = self.updates.id
         # create content types
         self.case_study = BlogContentType(content_type='Case Study')
         self.case_study.save()
+        case_study_id = self.case_study.id
 
         self.video = BlogContentType(content_type='Video')
         self.video.save()
+        video_id = self.video.id
         # create subjects
         self.math = Subject(name="Math", page_content="Math page content.", seo_title="Math SEO Title",
                             search_description="Math page description.")
         self.math.save()
+        math_id = self.math.id
 
         self.economics = Subject(name="Economics", page_content="Economics page content.",
                                  seo_title="Economics SEO Title",
                                  search_description="Economics page description.")
         self.economics.save()
+        economics_id = self.economics.id
         # create news articles
         news_index = NewsIndex.objects.all()[0]
         self.article = NewsArticle(title="Article 1",
@@ -119,19 +108,24 @@ class SearchTest(TestCase):
                               heading="Sample Article",
                               subheading="Sample Subheading",
                               author="OpenStax",
+                              body=json.dumps(
+                                  [
+                                      {"type": "paragraph", "value": "<p>This is the body of the post</p><p>This is the second paragraph</p>"}
+                                  ]
+                              ),
                               article_subjects=json.dumps(
                                   [
-                                      {"type": "subject", "value": [{"subject": 1}]}
+                                      {"type": "subject", "value": [{"subject": math_id}]}
                                   ]
                               ),
                               content_types=json.dumps(
                                   [
-                                      {"type": "content_type", "value": [{"content_type": 1}]},
+                                      {"type": "content_type", "value": [{"content_type": case_study_id}]},
                                   ]
                               ),
                               collections=json.dumps(
                                     [
-                                        {"type": "collection", "value": [{"collection": 1, "featured": 'false', "popular": 'false'}]}
+                                        {"type": "collection", "value": [{"collection": learning_id, "featured": 'false', "popular": 'false'}]}
                                     ]
                               ))
         news_index.add_child(instance=self.article)
@@ -141,22 +135,56 @@ class SearchTest(TestCase):
                               heading="Sample Article 2",
                               subheading="Sample Subheading 2",
                               author="OpenStax",
+                              body=json.dumps(
+                                  [
+                                      {"type": "paragraph", "value": "<p>This is the body of the post</p><p>This is the second paragraph</p>"}
+                                  ]
+                              ),
                               article_subjects=json.dumps(
                                   [
-                                      {"type": "subject", "value": [{"subject": 2}]}
+                                      {"type": "subject", "value": [{"subject": economics_id}]}
                                   ]
                               ),
                               content_types=json.dumps(
                                   [
-                                      {"type": "content_type", "value": [{"content_type": 2}]},
+                                      {"type": "content_type", "value": [{"content_type": video_id}]},
                                   ]
                               ),
                               collections=json.dumps(
                                     [
-                                        {"type": "collection", "value": [{"collection": 2, "featured": 'false', "popular": 'false'}]}
+                                        {"type": "collection", "value": [{"collection": update_id, "featured": 'false', "popular": 'false'}]}
                                     ]
                               ))
         news_index.add_child(instance=self.article2)
+        self.article3 = NewsArticle(title="Article 3",
+                                    slug="article3",
+                                    date=timezone.now(),
+                                    heading="Sample Article 3",
+                                    subheading="Sample Subheading 3",
+                                    author="OpenStax",
+                                    body=json.dumps(
+                                        [
+                                            {"type": "paragraph",
+                                             "value": "<p>This is the body of the post</p><p>This is the second paragraph</p>"}
+                                        ]
+                                    ),
+                                    article_subjects=json.dumps(
+                                        [
+                                            {"type": "subject", "value": [{"subject": math_id}]}
+                                        ]
+                                    ),
+                                    content_types=json.dumps(
+                                        [
+                                            {"type": "content_type", "value": [{"content_type": case_study_id}]},
+                                        ]
+                                    ),
+                                    collections=json.dumps(
+                                        [
+                                            {"type": "collection", "value": [
+                                                {"collection": update_id, "featured": 'false', "popular": 'false'}]}
+                                        ]
+                                    ))
+        news_index.add_child(instance=self.article3)
 
     @classmethod
     def setUpTestData(cls):
@@ -175,9 +203,39 @@ class SearchTest(TestCase):
 
         cls.news_index = Page.objects.get(id=news_index.id)
 
-    def test_search_collection(self):
-        # call search URL
+    def test_search_blog_collection(self):
         response = self.client.get('/apps/cms/api/search/', {'collection': 'OpenStax Updates'})
-        # compare results
-        print(str(response))
+        self.assertContains(response, 'OpenStax Updates')
+
+    def test_search_blog_content_type(self):
+        response = self.client.get('/apps/cms/api/search/', {'collection': 'OpenStax Updates', 'types': 'Video'})
+        self.assertContains(response, 'OpenStax Updates')
+        self.assertContains(response, 'Video')
+
+    def test_search_blog_subject(self):
+        response = self.client.get('/apps/cms/api/search/', {'collection': 'OpenStax Updates', 'subjects': 'Economics'})
+        self.assertContains(response, 'OpenStax Updates')
+        self.assertContains(response, 'Economics')
+
+    def test_search_blog_content_type_and_subject(self):
+        response = self.client.get('/apps/cms/api/search/', {'collection': 'OpenStax Updates', 'types': 'Case Study', 'subjects': 'Economics'})
+        self.assertContains(response, 'OpenStax Updates')
+        self.assertContains(response, 'Case Study')
+        self.assertContains(response, 'Economics')
+
+    def test_search_blog_multiple_content_type_and_subject(self):
+        response = self.client.get('/apps/cms/api/search/', {'collection': 'OpenStax Updates', 'types': 'Case Study,Video', 'subjects': 'Economics,Math'})
+        self.assertContains(response, 'OpenStax Updates')
+        self.assertContains(response, 'Case Study')
+        self.assertContains(response, 'Economics')
+
+    def test_search_two_blog_content_types(self):
+        response = self.client.get('/apps/cms/api/search/', {'collection': 'OpenStax Updates', 'types': 'Video,Case Study'})
+        self.assertContains(response, 'Video')
+        self.assertContains(response, 'Case Study')
+
+    def test_search_two_blog_subjects(self):
+        response = self.client.get('/apps/cms/api/search/', {'collection': 'OpenStax Updates', 'subjects': 'Economics,Math'})
+        self.assertContains(response, 'Economics')
+        self.assertContains(response, 'Math')
 
