@@ -3,6 +3,10 @@
 branch = True
 
 [report]
+fail_under=80
+skip_covered = true
+show_missing = true
+
 # Regexes for lines to exclude from consideration
 exclude_lines =
     # Have to re-enable the standard pragma
