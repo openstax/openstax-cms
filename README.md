@@ -1,5 +1,9 @@
-[![Build Status](https://travis-ci.org/openstax/openstax-cms.svg?branch=master)](https://travis-ci.org/openstax/openstax-cms)
-[![codecov](https://codecov.io/gh/openstax/openstax-cms/branch/master/graph/badge.svg)](https://codecov.io/gh/openstax/openstax-cms)
+[![CI](https://github.com/openstax/openstax-cms/actions/workflows/tests.yml/badge.svg)](https://github.com/openstax/openstax-cms/actions/workflows/tests.yml)
+[![codecov](https://codecov.io/gh/openstax/openstax-cms/branch/main/graph/badge.svg?token=hHMb4KUGYC)](https://codecov.io/gh/openstax/openstax-cms)
+
+![](https://codebuild.us-west-2.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiek9QM293aWxTZkdOZ0kwb00yTlZPaFJqck53RENqMFFaWGNGS2xQZFpEbThaOENrWnFUQmd2cFZIdHJoUkNFekN6Z3ozc2d3MFh6dlBaT29nNVcrM2RBPSIsIml2UGFyYW1ldGVyU3BlYyI6IklqT2p6T3NwT1pHVVVKRU0iLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=main)
+![](https://img.shields.io/github/v/tag/openstax/openstax-cms?label=latest%20tag)
+
 
 OpenStax CMS
 =======================
