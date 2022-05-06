@@ -160,7 +160,8 @@ class PartnerAdmin(admin.ModelAdmin):
     'online_teaching_academic_integrity',
     'online_teaching_teaching_labs',
     'international',
-    'partnership_level')
+    'partnership_level',
+    'equity_rating')
 
     actions = ['sync_with_salesforce', 'mark_visible', 'mark_not_visible' ]
 
