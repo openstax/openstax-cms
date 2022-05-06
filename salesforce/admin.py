@@ -70,6 +70,7 @@ class PartnerAdmin(admin.ModelAdmin):
     'landing_page',
     'verified_by_instructor',
     'integrated',
+    'partner_sf_account_id',
     'affordability_cost',
     'affordability_institutional',
     'app_available',
