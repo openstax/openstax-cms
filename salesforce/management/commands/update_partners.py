@@ -117,7 +117,8 @@ class Command(BaseCommand):
                     "Online_teaching_academic_integrity__c, " \
                     "Online_teaching_labs__c, " \
                     "International__c, " \
-                    "Partnership_Level__c " \
+                    "Partnership_Level__c, " \
+                    "Equity_Rating__c " \
                     "FROM Partner__c"
             response = sf.query_all(query)
             sf_marketplace_partners = response['records']
@@ -235,6 +236,7 @@ class Command(BaseCommand):
                 p.online_teaching_teaching_labs=self.str2bool(partner['Online_teaching_labs__c'])
                 p.international=self.str2bool(partner['International__c'])
                 p.partnership_level=partner['Partnership_Level__c']
+                p.equity_rating = partner['Equity_Rating__c']
                 p.save()
 
                 if created:
