@@ -10,7 +10,8 @@ CacheControl==0.12.5
 certifi==2020.11.8
 cffi>=1.15.0
 chardet==3.0.4
-cryptography>=35.0.0
+coverage==6.2
+cryptography>=36.0.0
 defusedxml==0.6.0
 distro==1.5.0
 Django==3.2.5
