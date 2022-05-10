@@ -65,3 +65,4 @@ def remove_locked_links_listing(response):
                     any_hidden = True
 
     return any_hidden
+

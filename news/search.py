@@ -1,9 +1,11 @@
+
 import re
 
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.http import JsonResponse
 
-from news.models import NewsArticle
+from news.models import NewsArticle, news_article_search
+
 
 def normalize_query(query_string, findterms=re.compile(r'"([^"]+)"|(\S+)').findall, normspace=re.compile(r'\s{2,}').sub):
     """
@@ -63,6 +65,18 @@ def search(request):
             search=vector,
         ).filter(search=query).order_by('rank', '-date')
 
+    if ('collection' in request.GET) and request.GET['collection'].strip():
+        collection_name = request.GET['collection']
+        types = []
+        subjects = []
+        if ('types' in request.GET) and request.GET['types'].strip():
+            types = request.GET['types'].split(',')
+
+        if ('subjects' in request.GET) and request.GET['subjects'].strip():
+            subjects = request.GET['subjects'].split(',')
+
+        found_entries = news_article_search(collection_name, types, subjects)
+
     search_results_json = []
     search_results_shown = set()
     for result in found_entries:
@@ -82,10 +96,12 @@ def search(request):
             'author': result.author,
             'pin_to_top': result.pin_to_top,
             'tags': list(result.tags.names()),
+            'collections': result.blog_collections,
+            'article_subjects': result.blog_subjects,
+            'content_types': result.blog_content_types,
             'slug': result.slug,
             'seo_title': result.seo_title,
             'search_description': result.search_description,
         })
-
     return JsonResponse(search_results_json, safe=False)
-    return JsonResponse([], safe=False)
+

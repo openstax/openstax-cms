@@ -11,7 +11,7 @@ from wagtail.documents.edit_handlers import DocumentChooserPanel
 from wagtail.embeds.blocks import EmbedBlock
 from wagtail.search import index
 from wagtail.core import blocks
-from wagtail.core.blocks import TextBlock, StructBlock, StreamBlock, FieldBlock, CharBlock, RichTextBlock, RawHTMLBlock
+from wagtail.core.blocks import TextBlock, StructBlock, StreamBlock, FieldBlock, CharBlock, RichTextBlock, RawHTMLBlock, BooleanBlock
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.documents.blocks import DocumentChooserBlock
 from wagtail.snippets.blocks import SnippetChooserBlock
@@ -25,7 +25,8 @@ from modelcluster.fields import ParentalKey
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from taggit.models import TaggedItemBase
 from openstax.functions import build_image_url
-from snippets.models import NewsSource
+from snippets.models import NewsSource, BlogContentType, BlogCollection, Subject
+
 
 class ImageChooserBlock(ImageChooserBlock):
     def get_api_representation(self, value, context=None):
@@ -64,6 +65,44 @@ class BlogStreamBlock(StreamBlock):
     aligned_html = RawHTMLBlock(icon="code", label='Raw HTML')
     document = DocumentChooserBlock(icon="doc-full-inverse")
     embed = EmbedBlock(icon="media", label="Embed Media URL")
+
+
+class BlogCollectionChooserBlock(SnippetChooserBlock):
+    def get_api_representation(self, value, context=None):
+        if value:
+            return {
+                'name': value.name,
+            }
+
+
+class SubjectChooserBlock(SnippetChooserBlock):
+    def get_api_representation(self, value, context=None):
+        if value:
+            return {
+                'name': value.name,
+            }
+
+
+class ContentTypeChooserBlock(SnippetChooserBlock):
+    def get_api_representation(self, value, context=None):
+        if value:
+            return {
+                'content_type': value.content_type,
+            }
+
+
+class SubjectBlock(StructBlock):
+    subject = BlogCollectionChooserBlock(required=True, label='Blog Subject', target_model='snippets.Subject')
+
+
+class BlogCollectionBlock(StructBlock):
+    collection = BlogCollectionChooserBlock(required=True, label='Blog Collection', target_model='snippets.BlogCollection')
+    featured = BooleanBlock(label="Featured", required=False)
+    popular = BooleanBlock(label="Popular", required=False)
+
+
+class BlogContentTypeBlock(StructBlock):
+    content_type = ContentTypeChooserBlock(required=True, label='Blog Content Type', target_model='snippets.BlogContentType')
 
 
 class NewsIndex(Page):
@@ -122,6 +161,50 @@ class NewsArticleTag(TaggedItemBase):
     content_object = ParentalKey('news.NewsArticle', related_name='tagged_items')
 
 
+def news_article_search(collection, content_types=None, subjects=None):
+    if subjects is None:
+        subjects = []
+    if content_types is None:
+        content_types = []
+    news_articles = NewsArticle.objects.all()
+    collection_articles = []
+    articles_to_return = []
+
+    for na in news_articles:
+        if collection is not None and collection in na.blog_collections:
+            collection_articles.append(na)
+
+    if len(collection_articles) > 0:
+        if len(content_types) > 0 and len(subjects) > 0:
+            for article in collection_articles:
+                blog_types = article.blog_content_types
+                blog_subjects = article.blog_subjects
+                added = False
+                for item in content_types:
+                    if item in blog_types:
+                        articles_to_return.append(article)
+                        added = True
+                for item in subjects:
+                    if item in blog_subjects and not added:
+                        articles_to_return.append(article)
+        elif len(content_types) > 0 and len(subjects) == 0:
+            for article in collection_articles:
+                blog_types = article.blog_content_types
+                for item in content_types:
+                    if item in blog_types:
+                        articles_to_return.append(article)
+        elif len(content_types) == 0 and len(subjects) > 0:
+            for article in collection_articles:
+                blog_subjects = article.blog_subjects
+                for item in subjects:
+                    if item in blog_subjects:
+                        articles_to_return.append(article)
+        else:
+            articles_to_return = collection_articles
+
+    return articles_to_return
+
+
 class NewsArticle(Page):
     date = models.DateField("Post date")
     heading = models.CharField(max_length=250, help_text="Heading displayed on website")
@@ -142,6 +225,15 @@ class NewsArticle(Page):
     tags = ClusterTaggableManager(through=NewsArticleTag, blank=True)
     body = StreamField(BlogStreamBlock())
     pin_to_top = models.BooleanField(default=False)
+    collections = StreamField(blocks.StreamBlock([
+            ('collection', blocks.ListBlock(BlogCollectionBlock())
+             )]), null=True)
+    article_subjects = StreamField(blocks.StreamBlock([
+            ('subject', blocks.ListBlock(SubjectBlock())
+             )]), null=True)
+    content_types = StreamField(blocks.StreamBlock([
+        ('content_type', blocks.ListBlock(BlogContentTypeBlock())
+         )]), null=True)
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -164,6 +256,36 @@ class NewsArticle(Page):
 
         return str(first_paragraph_parsed[0])
 
+    @property
+    def blog_content_types(self):
+        prep_value = self.content_types.get_prep_value()
+        types = []
+        for t in prep_value:
+            type_id = t['value'][0]['content_type']
+            type = BlogContentType.objects.filter(id=type_id)
+            types.append(str(type[0]))
+        return types
+
+    @property
+    def blog_subjects(self):
+        prep_value = self.article_subjects.get_prep_value()
+        subjects = []
+        for s in prep_value:
+            subject_id = s['value'][0]['subject']
+            subject = Subject.objects.filter(id=subject_id)
+            subjects.append(str(subject[0]))
+        return subjects
+
+    @property
+    def blog_collections(self):
+        prep_value = self.collections.get_prep_value()
+        cols = []
+        for c in prep_value:
+            collection_id = c['value'][0]['collection']
+            collection = BlogCollection.objects.filter(id=collection_id)
+            cols.append(str(collection[0]))
+        return cols
+
     search_fields = Page.search_fields + [
         index.SearchField('body'),
         index.SearchField('tags'),
@@ -180,6 +302,9 @@ class NewsArticle(Page):
         FieldPanel('tags'),
         StreamFieldPanel('body'),
         FieldPanel('pin_to_top'),
+        StreamFieldPanel('collections'),
+        StreamFieldPanel('article_subjects'),
+        StreamFieldPanel('content_types'),
     ]
 
     promote_panels = [
@@ -205,6 +330,9 @@ class NewsArticle(Page):
         APIField('slug'),
         APIField('seo_title'),
         APIField('search_description'),
+        APIField('collections'),
+        APIField('article_subjects'),
+        APIField('content_types'),
         APIField('promote_image')
     ]
 

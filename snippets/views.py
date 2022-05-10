@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 
-from .models import Role, Subject, ErrataContent, SubjectCategory, GiveBanner
-from .serializers import RoleSerializer, SubjectSerializer, ErrataContentSerializer, SubjectCategorySerializer, GiveBannerSerializer
+from .models import Role, Subject, ErrataContent, SubjectCategory, GiveBanner, BlogContentType, BlogCollection
+from .serializers import RoleSerializer, SubjectSerializer, ErrataContentSerializer, SubjectCategorySerializer, GiveBannerSerializer, BlogContentTypeSerializer, BlogCollectionSerializer
 
 from rest_framework import generics, viewsets
 from django_filters.rest_framework import DjangoFilterBackend
@@ -65,6 +65,16 @@ class GiveBannerViewSet(viewsets.ModelViewSet):
     # validation prevents multiple Give Banners, so this is safe
     queryset = GiveBanner.objects.all()
     serializer_class = GiveBannerSerializer
+
+
+class BlogContentTypeViewSet(viewsets.ModelViewSet):
+    queryset = BlogContentType.objects.all()
+    serializer_class = BlogContentTypeSerializer
+
+
+class BlogCollectionViewSet(viewsets.ModelViewSet):
+    queryset = BlogCollection.objects.all()
+    serializer_class = BlogCollectionSerializer
 
 
 def convert_locale(locale):

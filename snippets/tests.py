@@ -6,7 +6,7 @@ from django.test import TestCase, Client
 from django.conf import settings
 from django.urls import reverse
 
-from snippets.models import Subject, ErrataContent, GiveBanner
+from snippets.models import Subject, ErrataContent, GiveBanner, BlogContentType
 
 
 class SnippetsTestCase(TestCase):
@@ -28,6 +28,13 @@ class SnippetsTestCase(TestCase):
 
         self.give_banner = GiveBanner(html_message="Help students around the world succeed with <strong>contributions of $5, $10 or $20</strong>", link_text="Make a difference now", link_url='https://example.com')
         self.give_banner.save()
+
+        self.report = BlogContentType(content_type="Report")
+        self.report.save()
+        self.video = BlogContentType(content_type="Video")
+        self.video.save()
+        self.whitepaper = BlogContentType(content_type="Whitepaper")
+        self.whitepaper.save()
 
     def test_can_create_subject(self):
         subject = Subject(name="Science", page_content="Science page content.", seo_title="Science SEO Title",
@@ -57,3 +64,7 @@ class SnippetsTestCase(TestCase):
     def test_can_fetch_all_give_banners(self):
         response = self.client.get('/apps/cms/api/snippets/givebanner/?format=json')
         self.assertIn(b"Help students", response.content)
+
+    def test_can_fetch_all_blog_content_types(self):
+        response = self.client.get('/apps/cms/api/snippets/blogcontenttype/?format=json')
+        self.assertIn(b"Whitepaper", response.content)
