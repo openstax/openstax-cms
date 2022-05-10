@@ -9,6 +9,10 @@ from django.utils.log import DEFAULT_LOGGING
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
+ENVIRONMENT = os.getenv('ENVIRONMENT')
+RELEASE_VERSION = os.getenv('RELEASE_VERSION')
+DEPLOYMENT_VERSION = os.getenv('DEPLOYMENT_VERSION')
+
 PROJECT_ROOT = os.path.join(os.path.dirname(__file__), '..', '..')
 BASE_DIR = PROJECT_ROOT
 
@@ -362,10 +366,6 @@ logging.config.dictConfig({
         'django.server': DEFAULT_LOGGING['loggers']['django.server'],
     },
 })
-
-ENVIRONMENT = os.getenv('ENVIRONMENT')
-RELEASE_VERSION = os.getenv('RELEASE_VERSION')
-DEPLOYMENT_VERSION = os.getenv('DEPLOYMENT_VERSION')
 
 BASE_URL = os.getenv('BASE_URL')
 if BASE_URL is None:
