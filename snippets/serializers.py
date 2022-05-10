@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-from .models import Role, Subject, ErrataContent, SubjectCategory, GiveBanner, BlogContentType, BlogCollection
-=======
-from .models import Role, Subject, ErrataContent, SubjectCategory, GiveBanner, ContentLicense
->>>>>>> Added Content License snippet and drop down to select license of book
+from .models import Role, Subject, ErrataContent, SubjectCategory, GiveBanner, BlogContentType, BlogCollection, ContentLicense
 
 from rest_framework import serializers, generics
 

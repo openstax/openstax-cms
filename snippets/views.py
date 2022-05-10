@@ -1,13 +1,8 @@
 from rest_framework import viewsets
 
-<<<<<<< HEAD
-from .models import Role, Subject, ErrataContent, SubjectCategory, GiveBanner, BlogContentType, BlogCollection
-from .serializers import RoleSerializer, SubjectSerializer, ErrataContentSerializer, SubjectCategorySerializer, GiveBannerSerializer, BlogContentTypeSerializer, BlogCollectionSerializer
-=======
-from .models import Role, Subject, ErrataContent, SubjectCategory, GiveBanner, ContentLicense
+from .models import Role, Subject, ErrataContent, SubjectCategory, GiveBanner, ContentLicense, BlogContentType, BlogCollection
 from .serializers import RoleSerializer, SubjectSerializer, ErrataContentSerializer, SubjectCategorySerializer, \
-    GiveBannerSerializer, ContentLicenseSerializer
->>>>>>> Added Content License snippet and drop down to select license of book
+    GiveBannerSerializer, ContentLicenseSerializer, BlogContentTypeSerializer, BlogCollectionSerializer
 
 from rest_framework import generics, viewsets
 from django_filters.rest_framework import DjangoFilterBackend
