@@ -9,6 +9,10 @@ from django.utils.log import DEFAULT_LOGGING
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
+ENVIRONMENT = os.getenv('ENVIRONMENT')
+RELEASE_VERSION = os.getenv('RELEASE_VERSION')
+DEPLOYMENT_VERSION = os.getenv('DEPLOYMENT_VERSION')
+
 PROJECT_ROOT = os.path.join(os.path.dirname(__file__), '..', '..')
 BASE_DIR = PROJECT_ROOT
 
@@ -53,7 +57,7 @@ DATABASES = {
 SALESFORCE = { 'username' : os.getenv('SALESFORCE_USERNAME'),
                'password' : os.getenv('SALESFORCE_PASSWORD'),
                'security_token' : os.getenv('SALESFORCE_SECURITY_TOKEN'),
-               'sandbox': os.getenv('SALESFORCE_SANDBOX', 'False') == 'True',
+               'sandbox': os.getenv('SALESFORCE_SANDBOX') == 'True',
 }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
@@ -213,6 +217,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'rest_auth',
+    'django_crontab',
     'django_filters',
     'social_django',
     'storages',
@@ -263,6 +268,23 @@ INSTALLED_APPS = [
     'duplicatebooks',
     'versions',
 ]
+
+CRONJOBS = [
+    ('0 22 * * *', 'django.core.management.call_command', ['update_adopters']),
+    ('0 23 * * *', 'django.core.management.call_command', ['sync_reviews']),
+    ('0 1 * * *', 'django.core.management.call_command', ['update_resource_downloads']),
+    ('0 3 * * *', 'django.core.management.call_command', ['update_schools_and_mapbox']),
+    ('0 4 * * *', 'django.core.management.call_command', ['update_opportunities']),
+    ('0 5 * * *', 'django.core.management.call_command', ['update_partners']),
+    ('0 6 * * *', 'django.core.management.call_command', ['update_savings_number']),
+]
+
+if ENVIRONMENT == 'prod':
+    CRONJOBS.append(('0 1 1 * *', 'django.core.management.call_command', ['check_redirects']))
+
+CRONTAB_COMMAND_PREFIX = os.getenv('CRONTAB_COMMAND_PREFIX', '')
+CRONTAB_COMMAND_SUFFIX = os.getenv('CRONTAB_COMMAND_SUFFIX', '')
+CRONTAB_LOCK_JOBS = os.getenv('CRONTAB_LOCK_JOBS') != 'False'
 
 EMAIL_SUBJECT_PREFIX = '[openstax] '
 
@@ -344,10 +366,6 @@ logging.config.dictConfig({
         'django.server': DEFAULT_LOGGING['loggers']['django.server'],
     },
 })
-
-ENVIRONMENT = os.getenv('ENVIRONMENT')
-RELEASE_VERSION = os.getenv('RELEASE_VERSION')
-DEPLOYMENT_VERSION = os.getenv('DEPLOYMENT_VERSION')
 
 BASE_URL = os.getenv('BASE_URL')
 if BASE_URL is None:
