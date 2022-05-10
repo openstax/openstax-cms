@@ -104,5 +104,4 @@ def search(request):
             'search_description': result.search_description,
         })
     return JsonResponse(search_results_json, safe=False)
-    #return JsonResponse([], safe=False)
 
