@@ -1,8 +1,8 @@
 from rest_framework import viewsets
 
-from .models import Role, Subject, ErrataContent, SubjectCategory, GiveBanner, ContentLicense, BlogContentType, BlogCollection
+from .models import Role, Subject, ErrataContent, SubjectCategory, GiveBanner, BlogContentType, BlogCollection
 from .serializers import RoleSerializer, SubjectSerializer, ErrataContentSerializer, SubjectCategorySerializer, \
-    GiveBannerSerializer, ContentLicenseSerializer, BlogContentTypeSerializer, BlogCollectionSerializer
+    GiveBannerSerializer, BlogContentTypeSerializer, BlogCollectionSerializer
 
 from rest_framework import generics, viewsets
 from django_filters.rest_framework import DjangoFilterBackend
@@ -76,18 +76,6 @@ class BlogContentTypeViewSet(viewsets.ModelViewSet):
 class BlogCollectionViewSet(viewsets.ModelViewSet):
     queryset = BlogCollection.objects.all()
     serializer_class = BlogCollectionSerializer
-
-
-class ContentLicenseViewSet(viewsets.ModelViewSet):
-    serializer_class = ContentLicenseSerializer
-    filter_backends = (DjangoFilterBackend,)
-
-    def get_queryset(self):
-        queryset = ContentLicense.objects.all()
-        locale = self.request.query_params.get('locale', None)
-        if locale is not None:
-            queryset = queryset.filter(locale=convert_locale(locale))
-        return queryset
 
 
 def convert_locale(locale):

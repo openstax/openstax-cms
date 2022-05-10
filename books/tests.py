@@ -41,13 +41,6 @@ class BookTests(WagtailPageTests):
 
         cls.book_index = Page.objects.get(id=book_index.id)
 
-        content_license = snippets.models.ContentLicense(license_code='by',
-                                                         version='4.0',
-                                                         license_name='Creative Commons Attribution License',
-                                                         license_url='https://creativecommons.org/licenses/by/4.0/')
-        content_license.save()
-
-
     def test_can_create_book(self):
         book_index = BookIndex.objects.all()[0]
         root_page = Page.objects.get(title="Root")

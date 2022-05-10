@@ -316,24 +316,3 @@ class BlogCollection(TranslatableMixin, models.Model):
 
 register_snippet(BlogCollection)
 
-
-class ContentLicense(TranslatableMixin, models.Model):
-    license_code = models.CharField(max_length=255, blank=True, null=True)
-    version = models.CharField(max_length=255, blank=True, null=True)
-    license_name = models.CharField(max_length=255, blank=True, null=True)
-    license_url = models.URLField(null=True, blank=True)
-
-    panels = [
-        FieldPanel('license_code'),
-        FieldPanel('version'),
-        FieldPanel('license_name'),
-        FieldPanel('license_url')
-    ]
-
-    api_fields = ('license_code', 'version', 'license_name', 'license_url')
-
-    def __str__(self):
-        return self.license_name
-
-
-register_snippet(ContentLicense)

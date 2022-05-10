@@ -29,7 +29,8 @@ from wagtail.snippets.models import register_snippet
 from wagtail.core.models import Site
 
 from openstax.functions import build_document_url, build_image_url
-from books.constants import BOOK_STATES, BOOK_COVER_TEXT_COLOR, COVER_COLORS
+from books.constants import BOOK_STATES, BOOK_COVER_TEXT_COLOR, COVER_COLORS, CC_NC_SA_LICENSE_NAME, CC_BY_LICENSE_NAME, \
+    CC_BY_LICENSE_URL, CC_NC_SA_LICENSE_URL, CC_NC_SA_LICENSE_VERSION, CC_BY_LICENSE_VERSION
 import snippets.models as snippets
 
 
@@ -451,10 +452,9 @@ class BookCategories(Orderable, BookCategory):
 
 
 def content_license_choices():
-    licenses = snippets.ContentLicense.objects.all()
     choices = []
-    for l in licenses:
-        choices.append((str(l.license_name),str(l.license_name))),
+    choices.append((str(CC_BY_LICENSE_NAME),str(CC_BY_LICENSE_NAME)))
+    choices.append((str(CC_NC_SA_LICENSE_NAME), str(CC_NC_SA_LICENSE_NAME)))
     return choices
 
 
@@ -892,9 +892,13 @@ class Book(Page):
 
         # populate license
         if self.license_name:
-            book_license = snippets.ContentLicense.objects.filter(license_name=self.license_name)
-            self.license_url = book_license[0].license_url
-            self.license_version = book_license[0].version
+            if self.license_name == CC_BY_LICENSE_NAME:
+                self.license_url = CC_BY_LICENSE_URL
+                self.license_version = CC_BY_LICENSE_VERSION
+            else:
+                self.license_url = CC_NC_SA_LICENSE_URL
+                self.license_version = CC_NC_SA_LICENSE_VERSION
+
 
         # if book is new, clear out isbn 10 fields
         if self._state.adding:

@@ -1,4 +1,4 @@
-from .models import Role, Subject, ErrataContent, SubjectCategory, GiveBanner, BlogContentType, BlogCollection, ContentLicense
+from .models import Role, Subject, ErrataContent, SubjectCategory, GiveBanner, BlogContentType, BlogCollection
 
 from rest_framework import serializers, generics
 
@@ -63,11 +63,3 @@ class BlogCollectionSerializer(serializers.ModelSerializer):
                   'description',
                   'collection_image')
 
-
-class ContentLicenseSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ContentLicense
-        fields = ('license_code',
-                  'version',
-                  'license_name',
-                  'license_url')
