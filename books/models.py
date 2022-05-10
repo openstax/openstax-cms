@@ -450,6 +450,14 @@ class BookCategories(Orderable, BookCategory):
     book_category = ParentalKey('books.Book', related_name='book_categories')
 
 
+def content_license_choices():
+    licenses = snippets.ContentLicense.objects.all()
+    choices = []
+    for l in licenses:
+        choices.append((str(l.license_name),str(l.license_name))),
+    return choices
+
+
 class Book(Page):
     created = models.DateTimeField(auto_now_add=True)
     book_state = models.CharField(max_length=255, choices=BOOK_STATES, default='live', help_text='The state of the book.')
@@ -506,7 +514,7 @@ class Book(Page):
     license_text = models.TextField(
         blank=True, null=True, help_text="Overrides default license text.")
     license_name = models.CharField(
-        max_length=255, blank=True, null=True, editable=False, help_text="Name of the license.")
+        max_length=255, blank=True, null=True, choices=content_license_choices(), help_text="Name of the license.")
     license_version = models.CharField(
         max_length=255, blank=True, null=True, editable=False, help_text="Version of the license.")
     license_url = models.CharField(
@@ -660,6 +668,7 @@ class Book(Page):
         FieldPanel('ibook_volume_2_isbn_10'),
         FieldPanel('ibook_volume_2_isbn_13'),
         FieldPanel('license_text'),
+        FieldPanel('license_name'),
         FieldPanel('webview_rex_link'),
         FieldPanel('rex_callout_title'),
         FieldPanel('rex_callout_blurb'),
@@ -880,6 +889,12 @@ class Book(Page):
             Book.objects.filter(locale=self.locale).update(customization_form_next_steps=self.customization_form_next_steps)
         if self.support_statement:
             Book.objects.filter(locale=self.locale).update(support_statement=self.support_statement)
+
+        # populate license
+        if self.license_name:
+            book_license = snippets.ContentLicense.objects.filter(license_name=self.license_name)
+            self.license_url = book_license[0].license_url
+            self.license_version = book_license[0].version
 
         # if book is new, clear out isbn 10 fields
         if self._state.adding:

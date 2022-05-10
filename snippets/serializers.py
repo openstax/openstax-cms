@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 from .models import Role, Subject, ErrataContent, SubjectCategory, GiveBanner, BlogContentType, BlogCollection
+=======
+from .models import Role, Subject, ErrataContent, SubjectCategory, GiveBanner, ContentLicense
+>>>>>>> Added Content License snippet and drop down to select license of book
 
 from rest_framework import serializers, generics
 
@@ -62,3 +66,12 @@ class BlogCollectionSerializer(serializers.ModelSerializer):
         fields = ('name',
                   'description',
                   'collection_image')
+
+
+class ContentLicenseSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContentLicense
+        fields = ('license_code',
+                  'version',
+                  'license_name',
+                  'license_url')
