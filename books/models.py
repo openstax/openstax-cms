@@ -514,7 +514,7 @@ class Book(Page):
     license_text = models.TextField(
         blank=True, null=True, help_text="Overrides default license text.")
     license_name = models.CharField(
-        max_length=255, blank=True, null=True, choices=content_license_choices(), help_text="Name of the license.")
+        max_length=255, blank=True, null=True, choices=content_license_choices(),default='Creative Commons Attribution License', help_text="Name of the license.")
     license_version = models.CharField(
         max_length=255, blank=True, null=True, editable=False, help_text="Version of the license.")
     license_url = models.CharField(
