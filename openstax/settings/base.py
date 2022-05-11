@@ -270,16 +270,15 @@ INSTALLED_APPS = [
 ]
 
 CRONJOBS = [
-    ('0 23 * * *', 'django.core.management.call_command', ['sync_reviews']),
-    ('0 1 * * *', 'django.core.management.call_command', ['update_resource_downloads']),
-    ('0 3 * * *', 'django.core.management.call_command', ['update_schools_and_mapbox']),
-    ('0 4 * * *', 'django.core.management.call_command', ['update_opportunities']),
-    ('0 5 * * *', 'django.core.management.call_command', ['update_partners']),
-    ('0 6 * * *', 'django.core.management.call_command', ['update_savings_number']),
+    ('0 4 * * *', 'django.core.management.call_command', ['sync_reviews']),
+    ('0 6 * * *', 'django.core.management.call_command', ['update_resource_downloads']),
+    ('0 8 * * *', 'django.core.management.call_command', ['update_schools_and_mapbox']),
+    ('0 9 * * *', 'django.core.management.call_command', ['update_opportunities']),
+    ('0 10 * * *', 'django.core.management.call_command', ['update_partners']),
 ]
 
 if ENVIRONMENT == 'prod':
-    CRONJOBS.append(('0 1 1 * *', 'django.core.management.call_command', ['check_redirects']))
+    CRONJOBS.append(('0 6 1 * *', 'django.core.management.call_command', ['check_redirects']))
 
 CRONTAB_COMMAND_PREFIX = os.getenv('CRONTAB_COMMAND_PREFIX', '')
 CRONTAB_COMMAND_SUFFIX = os.getenv('CRONTAB_COMMAND_SUFFIX', '')
