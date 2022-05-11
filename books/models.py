@@ -451,14 +451,12 @@ class BookCategories(Orderable, BookCategory):
     book_category = ParentalKey('books.Book', related_name='book_categories')
 
 
-def content_license_choices():
-    choices = []
-    choices.append((str(CC_BY_LICENSE_NAME),str(CC_BY_LICENSE_NAME)))
-    choices.append((str(CC_NC_SA_LICENSE_NAME), str(CC_NC_SA_LICENSE_NAME)))
-    return choices
-
-
 class Book(Page):
+    licenses = (
+        (CC_BY_LICENSE_NAME, CC_BY_LICENSE_NAME),
+        (CC_NC_SA_LICENSE_NAME, CC_NC_SA_LICENSE_NAME)
+    )
+
     created = models.DateTimeField(auto_now_add=True)
     book_state = models.CharField(max_length=255, choices=BOOK_STATES, default='live', help_text='The state of the book.')
     cnx_id = models.CharField(
@@ -514,7 +512,7 @@ class Book(Page):
     license_text = models.TextField(
         blank=True, null=True, help_text="Overrides default license text.")
     license_name = models.CharField(
-        max_length=255, blank=True, null=True, choices=content_license_choices(),default='Creative Commons Attribution License', help_text="Name of the license.")
+        max_length=255, blank=True, null=True, choices=licenses,default=CC_BY_LICENSE_NAME, help_text="Name of the license.")
     license_version = models.CharField(
         max_length=255, blank=True, null=True, editable=False, help_text="Version of the license.")
     license_url = models.CharField(
