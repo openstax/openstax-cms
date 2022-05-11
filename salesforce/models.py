@@ -38,6 +38,19 @@ class AdoptionOpportunityRecord(models.Model):
         return self.opportunity_id
 
 
+class RenewalOpportunity(models.Model):
+    opportunity_id = models.CharField(max_length=255, unique=True)
+    account_uuid = models.UUIDField(null=True)
+    book_name = models.CharField(max_length=255)
+    fall_student_number = models.CharField(max_length=255)
+    spring_student_number = models.CharField(max_length=255)
+    renewal_date = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return self.account_uuid
+
+
+
 class School(models.Model):
     salesforce_id = models.CharField(max_length=255, blank=True, null=True)
     name = models.CharField(max_length=255)
