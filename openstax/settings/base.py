@@ -270,7 +270,6 @@ INSTALLED_APPS = [
 ]
 
 CRONJOBS = [
-    ('0 22 * * *', 'django.core.management.call_command', ['update_adopters']),
     ('0 23 * * *', 'django.core.management.call_command', ['sync_reviews']),
     ('0 1 * * *', 'django.core.management.call_command', ['update_resource_downloads']),
     ('0 3 * * *', 'django.core.management.call_command', ['update_schools_and_mapbox']),
