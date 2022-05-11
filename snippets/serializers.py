@@ -62,3 +62,4 @@ class BlogCollectionSerializer(serializers.ModelSerializer):
         fields = ('name',
                   'description',
                   'collection_image')
+

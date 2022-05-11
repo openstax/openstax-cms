@@ -315,3 +315,4 @@ class BlogCollection(TranslatableMixin, models.Model):
 
 
 register_snippet(BlogCollection)
+

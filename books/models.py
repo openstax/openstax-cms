@@ -29,7 +29,8 @@ from wagtail.snippets.models import register_snippet
 from wagtail.core.models import Site
 
 from openstax.functions import build_document_url, build_image_url
-from books.constants import BOOK_STATES, BOOK_COVER_TEXT_COLOR, COVER_COLORS
+from books.constants import BOOK_STATES, BOOK_COVER_TEXT_COLOR, COVER_COLORS, CC_NC_SA_LICENSE_NAME, CC_BY_LICENSE_NAME, \
+    CC_BY_LICENSE_URL, CC_NC_SA_LICENSE_URL, CC_NC_SA_LICENSE_VERSION, CC_BY_LICENSE_VERSION
 import snippets.models as snippets
 
 
@@ -451,6 +452,11 @@ class BookCategories(Orderable, BookCategory):
 
 
 class Book(Page):
+    licenses = (
+        (CC_BY_LICENSE_NAME, CC_BY_LICENSE_NAME),
+        (CC_NC_SA_LICENSE_NAME, CC_NC_SA_LICENSE_NAME)
+    )
+
     created = models.DateTimeField(auto_now_add=True)
     book_state = models.CharField(max_length=255, choices=BOOK_STATES, default='live', help_text='The state of the book.')
     cnx_id = models.CharField(
@@ -506,7 +512,7 @@ class Book(Page):
     license_text = models.TextField(
         blank=True, null=True, help_text="Overrides default license text.")
     license_name = models.CharField(
-        max_length=255, blank=True, null=True, editable=False, help_text="Name of the license.")
+        max_length=255, blank=True, null=True, choices=licenses,default=CC_BY_LICENSE_NAME, help_text="Name of the license.")
     license_version = models.CharField(
         max_length=255, blank=True, null=True, editable=False, help_text="Version of the license.")
     license_url = models.CharField(
@@ -660,6 +666,7 @@ class Book(Page):
         FieldPanel('ibook_volume_2_isbn_10'),
         FieldPanel('ibook_volume_2_isbn_13'),
         FieldPanel('license_text'),
+        FieldPanel('license_name'),
         FieldPanel('webview_rex_link'),
         FieldPanel('rex_callout_title'),
         FieldPanel('rex_callout_blurb'),
@@ -880,6 +887,16 @@ class Book(Page):
             Book.objects.filter(locale=self.locale).update(customization_form_next_steps=self.customization_form_next_steps)
         if self.support_statement:
             Book.objects.filter(locale=self.locale).update(support_statement=self.support_statement)
+
+        # populate license
+        if self.license_name:
+            if self.license_name == CC_BY_LICENSE_NAME:
+                self.license_url = CC_BY_LICENSE_URL
+                self.license_version = CC_BY_LICENSE_VERSION
+            else:
+                self.license_url = CC_NC_SA_LICENSE_URL
+                self.license_version = CC_NC_SA_LICENSE_VERSION
+
 
         # if book is new, clear out isbn 10 fields
         if self._state.adding:

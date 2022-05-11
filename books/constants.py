@@ -66,3 +66,10 @@ COVER_COLORS = (
     (RED, 'Red'),
     (YELLOW, 'Yellow'),
 )
+
+CC_BY_LICENSE_NAME = 'Creative Commons Attribution License'
+CC_BY_LICENSE_VERSION = '4.0'
+CC_BY_LICENSE_URL = 'https://creativecommons.org/licenses/by/4.0/'
+CC_NC_SA_LICENSE_NAME = 'Creative Commons Attribution-NonCommercial-ShareAlike License'
+CC_NC_SA_LICENSE_VERSION = '4.0'
+CC_NC_SA_LICENSE_URL = 'https://creativecommons.org/licenses/by-nc-sa/4.0/'

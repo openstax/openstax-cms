@@ -1,5 +1,7 @@
 from wagtail.tests.utils import WagtailPageTests
 from wagtail.core.models import Page
+
+import snippets.models
 from pages.models import HomePage
 from books.models import BookIndex, Book
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
@@ -117,3 +119,21 @@ class BookTests(WagtailPageTests):
     def test_slashless_apis_are_good(self):
         assertPathDoesNotRedirectToTrailingSlash(self, '/apps/cms/api/books')
         assertPathDoesNotRedirectToTrailingSlash(self, '/apps/cms/api/books/slug')
+
+    def test_can_create_book_with_cc_license(self):
+        book_index = BookIndex.objects.all()[0]
+        root_page = Page.objects.get(title="Root")
+        book = Book(title="University Physics",
+                    slug="university-physics",
+                    cnx_id='031da8d3-b525-429c-80cf-6c8ed997733a',
+                    salesforce_abbreviation='University Phys (Calc)',
+                    salesforce_name='University Physics',
+                    description="Test Book",
+                    cover=self.test_doc,
+                    title_image=self.test_doc,
+                    publish_date=datetime.date.today(),
+                    locale=root_page.locale,
+                    license_name='Creative Commons Attribution License',
+                    )
+        book_index.add_child(instance=book)
+        self.assertEqual(book.license_url, 'https://creativecommons.org/licenses/by/4.0/')
