@@ -33,22 +33,12 @@ class AdoptionOpportunityRecord(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     last_update = models.DateTimeField(auto_now=True)
     verified = models.BooleanField(default=False)
+    fall_student_number = models.IntegerField(null=True, blank=True,)
+    spring_student_number = models.IntegerField(null=True, blank=True,)
+    summer_student_number = models.IntegerField(null=True, blank=True,)
 
     def __str__(self):
         return self.opportunity_id
-
-
-class RenewalOpportunity(models.Model):
-    opportunity_id = models.CharField(max_length=255, unique=True)
-    account_uuid = models.UUIDField(null=True)
-    book_name = models.CharField(max_length=255)
-    fall_student_number = models.CharField(max_length=255)
-    spring_student_number = models.CharField(max_length=255)
-    renewal_date = models.DateTimeField(auto_now=True)
-
-    def __str__(self):
-        return self.account_uuid
-
 
 
 class School(models.Model):
