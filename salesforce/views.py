@@ -124,10 +124,9 @@ class SavingsNumberViewSet(viewsets.ReadOnlyModelViewSet):
 class AdoptionOpportunityRecordViewSet(viewsets.ViewSet):
     @action(methods=['get'], detail=True)
     def list(self, request):
-        print(str(request.data))
         account_uuid = request.GET.get('account_uuid', False)
         # a user can have many adoption records - one for each book
-        queryset = AdoptionOpportunityRecord.objects.filter(account_uuid=account_uuid, verified=False)
+        queryset = AdoptionOpportunityRecord.objects.filter(account_uuid=account_uuid)
         book_list = []
         for record in queryset:
             student_nums = [record.fall_student_number or 0, record.spring_student_number or 0, record.summer_student_number or 0]
@@ -135,35 +134,6 @@ class AdoptionOpportunityRecordViewSet(viewsets.ViewSet):
         data = {"Books": book_list}
 
         return JsonResponse(data)
-
-    # @action(methods=['post'], detail=True)
-    # def post(self, request, account_id, format=None):
-    #     # this takes the adoption record as a post and looks it up, since a user can adopt more than one book
-    #     records = AdoptionOpportunityRecord.objects.filter(account_id=account_id)
-    #     if not records:
-    #         return JsonResponse({'error': 'No records associated with that ID.'})
-    #
-    #     # adoption id is included in the post request
-    #     id = self.request.data.get('id', None)
-    #     if id:
-    #         try:
-    #             record = AdoptionOpportunityRecord.objects.get(id=id)
-    #         except AdoptionOpportunityRecord.DoesNotExist:
-    #             return JsonResponse({'error': 'Invalid adoption id.'})
-    #
-    #         confirmed_yearly_students = self.request.data.get('confirmed_yearly_students', 0)
-    #         data = {"verified": True, "confirmed_yearly_students": confirmed_yearly_students}
-    #
-    #         serializer = AdoptionOpportunityRecordSerializer(record, data=data, partial=True)
-    #
-    #         if serializer.is_valid():
-    #             serializer.save()
-    #         else:
-    #             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    #
-    #         return JsonResponse(data)
-    #     else:
-    #         return JsonResponse({'error': 'Must include adoption ID to update'})
 
 
 def get_adoption_status(request):
