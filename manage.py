@@ -11,13 +11,24 @@ def main():
     except IndexError:
         command = "help"
 
-    running_tests = command == "test"
-    if running_tests:
+    # logic to start codecov if in test environment
+    # codecov is only installed in requirements/test.txt
+    try:
         from coverage import Coverage
+        running_tests = command == "test"
+    except ImportError:
+        running_tests = False
 
-        cov = Coverage()
-        cov.erase()
-        cov.start()
+    if running_tests:
+        try:
+            from coverage import Coverage
+
+            cov = Coverage()
+            cov.erase()
+            cov.start()
+        except Error as e:
+            print(e)
+
 
     try:
         from django.core.management import execute_from_command_line
