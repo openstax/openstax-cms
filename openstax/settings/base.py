@@ -226,7 +226,6 @@ INSTALLED_APPS = [
     'inline_actions',
     # custom
     'accounts',
-    'admin_templates',  # this overrides the admin templates
     'api',
     'pages',
     'books',
