@@ -106,14 +106,12 @@ class BlogContentTypeBlock(StructBlock):
 
 
 class NewsIndex(Page):
-    intro = RichTextField(blank=True)
-    press_kit = models.ForeignKey(
-        'wagtaildocs.Document',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
+    interest_block = StreamField([
+            ('heading', blocks.CharBlock()),
+            ('description', blocks.TextBlock()),
+            ('button_text', blocks.CharBlock()),
+            ('button_href', blocks.URLBlock())
+         ], null=True)
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -123,8 +121,7 @@ class NewsIndex(Page):
     )
 
     content_panels = Page.content_panels + [
-        FieldPanel('intro', classname="full"),
-        DocumentChooserPanel('press_kit'),
+        StreamFieldPanel('interest_block'),
     ]
 
     promote_panels = [
@@ -135,8 +132,7 @@ class NewsIndex(Page):
     ]
 
     api_fields = [
-        APIField('intro'),
-        APIField('press_kit'),
+        APIField('interest_block'),
         APIField('slug'),
         APIField('seo_title'),
         APIField('search_description'),
