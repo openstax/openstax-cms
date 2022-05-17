@@ -32,7 +32,7 @@ WAGTAIL_APPEND_SLASH=True
 SILENCED_SYSTEM_CHECKS = ['urls.W002']
 
 ADMINS = (
-    ('Michael Harrison', 'mwharrison@rice.edu'),
+    ('Michael Volo', 'volo@rice.edu'),
 )
 
 # Amazon SES mail settings
@@ -224,6 +224,8 @@ INSTALLED_APPS = [
     'django_ses',
     'import_export',
     'inline_actions',
+    'rangefilter',
+    'reversion',
     # custom
     'accounts',
     'api',
@@ -237,8 +239,6 @@ INSTALLED_APPS = [
     'global_settings',
     'errata',
     'extraadminfilters',
-    'rangefilter',
-    'reversion',
     'redirects',
     'oxauth',
     'events',
@@ -258,7 +258,6 @@ INSTALLED_APPS = [
     'wagtail.locales',
     'wagtail.contrib.forms',
     'wagtail.sites',
-    #'wagtail.contrib.wagtailapi',
     'wagtail.api.v2',
     'wagtail.contrib.settings',
     'wagtail.contrib.modeladmin',
@@ -267,6 +266,7 @@ INSTALLED_APPS = [
     'versions',
 ]
 
+if DEBUG == True:
     # dev only apps - be sure to install requirements/dev.txt
     INSTALLED_APPS += [
         'django_extensions',
