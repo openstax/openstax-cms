@@ -379,10 +379,6 @@ def send_status_update_email(sender, instance, created, **kwargs):
             if instance.submitted_by_account_id:
                 user = get_user_info(instance.submitted_by_account_id)
                 to = user['email']
-            elif instance.submitter_email_address:
-                to = instance.submitter_email_address
-            elif instance.submitted_by:
-                to = instance.submitted_by.email
             else:
                 send_email = False
         except TypeError:
