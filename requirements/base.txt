@@ -24,6 +24,5 @@ unicodecsv==0.14.1
 Unidecode==1.3.4
 vcrpy==4.1.1 # for recording test interactions with third-party APIs
 wagtail==2.16.2
-wagtail-import-export-tool==0.9.5
 Wand==0.6.7 # for supporting animated gifs
 whitenoise==6.1.0
