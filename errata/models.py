@@ -203,10 +203,6 @@ class Errata(models.Model):
     )
     resource_other = models.CharField(max_length=255, blank=True, null=True)
 
-    # TODO: We are keeping the Foreign Key to the local user until the migrations to production are complete, then remove submitted_by and submitter_email_address
-    submitted_by = models.ForeignKey(User, blank=True, null=True, on_delete=models.SET_NULL)
-    submitter_email_address = models.EmailField(blank=True, null=True)
-
     submitted_by_account_id = models.IntegerField(blank=True, null=True, validators=[MinValueValidator(0), is_user_blocked])
     accounts_user_email = models.CharField(max_length=255, null=True, blank=True)
     accounts_user_name = models.CharField(max_length=255, null=True, blank=True)
@@ -284,10 +280,6 @@ class Errata(models.Model):
     @hooks.register('register_admin_menu_item')
     def register_errata_menu_item():
         return MenuItem('Errata', '/django-admin/errata/errata', classnames='icon icon-form', order=10000)
-
-    # @hooks.register('register_admin_menu_item')
-    # def register_errata_menu_item():
-    #     return MenuItem('Errata (beta)', '/api/errata/admin/dashboard/', classnames='icon icon-form', order=10000)
 
     def __str__(self):
         return self.book.book_title

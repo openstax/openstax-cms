@@ -79,7 +79,7 @@ class ErrataAdmin(ImportExportActionModelAdmin, VersionAdmin):
     }
     actions = ['mark_in_review', 'mark_andrew_in_review', 'mark_anthony_in_review', 'mark_reviewed', 'mark_archived', 'mark_completed', ExportActionMixin.export_admin_action]
     inlines = [InlineInternalImage, ]
-    raw_id_fields = ('submitted_by', 'duplicate_id')
+    raw_id_fields = ('duplicate_id', )
 
     def get_export_formats(self):
         return [base_formats.CSV]
