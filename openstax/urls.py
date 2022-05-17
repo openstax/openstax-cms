@@ -8,6 +8,7 @@ from wagtail.core import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
 from wagtail.images.views.serve import ServeView
 from accounts import urls as accounts_urls
+from oxauth import views as oxauth_views
 
 from .api import api_router
 from news.search import search
@@ -20,16 +21,19 @@ from wagtail.contrib.sitemaps.views import sitemap
 admin.site.site_header = 'OpenStax'
 
 urlpatterns = [
-    url(r'^django-admin/login', RedirectView.as_view(url='/admin/login')),
+    url(r'^admin/login', oxauth_views.login),
+    url(r'^admin/logout', oxauth_views.logout),
+    url(r'^django-admin/login', oxauth_views.login),
+    url(r'^oxauth', include('oxauth.urls')), # new auth package
     url(r'^django-admin/', admin.site.urls),
     url(r'^admin/', include(wagtailadmin_urls)),
 
 
     url(r'^django-admin/error/', throw_error, name='throw_error'),
 
-    url(r'^oxauth', include('oxauth.urls')), # new auth package
     url(r'^documents/', include(wagtaildocs_urls)),
     url(r'^images/([^/]*)/(\d*)/([^/]*)/[^/]*$', ServeView.as_view(action='redirect'), name='wagtailimages_serve'),
+
     url(r'^accounts', include(accounts_urls)), # non-CloudFront Accounts redirects
 
     url(r'^apps/cms/api/mail', include('mail.urls')),
