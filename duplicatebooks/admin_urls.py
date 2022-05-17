@@ -1,9 +1,9 @@
-from django.conf.urls import url
+from django.urls import path
 
 from duplicatebooks import views
 
 
 app_name = 'duplicatebooks_admin'
 urlpatterns = [
-    url(r'^do/(?P<page>[\w-]+)/?$', views.duplicate, name='duplicate'),
+    path(r'do/<page>/', views.duplicate, name='duplicate'),
 ]

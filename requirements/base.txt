@@ -3,7 +3,6 @@ chardet==4.0.0
 django-admin-rangefilter==0.8.4
 django-crontab==0.7.1
 django-import-export==2.8.0
-django-inline-actions==2.4.0 # only being used in events/webinars
 django-libsass==0.9
 django-rest-auth==0.9.5
 django-reversion==5.0.0

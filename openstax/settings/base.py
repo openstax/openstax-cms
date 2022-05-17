@@ -203,7 +203,6 @@ INSTALLED_APPS = [
     'storages',
     'django_ses',
     'import_export',
-    'inline_actions',
     'rangefilter',
     'reversion',
     # custom

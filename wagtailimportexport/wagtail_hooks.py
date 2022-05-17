@@ -1,4 +1,4 @@
-from django.conf.urls import include, url
+from django.urls import include, path
 from django.urls import reverse
 
 from wagtail.core import hooks
@@ -13,7 +13,7 @@ def register_admin_urls():
     Register 'import-export/' url path to admin urls.
     """
     return [
-        url(r'^import-export/', include(admin_urls, namespace='wagtailimportexport')),
+        path(r'import-export/', include(admin_urls, namespace='wagtailimportexport')),
     ]
 
 

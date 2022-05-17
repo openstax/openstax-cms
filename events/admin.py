@@ -1,8 +1,6 @@
 from import_export import resources
 from import_export.admin import ExportActionModelAdmin
 
-from inline_actions.admin import InlineActionsModelAdminMixin
-
 from django.contrib import admin, messages
 from django.utils import timezone
 
@@ -19,7 +17,7 @@ class RegistrationResource(resources.ModelResource):
         model = Registration
         fields = ('first_name', 'last_name', 'registration_email', 'session__name', 'checked_in')
 
-class RegistrationAdmin(InlineActionsModelAdminMixin, ExportActionModelAdmin):
+class RegistrationAdmin(ExportActionModelAdmin):
     list_display = ('full_name', 'registration_email', 'checked_in')
     search_fields = ('last_name', 'registration_email')
     list_filter = ['session', ]
