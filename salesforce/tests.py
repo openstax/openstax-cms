@@ -3,7 +3,7 @@ import unittest
 
 from django.conf import settings
 from django.core.management import call_command
-from django.test import LiveServerTestCase, TestCase
+from django.test import LiveServerTestCase, TestCase, Client
 from six import StringIO
 from django.core.exceptions import ValidationError
 
@@ -165,3 +165,20 @@ class MapboxTest(TestCase):
         setting = self.create_mapbox_setting()
         self.assertTrue(isinstance(setting, MapBoxDataset))
         self.assertEqual(setting.__str__(), setting.name)
+
+
+class AdoptionOpportunityTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+        self.opportunity = AdoptionOpportunityRecord(opportunity_id='0066f000015SSy5AAG',
+                                                     book_name='US History',
+                                                     account_uuid='f826f1b1-ead5-4594-82b3-df9a2753cb43',
+                                                     fall_student_number=123,
+                                                     spring_student_number=75,
+                                                     summer_student_number=None)
+        self.opportunity.save()
+
+    def test_query_opportunity_by_account_uuid(self):
+        response = self.client.get('/apps/cms/api/salesforce/renewal?account_uuid=f826f1b1-ead5-4594-82b3-df9a2753cb43')
+        self.assertIn(b'"students": "123"', response.content)
+
