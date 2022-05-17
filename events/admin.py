@@ -4,7 +4,6 @@ from import_export.admin import ExportActionModelAdmin
 from inline_actions.admin import InlineActionsModelAdminMixin
 
 from django.contrib import admin, messages
-from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 
 from .models import Event, Session, Registration
@@ -36,9 +35,9 @@ class RegistrationAdmin(InlineActionsModelAdminMixin, ExportActionModelAdmin):
         obj.save()
 
         if obj.checked_in:
-            messages.success(request, _("User marked as checked in."))
+            messages.success(request, "User marked as checked in.")
         else:
-            messages.warning(request, _("User marked as not checked in."))
+            messages.warning(request, "User marked as not checked in.")
 
     def get_toggle_check_in_label(self, obj):
         if not obj.checked_in:
