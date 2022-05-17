@@ -223,7 +223,6 @@ INSTALLED_APPS = [
     'storages',
     'django_ses',
     'import_export',
-    'django_extensions',
     'inline_actions',
     # custom
     'accounts',
@@ -268,6 +267,11 @@ INSTALLED_APPS = [
     'duplicatebooks',
     'versions',
 ]
+
+    # dev only apps - be sure to install requirements/dev.txt
+    INSTALLED_APPS += [
+        'django_extensions',
+        ]
 
 CRONJOBS = [
     ('0 4 * * *', 'django.core.management.call_command', ['sync_reviews']),
