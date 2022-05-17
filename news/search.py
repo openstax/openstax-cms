@@ -4,7 +4,7 @@ import re
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.http import JsonResponse
 
-from news.models import NewsArticle, news_article_search
+from news.models import NewsArticle, news_article_collection_search, news_article_subject_search
 
 
 def normalize_query(query_string, findterms=re.compile(r'"([^"]+)"|(\S+)').findall, normspace=re.compile(r'\s{2,}').sub):
@@ -75,7 +75,12 @@ def search(request):
         if ('subjects' in request.GET) and request.GET['subjects'].strip():
             subjects = request.GET['subjects'].split(',')
 
-        found_entries = news_article_search(collection_name, types, subjects)
+        found_entries = news_article_collection_search(collection_name, types, subjects)
+
+    elif ('subjects' in request.GET) and request.GET['subjects'].strip():
+        print('**Only subjects query')
+        subject = request.GET['subjects']
+        found_entries = news_article_subject_search(subject)
 
     search_results_json = []
     search_results_shown = set()
