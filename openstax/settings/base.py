@@ -245,12 +245,6 @@ INSTALLED_APPS = [
     'versions',
 ]
 
-if DEBUG == True:
-    # dev only apps - be sure to install requirements/dev.txt
-    INSTALLED_APPS += [
-        'django_extensions',
-        ]
-
 CRONJOBS = [
     ('0 2 * * *', 'django.core.management.call_command', ['delete_resource_downloads']),
     ('0 4 * * *', 'django.core.management.call_command', ['sync_reviews']),
@@ -269,7 +263,7 @@ CRONTAB_LOCK_JOBS = os.getenv('CRONTAB_LOCK_JOBS') != 'False'
 
 EMAIL_SUBJECT_PREFIX = '[openstax] '
 
-INTERNAL_IPS = ('127.0.0.1', '10.0.2.2')
+INTERNAL_IPS = ['127.0.0.1',]
 
 # django-compressor settings
 COMPRESS_PRECOMPILERS = (
