@@ -51,7 +51,7 @@ def login(request):
         auth_login(request, user, 'oxauth.backend.OpenStaxAccountsBackend')
         return redirect(reverse('wagtailadmin_explore_root'))
     else:
-        return HttpResponse('Unauthorized', status=401)
+        return HttpResponse('Unauthorized. Please check your login status on <a href="' + settings.ACCOUNTS_URL + '">OpenStax Accounts</a>', status=401)
 
 
 def logout(request):
