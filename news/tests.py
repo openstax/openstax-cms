@@ -166,7 +166,6 @@ class NewsTests(WagtailPageTests, TestCase):
 
     def test_search_subject_only(self):
         response = self.client.get('/apps/cms/api/search/',{'subjects': 'Math'})
-        print(str(response.content))
         self.assertContains(response, 'Math')
 
     def test_search_blog_collection(self):
