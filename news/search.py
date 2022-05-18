@@ -78,7 +78,6 @@ def search(request):
         found_entries = news_article_collection_search(collection_name, types, subjects)
 
     elif ('subjects' in request.GET) and request.GET['subjects'].strip():
-        print('**Only subjects query')
         subject = request.GET['subjects']
         found_entries = news_article_subject_search(subject)
 
