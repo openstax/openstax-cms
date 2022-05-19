@@ -21,6 +21,7 @@ def create_sso_profile(decrypted_cookie):
         defaults={'user': user}
     )
     openstax_user.save()
+    print(openstax_user)
 
     # Assign/remove admin permissions if they are an admin in the Accounts admin SSO cookie
     if decrypted_cookie['is_administrator'] == True:
@@ -39,8 +40,18 @@ def create_sso_profile(decrypted_cookie):
     return user
 
 def login(request):
+    print('logging in')
+    # to allow using django auth login from django-admin
+    if not request.user.is_anonymous:
+        print(request.user)
+        print('user logged in, redirect to admin')
+        return redirect(reverse('wagtailadmin_explore_root'))
+
     try:
+        print('attempting cookie decrypt')
+        print(request.COOKIES)
         decrypted_cookie = decrypt_cookie(request.COOKIES.get(settings.SSO_COOKIE_NAME)).payload_dict['sub']
+        print(decrypted_cookie)
         user = create_sso_profile(decrypted_cookie)
     except AttributeError:
         return HttpResponse('Unauthorized. Please check your login status on <a href="' + settings.ACCOUNTS_URL + '/login">OpenStax Accounts</a>', status=401)

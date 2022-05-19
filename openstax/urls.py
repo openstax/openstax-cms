@@ -23,7 +23,6 @@ admin.site.site_header = 'OpenStax'
 urlpatterns = [
     path('admin/login/', oxauth_views.login),
     path('admin/logout/', oxauth_views.logout),
-    path('django-admin/login/', oxauth_views.login),
     path('oxauth/', include('oxauth.urls')), # new auth package
     path('django-admin/', admin.site.urls),
     path('admin/', include(wagtailadmin_urls)),
