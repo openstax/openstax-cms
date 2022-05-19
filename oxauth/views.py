@@ -43,15 +43,14 @@ def login(request):
         decrypted_cookie = decrypt_cookie(request.COOKIES.get(settings.SSO_COOKIE_NAME)).payload_dict['sub']
         user = create_sso_profile(decrypted_cookie)
     except AttributeError:
-        next = request.GET.get("next", None)
-        return redirect(settings.ACCOUNTS_URL + '/login/?r={}'.format(urllib.parse.quote(next)))
+        return HttpResponse('Unauthorized. Please check your login status on <a href="' + settings.ACCOUNTS_URL + '/login">OpenStax Accounts</a>', status=401)
 
     # we only authenticate admins for the CMS, so everyone else gets a 401
     if user is not None and user.is_superuser:
         auth_login(request, user, 'oxauth.backend.OpenStaxAccountsBackend')
         return redirect(reverse('wagtailadmin_explore_root'))
     else:
-        return HttpResponse('Unauthorized. Please check your login status on <a href="' + settings.ACCOUNTS_URL + '">OpenStax Accounts</a>', status=401)
+        return HttpResponse('Unauthorized. Please check your login status on <a href="' + settings.ACCOUNTS_URL + '/login">OpenStax Accounts</a>', status=401)
 
 
 def logout(request):
