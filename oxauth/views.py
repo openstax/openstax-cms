@@ -21,7 +21,6 @@ def create_sso_profile(decrypted_cookie):
         defaults={'user': user}
     )
     openstax_user.save()
-    print(openstax_user)
 
     # Assign/remove admin permissions if they are an admin in the Accounts admin SSO cookie
     if decrypted_cookie['is_administrator'] == True:
@@ -40,28 +39,32 @@ def create_sso_profile(decrypted_cookie):
     return user
 
 def login(request):
-    print('logging in')
     # to allow using django auth login from django-admin
-    if not request.user.is_anonymous:
-        print(request.user)
-        print('user logged in, redirect to admin')
+    if request.user.is_authenticated:
         return redirect(reverse('wagtailadmin_explore_root'))
 
     try:
-        print('attempting cookie decrypt')
-        print(request.COOKIES)
         decrypted_cookie = decrypt_cookie(request.COOKIES.get(settings.SSO_COOKIE_NAME)).payload_dict['sub']
-        print(decrypted_cookie)
         user = create_sso_profile(decrypted_cookie)
     except AttributeError:
-        return HttpResponse('Unauthorized. Please check your login status on <a href="' + settings.ACCOUNTS_URL + '/login">OpenStax Accounts</a>', status=401)
+        return HttpResponse(
+            'Unauthorized. Please check your login/admin status on <a href="'
+            + settings.ACCOUNTS_URL
+            + '/login/?r=/admin">OpenStax Accounts</a>',
+            status=401
+        )
 
     # we only authenticate admins for the CMS, so everyone else gets a 401
     if user is not None and user.is_superuser:
         auth_login(request, user, 'oxauth.backend.OpenStaxAccountsBackend')
         return redirect(reverse('wagtailadmin_explore_root'))
     else:
-        return HttpResponse('Unauthorized. Please check your login status on <a href="' + settings.ACCOUNTS_URL + '/login">OpenStax Accounts</a>', status=401)
+        return HttpResponse(
+            'Unauthorized. Please check your login/admin status on <a href="'
+            + settings.ACCOUNTS_URL
+            + '/login/r=/admin">OpenStax Accounts</a>',
+            status=401
+        )
 
 
 def logout(request):
@@ -69,8 +72,10 @@ def logout(request):
 
     next = request.GET.get("next", None)
     if next:
-        url = settings.ACCOUNTS_URL + "/logout/?r={}".format(urllib.parse.quote(next))
+        url += "/logout/?r={}".format(urllib.parse.quote(next))
 
+    # logout of the django auth system
     auth_logout(request)
 
+    # logout and redirect (or return to accounts login page if no `r` param)
     return redirect(url)

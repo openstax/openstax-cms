@@ -220,6 +220,9 @@ INSTALLED_APPS = [
     'events',
     'webinars',
     'donations',
+    'wagtailimportexport', # TODO: replace with wagtail-transfer
+    'duplicatebooks',      # TODO: replace with wagtail-transfer
+    'versions',
     # wagtail
     'wagtail.core',
     'wagtail.admin',
@@ -236,10 +239,7 @@ INSTALLED_APPS = [
     'wagtail.sites',
     'wagtail.api.v2',
     'wagtail.contrib.settings',
-    'wagtail.contrib.modeladmin',
-    'wagtailimportexport',
-    'duplicatebooks',
-    'versions',
+    'wagtail.contrib.modeladmin'
 ]
 
 CRONJOBS = [
