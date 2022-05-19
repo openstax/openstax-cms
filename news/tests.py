@@ -164,6 +164,10 @@ class NewsTests(WagtailPageTests, TestCase):
         PressRelease.objects.get = MagicMock(return_value=MagicMock(pk=3))
         assertPathDoesNotRedirectToTrailingSlash(self, '/apps/cms/api/press/slug')
 
+    def test_search_subject_only(self):
+        response = self.client.get('/apps/cms/api/search/',{'subjects': 'Math'})
+        self.assertContains(response, 'Math')
+
     def test_search_blog_collection(self):
         response = self.client.get('/apps/cms/api/search/', {'collection': 'OpenStax Updates'})
         self.assertContains(response, 'OpenStax Updates')
@@ -173,7 +177,7 @@ class NewsTests(WagtailPageTests, TestCase):
         self.assertContains(response, 'OpenStax Updates')
         self.assertContains(response, 'Video')
 
-    def test_search_blog_subject(self):
+    def test_search_blogcollection_and_subject(self):
         response = self.client.get('/apps/cms/api/search/', {'collection': 'OpenStax Updates', 'subjects': 'Economics'})
         self.assertContains(response, 'OpenStax Updates')
         self.assertContains(response, 'Economics')
@@ -195,9 +199,10 @@ class NewsTests(WagtailPageTests, TestCase):
         self.assertContains(response, 'Video')
         self.assertContains(response, 'Case Study')
 
-    def test_search_two_blog_subjects(self):
+    def test_search_blog_collection_and_two_subjects(self):
         response = self.client.get('/apps/cms/api/search/', {'collection': 'OpenStax Updates', 'subjects': 'Economics,Math'})
         self.assertContains(response, 'Economics')
         self.assertContains(response, 'Math')
+
 
 
