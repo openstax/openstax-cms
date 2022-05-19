@@ -106,14 +106,12 @@ class BlogContentTypeBlock(StructBlock):
 
 
 class NewsIndex(Page):
-    intro = RichTextField(blank=True)
-    press_kit = models.ForeignKey(
-        'wagtaildocs.Document',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
+    interest_block = StreamField([
+            ('heading', blocks.CharBlock()),
+            ('description', blocks.TextBlock()),
+            ('button_text', blocks.CharBlock()),
+            ('button_href', blocks.URLBlock())
+         ], null=True)
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -123,8 +121,7 @@ class NewsIndex(Page):
     )
 
     content_panels = Page.content_panels + [
-        FieldPanel('intro', classname="full"),
-        DocumentChooserPanel('press_kit'),
+        StreamFieldPanel('interest_block'),
     ]
 
     promote_panels = [
@@ -135,8 +132,7 @@ class NewsIndex(Page):
     ]
 
     api_fields = [
-        APIField('intro'),
-        APIField('press_kit'),
+        APIField('interest_block'),
         APIField('slug'),
         APIField('seo_title'),
         APIField('search_description'),
@@ -161,7 +157,7 @@ class NewsArticleTag(TaggedItemBase):
     content_object = ParentalKey('news.NewsArticle', related_name='tagged_items')
 
 
-def news_article_search(collection, content_types=None, subjects=None):
+def news_article_collection_search(collection, content_types=None, subjects=None):
     if subjects is None:
         subjects = []
     if content_types is None:
@@ -203,6 +199,22 @@ def news_article_search(collection, content_types=None, subjects=None):
             articles_to_return = collection_articles
 
     return articles_to_return
+
+
+def news_article_subject_search(subject):
+    print('**Only subjects in search function')
+    print('**subject: ' + str(subject))
+
+    news_articles = NewsArticle.objects.all()
+    print('**number of articles: ' + str(len(news_articles)))
+    articles_to_return = []
+    for article in news_articles:
+        blog_subjects = article.blog_subjects
+        if subject in blog_subjects:
+            articles_to_return.append(article)
+
+    return articles_to_return
+
 
 
 class NewsArticle(Page):
