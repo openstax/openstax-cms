@@ -150,11 +150,8 @@ MIDDLEWARE = [
 
 AUTHENTICATION_BACKENDS = (
     'oxauth.backend.OpenStaxAccountsBackend',
+    'django.contrib.auth.backends.ModelBackend',
 )
-
-if DEBUG == True:
-    # allow model auth if debug is true (aka. local development)
-    AUTHENTICATION_BACKENDS += ('django.contrib.auth.backends.ModelBackend', )
 
 TEMPLATES = [
     {
