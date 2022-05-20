@@ -5,7 +5,6 @@ import urllib
 import ssl
 
 from django.conf import settings
-from django.contrib.postgres.fields import JSONField
 from django.db import models
 from django.forms import ValidationError
 from django.utils.html import format_html, mark_safe

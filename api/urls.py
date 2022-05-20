@@ -1,5 +1,4 @@
-from django.conf.urls import include, url
-from django.urls import path
+from django.urls import include, path
 from rest_framework import routers
 
 from .views import AdopterViewSet, ImageViewSet, DocumentViewSet, ProgressViewSet, customize_request, sticky_note, footer, schools, mapbox, flags, errata_fields, give_today, webview_settings
@@ -11,15 +10,15 @@ router.register(r'adopters', AdopterViewSet)
 router.register(r'progress', ProgressViewSet)
 
 urlpatterns = [
-    url(r'^', include(router.urls)),
-    url(r'^sticky/$', sticky_note, name='sticky_note'),
-    url(r'^footer/$', footer, name='footer'),
-    url(r'^schools/$', schools, name='schools'),
-    url(r'^mapbox/$', mapbox, name='mapbox'),
-    url(r'^flags/$', flags, name='flags'),
-    url(r'^errata-fields/', errata_fields, name='errata-fields'),
-    url(r'^give-today/$', give_today, name='give_today'),
-    url(r'^webview-settings/$', webview_settings, name='webview_settings'),
+    path('', include(router.urls)),
+    path('sticky/', sticky_note, name='sticky_note'),
+    path('footer/', footer, name='footer'),
+    path('schools/', schools, name='schools'),
+    path('mapbox/', mapbox, name='mapbox'),
+    path('flags/', flags, name='flags'),
+    path('errata-fields/', errata_fields, name='errata-fields'),
+    path('give-today/', give_today, name='give_today'),
+    path('webview-settings/', webview_settings, name='webview_settings'),
     path('customize/', customize_request),
 ]
 

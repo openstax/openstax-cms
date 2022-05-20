@@ -7,11 +7,11 @@ from wagtail.documents.models import Document
 
 from api.models import FeatureFlag
 
-from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
+from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash, mock_user_login
 
 class PagesAPI(TestCase, WagtailTestUtils):
     def setUp(self):
-        self.login()
+        pass
 
     def test_api_v2_pages_urls(self):
         #make sure we get a 200 with or without a slash, no 3xx
@@ -25,7 +25,7 @@ class PagesAPI(TestCase, WagtailTestUtils):
 class ImageAPI(TestCase, WagtailTestUtils):
 
     def setUp(self):
-        self.login()
+        pass
 
     def test_api_v2_no_images(self):
         response = self.client.get('/apps/cms/api/v2/images/')
@@ -60,7 +60,7 @@ class ImageAPI(TestCase, WagtailTestUtils):
 
 class DocumentAPI(TestCase, WagtailTestUtils):
     def setUp(self):
-        self.login()
+        pass
 
     def test_api_v2_single_document(self):
         response = self.client.get('/apps/cms/api/v2/documents/')
@@ -99,8 +99,7 @@ class DocumentAPI(TestCase, WagtailTestUtils):
 
 class APITests(TestCase, WagtailTestUtils):
     def setUp(self):
-        self.login()
-        self.client = Client()
+        mock_user_login()
 
     def test_footer_api(self):
         response = self.client.get('/apps/cms/api/footer/')
