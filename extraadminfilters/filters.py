@@ -1,4 +1,3 @@
-from django.utils.translation import ugettext_lazy as _
 from django.contrib.admin.filters import FieldListFilter
 from django.db.models.fields import IntegerField, AutoField
 from django.db.models.fields.related import OneToOneField, ForeignKey, ManyToOneRel
@@ -35,7 +34,7 @@ class MultipleSelectFieldListFilter(FieldListFilter):
             'selected': self.lookup_val is None,
             'query_string': cl.get_query_string({},
                 [self.lookup_kwarg]),
-            'display': _('All')
+            'display': 'All'
         }
         for pk_val, val in self.lookup_choices:
             selected = pk_val in self.values()
