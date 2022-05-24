@@ -44,6 +44,7 @@ def import_page(uploaded_archive, parent_page, overwrites = {}):
             # Open content.json and load them into contents dictionary.
             with zf.open('content.json') as mf:
                 contents = json.loads(mf.read().decode('utf-8-sig'))
+                error_msg = ''
 
                 # First create the base Page records; these contain no foreign keys, so this allows us to
                 # build a complete mapping from old IDs to new IDs before we go on to importing the
@@ -68,6 +69,7 @@ def import_page(uploaded_archive, parent_page, overwrites = {}):
 
                     # Skip the existing pages.
                     if i in existing_pages:
+                        error_msg = 'Duplicate slug'
                         continue
 
                     # Reassign document IDs.
@@ -109,6 +111,13 @@ def import_page(uploaded_archive, parent_page, overwrites = {}):
                     # Misc. overwrites
                     for (field, new_value) in overwrites.items():
                         page_record['content'][field] = new_value
+
+                    # set page.pk to null if pk already exists
+                    pages = Page.objects.all()
+                    for p in pages:
+                        if p.pk == page_record['content']['pk']:
+                            page_record['content']['pk'] = None
+                            break
 
                     # Create page instance.
                     page = Page.from_serializable_data(page_record['content'])
@@ -155,7 +164,7 @@ def import_page(uploaded_archive, parent_page, overwrites = {}):
                     update_page_references(specific_page, pages_by_original_id)
                     specific_page.save()
 
-            return (len(contents)-len(existing_pages), len(existing_pages), "")
+            return (len(contents)-len(existing_pages), len(existing_pages), error_msg)
 
         except LookupError as e:
             # If content.json does not exist, then return the error,
