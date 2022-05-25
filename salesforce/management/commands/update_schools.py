@@ -33,8 +33,7 @@ class Command(BaseCommand):
                       "Address_Longitude__c," \
                       "Testimonial__c," \
                       "Testimonial_Name__c, " \
-                      "Testimonial_Position__c, " \
-                      "Number_of_Adoptions__c FROM Account WHERE Number_of_Adoptions__c > 0"
+                      "Testimonial_Position__c FROM Account WHERE All_Time_Students2__c > 0"
             response = sf.query_all(query)
             sf_schools = response['records']
 
@@ -65,8 +64,7 @@ class Command(BaseCommand):
                       "Address_Longitude__c," \
                       "Testimonial__c," \
                       "Testimonial_Name__c, " \
-                      "Testimonial_Position__c, " \
-                      "Number_of_Adoptions__c FROM Account WHERE RecordTypeId = '012U0000000MdzNIAS' AND K_I_P__c = True"
+                      "Testimonial_Position__c, FROM Account WHERE RecordTypeId = '012U0000000MdzNIAS' AND K_I_P__c = True"
             district_response = sf.query_all(district_query)
             sf_districts = district_response['records']
             #remove duplicates

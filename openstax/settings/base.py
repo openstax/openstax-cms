@@ -32,7 +32,7 @@ WAGTAIL_APPEND_SLASH=True
 SILENCED_SYSTEM_CHECKS = ['urls.W002']
 
 ADMINS = (
-    ('Michael Harrison', 'mwharrison@rice.edu'),
+    ('Michael Volo', 'volo@rice.edu'),
 )
 
 # Amazon SES mail settings
