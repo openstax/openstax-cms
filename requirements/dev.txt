@@ -1,2 +1,7 @@
 -r base.txt
-selenium>=4.0.0
+django-extensions
+pipdeptree
+pydot
+black # code formatting
+django-debug-toolbar
+

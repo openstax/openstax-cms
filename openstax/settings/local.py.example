@@ -1,54 +1,95 @@
-DEBUG=True
+from .base import INSTALLED_APPS, MIDDLEWARE_CLASSES
+INSTALLED_APPS += (
+    'debug_toolbar',
+    'django_extensions',
+)
+MIDDLEWARE_CLASSES += (
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
+)
+# django-debug-toolbar settings
+DEBUG_TOOLBAR_CONFIG = {
+    'INTERCEPT_REDIRECTS': False,
+}
+# settings for django_extensions when graphing models
+GRAPH_MODELS = {
+  'all_applications': True,
+  'group_models': True,
+}
 
-# If local.py is present, any settings in it will override those in base.py and dev.py.
-# Use this for any settings that are specific to this one installation, such as developer API keys.
-# local.py should not be checked in to version control.
-
-EMBEDLY_KEY = 'get-one-from-http://embed.ly/'
-# GOOGLE_MAPS_KEY = 'get-one-from-https://code.google.com/apis/console/?noredirect'
-
-# It is strongly recommended that you define a SECRET_KEY here, where it won't be visible
-# in your version control system.
+# Set something here, we shouldn't check any secret keys into version control
 SECRET_KEY = 'enter-a-long-unguessable-string-here'
 
+# make sure debug is on and set host to your local dev env url
+DEBUG=True
+HOST_LINK = 'http://localhost:8000'
 
-# When developing Wagtail templates, we recommend django-debug-toolbar
-# for keeping track of page rendering times. To use it:
-#     pip install django-debug-toolbar==1.0.1
-# and uncomment the lines below.
+#################
+#    AWS        #
+#################
+AWS_ACCESS_KEY_ID = 'xxx'
+AWS_SECRET_ACCESS_KEY = 'xxx'
+AWS_S3_FORCE_HTTP_URL = True
 
-# from .base import INSTALLED_APPS, MIDDLEWARE_CLASSES
-# INSTALLED_APPS += (
-#     'debug_toolbar',
-# )
-# MIDDLEWARE_CLASSES += (
-#     'debug_toolbar.middleware.DebugToolbarMiddleware',
-# )
-# # django-debug-toolbar settings
-# DEBUG_TOOLBAR_CONFIG = {
-#     'INTERCEPT_REDIRECTS': False,
-# }
 
+#################
+#  Salesforce   #
+#################
 SALESFORCE = { 'username' : '',
                'password' : '', # password might need to be concatenated with security_token e.g. 'mypass1231'
                'security_token' : '',
                'sandbox': True }
 
+#################
+#  Accounts     #
+#################
+ACCOUNTS_URL = 'https://dev.openstax.org/accounts'
+SHARED_SECRET = 'xxx'
+SSO_COOKIE_NAME = 'oxa_dev'
+BYPASS_SSO_COOKIE_CHECK = False
+
+SOCIAL_AUTH_OPENSTAX_KEY = 'xxx'
+SOCIAL_AUTH_OPENSTAX_SECRET = 'xxx'
+AUTHORIZATION_URL = 'https://dev.openstax.org/accounts/oauth/authorize'
+ACCESS_TOKEN_URL = 'https://dev.openstax.org/oauth/token'
+USER_QUERY = 'https://dev.openstax.org/api/user?'
+USERS_QUERY = 'https://dev.openstax.org/api/users?'
+SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'https://dev.openstax.org'
+SOCIAL_AUTH_SANITIZE_REDIRECTS = False
+
+#################
+#  Eventbrite   #
+#################
+EVENTBRITE_API_KEY = 'xxx'
+EVENTBRITE_API_SECRET = 'xxx'
+EVENTBRITE_API_PRIVATE_TOKEN = 'xxx'
+EVENTBRITE_API_PUBLIC_TOKEN = 'xxx'
+
+#################
+#  GoToWebinar  #
+#################
+GOTOWEBINAR_CONSUMER_KEY='xxx'
+GOTOWEBINAR_CONSUMER_SECRET='xxx'
+
+#################
+#  Mapbox       #
+#################
+MAPBOX_TOKEN = '' # should be the sk from mapbox
+
+#################
+#  Media        #
+#################
 # locally, we want to use local storage for uploaded (media) files
 DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
-# URL that handles the media served from MEDIA_ROOT. Make sure to use a
-# trailing slash.
-# Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
-MEDIA_URL = '/media/'
+#################
+#  CORS         #
+#################
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_WHITELIST = (
+    'http://localhost:3000' # http://localhost:3000, not http://localhost:3000/
+)
 
 # As of Django 1.10, we need to be explicit with localhost being allowed
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0']
-
-MAPBOX_TOKEN = '' # should be the sk from mapbox
-
-# SSO Cookie name (oxa-dev for accounts dev; oxa for local accounts)
-SSO_COOKIE_NAME = 'oxa-dev'
-
-# If you want to bypass the SSO cookie checks, set this to True - as of this writing, that only affects the delete method on reviews
-BYPASS_SSO_COOKIE_CHECK = True

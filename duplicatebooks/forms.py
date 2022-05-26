@@ -1,6 +1,4 @@
 from django import forms
-from django.utils.translation import ugettext, ugettext_lazy as _
-
 from wagtail.admin.widgets import AdminPageChooser
 from wagtail.core.models import Page
 from wagtail.admin import widgets as wagtailadmin_widgets
@@ -16,8 +14,8 @@ class DuplicateForm(forms.Form):
 
         self.user = kwargs.pop('user', None)
         super().__init__(*args, **kwargs)
-        self.fields['new_title'] = forms.CharField(initial=self.page.title, label=_("New title"))
-        self.fields['new_slug'] = forms.SlugField(initial=self.page.slug, label=_("New slug"))
+        self.fields['new_title'] = forms.CharField(initial=self.page.title, label="New title")
+        self.fields['new_slug'] = forms.SlugField(initial=self.page.slug, label="New slug")
         self.fields['new_parent_page'] = forms.ModelChoiceField(
             initial=self.page.get_parent(),
             queryset=Page.objects.all(),
@@ -30,7 +28,7 @@ class DuplicateForm(forms.Form):
         subpage_count = pages_to_copy.count() - 1
         if subpage_count > 0:
             self.fields['copy_subpages'] = forms.BooleanField(
-                required=False, initial=True, label=_("Copy subpages"),
+                required=False, initial=True, label="Copy subpages",
                 help_text=ungettext(
                     "This will copy %(count)s subpage.",
                     "This will copy %(count)s subpages.",
@@ -43,10 +41,10 @@ class DuplicateForm(forms.Form):
             if pages_to_publish_count > 0:
                 # In the specific case that there are no subpages, customise the field label and help text
                 if subpage_count == 0:
-                    label = _("Publish copied page")
-                    help_text = _("This page is live. Would you like to publish its copy as well?")
+                    label = "Publish copied page"
+                    help_text = "This page is live. Would you like to publish its copy as well?"
                 else:
-                    label = _("Publish copies")
+                    label = "Publish copies"
                     help_text = ungettext(
                         "%(count)s of the pages being copied is live. Would you like to publish its copy?",
                         "%(count)s of the pages being copied are live. Would you like to publish their copies?",

@@ -1,4 +1,4 @@
-from django.conf.urls import include, url
+from django.urls import include, path
 from rest_framework import routers
 from . import views
 
@@ -10,8 +10,8 @@ router.register(r'savings', views.SavingsNumberViewSet, basename='SavingsNumber'
 router.register(r'download-tracking', views.ResourceDownloadViewSet, basename='DownloadTracking')
 
 urlpatterns = [
-    url(r'', include(router.urls)),
-    url(r'^adoption-status/', views.get_adoption_status),
-    url(r'^renewal/', views.AdoptionOpportunityRecordViewSet.as_view({'get': 'list'})),
-    url(r'reviews/', views.PartnerReviewViewSet.as_view({'get': 'list', 'post': 'post', 'patch': 'patch', 'delete': 'delete'})),
+    path('', include(router.urls)),
+    path('adoption-status/', views.get_adoption_status),
+    path('renewal/', views.AdoptionOpportunityRecordViewSet.as_view({'get': 'list'})),
+    path('reviews/', views.PartnerReviewViewSet.as_view({'get': 'list', 'post': 'post', 'patch': 'patch', 'delete': 'delete'})),
 ]
