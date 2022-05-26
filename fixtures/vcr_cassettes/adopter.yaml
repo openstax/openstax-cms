@@ -63,7 +63,7 @@ interactions:
       User-Agent: [python-requests/2.22.0]
       X-PrettyPrint: ['1']
     method: GET
-    uri: https://openstax--tutorqa.my.salesforce.com/services/data/v42.0/query/?q=SELECT+Id%2C+Name%2C+Description%2C+Website+FROM+Account+WHERE+Number_of_Adoptions__c+%3E+0+and+Id+%21%3D+%27001U0000011KxWa%27
+    uri: https://openstax--tutorqa.my.salesforce.com/services/data/v42.0/query/?q=SELECT+Id%2C+Name%2C+Description%2C+Website+FROM+Account+WHERE+All_Time_Students2__c+%3E+0+and+Id+%21%3D+%27001U0000011KxWa%27
   response:
     body:
       string: !!binary |
