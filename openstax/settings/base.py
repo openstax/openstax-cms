@@ -220,8 +220,7 @@ INSTALLED_APPS = [
     'events',
     'webinars',
     'donations',
-    'wagtailimportexport', # TODO: replace with wagtail-transfer
-    'duplicatebooks',      # TODO: replace with wagtail-transfer
+    'wagtailimportexport',
     'versions',
     # wagtail
     'wagtail.core',
