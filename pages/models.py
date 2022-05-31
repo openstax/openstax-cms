@@ -2931,7 +2931,7 @@ class Subject(Page):
                 books = {}
                 book_list = {}
                 for book in all_books:
-                    if book.subject_categories is not None and category.subject_category in book.subject_categories:
+                    if book.subject_categories is not None and category.subject_category in book.subject_categories and book.book_state != 'retired':
                         book_data = []
                         book_data.append({
                             'id': book.id,
