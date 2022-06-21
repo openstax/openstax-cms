@@ -127,6 +127,7 @@ class ContentTypeChooserBlock(SnippetChooserBlock):
 
 class SubjectBlock(StructBlock):
     subject = BlogCollectionChooserBlock(required=True, label='Blog Subject', target_model='snippets.Subject')
+    featured = BooleanBlock(label="Featured", required=False)
 
 
 class BlogCollectionBlock(StructBlock):
@@ -273,13 +274,13 @@ class NewsArticle(Page):
     gated_content = models.BooleanField(default=False)
     collections = StreamField(blocks.StreamBlock([
             ('collection', blocks.ListBlock(BlogCollectionBlock())
-             )]), null=True)
+             )]), null=True, blank=True)
     article_subjects = StreamField(blocks.StreamBlock([
             ('subject', blocks.ListBlock(SubjectBlock())
-             )]), null=True)
+             )]), null=True, blank=True)
     content_types = StreamField(blocks.StreamBlock([
         ('content_type', blocks.ListBlock(BlogContentTypeBlock())
-         )]), null=True)
+         )]), null=True, blank=True)
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
