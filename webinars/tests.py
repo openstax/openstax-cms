@@ -34,7 +34,11 @@ class WebinarTests(WagtailPageTests, TestCase):
                                    display_on_tutor_page=False,
                                    webinar_subjects=json.dumps(
                                        [
-                                           {"type": "subject", "value": [{"subject": math_id}]}
+
+                                           {"type": "subject", "value": [
+                                               {"type": "item", "value": {"subject": math_id, "featured": False},
+                                                "id": "fb443e9a-5487-4b5e-86f3-69017c0327b5"}]
+                                            }
                                        ]
                                    ),
                                    )
@@ -50,12 +54,16 @@ class WebinarTests(WagtailPageTests, TestCase):
                                display_on_tutor_page=False,
                                webinar_subjects=json.dumps(
                                    [
-                                       {"type": "subject", "value": [{"subject": economics_id}]}
+
+                                       {"type": "subject", "value": [
+                                           {"type": "item", "value": {"subject": economics_id, "featured": False},
+                                            "id": "fb443e9a-5487-4b5e-86f3-69017c0327b5"}]
+                                        }
                                    ]
                                ),
                                )
         self.webinar2.save()
 
     def test_search_subject_only(self):
-        response = self.client.get('/apps/cms/api/webinars/search/', {'subjects': 'Math'})
+        response = self.client.get('/apps/cms/api/webinars/?subject=Math')
         self.assertContains(response, 'Math')
