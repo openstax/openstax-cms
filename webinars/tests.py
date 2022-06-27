@@ -67,3 +67,8 @@ class WebinarTests(WagtailPageTests, TestCase):
     def test_search_subject_only(self):
         response = self.client.get('/apps/cms/api/webinars/?subject=Math')
         self.assertContains(response, 'Math')
+
+    def test_all_webinars(self):
+        response = self.client.get('/apps/cms/api/webinars/')
+        self.assertContains(response, 'Math')
+        self.assertContains(response, 'Economics')
