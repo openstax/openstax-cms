@@ -47,7 +47,7 @@ urlpatterns = [
     path('errata/', include('errata.urls')),
     path('apps/cms/api/errata/', include('errata.urls')),
     path('apps/cms/api/events/', include('events.urls')),
-    path('apps/cms/api/', include('webinars.urls')),
+    path('apps/cms/api/webinars/', include('webinars.urls')),
     path('apps/cms/api/donations/', include('donations.urls')),
 
     # route everything to /api/spike also...

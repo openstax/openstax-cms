@@ -1,9 +1,9 @@
-from .base import INSTALLED_APPS, MIDDLEWARE_CLASSES
+from .base import INSTALLED_APPS, MIDDLEWARE
 INSTALLED_APPS += (
     'debug_toolbar',
     'django_extensions',
 )
-MIDDLEWARE_CLASSES += (
+MIDDLEWARE += (
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
 # django-debug-toolbar settings
