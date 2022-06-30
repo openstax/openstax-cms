@@ -36,3 +36,8 @@ def register_strikethrough_feature(features):
 @hooks.register('register_settings_menu_item')
 def register_500_menu_item():
   return MenuItem('Generate 500', reverse('throw_error'), classnames='icon icon-warning', order=10000)
+
+
+@hooks.register('register_settings_menu_item')
+def register_clear_cache_menu_item():
+  return MenuItem('Clear Cloudfront Cache', reverse('clear_entire_cache'), classnames='icon icon-bin', order=11000)
