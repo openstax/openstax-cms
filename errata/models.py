@@ -273,7 +273,7 @@ class Errata(models.Model):
             self.archived = True
 
         # invalidate cloudfront cache so FE updates (remove when errata is no longer in CMS)
-        invalidate_cloudfront_caches()
+        invalidate_cloudfront_caches('errata')
 
         super(Errata, self).save(*args, **kwargs)
 

@@ -15,7 +15,7 @@ from news.search import search
 from news.feeds import RssBlogFeed, AtomBlogFeed
 
 from api import urls as api_urls
-from global_settings.views import throw_error
+from global_settings.views import throw_error, clear_entire_cache
 from wagtail.contrib.sitemaps.views import sitemap
 
 admin.site.site_header = 'OpenStax'
@@ -24,11 +24,11 @@ urlpatterns = [
     path('admin/login/', oxauth_views.login),
     path('admin/logout/', oxauth_views.logout),
     path('oxauth/', include('oxauth.urls')), # new auth package
-    path('django-admin/', admin.site.urls),
     path('admin/', include(wagtailadmin_urls)),
 
-
     path('django-admin/error/', throw_error, name='throw_error'),
+    path('django-admin/clear_cache/', clear_entire_cache, name='clear_entire_cache'),
+    path('django-admin/', admin.site.urls),
 
     path('documents/', include(wagtaildocs_urls)),
     path('images/', ServeView.as_view(action='redirect'), name='wagtailimages_serve'),
