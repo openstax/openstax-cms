@@ -28,8 +28,8 @@ urlpatterns = [
     path('admin/', include(wagtailadmin_urls)),
 
 
-    path('django-admin/error/', throw_error, name='throw_error'),
-    path('django-admin/clear_cache/', clear_entire_cache, name='clear_entire_cache'),
+    path('global_settings/error/', throw_error, name='throw_error'),
+    path('global_settings/clear_cache/', clear_entire_cache, name='clear_entire_cache'),
 
     path('documents/', include(wagtaildocs_urls)),
     path('images/', ServeView.as_view(action='redirect'), name='wagtailimages_serve'),
