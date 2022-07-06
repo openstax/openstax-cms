@@ -2536,8 +2536,3 @@ class Subject(Page):
 
     class Meta:
         verbose_name = "Subject Page"
-
-
-
-
-
