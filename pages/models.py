@@ -2179,12 +2179,13 @@ class TutorMarketing(Page):
         books = Book.objects.filter(tutor_marketing_book=True).order_by('path')
         book_data = []
         for book in books:
-            book_data.append({
-                'id': book.id,
-                'slug': 'books/{}'.format(book.slug),
-                'title': book.title,
-                'cover_url': book.cover_url,
-            })
+            if book.book_state is not 'Retired' and book.book_state is not 'Draft':
+                book_data.append({
+                    'id': book.id,
+                    'slug': 'books/{}'.format(book.slug),
+                    'title': book.title,
+                    'cover_url': book.cover_url,
+                })
         return book_data
 
     @property
