@@ -1,5 +1,6 @@
 import vcr
 import unittest
+from unittest import skip
 
 from django.conf import settings
 from django.core.management import call_command
