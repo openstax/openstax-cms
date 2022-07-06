@@ -2179,7 +2179,7 @@ class TutorMarketing(Page):
         books = Book.objects.filter(tutor_marketing_book=True).order_by('path')
         book_data = []
         for book in books:
-            if book.book_state is not 'Retired' and book.book_state is not 'Draft':
+            if book.book_state not in ['Retired', 'Draft']:
                 book_data.append({
                     'id': book.id,
                     'slug': 'books/{}'.format(book.slug),
