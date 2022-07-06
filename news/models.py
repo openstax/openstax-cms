@@ -47,7 +47,24 @@ class PullQuoteBlock(StructBlock):
 
 class ImageFormatChoiceBlock(FieldBlock):
     field = forms.ChoiceField(choices=(
-        ('left', 'Wrap left'), ('right', 'Wrap right'), ('mid', 'Mid width'), ('full', 'Full width'),
+        ('left 1/3', 'Wrap left 1/3'),
+        ('left 1/2', 'Wrap left 1/2'),
+        ('right 1/3', 'Wrap right 1/3'),
+        ('right 1/2', 'Wrap right 1/2'),
+        ('left', 'Wrap left'),
+        ('right', 'Wrap right'),
+        ('mid', 'Mid width'),
+        ('full', 'Full width'),
+    ))
+
+class CTAAlignmentChoiceBlock(FieldBlock):
+    field = forms.ChoiceField(choices=(
+        ('left 1/3', 'Wrap left 1/3'),
+        ('left 1/2', 'Wrap left 1/2'),
+        ('right 1/3', 'Wrap right 1/3'),
+        ('right 1/2', 'Wrap right 1/2'),
+        ('full', 'Full width'),
+        ('bottom', 'Bottom of post'),
     ))
 
 
@@ -57,14 +74,31 @@ class ImageBlock(StructBlock):
     alignment = ImageFormatChoiceBlock()
     alt_text = blocks.CharBlock(required=False)
 
+class BlogCTABlock(StructBlock):
+    heading = blocks.CharBlock()
+    description = blocks.TextBlock()
+    button_text = blocks.CharBlock()
+    button_href = blocks.URLBlock()
+    alignment = CTAAlignmentChoiceBlock()
+
+
+class BlogDocumentChooserBlock(DocumentChooserBlock):
+    def get_api_representation(self, value, context=None):
+        if value:
+            return {
+                'title': value.title,
+                'download_url': value.url,
+            }
+
 
 class BlogStreamBlock(StreamBlock):
     paragraph = RichTextBlock(icon="pilcrow")
     aligned_image = ImageBlock(label="Aligned image", icon="image")
     pullquote = PullQuoteBlock()
     aligned_html = RawHTMLBlock(icon="code", label='Raw HTML')
-    document = DocumentChooserBlock(icon="doc-full-inverse")
+    document = BlogDocumentChooserBlock(icon="doc-full-inverse")
     embed = EmbedBlock(icon="media", label="Embed Media URL")
+    blog_cta = BlogCTABlock(icon="form", label="Call to Action block")
 
 
 class BlogCollectionChooserBlock(SnippetChooserBlock):
@@ -93,6 +127,7 @@ class ContentTypeChooserBlock(SnippetChooserBlock):
 
 class SubjectBlock(StructBlock):
     subject = BlogCollectionChooserBlock(required=True, label='Blog Subject', target_model='snippets.Subject')
+    featured = BooleanBlock(label="Featured", required=False)
 
 
 class BlogCollectionBlock(StructBlock):
@@ -106,14 +141,12 @@ class BlogContentTypeBlock(StructBlock):
 
 
 class NewsIndex(Page):
-    intro = RichTextField(blank=True)
-    press_kit = models.ForeignKey(
-        'wagtaildocs.Document',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
+    interest_block = StreamField([
+            ('heading', blocks.CharBlock()),
+            ('description', blocks.TextBlock()),
+            ('button_text', blocks.CharBlock()),
+            ('button_href', blocks.URLBlock())
+         ], null=True)
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -123,8 +156,7 @@ class NewsIndex(Page):
     )
 
     content_panels = Page.content_panels + [
-        FieldPanel('intro', classname="full"),
-        DocumentChooserPanel('press_kit'),
+        StreamFieldPanel('interest_block'),
     ]
 
     promote_panels = [
@@ -135,8 +167,7 @@ class NewsIndex(Page):
     ]
 
     api_fields = [
-        APIField('intro'),
-        APIField('press_kit'),
+        APIField('interest_block'),
         APIField('slug'),
         APIField('seo_title'),
         APIField('search_description'),
@@ -161,7 +192,7 @@ class NewsArticleTag(TaggedItemBase):
     content_object = ParentalKey('news.NewsArticle', related_name='tagged_items')
 
 
-def news_article_search(collection, content_types=None, subjects=None):
+def news_article_collection_search(collection, content_types=None, subjects=None):
     if subjects is None:
         subjects = []
     if content_types is None:
@@ -205,6 +236,18 @@ def news_article_search(collection, content_types=None, subjects=None):
     return articles_to_return
 
 
+def news_article_subject_search(subject):
+    news_articles = NewsArticle.objects.all()
+    articles_to_return = []
+    for article in news_articles:
+        blog_subjects = article.blog_subjects
+        if subject in blog_subjects:
+            articles_to_return.append(article)
+
+    return articles_to_return
+
+
+
 class NewsArticle(Page):
     date = models.DateField("Post date")
     heading = models.CharField(max_length=250, help_text="Heading displayed on website")
@@ -219,21 +262,25 @@ class NewsArticle(Page):
         help_text="Image should be 1200 x 600"
     )
     featured_image_alt_text = models.CharField(max_length=250, blank=True, null=True)
+    featured_video = StreamField([
+        ('video', blocks.RawHTMLBlock()),
+        ], null=True, blank=True)
     def get_article_image(self):
         return build_image_url(self.featured_image)
     article_image = property(get_article_image)
     tags = ClusterTaggableManager(through=NewsArticleTag, blank=True)
     body = StreamField(BlogStreamBlock())
     pin_to_top = models.BooleanField(default=False)
+    gated_content = models.BooleanField(default=False)
     collections = StreamField(blocks.StreamBlock([
             ('collection', blocks.ListBlock(BlogCollectionBlock())
-             )]), null=True)
+             )]), null=True, blank=True)
     article_subjects = StreamField(blocks.StreamBlock([
             ('subject', blocks.ListBlock(SubjectBlock())
-             )]), null=True)
+             )]), null=True, blank=True)
     content_types = StreamField(blocks.StreamBlock([
         ('content_type', blocks.ListBlock(BlogContentTypeBlock())
-         )]), null=True)
+         )]), null=True, blank=True)
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -250,11 +297,14 @@ class NewsArticle(Page):
                 paragraphs.append(str(block.value))
 
         first_paragraph_parsed = []
-        soup = BeautifulSoup(paragraphs[0], "html.parser")
-        for tag in soup.findAll('p'):
-            first_paragraph_parsed.append(tag)
+        if len(paragraphs) > 0:
+            soup = BeautifulSoup(paragraphs[0], "html.parser")
+            for tag in soup.findAll('p'):
+                first_paragraph_parsed.append(tag)
 
-        return str(first_paragraph_parsed[0])
+            return str(first_paragraph_parsed[0])
+        else:
+            return ''
 
     @property
     def blog_content_types(self):
@@ -298,10 +348,12 @@ class NewsArticle(Page):
         FieldPanel('subheading'),
         FieldPanel('author'),
         ImageChooserPanel('featured_image'),
+        StreamFieldPanel('featured_video'),
         FieldPanel('featured_image_alt_text'),
         FieldPanel('tags'),
         StreamFieldPanel('body'),
         FieldPanel('pin_to_top'),
+        FieldPanel('gated_content'),
         StreamFieldPanel('collections'),
         StreamFieldPanel('article_subjects'),
         StreamFieldPanel('content_types'),
@@ -323,10 +375,12 @@ class NewsArticle(Page):
         APIField('article_image'),
         APIField('featured_image_small', serializer=ImageRenditionField('width-420', source='featured_image')),
         APIField('featured_image_alt_text'),
+        APIField('featured_video'),
         APIField('tags'),
         APIField('body_blurb'),
         APIField('body'),
         APIField('pin_to_top'),
+        APIField('gated_content'),
         APIField('slug'),
         APIField('seo_title'),
         APIField('search_description'),

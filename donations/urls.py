@@ -1,4 +1,4 @@
-from django.conf.urls import include, url
+from django.urls import include, path
 from . import views
 from rest_framework import routers
 
@@ -7,6 +7,6 @@ router.register(r'donation-popup', views.DonationPopupViewSet, basename='Donatio
 router.register(r'fundraiser', views.FundraiserViewSet, basename='Fundraiser')
 
 urlpatterns = [
-    url(r'', include(router.urls)),
-    url(r'thankyounote', views.ThankYouNoteViewSet.as_view({'post': 'post'}))
+    path('', include(router.urls)),
+    path('thankyounote/', views.ThankYouNoteViewSet.as_view({'post': 'post'}))
 ]

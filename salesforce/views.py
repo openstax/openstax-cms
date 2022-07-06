@@ -74,7 +74,7 @@ class PartnerReviewViewSet(viewsets.ViewSet):
             serializer = PartnerReviewSerializer(data=request.data)
             if serializer.is_valid():
                 serializer.save()
-                invalidate_cloudfront_caches()
+                invalidate_cloudfront_caches('salesforce/partners/')
                 return JsonResponse(status=201, data=serializer.data)
         return JsonResponse(status=400, data="wrong parameters")
 
@@ -88,7 +88,7 @@ class PartnerReviewViewSet(viewsets.ViewSet):
             # set review status to Edited so it will reenter the review queue
             review_object.status = 'Edited'
             review_object.save()
-            invalidate_cloudfront_caches()
+            invalidate_cloudfront_caches('salesforce/partners/')
             return JsonResponse(status=201, data=serializer.data)
         return JsonResponse(status=400, data="wrong parameters")
 
@@ -100,7 +100,7 @@ class PartnerReviewViewSet(viewsets.ViewSet):
             if user_uuid == str(review_object.submitted_by_account_uuid) or user_uuid == -1: # -1 is returned by get_logged_in_user_uuid when bypass_sso_cookie_check = True
                 review_object.status = 'Deleted'
                 review_object.save()
-                invalidate_cloudfront_caches()
+                invalidate_cloudfront_caches('salesforce/partners/')
             serializer = PartnerReviewSerializer(review_object)
             return Response(serializer.data)
         else:

@@ -84,7 +84,6 @@ class Command(BaseCommand):
                     sf.Partner_Review__c.delete(review.review_salesforce_id)
                 review.delete()
 
-
-            invalidate_cloudfront_caches()
+            invalidate_cloudfront_caches('salesforce/reviews')
             response = self.style.SUCCESS("Successfully updated partner reviews")
         self.stdout.write(response)
