@@ -149,29 +149,8 @@ MIDDLEWARE = [
 ]
 
 AUTHENTICATION_BACKENDS = (
-    'oxauth.backend.OpenStax',
+    'oxauth.backend.OpenStaxAccountsBackend',
     'django.contrib.auth.backends.ModelBackend',
-)
-
-SOCIAL_AUTH_PIPELINE = (
-    'social_core.pipeline.social_auth.social_details',
-    'social_core.pipeline.social_auth.social_uid',
-    #'social_core.pipeline.social_auth.social_user',
-    'oxauth.pipelines.social_user',
-    'social_core.pipeline.user.create_user',
-    'oxauth.pipelines.save_profile',
-    'oxauth.pipelines.update_email',
-    'social_core.pipeline.social_auth.associate_user',
-    'social_core.pipeline.social_auth.load_extra_data',
-    'social_core.pipeline.user.user_details',
-)
-
-IMPORT_USER_PIPELINE = (
-    'social_django.pipeline.social_auth.social_user',
-    'social_django.pipeline.user.create_user',
-    'oxauth.pipelines.save_profile',
-    'social_django.pipeline.social_auth.associate_user',
-    'social_django.pipeline.user.user_details',
 )
 
 TEMPLATES = [
@@ -188,8 +167,6 @@ TEMPLATES = [
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.request',
-                'social_django.context_processors.backends',
-                'social_django.context_processors.login_redirect',
             ],
         },
     },
@@ -223,11 +200,10 @@ INSTALLED_APPS = [
     'storages',
     'django_ses',
     'import_export',
-    'django_extensions',
-    'inline_actions',
+    'rangefilter',
+    'reversion',
     # custom
     'accounts',
-    'admin_templates',  # this overrides the admin templates
     'api',
     'pages',
     'books',
@@ -239,13 +215,13 @@ INSTALLED_APPS = [
     'global_settings',
     'errata',
     'extraadminfilters',
-    'rangefilter',
-    'reversion',
     'redirects',
     'oxauth',
     'events',
     'webinars',
     'donations',
+    'wagtailimportexport',
+    'versions',
     # wagtail
     'wagtail.core',
     'wagtail.admin',
@@ -260,13 +236,9 @@ INSTALLED_APPS = [
     'wagtail.locales',
     'wagtail.contrib.forms',
     'wagtail.sites',
-    #'wagtail.contrib.wagtailapi',
     'wagtail.api.v2',
     'wagtail.contrib.settings',
-    'wagtail.contrib.modeladmin',
-    'wagtailimportexport',
-    'duplicatebooks',
-    'versions',
+    'wagtail.contrib.modeladmin'
 ]
 
 CRONJOBS = [
@@ -287,7 +259,7 @@ CRONTAB_LOCK_JOBS = os.getenv('CRONTAB_LOCK_JOBS') != 'False'
 
 EMAIL_SUBJECT_PREFIX = '[openstax] '
 
-INTERNAL_IPS = ('127.0.0.1', '10.0.2.2')
+INTERNAL_IPS = ['127.0.0.1',]
 
 # django-compressor settings
 COMPRESS_PRECOMPILERS = (
@@ -376,17 +348,6 @@ if BASE_URL is None:
             APPLICATION_DOMAIN = f'{ENVIRONMENT}.openstax.org'
     BASE_URL = f'https://{APPLICATION_DOMAIN}'
 
-# WAGTAIL SETTINGS
-WAGTAIL_SITE_NAME = 'openstax'
-WAGTAILAPI_BASE_URL = os.getenv('WAGTAILAPI_BASE_URL', BASE_URL)
-# Wagtail API number of results
-WAGTAILAPI_LIMIT_MAX = None
-WAGTAILUSERS_PASSWORD_ENABLED = False
-WAGTAIL_USAGE_COUNT_ENABLED = False
-WAGTAIL_USER_CUSTOM_FIELDS = ['is_staff', ]
-
-NEW_USER_REDIRECT = os.getenv('NEW_USER_REDIRECT', f'{BASE_URL}/finish-profile')
-
 ALLOWED_HOSTS = json.loads(os.getenv('ALLOWED_HOSTS', '[]'))
 
 CNX_URL = os.getenv('CNX_URL')
@@ -396,8 +357,6 @@ CNX_ARCHIVE_URL = 'https://archive.cnx.org'
 
 # Server host (used to populate links in the email)
 HOST_LINK = 'https://openstax.org'
-
-WAGTAIL_GRAVATAR_PROVIDER_URL = '//www.gravatar.com/avatar'
 
 MAPBOX_TOKEN = os.getenv('MAPBOX_TOKEN', '') # should be the sk from mapbox
 
@@ -421,6 +380,23 @@ ENCRYPTION_METHOD = os.getenv('SSO_ENCRYPTION_METHOD', 'A256GCM')
 SIGNATURE_ALGORITHM = os.getenv('SSO_SIGNATURE_ALGORITHM', 'RS256')
 
 HOST_LINK = os.getenv('HOST_LINK', BASE_URL)
+
+# WAGTAIL SETTINGS
+WAGTAIL_SITE_NAME = 'openstax'
+WAGTAILAPI_BASE_URL = os.getenv('WAGTAILAPI_BASE_URL', BASE_URL)
+WAGTAIL_FRONTEND_LOGIN_URL = 'oxauth/login'
+# Wagtail API number of results
+WAGTAILAPI_LIMIT_MAX = None
+WAGTAILUSERS_PASSWORD_ENABLED = False
+WAGTAIL_USAGE_COUNT_ENABLED = False
+WAGTAIL_USER_CUSTOM_FIELDS = ['is_staff']
+WAGTAIL_GRAVATAR_PROVIDER_URL = '//www.gravatar.com/avatar'
+
+WAGTAILSEARCH_BACKENDS = {
+    'default': {
+        'BACKEND': 'wagtail.search.backends.database',
+    }
+}
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
 

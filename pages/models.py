@@ -417,7 +417,6 @@ class HomePage(Page):
     # if a new page type is created, it needs to be added here to show up in
     # the admin
     subpage_types = [
-        'pages.HigherEducation',
         'pages.ContactUs',
         'pages.AboutUsPage',
         'pages.TeamPage',
@@ -426,15 +425,10 @@ class HomePage(Page):
         'pages.MapPage',
         'pages.Give',
         'pages.TermsOfService',
-        'pages.AP',
         'pages.FAQ',
-        'pages.Support',
         'pages.GiveForm',
         'pages.Accessibility',
         'pages.Licensing',
-        'pages.CompCopy',
-        'pages.AdoptForm',
-        'pages.InterestForm',
         'pages.Technology',
         'pages.ErrataList',
         'pages.PrivacyPolicy',
@@ -443,7 +437,6 @@ class HomePage(Page):
         'pages.Careers',
         'pages.Impact',
         'pages.InstitutionalPartnership',
-        'pages.HeroJourneyPage',
         'pages.InstitutionalPartnerProgramPage',
         'pages.CreatorFestPage',
         'pages.PartnersPage',
@@ -451,7 +444,6 @@ class HomePage(Page):
         'pages.MathQuizPage',
         'pages.LLPHPage',
         'pages.TutorMarketing',
-        'pages.TutorLanding',
         'pages.Subjects',
         'books.BookIndex',
         'news.NewsIndex',
@@ -479,109 +471,6 @@ class HomePage(Page):
 
     class Meta:
         verbose_name = "homepage"
-
-
-class HigherEducation(Page):
-    intro_heading = models.CharField(max_length=255)
-    intro_description = models.TextField()
-
-    row_1 = StreamField([
-        ('column', ColumnBlock()),
-    ])
-
-    get_started_heading = models.CharField(max_length=255)
-
-    get_started_step_1_heading = models.CharField(max_length=255)
-    get_started_step_1_description = models.TextField()
-    get_started_step_1_cta = models.CharField(max_length=255)
-
-    get_started_step_2_heading = models.CharField(max_length=255)
-    get_started_step_2_description = models.TextField()
-    get_started_step_2_logged_in_cta = models.CharField(max_length=255)
-    get_started_step_2_logged_out_cta = models.CharField(max_length=255)
-
-    get_started_step_3_heading = models.CharField(max_length=255)
-    get_started_step_3_description = models.TextField()
-    get_started_step_3_cta = models.CharField(max_length=255)
-
-    adopt_heading = models.CharField(max_length=255)
-    adopt_description = models.TextField()
-    adopt_cta = models.CharField(max_length=255)
-
-    row_2 = StreamField([
-        ('column', ColumnBlock()),
-    ])
-    row_3 = StreamField([
-        ('column', ColumnBlock()),
-    ])
-    promote_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-
-    api_fields = [
-        APIField('intro_heading'),
-        APIField('intro_description'),
-        APIField('row_1'),
-        APIField('get_started_heading'),
-        APIField('get_started_step_1_heading'),
-        APIField('get_started_step_1_description'),
-        APIField('get_started_step_1_cta'),
-        APIField('get_started_step_2_heading'),
-        APIField('get_started_step_2_description'),
-        APIField('get_started_step_2_logged_in_cta'),
-        APIField('get_started_step_2_logged_out_cta'),
-        APIField('get_started_step_3_heading'),
-        APIField('get_started_step_3_description'),
-        APIField('get_started_step_3_cta'),
-        APIField('adopt_heading'),
-        APIField('adopt_description'),
-        APIField('adopt_cta'),
-        APIField('row_2'),
-        APIField('row_3'),
-        APIField('slug'),
-        APIField('seo_title'),
-        APIField('search_description'),
-        APIField('promote_image')
-    ]
-
-    content_panels = [
-        FieldPanel('title', classname="full title"),
-        FieldPanel('intro_heading'),
-        FieldPanel('intro_description'),
-        StreamFieldPanel('row_1'),
-        FieldPanel('get_started_heading'),
-        FieldPanel('get_started_step_1_heading'),
-        FieldPanel('get_started_step_1_description'),
-        FieldPanel('get_started_step_1_cta'),
-        FieldPanel('get_started_step_2_heading'),
-        FieldPanel('get_started_step_2_description'),
-        FieldPanel('get_started_step_2_logged_in_cta'),
-        FieldPanel('get_started_step_2_logged_out_cta'),
-        FieldPanel('get_started_step_3_heading'),
-        FieldPanel('get_started_step_3_description'),
-        FieldPanel('get_started_step_3_cta'),
-        FieldPanel('adopt_heading'),
-        FieldPanel('adopt_description'),
-        FieldPanel('adopt_cta'),
-        StreamFieldPanel('row_2'),
-        StreamFieldPanel('row_3'),
-    ]
-
-    promote_panels = [
-        FieldPanel('slug'),
-        FieldPanel('seo_title'),
-        FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
-    ]
-
-    template = 'page.html'
-
-    parent_page_types = ['pages.HomePage']
-    max_count = 1
 
 
 class ContactUs(Page):
@@ -990,54 +879,6 @@ class TermsOfService(Page):
     max_count = 1
 
 
-class AP(Page):
-    intro_heading = models.CharField(max_length=255)
-    intro_description = models.TextField()
-
-    row_1 = StreamField([
-        ('column', ColumnBlock()),
-    ])
-
-    row_2 = StreamField([
-        ('column', ColumnBlock()),
-    ])
-    promote_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-
-    api_fields = [
-        APIField('intro_heading'),
-        APIField('intro_description'),
-        APIField('row_1'),
-        APIField('row_2'),
-        APIField('promote_image')
-    ]
-
-    content_panels = [
-        FieldPanel('title', classname="full title"),
-        FieldPanel('intro_heading'),
-        FieldPanel('intro_description'),
-        StreamFieldPanel('row_1'),
-        StreamFieldPanel('row_2'),
-    ]
-
-    promote_panels = [
-        FieldPanel('slug'),
-        FieldPanel('seo_title'),
-        FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
-    ]
-
-    template = 'page.html'
-
-    parent_page_types = ['pages.HomePage']
-    max_count = 1
-
-
 class FAQ(Page):
     intro_heading = models.CharField(max_length=255)
     intro_description = RichTextField()
@@ -1067,50 +908,6 @@ class FAQ(Page):
         FieldPanel('intro_heading'),
         FieldPanel('intro_description'),
         StreamFieldPanel('questions'),
-    ]
-
-    promote_panels = [
-        FieldPanel('slug'),
-        FieldPanel('seo_title'),
-        FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
-    ]
-
-    template = 'page.html'
-
-    parent_page_types = ['pages.HomePage']
-    max_count = 1
-
-
-class Support(Page):
-    intro_heading = models.CharField(max_length=255)
-    intro_description = RichTextField()
-
-    row_1 = StreamField([
-        ('column', ColumnBlock()),
-    ])
-    promote_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-
-    api_fields = [
-        APIField('intro_heading'),
-        APIField('intro_description'),
-        APIField('row_1'),
-        APIField('seo_title'),
-        APIField('search_description'),
-        APIField('promote_image')
-    ]
-
-    content_panels = [
-        FieldPanel('title', classname="full title"),
-        FieldPanel('intro_heading'),
-        FieldPanel('intro_description'),
-        StreamFieldPanel('row_1'),
     ]
 
     promote_panels = [
@@ -1228,121 +1025,6 @@ class Licensing(Page):
         FieldPanel('title', classname='full title'),
         FieldPanel('intro_heading'),
         FieldPanel('licensing_content'),
-    ]
-
-    promote_panels = [
-        FieldPanel('slug'),
-        FieldPanel('seo_title'),
-        FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
-    ]
-
-    template = 'page.html'
-
-    parent_page_types = ['pages.HomePage']
-    max_count = 1
-
-
-class CompCopy(Page):
-    intro_heading = models.CharField(max_length=255)
-    intro_description = RichTextField()
-    promote_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-
-    api_fields = [
-        APIField('intro_heading'),
-        APIField('intro_description'),
-        APIField('seo_title'),
-        APIField('search_description'),
-        APIField('promote_image')
-    ]
-
-    content_panels = [
-        FieldPanel('title', classname="full title"),
-        FieldPanel('intro_heading'),
-        FieldPanel('intro_description'),
-    ]
-
-    promote_panels = [
-        FieldPanel('slug'),
-        FieldPanel('seo_title'),
-        FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
-    ]
-
-    template = 'page.html'
-
-    parent_page_types = ['pages.HomePage']
-    max_count = 1
-
-
-class AdoptForm(Page):
-    intro_heading = models.CharField(max_length=255)
-    intro_description = RichTextField()
-    promote_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-
-    api_fields = [
-        APIField('intro_heading'),
-        APIField('intro_description'),
-        APIField('seo_title'),
-        APIField('search_description'),
-        APIField('promote_image')
-
-    ]
-
-    content_panels = [
-        FieldPanel('title', classname="full title"),
-        FieldPanel('intro_heading'),
-        FieldPanel('intro_description'),
-    ]
-
-    promote_panels = [
-        FieldPanel('slug'),
-        FieldPanel('seo_title'),
-        FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
-    ]
-
-    template = 'page.html'
-
-    parent_page_types = ['pages.HomePage']
-    max_count = 1
-
-
-class InterestForm(Page):
-    intro_heading = models.CharField(max_length=255)
-    intro_description = RichTextField()
-    promote_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-
-    api_fields = [
-        APIField('intro_heading'),
-        APIField('intro_description'),
-        APIField('seo_title'),
-        APIField('search_description'),
-        APIField('promote_image')
-    ]
-
-    content_panels = [
-        FieldPanel('title', classname="full title"),
-        FieldPanel('intro_heading'),
-        FieldPanel('intro_description'),
     ]
 
     promote_panels = [
@@ -1936,73 +1618,6 @@ class InstitutionalPartnership(Page):
     parent_page_type = ['pages.HomePage']
     template = 'page.html'
     max_count = 1
-
-
-class HeroJourneyPage(Page):
-    books = StreamField([
-        ('heading', blocks.CharBlock()),
-        ('subheading', blocks.CharBlock()),
-        ('description', blocks.TextBlock()),
-        ('book_heading', blocks.CharBlock()),
-        ('book_description', blocks.TextBlock()),
-        ('books_link', blocks.CharBlock()),
-        ('books_link_text', blocks.CharBlock()),
-        ('skip_html', blocks.RichTextBlock())
-    ], null=True)
-    quiz = StreamField([
-        ('heading', blocks.CharBlock()),
-        ('skip_link', blocks.CharBlock()),
-        ('skip_link_text', blocks.CharBlock()),
-        ('complete_message', blocks.CharBlock()),
-        ('questions', blocks.ListBlock(blocks.StructBlock([
-            ('question', blocks.CharBlock()),
-            ('answers', blocks.ListBlock(blocks.StructBlock([
-                ('text', blocks.CharBlock()),
-                ('correct', blocks.BooleanBlock(required=False))
-            ])
-            ))
-        ])))
-    ], null=True)
-    quiz_complete = StreamField([
-        ('heading', blocks.CharBlock()),
-        ('description', blocks.TextBlock()),
-        ('instructions', blocks.TextBlock()),
-        ('link_url', blocks.CharBlock()),
-        ('link_text', blocks.CharBlock())
-    ], null=True)
-    share = StreamField([
-        ('heading', blocks.CharBlock()),
-        ('description', blocks.TextBlock()),
-        ('instructions', blocks.TextBlock()),
-    ], null=True)
-    thanks = StreamField([
-        ('heading', blocks.TextBlock()),
-        ('description', blocks.TextBlock())
-    ], null=True)
-
-
-    content_panels = [
-        FieldPanel('title', classname='full title', help_text="Internal name for page."),
-        StreamFieldPanel('books'),
-        StreamFieldPanel('quiz'),
-        StreamFieldPanel('quiz_complete'),
-        StreamFieldPanel('share'),
-        StreamFieldPanel('thanks'),
-    ]
-
-    api_fields = [
-        APIField('title'),
-        APIField('books'),
-        APIField('quiz'),
-        APIField('quiz_complete'),
-        APIField('share'),
-        APIField('thanks'),
-        APIField('slug'),
-        APIField('seo_title'),
-        APIField('search_description'),
-    ]
-
-    parent_page_type = ['pages.HomePage']
 
 
 class InstitutionalPartnerProgramPage(Page):
@@ -2660,101 +2275,6 @@ class TutorMarketing(Page):
     max_count = 1
 
 
-class TutorLanding(Page):
-    # header section
-    header = models.CharField(max_length=255)
-    description = models.TextField()
-    available_books_header = models.CharField(max_length=255)
-    case_study_cta = models.CharField(max_length=255)
-    case_study_file = models.ForeignKey(
-        'wagtaildocs.Document',
-        null=True, blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-
-    def get_case_study_file(self):
-        return build_document_url(self.case_study_file.url)
-    case_study_file_url = property(get_case_study_file)
-
-    #features
-    features_header = models.CharField(max_length=255)
-    features_cards = StreamField([
-        ('cards', CardImageBlock()),
-    ])
-
-    #other resource
-    other_resources_text = models.TextField()
-    other_resources_cta = models.CharField(max_length=255)
-    other_resources_link = models.URLField()
-
-    promote_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-
-    @property
-    def tutor_books(self):
-        books = Book.objects.filter(tutor_marketing_book=True).order_by('path')
-        book_data = []
-        for book in books:
-            book_data.append({
-                'id': book.id,
-                'slug': 'books/{}'.format(book.slug),
-                'title': book.title,
-                'cover_url': book.cover_url,
-            })
-        return book_data
-
-    api_fields = [
-        APIField('title'),
-        APIField('header'),
-        APIField('description'),
-        APIField('available_books_header'),
-        APIField('tutor_books'),
-        APIField('case_study_cta'),
-        APIField('case_study_file_url'),
-        APIField('features_header'),
-        APIField('features_cards'),
-        APIField('other_resources_text'),
-        APIField('other_resources_cta'),
-        APIField('other_resources_link'),
-        APIField('slug'),
-        APIField('seo_title'),
-        APIField('search_description'),
-        APIField('promote_image')
-    ]
-
-    content_panels = [
-        FieldPanel('title', classname="full title"),
-        FieldPanel('header'),
-        FieldPanel('description'),
-        FieldPanel('available_books_header'),
-        FieldPanel('case_study_cta'),
-        DocumentChooserPanel('case_study_file'),
-        FieldPanel('features_header'),
-        StreamFieldPanel('features_cards'),
-        FieldPanel('other_resources_text'),
-        FieldPanel('other_resources_cta'),
-        FieldPanel('other_resources_link'),
-    ]
-
-    promote_panels = [
-        FieldPanel('slug'),
-        FieldPanel('seo_title'),
-        FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
-    ]
-
-    template = 'page.html'
-
-    parent_page_types = ['pages.HomePage']
-    max_count = 1
-
-
 class Subjects(Page):
     heading = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
@@ -2926,8 +2446,8 @@ class Subject(Page):
             categories = {}
 
             subject_categories['icon'] = subject.subject_icon
-            all_books = Book.objects.all()
-            for category in snippets.SubjectCategory.objects.filter(subject_id=subject.id):
+            all_books = Book.objects.all().order_by('title')
+            for category in snippets.SubjectCategory.objects.filter(subject_id=subject.id).order_by('subject_category'):
                 books = {}
                 book_list = {}
                 for book in all_books:

@@ -19,16 +19,7 @@ from rest_framework.test import APIRequestFactory
 
 from wagtail.tests.utils import WagtailPageTests
 
-
-class AdopterTest(TestCase):
-
-    def create_adopter(self, sales_id="123", name="test", description="test", website="https://rice.edu"):
-        return Adopter.objects.create(sales_id=sales_id, name=name, description=description, website=website)
-
-    def test_adopter_creation(self):
-        adopter = self.create_adopter()
-        self.assertTrue(isinstance(adopter, Adopter))
-        self.assertEqual(adopter.__str__(), adopter.name)
+from shared.test_utilities import mock_user_login
 
 
 class PartnerTest(APITestCase, TestCase):
@@ -108,8 +99,7 @@ class PartnerTest(APITestCase, TestCase):
 class SalesforceTest(LiveServerTestCase, WagtailPageTests):
 
     def setUp(self):
-        super(WagtailPageTests, self).setUp()
-        super(LiveServerTestCase, self).setUp()
+        mock_user_login()
 
     def create_salesforce_setting(self, username="test", password="test", security_token="test",
                                                      sandbox=True):
@@ -134,13 +124,6 @@ class SalesforceTest(LiveServerTestCase, WagtailPageTests):
             self.assertIsNot(
                 contact_info, None)
 
-    @skip("Skipping adopter test, can't record cassette")
-    def test_update_adopters_command(self):
-        out = StringIO()
-        with vcr.use_cassette('fixtures/vcr_cassettes/adopter.yaml'):
-            call_command('update_adopters', stdout=out)
-        self.assertIn("Success", out.getvalue())
-
     def test_salesforce_forms_no_debug(self):
         form = SalesforceForms(oid='thisisanoid', posting_url='https://nowhereto.salesforce.com/nothing')
         form.save()
@@ -153,10 +136,6 @@ class SalesforceTest(LiveServerTestCase, WagtailPageTests):
             form.save()
         except ValidationError as e:
             self.assertTrue('debug_email' in e.message_dict)
-
-    def tearDown(self):
-        super(WagtailPageTests, self).tearDown()
-        super(LiveServerTestCase, self).tearDown()
 
 
 class MapboxTest(TestCase):

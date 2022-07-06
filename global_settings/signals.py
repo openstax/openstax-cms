@@ -6,20 +6,26 @@ from wagtail.core.signals import page_published
 from .functions import invalidate_cloudfront_caches
 from .models import StickyNote, Footer, GiveToday
 
+
 def clear_cloudfront_on_page_publish(sender, **kwargs):
-    invalidate_cloudfront_caches()
+    invalidate_cloudfront_caches('v2/pages')
+
+
 page_published.connect(clear_cloudfront_on_page_publish)
+
 
 # These functions clear caches on non-page models that drive content on the website
 @receiver(post_save, sender=StickyNote)
 def clear_cloudfront_on_sticky_save(sender, **kwargs):
-    invalidate_cloudfront_caches()
+    invalidate_cloudfront_caches('sticky')
+
 
 @receiver(post_save, sender=Footer)
 def clear_cloudfront_on_footer_save(sender, **kwargs):
-    invalidate_cloudfront_caches()
+    invalidate_cloudfront_caches('footer')
+
 
 @receiver(post_save, sender=GiveToday)
 def clear_cloudfront_on_give_save(sender, **kwargs):
-    invalidate_cloudfront_caches()
+    invalidate_cloudfront_caches('give-today')
 
