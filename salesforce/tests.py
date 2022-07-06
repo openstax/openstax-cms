@@ -134,12 +134,6 @@ class SalesforceTest(LiveServerTestCase, WagtailPageTests):
             self.assertIsNot(
                 contact_info, None)
 
-    def test_update_adopters_command(self):
-        out = StringIO()
-        with vcr.use_cassette('fixtures/vcr_cassettes/adopter.yaml'):
-            call_command('update_adopters', stdout=out)
-        self.assertIn("Success", out.getvalue())
-
     def test_salesforce_forms_no_debug(self):
         form = SalesforceForms(oid='thisisanoid', posting_url='https://nowhereto.salesforce.com/nothing')
         form.save()
