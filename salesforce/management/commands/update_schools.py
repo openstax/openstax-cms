@@ -33,8 +33,8 @@ class Command(BaseCommand):
                       "Address_Longitude__c," \
                       "Testimonial__c," \
                       "Testimonial_Name__c, " \
-                      "Testimonial_Position__c, " \
-                      "Number_of_Adoptions__c FROM Account WHERE Number_of_Adoptions__c > 0"
+                      "Testimonial_Position__c " \
+                      "FROM Account WHERE All_Time_Savings2__c > 0"
             response = sf.query_all(query)
             sf_schools = response['records']
 
