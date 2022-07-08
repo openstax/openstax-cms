@@ -44,6 +44,8 @@ class Command(BaseCommand):
             # If a review does not have a Salesforce ID, it must be new. We'll upload those to SF and assign a SF ID.
             new_reviews = PartnerReview.objects.filter(review_salesforce_id__isnull=True)
             for review in new_reviews:
+                if review.partner is None:
+                    continue
                 data = {
                     'Status__c': 'New',
                     'Pending_Customer_Review__c': review.review,
