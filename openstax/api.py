@@ -15,6 +15,9 @@ class OpenstaxPagesAPIEndpoint(PagesAPIViewSet):
     """
 
     def detail_view(self, request, pk=None, slug=None):
+        x_param = request.GET.get('x', False)
+        #print(str(request))
+        print('api x_param: ' + str(x_param))
         param = pk
         if slug is not None:
             self.lookup_field = 'slug'
