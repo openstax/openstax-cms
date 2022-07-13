@@ -31,7 +31,8 @@ from pages.models import (HomePage,
                           LLPHPage,
                           TutorMarketing,
                           Subjects,
-                          Subject)
+                          Subject,
+                          FormHeadings)
 from news.models import NewsIndex, PressIndex
 from books.models import BookIndex
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash, mock_user_login
@@ -91,7 +92,8 @@ class HomePageTests(WagtailPageTests):
             MathQuizPage,
             LLPHPage,
             TutorMarketing,
-            Subjects
+            Subjects,
+            FormHeadings
         })
 
 class PageTests(WagtailPageTests):
