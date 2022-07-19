@@ -43,7 +43,11 @@ class Command(BaseCommand):
 
             # If a review does not have a Salesforce ID, it must be new. We'll upload those to SF and assign a SF ID.
             new_reviews = PartnerReview.objects.filter(review_salesforce_id__isnull=True)
+            new_reviews_to_delete = []
             for review in new_reviews:
+                if review.partner is None:
+                    new_reviews_to_delete.append(review)
+                    continue
                 data = {
                     'Status__c': 'New',
                     'Pending_Customer_Review__c': review.review,
@@ -59,7 +63,8 @@ class Command(BaseCommand):
                 except SalesforceGeneralError:
                     print('Failed to create review in Salesforce - are you sure the partner exists?')
 
-
+            for review in new_reviews_to_delete:
+                review.delete()
 
             # If a review is in the Edited state, it needs to be reuploaded to SF and set to 'New'
             update_reviews = PartnerReview.objects.filter(status='Edited')
