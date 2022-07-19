@@ -11,7 +11,9 @@ openstax/settings/local.py
 /.idea
 /htmlcov
 /.coverage
+.venv
 .DS_STORE
 
 *.bk
 admin_templates/templates/wagtailadmin/login.html*
+.vscode/settings.json
