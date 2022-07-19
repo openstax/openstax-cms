@@ -77,7 +77,7 @@ class ErrataAdmin(ImportExportActionModelAdmin, VersionAdmin):
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
     }
-    actions = ['mark_in_review', 'mark_andrew_in_review', 'mark_anthony_in_review', 'mark_reviewed', 'mark_archived', 'mark_completed', ExportActionMixin.export_admin_action]
+    actions = ['mark_in_review', 'mark_OpenStax_editorial_review', 'mark_cartridge_review', 'mark_reviewed', 'mark_archived', 'mark_completed', ExportActionMixin.export_admin_action]
     inlines = [InlineInternalImage, ]
     raw_id_fields = ('duplicate_id', )
 
@@ -87,15 +87,15 @@ class ErrataAdmin(ImportExportActionModelAdmin, VersionAdmin):
     """Actions for the Django Admin list view"""
     def mark_in_review(self, request, queryset):
         queryset.update(status='Editorial Review')
-    mark_in_review.short_description = "Mark errata as in-review"
+    mark_in_review.short_description = "Mark errata as Editorial Review"
 
-    def mark_andrew_in_review(self, request, queryset):
-        queryset.update(status='Andrew Editorial Review')
-    mark_in_review.short_description = "Mark errata as in-review"
+    def mark_OpenStax_editorial_review(self, request, queryset):
+        queryset.update(status='OpenStax Editorial Review')
+    mark_OpenStax_editorial_review.short_description = "Mark errata as OpenStax Editorial Review"
 
-    def mark_anthony_in_review(self, request, queryset):
-        queryset.update(status='Anthony Editorial Review')
-    mark_in_review.short_description = "Mark errata as in-review"
+    def mark_cartridge_review(self, request, queryset):
+        queryset.update(status='Cartridge Review')
+    mark_cartridge_review.short_description = "Mark errata as cartridge review"
 
     def mark_reviewed(self, request, queryset):
         queryset.update(status='Reviewed')
