@@ -21,8 +21,8 @@ from wagtail.contrib.sitemaps.views import sitemap
 admin.site.site_header = 'OpenStax'
 
 urlpatterns = [
-    path('admin/login/', oxauth_views.login),
-    path('admin/logout/', oxauth_views.logout),
+    #path('admin/login/', oxauth_views.login),
+    #path('admin/logout/', oxauth_views.logout),
     path('oxauth/', include('oxauth.urls')), # new auth package
     path('admin/', include(wagtailadmin_urls)),
 
