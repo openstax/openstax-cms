@@ -105,6 +105,7 @@ MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'public', 'media')
 AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
 AWS_STORAGE_DIR = os.getenv('AWS_STORAGE_DIR')
 AWS_S3_CUSTOM_DOMAIN = os.getenv('AWS_S3_CUSTOM_DOMAIN')
+AWS_DEFAULT_ACL = 'public-read'
 
 # S3 media storage using custom backend
 MEDIAFILES_LOCATION = '{}/media'.format(AWS_STORAGE_DIR)
