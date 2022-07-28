@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.http import JsonResponse
 from wagtail.core.models import Site
 
 
@@ -35,15 +36,31 @@ def remove_locked_links_detail(response):
     """
 
     any_hidden = False
+    print('response: ' + str(response.data.book_faculty_resources.values()[0]))
+    faculty_resources = []
+    video_resources = []
+    orientation_resources = []
+    for faculty_resource in response.data.book_faculty_resources.values():
 
-    if "book_faculty_resources" in response.data:
-        for res_id in range(len(response.data["book_faculty_resources"])):
-            if not response.data["book_faculty_resources"][res_id]["resource_unlocked"]:
-                response.data["book_faculty_resources"][res_id]["link_document_url"] = ""
-                response.data["book_faculty_resources"][res_id]["link_external"] = ""
-                any_hidden = True
+        #print(FacultyResources.objects.filter(id=faculty_resource['link_document_id']).values())
+        faculty_resources.append(faculty_resource)
+
+    faculty_resource_json = {}
+    faculty_resource_json['book_faculty_resources'] = faculty_resources
+    faculty_resource_json['book_video_faculty_resources'] = video_resources
+    faculty_resource_json['book_orientation_faculty_resources'] = faculty_resources
+    #faculty_resource_json.append({response.data.book_faculty_resources.values()})
+    #faculty_resource_json.append({response.data.book_video_faculty_resources.values()})
+    #faculty_resource_json.append({response.data.book_orientation_faculty_resources.values()})
+
+    # if response.data.book_faculty_resources:
+    #     for resource in response.data.book_faculty_resources:
+    #         if not resource["resource_unlocked"]:
+    #             resource["link_document_url"] = ""
+    #             resource["link_external"] = ""
+    #             any_hidden = True
                 
-    return any_hidden
+    return JsonResponse(faculty_resource_json, safe=False)
 
 def remove_locked_links_listing(response):
     """

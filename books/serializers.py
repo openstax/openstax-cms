@@ -7,10 +7,10 @@ class FacultyResourcesSerializer(serializers.ModelSerializer):
     #     ret = super().to_representation(instance)
     #     print('ret: ' + str(ret))
     #     request = self.context['request']
-    #     print('request: ' + str(request))
+    #     #print('request: ' + str(request))
     #     x_param = request.GET.get('x', False)
     #     if x_param and x_param == 'y':
-    #         bfr = ret['book_faculty_resources']
+    #         bfr = ret['book_faculty_resources'].values()
     #         if not bfr['resource_unlocked']:
     #             bfr['link_document_url'] = ''
     #             bfr['link_external'] = ''
