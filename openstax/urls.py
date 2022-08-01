@@ -52,7 +52,7 @@ urlpatterns = [
 
     # route everything to /api/spike also...
     path('apps/cms/api/spike/', include(wagtail_urls)),
-    path('sitemap\.xml', sitemap),
+    path('sitemap.xml', sitemap),
 
     # For anything not caught by a more specific rule above, hand over to Wagtail's serving mechanism
     path('', include(wagtail_urls)),
