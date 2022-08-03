@@ -313,7 +313,7 @@ class NewsArticle(Page):
         prep_value = self.content_types.get_prep_value()
         types = []
         for t in prep_value:
-            type_id = t['value'][0]['content_type']
+            type_id = t['value'][0]['value'][0]['value']['content_type']
             type = BlogContentType.objects.filter(id=type_id)
             types.append(str(type[0]))
         return types
@@ -324,7 +324,7 @@ class NewsArticle(Page):
         capture_message(str(self.title) + ' prep value: ' + str(prep_value))
         subjects = []
         for s in prep_value:
-            subject_id = s['value'][0]['subject']
+            subject_id = s['value'][0]['value'][0]['value']['subject']
             subject = Subject.objects.filter(id=subject_id)
             subjects.append(str(subject[0]))
         return subjects
@@ -334,7 +334,7 @@ class NewsArticle(Page):
         prep_value = self.collections.get_prep_value()
         cols = []
         for c in prep_value:
-            collection_id = c['value'][0]['collection']
+            collection_id = c['value'][0]['value'][0]['value']['collection']
             collection = BlogCollection.objects.filter(id=collection_id)
             cols.append(str(collection[0]))
         return cols
