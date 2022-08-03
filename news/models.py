@@ -27,6 +27,8 @@ from taggit.models import TaggedItemBase
 from openstax.functions import build_image_url
 from snippets.models import NewsSource, BlogContentType, BlogCollection, Subject
 
+from sentry_sdk import capture_message
+
 
 class ImageChooserBlock(ImageChooserBlock):
     def get_api_representation(self, value, context=None):
@@ -319,6 +321,7 @@ class NewsArticle(Page):
     @property
     def blog_subjects(self):
         prep_value = self.article_subjects.get_prep_value()
+        capture_message(str(self.title) + ' prep value: ' + str(prep_value))
         subjects = []
         for s in prep_value:
             subject_id = s['value'][0]['subject']
