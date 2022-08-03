@@ -321,11 +321,12 @@ class NewsArticle(Page):
     @property
     def blog_subjects(self):
         prep_value = self.article_subjects.get_prep_value()
-        #capture_message(str(self.title) + ' prep value: ' + str(prep_value))
+        print(str(self.title) + ' prep value: ' + str(prep_value))
         subjects = []
         for s in prep_value:
-            capture_message(str(self.title) + ' s: ' + str(s))
-            subject_id = s['value'][0]['value'][0]['value']['subject']
+            print(str(self.title) + ' s: ' + str(s))
+            #subject_id = s['value'][0]['value'][0]['value']['subject']
+            subject_id = s['value'][0]['value']['subject']
             subject = Subject.objects.filter(id=subject_id)
             subjects.append(str(subject[0]))
         return subjects
