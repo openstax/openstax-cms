@@ -27,8 +27,6 @@ from taggit.models import TaggedItemBase
 from openstax.functions import build_image_url
 from snippets.models import NewsSource, BlogContentType, BlogCollection, Subject
 
-from sentry_sdk import capture_message, capture_exception
-
 
 class ImageChooserBlock(ImageChooserBlock):
     def get_api_representation(self, value, context=None):
