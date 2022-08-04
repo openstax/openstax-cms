@@ -56,18 +56,19 @@ class NewsTests(WagtailPageTests, TestCase):
                                    ),
                                    article_subjects=json.dumps(
                                        [
-                                           {"type": "subject", "value": [{"subject": math_id}]}
+                                           {'type': 'subject', 'value': [{'type': 'item', 'value': {'subject': math_id, 'featured': False}}]}
                                        ]
                                    ),
                                    content_types=json.dumps(
                                        [
-                                           {"type": "content_type", "value": [{"content_type": case_study_id}]},
+                                           {'type': 'content_type', 'value': [
+                                               {'type': 'item', 'value': {'content_type': case_study_id}}]}
                                        ]
                                    ),
                                    collections=json.dumps(
                                        [
-                                           {"type": "collection", "value": [
-                                               {"collection": learning_id, "featured": 'false', "popular": 'false'}]}
+                                           {'type': 'collection', 'value': [
+                                               {'type': 'item', 'value': {'collection': learning_id, 'featured': False, 'popular': False}}]}
                                        ]
                                    ))
         news_index.add_child(instance=self.article)
@@ -85,18 +86,20 @@ class NewsTests(WagtailPageTests, TestCase):
                                     ),
                                     article_subjects=json.dumps(
                                         [
-                                            {"type": "subject", "value": [{"subject": economics_id}]}
+                                            {'type': 'subject', 'value': [{'type': 'item', 'value': {'subject': economics_id, 'featured': False}}]}
                                         ]
                                     ),
                                     content_types=json.dumps(
                                         [
-                                            {"type": "content_type", "value": [{"content_type": video_id}]},
+                                            {'type': 'content_type', 'value': [
+                                                {'type': 'item', 'value': {'content_type': video_id}}]}
                                         ]
                                     ),
                                     collections=json.dumps(
                                         [
-                                            {"type": "collection", "value": [
-                                                {"collection": update_id, "featured": 'false', "popular": 'false'}]}
+                                            {'type': 'collection', 'value': [
+                                                {'type': 'item', 'value': {'collection': update_id, 'featured': False,
+                                                                           'popular': False}}]}
                                         ]
                                     ))
         news_index.add_child(instance=self.article2)
@@ -114,18 +117,21 @@ class NewsTests(WagtailPageTests, TestCase):
                                     ),
                                     article_subjects=json.dumps(
                                         [
-                                            {"type": "subject", "value": [{"subject": math_id}]}
+                                            {'type': 'subject', 'value': [{'type': 'item','value': {'subject': math_id,'featured': False}}]}
                                         ]
                                     ),
                                     content_types=json.dumps(
                                         [
-                                            {"type": "content_type", "value": [{"content_type": case_study_id}]},
+                                            {'type': 'content_type', 'value': [
+                                                {'type': 'item', 'value': {'content_type': case_study_id}}]}
                                         ]
                                     ),
                                     collections=json.dumps(
                                         [
-                                            {"type": "collection", "value": [
-                                                {"collection": update_id, "featured": 'false', "popular": 'false'}]}
+                                            {'type': 'collection', 'value': [
+                                                {'type': 'item', 'value': {'collection': update_id, 'featured': False,
+                                                                           'popular': False}}]}
+
                                         ]
                                     ))
         news_index.add_child(instance=self.article3)
