@@ -12,13 +12,8 @@
 * Will not be used for any environment using Cloudfront since Cloudfront redirects /accounts to OS Accounts.
 * The CMS database contains many users because when the app was first deployed, user info was stored in the CMS. That functionality is now in OS Accounts.
 
-### Admin Templates
-* Contains templates for Wagtail login and for adding a redirect URL.
-* The Redirect template is used to add Javascript to add validation that the URL contains a `/l/` or `/r/`
-* Redirect URLs are used in books and are short openstax URLs used for third party sites
-* Redirects are available from the Settings menu
-
 ### Allies
+* **This is no longer used**
 * Model for the Partners page
 * It was originally called the Ally page
 * Each Ally has one or more subjects they cover. The list can be filtered by subject in the OS UI.
@@ -34,17 +29,19 @@
   * sticky note - a time limited banner that displays at the top of the site
   * schools - list of schools using OpenStax books. Used for map display on OS site. Data comes from Salesforce
   * mapbox - data for mapbox. Data comes from Salesforce
-  * flags - not sure what this is for
+  * flags - feature flags
   * errata-fields - errata data
   * footer - data for site footer
+  * give-today - Give Today data
+  * webview-settings - settings for the frontend
 
 ### Books
 * APIs and models for Book information
 * API allows getting information for all books or a single book
 
-### Duplicate Books
-* Form that, once completed, allows for the duplication of book data into a new book model
-* Uses Wagtail import-export package
+### Donations
+* APIs for donation popup and fundraiser data
+* API to post thankyounote to CMS
 
 ### Errata
 * seperate Django app that is used for handling errata through a workflow. The app does not use Wagtail as does the rest of OS CMS.
@@ -76,20 +73,31 @@
 * Emails are sent to users who entered the errata as it moves through the workflow. 
 * Errata can be filtered in the UI
 
+### Eventbrite
+* Wrappers around the eventbrite API
+
+### Events
+* API to register and view Eventbrite event registrations
+
 ### Extra Admin Filters
 * Used to filter errata
 * Allows users to filter multiple books in the same query
+
+### Fixtures
+* used to store VCR cassettes used when running tests
 
 ### Global Settings
 * Views and models for items on the Admin Settings menu
   * Sticky Note
   * Footer
+  * Give Today
   * Cloudfront Distribution - this holds a cloudfront distribution id. When it's filled in, a call is made to dump the cache of cloudfront for this distribution on each wagtail page save (using a post-save hook). This is not currently in use because REX has not figured out all the details needed. 
+
+### Healthcheck
+* used by AWS to verify the server is running
 
 ### Mail
 * Used to send the redirect report email to the Content team
-* Used for the contact form in the OS UI.
-* There could be some dead code in this app
 
 ### News
 * Contains code for the Blog Atom feed
@@ -119,13 +127,14 @@
 * The command is run on the first of each month via a cron job
 
 ### Salesforce
-* Used to pull data from Salesforce
+* Used to pull and update Salesforce data
   * Adopter
   * Faculty status
   * Partners
+  * Partner Review data
   * Schools and mapbox data
+  * Resource Download data
   * Opportunities
-* Used to upload school data to mapbox
 * Uses SimpleSalesforce to connect to Salesforce API
 * Opportunities are used for the renewal form which users are asked to update after a period of time.
 
@@ -139,7 +148,15 @@
   * Role
   * Shared Content
   * News Source
-* There are APIs for Roles and Subjects
+  * Errata Content
+  * Subject Category
+  * Give Banner
+  * Blog Content Type
+  * Blog Collection
+* There are APIs each snippet type
+
+### Webinars
+* Model and API for information about scheduled and past webinars
 
 ## Other
 * **Import-Export:** Admin has a feature to import or export a page. This uses the [Wagtail import-export package](https://pypi.org/project/wagtail-import-export-tool/). It is used to move pages from one environment to another.
@@ -147,4 +164,4 @@
 ## Database
 Below is a link to an image of the database scema as of 1-13-2020. The image might need to be downloaded for proper viewing.
 
-[Database Schema image](openstax-cms-db.png)
+[Database Schema image](openstax-cms-db.svg)
