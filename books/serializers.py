@@ -12,17 +12,21 @@ class FacultyResourcesSerializer(serializers.ModelSerializer):
         for resource in bfr:
             # remove listing of linked book data
             resource['book_faculty_resource'] = {}
+            # if parameter sent, clear links to faculty resources
             if x_param and x_param == 'y':
                 if not resource['resource']['unlocked_resource']:
                     if resource['link_document'] is not None:
                         resource['link_document']['file'] = ''
                     if resource['link_page'] is not None:
                         resource['link_page']['url_path'] = ''
+                    if resource['link_external'] is not None:
+                        resource['link_external'] = ''
 
         bofr = ret['book_orientation_faculty_resources']
         for resource in bofr:
             # remove listing of linked book data
             resource['book_orientation_faculty_resource'] = {}
+            # if parameter sent, clear links to faculty resources
             if x_param and x_param == 'y':
                 if not resource['resource_unlocked']:
                     if resource['link_external'] is not None:
