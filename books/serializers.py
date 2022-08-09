@@ -8,8 +8,8 @@ class FacultyResourcesSerializer(serializers.ModelSerializer):
         request = self.context['request']
         x_param = request.GET.get('x', False)
         
-        bfr = ret['book_faculty_resources']
-        for resource in bfr:
+        book_faculty_resources = ret['book_faculty_resources']
+        for resource in book_faculty_resources:
             # remove listing of linked book data
             resource['book_faculty_resource'] = {}
             # if parameter sent, clear links to faculty resources
@@ -22,8 +22,8 @@ class FacultyResourcesSerializer(serializers.ModelSerializer):
                     if resource['link_external'] is not None:
                         resource['link_external'] = ''
 
-        bofr = ret['book_orientation_faculty_resources']
-        for resource in bofr:
+        book_orientation_faculty_resources = ret['book_orientation_faculty_resources']
+        for resource in book_orientation_faculty_resources:
             # remove listing of linked book data
             resource['book_orientation_faculty_resource'] = {}
             # if parameter sent, clear links to faculty resources
@@ -36,8 +36,8 @@ class FacultyResourcesSerializer(serializers.ModelSerializer):
                     if resource['link_document'] is not None:
                         resource['link_document']['file'] = ''
 
-        bvfr = ret['book_video_faculty_resources']
-        for resource in bvfr:
+        book_video_faculty_rresources = ret['book_video_faculty_resources']
+        for resource in book_video_faculty_rresources:
             # remove listing of linked book data
             resource['book_video_faculty_resource'] = {}
         return ret
@@ -47,3 +47,4 @@ class FacultyResourcesSerializer(serializers.ModelSerializer):
         fields = ('book_video_faculty_resources','book_orientation_faculty_resources','book_faculty_resources')
         read_only_fields = ('book_video_faculty_resources','book_orientation_faculty_resources','book_faculty_resources')
         depth=2
+        
