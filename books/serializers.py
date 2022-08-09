@@ -47,4 +47,3 @@ class FacultyResourcesSerializer(serializers.ModelSerializer):
         fields = ('book_video_faculty_resources','book_orientation_faculty_resources','book_faculty_resources')
         read_only_fields = ('book_video_faculty_resources','book_orientation_faculty_resources','book_faculty_resources')
         depth=2
-        
