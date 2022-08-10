@@ -1,4 +1,6 @@
 from django.core.management.base import BaseCommand
+
+from global_settings.functions import invalidate_cloudfront_caches
 from salesforce.models import Partner, PartnerFieldNameMapping
 from salesforce.salesforce import Salesforce
 
@@ -263,6 +265,7 @@ class Command(BaseCommand):
             PartnerFieldNameMapping.objects.filter(salesforce_name__in=partner_field_names).update(hidden=True)
             PartnerFieldNameMapping.objects.filter(salesforce_name__in=(list(hidden_fields_to_update))).update(hidden=False)
 
+            invalidate_cloudfront_caches('salesforce/partners')
             response = self.style.SUCCESS("Successfully updated {} partners, created {} partners.".format(updated_partners, created_partners))
         self.stdout.write(response)
 
