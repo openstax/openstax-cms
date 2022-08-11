@@ -204,7 +204,7 @@ def news_article_collection_search(collection, content_types=None, subjects=None
     articles_to_return = []
 
     for na in news_articles:
-        if collection is not None and collection in na.blog_collections[0]['name']:
+        if collection is not None and na.blog_collections[0]['name'] and collection in na.blog_collections[0]['name']:
             collection_articles.append(na)
 
     if len(collection_articles) > 0:
@@ -218,7 +218,7 @@ def news_article_collection_search(collection, content_types=None, subjects=None
                         articles_to_return.append(article)
                         added = True
                 for item in subjects:
-                    if item in blog_subjects[0]['name'] and not added:
+                    if blog_subjects[0]['name'] and item in blog_subjects[0]['name'] and not added:
                         articles_to_return.append(article)
         elif len(content_types) > 0 and len(subjects) == 0:
             for article in collection_articles:
@@ -230,7 +230,7 @@ def news_article_collection_search(collection, content_types=None, subjects=None
             for article in collection_articles:
                 blog_subjects = article.blog_subjects
                 for item in subjects:
-                    if item in blog_subjects[0]['name']:
+                    if blog_subjects[0]['name'] and item in blog_subjects[0]['name']:
                         articles_to_return.append(article)
         else:
             articles_to_return = collection_articles
@@ -243,7 +243,7 @@ def news_article_subject_search(subject):
     articles_to_return = []
     for article in news_articles:
         blog_subjects = article.blog_subjects
-        if subject in blog_subjects[0]['name']:
+        if blog_subjects[0]['name'] and subject in blog_subjects[0]['name']:
             articles_to_return.append(article)
     return articles_to_return
 
