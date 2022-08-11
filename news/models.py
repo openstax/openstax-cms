@@ -1,3 +1,5 @@
+import json
+
 from bs4 import BeautifulSoup
 
 from django.db import models
@@ -197,12 +199,12 @@ def news_article_collection_search(collection, content_types=None, subjects=None
         subjects = []
     if content_types is None:
         content_types = []
-    news_articles = NewsArticle.objects.all()
+    news_articles = NewsArticle.objects.all().order_by('-date')
     collection_articles = []
     articles_to_return = []
 
     for na in news_articles:
-        if collection is not None and collection in na.blog_collections:
+        if collection is not None and collection in na.blog_collections[0]['name']:
             collection_articles.append(na)
 
     if len(collection_articles) > 0:
@@ -216,7 +218,7 @@ def news_article_collection_search(collection, content_types=None, subjects=None
                         articles_to_return.append(article)
                         added = True
                 for item in subjects:
-                    if item in blog_subjects and not added:
+                    if item in blog_subjects[0]['name'] and not added:
                         articles_to_return.append(article)
         elif len(content_types) > 0 and len(subjects) == 0:
             for article in collection_articles:
@@ -228,7 +230,7 @@ def news_article_collection_search(collection, content_types=None, subjects=None
             for article in collection_articles:
                 blog_subjects = article.blog_subjects
                 for item in subjects:
-                    if item in blog_subjects:
+                    if item in blog_subjects[0]['name']:
                         articles_to_return.append(article)
         else:
             articles_to_return = collection_articles
@@ -237,13 +239,12 @@ def news_article_collection_search(collection, content_types=None, subjects=None
 
 
 def news_article_subject_search(subject):
-    news_articles = NewsArticle.objects.all()
+    news_articles = NewsArticle.objects.all().order_by('-date')
     articles_to_return = []
     for article in news_articles:
         blog_subjects = article.blog_subjects
-        if subject in blog_subjects:
+        if subject in blog_subjects[0]['name']:
             articles_to_return.append(article)
-
     return articles_to_return
 
 
@@ -322,8 +323,10 @@ class NewsArticle(Page):
         subjects = []
         for s in prep_value:
             subject_id = s['value'][0]['value']['subject']
+            featured = s['value'][0]['value']['featured']
             subject = Subject.objects.filter(id=subject_id)
-            subjects.append(str(subject[0]))
+            data = {'name': str(subject[0]), 'featured': featured}
+            subjects.append(data)
         return subjects
 
     @property
@@ -332,8 +335,11 @@ class NewsArticle(Page):
         cols = []
         for c in prep_value:
             collection_id = c['value'][0]['value']['collection']
+            featured = c['value'][0]['value']['featured']
+            popular = c['value'][0]['value']['popular']
             collection = BlogCollection.objects.filter(id=collection_id)
-            cols.append(str(collection[0]))
+            data = {'name': str(collection[0]), 'featured': featured, 'popular': popular}
+            cols.append(data)
         return cols
 
     search_fields = Page.search_fields + [
