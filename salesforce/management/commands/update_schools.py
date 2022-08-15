@@ -1,4 +1,6 @@
 from django.core.management.base import BaseCommand
+
+from global_settings.functions import invalidate_cloudfront_caches
 from salesforce.models import School
 from salesforce.salesforce import Salesforce
 
@@ -151,5 +153,6 @@ class Command(BaseCommand):
                 else:
                     updated_schools = updated_schools + 1
 
+            invalidate_cloudfront_caches('salesforce/schools')
             response = self.style.SUCCESS("Successfully updated {} schools, created {} schools.".format(updated_schools, created_schools))
         self.stdout.write(response)
