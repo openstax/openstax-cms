@@ -7,7 +7,6 @@ from snippets.models import Subject, Role, ErrataContent, SubjectCategory, GiveB
 
 @receiver(post_save, sender=Subject)
 def clear_cloudfront_on_subject_save(sender, **kwargs):
-    print('subjects cache cleared')
     invalidate_cloudfront_caches('snippets/subjects')
 
 
