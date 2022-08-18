@@ -2322,7 +2322,7 @@ class Subjects(Page):
             subject_categories = {}
             categories = []
             subject_categories['icon'] = subject.subject_icon
-            for category in snippets.SubjectCategory.objects.filter(subject_id=subject.id):
+            for category in snippets.SubjectCategory.objects.filter(subject_id=subject.id).order_by('subject_category'):
                 categories.append(category.subject_category)
             subject_categories['categories'] = categories
             subject_list[subject.name] = subject_categories
