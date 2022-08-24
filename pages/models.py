@@ -39,8 +39,6 @@ from .custom_fields import \
     Group
 import snippets.models as snippets
 
-from sentry_sdk import capture_message
-
 
 class AboutUsPage(Page):
     who_heading = models.CharField(max_length=255)
@@ -2320,7 +2318,7 @@ class Subjects(Page):
     @property
     def subjects(self):
         subject_list = {}
-        for subject in snippets.Subject.objects.filter(locale=self.locale):
+        for subject in snippets.Subject.objects.filter(locale=self.locale).order_by('name'):
             subject_categories = {}
             categories = []
             subject_categories['icon'] = subject.subject_icon
@@ -2450,7 +2448,6 @@ class Subject(Page):
     @property
     def subjects(self):
         subject_list = {}
-        capture_message('selected subject: ' + str(self.selected_subject[0].subject_name))
         for subject in snippets.Subject.objects.filter(name=str(self.selected_subject[0].subject_name)):
             subject_categories = {}
             categories = {}
@@ -2458,7 +2455,6 @@ class Subject(Page):
             subject_categories['icon'] = subject.subject_icon
             all_books = Book.objects.all().order_by('title')
             for category in snippets.SubjectCategory.objects.filter(subject_id=subject.id).order_by('subject_category'):
-                capture_message('Subject: ' + str(subject) + ' category: ' + str(category) )
                 books = {}
                 book_list = {}
                 for book in all_books:
