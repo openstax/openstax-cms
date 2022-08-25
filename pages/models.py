@@ -2318,11 +2318,11 @@ class Subjects(Page):
     @property
     def subjects(self):
         subject_list = {}
-        for subject in snippets.Subject.objects.filter(locale=self.locale):
+        for subject in snippets.Subject.objects.filter(locale=self.locale).order_by('name'):
             subject_categories = {}
             categories = []
             subject_categories['icon'] = subject.subject_icon
-            for category in snippets.SubjectCategory.objects.filter(subject_id=subject.id):
+            for category in snippets.SubjectCategory.objects.filter(subject_id=subject.id).order_by('subject_category'):
                 categories.append(category.subject_category)
             subject_categories['categories'] = categories
             subject_list[subject.name] = subject_categories
@@ -2419,6 +2419,11 @@ class Subject(Page):
     info_boxes = StreamField([
         ('info_box', blocks.ListBlock(InfoBoxBlock())),
     ])
+    book_categories_heading = models.TextField(default='')
+    learn_more_heading = models.TextField(default='')
+    learn_more_blog_posts = models.TextField(default='')
+    learn_more_webinars = models.TextField(default='')
+    learn_more_about_books = models.TextField(default='')
 
     philanthropic_support = models.TextField(blank=True, null=True)
     translations = StreamField([
@@ -2502,6 +2507,11 @@ class Subject(Page):
         APIField('os_textbook_categories'),
         APIField('about_os'),
         APIField('info_boxes'),
+        APIField('book_categories_heading'),
+        APIField('learn_more_heading'),
+        APIField('learn_more_blog_posts'),
+        APIField('learn_more_webinars'),
+        APIField('learn_more_about_books'),
         APIField('philanthropic_support'),
         APIField('subjects'),
         APIField('translations'),
@@ -2520,6 +2530,11 @@ class Subject(Page):
         StreamFieldPanel('os_textbook_categories'),
         StreamFieldPanel('about_os'),
         StreamFieldPanel('info_boxes'),
+        FieldPanel('book_categories_heading'),
+        FieldPanel('learn_more_heading'),
+        FieldPanel('learn_more_blog_posts'),
+        FieldPanel('learn_more_webinars'),
+        FieldPanel('learn_more_about_books'),
         FieldPanel('philanthropic_support'),
         StreamFieldPanel('translations'),
     ]

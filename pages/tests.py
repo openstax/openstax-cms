@@ -208,6 +208,11 @@ class SubjectPageTest(WagtailPageTests):
                                page_description="Business page",
                                os_textbook_heading="OpenStax Business Textbooks",
                                philanthropic_support="Please support us",
+                               book_categories_heading="Business book categories",
+                               learn_more_heading="learn more",
+                               learn_more_blog_posts="Business blog posts",
+                               learn_more_webinars="business webinars",
+                               learn_more_about_books="Learn more about our books",
                                )
         subjects_page.add_child(instance=subject_page)
 
