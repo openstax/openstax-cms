@@ -21,8 +21,8 @@ from wagtail.contrib.sitemaps.views import sitemap
 admin.site.site_header = 'OpenStax'
 
 urlpatterns = [
-    path('admin/login/', oxauth_views.login),
-    path('admin/logout/', oxauth_views.logout),
+    #path('admin/login/', oxauth_views.login),
+    #path('admin/logout/', oxauth_views.logout),
     path('oxauth/', include('oxauth.urls')), # new auth package
     path('admin/', include(wagtailadmin_urls)),
 
@@ -52,7 +52,7 @@ urlpatterns = [
 
     # route everything to /api/spike also...
     path('apps/cms/api/spike/', include(wagtail_urls)),
-    path('sitemap\.xml', sitemap),
+    path('sitemap.xml', sitemap),
 
     # For anything not caught by a more specific rule above, hand over to Wagtail's serving mechanism
     path('', include(wagtail_urls)),

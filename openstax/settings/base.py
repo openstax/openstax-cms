@@ -105,6 +105,7 @@ MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'public', 'media')
 AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
 AWS_STORAGE_DIR = os.getenv('AWS_STORAGE_DIR')
 AWS_S3_CUSTOM_DOMAIN = os.getenv('AWS_S3_CUSTOM_DOMAIN')
+AWS_DEFAULT_ACL = 'public-read'
 
 # S3 media storage using custom backend
 MEDIAFILES_LOCATION = '{}/media'.format(AWS_STORAGE_DIR)
@@ -149,8 +150,8 @@ MIDDLEWARE = [
 ]
 
 AUTHENTICATION_BACKENDS = (
-    'oxauth.backend.OpenStaxAccountsBackend',
     'django.contrib.auth.backends.ModelBackend',
+    'oxauth.backend.OpenStaxAccountsBackend',
 )
 
 TEMPLATES = [
@@ -384,10 +385,8 @@ HOST_LINK = os.getenv('HOST_LINK', BASE_URL)
 # WAGTAIL SETTINGS
 WAGTAIL_SITE_NAME = 'openstax'
 WAGTAILAPI_BASE_URL = os.getenv('WAGTAILAPI_BASE_URL', BASE_URL)
-WAGTAIL_FRONTEND_LOGIN_URL = 'oxauth/login'
 # Wagtail API number of results
 WAGTAILAPI_LIMIT_MAX = None
-WAGTAILUSERS_PASSWORD_ENABLED = False
 WAGTAIL_USAGE_COUNT_ENABLED = False
 WAGTAIL_USER_CUSTOM_FIELDS = ['is_staff']
 WAGTAIL_GRAVATAR_PROVIDER_URL = '//www.gravatar.com/avatar'

@@ -445,6 +445,7 @@ class HomePage(Page):
         'pages.LLPHPage',
         'pages.TutorMarketing',
         'pages.Subjects',
+        'pages.FormHeadings',
         'books.BookIndex',
         'news.NewsIndex',
         'news.PressIndex'
@@ -2538,6 +2539,45 @@ class Subject(Page):
         verbose_name = "Subject Page"
 
 
+class FormHeadings(Page):
+    adoption_intro_heading = models.CharField(max_length=255)
+    adoption_intro_description = RichTextField()
+    interest_intro_heading = models.CharField(max_length=255)
+    interest_intro_description = RichTextField()
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
+    api_fields = [
+        APIField('adoption_intro_heading'),
+        APIField('adoption_intro_description'),
+        APIField('interest_intro_heading'),
+        APIField('interest_intro_description'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+    ]
 
+    content_panels = [
+        FieldPanel('title'),
+        FieldPanel('adoption_intro_heading'),
+        FieldPanel('adoption_intro_description'),
+        FieldPanel('interest_intro_heading'),
+        FieldPanel('interest_intro_description')
+    ]
 
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
+    ]
+
+    template = 'page.html'
+
+    parent_page_types = ['pages.HomePage']
+    max_count = 1

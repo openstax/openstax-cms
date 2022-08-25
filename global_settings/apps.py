@@ -6,3 +6,7 @@ class GlobalSettingsConfig(AppConfig):
 
     def ready(self):
         import global_settings.signals  # noqa
+        import api.signals
+        import donations.signals
+        import webinars.signals
+        import snippets.signals

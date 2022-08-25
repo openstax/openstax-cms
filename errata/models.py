@@ -29,16 +29,16 @@ YES_NO_CHOICES = (
 NEW = 'New'
 EDITORIAL_REVIEW = 'Editorial Review'
 K12_EDITORIAL_REVIEW = 'K-12 Editorial Review'
-ASSOCIATE_EDITORIAL_REVIEW = 'Associate Editorial Review'
-ANTHONY_EDITORIAL_REVIEW = 'Anthony Editorial Review'
+CARTRIDGE_REVIEW = 'Cartridge Review'
+OPENSTAX_EDITORIAL_REVIEW = 'OpenStax Editorial Review'
 REVIEWED = 'Reviewed'
 COMPLETED = 'Completed'
 ERRATA_STATUS = (
     (NEW, 'New'),
     (EDITORIAL_REVIEW, 'Editorial Review'),
     (K12_EDITORIAL_REVIEW, 'K-12 Editorial Review'),
-    (ASSOCIATE_EDITORIAL_REVIEW, 'Kelsey Editorial Review'),
-    (ANTHONY_EDITORIAL_REVIEW,'Anthony Editorial Review'),
+    (CARTRIDGE_REVIEW, 'Cartridge Review'),
+    (OPENSTAX_EDITORIAL_REVIEW, 'OpenStax Editorial Review'),
     (REVIEWED, 'Reviewed'),
     (COMPLETED, 'Completed'),
 )
@@ -154,7 +154,7 @@ class Errata(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
 
-    # TODO: If we seperate the Errata application from the CMS, the books will need to be store differently. `book` will be removed, `openstax_book` will store as string
+    # TODO: If we separate the Errata application from the CMS, the books will need to be store differently. `book` will be removed, `openstax_book` will store as string
     book = models.ForeignKey(Book, on_delete=models.PROTECT)
     openstax_book = models.CharField(max_length=255, null=True, blank=True, editable=False)
 

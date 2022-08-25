@@ -1,5 +1,5 @@
 from django.core.mail import EmailMessage, send_mail
-import logging
+from sentry_sdk import capture_exception
 
 
 def send_redirect_report(bad_redirects):
@@ -19,4 +19,4 @@ def send_redirect_report(bad_redirects):
         email.send()
 
     except Exception as e:
-        logger.error("EMAIL FAILED TO SEND: subject:{}".format(subject))
+        capture_exception(e)
