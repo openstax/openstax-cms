@@ -31,6 +31,8 @@ from openstax.functions import build_document_url, build_image_url
 from books.constants import BOOK_STATES, BOOK_COVER_TEXT_COLOR, COVER_COLORS, CC_NC_SA_LICENSE_NAME, CC_BY_LICENSE_NAME, \
     CC_BY_LICENSE_URL, CC_NC_SA_LICENSE_URL, CC_NC_SA_LICENSE_VERSION, CC_BY_LICENSE_VERSION
 import snippets.models as snippets
+#from salesforce.salesforce import Salesforce as sf
+from salesforce.functions import retrieve_salesforce_abbreviation
 
 
 def cleanhtml(raw_html):
@@ -462,7 +464,7 @@ class Book(Page):
         max_length=255, help_text="This is used to pull relevant information from CNX.",
         blank=True, null=True)
     salesforce_abbreviation = models.CharField(max_length=255, blank=True, null=True, verbose_name='Internal Salesforce Name')
-    salesforce_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Website Visible Salesforce Name')
+    salesforce_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Website Visible Salesforce Name (no edition number)')
     updated = models.DateTimeField(blank=True, null=True, help_text='Late date web content was updated')
     is_ap = models.BooleanField(default=False, help_text='Whether this book is an AP (Advanced Placement) book.')
     description = RichTextField(
@@ -643,7 +645,7 @@ class Book(Page):
     book_detail_panel = Page.content_panels + [
         FieldPanel('book_state'),
         FieldPanel('cnx_id'),
-        FieldPanel('salesforce_abbreviation'),
+        #FieldPanel('salesforce_abbreviation'),
         FieldPanel('salesforce_name'),
         FieldPanel('updated'),
         FieldPanel('publish_date'),
@@ -895,6 +897,15 @@ class Book(Page):
             else:
                 self.license_url = CC_NC_SA_LICENSE_URL
                 self.license_version = CC_NC_SA_LICENSE_VERSION
+
+        if self.salesforce_name:
+            self.salesforce_abbreviation = retrieve_salesforce_abbreviation(self.salesforce_name)
+        #     with sf() as s_force:
+        #         command = "Select Name from Book__c where Official_Name__c = '" + self.salesforce_name + "'"
+        #         response = s_force.query_all(command)
+        #         book = response['records']
+        #         for record in book:
+        #             self.salesforce_abbreviation = record['Name']
 
 
         # if book is new, clear out isbn 10 fields
