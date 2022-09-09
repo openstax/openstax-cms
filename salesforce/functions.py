@@ -9,6 +9,5 @@ def retrieve_salesforce_abbreviation(sf_book_name):
             book = response['records']
             sf_abbreviation = ''
             for record in book:
-                print('book name: ' + str(record['Name']))
                 sf_abbreviation = record['Name']
             return sf_abbreviation
