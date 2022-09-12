@@ -643,7 +643,6 @@ class Book(Page):
     book_detail_panel = Page.content_panels + [
         FieldPanel('book_state'),
         FieldPanel('cnx_id'),
-        #FieldPanel('salesforce_abbreviation'),
         FieldPanel('salesforce_name'),
         FieldPanel('updated'),
         FieldPanel('publish_date'),

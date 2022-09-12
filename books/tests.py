@@ -5,7 +5,7 @@ from wagtail.core.models import Page
 
 import snippets.models
 from pages.models import HomePage
-from books.models import BookIndex, Book
+from books.models import BookIndex, Book, BookFacultyResources
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
 from django.core.files.uploadedfile import SimpleUploadedFile
 from wagtail.documents.models import Document
@@ -95,23 +95,6 @@ class BookTests(WagtailPageTests):
             book_index.add_child(instance=book)
             self.assertEqual(book.salesforce_abbreviation, 'University Physics (Calc)')
 
-    # def test_only_numbers_for_price(self):
-    #     with vcr.use_cassette('fixtures/vcr_cassettes/books_.yaml'):
-    #         book_index = BookIndex.objects.all()[0]
-    #         root_page = Page.objects.get(title="Root")
-    #         book = Book(title="Prealgebra",
-    #                 slug="prealgebra",
-    #                 salesforce_abbreviation='College Algebra',
-    #                 salesforce_name='College Algebra',
-    #                 description="This is College Algebra. Next, you learn Algebra!",
-    #                 cover=self.test_doc,
-    #                 title_image=self.test_doc,
-    #                 publish_date=datetime.date.today(),
-    #                 locale=root_page.locale
-    #                 )
-    #         book_index.add_child(instance=book)
-    #         self.assertEqual(book.salesforce_abbreviation, 'College Algebra')
-
     def test_allowed_subpages(self):
         self.assertAllowedSubpageTypes(BookIndex, {
             Book
@@ -142,3 +125,41 @@ class BookTests(WagtailPageTests):
                         )
             book_index.add_child(instance=book)
             self.assertEqual(book.license_url, 'https://creativecommons.org/licenses/by/4.0/')
+
+    def test_faculty_resources_available_or_not(self):
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            book = Book(title="University Physics",
+                        slug="university-physics",
+                        cnx_id='031da8d3-b525-429c-80cf-6c8ed997733a',
+                        salesforce_name='University Physics',
+                        description="Test Book",
+                        cover=self.test_doc,
+                        title_image=self.test_doc,
+                        publish_date=datetime.date.today(),
+                        locale=root_page.locale
+                        )
+            book_index.add_child(instance=book)
+
+        faculty_resource = snippets.models.FacultyResource(heading="Instructor Getting Started Guide",
+                                                           description="<p data-block-key=\"6o2yl\">Download our helpful guide to all things OpenStax.<br/></p>",
+                                                           unlocked_resource=False,
+                                                           creator_fest_resource=False)
+        faculty_resource.save()
+
+        book_faculty_resource = BookFacultyResources.objects.create(link_external="https://openstax.org",
+                                                                    link_text="Go!", resource=faculty_resource,
+                                                                    book_faculty_resource=book)
+        book_faculty_resource.save()
+
+        # run test without flag
+        response = self.client.get('/apps/cms/api/books/resources/?slug=university-physics')
+        print(str(response))
+        self.assertEqual(response.data['book_faculty_resources'][0]['link_external'], 'https://openstax.org')
+        # check book data is cleared out
+        self.assertEqual(response.data['book_faculty_resources'][0]['book_faculty_resource'], {})
+
+        # run test with flag
+        response = self.client.get('/apps/cms/api/books/resources/?slug=university-physics&x=y')
+        self.assertEqual(response.data['book_faculty_resources'][0]['link_external'], '')
