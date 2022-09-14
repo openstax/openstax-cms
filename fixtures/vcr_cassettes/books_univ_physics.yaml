@@ -56,10 +56,10 @@ interactions:
       Content-Type:
       - text/xml; charset=utf-8
       Date:
-      - Fri, 09 Sep 2022 13:42:35 GMT
+      - Wed, 14 Sep 2022 20:23:24 GMT
       Set-Cookie:
-      - BrowserId=QvpM0jBFEe2-n5WbINdQYg; domain=.salesforce.com; path=/; expires=Sat,
-        09-Sep-2023 13:42:35 GMT; Max-Age=31536000
+      - BrowserId=FajqUzRrEe2t8R9LGxBJLQ; domain=.salesforce.com; path=/; expires=Thu,
+        14-Sep-2023 20:23:24 GMT; Max-Age=31536000
       Vary:
       - Accept-Encoding
     status:
@@ -79,20 +79,20 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - BrowserId=QvpM0jBFEe2-n5WbINdQYg
+      - BrowserId=FajqUzRrEe2t8R9LGxBJLQ
       User-Agent:
       - python-requests/2.27.1
       X-PrettyPrint:
       - '1'
     method: GET
-    uri: https://openstax--staging.sandbox.my.salesforce.com/services/data/v52.0/query/?q=Select+Name+from+Book__c+where+Official_Name__c+%3D+%27University+Physics%27
+    uri: https://openstax--staging.sandbox.my.salesforce.com/services/data/v52.0/query/?q=Select+Name%2C+Official_Name__c+from+Book__c+where+Id+%3D+%27a0ZU0000008pyvQMAQ%27
   response:
     body:
       string: !!binary |
-        H4sIAAAAAAAAADWNwQrCMAyG73uK0pPCsFMQxJt6VhyyiyKj6wJW5zqarFDH3t2t09zy/fm/dBFj
-        nAzJ6qI/wNmWLeMRlaYOG9kWArCgjC1xZDfWDWRgksjqoiUIeIKjzjehy/fGvPJc8fiftLYKgUCw
-        TitAUUqSwq1Xi0SgKZ6gCMWvJmRyzZIwm8a79LhLeRD1k4+f5Hv6k9XagUVNnp0fHrVCNjvISs3H
-        +57do/4LYv94nOcAAAA=
+        H4sIAAAAAAAAAG2OywrCMBBF935FyEqhmCoI4k5d+yjSjSIlTVOMxqYk00As/XebtO6c3ZzLuTPt
+        BCEMCqi8iA/HaIMWkUeFqsIGuuEBaM6ULoxnN9T2pGcUQIu8AR7wAH2dq4OLd0q9sozh6Jc0WoaA
+        GK6tYNyQggIldrWcx8So/MkZGDJqhMbXNA6zrp1NDtsEh6Ju6MNH+h7upJWwXBsBDp0fzghm0HRP
+        JZuNl/GpLAUTVGZe8R/9t3x9h+6T7gu/7HQIFgEAAA==
     headers:
       Cache-Control:
       - no-cache,must-revalidate,max-age=0,no-store,private
@@ -101,13 +101,13 @@ interactions:
       Content-Type:
       - application/json;charset=UTF-8
       Date:
-      - Fri, 09 Sep 2022 13:42:36 GMT
+      - Wed, 14 Sep 2022 20:23:25 GMT
       Set-Cookie:
-      - CookieConsentPolicy=0:1; path=/; expires=Sat, 09-Sep-2023 13:42:36 GMT; Max-Age=31536000
-      - LSKey-c$CookieConsentPolicy=0:1; path=/; expires=Sat, 09-Sep-2023 13:42:36
+      - CookieConsentPolicy=0:1; path=/; expires=Thu, 14-Sep-2023 20:23:25 GMT; Max-Age=31536000
+      - LSKey-c$CookieConsentPolicy=0:1; path=/; expires=Thu, 14-Sep-2023 20:23:25
         GMT; Max-Age=31536000
       Sforce-Limit-Info:
-      - api-usage=85194/5000000
+      - api-usage=73011/5000000
       Strict-Transport-Security:
       - max-age=63072000; includeSubDomains
       Transfer-Encoding:

@@ -1,13 +1,14 @@
 from .salesforce import Salesforce
 
 
-def retrieve_salesforce_abbreviation(sf_book_name):
-    if sf_book_name:
+def retrieve_salesforce_names(sf_book_id):
+    if sf_book_id:
         with Salesforce() as sf:
-            command = "Select Name from Book__c where Official_Name__c = '" + sf_book_name + "'"
+            command = "Select Name, Official_Name__c from Book__c where Id = '" + sf_book_id + "'"
             response = sf.query_all(command)
             book = response['records']
-            sf_abbreviation = ''
+            sf_names = {}
             for record in book:
-                sf_abbreviation = record['Name']
-            return sf_abbreviation
+                sf_names['Name'] = record['Name']
+                sf_names['Official_Name'] = record['Official_Name__c']
+            return sf_names
