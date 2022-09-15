@@ -461,9 +461,8 @@ class Book(Page):
     cnx_id = models.CharField(
         max_length=255, help_text="This is used to pull relevant information from CNX.",
         blank=True, null=True)
-    salesforce_abbreviation = models.CharField(max_length=255, blank=True, null=True)
-    salesforce_name = models.CharField(max_length=255, blank=True, null=True)
-    salesforce_book_id = models.CharField(max_length=255, blank=True, null=True, verbose_name='Salesforce Book Id (if blank, adoptions are not tracked)')
+    salesforce_abbreviation = models.CharField(max_length=255, blank=True, null=True, verbose_name='Internal Salesforce Name')
+    salesforce_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Website Visible Salesforce Name (no edition number)')
     updated = models.DateTimeField(blank=True, null=True, help_text='Late date web content was updated')
     is_ap = models.BooleanField(default=False, help_text='Whether this book is an AP (Advanced Placement) book.')
     description = RichTextField(
@@ -644,7 +643,7 @@ class Book(Page):
     book_detail_panel = Page.content_panels + [
         FieldPanel('book_state'),
         FieldPanel('cnx_id'),
-        FieldPanel('salesforce_book_id'),
+        FieldPanel('salesforce_name'),
         FieldPanel('updated'),
         FieldPanel('publish_date'),
         InlinePanel('book_subjects', label='Subjects'),
@@ -740,7 +739,6 @@ class Book(Page):
         APIField('cnx_id'),
         APIField('salesforce_abbreviation'),
         APIField('salesforce_name'),
-        APIField('salesforce_book_id'),
         APIField('book_subjects'),
         APIField('book_categories'),
         APIField('is_ap'),
@@ -897,12 +895,9 @@ class Book(Page):
                 self.license_url = CC_NC_SA_LICENSE_URL
                 self.license_version = CC_NC_SA_LICENSE_VERSION
 
-        # import here to prevent circular reference
-        from salesforce.functions import retrieve_salesforce_names
-        if self.salesforce_book_id:
-            salesforce_names = retrieve_salesforce_names(self.salesforce_book_id)
-            self.salesforce_abbreviation = salesforce_names['Name']
-            self.salesforce_name = salesforce_names['Official_Name']
+        from salesforce.functions import retrieve_salesforce_abbreviation
+        if self.salesforce_name:
+            self.salesforce_abbreviation = retrieve_salesforce_abbreviation(self.salesforce_name)
 
         # if book is new, clear out isbn 10 fields
         if self._state.adding:

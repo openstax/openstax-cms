@@ -50,7 +50,7 @@ class BookTests(WagtailPageTests):
             book = Book(title="University Physics",
                         slug="university-physics",
                         cnx_id='031da8d3-b525-429c-80cf-6c8ed997733a',
-                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        salesforce_name='University Physics',
                         description="Test Book",
                         cover=self.test_doc,
                         title_image=self.test_doc,
@@ -67,7 +67,7 @@ class BookTests(WagtailPageTests):
             book = Book(title="Prealgebra",
                         slug="prealgebra",
                         salesforce_abbreviation='Prealgebra',
-                        salesforce_book_id='a0ZU000000DLpEMMA1',
+                        salesforce_name='Prealgebra',
                         description="This is Prealgebra. Next, you learn Prealgebra!",
                         is_ap=True,
                         cover=self.test_doc,
@@ -85,7 +85,7 @@ class BookTests(WagtailPageTests):
             root_page = Page.objects.get(title="Root")
             book = Book(title="University Physics",
                         slug="university-physics",
-                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        salesforce_name='University Physics',
                         description="This is University Physics. Next, you learn University Physics!",
                         cover=self.test_doc,
                         title_image=self.test_doc,
@@ -114,7 +114,8 @@ class BookTests(WagtailPageTests):
             book = Book(title="University Physics",
                         slug="university-physics",
                         cnx_id='031da8d3-b525-429c-80cf-6c8ed997733a',
-                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        salesforce_abbreviation='University Physics (Calc)',
+                        salesforce_name='University Physics  (Calc)',
                         description="Test Book",
                         cover=self.test_doc,
                         title_image=self.test_doc,
@@ -132,7 +133,7 @@ class BookTests(WagtailPageTests):
             book = Book(title="University Physics",
                         slug="university-physics",
                         cnx_id='031da8d3-b525-429c-80cf-6c8ed997733a',
-                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        salesforce_name='University Physics',
                         description="Test Book",
                         cover=self.test_doc,
                         title_image=self.test_doc,
@@ -154,6 +155,7 @@ class BookTests(WagtailPageTests):
 
         # run test without flag
         response = self.client.get('/apps/cms/api/books/resources/?slug=university-physics')
+        print(str(response))
         self.assertEqual(response.data['book_faculty_resources'][0]['link_external'], 'https://openstax.org')
         # check book data is cleared out
         self.assertEqual(response.data['book_faculty_resources'][0]['book_faculty_resource'], {})
