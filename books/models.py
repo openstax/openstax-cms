@@ -464,7 +464,7 @@ class Book(Page):
     salesforce_abbreviation = models.CharField(max_length=255, blank=True, null=True)
     salesforce_name = models.CharField(max_length=255, blank=True, null=True)
     salesforce_book_id = models.CharField(max_length=255, blank=True, null=True,
-                                       verbose_name='Salesforce book id (No tracking if left blank)')
+                                       verbose_name='Salesforce book id (No tracking and not included on adoption or interest form if left blank)')
     updated = models.DateTimeField(blank=True, null=True, help_text='Late date web content was updated')
     is_ap = models.BooleanField(default=False, help_text='Whether this book is an AP (Advanced Placement) book.')
     description = RichTextField(
