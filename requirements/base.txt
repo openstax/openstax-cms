@@ -8,6 +8,7 @@ django-rest-auth==0.9.5
 django-reversion==5.0.0
 django-ses==3.0.1
 django-storages==1.12.3
+django-dbbackup==4.0.2
 future==0.18.2
 html2text==2020.1.16 # used in news feed
 jsonfield==3.1.0
