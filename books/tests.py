@@ -1,70 +1,103 @@
-import json
-from collections import OrderedDict
+import vcr
 
-from django.forms import model_to_dict
 from wagtail.tests.utils import WagtailPageTests
-from wagtail.images.tests.utils import Image, get_test_image_file
-from wagtail.documents.models import Document
 from wagtail.core.models import Page
 
-import books
 import snippets.models
 from pages.models import HomePage
 from books.models import BookIndex, Book, BookFacultyResources
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
 from django.core.files.uploadedfile import SimpleUploadedFile
+from wagtail.documents.models import Document
 import datetime
 
 
 class BookTests(WagtailPageTests):
 
     def setUp(self):
-        # create root page
-        self.root_page = Page.objects.get(title="Root")
-        # create homepage
-        self.homepage = HomePage(title="Hello World", slug="hello-world")
-        # add homepage to root page
-        self.root_page.add_child(instance=self.homepage)
-        # create book index page
-        self.book_index = BookIndex(title="Book Index",
-                                   page_description="Test",
-                                   dev_standard_1_description="Test",
-                                   dev_standard_2_description="Test",
-                                   dev_standard_3_description="Test",
-                                   dev_standard_4_description="Test",
-                                   )
-        # add book index to homepage
-        self.homepage.add_child(instance=self.book_index)
+        pass
 
-        self.book = Book(title="University Physics",
-                        slug="university-physics",
-                        salesforce_abbreviation='University Phys (Calc)',
-                        salesforce_name='University Physics',
-                        description="Test Book",
-                        publish_date=datetime.date.today(),
-                        locale=self.root_page.locale,
-                        license_name='Creative Commons Attribution License'
-                        )
-        self.book_index.add_child(instance=self.book)
+    @classmethod
+    def setUpTestData(cls):
+        # create root page
+        root_page = Page.objects.get(title="Root")
+        # create homepage
+        homepage = HomePage(title="Hello World",
+                            slug="hello-world",
+                            )
+        # add homepage to root page
+        root_page.add_child(instance=homepage)
+        # create book index page
+        book_index = BookIndex(title="Book Index",
+                               page_description="Test",
+                               dev_standard_1_description="Test",
+                               dev_standard_2_description="Test",
+                               dev_standard_3_description="Test",
+                               dev_standard_4_description="Test",
+                               )
+        # add book index to homepage
+        homepage.add_child(instance=book_index)
+
+        test_image = SimpleUploadedFile(name='openstax.png', content=open("oxauth/static/images/openstax.png", 'rb').read())
+        cls.test_doc = Document.objects.create(title='Test Doc', file=test_image)
+
+        cls.book_index = Page.objects.get(id=book_index.id)
 
     def test_can_create_book(self):
-        self.assertEqual(self.book.salesforce_abbreviation, 'University Phys (Calc)')
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            book = Book(title="University Physics",
+                        slug="university-physics",
+                        cnx_id='031da8d3-b525-429c-80cf-6c8ed997733a',
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test Book",
+                        cover=self.test_doc,
+                        title_image=self.test_doc,
+                        publish_date=datetime.date.today(),
+                        locale=root_page.locale
+                        )
+            book_index.add_child(instance=book)
+            self.assertEqual(book.salesforce_abbreviation, 'University Physics (Calc)')
 
-    # TODO: not sure what this is testing... likely not needed
     def test_can_create_ap_book(self):
-        self.assertEqual(self.book.salesforce_abbreviation, 'University Phys (Calc)')
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_prealgebra.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            book = Book(title="Prealgebra",
+                        slug="prealgebra",
+                        salesforce_book_id='a0ZU000000DLpEMMA1',
+                        description="This is Prealgebra. Next, you learn Prealgebra!",
+                        is_ap=True,
+                        cover=self.test_doc,
+                        title_image=self.test_doc,
+                        publish_date=datetime.date.today(),
+                        locale=root_page.locale
+                        )
+            book_index.add_child(instance=book)
+            self.assertEqual(book.salesforce_abbreviation, 'Prealgebra')
+
 
     def test_can_create_book_without_cnx_id(self):
-        self.book.cnx_id = None
-        self.book.save()
-        self.assertEqual(self.book.salesforce_abbreviation, 'University Phys (Calc)')
-
-    # TODO: again.. not sure what this is testing
-    def test_only_numbers_for_price(self):
-        self.assertEqual(self.book.salesforce_abbreviation, 'University Phys (Calc)')
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_no_cnx_id.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            book = Book(title="University Physics",
+                        slug="university-physics",
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="This is University Physics. Next, you learn University Physics!",
+                        cover=self.test_doc,
+                        title_image=self.test_doc,
+                        publish_date=datetime.date.today(),
+                        locale=root_page.locale
+                        )
+            book_index.add_child(instance=book)
+            self.assertEqual(book.salesforce_abbreviation, 'University Physics (Calc)')
 
     def test_allowed_subpages(self):
-        self.assertAllowedSubpageTypes(BookIndex, { Book })
+        self.assertAllowedSubpageTypes(BookIndex, {
+            Book
+        })
 
     def test_cannot_create_book_under_homepage(self):
         self.assertCanNotCreateAt(HomePage, Book)
@@ -74,26 +107,56 @@ class BookTests(WagtailPageTests):
         assertPathDoesNotRedirectToTrailingSlash(self, '/apps/cms/api/books/slug')
 
     def test_can_create_book_with_cc_license(self):
-        self.book.license_name = 'Creative Commons Attribution License'
-        self.book.save()
-        self.assertEqual(self.book.license_url, 'https://creativecommons.org/licenses/by/4.0/')
-
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_license.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            book = Book(title="University Physics",
+                        slug="university-physics",
+                        cnx_id='031da8d3-b525-429c-80cf-6c8ed997733a',
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test Book",
+                        cover=self.test_doc,
+                        title_image=self.test_doc,
+                        publish_date=datetime.date.today(),
+                        locale=root_page.locale,
+                        license_name='Creative Commons Attribution License',
+                        )
+            book_index.add_child(instance=book)
+            self.assertEqual(book.license_url, 'https://creativecommons.org/licenses/by/4.0/')
 
     def test_faculty_resources_available_or_not(self):
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            book = Book(title="University Physics",
+                        slug="university-physics",
+                        cnx_id='031da8d3-b525-429c-80cf-6c8ed997733a',
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test Book",
+                        cover=self.test_doc,
+                        title_image=self.test_doc,
+                        publish_date=datetime.date.today(),
+                        locale=root_page.locale
+                        )
+            book_index.add_child(instance=book)
+
         faculty_resource = snippets.models.FacultyResource(heading="Instructor Getting Started Guide",
                                                            description="<p data-block-key=\"6o2yl\">Download our helpful guide to all things OpenStax.<br/></p>",
                                                            unlocked_resource=False,
                                                            creator_fest_resource=False)
         faculty_resource.save()
 
-        book_faculty_resource = BookFacultyResources.objects.create(link_external="https://openstax.org", link_text="Go!",resource=faculty_resource,book_faculty_resource=self.book)
+        book_faculty_resource = BookFacultyResources.objects.create(link_external="https://openstax.org",
+                                                                    link_text="Go!", resource=faculty_resource,
+                                                                    book_faculty_resource=book)
         book_faculty_resource.save()
 
         # run test without flag
         response = self.client.get('/apps/cms/api/books/resources/?slug=university-physics')
+        print(str(response))
         self.assertEqual(response.data['book_faculty_resources'][0]['link_external'], 'https://openstax.org')
         # check book data is cleared out
-        self.assertEqual(response.data['book_faculty_resources'][0]['book_faculty_resource'],{})
+        self.assertEqual(response.data['book_faculty_resources'][0]['book_faculty_resource'], {})
 
         # run test with flag
         response = self.client.get('/apps/cms/api/books/resources/?slug=university-physics&x=y')
