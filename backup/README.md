@@ -9,3 +9,5 @@
  * run this command from bit-deployment
    * `bin/scp cms dev cron :~/www/cms/backup/[backup file name] ~/new/location`
    * Read more setup details in the scp file in bit-deployment
+
+[DBBackup Documentation](https://django-dbbackup.readthedocs.io/en/master/index.html)
