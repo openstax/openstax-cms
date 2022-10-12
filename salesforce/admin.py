@@ -180,6 +180,10 @@ class PartnerAdmin(admin.ModelAdmin):
     mark_not_visible.short_description = "Mark partners as not visible on website"
     mark_not_visible.allowed_permissions = ('change',)
 
+    def save_model(self, request, obj, form, change):
+        obj.from_admin_site = True
+        super().save_model(request, obj, form, change)
+
 class PartnerCategoryMappingAdmin(admin.ModelAdmin):
     list_display = ('display_name', 'salesforce_name')
 

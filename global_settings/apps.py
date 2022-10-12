@@ -10,3 +10,4 @@ class GlobalSettingsConfig(AppConfig):
         import donations.signals
         import webinars.signals
         import snippets.signals
+        import salesforce.signals
