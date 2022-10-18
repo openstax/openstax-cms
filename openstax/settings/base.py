@@ -188,7 +188,6 @@ INSTALLED_APPS = [
     'django.contrib.postgres',
     'django.contrib.admin',
     'django.contrib.sitemaps',
-    'dbbackup',  # django-dbbackup
     # contrib
     'compressor',
     'taggit',
@@ -435,10 +434,6 @@ EVENTBRITE_API_KEY = os.getenv('EVENTBRITE_API_KEY', '')
 EVENTBRITE_API_SECRET = os.getenv('EVENTBRITE_API_SECRET', '')
 EVENTBRITE_API_PRIVATE_TOKEN = os.getenv('EVENTBRITE_API_PRIVATE_TOKEN', '')
 EVENTBRITE_API_PUBLIC_TOKEN = os.getenv('EVENTBRITE_API_PUBLIC_TOKEN', '')
-
-# djago-dbbackup
-DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
-DBBACKUP_STORAGE_OPTIONS = {'location': 'backup/'}
 
 # to override any of the above settings use a local.py file in this directory
 try:
