@@ -133,3 +133,10 @@ class InfoBoxBlock(blocks.StructBlock):
     class Meta:
         icon = 'placeholder'
 
+
+class AllyLogoBlock(blocks.StructBlock):
+    image = APIImageChooserBlock()
+
+    class Meta:
+        icon = 'placeholder'
+
