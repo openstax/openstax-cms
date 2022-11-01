@@ -143,11 +143,6 @@ rich-click==1.4
   rich==12.4.1
     commonmark==0.9.1
     Pygments==2.12.0
-scout-apm==2.25.1
-  asgiref==3.5.2
-  psutil==5.9.0
-  urllib3==1.26.9
-  wrapt==1.14.1
 selenium==4.1.5
   trio==0.20.0
     async-generator==1.10

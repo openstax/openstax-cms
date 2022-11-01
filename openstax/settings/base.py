@@ -179,7 +179,6 @@ ROOT_URLCONF = 'openstax.urls'
 WSGI_APPLICATION = 'openstax.wsgi.application'
 
 INSTALLED_APPS = [
-    'scout_apm.django',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -414,11 +413,6 @@ WAGTAILIMAGES_FORMAT_CONVERSIONS = {
 }
 
 WAGTAILIMAGES_MAX_UPLOAD_SIZE = 2 * 1024 * 1024  # 2MB
-
-# Scout
-SCOUT_KEY = os.getenv('SCOUT_KEY', '')
-SCOUT_MONITOR = bool(SCOUT_KEY)
-SCOUT_NAME = os.getenv('SCOUT_NAME', f"openstax-cms ({ENVIRONMENT})")
 
 # Sentry
 sentry_sdk.init(
