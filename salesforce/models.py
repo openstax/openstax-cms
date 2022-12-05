@@ -259,16 +259,18 @@ class Partner(models.Model):
 
     @property
     def reviews(self):
-        return list(PartnerReview.objects.filter(partner=self).values('id',
-                                                                         'status',
-                                                                         'rating',
-                                                                         'review',
-                                                                         'partner_response',
-                                                                         'submitted_by_name',
-                                                                         'submitted_by_account_uuid',
-                                                                         'user_faculty_status',
-                                                                         'created',
-                                                                         'updated'))
+        # empty array for now
+        return []
+        # return list(PartnerReview.objects.filter(partner=self).values('id',
+        #                                                                  'status',
+        #                                                                  'rating',
+        #                                                                  'review',
+        #                                                                  'partner_response',
+        #                                                                  'submitted_by_name',
+        #                                                                  'submitted_by_account_uuid',
+        #                                                                  'user_faculty_status',
+        #                                                                  'created',
+        #                                                                  'updated'))
 
     @property
     def average_rating(self):
