@@ -121,7 +121,7 @@ class Command(BaseCommand):
                     "International__c, " \
                     "Partnership_Level__c, " \
                     "Equity_Rating__c " \
-                    "FROM Partner__c"
+                    "FROM Partner__c WHERE Partner_Status__c = 'Current Partner' AND RecordType.Name = 'Child'"
             response = sf.query_all(query)
             sf_marketplace_partners = response['records']
 
