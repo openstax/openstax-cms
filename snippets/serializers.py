@@ -1,4 +1,4 @@
-from .models import Role, Subject, ErrataContent, SubjectCategory, GiveBanner, BlogContentType, BlogCollection
+from .models import Role, Subject, k12Subject, ErrataContent, SubjectCategory, GiveBanner, BlogContentType, BlogCollection
 
 from rest_framework import serializers, generics
 
@@ -23,6 +23,22 @@ class SubjectSerializer(serializers.ModelSerializer):
                   'search_description',
                   'subject_icon',
                   'subject_color')
+
+
+
+class k12SubjectSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = k12Subject
+        fields = ('id',
+                  'name', 
+                  'description', 
+                  'seo_title', 
+                  'search_description', 
+                  'subject_image', 
+                  'subject_category' , 
+                  'subject_color', 
+                  'subject_link'
+                  )
 
 
 class ErrataContentSerializer(serializers.ModelSerializer):

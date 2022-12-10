@@ -67,6 +67,24 @@ COVER_COLORS = (
     (YELLOW, 'Yellow'),
 )
 
+
+MATH = 'math'
+SOCIAL_STUDIES='social-studies'
+SCIENCE = 'science'
+CAREER_COLLEGE_READINESS = 'career-college-readiness'
+OTHER = 'other'
+NONE = 'none'
+
+K12_CATEGORIES = (
+(MATH, 'Math'),
+(SOCIAL_STUDIES, 'Social Studies'),
+(SCIENCE, 'Science'),
+(CAREER_COLLEGE_READINESS, 'Career and College Readiness'),
+(OTHER, 'Other'),
+(NONE, 'None'),
+)
+
+
 CC_BY_LICENSE_NAME = 'Creative Commons Attribution License'
 CC_BY_LICENSE_VERSION = '4.0'
 CC_BY_LICENSE_URL = 'https://creativecommons.org/licenses/by/4.0/'

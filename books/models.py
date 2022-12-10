@@ -29,7 +29,7 @@ from wagtail.core.models import Site
 
 from openstax.functions import build_document_url, build_image_url
 from books.constants import BOOK_STATES, BOOK_COVER_TEXT_COLOR, COVER_COLORS, CC_NC_SA_LICENSE_NAME, CC_BY_LICENSE_NAME, \
-    CC_BY_LICENSE_URL, CC_NC_SA_LICENSE_URL, CC_NC_SA_LICENSE_VERSION, CC_BY_LICENSE_VERSION
+    CC_BY_LICENSE_URL, CC_NC_SA_LICENSE_URL, CC_NC_SA_LICENSE_VERSION, CC_BY_LICENSE_VERSION, K12_CATEGORIES
 import snippets.models as snippets
 
 
@@ -387,6 +387,22 @@ class SubjectBooks(models.Model):
         APIField('subject_search_description')
     ]
 
+class k12SubjectBooks(models.Model):
+    subject = models.ForeignKey(snippets.k12Subject, on_delete=models.SET_NULL, null=True, related_name='k12subjects_subject')
+
+    def get_subject_name(self):
+        return self.subject.name
+    subject_name = property(get_subject_name)
+
+    def get_subject_category(self):
+        return self.subject.subject_category
+    subject_category = property(get_subject_category)
+
+    api_fields = [
+        APIField('subject_name'),
+        APIField('subject_category'),
+    ]
+
 
 class BookCategory(models.Model):
     category = models.ForeignKey(snippets.SubjectCategory, on_delete=models.SET_NULL, null=True, related_name='subjects_subjectcategory')
@@ -441,9 +457,11 @@ class OrientationFacultyResources(Orderable, OrientationFacultyResource):
 class BookStudentResources(Orderable, StudentResources):
     book_student_resource = ParentalKey('books.Book', related_name='book_student_resources')
 
-
 class BookSubjects(Orderable, SubjectBooks):
     book_subject = ParentalKey('books.Book', related_name='book_subjects')
+
+class k12BookSubjects(Orderable, k12SubjectBooks):
+    k12book_subject = ParentalKey('books.Book', related_name='k12book_subjects')
 
 
 class BookCategories(Orderable, BookCategory):
@@ -466,6 +484,7 @@ class Book(Page):
     salesforce_book_id = models.CharField(max_length=255, blank=True, null=True,
                                        help_text='No tracking and not included on adoption and interest forms if left blank)')
     updated = models.DateTimeField(blank=True, null=True, help_text='Late date web content was updated')
+    k12_subject = models.CharField(max_length=255, choices=K12_CATEGORIES, default='none')
     is_ap = models.BooleanField(default=False, help_text='Whether this book is an AP (Advanced Placement) book.')
     description = RichTextField(
         blank=True, help_text="Description shown on Book Detail page.")
@@ -650,6 +669,7 @@ class Book(Page):
         FieldPanel('publish_date'),
         InlinePanel('book_subjects', label='Subjects'),
         InlinePanel('book_categories', label='Subject Categories'),
+        InlinePanel('k12book_subjects', label='K12 Subjects'),
         FieldPanel('is_ap'),
         FieldPanel('description', classname="full"),
         DocumentChooserPanel('cover'),
@@ -744,6 +764,7 @@ class Book(Page):
         APIField('salesforce_book_id'),
         APIField('book_subjects'),
         APIField('book_categories'),
+        APIField('k12book_subjects'),
         APIField('is_ap'),
         APIField('description'),
         APIField('cover_url'),
@@ -833,6 +854,12 @@ class Book(Page):
         for subject in self.book_subjects.all():
             subject_list.append(subject.subject_name)
         return subject_list
+
+    def k12subjects(self):
+        k12subject_list = []
+        for k12subject in self.k12book_subjects.all():
+            k12subject_list.append(k12subject.subject_name)
+        return k12subject_list
 
     @property
     def subject_categories(self):
