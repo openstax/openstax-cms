@@ -29,6 +29,9 @@ class ResourcesViewSet(viewsets.ViewSet):
     def list(self, request):
         slug = request.GET.get('slug', False)
         queryset = Book.objects.filter(slug=slug)
-        serializer = FacultyResourcesSerializer(queryset[0], context={'request': request})
-        return Response(serializer.data)
+        if queryset:
+            serializer = FacultyResourcesSerializer(queryset[0], context={'request': request})
+            return Response(serializer.data)
+        else:
+            return Response({})
 

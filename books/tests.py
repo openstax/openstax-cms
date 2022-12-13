@@ -153,7 +153,6 @@ class BookTests(WagtailPageTests):
 
         # run test without flag
         response = self.client.get('/apps/cms/api/books/resources/?slug=university-physics')
-        print(str(response))
         self.assertEqual(response.data['book_faculty_resources'][0]['link_external'], 'https://openstax.org')
         # check book data is cleared out
         self.assertEqual(response.data['book_faculty_resources'][0]['book_faculty_resource'], {})
@@ -161,3 +160,8 @@ class BookTests(WagtailPageTests):
         # run test with flag
         response = self.client.get('/apps/cms/api/books/resources/?slug=university-physics&x=y')
         self.assertEqual(response.data['book_faculty_resources'][0]['link_external'], '')
+
+    def test_bad_faculty_resources_slug(self):
+        response = self.client.get('/apps/cms/api/books/resources/?slug=university-physic')
+        self.assertEqual(response.data, {})
+
