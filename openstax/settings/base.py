@@ -179,7 +179,6 @@ ROOT_URLCONF = 'openstax.urls'
 WSGI_APPLICATION = 'openstax.wsgi.application'
 
 INSTALLED_APPS = [
-    'scout_apm.django',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -188,7 +187,6 @@ INSTALLED_APPS = [
     'django.contrib.postgres',
     'django.contrib.admin',
     'django.contrib.sitemaps',
-    'dbbackup',  # django-dbbackup
     # contrib
     'compressor',
     'taggit',
@@ -245,7 +243,6 @@ INSTALLED_APPS = [
 
 CRONJOBS = [
     ('0 2 * * *', 'django.core.management.call_command', ['delete_resource_downloads']),
-    ('0 4 * * *', 'django.core.management.call_command', ['sync_reviews']),
     ('0 6 * * *', 'django.core.management.call_command', ['update_resource_downloads']),
     ('0 8 * * *', 'django.core.management.call_command', ['update_schools_and_mapbox']),
     ('0 9 * * *', 'django.core.management.call_command', ['update_opportunities']),
@@ -416,11 +413,6 @@ WAGTAILIMAGES_FORMAT_CONVERSIONS = {
 
 WAGTAILIMAGES_MAX_UPLOAD_SIZE = 2 * 1024 * 1024  # 2MB
 
-# Scout
-SCOUT_KEY = os.getenv('SCOUT_KEY', '')
-SCOUT_MONITOR = bool(SCOUT_KEY)
-SCOUT_NAME = os.getenv('SCOUT_NAME', f"openstax-cms ({ENVIRONMENT})")
-
 # Sentry
 sentry_sdk.init(
     dsn=os.getenv('SENTRY_DSN'),
@@ -435,10 +427,6 @@ EVENTBRITE_API_KEY = os.getenv('EVENTBRITE_API_KEY', '')
 EVENTBRITE_API_SECRET = os.getenv('EVENTBRITE_API_SECRET', '')
 EVENTBRITE_API_PRIVATE_TOKEN = os.getenv('EVENTBRITE_API_PRIVATE_TOKEN', '')
 EVENTBRITE_API_PUBLIC_TOKEN = os.getenv('EVENTBRITE_API_PUBLIC_TOKEN', '')
-
-# djago-dbbackup
-DBBACKUP_STORAGE = 'django.core.files.storage.FileSystemStorage'
-DBBACKUP_STORAGE_OPTIONS = {'location': 'backup/'}
 
 # to override any of the above settings use a local.py file in this directory
 try:

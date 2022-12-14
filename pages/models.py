@@ -32,7 +32,8 @@ from .custom_blocks import ImageBlock, \
     StoryBlock, \
     TutorAdBlock, \
     AboutOpenStaxBlock, \
-    InfoBoxBlock
+    InfoBoxBlock, \
+    AllyLogoBlock
 
 from .custom_fields import \
     Institutions, \
@@ -446,6 +447,7 @@ class HomePage(Page):
         'pages.TutorMarketing',
         'pages.Subjects',
         'pages.FormHeadings',
+        'pages.AllyLogos',
         'books.BookIndex',
         'news.NewsIndex',
         'news.PressIndex'
@@ -2596,3 +2598,73 @@ class FormHeadings(Page):
 
     parent_page_types = ['pages.HomePage']
     max_count = 1
+
+
+class AllyLogos(Page):
+    heading = models.CharField(max_length=255)
+    description = RichTextField()
+    ally_logos_heading = models.CharField(max_length=255)
+    ally_logos_description = RichTextField()
+    ally_logos = StreamField([
+        ('ally_logo', blocks.ListBlock(AllyLogoBlock())),
+    ])
+    openstax_logos_heading = models.CharField(max_length=255)
+    openstax_logos_description = RichTextField()
+    openstax_logos = StreamField([
+        ('openstax_logo', blocks.ListBlock(AllyLogoBlock())),
+    ])
+    book_ally_logos_heading = models.CharField(max_length=255)
+    book_ally_logos_description = RichTextField()
+    book_ally_logos = StreamField([
+        ('book_ally_logo', blocks.ListBlock(AllyLogoBlock())),
+    ])
+
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    content_panels = [
+        FieldPanel('title'),
+        FieldPanel('heading'),
+        FieldPanel('description'),
+        FieldPanel('ally_logos_heading'),
+        FieldPanel('ally_logos_description'),
+        StreamFieldPanel('ally_logos'),
+        FieldPanel('openstax_logos_heading'),
+        FieldPanel('openstax_logos_description'),
+        StreamFieldPanel('openstax_logos'),
+        FieldPanel('book_ally_logos_heading'),
+        FieldPanel('book_ally_logos_description'),
+        StreamFieldPanel('book_ally_logos')
+    ]
+
+    api_fields = [
+        APIField('heading'),
+        APIField('description'),
+        APIField('ally_logos_heading'),
+        APIField('ally_logos_description'),
+        APIField('ally_logos'),
+        APIField('openstax_logos_heading'),
+        APIField('openstax_logos_description'),
+        APIField('openstax_logos'),
+        APIField('book_ally_logos_heading'),
+        APIField('book_ally_logos_description'),
+        APIField('book_ally_logos'),
+    ]
+
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
+    ]
+
+    template = 'page.html'
+
+    parent_page_types = ['pages.HomePage']
+
+
