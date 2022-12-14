@@ -94,6 +94,7 @@ class ResourceDownloadSerializer(serializers.ModelSerializer):
         account_uuid = validated_data.get('account_uuid', None)
         resource_name = validated_data.get('resource_name', None)
         contact_id = validated_data.get('contact_id', None)
+        rd = []
         try:
             rd = ResourceDownload.objects.filter(account_uuid=account_uuid, book=book)
             if resource_name:
@@ -103,7 +104,8 @@ class ResourceDownloadSerializer(serializers.ModelSerializer):
             rd.contact_id = contact_id
             rd.save()
         except (ResourceDownload.DoesNotExist, IndexError):
-            rd = ResourceDownload.objects.create(**validated_data)
+            if book:
+                rd = ResourceDownload.objects.create(**validated_data)
 
         return rd
 
