@@ -130,11 +130,11 @@ pycryptodome==3.14.1
 pydot==1.4.2
   pyparsing==3.0.9
 PyJWE==1.0.0
-  cryptography==37.0.2
+  cryptography==38.0.3
     cffi==1.15.0
       pycparser==2.21
 pyOpenSSL==22.0.0
-  cryptography==37.0.2
+  cryptography==38.0.3
     cffi==1.15.0
       pycparser==2.21
 PySocks==1.7.1
@@ -171,7 +171,7 @@ sentry-sdk==1.5.12
 setuptools==62.1.0
 simple-salesforce==1.11.6
   Authlib==1.0.1
-    cryptography==37.0.2
+    cryptography==38.0.3
       cffi==1.15.0
         pycparser==2.21
   requests==2.27.1
@@ -207,7 +207,7 @@ simple-salesforce==1.11.6
         urllib3==1.26.9
 social-auth-app-django==5.0.0
   social-auth-core==4.2.0
-    cryptography==37.0.2
+    cryptography==38.0.3
       cffi==1.15.0
         pycparser==2.21
     defusedxml==0.7.1
