@@ -104,7 +104,7 @@ class ResourceDownloadSerializer(serializers.ModelSerializer):
             rd.contact_id = contact_id
             rd.save()
         except (ResourceDownload.DoesNotExist, IndexError):
-            if book is not None:
+            if book:
                 rd = ResourceDownload.objects.create(**validated_data)
 
         return rd
