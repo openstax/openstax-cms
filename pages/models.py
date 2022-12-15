@@ -1287,22 +1287,22 @@ class ResearchPage(Page):
             ('link', blocks.URLBlock(required=False, help_text="Optional link to project."))
         ], icon='document')),
     ], null=True, blank=True)
-	research_areas = StreamField(
-		blocks.StreamBlock([
-			('research_area_section', blocks.StructBlock([
-				('research_area_title', blocks.CharBlock()),
-				('research_area_blurb', blocks.RichTextBlock()),
-				('research_area', blocks.ListBlock(blocks.StructBlock([
-					('header', blocks.CharBlock()),
-					('description', blocks.CharBlock()),
-					('short_description', blocks.CharBlock()),
-					('photo', APIImageChooserBlock(required=False)),
-					('cta_text', blocks.CharBlock(required=False)),
-					('cta_link', blocks.URLBlock(required=False)),
-					('publication', blocks.URLBlock(required=False)),
-					('github', blocks.URLBlock(required=False)),
-				])))
-			]))]))
+    research_areas = StreamField(
+        blocks.StreamBlock([
+            ('research_area_section', blocks.StructBlock([
+                ('research_area_title', blocks.CharBlock()),
+                ('research_area_blurb', blocks.RichTextBlock()),
+                ('research_area', blocks.ListBlock(blocks.StructBlock([
+                    ('header', blocks.CharBlock()),
+                    ('description', blocks.CharBlock()),
+                    ('short_description', blocks.CharBlock()),
+                    ('photo', APIImageChooserBlock(required=False)),
+                    ('cta_text', blocks.CharBlock(required=False)),
+                    ('cta_link', blocks.URLBlock(required=False)),
+                    ('publication', blocks.URLBlock(required=False)),
+                    ('github', blocks.URLBlock(required=False)),
+                ])))
+            ]))]))
     people_header = models.CharField(max_length=255)
     current_members = StreamField([
         ('person', blocks.StructBlock([
@@ -1321,20 +1321,20 @@ class ResearchPage(Page):
         ], icon='user')),
     ], null=True, blank=True)
     collaborating_researchers = StreamField([
-		('person', blocks.StructBlock([
-			('first_name', blocks.CharBlock()),
-			('last_name', blocks.CharBlock()),
-			('title', blocks.CharBlock()),
-			('long_title', blocks.CharBlock(required=False)),
-			('bio', blocks.CharBlock()),
-			('education', blocks.CharBlock(required=False)),
-			('specialization', blocks.CharBlock(required=False)),
-			('research_interest', blocks.CharBlock(required=False)),
-			('photo', APIImageChooserBlock(required=False)),
-			('website', blocks.URLBlock(required=False)),
-			('linked_in', blocks.URLBlock(required=False)),
-			('google_scholar', blocks.URLBlock(required=False)),
-		], icon='user')),
+        ('person', blocks.StructBlock([
+            ('first_name', blocks.CharBlock()),
+            ('last_name', blocks.CharBlock()),
+            ('title', blocks.CharBlock()),
+            ('long_title', blocks.CharBlock(required=False)),
+            ('bio', blocks.CharBlock()),
+            ('education', blocks.CharBlock(required=False)),
+            ('specialization', blocks.CharBlock(required=False)),
+            ('research_interest', blocks.CharBlock(required=False)),
+            ('photo', APIImageChooserBlock(required=False)),
+            ('website', blocks.URLBlock(required=False)),
+            ('linked_in', blocks.URLBlock(required=False)),
+            ('google_scholar', blocks.URLBlock(required=False)),
+        ], icon='user')),
     ], null=True, blank=True)
     alumni = StreamField([
         ('person', blocks.StructBlock([
