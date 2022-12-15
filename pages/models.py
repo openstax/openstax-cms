@@ -1279,6 +1279,10 @@ class PrintOrder(Page):
 class ResearchPage(Page):
     mission_header = models.CharField(max_length=255)
     mission_body = models.TextField()
+    banner_header = models.TextField(default='')
+    banner_body = models.TextField(default='')
+    banner_cta = models.TextField(default='')
+    banner_url = models.URLField(default='')
     projects_header = models.CharField(max_length=255)
     projects = StreamField([
         ('project', blocks.StructBlock([
@@ -1302,7 +1306,7 @@ class ResearchPage(Page):
                     ('publication', blocks.URLBlock(required=False)),
                     ('github', blocks.URLBlock(required=False)),
                 ])))
-            ]))]))
+            ]))]), default='')
     people_header = models.CharField(max_length=255)
     current_members = StreamField([
         ('person', blocks.StructBlock([
@@ -1366,6 +1370,10 @@ class ResearchPage(Page):
         FieldPanel('title', classname='full title', help_text="Internal name for page."),
         FieldPanel('mission_header'),
         FieldPanel('mission_body'),
+        FieldPanel('banner_header'),
+        FieldPanel('banner_body'),
+        FieldPanel('banner_cta'),
+        FieldPanel('banner_url'),
         FieldPanel('projects_header'),
         StreamFieldPanel('projects'),
         StreamFieldPanel('research_areas'),
@@ -1382,7 +1390,6 @@ class ResearchPage(Page):
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
         ImageChooserPanel('promote_image')
-
     ]
 
     api_fields = [
@@ -1390,6 +1397,10 @@ class ResearchPage(Page):
         APIField('mission_body'),
         APIField('projects_header'),
         APIField('projects'),
+		APIField('banner_header'),
+		APIField('banner_body'),
+		APIField('banner_cta'),
+		APIField('banner_url'),
         APIField('research_areas'),
         APIField('people_header'),
         APIField('current_members'),
