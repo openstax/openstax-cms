@@ -1279,23 +1279,17 @@ class PrintOrder(Page):
 class ResearchPage(Page):
     mission_header = models.CharField(max_length=255)
     mission_body = models.TextField()
-    banner_header = models.TextField(default='')
-    banner_body = models.TextField(default='')
-    banner_cta = models.TextField(default='')
-    banner_url = models.URLField(default='')
-    projects_header = models.CharField(max_length=255)
-    projects = StreamField([
-        ('project', blocks.StructBlock([
-            ('title', blocks.CharBlock()),
-            ('blurb', blocks.TextBlock()),
-            ('link', blocks.URLBlock(required=False, help_text="Optional link to project."))
-        ], icon='document')),
-    ], null=True, blank=True)
+    banner_header = models.TextField(default='', blank=True)
+    banner_body = models.TextField(default='', blank=True)
+    banner_CTA = models.TextField(default='', blank=True)
+    banner_URL = models.URLField(default='', blank=True)
+    research_area_header = models.CharField(max_length=255)
     research_areas = StreamField(
         blocks.StreamBlock([
             ('research_area_section', blocks.StructBlock([
                 ('research_area_title', blocks.CharBlock()),
                 ('research_area_blurb', blocks.RichTextBlock()),
+                ('research_area_blurb_mobile', blocks.RichTextBlock()),
                 ('research_area', blocks.ListBlock(blocks.StructBlock([
                     ('header', blocks.CharBlock()),
                     ('description', blocks.CharBlock()),
@@ -1372,10 +1366,8 @@ class ResearchPage(Page):
         FieldPanel('mission_body'),
         FieldPanel('banner_header'),
         FieldPanel('banner_body'),
-        FieldPanel('banner_cta'),
-        FieldPanel('banner_url'),
-        FieldPanel('projects_header'),
-        StreamFieldPanel('projects'),
+        FieldPanel('banner_CTA'),
+        FieldPanel('banner_URL'),
         StreamFieldPanel('research_areas'),
         FieldPanel('people_header'),
         StreamFieldPanel('current_members'),
@@ -1395,12 +1387,10 @@ class ResearchPage(Page):
     api_fields = [
         APIField('mission_header'),
         APIField('mission_body'),
-        APIField('projects_header'),
-        APIField('projects'),
         APIField('banner_header'),
         APIField('banner_body'),
-        APIField('banner_cta'),
-        APIField('banner_url'),
+        APIField('banner_CTA'),
+        APIField('banner_URL'),
         APIField('research_areas'),
         APIField('people_header'),
         APIField('current_members'),
