@@ -435,6 +435,7 @@ class HomePage(Page):
         'pages.PrivacyPolicy',
         'pages.PrintOrder',
         'pages.ResearchPage',
+        'pages.LearningResearchPage',
         'pages.Careers',
         'pages.Impact',
         'pages.InstitutionalPartnership',
