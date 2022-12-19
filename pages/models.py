@@ -1284,7 +1284,7 @@ class ResearchPage(Page):
     banner_CTA = models.TextField(default='', blank=True)
     banner_URL = models.URLField(default='', blank=True)
     research_area_header = models.CharField(max_length=255)
-    research_area_description = models.TextField(default='', blank=True)
+    research_area_description = RichTextField()
     research_areas_list = StreamField(
         blocks.StreamBlock([
             ('research_area_section', blocks.StructBlock([
