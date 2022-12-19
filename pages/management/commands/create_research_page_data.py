@@ -17,8 +17,8 @@ class Command(BaseCommand):
 			mission_body='Advancing interdisciplinary research in learning sciences, education, and allied disciplines, to improve learner success.',
 			banner_header='',
 			banner_body='',
-			banner_CTA='',
-			banner_URL='',
+			bannerCTA='',
+			bannerURL='',
 			research_area_header='Areas of Research Focus',
 			research_area_description='Our team has significant expertise in <strong>learning science, education research, and AI/ML in education.</strong> We use a multidisciplinary approach to examine who our learners are, what are they learning, and how are they learning; to provide appropriate supports when and where learners need them. To enable large-scale rapid cycle research, we are developing Kinetic, a research infrastructure connecting researchers with adult higher ed learners in the US.',
 			research_areas_list=json.dumps([

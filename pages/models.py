@@ -1281,8 +1281,8 @@ class ResearchPage(Page):
     mission_body = models.TextField()
     banner_header = models.TextField(default='', blank=True)
     banner_body = models.TextField(default='', blank=True)
-    banner_CTA = models.TextField(default='', blank=True)
-    banner_URL = models.URLField(default='', blank=True)
+    bannerCTA = models.TextField(default='', blank=True)
+    bannerURL = models.URLField(default='', blank=True)
     research_area_header = models.CharField(max_length=255)
     research_area_description = RichTextField()
     research_areas_list = StreamField(
@@ -1367,8 +1367,8 @@ class ResearchPage(Page):
         FieldPanel('mission_body'),
         FieldPanel('banner_header'),
         FieldPanel('banner_body'),
-        FieldPanel('banner_CTA'),
-        FieldPanel('banner_URL'),
+        FieldPanel('bannerCTA'),
+        FieldPanel('bannerURL'),
         FieldPanel('research_area_header'),
         FieldPanel('research_area_description'),
         StreamFieldPanel('research_areas_list'),
@@ -1392,8 +1392,8 @@ class ResearchPage(Page):
         APIField('mission_body'),
         APIField('banner_header'),
         APIField('banner_body'),
-        APIField('banner_CTA'),
-        APIField('banner_URL'),
+        APIField('bannerCTA'),
+        APIField('bannerURL'),
         APIField('research_area_header'),
         APIField('research_area_description'),
         APIField('research_areas_list'),
