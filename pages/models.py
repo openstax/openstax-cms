@@ -1279,79 +1279,47 @@ class PrintOrder(Page):
 class ResearchPage(Page):
     mission_header = models.CharField(max_length=255)
     mission_body = models.TextField()
-    banner_header = models.TextField(default='', blank=True)
-    banner_body = models.TextField(default='', blank=True)
-    bannerCTA = models.TextField(default='', blank=True)
-    bannerURL = models.URLField(default='', blank=True)
-    research_area_header = models.CharField(max_length=255)
-    research_area_description = RichTextField()
-    research_areas_list = StreamField(
-        blocks.StreamBlock([
-            ('research_area_section', blocks.StructBlock([
-                ('research_area_title', blocks.CharBlock()),
-                ('research_area_blurb', blocks.RichTextBlock()),
-                ('research_area_blurb_mobile', blocks.RichTextBlock()),
-                ('research_areas', blocks.ListBlock(blocks.StructBlock([
-                    ('header', blocks.CharBlock()),
-                    ('description', blocks.CharBlock()),
-                    ('short_description', blocks.CharBlock()),
-                    ('photo', APIImageChooserBlock(required=False)),
-                    ('cta_text', blocks.CharBlock(required=False)),
-                    ('cta_link', blocks.URLBlock(required=False)),
-                    ('publication', blocks.URLBlock(required=False)),
-                    ('github', blocks.URLBlock(required=False)),
-                ])))
-            ]))]), default='')
+    projects_header = models.CharField(max_length=255)
+    projects = StreamField([
+        ('project', blocks.StructBlock([
+            ('title', blocks.CharBlock()),
+            ('blurb', blocks.TextBlock()),
+            ('link', blocks.URLBlock(required=False, help_text="Optional link to project."))
+        ], icon='user')),
+    ], null=True, blank=True)
     people_header = models.CharField(max_length=255)
-    current_members = StreamField([
-        ('person', blocks.StructBlock([
-            ('first_name', blocks.CharBlock()),
-            ('last_name', blocks.CharBlock()),
-            ('title', blocks.CharBlock()),
-            ('long_title', blocks.CharBlock(required=False)),
-            ('bio', blocks.CharBlock()),
-            ('education', blocks.CharBlock(required=False)),
-            ('specialization', blocks.CharBlock(required=False)),
-            ('research_interest', blocks.CharBlock(required=False)),
-            ('photo', APIImageChooserBlock(required=False)),
-            ('website', blocks.URLBlock(required=False)),
-            ('linked_in', blocks.URLBlock(required=False)),
-            ('google_scholar', blocks.URLBlock(required=False)),
-        ], icon='user')),
-    ], null=True, blank=True)
-    collaborating_researchers = StreamField([
-        ('person', blocks.StructBlock([
-            ('first_name', blocks.CharBlock()),
-            ('last_name', blocks.CharBlock()),
-            ('title', blocks.CharBlock()),
-            ('long_title', blocks.CharBlock(required=False)),
-            ('bio', blocks.CharBlock()),
-            ('education', blocks.CharBlock(required=False)),
-            ('specialization', blocks.CharBlock(required=False)),
-            ('research_interest', blocks.CharBlock(required=False)),
-            ('photo', APIImageChooserBlock(required=False)),
-            ('website', blocks.URLBlock(required=False)),
-            ('linked_in', blocks.URLBlock(required=False)),
-            ('google_scholar', blocks.URLBlock(required=False)),
-        ], icon='user')),
-    ], null=True, blank=True)
     alumni = StreamField([
         ('person', blocks.StructBlock([
             ('name', blocks.CharBlock()),
             ('title', blocks.CharBlock()),
-            ('linked_in', blocks.URLBlock(required=False)),
+            ('website', blocks.URLBlock(required=False)),
+        ], icon='user')),
+    ], null=True, blank=True)
+    current_members = StreamField([
+        ('person', blocks.StructBlock([
+            ('name', blocks.CharBlock()),
+            ('title', blocks.CharBlock()),
+            ('photo', APIImageChooserBlock(required=False)),
+            ('website', blocks.URLBlock(required=False)),
+        ], icon='user')),
+    ], null=True, blank=True)
+    external_collaborators = StreamField([
+        ('person', blocks.StructBlock([
+            ('name', blocks.CharBlock()),
+            ('title', blocks.CharBlock()),
+            ('photo', APIImageChooserBlock(required=False)),
+            ('website', blocks.URLBlock(required=False)),
         ], icon='user')),
     ], null=True, blank=True)
     publication_header = models.CharField(max_length=255)
     publications = StreamField([
         ('publication', blocks.StructBlock([
             ('authors', blocks.CharBlock()),
-            ('date', blocks.CharBlock()),
+            ('date', blocks.DateBlock()),
             ('title', blocks.CharBlock()),
             ('excerpt', blocks.CharBlock()),
-            ('pdf', blocks.URLBlock()),
-            ('github', blocks.URLBlock(required=False)),
-        ], icon='document')),
+            ('download_url', blocks.URLBlock()),
+        ], icon='user')),
     ], null=True, blank=True)
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
@@ -1365,17 +1333,12 @@ class ResearchPage(Page):
         FieldPanel('title', classname='full title', help_text="Internal name for page."),
         FieldPanel('mission_header'),
         FieldPanel('mission_body'),
-        FieldPanel('banner_header'),
-        FieldPanel('banner_body'),
-        FieldPanel('bannerCTA'),
-        FieldPanel('bannerURL'),
-        FieldPanel('research_area_header'),
-        FieldPanel('research_area_description'),
-        StreamFieldPanel('research_areas_list'),
+        FieldPanel('projects_header'),
+        StreamFieldPanel('projects'),
         FieldPanel('people_header'),
-        StreamFieldPanel('current_members'),
-        StreamFieldPanel('collaborating_researchers'),
         StreamFieldPanel('alumni'),
+        StreamFieldPanel('current_members'),
+        StreamFieldPanel('external_collaborators'),
         FieldPanel('publication_header'),
         StreamFieldPanel('publications'),
     ]
@@ -1385,22 +1348,18 @@ class ResearchPage(Page):
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
         ImageChooserPanel('promote_image')
+
     ]
 
     api_fields = [
         APIField('mission_header'),
         APIField('mission_body'),
-        APIField('banner_header'),
-        APIField('banner_body'),
-        APIField('bannerCTA'),
-        APIField('bannerURL'),
-        APIField('research_area_header'),
-        APIField('research_area_description'),
-        APIField('research_areas_list'),
+        APIField('projects_header'),
+        APIField('projects'),
         APIField('people_header'),
-        APIField('current_members'),
-        APIField('collaborating_researchers'),
         APIField('alumni'),
+        APIField('current_members'),
+        APIField('external_collaborators'),
         APIField('publication_header'),
         APIField('publications'),
         APIField('slug'),
