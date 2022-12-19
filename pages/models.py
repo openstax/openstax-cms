@@ -1284,13 +1284,14 @@ class ResearchPage(Page):
     banner_CTA = models.TextField(default='', blank=True)
     banner_URL = models.URLField(default='', blank=True)
     research_area_header = models.CharField(max_length=255)
-    research_areas = StreamField(
+    research_area_description = models.TextField(default='', blank=True)
+    research_areas_list = StreamField(
         blocks.StreamBlock([
             ('research_area_section', blocks.StructBlock([
                 ('research_area_title', blocks.CharBlock()),
                 ('research_area_blurb', blocks.RichTextBlock()),
                 ('research_area_blurb_mobile', blocks.RichTextBlock()),
-                ('research_area', blocks.ListBlock(blocks.StructBlock([
+                ('research_areas', blocks.ListBlock(blocks.StructBlock([
                     ('header', blocks.CharBlock()),
                     ('description', blocks.CharBlock()),
                     ('short_description', blocks.CharBlock()),
@@ -1368,7 +1369,9 @@ class ResearchPage(Page):
         FieldPanel('banner_body'),
         FieldPanel('banner_CTA'),
         FieldPanel('banner_URL'),
-        StreamFieldPanel('research_areas'),
+        FieldPanel('research_area_header'),
+        FieldPanel('research_area_description'),
+        StreamFieldPanel('research_areas_list'),
         FieldPanel('people_header'),
         StreamFieldPanel('current_members'),
         StreamFieldPanel('collaborating_researchers'),
@@ -1391,7 +1394,9 @@ class ResearchPage(Page):
         APIField('banner_body'),
         APIField('banner_CTA'),
         APIField('banner_URL'),
-        APIField('research_areas'),
+        APIField('research_area_header'),
+        APIField('research_area_description'),
+        APIField('research_areas_list'),
         APIField('people_header'),
         APIField('current_members'),
         APIField('collaborating_researchers'),
