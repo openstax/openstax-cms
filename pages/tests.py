@@ -83,7 +83,7 @@ class HomePageTests(WagtailPageTests):
             PrivacyPolicy,
             PrintOrder,
             ResearchPage,
-			LearningResearchPage,
+            LearningResearchPage,
             TeamPage,
             Careers,
             Impact,
