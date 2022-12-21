@@ -1285,7 +1285,10 @@ class LearningResearchPage(Page):
     bannerCTA = models.TextField(default='', blank=True)
     bannerURL = models.URLField(default='', blank=True)
     research_area_header = models.CharField(max_length=255)
-    research_area_description = RichTextField()
+    research_area_description_mobile = RichTextField(
+        help_text="Research Area Description (Mobile Only)",
+        default=""
+    )
     research_areas_list = StreamField(
         blocks.StreamBlock([
             ('research_area_section', blocks.StructBlock([
@@ -1295,7 +1298,10 @@ class LearningResearchPage(Page):
                 ('research_areas', blocks.ListBlock(blocks.StructBlock([
                     ('header', blocks.CharBlock()),
                     ('description', blocks.CharBlock()),
-                    ('short_description', blocks.CharBlock()),
+                    ('short_description', blocks.CharBlock(
+                        label="Short Description (Mobile Only)",
+                        help_text="Short Description (Mobile Only)"
+                    )),
                     ('photo', APIImageChooserBlock(required=False)),
                     ('cta_text', blocks.CharBlock(required=False)),
                     ('cta_link', blocks.URLBlock(required=False)),
@@ -1371,7 +1377,7 @@ class LearningResearchPage(Page):
         FieldPanel('bannerCTA'),
         FieldPanel('bannerURL'),
         FieldPanel('research_area_header'),
-        FieldPanel('research_area_description'),
+        FieldPanel('research_area_description_mobile'),
         StreamFieldPanel('research_areas_list'),
         FieldPanel('people_header'),
         StreamFieldPanel('current_members'),
@@ -1396,7 +1402,7 @@ class LearningResearchPage(Page):
         APIField('bannerCTA'),
         APIField('bannerURL'),
         APIField('research_area_header'),
-        APIField('research_area_description'),
+        APIField('research_area_description_mobile'),
         APIField('research_areas_list'),
         APIField('people_header'),
         APIField('current_members'),
