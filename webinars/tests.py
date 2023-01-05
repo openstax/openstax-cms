@@ -2,7 +2,7 @@ import json
 
 from django.test import TestCase
 from django.utils import timezone
-from wagtail.tests.utils import WagtailPageTests
+from wagtail.test.utils import WagtailPageTests
 
 from snippets.models import Subject
 from webinars.models import Webinar

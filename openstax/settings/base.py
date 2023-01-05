@@ -223,7 +223,7 @@ INSTALLED_APPS = [
     'wagtailimportexport',
     'versions',
     # wagtail
-    'wagtail.core',
+    'wagtail',
     'wagtail.admin',
     'wagtail.documents',
     'wagtail.snippets',
