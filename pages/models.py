@@ -4,14 +4,14 @@ from django.http.response import JsonResponse
 
 from modelcluster.fields import ParentalKey
 from wagtail.admin.edit_handlers import FieldPanel, InlinePanel, StreamFieldPanel, MultiFieldPanel
-from wagtail.core import blocks
-from wagtail.core.fields import RichTextField, StreamField
-from wagtail.core.models import Orderable, Page
+from wagtail import blocks
+from wagtail.fields import RichTextField, StreamField
+from wagtail.models import Orderable, Page
 from wagtail.documents.edit_handlers import DocumentChooserPanel
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.api import APIField
-from wagtail.core.models import Site
-from wagtail.core import hooks
+from wagtail.models import Site
+from wagtail import hooks
 from wagtail.admin.menu import MenuItem
 from wagtail.snippets.edit_handlers import SnippetChooserPanel
 

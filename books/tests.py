@@ -1,7 +1,7 @@
 import vcr
 
 from wagtail.tests.utils import WagtailPageTests
-from wagtail.core.models import Page
+from wagtail.models import Page
 
 import snippets.models
 from pages.models import HomePage

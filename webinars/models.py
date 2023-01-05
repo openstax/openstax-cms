@@ -1,8 +1,8 @@
 import json
 
 from django.db import models
-from wagtail.core import blocks
-from wagtail.core.fields import StreamField
+from wagtail import blocks
+from wagtail.fields import StreamField
 from news.models import SubjectBlock
 from snippets.models import Subject
 

@@ -15,9 +15,9 @@ from wagtail.admin.edit_handlers import (FieldPanel,
                                          InlinePanel,
                                          PageChooserPanel,
                                          StreamFieldPanel)
-from wagtail.core import blocks
-from wagtail.core.fields import RichTextField, StreamField
-from wagtail.core.models import Orderable, Page
+from wagtail import blocks
+from wagtail.fields import RichTextField, StreamField
+from wagtail.models import Orderable, Page
 from wagtail.documents.edit_handlers import DocumentChooserPanel
 from wagtail.snippets.blocks import SnippetChooserBlock
 from wagtail.images.edit_handlers import ImageChooserPanel
@@ -25,7 +25,7 @@ from wagtail.snippets.edit_handlers import SnippetChooserPanel
 from wagtail.admin.edit_handlers import TabbedInterface, ObjectList
 from wagtail.api import APIField
 from wagtail.snippets.models import register_snippet
-from wagtail.core.models import Site
+from wagtail.models import Site
 
 from openstax.functions import build_document_url, build_image_url
 from books.constants import BOOK_STATES, BOOK_COVER_TEXT_COLOR, COVER_COLORS, CC_NC_SA_LICENSE_NAME, CC_BY_LICENSE_NAME, \

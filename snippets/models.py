@@ -5,8 +5,8 @@ from wagtail.search import index
 from wagtail.admin.edit_handlers import FieldPanel, InlinePanel
 from wagtail.snippets.edit_handlers import SnippetChooserPanel
 from wagtail.images.edit_handlers import ImageChooserPanel
-from wagtail.core.fields import RichTextField
-from wagtail.core.models import TranslatableMixin, Orderable
+from wagtail.fields import RichTextField
+from wagtail.models import TranslatableMixin, Orderable
 from wagtail.snippets.models import register_snippet
 from openstax.functions import build_image_url
 from books.constants import BOOK_STATES, COVER_COLORS, K12_CATEGORIES

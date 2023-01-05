@@ -10,7 +10,7 @@ from django.core.mail import send_mail
 from django.template.loader import render_to_string
 from django.core.validators import MinValueValidator
 from django.utils.html import format_html
-from wagtail.core import hooks
+from wagtail import hooks
 from wagtail.admin.menu import MenuItem
 
 from books.models import Book

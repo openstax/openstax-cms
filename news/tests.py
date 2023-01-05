@@ -3,7 +3,7 @@ import json
 from django.utils import timezone
 from django.test import TestCase
 from wagtail.tests.utils import WagtailPageTests
-from wagtail.core.models import Page
+from wagtail.models import Page
 from pages.models import HomePage
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
 from unittest.mock import MagicMock

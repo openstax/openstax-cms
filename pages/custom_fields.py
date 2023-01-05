@@ -1,7 +1,7 @@
 from django.db import models
 
-from wagtail.core import blocks
-from wagtail.core.fields import RichTextField, StreamField
+from wagtail.import blocks
+from wagtail.fields import RichTextField, StreamField
 from wagtail.admin.edit_handlers import FieldPanel, StreamFieldPanel
 from wagtail.images.edit_handlers import ImageChooserPanel
 
