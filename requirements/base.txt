@@ -8,7 +8,6 @@ django-rest-auth==0.9.5
 django-reversion==5.0.0
 django-ses==3.0.1
 django-storages==1.12.3
-django-dbbackup==4.0.2
 future==0.18.2
 html2text==2020.1.16 # used in news feed
 jsonfield==3.1.0
@@ -16,7 +15,6 @@ mapbox==0.18.0
 psycopg2>=2.9.2
 pycryptodome==3.14.1 # for using the SSO cookie from accounts
 PyJWE==1.0.0
-scout-apm
 sentry-sdk
 simple_salesforce==1.11.6
 social-auth-app-django==5.0.0

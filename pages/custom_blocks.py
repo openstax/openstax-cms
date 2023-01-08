@@ -140,3 +140,11 @@ class TestimonialBlock(blocks.StructBlock):
     class Meta:
         author_icon = 'image'
         max_num = 4
+
+        
+class AllyLogoBlock(blocks.StructBlock):
+    image = APIImageChooserBlock()
+
+    class Meta:
+        icon = 'placeholder'
+

@@ -208,7 +208,7 @@ class PartnerReviewAdmin(admin.ModelAdmin):
                    'partner',
                    'status')
     search_fields = ['review_salesforce_id', 'submitted_by_name', 'submitted_by_account_uuid', ]
-    actions = ['sync_with_salesforce', 'populate_review_faculty_status']
+    actions = ['populate_review_faculty_status']
     readonly_fields = ('partner',
                        'review_salesforce_id',
                        'rating',

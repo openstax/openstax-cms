@@ -18,8 +18,6 @@ BYPASS_SSO_COOKIE_CHECK = True
 #CNX URL for viewing book online
 CNX_URL = 'https://staging.cnx.org/'
 
-SCOUT_MONITOR = False
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',

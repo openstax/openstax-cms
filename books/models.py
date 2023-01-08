@@ -997,7 +997,7 @@ class BookIndex(Page):
 
     @property
     def books(self):
-        books = Book.objects.live().filter(locale=self.locale).order_by('path')
+        books = Book.objects.live().filter(locale=self.locale).order_by('title')
         book_data = []
         for book in books:
             has_faculty_resources = BookFacultyResources.objects.filter(book_faculty_resource=book).exists()

@@ -23,13 +23,14 @@ class Command(BaseCommand):
         with Salesforce() as sf:
             new_data = []
             for nrd in new_resource_downloads:
-                data_dict_item = {'Contact__c': nrd.contact_id,
-                                  'Last_accessed__c': nrd.last_access.strftime('%Y-%m-%d'),
-                                  'Name': nrd.resource_name,
-                                  'Book__c': nrd.book.salesforce_abbreviation,
-                                  'Book_Format__c': nrd.book_format,
-                                  'Accounts_UUID__c': str(nrd.account_uuid)}
-                new_data.append(data_dict_item)
+                if nrd.book.salesforce_abbreviation:
+                    data_dict_item = {'Contact__c': nrd.contact_id,
+                                      'Last_accessed__c': nrd.last_access.strftime('%Y-%m-%d'),
+                                      'Name': nrd.resource_name,
+                                      'Book__c': nrd.book.salesforce_abbreviation,
+                                      'Book_Format__c': nrd.book_format,
+                                      'Accounts_UUID__c': str(nrd.account_uuid)}
+                    new_data.append(data_dict_item)
 
             new_results = sf.bulk.Resource__c.insert(new_data)
 

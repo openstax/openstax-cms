@@ -142,7 +142,7 @@ class Partner(models.Model):
     video_1 = models.FileField(upload_to='partner_videos/', null=True, blank=True)
     video_2 = models.FileField(upload_to='partner_videos/', null=True, blank=True)
     partner_list_label = models.CharField(max_length=255, null=True, blank=True)
-    visible_on_website = models.BooleanField(default=False)
+    visible_on_website = models.BooleanField(default=True)
     lead_sharing = models.BooleanField(default=False)
     partner_type = models.CharField(max_length=255, blank=True, null=True)
     rich_description = models.TextField(blank=True, null=True)
@@ -259,16 +259,18 @@ class Partner(models.Model):
 
     @property
     def reviews(self):
-        return list(PartnerReview.objects.filter(partner=self).values('id',
-                                                                         'status',
-                                                                         'rating',
-                                                                         'review',
-                                                                         'partner_response',
-                                                                         'submitted_by_name',
-                                                                         'submitted_by_account_uuid',
-                                                                         'user_faculty_status',
-                                                                         'created',
-                                                                         'updated'))
+        # empty array for now
+        return []
+        # return list(PartnerReview.objects.filter(partner=self).values('id',
+        #                                                                  'status',
+        #                                                                  'rating',
+        #                                                                  'review',
+        #                                                                  'partner_response',
+        #                                                                  'submitted_by_name',
+        #                                                                  'submitted_by_account_uuid',
+        #                                                                  'user_faculty_status',
+        #                                                                  'created',
+        #                                                                  'updated'))
 
     @property
     def average_rating(self):

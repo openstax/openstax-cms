@@ -121,7 +121,7 @@ class Command(BaseCommand):
                     "International__c, " \
                     "Partnership_Level__c, " \
                     "Equity_Rating__c " \
-                    "FROM Partner__c"
+                    "FROM Partner__c WHERE Partner_Status__c = 'Current Partner' AND RecordType.Name = 'Child'"
             response = sf.query_all(query)
             sf_marketplace_partners = response['records']
 
@@ -239,6 +239,7 @@ class Command(BaseCommand):
                 p.international=self.str2bool(partner['International__c'])
                 p.partnership_level=partner['Partnership_Level__c']
                 p.equity_rating = partner['Equity_Rating__c']
+                p.visible_on_website = True
                 p.save()
 
                 if created:

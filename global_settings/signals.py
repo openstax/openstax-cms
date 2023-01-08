@@ -9,6 +9,8 @@ from .models import StickyNote, Footer, GiveToday
 
 def clear_cloudfront_on_page_publish(sender, **kwargs):
     invalidate_cloudfront_caches('v2/pages')
+    # clear general pages
+    invalidate_cloudfront_caches('spike')
 
 
 page_published.connect(clear_cloudfront_on_page_publish)
@@ -18,6 +20,8 @@ page_published.connect(clear_cloudfront_on_page_publish)
 @receiver(post_save, sender=StickyNote)
 def clear_cloudfront_on_sticky_save(sender, **kwargs):
     invalidate_cloudfront_caches('sticky')
+    # this should not be needed, but we had an issue with it not clearing
+    invalidate_cloudfront_caches('sticky/')
 
 
 @receiver(post_save, sender=Footer)
