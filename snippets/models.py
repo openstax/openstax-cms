@@ -49,7 +49,7 @@ class Subject(TranslatableMixin, models.Model):
 
 register_snippet(Subject)
 
-class k12Subject(TranslatableMixin, models.Model):
+class K12Subject(TranslatableMixin, models.Model):
     name = models.CharField(max_length=255)
     intro_text = RichTextField(blank=True, null=True)
     seo_title = models.CharField(max_length=255, null=True, blank=True)
@@ -88,7 +88,7 @@ class k12Subject(TranslatableMixin, models.Model):
     def __str__(self):
         return self.name
 
-register_snippet(k12Subject)
+register_snippet(K12Subject)
 
 class FacultyResource(TranslatableMixin, index.Indexed, models.Model):
     heading = models.CharField(max_length=255)

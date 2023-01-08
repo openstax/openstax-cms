@@ -387,7 +387,7 @@ class SubjectBooks(models.Model):
         APIField('subject_search_description')
     ]
 
-class k12SubjectBooks(models.Model):
+class K12SubjectBooks(models.Model):
     subject = models.ForeignKey(snippets.k12Subject, on_delete=models.SET_NULL, null=True, related_name='k12subjects_subject')
 
     def get_subject_name(self):
@@ -460,7 +460,7 @@ class BookStudentResources(Orderable, StudentResources):
 class BookSubjects(Orderable, SubjectBooks):
     book_subject = ParentalKey('books.Book', related_name='book_subjects')
 
-class k12BookSubjects(Orderable, k12SubjectBooks):
+class K12BookSubjects(Orderable, K12SubjectBooks):
     k12book_subject = ParentalKey('books.Book', related_name='k12book_subjects')
 
 

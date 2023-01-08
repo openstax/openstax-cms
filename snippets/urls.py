@@ -4,7 +4,7 @@ from . import views
 router = routers.SimpleRouter()
 router.register('roles', views.RoleViewSet)
 router.register('subjects', views.SubjectList, basename="Subjects")
-router.register('k12subjects', views.k12SubjectList, basename="k12Subjects")
+router.register('k12subjects', views.K12SubjectList, basename="K12Subjects")
 router.register('erratacontent', views.ErrataContentViewSet, basename="ErrataContent")
 router.register('subjectcategory', views.SubjectCategoryViewSet, basename="SubjectCategory")
 router.register('givebanner', views.GiveBannerViewSet, basename="GiveBanner")
