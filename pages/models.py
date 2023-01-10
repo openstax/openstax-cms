@@ -584,13 +584,11 @@ class K12MainPage(Page):
         subject_list = {}
         for subject in snippets.K12Subject.objects.filter(locale=self.locale).order_by('name'):
             subject_categories = {}
-            categories = []
             subject_categories['color'] = subject.subject_color
             subject_categories['image'] = subject.subject_image
             subject_categories['link'] = subject.subject_link
             subject_categories['subject_category'] = subject.subject_category
             subject_list[subject.name] = subject_categories
-
         return subject_list
 
     api_fields = [
@@ -2808,9 +2806,6 @@ class FormHeadings(Page):
 class K12Subject(Page):
 
     subheader = models.TextField(default='HIGH SCHOOL')
-    # get title, short desc and image from snippets, select a snippet to get the data in
-
-    # quick links - menu
 
     books_heading = models.TextField(default='')
     books_short_desc = RichTextField(default='')
@@ -2822,13 +2817,10 @@ class K12Subject(Page):
     adoption_link = models.URLField(blank=True, default='/adoption')
     quote_heading = models.TextField(default='What Our Teachers Say', blank=True,)
     quote_text = models.CharField(default='', blank=True, max_length=255)
-
     resources_heading = models.TextField(default='Supplemental Resources')
     blogs_heading = models.TextField(default='Blogs for High School Teachers', blank=True,)
     rfi_heading = models.TextField(default="Don't see what you're looking for?")
     rfi_text = models.CharField(default="We're here to answer any questions you may have. Complete the form to get in contact with a member of our team.", max_length=255)
-    
-   
 
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
@@ -2837,7 +2829,6 @@ class K12Subject(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
-
 
     @property
     def subject_intro(self):
@@ -2860,8 +2851,6 @@ class K12Subject(Page):
 
         return subject_category
    
-
-
     @property
     def books(self):
             books = Book.objects.order_by('path')
@@ -2874,13 +2863,9 @@ class K12Subject(Page):
                 for subject in book.book_subjects.all():
                     subjects.append(subject.subject_name)
                 
-                if book.subject_categories is not None \
+                if book.k12book_subjects is not None \
                             and self.title in k12subjects \
                             and book.book_state not in ['retired', 'draft']:                    
-                    if 'High School' in subjects:
-                        high_school=True
-                    else:
-                        high_school=False
                     book_data.append({
                         'id': book.id,
                         'slug': 'books/{}'.format(book.slug),
@@ -2889,7 +2874,7 @@ class K12Subject(Page):
                         # 'cover_url': book.cover_url,
                         'cover_url': 'https://assets.openstax.org/oscms-dev/media/documents/biology-AP.png',
                         'is_ap': book.is_ap,
-                        'is_hs': high_school,
+                        'is_hs': 'High School' in subjects,
                         'cover_color': book.cover_color,
                         'high_resolution_pdf_url': book.high_resolution_pdf_url,
                         'low_resolution_pdf_url': book.low_resolution_pdf_url,
