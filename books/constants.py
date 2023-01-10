@@ -67,19 +67,33 @@ COVER_COLORS = (
     (YELLOW, 'Yellow'),
 )
 
-
 MATH = 'math'
 SOCIAL_STUDIES='social-studies'
 SCIENCE = 'science'
-CAREER_COLLEGE_READINESS = 'career-college-readiness'
+ENGLISH = 'english'
+CAREER_TECHNICAL = 'career-technical'
+COLLEGE_READINESS = 'college_readiness'
+FINE_ARTS = 'fine_arts'
+HEALTH = 'health'
+LANGUAGES = 'languages'
+PHYSICAL_ED = 'physical_education'
+TECHNOLOGY_APPLICATIONS = 'technology_applications'
 OTHER = 'other'
 NONE = 'none'
+
 
 K12_CATEGORIES = (
 (MATH, 'Math'),
 (SOCIAL_STUDIES, 'Social Studies'),
 (SCIENCE, 'Science'),
-(CAREER_COLLEGE_READINESS, 'Career and College Readiness'),
+(ENGLISH, 'English Language Areas & Reading'),
+(CAREER_TECHNICAL, 'Career and Technical Education'),
+(COLLEGE_READINESS, 'College Readiness'),
+(FINE_ARTS, 'Fine Arts'),
+(HEALTH, 'Health Education'),
+(LANGUAGES, 'Languages other than English'),
+(PHYSICAL_ED, 'Physical Education'),
+(TECHNOLOGY_APPLICATIONS, 'Technology Applications'),
 (OTHER, 'Other'),
 (NONE, 'None'),
 )

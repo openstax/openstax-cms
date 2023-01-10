@@ -582,9 +582,10 @@ class K12MainPage(Page):
     @property
     def k12library(self):
         subject_list = {}
-        for subject in snippets.k12Subject.objects.filter(locale=self.locale).order_by('name'):
+        for subject in snippets.K12Subject.objects.filter(locale=self.locale).order_by('name'):
             subject_categories = {}
             categories = []
+            subject_categories['color'] = subject.subject_color
             subject_categories['image'] = subject.subject_image
             subject_categories['link'] = subject.subject_link
             subject_categories['subject_category'] = subject.subject_category
@@ -674,7 +675,7 @@ class K12MainPage(Page):
     
 
     class Meta:
-        verbose_name = "k12 Main Page"
+        verbose_name = "K12 Main Page"
 
 
 
@@ -2827,7 +2828,6 @@ class K12Subject(Page):
     rfi_heading = models.TextField(default="Don't see what you're looking for?")
     rfi_text = models.CharField(default="We're here to answer any questions you may have. Complete the form to get in contact with a member of our team.", max_length=255)
     
-    # get list of all books with k12 subject that matches page, then get the resources
    
 
     promote_image = models.ForeignKey(
@@ -2841,21 +2841,21 @@ class K12Subject(Page):
 
     @property
     def subject_intro(self):
-        for subject in snippets.k12Subject.objects.filter(locale=self.locale, name=self.title).order_by('name'):
+        for subject in snippets.K12Subject.objects.filter(locale=self.locale, name=self.title).order_by('name'):
             subject_intro = subject.intro_text
 
         return subject_intro
 
     @property
     def subject_image(self):
-        for subject in snippets.k12Subject.objects.filter(locale=self.locale, name=self.title).order_by('name'):
+        for subject in snippets.K12Subject.objects.filter(locale=self.locale, name=self.title).order_by('name'):
             subject_image = subject.image
 
         return subject_image
 
     @property
     def subject_category(self):
-        for subject in snippets.k12Subject.objects.filter(locale=self.locale, name=self.title).order_by('name'):
+        for subject in snippets.K12Subject.objects.filter(locale=self.locale, name=self.title).order_by('name'):
             subject_category = subject.subject_category
 
         return subject_category
@@ -2881,15 +2881,6 @@ class K12Subject(Page):
                         high_school=True
                     else:
                         high_school=False
-                    student_resources =[]
-                    for resource in book.book_student_resources.all():
-                        resource_info = {}
-                        resource_info['book']=book.title
-                        resource_info['resource_heading']=resource.resource_heading
-                        resource_info['resource_unlocked'] = resource.resource_unlocked
-                        resource_info['link_document_url'] = resource.link_document_url
-                        resource_info['link_external'] = resource.link_external
-                        student_resources.append(resource_info)
                     book_data.append({
                         'id': book.id,
                         'slug': 'books/{}'.format(book.slug),
@@ -2919,16 +2910,10 @@ class K12Subject(Page):
                         'created': book.created,
                         'publish_date': book.publish_date,
                         'last_updated_pdf': book.last_updated_pdf,
-                        # 'has_student_resources': BookStudentResources.objects.filter(book_student_resource=book).exists(),
-                        # 'has_instructor_resources': BookFacultyResources.objects.filter(book_faculty_resource=book).exists(),
-                        'student_resources': student_resources,
-                        'instructor_resources': []
+                        'student_resources': BookStudentResources.objects.values(),
+                        'instructor_resources': BookFacultyResources.objects.values()
                         })
             return book_data
-    
-            
-    class Meta:
-            verbose_name = "K12 Subject"
 
     api_fields = [
         APIField('subheader'),
@@ -2984,8 +2969,9 @@ class K12Subject(Page):
 
     parent_page_types = ['pages.K12MainPage']
 
+            
     class Meta:
-        verbose_name = "k12subject"
+            verbose_name = "K12 Subject"
 
 
 

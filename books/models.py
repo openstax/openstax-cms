@@ -388,7 +388,7 @@ class SubjectBooks(models.Model):
     ]
 
 class K12SubjectBooks(models.Model):
-    subject = models.ForeignKey(snippets.k12Subject, on_delete=models.SET_NULL, null=True, related_name='k12subjects_subject')
+    subject = models.ForeignKey(snippets.K12Subject, on_delete=models.SET_NULL, null=True, related_name='k12subjects_subject')
 
     def get_subject_name(self):
         return self.subject.name
