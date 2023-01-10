@@ -434,7 +434,6 @@ class HomePage(Page):
         'pages.ErrataList',
         'pages.PrivacyPolicy',
         'pages.PrintOrder',
-        'pages.ResearchPage',
         'pages.LearningResearchPage',
         'pages.Careers',
         'pages.Impact',
@@ -1408,104 +1407,6 @@ class LearningResearchPage(Page):
         APIField('current_members'),
         APIField('collaborating_researchers'),
         APIField('alumni'),
-        APIField('publication_header'),
-        APIField('publications'),
-        APIField('slug'),
-        APIField('seo_title'),
-        APIField('search_description'),
-        APIField('promote_image')
-    ]
-
-    template = 'page.html'
-
-    parent_page_types = ['pages.HomePage']
-    max_count = 1
-
-
-class ResearchPage(Page):
-    mission_header = models.CharField(max_length=255)
-    mission_body = models.TextField()
-    projects_header = models.CharField(max_length=255)
-    projects = StreamField([
-        ('project', blocks.StructBlock([
-            ('title', blocks.CharBlock()),
-            ('blurb', blocks.TextBlock()),
-            ('link', blocks.URLBlock(required=False, help_text="Optional link to project."))
-        ], icon='user')),
-    ], null=True, blank=True)
-    people_header = models.CharField(max_length=255)
-    alumni = StreamField([
-        ('person', blocks.StructBlock([
-            ('name', blocks.CharBlock()),
-            ('title', blocks.CharBlock()),
-            ('website', blocks.URLBlock(required=False)),
-        ], icon='user')),
-    ], null=True, blank=True)
-    current_members = StreamField([
-        ('person', blocks.StructBlock([
-            ('name', blocks.CharBlock()),
-            ('title', blocks.CharBlock()),
-            ('photo', APIImageChooserBlock(required=False)),
-            ('website', blocks.URLBlock(required=False)),
-        ], icon='user')),
-    ], null=True, blank=True)
-    external_collaborators = StreamField([
-        ('person', blocks.StructBlock([
-            ('name', blocks.CharBlock()),
-            ('title', blocks.CharBlock()),
-            ('photo', APIImageChooserBlock(required=False)),
-            ('website', blocks.URLBlock(required=False)),
-        ], icon='user')),
-    ], null=True, blank=True)
-    publication_header = models.CharField(max_length=255)
-    publications = StreamField([
-        ('publication', blocks.StructBlock([
-            ('authors', blocks.CharBlock()),
-            ('date', blocks.DateBlock()),
-            ('title', blocks.CharBlock()),
-            ('excerpt', blocks.CharBlock()),
-            ('download_url', blocks.URLBlock()),
-        ], icon='user')),
-    ], null=True, blank=True)
-    promote_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-
-    content_panels = [
-        FieldPanel('title', classname='full title', help_text="Internal name for page."),
-        FieldPanel('mission_header'),
-        FieldPanel('mission_body'),
-        FieldPanel('projects_header'),
-        StreamFieldPanel('projects'),
-        FieldPanel('people_header'),
-        StreamFieldPanel('alumni'),
-        StreamFieldPanel('current_members'),
-        StreamFieldPanel('external_collaborators'),
-        FieldPanel('publication_header'),
-        StreamFieldPanel('publications'),
-    ]
-
-    promote_panels = [
-        FieldPanel('slug'),
-        FieldPanel('seo_title'),
-        FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
-
-    ]
-
-    api_fields = [
-        APIField('mission_header'),
-        APIField('mission_body'),
-        APIField('projects_header'),
-        APIField('projects'),
-        APIField('people_header'),
-        APIField('alumni'),
-        APIField('current_members'),
-        APIField('external_collaborators'),
         APIField('publication_header'),
         APIField('publications'),
         APIField('slug'),
