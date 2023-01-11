@@ -1277,7 +1277,6 @@ class PrintOrder(Page):
 
 
 class LearningResearchPage(Page):
-    mission_header = models.CharField(max_length=255)
     mission_body = models.TextField()
     banner_header = models.TextField(default='', blank=True)
     banner_body = models.TextField(default='', blank=True)
@@ -1369,7 +1368,6 @@ class LearningResearchPage(Page):
 
     content_panels = [
         FieldPanel('title', classname='full title', help_text="Internal name for page."),
-        FieldPanel('mission_header'),
         FieldPanel('mission_body'),
         FieldPanel('banner_header'),
         FieldPanel('banner_body'),
@@ -1394,7 +1392,6 @@ class LearningResearchPage(Page):
     ]
 
     api_fields = [
-        APIField('mission_header'),
         APIField('mission_body'),
         APIField('banner_header'),
         APIField('banner_body'),
