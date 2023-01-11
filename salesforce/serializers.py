@@ -32,8 +32,7 @@ class SchoolSerializer(serializers.ModelSerializer):
                   'physical_state_province',
                   'physical_zip_postal_code',
                   'long',
-                  'lat',
-                  'testimonial',)
+                  'lat')
 
 
 class AdoptionOpportunityRecordSerializer(serializers.ModelSerializer):
