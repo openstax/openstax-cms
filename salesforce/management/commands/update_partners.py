@@ -239,7 +239,6 @@ class Command(BaseCommand):
                 p.international=self.str2bool(partner['International__c'])
                 p.partnership_level=partner['Partnership_Level__c']
                 p.equity_rating = partner['Equity_Rating__c']
-                p.visible_on_website = True
                 p.save()
 
                 if created:
