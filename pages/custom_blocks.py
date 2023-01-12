@@ -90,7 +90,6 @@ class CardImageBlock(blocks.StructBlock):
     class Meta:
         icon = 'image'
 
-
 class StoryBlock(blocks.StructBlock):
     image = APIImageChooserBlock(required=False)
     story_text = blocks.TextBlock(required=False)
