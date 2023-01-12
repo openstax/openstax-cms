@@ -16,7 +16,7 @@ from wagtail.admin.menu import MenuItem
 from wagtail.snippets.edit_handlers import SnippetChooserPanel
 
 from openstax.functions import build_image_url, build_document_url
-from books.models import Book, SubjectBooks
+from books.models import Book, SubjectBooks, BookFacultyResources, BookStudentResources
 from webinars.models import Webinar
 from news.models import BlogStreamBlock # for use on the ImpactStories
 
@@ -33,6 +33,7 @@ from .custom_blocks import ImageBlock, \
     TutorAdBlock, \
     AboutOpenStaxBlock, \
     InfoBoxBlock, \
+    TestimonialBlock, \
     AllyLogoBlock
 
 from .custom_fields import \
@@ -362,6 +363,7 @@ class HomePage(Page):
 
 
     content_panels = [
+        FieldPanel('title', classname="full title"),
         FieldPanel('banner_headline'),
         FieldPanel('banner_description'),
         FieldPanel('banner_get_started_text'),
@@ -448,10 +450,12 @@ class HomePage(Page):
         'pages.TutorMarketing',
         'pages.Subjects',
         'pages.FormHeadings',
+        'pages.K12MainPage',
+        'pages.K12Subject',
         'pages.AllyLogos',
         'books.BookIndex',
         'news.NewsIndex',
-        'news.PressIndex'
+        'news.PressIndex',
     ]
 
     max_count = 1
@@ -475,6 +479,203 @@ class HomePage(Page):
 
     class Meta:
         verbose_name = "homepage"
+
+
+
+class K12MainPage(Page):
+
+    banner_headline = models.CharField(default='', blank=True, max_length=255)
+    banner_description = models.TextField(default='', blank=True)
+    banner_right_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    features_cards = StreamField([
+        ('features_cards', CardImageBlock()),
+    ])
+    highlights_header = RichTextField(default='', blank=True)
+    highlights = StreamField(
+            blocks.StreamBlock([
+                ('highlight', blocks.ListBlock(blocks.StructBlock([
+                    ('highlight_subheader', blocks.TextBlock(required=False)),
+                    ('highlight_text', blocks.CharBlock(Required=False)),
+                ])))], max_num=3))
+    highlights_icon = models.ForeignKey(
+            'wagtailimages.Image',
+            null=True,
+            blank=True,
+            on_delete=models.SET_NULL,
+            related_name='+'
+        )
+    stats_grid = StreamField(
+            blocks.StreamBlock([
+                ('stat', blocks.ListBlock(blocks.StructBlock([
+                    ('bold_stat_text', blocks.TextBlock(required=False)),
+                    ('normal_stat_text', blocks.CharBlock(required=False)),
+                ])))], max_num=3))
+    stats_image1 = models.ForeignKey(
+            'wagtailimages.Image',
+            null=True,
+            blank=True,
+            on_delete=models.SET_NULL,
+            related_name='+'
+        )
+    stats_image2 = models.ForeignKey(
+                'wagtailimages.Image',
+                null=True,
+                blank=True,
+                on_delete=models.SET_NULL,
+                related_name='+'
+            )
+    stats_image3 = models.ForeignKey(
+                'wagtailimages.Image',
+                null=True,
+                blank=True,
+                on_delete=models.SET_NULL,
+                related_name='+'
+            )
+    subject_library_header = models.CharField(default='', blank=True, max_length=255)
+    subject_library_description = models.TextField(default='', blank=True)
+    
+
+
+    testimonials_header = models.CharField(default='', blank=True, max_length=255)
+    testimonials_description = models.TextField(default='', blank=True)
+    testimonials = StreamField([
+        ('testimonials', TestimonialBlock()),
+    ])
+    faq_header = models.CharField(default='', blank=True, max_length=255)
+    faqs = StreamField([
+        ('faq', FAQBlock()),
+    ])
+    rfi_image = models.ForeignKey(
+                'wagtailimages.Image',
+                null=True,
+                blank=True,
+                on_delete=models.SET_NULL,
+                related_name='+'
+            )
+    rfi_header = models.CharField(default='', blank=True, max_length=255)    
+    rfi_description = models.TextField(default='', blank=True)
+    sticky_header = models.CharField(default='', blank=True, max_length=255)    
+    sticky_description = models.TextField(default='', blank=True)
+
+    def get_sitemap_urls(self, request=None):
+        return [
+            {
+                'location': '{}/k12/{}'.format(Site.find_for_request(request).root_url, self.slug),
+                'lastmod': (self.last_published_at or self.latest_revision_created_at),
+            }
+        ]
+
+
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    @property
+    def k12library(self):
+        subject_list = {}
+        for subject in snippets.K12Subject.objects.filter(locale=self.locale).order_by('name'):
+            subject_categories = {}
+            subject_categories['color'] = subject.subject_color
+            subject_categories['image'] = subject.subject_image
+            subject_categories['link'] = subject.subject_link
+            subject_categories['subject_category'] = subject.subject_category
+            subject_list[subject.name] = subject_categories
+        return subject_list
+
+    api_fields = [
+        APIField('title'),
+        APIField('banner_headline'),
+        APIField('banner_description'),
+        APIField('banner_right_image'),
+        APIField('features_cards'),
+        APIField('highlights_header'),
+        APIField('highlights'),
+        APIField('highlights_icon'),
+        APIField('stats_grid'),
+        APIField('stats_image1'),
+        APIField('stats_image2'),
+        APIField('stats_image3'),
+        APIField('subject_library_header'),
+        APIField('subject_library_description'),
+        APIField('k12library'),
+        APIField('testimonials_header'),
+        APIField('testimonials_description'),
+        APIField('testimonials'),
+        APIField('faq_header'),
+        APIField('faqs'),
+        APIField('rfi_image'),
+        APIField('rfi_header'),
+        APIField('rfi_description'),
+        APIField('sticky_header'),
+        APIField('sticky_description'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+    ]
+
+    max_count = 1
+
+    class Meta:
+        verbose_name = "K12 Main Page"
+
+
+    content_panels = [
+        FieldPanel('title', classname="full title"),
+        FieldPanel('banner_headline'),
+        FieldPanel('banner_description'),
+        ImageChooserPanel('banner_right_image'),
+        StreamFieldPanel('features_cards'),
+        FieldPanel('highlights_header'),
+        StreamFieldPanel('highlights'),
+        ImageChooserPanel('highlights_icon'),
+        StreamFieldPanel('stats_grid'),
+        ImageChooserPanel('stats_image1'),
+        ImageChooserPanel('stats_image2'),
+        ImageChooserPanel('stats_image3'),
+        FieldPanel('subject_library_header'),
+        FieldPanel('subject_library_description'),
+        FieldPanel('testimonials_header'),
+        FieldPanel('testimonials_description'),
+        StreamFieldPanel('testimonials'),
+        FieldPanel('faq_header'),
+        StreamFieldPanel('faqs'),
+        ImageChooserPanel('rfi_image'),
+        FieldPanel('rfi_header'),
+        FieldPanel('rfi_description'),
+        FieldPanel('sticky_header'),
+        FieldPanel('sticky_description')
+    ]
+
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
+    ]
+
+
+    template = 'page.html'
+    parent_page_types = ['pages.HomePage']
+    subpage_types = ['pages.K12Subject']
+
+    max_count = 1
+
+    
+
+    class Meta:
+        verbose_name = "K12 Main Page"
+
 
 
 class ContactUs(Page):
@@ -2617,6 +2818,7 @@ class Subject(Page):
                             'title': book.title,
                             'subjects': book.subjects(),
                             'subject_categories': book.subject_categories,
+                            'k12subject': book.k12subject(),
                             'is_ap': book.is_ap,
                             'cover_url': book.cover_url,
                             'cover_color': book.cover_color,
@@ -2744,6 +2946,165 @@ class FormHeadings(Page):
 
     parent_page_types = ['pages.HomePage']
     max_count = 1
+
+
+
+class K12Subject(Page):
+
+    subheader = models.TextField(default='HIGH SCHOOL')
+
+    books_heading = models.TextField(default='')
+    books_short_desc = RichTextField(default='')
+    about_books_heading = models.TextField(default='About the Books')
+    about_books_text = models.CharField(default='FIND SUPPLEMENTAL RESOURCES', blank=True, max_length=255)
+    adoption_heading = models.TextField(default='Using an OpenStax resource in your classroom? Let us know!')
+    adoption_text = RichTextField(default="<p>Help us continue to make high-quality educational materials accessible by letting us know you've adopted! Our future grant funding is based on educator adoptions and the number of students we impact.</p>")
+    adoption_link_text = models.CharField(default='Report Your Adoption', max_length=255)
+    adoption_link = models.URLField(blank=True, default='/adoption')
+    quote_heading = models.TextField(default='What Our Teachers Say', blank=True,)
+    quote_text = models.CharField(default='', blank=True, max_length=255)
+    resources_heading = models.TextField(default='Supplemental Resources')
+    blogs_heading = models.TextField(default='Blogs for High School Teachers', blank=True,)
+    rfi_heading = models.TextField(default="Don't see what you're looking for?")
+    rfi_text = models.CharField(default="We're here to answer any questions you may have. Complete the form to get in contact with a member of our team.", max_length=255)
+
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    @property
+    def subject_intro(self):
+        for subject in snippets.K12Subject.objects.filter(locale=self.locale, name=self.title).order_by('name'):
+            subject_intro = subject.intro_text
+
+        return subject_intro
+
+    @property
+    def subject_image(self):
+        for subject in snippets.K12Subject.objects.filter(locale=self.locale, name=self.title).order_by('name'):
+            subject_image = subject.image
+
+        return subject_image
+
+    @property
+    def subject_category(self):
+        for subject in snippets.K12Subject.objects.filter(locale=self.locale, name=self.title).order_by('name'):
+            subject_category = subject.subject_category
+
+        return subject_category
+   
+    @property
+    def books(self):
+            books = Book.objects.order_by('path')
+            book_data = []
+            for book in books:
+                k12subjects=[]
+                for subject in book.k12book_subjects.all():
+                    k12subjects.append(subject.subject_name)
+                subjects=[]
+                for subject in book.book_subjects.all():
+                    subjects.append(subject.subject_name)
+                
+                if book.k12book_subjects is not None \
+                            and self.title in k12subjects \
+                            and book.book_state not in ['retired', 'draft']:                    
+                    book_data.append({
+                        'id': book.id,
+                        'slug': 'books/{}'.format(book.slug),
+                        'title': book.title,
+                        'description': book.description,
+                        # 'cover_url': book.cover_url,
+                        'cover_url': 'https://assets.openstax.org/oscms-dev/media/documents/biology-AP.png',
+                        'is_ap': book.is_ap,
+                        'is_hs': 'High School' in subjects,
+                        'cover_color': book.cover_color,
+                        'high_resolution_pdf_url': book.high_resolution_pdf_url,
+                        'low_resolution_pdf_url': book.low_resolution_pdf_url,
+                        'ibook_link': book.ibook_link,
+                        'ibook_link_volume_2': book.ibook_link_volume_2,
+                        'webview_link': book.webview_link,
+                        'webview_rex_link': book.webview_rex_link,
+                        'bookshare_link': book.bookshare_link,
+                        'kindle_link': book.kindle_link,
+                        'amazon_coming_soon': book.amazon_coming_soon,
+                        'amazon_link': book.amazon_link,
+                        'bookstore_coming_soon': book.bookstore_coming_soon,
+                        'comp_copy_available': book.comp_copy_available,
+                        'salesforce_abbreviation': book.salesforce_abbreviation,
+                        'salesforce_name': book.salesforce_name,
+                        'urls': book.book_urls(),
+                        'updated': book.updated,
+                        'created': book.created,
+                        'publish_date': book.publish_date,
+                        'last_updated_pdf': book.last_updated_pdf,
+                        'student_resources': BookStudentResources.objects.values(),
+                        'instructor_resources': BookFacultyResources.objects.values()
+                        })
+            return book_data
+
+    api_fields = [
+        APIField('subheader'),
+        APIField('subject_intro'),
+        APIField('subject_image'),
+        APIField('subject_category'),
+        APIField('books_heading'),
+        APIField('books_short_desc'),
+        APIField('about_books_heading'),
+        APIField('about_books_text'),
+        APIField('books'),
+        APIField('adoption_heading'),
+        APIField('adoption_text'),
+        APIField('adoption_link_text'),
+        APIField('adoption_link'),
+        APIField('quote_heading'),
+        APIField('quote_text'),
+        APIField('resources_heading'),
+        APIField('blogs_heading'),
+        APIField('rfi_heading'),
+        APIField('rfi_text'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+    ]
+
+    content_panels = Page.content_panels + [
+        FieldPanel('subheader'),
+        FieldPanel('books_heading'),
+        FieldPanel('books_short_desc'),
+        FieldPanel('about_books_heading'),
+        FieldPanel('about_books_text'),
+        FieldPanel('adoption_heading'),
+        FieldPanel('adoption_text'),
+        FieldPanel('adoption_link_text'),
+        FieldPanel('adoption_link'),
+        FieldPanel('quote_heading'),
+        FieldPanel('quote_text'),
+        FieldPanel('resources_heading'),
+        FieldPanel('blogs_heading'),
+        FieldPanel('rfi_heading'),
+        FieldPanel('rfi_text'),
+    ]
+
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        ImageChooserPanel('promote_image')
+    ]
+
+    template = 'page.html'
+
+    parent_page_types = ['pages.K12MainPage']
+
+            
+    class Meta:
+            verbose_name = "K12 Subject"
+
+
 
 
 class AllyLogos(Page):
