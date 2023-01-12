@@ -1,7 +1,7 @@
 from rest_framework import viewsets
 
-from .models import Role, Subject, K12Subject, ErrataContent, SubjectCategory, GiveBanner, BlogContentType, BlogCollection
-from .serializers import RoleSerializer, SubjectSerializer, K12SubjectSerializer, ErrataContentSerializer, SubjectCategorySerializer, \
+from .models import Role, Subject, ErrataContent, SubjectCategory, GiveBanner, BlogContentType, BlogCollection
+from .serializers import RoleSerializer, SubjectSerializer, ErrataContentSerializer, SubjectCategorySerializer, \
     GiveBannerSerializer, BlogContentTypeSerializer, BlogCollectionSerializer
 
 from rest_framework import generics, viewsets
@@ -30,19 +30,6 @@ class SubjectList(viewsets.ReadOnlyModelViewSet):
             queryset = queryset.filter(locale=convert_locale(locale))
         return queryset
 
-class K12SubjectList(viewsets.ReadOnlyModelViewSet):
-    serializer_class = K12SubjectSerializer
-    filter_backends = (DjangoFilterBackend,)
-
-    def get_queryset(self):
-        queryset = K12Subject.objects.all()
-        name = self.request.query_params.get('name', None)
-        locale = self.request.query_params.get('locale', None)
-        if name is not None:
-            queryset = queryset.filter(name=name)
-        if locale is not None:
-            queryset = queryset.filter(locale=convert_locale(locale))
-        return queryset
 
 class ErrataContentViewSet(viewsets.ModelViewSet):
     serializer_class = ErrataContentSerializer

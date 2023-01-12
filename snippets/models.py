@@ -9,7 +9,7 @@ from wagtail.core.fields import RichTextField
 from wagtail.core.models import TranslatableMixin, Orderable
 from wagtail.snippets.models import register_snippet
 from openstax.functions import build_image_url
-from books.constants import BOOK_STATES, COVER_COLORS, K12_CATEGORIES
+from books.constants import BOOK_STATES, COVER_COLORS
 
 
 class Subject(TranslatableMixin, models.Model):
@@ -49,42 +49,6 @@ class Subject(TranslatableMixin, models.Model):
 
 register_snippet(Subject)
 
-class K12Subject(TranslatableMixin, models.Model):
-    name = models.CharField(max_length=255)
-    intro_text = RichTextField(blank=True, null=True)
-    image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-    subject_category = models.CharField(max_length=255, choices=K12_CATEGORIES, default='none',
-                                   help_text='The category used in the K12 subjects listings')
-    subject_color = models.CharField(max_length=255, choices=COVER_COLORS, default='blue',
-                                   help_text='The color of the vertical stripe on Subject page.')
-    subject_link = models.CharField(max_length=255, null=True, blank=True)
-
-    def get_subject_image(self):
-        return build_image_url(self.image)
-
-    subject_image = property(get_subject_image)
-
-    api_fields = ('name', 'intro_text', 'subject_image', 'subject_category' , 'subject_color', 'subject_link')
-
-    panels = [
-        FieldPanel('name'),
-        FieldPanel('intro_text'),
-        ImageChooserPanel('image'),
-        FieldPanel('subject_category'),
-        FieldPanel('subject_color'),
-        FieldPanel('subject_link'),
-    ]
-
-    def __str__(self):
-        return self.name
-
-register_snippet(K12Subject)
 
 class FacultyResource(TranslatableMixin, index.Indexed, models.Model):
     heading = models.CharField(max_length=255)
