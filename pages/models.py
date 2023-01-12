@@ -33,6 +33,7 @@ from .custom_blocks import ImageBlock, \
     TutorAdBlock, \
     AboutOpenStaxBlock, \
     InfoBoxBlock, \
+    TestimonialBlock, \
     AllyLogoBlock
 
 from .custom_fields import \
