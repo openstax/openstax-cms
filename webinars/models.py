@@ -30,7 +30,7 @@ class Webinar(models.Model):
     display_on_tutor_page = models.BooleanField(default=False)
     webinar_subjects = StreamField(blocks.StreamBlock([
         ('subject', blocks.ListBlock(SubjectBlock())
-         )]), null=True, blank=True)
+         )]), null=True, blank=True, use_json_field=True)
 
     @property
     def selected_subjects(self):

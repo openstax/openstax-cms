@@ -64,7 +64,7 @@ class AboutUsPage(Page):
         ],
             icon='placeholder'
         )),
-    ])
+    ], use_json_field=True)
     where_heading = models.CharField(max_length=255)
     where_paragraph = models.TextField()
     where_map = models.ForeignKey(
@@ -224,7 +224,7 @@ class HomePage(Page):
     features_tab1_features = StreamField(
         blocks.StreamBlock([
             ('feature_text', blocks.CharBlock())
-        ], max_num=4)
+        ], max_num=4),use_json_field=True
     )
     features_tab1_explore_text = models.CharField(default='', blank=True, max_length=255)
     features_tab1_explore_url = models.URLField(blank=True, default='')
@@ -233,7 +233,7 @@ class HomePage(Page):
     features_tab2_features = StreamField(
         blocks.StreamBlock([
             ('feature_text', blocks.CharBlock())
-        ], max_num=4)
+        ], max_num=4),use_json_field=True
     )
     features_tab2_explore_text = models.CharField(default='', blank=True, max_length=255)
     features_tab2_explore_url = models.URLField(blank=True, default='')
@@ -251,7 +251,7 @@ class HomePage(Page):
             ('quote', blocks.ListBlock(blocks.StructBlock([
                 ('testimonial', blocks.TextBlock(required=False)),
                 ('author', blocks.CharBlock(Required=False)),
-            ])))], max_num=2))
+            ])))], max_num=2), use_json_field=True)
     quotes_instructor_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -284,7 +284,7 @@ class HomePage(Page):
             ('features', blocks.ListBlock(blocks.StructBlock([
                 ('image', APIImageChooserBlock(required=False)),
                 ('title', blocks.CharBlock(required=False)),
-            ])))], max_num=4))
+            ])))], max_num=4), use_json_field=True)
     whats_openstax_headline = models.CharField(default='', blank=True, max_length=255)
     whats_openstax_description = models.TextField(default='', blank=True)
     whats_openstax_interest_headline = models.CharField(default='', blank=True, max_length=255)
@@ -732,7 +732,7 @@ class GeneralPage(Page):
         ('paragraph', blocks.RichTextBlock()),
         ('image', APIImageChooserBlock()),
         ('html', blocks.RawHTMLBlock()),
-    ])
+    ], use_json_field=True)
 
     def get_sitemap_urls(self, request=None):
         return [
@@ -805,7 +805,7 @@ class Supporters(Page):
                     ('url', blocks.URLBlock(required=False))
 
                 ])))
-            ]))]))
+            ]))]), use_json_field=True)
 
     disclaimer = models.TextField(default='')
 
@@ -871,7 +871,7 @@ class MapPage(Page):
             ('unit', blocks.CharBlock(required=False)),
             ('description', blocks.TextBlock(required=False)),
         ], icon='document')),
-    ], null=True)
+    ], null=True, use_json_field=True)
     section_2_header_1 = models.CharField(max_length=255)
     section_2_blurb_1 = models.TextField()
     section_2_cta_1 = models.CharField(max_length=255)
@@ -1097,7 +1097,7 @@ class FAQ(Page):
 
     questions = StreamField([
         ('question', FAQBlock()),
-    ])
+    ], use_json_field=True)
 
     api_fields = [
         APIField('intro_heading'),
@@ -1427,11 +1427,11 @@ class PrintOrder(Page):
     featured_provider_intro_blurb = models.TextField()
     featured_providers = StreamField([
         ('provider', BookProviderBlock(icon='document')),
-    ], null=True)
+    ], null=True, use_json_field=True)
     other_providers_intro_blurb = models.TextField()
     providers = StreamField([
         ('provider', BookProviderBlock(icon='document')),
-    ])
+    ], use_json_field=True)
 
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
@@ -1633,7 +1633,7 @@ class ResearchPage(Page):
             ('blurb', blocks.TextBlock()),
             ('link', blocks.URLBlock(required=False, help_text="Optional link to project."))
         ], icon='user')),
-    ], null=True, blank=True)
+    ], null=True, blank=True, use_json_field=True)
     people_header = models.CharField(max_length=255)
     alumni = StreamField([
         ('person', blocks.StructBlock([
@@ -1641,7 +1641,7 @@ class ResearchPage(Page):
             ('title', blocks.CharBlock()),
             ('website', blocks.URLBlock(required=False)),
         ], icon='user')),
-    ], null=True, blank=True)
+    ], null=True, blank=True, use_json_field=True)
     current_members = StreamField([
         ('person', blocks.StructBlock([
             ('name', blocks.CharBlock()),
@@ -1649,7 +1649,7 @@ class ResearchPage(Page):
             ('photo', APIImageChooserBlock(required=False)),
             ('website', blocks.URLBlock(required=False)),
         ], icon='user')),
-    ], null=True, blank=True)
+    ], null=True, blank=True, use_json_field=True)
     external_collaborators = StreamField([
         ('person', blocks.StructBlock([
             ('name', blocks.CharBlock()),
@@ -1657,7 +1657,7 @@ class ResearchPage(Page):
             ('photo', APIImageChooserBlock(required=False)),
             ('website', blocks.URLBlock(required=False)),
         ], icon='user')),
-    ], null=True, blank=True)
+    ], null=True, blank=True, use_json_field=True)
     publication_header = models.CharField(max_length=255)
     publications = StreamField([
         ('publication', blocks.StructBlock([
@@ -1667,7 +1667,7 @@ class ResearchPage(Page):
             ('excerpt', blocks.CharBlock()),
             ('download_url', blocks.URLBlock()),
         ], icon='user')),
-    ], null=True, blank=True)
+    ], null=True, blank=True, use_json_field=True)
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -1774,7 +1774,7 @@ class ImpactStory(Page):
         related_name='+'
     )
     featured_image_alt_text = models.CharField(max_length=250, blank=True, null=True)
-    body = StreamField(BlogStreamBlock())
+    body = StreamField(BlogStreamBlock(), use_json_field=True)
 
     content_panels = Page.content_panels + [
         FieldPanel('date'),
@@ -1813,7 +1813,7 @@ class Impact(Page):
             ('description', blocks.RichTextBlock()),
             ('button_text', blocks.CharBlock()),
             ('button_href', blocks.URLBlock())
-         ]))], max_num=1))
+         ]))], max_num=1), use_json_field=True)
     reach = StreamField(
         blocks.StreamBlock([
         ('content', blocks.StructBlock([
@@ -1826,20 +1826,20 @@ class Impact(Page):
                 ('link_text', blocks.CharBlock(required=False)),
                 ('link_href', blocks.URLBlock(required=False))
             ])))
-        ]))], max_num=1))
+        ]))], max_num=1), use_json_field=True)
     quote = StreamField(
         blocks.StreamBlock([
         ('content', blocks.StructBlock([
             ('image', ImageBlock()),
             ('quote', blocks.RichTextBlock())
-        ]))], max_num=1))
+        ]))], max_num=1), use_json_field=True)
     making_a_difference = StreamField(
         blocks.StreamBlock([
         ('content', blocks.StructBlock([
             ('heading', blocks.CharBlock()),
             ('description', blocks.RichTextBlock()),
             ('stories', blocks.ListBlock(StoryBlock()))
-        ]))], max_num=1))
+        ]))], max_num=1), use_json_field=True)
     disruption = StreamField(
         blocks.StreamBlock([
         ('content', blocks.StructBlock([
@@ -1849,7 +1849,7 @@ class Impact(Page):
                 ('image', ImageBlock(required=False)),
                 ('image_alt_text', blocks.CharBlock(required=False)),
             ]))
-        ]))], max_num=1))
+        ]))], max_num=1), use_json_field=True)
     supporter_community = StreamField(
         blocks.StreamBlock([
         ('content', blocks.StructBlock([
@@ -1858,7 +1858,7 @@ class Impact(Page):
             ('quote', blocks.RichTextBlock()),
             ('link_text', blocks.CharBlock()),
             ('link_href', blocks.URLBlock())
-        ]))], max_num=1))
+        ]))], max_num=1), use_json_field=True)
     giving = StreamField(
         blocks.StreamBlock([
         ('content', blocks.StructBlock([
@@ -1869,7 +1869,7 @@ class Impact(Page):
             ('nonprofit_statement', blocks.TextBlock()),
             ('annual_report_link_text', blocks.CharBlock()),
             ('annual_report_link_href', blocks.URLBlock()),
-        ]))], max_num=1))
+        ]))], max_num=1), use_json_field=True)
 
     content_panels = [
         FieldPanel('title', classname='full title', help_text="Internal name for page."),
@@ -1917,7 +1917,7 @@ class InstitutionalPartnership(Page):
             ('heading', blocks.CharBlock()),
             ('description', blocks.RichTextBlock())
         ])))
-    ], null=True)
+    ], null=True, use_json_field=True)
     quote = models.TextField()
     quote_author = models.CharField(max_length=255)
     quote_title = models.CharField(max_length=255, blank=True, null=True)
@@ -2003,14 +2003,14 @@ class InstitutionalPartnerProgramPage(Page):
             ('icon', ImageBlock()),
             ('html', blocks.RichTextBlock()),
         ])))
-    ])
+    ], use_json_field=True)
     section_3_tall_cards = StreamField([
         ('card', blocks.ListBlock(blocks.StructBlock([
             ('html', blocks.RichTextBlock()),
             ('link', blocks.URLBlock()),
             ('link_text', blocks.CharBlock())
         ])))
-    ])
+    ], use_json_field=True)
     section_4_quote_text = models.TextField()
     section_4_quote_name = models.CharField(max_length=255)
     section_4_quote_title = models.CharField(max_length=255)
@@ -2041,7 +2041,7 @@ class InstitutionalPartnerProgramPage(Page):
             ('heading_unit', blocks.CharBlock()),
             ('description', blocks.CharBlock())
         ])))
-    ])
+    ], use_json_field=True)
     section_7_heading = models.CharField(max_length=255)
     section_7_subheading = models.CharField(max_length=255)
     section_7_icons = StreamField([
@@ -2050,7 +2050,7 @@ class InstitutionalPartnerProgramPage(Page):
             ('image_alt_text', blocks.CharBlock()),
             ('current_cohort', blocks.BooleanBlock(required=False))
         ])))
-    ])
+    ], use_json_field=True)
     section_7_link_text = models.CharField(max_length=255)
     section_7_link_target = models.URLField()
     section_8_quote_text = models.TextField()
@@ -2180,13 +2180,13 @@ class CreatorFestPage(Page):
             ('button_url', blocks.URLBlock()),
             ('button_text', blocks.CharBlock()),
         ])))
-    ])
+    ], use_json_field=True)
     navigator = StreamField([
         ('menu_item', blocks.ListBlock(blocks.StructBlock([
             ('text', blocks.CharBlock()),
             ('slug', blocks.CharBlock()),
         ])))
-    ], null=True)
+    ], null=True, use_json_field=True)
 
     page_panels = StreamField([
         ('panel', blocks.StructBlock([
@@ -2202,7 +2202,7 @@ class CreatorFestPage(Page):
             ], null=True)
             ))
         ]))
-    ], null=True)
+    ], null=True, use_json_field=True)
 
     content_panels = [
         FieldPanel('title', classname='full title', help_text="Internal name for page."),
@@ -2377,7 +2377,7 @@ class MathQuizPage(Page):
                 ('partner', PartnerChooserBlock()),
              ]))),
         ])))
-    ])
+    ], use_json_field=True)
 
     content_panels = [
         FieldPanel('title', classname='full title', help_text="Internal name for page."),
@@ -2479,7 +2479,7 @@ class TutorMarketing(Page):
     features_header = models.CharField(max_length=255)
     features_cards = StreamField([
         ('cards', CardImageBlock()),
-    ])
+    ], use_json_field=True)
 
     #availble books
     available_books_header = models.CharField(max_length=255)
@@ -2489,7 +2489,7 @@ class TutorMarketing(Page):
     cost_description = models.TextField()
     cost_cards = StreamField([
         ('cards', CardBlock()),
-    ])
+    ], use_json_field=True)
     cost_institution_message = models.CharField(max_length=255)
 
     #feedback
@@ -2497,7 +2497,7 @@ class TutorMarketing(Page):
         blocks.StreamBlock([
             ('image', ImageBlock()),
             ('video', blocks.RawHTMLBlock())
-        ], max_num=1))
+        ], max_num=1), use_json_field=True)
     feedback_heading = models.CharField(max_length=255)
     feedback_quote = models.TextField()
     feedback_name = models.CharField(max_length=255)
@@ -2511,7 +2511,7 @@ class TutorMarketing(Page):
     faq_header = models.CharField(max_length=255)
     faqs = StreamField([
         ('faq', FAQBlock()),
-    ])
+    ], use_json_field=True)
 
     demo_cta_text = models.CharField(max_length=255)
     demo_cta_link = models.URLField()
@@ -2638,15 +2638,15 @@ class Subjects(Page):
     )
     tutor_ad = StreamField([
         ('content', TutorAdBlock()),
-    ])
+    ], use_json_field=True)
 
     about_os = StreamField([
         ('content', AboutOpenStaxBlock()),
-    ])
+    ], use_json_field=True)
 
     info_boxes = StreamField([
         ('info_box', blocks.ListBlock(InfoBoxBlock())),
-    ])
+    ], use_json_field=True)
 
     philanthropic_support = models.TextField(blank=True, null=True)
     translations = StreamField([
@@ -2654,7 +2654,7 @@ class Subjects(Page):
             ('locale', blocks.CharBlock()),
             ('slug', blocks.CharBlock()),
         ])))
-    ], null=True, blank=True)
+    ], null=True, blank=True, use_json_field=True)
 
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
@@ -2733,7 +2733,7 @@ class Subject(Page):
     page_description = models.TextField(default='')
     tutor_ad = StreamField([
         ('content', TutorAdBlock()),
-    ], null=True, blank=True)
+    ], null=True, blank=True, use_json_field=True)
 
     blog_header = StreamField(
         blocks.StreamBlock([
@@ -2742,7 +2742,7 @@ class Subject(Page):
                 ('blog_description', blocks.TextBlock()),
                 ('link_text', blocks.CharBlock()),
                 ('link_href', blocks.URLBlock())
-            ]))], max_num=1))
+            ]))], max_num=1), use_json_field=True)
 
     webinar_header = StreamField(
         blocks.StreamBlock([
@@ -2751,7 +2751,7 @@ class Subject(Page):
                 ('webinar_description', blocks.TextBlock()),
                 ('link_text', blocks.CharBlock()),
                 ('link_href', blocks.URLBlock())
-            ]))], max_num=1))
+            ]))], max_num=1), use_json_field=True)
 
     os_textbook_heading = models.TextField(blank=True, null=True)
     os_textbook_categories = StreamField([
@@ -2759,15 +2759,15 @@ class Subject(Page):
             ('heading', blocks.CharBlock()),
             ('text', blocks.TextBlock()),
         ])))
-    ], null=True, blank=True)
+    ], null=True, blank=True, use_json_field=True)
 
     about_os = StreamField([
         ('content', AboutOpenStaxBlock()),
-    ])
+    ], use_json_field=True)
 
     info_boxes = StreamField([
         ('info_box', blocks.ListBlock(InfoBoxBlock())),
-    ])
+    ], use_json_field=True)
     book_categories_heading = models.TextField(default='')
     learn_more_heading = models.TextField(default='')
     learn_more_blog_posts = models.TextField(default='')
@@ -2780,7 +2780,7 @@ class Subject(Page):
             ('locale', blocks.CharBlock()),
             ('slug', blocks.CharBlock()),
         ])))
-    ], null=True, blank=True)
+    ], null=True, blank=True, use_json_field=True)
 
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
@@ -3111,17 +3111,17 @@ class AllyLogos(Page):
     ally_logos_description = RichTextField()
     ally_logos = StreamField([
         ('ally_logo', blocks.ListBlock(AllyLogoBlock())),
-    ])
+    ], use_json_field=True)
     openstax_logos_heading = models.CharField(max_length=255)
     openstax_logos_description = RichTextField()
     openstax_logos = StreamField([
         ('openstax_logo', blocks.ListBlock(AllyLogoBlock())),
-    ])
+    ], use_json_field=True)
     book_ally_logos_heading = models.CharField(max_length=255)
     book_ally_logos_description = RichTextField()
     book_ally_logos = StreamField([
         ('book_ally_logo', blocks.ListBlock(AllyLogoBlock())),
-    ])
+    ], use_json_field=True)
 
     promote_image = models.ForeignKey(
         'wagtailimages.Image',

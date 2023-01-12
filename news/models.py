@@ -148,7 +148,7 @@ class NewsIndex(Page):
             ('description', blocks.TextBlock()),
             ('button_text', blocks.CharBlock()),
             ('button_href', blocks.URLBlock())
-         ], null=True)
+         ], null=True, use_json_field=True)
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -265,23 +265,23 @@ class NewsArticle(Page):
     featured_image_alt_text = models.CharField(max_length=250, blank=True, null=True)
     featured_video = StreamField([
         ('video', blocks.RawHTMLBlock()),
-        ], null=True, blank=True)
+        ], null=True, blank=True, use_json_field=True)
     def get_article_image(self):
         return build_image_url(self.featured_image)
     article_image = property(get_article_image)
     tags = ClusterTaggableManager(through=NewsArticleTag, blank=True)
-    body = StreamField(BlogStreamBlock())
+    body = StreamField(BlogStreamBlock(), use_json_field=True)
     pin_to_top = models.BooleanField(default=False)
     gated_content = models.BooleanField(default=False)
     collections = StreamField(blocks.StreamBlock([
             ('collection', blocks.ListBlock(BlogCollectionBlock())
-             )]), null=True, blank=True)
+             )]), null=True, blank=True, use_json_field=True)
     article_subjects = StreamField(blocks.StreamBlock([
             ('subject', blocks.ListBlock(SubjectBlock())
-             )]), null=True, blank=True)
+             )]), null=True, blank=True, use_json_field=True)
     content_types = StreamField(blocks.StreamBlock([
         ('content_type', blocks.ListBlock(BlogContentTypeBlock())
-         )]), null=True, blank=True)
+         )]), null=True, blank=True, use_json_field=True)
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -511,7 +511,7 @@ class PressIndex(Page):
     experts_blurb = models.TextField()
     mentions = StreamField([
         ('mention', NewsMentionBlock(icon='document')),
-    ], null=True)
+    ], null=True, use_json_field=True)
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -604,7 +604,7 @@ class PressRelease(Page):
     article_image = property(get_article_image)
     excerpt = models.CharField(max_length=255)
 
-    body = StreamField(BlogStreamBlock())
+    body = StreamField(BlogStreamBlock(), use_json_field=True)
 
     promote_image = models.ForeignKey(
         'wagtailimages.Image',

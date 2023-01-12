@@ -347,6 +347,8 @@ if BASE_URL is None:
             APPLICATION_DOMAIN = f'{ENVIRONMENT}.openstax.org'
     BASE_URL = f'https://{APPLICATION_DOMAIN}'
 
+WAGTAILADMIN_BASE_URL = BASE_URL
+
 ALLOWED_HOSTS = json.loads(os.getenv('ALLOWED_HOSTS', '[]'))
 
 CNX_URL = os.getenv('CNX_URL')

@@ -1,5 +1,6 @@
 appdirs==1.4.4
 chardet==4.0.0
+django==4.0.8
 django-admin-rangefilter==0.8.4
 django-crontab==0.7.1
 django-import-export==2.8.0
@@ -21,6 +22,6 @@ social-auth-app-django==5.0.0
 unicodecsv==0.14.1
 Unidecode==1.3.4
 vcrpy==4.1.1 # for recording test interactions with third-party APIs
-wagtail==2.16.2
+wagtail==3.0.1
 Wand==0.6.7 # for supporting animated gifs
 whitenoise==6.1.0

@@ -1,6 +1,6 @@
 from django.db import models
 
-from wagtail.import blocks
+from wagtail import blocks
 from wagtail.fields import RichTextField, StreamField
 from wagtail.admin.edit_handlers import FieldPanel, StreamFieldPanel
 from wagtail.images.edit_handlers import ImageChooserPanel
@@ -84,7 +84,7 @@ class Group(models.Model):
             ('bio', blocks.CharBlock(required=False)),
             ('photo', APIImageChooserBlock(required=False)),
         ], icon='user')),
-    ])
+    ], use_json_field=True)
 
     api_fields = ('heading',
                   'people', )
