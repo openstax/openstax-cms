@@ -90,7 +90,6 @@ class CardImageBlock(blocks.StructBlock):
     class Meta:
         icon = 'image'
 
-
 class StoryBlock(blocks.StructBlock):
     image = APIImageChooserBlock(required=False)
     story_text = blocks.TextBlock(required=False)
@@ -133,7 +132,16 @@ class InfoBoxBlock(blocks.StructBlock):
     class Meta:
         icon = 'placeholder'
 
+class TestimonialBlock(blocks.StructBlock):
+    author_icon = APIImageChooserBlock(required=False)
+    author = blocks.CharBlock(required=True)
+    testimonial = blocks.RichTextBlock(required=True)
 
+    class Meta:
+        author_icon = 'image'
+        max_num = 4
+
+        
 class AllyLogoBlock(blocks.StructBlock):
     image = APIImageChooserBlock()
 
