@@ -126,7 +126,7 @@ class OrientationFacultyResource(models.Model):
         FieldPanel('creator_fest_resource'),
         FieldPanel('link_external'),
         PageChooserPanel('link_page'),
-        DocumentChooserPanel('link_document'),
+        FieldPanel('link_document'),
         FieldPanel('link_text'),
         FieldPanel('video_reference_number'),
         FieldPanel('updated'),
@@ -211,10 +211,10 @@ class FacultyResources(models.Model):
     ]
 
     panels = [
-        SnippetChooserPanel('resource'),
+        FieldPanel('resource'),
         FieldPanel('link_external'),
         PageChooserPanel('link_page'),
-        DocumentChooserPanel('link_document'),
+        FieldPanel('link_document'),
         FieldPanel('link_text'),
         FieldPanel('coming_soon_text'),
         FieldPanel('video_reference_number'),
@@ -303,10 +303,10 @@ class StudentResources(models.Model):
     ]
 
     panels = [
-        SnippetChooserPanel('resource'),
+        FieldPanel('resource'),
         FieldPanel('link_external'),
         PageChooserPanel('link_page'),
-        DocumentChooserPanel('link_document'),
+        FieldPanel('link_document'),
         FieldPanel('link_text'),
         FieldPanel('coming_soon_text'),
         FieldPanel('updated'),
@@ -672,8 +672,8 @@ class Book(Page):
         InlinePanel('k12book_subjects', label='K12 Subjects'),
         FieldPanel('is_ap'),
         FieldPanel('description', classname="full"),
-        DocumentChooserPanel('cover'),
-        DocumentChooserPanel('title_image'),
+        FieldPanel('cover'),
+        FieldPanel('title_image'),
         FieldPanel('cover_color'),
         FieldPanel('book_cover_text_color'),
         FieldPanel('reverse_gradient'),
@@ -691,19 +691,19 @@ class Book(Page):
         FieldPanel('rex_callout_title'),
         FieldPanel('rex_callout_blurb'),
         FieldPanel('enable_study_edge'),
-        DocumentChooserPanel('high_resolution_pdf'),
+        FieldPanel('high_resolution_pdf'),
         FieldPanel('last_updated_pdf'),
-        DocumentChooserPanel('low_resolution_pdf'),
-        StreamFieldPanel('free_stuff_instructor'),
-        StreamFieldPanel('free_stuff_student'),
+        FieldPanel('low_resolution_pdf'),
+        FieldPanel('free_stuff_instructor'),
+        FieldPanel('free_stuff_student'),
         FieldPanel('community_resource_heading'),
-        DocumentChooserPanel('community_resource_logo'),
+        FieldPanel('community_resource_logo'),
         FieldPanel('community_resource_url'),
         FieldPanel('community_resource_cta'),
         FieldPanel('community_resource_blurb'),
-        DocumentChooserPanel('community_resource_feature_link'),
+        FieldPanel('community_resource_feature_link'),
         FieldPanel('community_resource_feature_text'),
-        StreamFieldPanel('webinar_content'),
+        FieldPanel('webinar_content'),
         FieldPanel('ibook_link'),
         FieldPanel('ibook_link_volume_2'),
         FieldPanel('bookshare_link'),
@@ -713,9 +713,9 @@ class Book(Page):
         FieldPanel('chegg_link'),
         FieldPanel('chegg_link_text'),
         FieldPanel('bookstore_coming_soon'),
-        StreamFieldPanel('bookstore_content'),
+        FieldPanel('bookstore_content'),
         FieldPanel('comp_copy_available'),
-        StreamFieldPanel('comp_copy_content'),
+        FieldPanel('comp_copy_content'),
         FieldPanel('tutor_marketing_book'),
         FieldPanel('partner_list_label'),
         FieldPanel('partner_page_link_text'),
@@ -724,8 +724,8 @@ class Book(Page):
         FieldPanel('customization_form_disclaimer'),
         FieldPanel('customization_form_next_steps'),
         FieldPanel('support_statement'),
-        StreamFieldPanel('videos'),
-        StreamFieldPanel('translations'),
+        FieldPanel('videos'),
+        FieldPanel('translations'),
     ]
     instructor_resources_panel = [
         FieldPanel('featured_resources_header'),
@@ -737,10 +737,10 @@ class Book(Page):
         InlinePanel('book_student_resources', label="Student Resources"),
     ]
     author_panel = [
-        StreamFieldPanel('authors')
+        FieldPanel('authors')
     ]
     promote_panels = Page.promote_panels + [
-        ImageChooserPanel('promote_image'),
+        FieldPanel('promote_image'),
     ]
 
     edit_handler = TabbedInterface([
@@ -1047,14 +1047,14 @@ class BookIndex(Page):
         FieldPanel('dev_standard_4_heading'),
         FieldPanel('dev_standard_4_description'),
         FieldPanel('subject_list_heading'),
-        StreamFieldPanel('translations'),
+        FieldPanel('translations'),
     ]
 
     promote_panels = [
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
+        FieldPanel('promote_image')
     ]
 
     api_fields = [

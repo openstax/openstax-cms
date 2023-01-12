@@ -158,14 +158,14 @@ class NewsIndex(Page):
     )
 
     content_panels = Page.content_panels + [
-        StreamFieldPanel('interest_block'),
+        FieldPanel('interest_block'),
     ]
 
     promote_panels = [
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
+        FieldPanel('promote_image')
     ]
 
     api_fields = [
@@ -359,23 +359,23 @@ class NewsArticle(Page):
         FieldPanel('heading'),
         FieldPanel('subheading'),
         FieldPanel('author'),
-        ImageChooserPanel('featured_image'),
-        StreamFieldPanel('featured_video'),
+        FieldPanel('featured_image'),
+        FieldPanel('featured_video'),
         FieldPanel('featured_image_alt_text'),
         FieldPanel('tags'),
-        StreamFieldPanel('body'),
+        FieldPanel('body'),
         FieldPanel('pin_to_top'),
         FieldPanel('gated_content'),
-        StreamFieldPanel('collections'),
-        StreamFieldPanel('article_subjects'),
-        StreamFieldPanel('content_types'),
+        FieldPanel('collections'),
+        FieldPanel('article_subjects'),
+        FieldPanel('content_types'),
     ]
 
     promote_panels = [
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
+        FieldPanel('promote_image')
     ]
 
     api_fields = [
@@ -453,7 +453,7 @@ class Experts(models.Model):
         FieldPanel('email'),
         FieldPanel('title'),
         FieldPanel('bio'),
-        ImageChooserPanel('image'),
+        FieldPanel('image'),
     ]
 
 
@@ -543,14 +543,14 @@ class PressIndex(Page):
         return releases_data
 
     content_panels = Page.content_panels + [
-        DocumentChooserPanel('press_kit'),
+        FieldPanel('press_kit'),
         FieldPanel('press_inquiry_name'),
         FieldPanel('press_inquiry_phone'),
         FieldPanel('press_inquiry_email'),
         FieldPanel('experts_heading'),
         FieldPanel('experts_blurb'),
         InlinePanel('experts_bios', label="Experts"),
-        StreamFieldPanel('mentions'),
+        FieldPanel('mentions'),
         InlinePanel('mission_statements', label="Mission Statement"),
     ]
 
@@ -558,7 +558,7 @@ class PressIndex(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
+        FieldPanel('promote_image')
     ]
 
     api_fields = [
@@ -632,17 +632,17 @@ class PressRelease(Page):
         FieldPanel('heading'),
         FieldPanel('subheading'),
         FieldPanel('author'),
-        ImageChooserPanel('featured_image'),
+        FieldPanel('featured_image'),
         FieldPanel('featured_image_alt_text'),
         FieldPanel('excerpt'),
-        StreamFieldPanel('body'),
+        FieldPanel('body'),
     ]
 
     promote_panels = [
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
+        FieldPanel('promote_image')
     ]
 
     api_fields = [

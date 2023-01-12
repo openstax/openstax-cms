@@ -109,13 +109,13 @@ class AboutUsPage(Page):
         FieldPanel('title', classname="full title"),
         FieldPanel('who_heading'),
         FieldPanel('who_paragraph'),
-        ImageChooserPanel('who_image'),
+        FieldPanel('who_image'),
         FieldPanel('what_heading'),
         FieldPanel('what_paragraph'),
-        StreamFieldPanel('what_cards'),
+        FieldPanel('what_cards'),
         FieldPanel('where_heading'),
         FieldPanel('where_paragraph'),
-        ImageChooserPanel('where_map'),
+        FieldPanel('where_map'),
         FieldPanel('where_map_alt'),
     ]
 
@@ -123,7 +123,7 @@ class AboutUsPage(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
+        FieldPanel('promote_image')
 
     ]
 
@@ -164,7 +164,7 @@ class TeamPage(Page):
         FieldPanel('title', classname="full title"),
         FieldPanel('header'),
         FieldPanel('subheader'),
-        ImageChooserPanel('header_image'),
+        FieldPanel('header_image'),
         FieldPanel('team_header'),
         InlinePanel('openstax_people', label="OpenStax People"),
     ]
@@ -173,7 +173,7 @@ class TeamPage(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
+        FieldPanel('promote_image')
 
     ]
 
@@ -372,37 +372,37 @@ class HomePage(Page):
         FieldPanel('banner_login_link'),
         FieldPanel('banner_logged_in_text'),
         FieldPanel('banner_logged_in_link'),
-        ImageChooserPanel('banner_left_image'),
-        ImageChooserPanel('banner_right_image'),
+        FieldPanel('banner_left_image'),
+        FieldPanel('banner_right_image'),
         FieldPanel('features_headline'),
         FieldPanel('features_tab1_heading'),
         FieldPanel('features_tab2_heading'),
-        StreamFieldPanel('features_tab1_features'),
+        FieldPanel('features_tab1_features'),
         FieldPanel('features_tab1_explore_text'),
         FieldPanel('features_tab1_explore_url'),
         FieldPanel('features_tab1_explore_logged_in_text'),
         FieldPanel('features_tab1_explore_logged_in_url'),
-        StreamFieldPanel('features_tab2_features'),
+        FieldPanel('features_tab2_features'),
         FieldPanel('features_tab2_explore_text'),
         FieldPanel('features_tab2_explore_url'),
-        ImageChooserPanel('features_bg_image'),
+        FieldPanel('features_bg_image'),
         FieldPanel('quotes_headline'),
-        StreamFieldPanel('quotes'),
-        ImageChooserPanel('quotes_instructor_image'),
-        ImageChooserPanel('quotes_student_image'),
-        ImageChooserPanel('tutor_logo'),
+        FieldPanel('quotes'),
+        FieldPanel('quotes_instructor_image'),
+        FieldPanel('quotes_student_image'),
+        FieldPanel('tutor_logo'),
         FieldPanel('tutor_description'),
         FieldPanel('tutor_button_text'),
         FieldPanel('tutor_button_link'),
         FieldPanel('tutor_demo_text'),
         FieldPanel('tutor_demo_link'),
-        StreamFieldPanel('tutor_features'),
+        FieldPanel('tutor_features'),
         FieldPanel('whats_openstax_headline'),
         FieldPanel('whats_openstax_description'),
         FieldPanel('whats_openstax_interest_headline'),
         FieldPanel('whats_openstax_interest_text'),
         FieldPanel('whats_openstax_interest_link_text'),
-        ImageChooserPanel('whats_openstax_image'),
+        FieldPanel('whats_openstax_image'),
         FieldPanel('map_text'),
         FieldPanel('map_button_text'),
     ]
@@ -411,7 +411,7 @@ class HomePage(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
+        FieldPanel('promote_image')
     ]
 
     template = 'page.html'
@@ -703,7 +703,7 @@ class ContactUs(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
+        FieldPanel('promote_image')
 
     ]
 
@@ -772,14 +772,14 @@ class GeneralPage(Page):
 
     content_panels = [
         FieldPanel('title'),
-        StreamFieldPanel('body'),
+        FieldPanel('body'),
     ]
 
     promote_panels = [
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
+        FieldPanel('promote_image')
     ]
 
 
@@ -834,8 +834,8 @@ class Supporters(Page):
         FieldPanel('title', classname="full title"),
         FieldPanel('banner_heading'),
         FieldPanel('banner_description'),
-        ImageChooserPanel('banner_image'),
-        StreamFieldPanel('funder_groups'),
+        FieldPanel('banner_image'),
+        FieldPanel('funder_groups'),
         FieldPanel('disclaimer')
     ]
 
@@ -843,7 +843,7 @@ class Supporters(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
+        FieldPanel('promote_image')
     ]
 
     template = 'page.html'
@@ -941,18 +941,18 @@ class MapPage(Page):
     content_panels = [
         FieldPanel('title', classname='full title'),
         FieldPanel('header_text'),
-        ImageChooserPanel('map_image'),
-        StreamFieldPanel('section_1_cards'),
+        FieldPanel('map_image'),
+        FieldPanel('section_1_cards'),
         FieldPanel('section_2_header_1'),
         FieldPanel('section_2_blurb_1'),
         FieldPanel('section_2_cta_1'),
         FieldPanel('section_2_link_1'),
-        ImageChooserPanel('section_2_image_1'),
+        FieldPanel('section_2_image_1'),
         FieldPanel('section_2_header_2'),
         FieldPanel('section_2_blurb_2'),
         FieldPanel('section_2_cta_2'),
         FieldPanel('section_2_link_2'),
-        ImageChooserPanel('section_2_image_2'),
+        FieldPanel('section_2_image_2'),
         FieldPanel('section_3_heading'),
         FieldPanel('section_3_blurb'),
         FieldPanel('section_3_cta'),
@@ -963,7 +963,7 @@ class MapPage(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
+        FieldPanel('promote_image')
     ]
 
     template = 'page.html'
@@ -1035,7 +1035,7 @@ class Give(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
+        FieldPanel('promote_image')
     ]
 
     template = 'page.html'
@@ -1075,7 +1075,7 @@ class TermsOfService(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
+        FieldPanel('promote_image')
     ]
 
     template = 'page.html'
@@ -1112,14 +1112,14 @@ class FAQ(Page):
         FieldPanel('title', classname="full title"),
         FieldPanel('intro_heading'),
         FieldPanel('intro_description'),
-        StreamFieldPanel('questions'),
+        FieldPanel('questions'),
     ]
 
     promote_panels = [
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
+        FieldPanel('promote_image')
     ]
 
     template = 'page.html'
@@ -1156,7 +1156,7 @@ class GiveForm(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
+        FieldPanel('promote_image')
     ]
 
     template = 'page.html'
@@ -1196,7 +1196,7 @@ class Accessibility(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
+        FieldPanel('promote_image')
     ]
 
     template = 'page.html'
@@ -1236,7 +1236,7 @@ class Licensing(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
+        FieldPanel('promote_image')
     ]
 
     template = 'page.html'
@@ -1316,7 +1316,7 @@ class Technology(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
+        FieldPanel('promote_image')
 
     ]
 
@@ -1369,7 +1369,7 @@ class ErrataList(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
+        FieldPanel('promote_image')
     ]
 
     template = 'page.html'
@@ -1412,7 +1412,7 @@ class PrivacyPolicy(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
+        FieldPanel('promote_image')
     ]
 
     template = 'page.html'
@@ -1460,16 +1460,16 @@ class PrintOrder(Page):
         FieldPanel('intro_heading'),
         FieldPanel('intro_description'),
         FieldPanel('featured_provider_intro_blurb'),
-        StreamFieldPanel('featured_providers'),
+        FieldPanel('featured_providers'),
         FieldPanel('other_providers_intro_blurb'),
-        StreamFieldPanel('providers'),
+        FieldPanel('providers'),
     ]
 
     promote_panels = [
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
+        FieldPanel('promote_image')
     ]
 
     template = 'page.html'
@@ -1681,20 +1681,20 @@ class ResearchPage(Page):
         FieldPanel('mission_header'),
         FieldPanel('mission_body'),
         FieldPanel('projects_header'),
-        StreamFieldPanel('projects'),
+        FieldPanel('projects'),
         FieldPanel('people_header'),
-        StreamFieldPanel('alumni'),
-        StreamFieldPanel('current_members'),
-        StreamFieldPanel('external_collaborators'),
+        FieldPanel('alumni'),
+        FieldPanel('current_members'),
+        FieldPanel('external_collaborators'),
         FieldPanel('publication_header'),
-        StreamFieldPanel('publications'),
+        FieldPanel('publications'),
     ]
 
     promote_panels = [
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
+        FieldPanel('promote_image')
 
     ]
 
@@ -1752,7 +1752,7 @@ class Careers(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
+        FieldPanel('promote_image')
     ]
 
     template = 'page.html'
@@ -1782,9 +1782,9 @@ class ImpactStory(Page):
         FieldPanel('heading'),
         FieldPanel('subheading'),
         FieldPanel('author'),
-        ImageChooserPanel('featured_image'),
+        FieldPanel('featured_image'),
         FieldPanel('featured_image_alt_text'),
-        StreamFieldPanel('body'),
+        FieldPanel('body'),
     ]
 
     api_fields = [
@@ -1873,13 +1873,13 @@ class Impact(Page):
 
     content_panels = [
         FieldPanel('title', classname='full title', help_text="Internal name for page."),
-        StreamFieldPanel('improving_access'),
-        StreamFieldPanel('reach'),
-        StreamFieldPanel('quote'),
-        StreamFieldPanel('making_a_difference'),
-        StreamFieldPanel('disruption'),
-        StreamFieldPanel('supporter_community'),
-        StreamFieldPanel('giving'),
+        FieldPanel('improving_access'),
+        FieldPanel('reach'),
+        FieldPanel('quote'),
+        FieldPanel('making_a_difference'),
+        FieldPanel('disruption'),
+        FieldPanel('supporter_community'),
+        FieldPanel('giving'),
     ]
 
     api_fields = [
@@ -1930,10 +1930,10 @@ class InstitutionalPartnership(Page):
 
     content_panels = [
         FieldPanel('title'),
-        ImageChooserPanel('heading_image'),
+        FieldPanel('heading_image'),
         FieldPanel('heading_year'),
         FieldPanel('heading'),
-        StreamFieldPanel('program_tab_content'),
+        FieldPanel('program_tab_content'),
         FieldPanel('quote'),
         FieldPanel('quote_author'),
         FieldPanel('quote_title'),
@@ -2069,35 +2069,35 @@ class InstitutionalPartnerProgramPage(Page):
         FieldPanel('section_1_description'),
         FieldPanel('section_1_link_text'),
         FieldPanel('section_1_link'),
-        ImageChooserPanel('section_1_background_image'),
+        FieldPanel('section_1_background_image'),
         FieldPanel('quote'),
         FieldPanel('quote_name'),
         FieldPanel('quote_title'),
         FieldPanel('quote_school'),
         FieldPanel('section_2_heading'),
         FieldPanel('section_2_description'),
-        ImageChooserPanel('section_2_image'),
+        FieldPanel('section_2_image'),
         FieldPanel('section_2_image_alt'),
         FieldPanel('section_3_heading'),
         FieldPanel('section_3_description'),
-        StreamFieldPanel('section_3_wide_cards'),
-        StreamFieldPanel('section_3_tall_cards'),
+        FieldPanel('section_3_wide_cards'),
+        FieldPanel('section_3_tall_cards'),
         FieldPanel('section_4_quote_text'),
         FieldPanel('section_4_quote_name'),
         FieldPanel('section_4_quote_title'),
         FieldPanel('section_4_quote_school'),
-        ImageChooserPanel('section_4_background_image'),
+        FieldPanel('section_4_background_image'),
         FieldPanel('section_5_heading'),
         FieldPanel('section_5_description'),
-        ImageChooserPanel('section_5_image'),
+        FieldPanel('section_5_image'),
         FieldPanel('section_5_image_alt'),
         FieldPanel('section_5_image_caption'),
         FieldPanel('section_6_heading'),
         FieldPanel('section_6_description'),
-        StreamFieldPanel('section_6_cards'),
+        FieldPanel('section_6_cards'),
         FieldPanel('section_7_heading'),
         FieldPanel('section_7_subheading'),
-        StreamFieldPanel('section_7_icons'),
+        FieldPanel('section_7_icons'),
         FieldPanel('section_7_link_text'),
         FieldPanel('section_7_link_target'),
         FieldPanel('section_8_quote_text'),
@@ -2208,10 +2208,10 @@ class CreatorFestPage(Page):
         FieldPanel('title', classname='full title', help_text="Internal name for page."),
         FieldPanel('banner_headline'),
         FieldPanel('banner_content'),
-        ImageChooserPanel('banner_image'),
-        StreamFieldPanel('register'),
-        StreamFieldPanel('navigator'),
-        StreamFieldPanel('page_panels'),
+        FieldPanel('banner_image'),
+        FieldPanel('register'),
+        FieldPanel('navigator'),
+        FieldPanel('page_panels'),
     ]
 
     api_fields = [
@@ -2323,7 +2323,7 @@ class WebinarPage(Page):
         FieldPanel('title', classname='full title', help_text="Internal name for page."),
         FieldPanel('heading'),
         FieldPanel('description'),
-        ImageChooserPanel('hero_image')
+        FieldPanel('hero_image')
     ]
 
     api_fields = [
@@ -2383,7 +2383,7 @@ class MathQuizPage(Page):
         FieldPanel('title', classname='full title', help_text="Internal name for page."),
         FieldPanel('heading'),
         FieldPanel('description'),
-        StreamFieldPanel('results')
+        FieldPanel('results')
     ]
 
     api_fields = [
@@ -2433,10 +2433,10 @@ class LLPHPage(Page):
         FieldPanel('title', classname='full title', help_text="Internal name for page."),
         FieldPanel('heading'),
         FieldPanel('subheading'),
-        ImageChooserPanel('hero_background'),
+        FieldPanel('hero_background'),
         FieldPanel('signup_link_href'),
         FieldPanel('signup_link_text'),
-        DocumentChooserPanel('book_cover'),
+        FieldPanel('book_cover'),
         FieldPanel('info_link_slug'),
         FieldPanel('info_link_text'),
         FieldPanel('book_heading'),
@@ -2593,13 +2593,13 @@ class TutorMarketing(Page):
         FieldPanel('header_cta_button_link'),
         FieldPanel('quote'),
         FieldPanel('features_header'),
-        StreamFieldPanel('features_cards'),
+        FieldPanel('features_cards'),
         FieldPanel('available_books_header'),
         FieldPanel('cost_header'),
         FieldPanel('cost_description'),
-        StreamFieldPanel('cost_cards'),
+        FieldPanel('cost_cards'),
         FieldPanel('cost_institution_message'),
-        StreamFieldPanel('feedback_media'),
+        FieldPanel('feedback_media'),
         FieldPanel('feedback_heading'),
         FieldPanel('feedback_quote'),
         FieldPanel('feedback_name'),
@@ -2607,7 +2607,7 @@ class TutorMarketing(Page):
         FieldPanel('feedback_organization'),
         FieldPanel('webinars_header'),
         FieldPanel('faq_header'),
-        StreamFieldPanel('faqs'),
+        FieldPanel('faqs'),
         FieldPanel('demo_cta_text'),
         FieldPanel('demo_cta_link'),
         FieldPanel('tutor_login_link')
@@ -2617,7 +2617,7 @@ class TutorMarketing(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
+        FieldPanel('promote_image')
     ]
 
     template = 'page.html'
@@ -2696,19 +2696,19 @@ class Subjects(Page):
     content_panels = Page.content_panels + [
         FieldPanel('heading'),
         FieldPanel('description'),
-        ImageChooserPanel('heading_image'),
-        StreamFieldPanel('tutor_ad'),
-        StreamFieldPanel('about_os'),
-        StreamFieldPanel('info_boxes'),
+        FieldPanel('heading_image'),
+        FieldPanel('tutor_ad'),
+        FieldPanel('about_os'),
+        FieldPanel('info_boxes'),
         FieldPanel('philanthropic_support'),
-        StreamFieldPanel('translations'),
+        FieldPanel('translations'),
     ]
 
     promote_panels = [
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
+        FieldPanel('promote_image')
     ]
 
     template = 'page.html'
@@ -2725,7 +2725,7 @@ class SubjectOrderable(Orderable, SubjectBooks):
     page = ParentalKey("pages.Subject", related_name="subject")
 
     panels = [
-        SnippetChooserPanel("subject"),
+        FieldPanel("subject"),
     ]
 
 
@@ -2873,27 +2873,27 @@ class Subject(Page):
     content_panels = Page.content_panels + [
         MultiFieldPanel([InlinePanel("subject", label="Subject", min_num=1, max_num=1)], heading="Subject(s)"),
         FieldPanel('page_description'),
-        StreamFieldPanel('tutor_ad'),
-        StreamFieldPanel('blog_header'),
-        StreamFieldPanel('webinar_header'),
+        FieldPanel('tutor_ad'),
+        FieldPanel('blog_header'),
+        FieldPanel('webinar_header'),
         FieldPanel('os_textbook_heading'),
-        StreamFieldPanel('os_textbook_categories'),
-        StreamFieldPanel('about_os'),
-        StreamFieldPanel('info_boxes'),
+        FieldPanel('os_textbook_categories'),
+        FieldPanel('about_os'),
+        FieldPanel('info_boxes'),
         FieldPanel('book_categories_heading'),
         FieldPanel('learn_more_heading'),
         FieldPanel('learn_more_blog_posts'),
         FieldPanel('learn_more_webinars'),
         FieldPanel('learn_more_about_books'),
         FieldPanel('philanthropic_support'),
-        StreamFieldPanel('translations'),
+        FieldPanel('translations'),
     ]
 
     promote_panels = [
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
+        FieldPanel('promote_image')
     ]
 
     template = 'page.html'
@@ -2939,7 +2939,7 @@ class FormHeadings(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
+        FieldPanel('promote_image')
     ]
 
     template = 'page.html'
@@ -3137,13 +3137,13 @@ class AllyLogos(Page):
         FieldPanel('description'),
         FieldPanel('ally_logos_heading'),
         FieldPanel('ally_logos_description'),
-        StreamFieldPanel('ally_logos'),
+        FieldPanel('ally_logos'),
         FieldPanel('openstax_logos_heading'),
         FieldPanel('openstax_logos_description'),
-        StreamFieldPanel('openstax_logos'),
+        FieldPanel('openstax_logos'),
         FieldPanel('book_ally_logos_heading'),
         FieldPanel('book_ally_logos_description'),
-        StreamFieldPanel('book_ally_logos')
+        FieldPanel('book_ally_logos')
     ]
 
     api_fields = [
@@ -3164,7 +3164,7 @@ class AllyLogos(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
+        FieldPanel('promote_image')
     ]
 
     template = 'page.html'

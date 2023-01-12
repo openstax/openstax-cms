@@ -45,7 +45,7 @@ class Quote(models.Model):
 
     panels = [
         FieldPanel('quote_text'),
-        ImageChooserPanel('quote_image'),
+        FieldPanel('quote_image'),
         FieldPanel('quote_image_alignment'),
         FieldPanel('quote_link'),
         FieldPanel('quote_link_text'),
@@ -71,7 +71,7 @@ class Institutions(models.Model):
 
     panels = [
         FieldPanel('title'),
-        ImageChooserPanel('logo'),
+        FieldPanel('logo'),
     ]
 
 
@@ -91,5 +91,5 @@ class Group(models.Model):
 
     panels = [
         FieldPanel('heading'),
-        StreamFieldPanel('people'),
+        FieldPanel('people'),
     ]

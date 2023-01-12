@@ -39,7 +39,7 @@ class Subject(TranslatableMixin, models.Model):
         FieldPanel('page_content'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('icon'),
+        FieldPanel('icon'),
         FieldPanel('subject_color'),
     ]
 
@@ -205,7 +205,7 @@ class NewsSource(TranslatableMixin, index.Indexed, models.Model):
 
     panels = [
         FieldPanel('name'),
-        ImageChooserPanel('logo'),
+        FieldPanel('logo'),
     ]
 
     search_fields = [
@@ -249,7 +249,7 @@ class SubjectCategory(TranslatableMixin, models.Model):
         return self.subject.name
 
     panels = [
-        SnippetChooserPanel('subject'),
+        FieldPanel('subject'),
         FieldPanel('subject_category'),
         FieldPanel('description'),
     ]
@@ -286,7 +286,7 @@ class GiveBanner(TranslatableMixin, models.Model):
         FieldPanel('html_message'),
         FieldPanel('link_text'),
         FieldPanel('link_url'),
-        ImageChooserPanel('thumbnail'),
+        FieldPanel('thumbnail'),
     ]
 
     def __str__(self):
@@ -343,7 +343,7 @@ class BlogCollection(TranslatableMixin, models.Model):
     panels = [
         FieldPanel('name'),
         FieldPanel('description'),
-        ImageChooserPanel('image'),
+        FieldPanel('image'),
     ]
 
     def __str__(self):
