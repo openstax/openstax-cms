@@ -23,7 +23,7 @@ class Command(BaseCommand):
         with Salesforce() as sf:
             new_data = []
             for nrd in new_resource_downloads:
-                if nrd.book.salesforce_abbreviation:
+                if nrd.book:
                     data_dict_item = {'Contact__c': nrd.contact_id,
                                       'Last_accessed__c': nrd.last_access.strftime('%Y-%m-%d'),
                                       'Name': nrd.resource_name,

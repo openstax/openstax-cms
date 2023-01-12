@@ -32,10 +32,7 @@ class Command(BaseCommand):
                       "BillingPostalCode, " \
                       "BillingCountry, " \
                       "Address_Latitude__c, " \
-                      "Address_Longitude__c," \
-                      "Testimonial__c," \
-                      "Testimonial_Name__c, " \
-                      "Testimonial_Position__c " \
+                      "Address_Longitude__c " \
                       "FROM Account WHERE All_Time_Savings2__c > 0"
             response = sf.query_all(query)
             sf_schools = response['records']
@@ -64,10 +61,7 @@ class Command(BaseCommand):
                       "BillingPostalCode, " \
                       "BillingCountry, " \
                       "Address_Latitude__c, " \
-                      "Address_Longitude__c," \
-                      "Testimonial__c," \
-                      "Testimonial_Name__c, " \
-                      "Testimonial_Position__c " \
+                      "Address_Longitude__c " \
                       "FROM Account WHERE RecordTypeId = '012U0000000MdzNIAS' AND K_I_P__c = True"
             district_response = sf.query_all(district_query)
             sf_districts = district_response['records']
@@ -103,9 +97,6 @@ class Command(BaseCommand):
                                   'physical_zip_postal_code': sf_district['BillingPostalCode'],
                                   'lat': sf_district['Address_Latitude__c'],
                                   'long': sf_district['Address_Longitude__c'],
-                                  'testimonial': sf_district['Testimonial__c'],
-                                  'testimonial_name': sf_district['Testimonial_Name__c'],
-                                  'testimonial_position': sf_district['Testimonial_Position__c']
                                   },
                     )
                 school.save()
@@ -141,9 +132,6 @@ class Command(BaseCommand):
                               'physical_zip_postal_code': sf_school['BillingPostalCode'],
                               'lat': sf_school['Address_Latitude__c'],
                               'long': sf_school['Address_Longitude__c'],
-                              'testimonial': sf_school['Testimonial__c'],
-                              'testimonial_name': sf_school['Testimonial_Name__c'],
-                              'testimonial_position': sf_school['Testimonial_Position__c']
                               },
                 )
 
