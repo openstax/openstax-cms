@@ -52,8 +52,6 @@ register_snippet(Subject)
 class K12Subject(TranslatableMixin, models.Model):
     name = models.CharField(max_length=255)
     intro_text = RichTextField(blank=True, null=True)
-    seo_title = models.CharField(max_length=255, null=True, blank=True)
-    search_description = models.CharField(max_length=255, null=True, blank=True)
     image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -72,13 +70,11 @@ class K12Subject(TranslatableMixin, models.Model):
 
     subject_image = property(get_subject_image)
 
-    api_fields = ('name', 'intro_text', 'seo_title', 'search_description', 'subject_image', 'subject_category' , 'subject_color', 'subject_link')
+    api_fields = ('name', 'intro_text', 'subject_image', 'subject_category' , 'subject_color', 'subject_link')
 
     panels = [
         FieldPanel('name'),
         FieldPanel('intro_text'),
-        FieldPanel('seo_title'),
-        FieldPanel('search_description'),
         ImageChooserPanel('image'),
         FieldPanel('subject_category'),
         FieldPanel('subject_color'),
