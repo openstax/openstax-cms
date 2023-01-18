@@ -11,6 +11,9 @@ def clear_cloudfront_on_page_publish(sender, **kwargs):
     invalidate_cloudfront_caches('v2/pages')
     # clear general pages
     invalidate_cloudfront_caches('spike')
+    # clear resources
+    invalidate_cloudfront_caches('books/resources')
+
 
 
 page_published.connect(clear_cloudfront_on_page_publish)
