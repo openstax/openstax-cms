@@ -2948,7 +2948,6 @@ class FormHeadings(Page):
     max_count = 1
 
 
-
 class K12Subject(Page):
 
     subheader = models.TextField(default='HIGH SCHOOL')
@@ -3103,8 +3102,6 @@ class K12Subject(Page):
             
     class Meta:
             verbose_name = "K12 Subject"
-
-
 
 
 class AllyLogos(Page):
