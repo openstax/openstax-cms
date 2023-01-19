@@ -1,19 +1,13 @@
 from django import forms
 from django.db import models
-from django.http.response import JsonResponse
 
 from modelcluster.fields import ParentalKey
-from wagtail.admin.edit_handlers import FieldPanel, InlinePanel, StreamFieldPanel, MultiFieldPanel
+from wagtail.admin.edit_handlers import FieldPanel, InlinePanel, MultiFieldPanel
 from wagtail import blocks
 from wagtail.fields import RichTextField, StreamField
 from wagtail.models import Orderable, Page
-from wagtail.documents.edit_handlers import DocumentChooserPanel
-from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.api import APIField
 from wagtail.models import Site
-from wagtail import hooks
-from wagtail.admin.menu import MenuItem
-from wagtail.snippets.edit_handlers import SnippetChooserPanel
 
 from openstax.functions import build_image_url, build_document_url
 from books.models import Book, SubjectBooks, BookFacultyResources, BookStudentResources
@@ -24,7 +18,6 @@ from salesforce.models import PartnerTypeMapping, PartnerFieldNameMapping, Partn
 
 from .custom_blocks import ImageBlock, \
     APIImageChooserBlock, \
-    ColumnBlock, \
     FAQBlock, \
     BookProviderBlock, \
     CardBlock, \
@@ -37,7 +30,6 @@ from .custom_blocks import ImageBlock, \
     AllyLogoBlock
 
 from .custom_fields import \
-    Institutions, \
     Group
 import snippets.models as snippets
 
@@ -495,14 +487,14 @@ class K12MainPage(Page):
     )
     features_cards = StreamField([
         ('features_cards', CardImageBlock()),
-    ])
+    ], use_json_field=True)
     highlights_header = RichTextField(default='', blank=True)
     highlights = StreamField(
             blocks.StreamBlock([
                 ('highlight', blocks.ListBlock(blocks.StructBlock([
                     ('highlight_subheader', blocks.TextBlock(required=False)),
                     ('highlight_text', blocks.CharBlock(Required=False)),
-                ])))], max_num=3))
+                ])))], max_num=3),use_json_field=True)
     highlights_icon = models.ForeignKey(
             'wagtailimages.Image',
             null=True,
@@ -515,7 +507,7 @@ class K12MainPage(Page):
                 ('stat', blocks.ListBlock(blocks.StructBlock([
                     ('bold_stat_text', blocks.TextBlock(required=False)),
                     ('normal_stat_text', blocks.CharBlock(required=False)),
-                ])))], max_num=3))
+                ])))], max_num=3), use_json_field=True)
     stats_image1 = models.ForeignKey(
             'wagtailimages.Image',
             null=True,
@@ -550,7 +542,7 @@ class K12MainPage(Page):
     faq_header = models.CharField(default='', blank=True, max_length=255)
     faqs = StreamField([
         ('faq', FAQBlock()),
-    ])
+    ], use_json_field=True)
     rfi_image = models.ForeignKey(
                 'wagtailimages.Image',
                 null=True,
@@ -634,23 +626,23 @@ class K12MainPage(Page):
         FieldPanel('title', classname="full title"),
         FieldPanel('banner_headline'),
         FieldPanel('banner_description'),
-        ImageChooserPanel('banner_right_image'),
-        StreamFieldPanel('features_cards'),
+        FieldPanel('banner_right_image'),
+        FieldPanel('features_cards'),
         FieldPanel('highlights_header'),
-        StreamFieldPanel('highlights'),
-        ImageChooserPanel('highlights_icon'),
-        StreamFieldPanel('stats_grid'),
-        ImageChooserPanel('stats_image1'),
-        ImageChooserPanel('stats_image2'),
-        ImageChooserPanel('stats_image3'),
+        FieldPanel('highlights'),
+        FieldPanel('highlights_icon'),
+        FieldPanel('stats_grid'),
+        FieldPanel('stats_image1'),
+        FieldPanel('stats_image2'),
+        FieldPanel('stats_image3'),
         FieldPanel('subject_library_header'),
         FieldPanel('subject_library_description'),
         FieldPanel('testimonials_header'),
         FieldPanel('testimonials_description'),
-        StreamFieldPanel('testimonials'),
+        FieldPanel('testimonials'),
         FieldPanel('faq_header'),
-        StreamFieldPanel('faqs'),
-        ImageChooserPanel('rfi_image'),
+        FieldPanel('faqs'),
+        FieldPanel('rfi_image'),
         FieldPanel('rfi_header'),
         FieldPanel('rfi_description'),
         FieldPanel('sticky_header'),
@@ -661,7 +653,7 @@ class K12MainPage(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
+        FieldPanel('promote_image')
     ]
 
 
@@ -1509,7 +1501,7 @@ class LearningResearchPage(Page):
                     ('publication', blocks.URLBlock(required=False)),
                     ('github', blocks.URLBlock(required=False)),
                 ])))
-            ]))]), default='')
+            ]))]), default='', use_json_field=True)
     people_header = models.CharField(max_length=255)
     current_members = StreamField([
         ('person', blocks.StructBlock([
@@ -1526,7 +1518,7 @@ class LearningResearchPage(Page):
             ('linked_in', blocks.URLBlock(required=False)),
             ('google_scholar', blocks.URLBlock(required=False)),
         ], icon='user')),
-    ], null=True, blank=True)
+    ], null=True, blank=True, use_json_field=True)
     collaborating_researchers = StreamField([
         ('person', blocks.StructBlock([
             ('first_name', blocks.CharBlock()),
@@ -1542,14 +1534,14 @@ class LearningResearchPage(Page):
             ('linked_in', blocks.URLBlock(required=False)),
             ('google_scholar', blocks.URLBlock(required=False)),
         ], icon='user')),
-    ], null=True, blank=True)
+    ], null=True, blank=True, use_json_field=True)
     alumni = StreamField([
         ('person', blocks.StructBlock([
             ('name', blocks.CharBlock()),
             ('title', blocks.CharBlock()),
             ('linked_in', blocks.URLBlock(required=False)),
         ], icon='user')),
-    ], null=True, blank=True)
+    ], null=True, blank=True, use_json_field=True)
     publication_header = models.CharField(max_length=255)
     publications = StreamField([
         ('publication', blocks.StructBlock([
@@ -1560,7 +1552,7 @@ class LearningResearchPage(Page):
             ('pdf', blocks.URLBlock()),
             ('github', blocks.URLBlock(required=False)),
         ], icon='document')),
-    ], null=True, blank=True)
+    ], null=True, blank=True, use_json_field=True)
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -1579,20 +1571,20 @@ class LearningResearchPage(Page):
         FieldPanel('bannerURL'),
         FieldPanel('research_area_header'),
         FieldPanel('research_area_description_mobile'),
-        StreamFieldPanel('research_areas_list'),
+        FieldPanel('research_areas_list'),
         FieldPanel('people_header'),
-        StreamFieldPanel('current_members'),
-        StreamFieldPanel('collaborating_researchers'),
-        StreamFieldPanel('alumni'),
+        FieldPanel('current_members'),
+        FieldPanel('collaborating_researchers'),
+        FieldPanel('alumni'),
         FieldPanel('publication_header'),
-        StreamFieldPanel('publications'),
+        FieldPanel('publications'),
     ]
 
     promote_panels = [
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
+        FieldPanel('promote_image')
     ]
 
     api_fields = [
@@ -3092,7 +3084,7 @@ class K12Subject(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
+        FieldPanel('promote_image')
     ]
 
     template = 'page.html'
