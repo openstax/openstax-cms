@@ -538,7 +538,7 @@ class K12MainPage(Page):
             )
     subject_library_header = models.CharField(default='', blank=True, max_length=255)
     subject_library_description = models.TextField(default='', blank=True)
-    
+
 
 
     testimonials_header = models.CharField(default='', blank=True, max_length=255)
@@ -557,9 +557,9 @@ class K12MainPage(Page):
                 on_delete=models.SET_NULL,
                 related_name='+'
             )
-    rfi_header = models.CharField(default='', blank=True, max_length=255)    
+    rfi_header = models.CharField(default='', blank=True, max_length=255)
     rfi_description = models.TextField(default='', blank=True)
-    sticky_header = models.CharField(default='', blank=True, max_length=255)    
+    sticky_header = models.CharField(default='', blank=True, max_length=255)
     sticky_description = models.TextField(default='', blank=True)
 
     def get_sitemap_urls(self, request=None):
@@ -670,7 +670,7 @@ class K12MainPage(Page):
 
     max_count = 1
 
-    
+
 
     class Meta:
         verbose_name = "K12 Main Page"
@@ -2846,7 +2846,6 @@ class FormHeadings(Page):
     max_count = 1
 
 
-
 class K12Subject(Page):
 
     subheader = models.TextField(default='HIGH SCHOOL')
@@ -2894,7 +2893,7 @@ class K12Subject(Page):
             subject_category = subject.subject_category
 
         return subject_category
-   
+
     @property
     def books(self):
             books = Book.objects.order_by('path')
@@ -2906,10 +2905,10 @@ class K12Subject(Page):
                 subjects=[]
                 for subject in book.book_subjects.all():
                     subjects.append(subject.subject_name)
-                
+
                 if book.k12book_subjects is not None \
                             and self.title in k12subjects \
-                            and book.book_state not in ['retired', 'draft']:                    
+                            and book.book_state not in ['retired', 'draft']:
                     book_data.append({
                         'id': book.id,
                         'slug': 'books/{}'.format(book.slug),
@@ -2998,11 +2997,9 @@ class K12Subject(Page):
 
     parent_page_types = ['pages.K12MainPage']
 
-            
+
     class Meta:
             verbose_name = "K12 Subject"
-
-
 
 
 class AllyLogos(Page):

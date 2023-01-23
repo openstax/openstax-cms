@@ -132,16 +132,16 @@ class InfoBoxBlock(blocks.StructBlock):
     class Meta:
         icon = 'placeholder'
 
+
 class TestimonialBlock(blocks.StructBlock):
     author_icon = APIImageChooserBlock(required=False)
     author = blocks.CharBlock(required=True)
     testimonial = blocks.RichTextBlock(required=True)
-
     class Meta:
         author_icon = 'image'
         max_num = 4
 
-        
+
 class AllyLogoBlock(blocks.StructBlock):
     image = APIImageChooserBlock()
 
