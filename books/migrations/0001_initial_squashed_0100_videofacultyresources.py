@@ -6,8 +6,8 @@ from django.db import migrations, models
 import django.db.models.deletion
 import modelcluster.fields
 import snippets.models
-import wagtail.core.blocks
-import wagtail.core.fields
+import wagtail.blocks
+import wagtail.fields
 
 
 class Migration(migrations.Migration):
@@ -45,11 +45,11 @@ class Migration(migrations.Migration):
                 ('page_description', models.TextField()),
                 ('dev_standards_heading', models.CharField(blank=True, max_length=255, null=True)),
                 ('dev_standard_1_heading', models.CharField(blank=True, max_length=255, null=True)),
-                ('dev_standard_1_description', wagtail.core.fields.RichTextField()),
+                ('dev_standard_1_description', wagtail.fields.RichTextField()),
                 ('dev_standard_2_heading', models.CharField(blank=True, max_length=255, null=True)),
-                ('dev_standard_2_description', wagtail.core.fields.RichTextField()),
+                ('dev_standard_2_description', wagtail.fields.RichTextField()),
                 ('dev_standard_3_heading', models.CharField(blank=True, max_length=255, null=True)),
-                ('dev_standard_3_description', wagtail.core.fields.RichTextField()),
+                ('dev_standard_3_description', wagtail.fields.RichTextField()),
                 ('subject_list_heading', models.CharField(blank=True, max_length=255, null=True)),
                 ('promote_image', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='wagtailimages.Image')),
             ],
@@ -78,7 +78,7 @@ class Migration(migrations.Migration):
             name='Quotes',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('quote_text', wagtail.core.fields.RichTextField()),
+                ('quote_text', wagtail.fields.RichTextField()),
                 ('quote_author', models.CharField(max_length=255)),
                 ('quote_author_school', models.CharField(max_length=255)),
             ],
@@ -90,7 +90,7 @@ class Migration(migrations.Migration):
                 ('created', models.DateTimeField(auto_now_add=True)),
                 ('cnx_id', models.CharField(blank=True, help_text='This is used to pull relevant information from CNX.', max_length=255, null=True)),
                 ('updated', models.DateTimeField(blank=True, help_text='Late date web content was updated', null=True)),
-                ('description', wagtail.core.fields.RichTextField(blank=True, help_text='Description shown on Book Detail page.')),
+                ('description', wagtail.fields.RichTextField(blank=True, help_text='Description shown on Book Detail page.')),
                 ('publish_date', models.DateField(help_text='Date the book is published on.', null=True)),
                 ('print_isbn_10', models.CharField(blank=True, help_text='ISBN 10 for print version (hardcover).', max_length=255, null=True)),
                 ('print_isbn_13', models.CharField(blank=True, help_text='ISBN 13 for print version (hardcover).', max_length=255, null=True)),
@@ -109,7 +109,7 @@ class Migration(migrations.Migration):
                 ('ibook_link_volume_2', models.URLField(blank=True, help_text='Link to secondary iBook')),
                 ('community_resource_cta', models.CharField(blank=True, help_text='Call the action text.', max_length=255, null=True)),
                 ('community_resource_url', models.URLField(blank=True, help_text='URL of the external source.')),
-                ('authors', wagtail.core.fields.StreamField([('author', wagtail.core.blocks.StructBlock([('name', wagtail.core.blocks.CharBlock(help_text='Full name of the author.', required=True)), ('university', wagtail.core.blocks.CharBlock(help_text='Name of the university/institution the author is associated with.', required=False)), ('country', wagtail.core.blocks.CharBlock(help_text='Country of the university/institution.', required=False)), ('senior_author', wagtail.core.blocks.BooleanBlock(help_text='Whether the author is a senior author. (Senior authors are shown before non-senior authors.)', required=False)), ('display_at_top', wagtail.core.blocks.BooleanBlock(help_text='Whether display the author on top.', required=False))]))], null=True)),
+                ('authors', wagtail.fields.StreamField([('author', wagtail.blocks.StructBlock([('name', wagtail.blocks.CharBlock(help_text='Full name of the author.', required=True)), ('university', wagtail.blocks.CharBlock(help_text='Name of the university/institution the author is associated with.', required=False)), ('country', wagtail.blocks.CharBlock(help_text='Country of the university/institution.', required=False)), ('senior_author', wagtail.blocks.BooleanBlock(help_text='Whether the author is a senior author. (Senior authors are shown before non-senior authors.)', required=False)), ('display_at_top', wagtail.blocks.BooleanBlock(help_text='Whether display the author on top.', required=False))]))], null=True)),
                 ('coming_soon', models.BooleanField(default=False)),
                 ('salesforce_abbreviation', models.CharField(blank=True, max_length=255, null=True)),
                 ('salesforce_name', models.CharField(blank=True, max_length=255, null=True)),
@@ -130,13 +130,13 @@ class Migration(migrations.Migration):
                 ('reverse_gradient', models.BooleanField(default=False)),
                 ('title_image', models.ForeignKey(help_text='The svg for title image to be shown on the website.', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='wagtaildocs.Document')),
                 ('community_resource_feature_link', models.ForeignKey(blank=True, help_text='Document of the community resource feature.', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='wagtaildocs.Document')),
-                ('ally_content', wagtail.core.fields.StreamField([('content', books.models.SharedContentChooserBlock(snippets.models.SharedContent)), ('link', wagtail.core.blocks.URLBlock(required=False)), ('link_text', wagtail.core.blocks.CharBlock(required=False))], blank=True, null=True)),
-                ('bookstore_content', wagtail.core.fields.StreamField([('content', books.models.SharedContentChooserBlock(snippets.models.SharedContent)), ('link', wagtail.core.blocks.URLBlock(required=False)), ('link_text', wagtail.core.blocks.CharBlock(required=False))], blank=True, help_text='Bookstore content.', null=True)),
-                ('comp_copy_content', wagtail.core.fields.StreamField([('content', books.models.SharedContentChooserBlock(snippets.models.SharedContent)), ('link', wagtail.core.blocks.URLBlock(required=False)), ('link_text', wagtail.core.blocks.CharBlock(required=False))], blank=True, help_text='Content of the free copy.', null=True)),
-                ('errata_content', wagtail.core.fields.StreamField([('content', books.models.SharedContentChooserBlock(snippets.models.SharedContent)), ('link', wagtail.core.blocks.URLBlock(required=False)), ('link_text', wagtail.core.blocks.CharBlock(required=False))], blank=True, help_text='Errata content.', null=True)),
-                ('free_stuff_instructor', wagtail.core.fields.StreamField([('content', books.models.SharedContentChooserBlock(snippets.models.SharedContent)), ('link', wagtail.core.blocks.URLBlock(required=False)), ('link_text', wagtail.core.blocks.CharBlock(required=False))], blank=True, help_text='Snippet to show texts for free instructor resources.', null=True)),
-                ('free_stuff_student', wagtail.core.fields.StreamField([('content', books.models.SharedContentChooserBlock(snippets.models.SharedContent)), ('link', wagtail.core.blocks.URLBlock(required=False)), ('link_text', wagtail.core.blocks.CharBlock(required=False))], blank=True, help_text='Snipped to show texts for free student resources.', null=True)),
-                ('webinar_content', wagtail.core.fields.StreamField([('content', books.models.SharedContentChooserBlock(snippets.models.SharedContent)), ('link', wagtail.core.blocks.URLBlock(required=False)), ('link_text', wagtail.core.blocks.CharBlock(required=False))], blank=True, null=True)),
+                ('ally_content', wagtail.fields.StreamField([('content', books.models.SharedContentChooserBlock(snippets.models.SharedContent)), ('link', wagtail.blocks.URLBlock(required=False)), ('link_text', wagtail.blocks.CharBlock(required=False))], blank=True, null=True)),
+                ('bookstore_content', wagtail.fields.StreamField([('content', books.models.SharedContentChooserBlock(snippets.models.SharedContent)), ('link', wagtail.blocks.URLBlock(required=False)), ('link_text', wagtail.blocks.CharBlock(required=False))], blank=True, help_text='Bookstore content.', null=True)),
+                ('comp_copy_content', wagtail.fields.StreamField([('content', books.models.SharedContentChooserBlock(snippets.models.SharedContent)), ('link', wagtail.blocks.URLBlock(required=False)), ('link_text', wagtail.blocks.CharBlock(required=False))], blank=True, help_text='Content of the free copy.', null=True)),
+                ('errata_content', wagtail.fields.StreamField([('content', books.models.SharedContentChooserBlock(snippets.models.SharedContent)), ('link', wagtail.blocks.URLBlock(required=False)), ('link_text', wagtail.blocks.CharBlock(required=False))], blank=True, help_text='Errata content.', null=True)),
+                ('free_stuff_instructor', wagtail.fields.StreamField([('content', books.models.SharedContentChooserBlock(snippets.models.SharedContent)), ('link', wagtail.blocks.URLBlock(required=False)), ('link_text', wagtail.blocks.CharBlock(required=False))], blank=True, help_text='Snippet to show texts for free instructor resources.', null=True)),
+                ('free_stuff_student', wagtail.fields.StreamField([('content', books.models.SharedContentChooserBlock(snippets.models.SharedContent)), ('link', wagtail.blocks.URLBlock(required=False)), ('link_text', wagtail.blocks.CharBlock(required=False))], blank=True, help_text='Snipped to show texts for free student resources.', null=True)),
+                ('webinar_content', wagtail.fields.StreamField([('content', books.models.SharedContentChooserBlock(snippets.models.SharedContent)), ('link', wagtail.blocks.URLBlock(required=False)), ('link_text', wagtail.blocks.CharBlock(required=False))], blank=True, null=True)),
                 ('community_resource_heading', models.CharField(blank=True, help_text='Snipped to show texts for community resources.', max_length=255, null=True)),
                 ('community_resource_logo', models.ForeignKey(blank=True, help_text='Logo for community resources.', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='wagtaildocs.Document')),
                 ('book_state', models.CharField(choices=[('live', 'Live'), ('coming_soon', 'Coming Soon'), ('new_edition_available', 'New Edition Available (Show new edition correction schedule)'), ('deprecated', 'Deprecated (Disallow errata submissions and show deprecated schedule)'), ('retired', 'Retired (Remove from website)')], default='live', help_text='The state of the book.', max_length=255)),
@@ -152,7 +152,7 @@ class Migration(migrations.Migration):
                 ('rex_callout_blurb', models.CharField(blank=True, help_text='Additional text for the REX callout.', max_length=255, null=True)),
                 ('rex_callout_title', models.CharField(blank=True, default='Recommended', help_text='Title of the REX callout', max_length=255, null=True)),
                 ('table_of_contents', django.contrib.postgres.fields.jsonb.JSONField(blank=True, editable=False, help_text='TOC.', null=True)),
-                ('videos', wagtail.core.fields.StreamField([('video', wagtail.core.blocks.ListBlock(wagtail.core.blocks.StructBlock([('title', wagtail.core.blocks.CharBlock()), ('description', wagtail.core.blocks.RichTextBlock()), ('embed', wagtail.core.blocks.RawHTMLBlock())])))], blank=True, null=True)),
+                ('videos', wagtail.fields.StreamField([('video', wagtail.blocks.ListBlock(wagtail.blocks.StructBlock([('title', wagtail.blocks.CharBlock()), ('description', wagtail.blocks.RichTextBlock()), ('embed', wagtail.blocks.RawHTMLBlock())])))], blank=True, null=True)),
                 ('partner_list_label', models.CharField(blank=True, help_text='Controls the heading text on the book detail page for partners. This will update ALL books to use this value!', max_length=255, null=True)),
                 ('partner_page_link_text', models.CharField(blank=True, help_text='Link to partners page on top right of list.', max_length=255, null=True)),
                 ('featured_resources_header', models.CharField(blank=True, help_text='Featured resource header on instructor resources tab.', max_length=255, null=True)),
@@ -299,7 +299,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('resource_heading', models.CharField(max_length=255)),
-                ('resource_description', wagtail.core.fields.RichTextField(blank=True, null=True)),
+                ('resource_description', wagtail.fields.RichTextField(blank=True, null=True)),
                 ('video_title', models.CharField(blank=True, max_length=255, null=True)),
                 ('video_url', models.URLField(blank=True, null=True)),
                 ('video_file', models.FileField(blank=True, null=True, upload_to='resource_videos')),

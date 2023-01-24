@@ -1,7 +1,7 @@
 import json
 from django.test import TestCase, Client
 
-from wagtail.tests.utils import WagtailTestUtils
+from wagtail.test.utils import WagtailTestUtils
 from wagtail.images.tests.utils import Image, get_test_image_file
 from wagtail.documents.models import Document
 
