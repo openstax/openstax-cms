@@ -3,8 +3,8 @@
 from django.db import migrations
 import news.models
 import snippets.models
-import wagtail.core.blocks
-import wagtail.core.fields
+import wagtail.blocks
+import wagtail.fields
 
 
 class Migration(migrations.Migration):
@@ -29,7 +29,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='pressindex',
             name='mentions',
-            field=wagtail.core.fields.StreamField((('source', news.models.NewsMentionChooserBlock(snippets.models.NewsSource)), ('url', wagtail.core.blocks.URLBlock()), ('headline', wagtail.core.blocks.CharBlock()), ('date', wagtail.core.blocks.DateBlock())), blank=True, null=True),
+            field=wagtail.fields.StreamField((('source', news.models.NewsMentionChooserBlock(snippets.models.NewsSource)), ('url', wagtail.blocks.URLBlock()), ('headline', wagtail.blocks.CharBlock()), ('date', wagtail.blocks.DateBlock())), blank=True, null=True),
         ),
         migrations.DeleteModel(
             name='NewsMention',

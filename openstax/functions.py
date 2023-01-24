@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.http import JsonResponse
-from wagtail.core.models import Site
+from wagtail.models import Site
 
 
 def build_document_url(url):

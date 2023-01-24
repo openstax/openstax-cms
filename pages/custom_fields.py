@@ -1,7 +1,7 @@
 from django.db import models
 
-from wagtail.core import blocks
-from wagtail.core.fields import RichTextField, StreamField
+from wagtail import blocks
+from wagtail.fields import RichTextField, StreamField
 from wagtail.admin.edit_handlers import FieldPanel, StreamFieldPanel
 from wagtail.images.edit_handlers import ImageChooserPanel
 
@@ -45,7 +45,7 @@ class Quote(models.Model):
 
     panels = [
         FieldPanel('quote_text'),
-        ImageChooserPanel('quote_image'),
+        FieldPanel('quote_image'),
         FieldPanel('quote_image_alignment'),
         FieldPanel('quote_link'),
         FieldPanel('quote_link_text'),
@@ -71,7 +71,7 @@ class Institutions(models.Model):
 
     panels = [
         FieldPanel('title'),
-        ImageChooserPanel('logo'),
+        FieldPanel('logo'),
     ]
 
 
@@ -84,12 +84,12 @@ class Group(models.Model):
             ('bio', blocks.CharBlock(required=False)),
             ('photo', APIImageChooserBlock(required=False)),
         ], icon='user')),
-    ])
+    ], use_json_field=True)
 
     api_fields = ('heading',
                   'people', )
 
     panels = [
         FieldPanel('heading'),
-        StreamFieldPanel('people'),
+        FieldPanel('people'),
     ]
