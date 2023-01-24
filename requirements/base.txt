@@ -20,7 +20,7 @@ psycopg2>=2.9.5
 pycryptodome==3.14.1 # for using the SSO cookie from accounts
 PyJWE==1.0.0
 sentry-sdk
-setuptools==65.5.0
+setuptools==65.5.1
 simple_salesforce==1.11.6
 social-auth-app-django==5.0.0
 unicodecsv==0.14.1
