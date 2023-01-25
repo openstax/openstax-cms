@@ -74,7 +74,7 @@ django-storages==1.12.3
   Django==4.0.4
     asgiref==3.5.2
     sqlparse==0.4.2
-future==0.18.2
+future==0.18.3
 html2text==2020.1.16
 jsonfield==3.1.0
   Django==4.0.4
