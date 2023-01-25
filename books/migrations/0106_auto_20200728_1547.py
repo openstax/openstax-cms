@@ -3,7 +3,7 @@
 import books.models
 from django.db import migrations
 import snippets.models
-import wagtail.core.fields
+import wagtail.fields
 
 
 class Migration(migrations.Migration):
@@ -16,6 +16,6 @@ class Migration(migrations.Migration):
         # migrations.AlterField(
         #     model_name='book',
         #     name='give_today',
-        #     field=wagtail.core.fields.StreamField([('content', books.models.GiveTodayChooserBlock(snippets.models.GiveToday))], blank=True, help_text='Give link text and url.', null=True),
+        #     field=wagtail.fields.StreamField([('content', books.models.GiveTodayChooserBlock(snippets.models.GiveToday))], blank=True, help_text='Give link text and url.', null=True),
         # ),
     ]

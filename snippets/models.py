@@ -5,8 +5,8 @@ from wagtail.search import index
 from wagtail.admin.edit_handlers import FieldPanel, InlinePanel
 from wagtail.snippets.edit_handlers import SnippetChooserPanel
 from wagtail.images.edit_handlers import ImageChooserPanel
-from wagtail.core.fields import RichTextField
-from wagtail.core.models import TranslatableMixin, Orderable
+from wagtail.fields import RichTextField
+from wagtail.models import TranslatableMixin, Orderable
 from wagtail.snippets.models import register_snippet
 from openstax.functions import build_image_url
 from books.constants import BOOK_STATES, COVER_COLORS, K12_CATEGORIES
@@ -39,7 +39,7 @@ class Subject(TranslatableMixin, models.Model):
         FieldPanel('page_content'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('icon'),
+        FieldPanel('icon'),
         FieldPanel('subject_color'),
     ]
 
@@ -205,7 +205,7 @@ class NewsSource(TranslatableMixin, index.Indexed, models.Model):
 
     panels = [
         FieldPanel('name'),
-        ImageChooserPanel('logo'),
+        FieldPanel('logo'),
     ]
 
     search_fields = [
@@ -249,7 +249,7 @@ class SubjectCategory(TranslatableMixin, models.Model):
         return self.subject.name
 
     panels = [
-        SnippetChooserPanel('subject'),
+        FieldPanel('subject'),
         FieldPanel('subject_category'),
         FieldPanel('description'),
     ]
@@ -286,7 +286,7 @@ class GiveBanner(TranslatableMixin, models.Model):
         FieldPanel('html_message'),
         FieldPanel('link_text'),
         FieldPanel('link_url'),
-        ImageChooserPanel('thumbnail'),
+        FieldPanel('thumbnail'),
     ]
 
     def __str__(self):
@@ -343,7 +343,7 @@ class BlogCollection(TranslatableMixin, models.Model):
     panels = [
         FieldPanel('name'),
         FieldPanel('description'),
-        ImageChooserPanel('image'),
+        FieldPanel('image'),
     ]
 
     def __str__(self):

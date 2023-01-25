@@ -15,9 +15,9 @@ from wagtail.admin.edit_handlers import (FieldPanel,
                                          InlinePanel,
                                          PageChooserPanel,
                                          StreamFieldPanel)
-from wagtail.core import blocks
-from wagtail.core.fields import RichTextField, StreamField
-from wagtail.core.models import Orderable, Page
+from wagtail import blocks
+from wagtail.fields import RichTextField, StreamField
+from wagtail.models import Orderable, Page
 from wagtail.documents.edit_handlers import DocumentChooserPanel
 from wagtail.snippets.blocks import SnippetChooserBlock
 from wagtail.images.edit_handlers import ImageChooserPanel
@@ -25,7 +25,7 @@ from wagtail.snippets.edit_handlers import SnippetChooserPanel
 from wagtail.admin.edit_handlers import TabbedInterface, ObjectList
 from wagtail.api import APIField
 from wagtail.snippets.models import register_snippet
-from wagtail.core.models import Site
+from wagtail.models import Site
 
 from openstax.functions import build_document_url, build_image_url
 from books.constants import BOOK_STATES, BOOK_COVER_TEXT_COLOR, COVER_COLORS, CC_NC_SA_LICENSE_NAME, CC_BY_LICENSE_NAME, \
@@ -126,7 +126,7 @@ class OrientationFacultyResource(models.Model):
         FieldPanel('creator_fest_resource'),
         FieldPanel('link_external'),
         PageChooserPanel('link_page'),
-        DocumentChooserPanel('link_document'),
+        FieldPanel('link_document'),
         FieldPanel('link_text'),
         FieldPanel('video_reference_number'),
         FieldPanel('updated'),
@@ -211,10 +211,10 @@ class FacultyResources(models.Model):
     ]
 
     panels = [
-        SnippetChooserPanel('resource'),
+        FieldPanel('resource'),
         FieldPanel('link_external'),
         PageChooserPanel('link_page'),
-        DocumentChooserPanel('link_document'),
+        FieldPanel('link_document'),
         FieldPanel('link_text'),
         FieldPanel('coming_soon_text'),
         FieldPanel('video_reference_number'),
@@ -303,10 +303,10 @@ class StudentResources(models.Model):
     ]
 
     panels = [
-        SnippetChooserPanel('resource'),
+        FieldPanel('resource'),
         FieldPanel('link_external'),
         PageChooserPanel('link_page'),
-        DocumentChooserPanel('link_document'),
+        FieldPanel('link_document'),
         FieldPanel('link_text'),
         FieldPanel('coming_soon_text'),
         FieldPanel('updated'),
@@ -517,7 +517,7 @@ class Book(Page):
     publish_date = models.DateField(null=True, help_text='Date the book is published on.')
     authors = StreamField([
         ('author', AuthorBlock()),
-    ], null=True)
+    ], null=True, use_json_field=True)
 
     print_isbn_10 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 10 for print version (hardcover).')
     print_isbn_13 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 13 for print version (hardcover).')
@@ -568,8 +568,8 @@ class Book(Page):
             return None
     low_resolution_pdf_url = property(get_low_res_pdf_url)
 
-    free_stuff_instructor = StreamField(SharedContentBlock(), null=True, blank=True, help_text="Snippet to show texts for free instructor resources.")
-    free_stuff_student = StreamField(SharedContentBlock(), null=True, blank=True, help_text="Snipped to show texts for free student resources.")
+    free_stuff_instructor = StreamField(SharedContentBlock(), null=True, blank=True, help_text="Snippet to show texts for free instructor resources.", use_json_field=True)
+    free_stuff_student = StreamField(SharedContentBlock(), null=True, blank=True, help_text="Snipped to show texts for free student resources.", use_json_field=True)
     community_resource_heading = models.CharField(max_length=255, blank=True, null=True, help_text="Snipped to show texts for community resources.")
     community_resource_logo = models.ForeignKey(
         'wagtaildocs.Document',
@@ -605,7 +605,7 @@ class Book(Page):
     community_resource_feature_text = models.TextField(blank=True, help_text='Text of the community resource feature.')
 
 
-    webinar_content = StreamField(SharedContentBlock(), null=True, blank=True)
+    webinar_content = StreamField(SharedContentBlock(), null=True, blank=True, use_json_field=True)
     ibook_link = models.URLField(blank=True, help_text="Link to iBook")
     ibook_link_volume_2 = models.URLField(blank=True, help_text="Link to secondary iBook")
     webview_link = models.URLField(blank=True, help_text="Link to CNX Webview book")
@@ -620,9 +620,9 @@ class Book(Page):
     chegg_link = models.URLField(blank=True, null=True, help_text="Link to Chegg e-reader")
     chegg_link_text = models.CharField(max_length=255, blank=True, null=True, help_text='Text for Chegg link.')
     bookstore_coming_soon = models.BooleanField(default=False, help_text='Whether this book is coming to bookstore soon.')
-    bookstore_content = StreamField(SharedContentBlock(), null=True, blank=True, help_text='Bookstore content.')
+    bookstore_content = StreamField(SharedContentBlock(), null=True, blank=True, help_text='Bookstore content.', use_json_field=True)
     comp_copy_available = models.BooleanField(default=True, help_text='Whether free compy available for teachers.')
-    comp_copy_content = StreamField(SharedContentBlock(), null=True, blank=True, help_text='Content of the free copy.')
+    comp_copy_content = StreamField(SharedContentBlock(), null=True, blank=True, help_text='Content of the free copy.', use_json_field=True)
     tutor_marketing_book = models.BooleanField(default=False, help_text='Whether this is a Tutor marketing book.')
     partner_list_label = models.CharField(max_length=255, null=True, blank=True, help_text="Controls the heading text on the book detail page for partners. This will update ALL books to use this value!")
     partner_page_link_text = models.CharField(max_length=255, null=True, blank=True, help_text="Link to partners page on top right of list.")
@@ -643,7 +643,7 @@ class Book(Page):
             ('description', blocks.RichTextBlock()),
             ('embed', blocks.RawHTMLBlock()),
         ])))
-    ], null=True, blank=True)
+    ], null=True, blank=True, use_json_field=True)
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -657,7 +657,7 @@ class Book(Page):
             ('locale', blocks.CharBlock()),
             ('slug', blocks.CharBlock()),
         ])))
-    ], null=True, blank=True)
+    ], null=True, blank=True, use_json_field=True)
 
     last_updated_pdf = models.DateTimeField(blank=True, null=True, help_text="Last time PDF was revised.", verbose_name='PDF Content Revision Date')
 
@@ -672,8 +672,8 @@ class Book(Page):
         InlinePanel('k12book_subjects', label='K12 Subjects'),
         FieldPanel('is_ap'),
         FieldPanel('description', classname="full"),
-        DocumentChooserPanel('cover'),
-        DocumentChooserPanel('title_image'),
+        FieldPanel('cover'),
+        FieldPanel('title_image'),
         FieldPanel('cover_color'),
         FieldPanel('book_cover_text_color'),
         FieldPanel('reverse_gradient'),
@@ -691,19 +691,19 @@ class Book(Page):
         FieldPanel('rex_callout_title'),
         FieldPanel('rex_callout_blurb'),
         FieldPanel('enable_study_edge'),
-        DocumentChooserPanel('high_resolution_pdf'),
+        FieldPanel('high_resolution_pdf'),
         FieldPanel('last_updated_pdf'),
-        DocumentChooserPanel('low_resolution_pdf'),
-        StreamFieldPanel('free_stuff_instructor'),
-        StreamFieldPanel('free_stuff_student'),
+        FieldPanel('low_resolution_pdf'),
+        FieldPanel('free_stuff_instructor'),
+        FieldPanel('free_stuff_student'),
         FieldPanel('community_resource_heading'),
-        DocumentChooserPanel('community_resource_logo'),
+        FieldPanel('community_resource_logo'),
         FieldPanel('community_resource_url'),
         FieldPanel('community_resource_cta'),
         FieldPanel('community_resource_blurb'),
-        DocumentChooserPanel('community_resource_feature_link'),
+        FieldPanel('community_resource_feature_link'),
         FieldPanel('community_resource_feature_text'),
-        StreamFieldPanel('webinar_content'),
+        FieldPanel('webinar_content'),
         FieldPanel('ibook_link'),
         FieldPanel('ibook_link_volume_2'),
         FieldPanel('bookshare_link'),
@@ -713,9 +713,9 @@ class Book(Page):
         FieldPanel('chegg_link'),
         FieldPanel('chegg_link_text'),
         FieldPanel('bookstore_coming_soon'),
-        StreamFieldPanel('bookstore_content'),
+        FieldPanel('bookstore_content'),
         FieldPanel('comp_copy_available'),
-        StreamFieldPanel('comp_copy_content'),
+        FieldPanel('comp_copy_content'),
         FieldPanel('tutor_marketing_book'),
         FieldPanel('partner_list_label'),
         FieldPanel('partner_page_link_text'),
@@ -724,8 +724,8 @@ class Book(Page):
         FieldPanel('customization_form_disclaimer'),
         FieldPanel('customization_form_next_steps'),
         FieldPanel('support_statement'),
-        StreamFieldPanel('videos'),
-        StreamFieldPanel('translations'),
+        FieldPanel('videos'),
+        FieldPanel('translations'),
     ]
     instructor_resources_panel = [
         FieldPanel('featured_resources_header'),
@@ -737,10 +737,10 @@ class Book(Page):
         InlinePanel('book_student_resources', label="Student Resources"),
     ]
     author_panel = [
-        StreamFieldPanel('authors')
+        FieldPanel('authors')
     ]
     promote_panels = Page.promote_panels + [
-        ImageChooserPanel('promote_image'),
+        FieldPanel('promote_image'),
     ]
 
     edit_handler = TabbedInterface([
@@ -993,7 +993,7 @@ class BookIndex(Page):
             ('locale', blocks.CharBlock()),
             ('slug', blocks.CharBlock()),
         ])))
-    ], null=True, blank=True)
+    ], null=True, blank=True, use_json_field=True)
 
     @property
     def books(self):
@@ -1047,14 +1047,14 @@ class BookIndex(Page):
         FieldPanel('dev_standard_4_heading'),
         FieldPanel('dev_standard_4_description'),
         FieldPanel('subject_list_heading'),
-        StreamFieldPanel('translations'),
+        FieldPanel('translations'),
     ]
 
     promote_panels = [
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
+        FieldPanel('promote_image')
     ]
 
     api_fields = [

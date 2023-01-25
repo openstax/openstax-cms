@@ -223,7 +223,7 @@ INSTALLED_APPS = [
     'wagtailimportexport',
     'versions',
     # wagtail
-    'wagtail.core',
+    'wagtail',
     'wagtail.admin',
     'wagtail.documents',
     'wagtail.snippets',
@@ -346,6 +346,8 @@ if BASE_URL is None:
         else:
             APPLICATION_DOMAIN = f'{ENVIRONMENT}.openstax.org'
     BASE_URL = f'https://{APPLICATION_DOMAIN}'
+
+WAGTAILADMIN_BASE_URL = BASE_URL
 
 ALLOWED_HOSTS = json.loads(os.getenv('ALLOWED_HOSTS', '[]'))
 

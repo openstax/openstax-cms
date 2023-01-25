@@ -13,7 +13,7 @@ from errata.models import ERRATA_RESOURCES
 from global_settings.models import StickyNote, Footer, GiveToday
 from wagtail.images.models import Image
 from wagtail.documents.models import Document
-from wagtail.core.models import Site
+from wagtail.models import Site
 from .models import ProgressTracker, FeatureFlag, WebviewSettings
 from .serializers import AdopterSerializer, ImageSerializer, DocumentSerializer, ProgressSerializer, CustomizationRequestSerializer
 

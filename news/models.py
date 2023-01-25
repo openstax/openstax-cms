@@ -5,15 +5,15 @@ from bs4 import BeautifulSoup
 from django.db import models
 from django import forms
 
-from wagtail.core.models import Page, Orderable
-from wagtail.core.fields import RichTextField, StreamField
+from wagtail.models import Page, Orderable
+from wagtail.fields import RichTextField, StreamField
 from wagtail.admin.edit_handlers import FieldPanel, StreamFieldPanel, InlinePanel
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.documents.edit_handlers import DocumentChooserPanel
 from wagtail.embeds.blocks import EmbedBlock
 from wagtail.search import index
-from wagtail.core import blocks
-from wagtail.core.blocks import TextBlock, StructBlock, StreamBlock, FieldBlock, CharBlock, RichTextBlock, RawHTMLBlock, BooleanBlock
+from wagtail import blocks
+from wagtail.blocks import TextBlock, StructBlock, StreamBlock, FieldBlock, CharBlock, RichTextBlock, RawHTMLBlock, BooleanBlock
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.documents.blocks import DocumentChooserBlock
 from wagtail.snippets.blocks import SnippetChooserBlock
@@ -21,7 +21,7 @@ from wagtail.snippets.edit_handlers import SnippetChooserPanel
 from wagtail.snippets.models import register_snippet
 from wagtail.api import APIField
 from wagtail.images.api.fields import ImageRenditionField
-from wagtail.core.models import Site
+from wagtail.models import Site
 
 from modelcluster.fields import ParentalKey
 from modelcluster.contrib.taggit import ClusterTaggableManager
@@ -148,7 +148,7 @@ class NewsIndex(Page):
             ('description', blocks.TextBlock()),
             ('button_text', blocks.CharBlock()),
             ('button_href', blocks.URLBlock())
-         ], null=True)
+         ], null=True, use_json_field=True)
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -158,14 +158,14 @@ class NewsIndex(Page):
     )
 
     content_panels = Page.content_panels + [
-        StreamFieldPanel('interest_block'),
+        FieldPanel('interest_block'),
     ]
 
     promote_panels = [
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
+        FieldPanel('promote_image')
     ]
 
     api_fields = [
@@ -265,23 +265,23 @@ class NewsArticle(Page):
     featured_image_alt_text = models.CharField(max_length=250, blank=True, null=True)
     featured_video = StreamField([
         ('video', blocks.RawHTMLBlock()),
-        ], null=True, blank=True)
+        ], null=True, blank=True, use_json_field=True)
     def get_article_image(self):
         return build_image_url(self.featured_image)
     article_image = property(get_article_image)
     tags = ClusterTaggableManager(through=NewsArticleTag, blank=True)
-    body = StreamField(BlogStreamBlock())
+    body = StreamField(BlogStreamBlock(), use_json_field=True)
     pin_to_top = models.BooleanField(default=False)
     gated_content = models.BooleanField(default=False)
     collections = StreamField(blocks.StreamBlock([
             ('collection', blocks.ListBlock(BlogCollectionBlock())
-             )]), null=True, blank=True)
+             )]), null=True, blank=True, use_json_field=True)
     article_subjects = StreamField(blocks.StreamBlock([
             ('subject', blocks.ListBlock(SubjectBlock())
-             )]), null=True, blank=True)
+             )]), null=True, blank=True, use_json_field=True)
     content_types = StreamField(blocks.StreamBlock([
         ('content_type', blocks.ListBlock(BlogContentTypeBlock())
-         )]), null=True, blank=True)
+         )]), null=True, blank=True, use_json_field=True)
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -359,23 +359,23 @@ class NewsArticle(Page):
         FieldPanel('heading'),
         FieldPanel('subheading'),
         FieldPanel('author'),
-        ImageChooserPanel('featured_image'),
-        StreamFieldPanel('featured_video'),
+        FieldPanel('featured_image'),
+        FieldPanel('featured_video'),
         FieldPanel('featured_image_alt_text'),
         FieldPanel('tags'),
-        StreamFieldPanel('body'),
+        FieldPanel('body'),
         FieldPanel('pin_to_top'),
         FieldPanel('gated_content'),
-        StreamFieldPanel('collections'),
-        StreamFieldPanel('article_subjects'),
-        StreamFieldPanel('content_types'),
+        FieldPanel('collections'),
+        FieldPanel('article_subjects'),
+        FieldPanel('content_types'),
     ]
 
     promote_panels = [
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
+        FieldPanel('promote_image')
     ]
 
     api_fields = [
@@ -453,7 +453,7 @@ class Experts(models.Model):
         FieldPanel('email'),
         FieldPanel('title'),
         FieldPanel('bio'),
-        ImageChooserPanel('image'),
+        FieldPanel('image'),
     ]
 
 
@@ -511,7 +511,7 @@ class PressIndex(Page):
     experts_blurb = models.TextField()
     mentions = StreamField([
         ('mention', NewsMentionBlock(icon='document')),
-    ], null=True)
+    ], null=True, use_json_field=True)
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -543,14 +543,14 @@ class PressIndex(Page):
         return releases_data
 
     content_panels = Page.content_panels + [
-        DocumentChooserPanel('press_kit'),
+        FieldPanel('press_kit'),
         FieldPanel('press_inquiry_name'),
         FieldPanel('press_inquiry_phone'),
         FieldPanel('press_inquiry_email'),
         FieldPanel('experts_heading'),
         FieldPanel('experts_blurb'),
         InlinePanel('experts_bios', label="Experts"),
-        StreamFieldPanel('mentions'),
+        FieldPanel('mentions'),
         InlinePanel('mission_statements', label="Mission Statement"),
     ]
 
@@ -558,7 +558,7 @@ class PressIndex(Page):
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
+        FieldPanel('promote_image')
     ]
 
     api_fields = [
@@ -604,7 +604,7 @@ class PressRelease(Page):
     article_image = property(get_article_image)
     excerpt = models.CharField(max_length=255)
 
-    body = StreamField(BlogStreamBlock())
+    body = StreamField(BlogStreamBlock(), use_json_field=True)
 
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
@@ -632,17 +632,17 @@ class PressRelease(Page):
         FieldPanel('heading'),
         FieldPanel('subheading'),
         FieldPanel('author'),
-        ImageChooserPanel('featured_image'),
+        FieldPanel('featured_image'),
         FieldPanel('featured_image_alt_text'),
         FieldPanel('excerpt'),
-        StreamFieldPanel('body'),
+        FieldPanel('body'),
     ]
 
     promote_panels = [
         FieldPanel('slug'),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
-        ImageChooserPanel('promote_image')
+        FieldPanel('promote_image')
     ]
 
     api_fields = [
