@@ -1,7 +1,7 @@
 from django import forms
 
-from wagtail.core import blocks
-from wagtail.core.blocks import FieldBlock, StructBlock
+from wagtail import blocks
+from wagtail.blocks import FieldBlock, StructBlock
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.documents.blocks import DocumentChooserBlock
 
