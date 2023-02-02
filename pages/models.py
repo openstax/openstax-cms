@@ -428,7 +428,6 @@ class HomePage(Page):
         'pages.ErrataList',
         'pages.PrivacyPolicy',
         'pages.PrintOrder',
-        'pages.ResearchPage',
         'pages.LearningResearchPage',
         'pages.Careers',
         'pages.Impact',
@@ -531,7 +530,7 @@ class K12MainPage(Page):
             )
     subject_library_header = models.CharField(default='', blank=True, max_length=255)
     subject_library_description = models.TextField(default='', blank=True)
-    
+
 
 
     testimonials_header = models.CharField(default='', blank=True, max_length=255)
@@ -550,9 +549,9 @@ class K12MainPage(Page):
                 on_delete=models.SET_NULL,
                 related_name='+'
             )
-    rfi_header = models.CharField(default='', blank=True, max_length=255)    
+    rfi_header = models.CharField(default='', blank=True, max_length=255)
     rfi_description = models.TextField(default='', blank=True)
-    sticky_header = models.CharField(default='', blank=True, max_length=255)    
+    sticky_header = models.CharField(default='', blank=True, max_length=255)
     sticky_description = models.TextField(default='', blank=True)
 
     def get_sitemap_urls(self, request=None):
@@ -663,7 +662,7 @@ class K12MainPage(Page):
 
     max_count = 1
 
-    
+
 
     class Meta:
         verbose_name = "K12 Main Page"
@@ -1471,7 +1470,6 @@ class PrintOrder(Page):
 
 
 class LearningResearchPage(Page):
-    mission_header = models.CharField(max_length=255)
     mission_body = models.TextField()
     banner_header = models.TextField(default='', blank=True)
     banner_body = models.TextField(default='', blank=True)
@@ -1563,7 +1561,6 @@ class LearningResearchPage(Page):
 
     content_panels = [
         FieldPanel('title', classname='full title', help_text="Internal name for page."),
-        FieldPanel('mission_header'),
         FieldPanel('mission_body'),
         FieldPanel('banner_header'),
         FieldPanel('banner_body'),
@@ -1588,7 +1585,6 @@ class LearningResearchPage(Page):
     ]
 
     api_fields = [
-        APIField('mission_header'),
         APIField('mission_body'),
         APIField('banner_header'),
         APIField('banner_body'),
@@ -1601,104 +1597,6 @@ class LearningResearchPage(Page):
         APIField('current_members'),
         APIField('collaborating_researchers'),
         APIField('alumni'),
-        APIField('publication_header'),
-        APIField('publications'),
-        APIField('slug'),
-        APIField('seo_title'),
-        APIField('search_description'),
-        APIField('promote_image')
-    ]
-
-    template = 'page.html'
-
-    parent_page_types = ['pages.HomePage']
-    max_count = 1
-
-
-class ResearchPage(Page):
-    mission_header = models.CharField(max_length=255)
-    mission_body = models.TextField()
-    projects_header = models.CharField(max_length=255)
-    projects = StreamField([
-        ('project', blocks.StructBlock([
-            ('title', blocks.CharBlock()),
-            ('blurb', blocks.TextBlock()),
-            ('link', blocks.URLBlock(required=False, help_text="Optional link to project."))
-        ], icon='user')),
-    ], null=True, blank=True, use_json_field=True)
-    people_header = models.CharField(max_length=255)
-    alumni = StreamField([
-        ('person', blocks.StructBlock([
-            ('name', blocks.CharBlock()),
-            ('title', blocks.CharBlock()),
-            ('website', blocks.URLBlock(required=False)),
-        ], icon='user')),
-    ], null=True, blank=True, use_json_field=True)
-    current_members = StreamField([
-        ('person', blocks.StructBlock([
-            ('name', blocks.CharBlock()),
-            ('title', blocks.CharBlock()),
-            ('photo', APIImageChooserBlock(required=False)),
-            ('website', blocks.URLBlock(required=False)),
-        ], icon='user')),
-    ], null=True, blank=True, use_json_field=True)
-    external_collaborators = StreamField([
-        ('person', blocks.StructBlock([
-            ('name', blocks.CharBlock()),
-            ('title', blocks.CharBlock()),
-            ('photo', APIImageChooserBlock(required=False)),
-            ('website', blocks.URLBlock(required=False)),
-        ], icon='user')),
-    ], null=True, blank=True, use_json_field=True)
-    publication_header = models.CharField(max_length=255)
-    publications = StreamField([
-        ('publication', blocks.StructBlock([
-            ('authors', blocks.CharBlock()),
-            ('date', blocks.DateBlock()),
-            ('title', blocks.CharBlock()),
-            ('excerpt', blocks.CharBlock()),
-            ('download_url', blocks.URLBlock()),
-        ], icon='user')),
-    ], null=True, blank=True, use_json_field=True)
-    promote_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-
-    content_panels = [
-        FieldPanel('title', classname='full title', help_text="Internal name for page."),
-        FieldPanel('mission_header'),
-        FieldPanel('mission_body'),
-        FieldPanel('projects_header'),
-        FieldPanel('projects'),
-        FieldPanel('people_header'),
-        FieldPanel('alumni'),
-        FieldPanel('current_members'),
-        FieldPanel('external_collaborators'),
-        FieldPanel('publication_header'),
-        FieldPanel('publications'),
-    ]
-
-    promote_panels = [
-        FieldPanel('slug'),
-        FieldPanel('seo_title'),
-        FieldPanel('search_description'),
-        FieldPanel('promote_image')
-
-    ]
-
-    api_fields = [
-        APIField('mission_header'),
-        APIField('mission_body'),
-        APIField('projects_header'),
-        APIField('projects'),
-        APIField('people_header'),
-        APIField('alumni'),
-        APIField('current_members'),
-        APIField('external_collaborators'),
         APIField('publication_header'),
         APIField('publications'),
         APIField('slug'),
@@ -2987,7 +2885,7 @@ class K12Subject(Page):
             subject_category = subject.subject_category
 
         return subject_category
-   
+
     @property
     def books(self):
             books = Book.objects.order_by('path')
@@ -2999,10 +2897,10 @@ class K12Subject(Page):
                 subjects=[]
                 for subject in book.book_subjects.all():
                     subjects.append(subject.subject_name)
-                
+
                 if book.k12book_subjects is not None \
                             and self.title in k12subjects \
-                            and book.book_state not in ['retired', 'draft']:                    
+                            and book.book_state not in ['retired', 'draft']:
                     book_data.append({
                         'id': book.id,
                         'slug': 'books/{}'.format(book.slug),
@@ -3091,7 +2989,7 @@ class K12Subject(Page):
 
     parent_page_types = ['pages.K12MainPage']
 
-            
+
     class Meta:
             verbose_name = "K12 Subject"
 
