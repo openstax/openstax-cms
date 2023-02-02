@@ -59,7 +59,7 @@ class K12Subject(TranslatableMixin, models.Model):
         on_delete=models.SET_NULL,
         related_name='+'
     )
-    subject_category = models.CharField(max_length=255, choices=K12_CATEGORIES, default='none',
+    subject_category = models.CharField(max_length=255, choices=K12_CATEGORIES, default='None',
                                    help_text='The category used in the K12 subjects listings')
     subject_color = models.CharField(max_length=255, choices=COVER_COLORS, default='blue',
                                    help_text='The color of the vertical stripe on Subject page.')

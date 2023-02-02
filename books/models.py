@@ -287,6 +287,7 @@ class StudentResources(models.Model):
     coming_soon_text = models.CharField(max_length=255, null=True, blank=True, help_text="If there is text in this field a coming soon banner will be added with this description.")
     updated = models.DateTimeField(blank=True, null=True, help_text='Late date resource was updated')
     print_link = models.URLField(blank=True, null=True, help_text="Link for Buy Print link on resource")
+    k12 = models.BooleanField(default=False, help_text="Add to K12 student resources.")
 
     api_fields = [
         APIField('resource_heading'),
@@ -299,7 +300,8 @@ class StudentResources(models.Model):
         APIField('link_text'),
         APIField('coming_soon_text'),
         APIField('updated'),
-        APIField('print_link')
+        APIField('print_link'),
+        APIField('k12')
     ]
 
     panels = [
@@ -310,7 +312,8 @@ class StudentResources(models.Model):
         FieldPanel('link_text'),
         FieldPanel('coming_soon_text'),
         FieldPanel('updated'),
-        FieldPanel('print_link')
+        FieldPanel('print_link'),
+        FieldPanel('k12')
     ]
 
     def clean(self):
@@ -484,7 +487,6 @@ class Book(Page):
     salesforce_book_id = models.CharField(max_length=255, blank=True, null=True,
                                        help_text='No tracking and not included on adoption and interest forms if left blank)')
     updated = models.DateTimeField(blank=True, null=True, help_text='Late date web content was updated')
-    k12_subject = models.CharField(max_length=255, choices=K12_CATEGORIES, default='none')
     is_ap = models.BooleanField(default=False, help_text='Whether this book is an AP (Advanced Placement) book.')
     description = RichTextField(
         blank=True, help_text="Description shown on Book Detail page.")

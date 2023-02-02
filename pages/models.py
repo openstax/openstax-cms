@@ -484,6 +484,7 @@ class K12MainPage(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+    subject_list_default = models.CharField(default='Find Your Subject', blank=True, max_length=255)
     features_cards = StreamField([
         ('features_cards', CardImageBlock()),
     ], use_json_field=True)
@@ -530,9 +531,6 @@ class K12MainPage(Page):
             )
     subject_library_header = models.CharField(default='', blank=True, max_length=255)
     subject_library_description = models.TextField(default='', blank=True)
-
-
-
     testimonials_header = models.CharField(default='', blank=True, max_length=255)
     testimonials_description = models.TextField(default='', blank=True)
     testimonials = StreamField([
@@ -588,6 +586,7 @@ class K12MainPage(Page):
         APIField('banner_headline'),
         APIField('banner_description'),
         APIField('banner_right_image'),
+        APIField('subject_list_default'),
         APIField('features_cards'),
         APIField('highlights_header'),
         APIField('highlights'),
@@ -2875,7 +2874,7 @@ class K12Subject(Page):
     @property
     def subject_image(self):
         for subject in snippets.K12Subject.objects.filter(locale=self.locale, name=self.title).order_by('name'):
-            subject_image = subject.image
+            subject_image = subject.subject_image
 
         return subject_image
 
@@ -2906,8 +2905,7 @@ class K12Subject(Page):
                         'slug': 'books/{}'.format(book.slug),
                         'title': book.title,
                         'description': book.description,
-                        # 'cover_url': book.cover_url,
-                        'cover_url': 'https://assets.openstax.org/oscms-dev/media/documents/biology-AP.png',
+                        'cover_url': book.cover_url,
                         'is_ap': book.is_ap,
                         'is_hs': 'High School' in subjects,
                         'cover_color': book.cover_color,
@@ -2930,8 +2928,8 @@ class K12Subject(Page):
                         'created': book.created,
                         'publish_date': book.publish_date,
                         'last_updated_pdf': book.last_updated_pdf,
-                        'student_resources': BookStudentResources.objects.values(),
-                        'instructor_resources': BookFacultyResources.objects.values()
+                        'student_resources': BookStudentResources.objects.filter(k12=True).values(),
+                        'instructor_resources': BookFacultyResources.objects.filter(k12=True).values()
                         })
             return book_data
 

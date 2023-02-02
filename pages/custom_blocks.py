@@ -135,7 +135,8 @@ class InfoBoxBlock(blocks.StructBlock):
 
 class TestimonialBlock(blocks.StructBlock):
     author_icon = APIImageChooserBlock(required=False)
-    author = blocks.CharBlock(required=True)
+    author_name = blocks.CharBlock(required=True)
+    author_title = blocks.CharBlock(required=True)
     testimonial = blocks.RichTextBlock(required=True)
     class Meta:
         author_icon = 'image'
