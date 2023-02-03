@@ -91,14 +91,28 @@ class FacultyResource(TranslatableMixin, index.Indexed, models.Model):
     description = RichTextField(blank=True, null=True)
     unlocked_resource = models.BooleanField(default=False)
     creator_fest_resource = models.BooleanField(default=False)
+    icon = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        help_text = 'icon used on K12 Subject pages'
+    )
 
-    api_fields = ('heading', 'description', 'unlocked_resource', 'creator_fest_resource')
+    def get_resource_icon(self):
+        return build_image_url(self.icon)
+
+    resource_icon = property(get_resource_icon)
+
+    api_fields = ('heading', 'description', 'unlocked_resource', 'creator_fest_resource',  'resource_icon')
 
     panels = [
         FieldPanel('heading'),
         FieldPanel('description'),
         FieldPanel('unlocked_resource'),
-        FieldPanel('creator_fest_resource')
+        FieldPanel('creator_fest_resource'),
+        ImageChooserPanel('icon')
     ]
 
     search_fields = [
@@ -109,7 +123,6 @@ class FacultyResource(TranslatableMixin, index.Indexed, models.Model):
     def __str__(self):
         return self.heading
 
-
 register_snippet(FacultyResource)
 
 
@@ -117,13 +130,26 @@ class StudentResource(TranslatableMixin, index.Indexed, models.Model):
     heading = models.CharField(max_length=255)
     description = RichTextField(blank=True, null=True)
     unlocked_resource = models.BooleanField(default=True)
+    icon = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        help_text = 'icon used on K12 Subject pages'
+    )
+    def get_resource_icon(self):
+        return build_image_url(self.icon)
 
-    api_fields = ('heading', 'description', 'unlocked_resource')
+    resource_icon = property(get_resource_icon)
+
+    api_fields = ('heading', 'description', 'unlocked_resource', 'resource_icon')
 
     panels = [
         FieldPanel('heading'),
         FieldPanel('description'),
         FieldPanel('unlocked_resource'),
+        ImageChooserPanel('icon')
     ]
 
     search_fields = [

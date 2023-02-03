@@ -2707,7 +2707,7 @@ class Subject(Page):
                             'title': book.title,
                             'subjects': book.subjects(),
                             'subject_categories': book.subject_categories,
-                            'k12subject': book.k12subject(),
+                            'k12subject': book.k12subjects(),
                             'is_ap': book.is_ap,
                             'cover_url': book.cover_url,
                             'cover_color': book.cover_color,
