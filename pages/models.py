@@ -2838,9 +2838,7 @@ class FormHeadings(Page):
 
 
 class K12Subject(Page):
-
     subheader = models.TextField(default='HIGH SCHOOL')
-
     books_heading = models.TextField(default='')
     books_short_desc = RichTextField(default='')
     about_books_heading = models.TextField(default='About the Books')
@@ -2868,21 +2866,18 @@ class K12Subject(Page):
     def subject_intro(self):
         for subject in snippets.K12Subject.objects.filter(locale=self.locale, name=self.title).order_by('name'):
             subject_intro = subject.intro_text
-
         return subject_intro
 
     @property
     def subject_image(self):
         for subject in snippets.K12Subject.objects.filter(locale=self.locale, name=self.title).order_by('name'):
             subject_image = subject.subject_image
-
         return subject_image
 
     @property
     def subject_category(self):
         for subject in snippets.K12Subject.objects.filter(locale=self.locale, name=self.title).order_by('name'):
             subject_category = subject.subject_category
-
         return subject_category
 
     @property
@@ -2896,7 +2891,6 @@ class K12Subject(Page):
                 subjects=[]
                 for subject in book.book_subjects.all():
                     subjects.append(subject.subject_name)
-
                 if book.k12book_subjects is not None \
                             and self.title in k12subjects \
                             and book.book_state not in ['retired', 'draft']:
@@ -2927,11 +2921,62 @@ class K12Subject(Page):
                         'updated': book.updated,
                         'created': book.created,
                         'publish_date': book.publish_date,
-                        'last_updated_pdf': book.last_updated_pdf,
-                        'student_resources': BookStudentResources.objects.filter(k12=True).values(),
-                        'instructor_resources': BookFacultyResources.objects.filter(k12=True).values()
+                        'last_updated_pdf': book.last_updated_pdf
                         })
             return book_data
+    
+
+    def student_resource_headers(self):
+        student_resource_data=[]
+        book_ids={}
+        for book in self.books:
+            book_id = book.get('id')
+            book_title = book.get('title')
+            book_ids[book_id]=book_title
+        for resource in BookStudentResources.objects.filter(k12=True, book_student_resource_id__in = book_ids).all():
+            student_resource_data.append({
+                'id': resource.id,
+                'heading': resource.get_resource_heading(),
+                'icon': resource.get_resource_icon_url(),
+                'book': book_ids[resource.book_student_resource_id],
+                'resource_id': resource.resource_id,
+                'resource_icon_id': resource.resource_icon_id,
+                'link_external': resource.link_external,
+                'link_page_id': resource.link_page_id,
+                'link_document_id': resource.link_document_id,
+                'link_text': resource.link_text,
+                'coming_soon_text': resource.coming_soon_text,
+                'updated': resource.updated,
+                'print_link': resource.print_link,
+                'k12': resource.k12,
+                })
+        return student_resource_data
+
+    def faculty_resource_headers(self):
+        faculty_resource_data=[]
+        book_ids={}
+        for book in self.books:
+            book_id = book.get('id')
+            book_title = book.get('title')
+            book_ids[book_id]=book_title
+        for resource in BookFacultyResources.objects.filter(k12=True, book_faculty_resource_id__in = book_ids).all():
+            faculty_resource_data.append({
+                'id': resource.id,
+                'heading': resource.get_resource_heading(),
+                'icon': resource.get_resource_icon_url(),
+                'book': book_ids[resource.book_faculty_resource_id],
+                'resource_id': resource.resource_id,
+                'resource_icon_id': resource.resource_icon_id,
+                'link_external': resource.link_external,
+                'link_page_id': resource.link_page_id,
+                'link_document_id': resource.link_document_id,
+                'link_text': resource.link_text,
+                'coming_soon_text': resource.coming_soon_text,
+                'updated': resource.updated,
+                'print_link': resource.print_link,
+                'k12': resource.k12,
+                })
+        return faculty_resource_data
 
     api_fields = [
         APIField('subheader'),
@@ -2943,6 +2988,8 @@ class K12Subject(Page):
         APIField('about_books_heading'),
         APIField('about_books_text'),
         APIField('books'),
+        APIField('student_resource_headers'),
+        APIField('faculty_resource_headers'),
         APIField('adoption_heading'),
         APIField('adoption_text'),
         APIField('adoption_link_text'),
