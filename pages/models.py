@@ -726,12 +726,15 @@ class GeneralPage(Page):
     ], use_json_field=True)
 
     def get_sitemap_urls(self, request=None):
-        return [
-            {
-                'location': '{}/general/{}'.format(Site.find_for_request(request).root_url, self.slug),
-                'lastmod': (self.last_published_at or self.latest_revision_created_at),
-            }
-        ]
+        if self.slug == 'kinetic':
+            return [
+                {
+                    'location': '{}/general/{}'.format(Site.find_for_request(request).root_url, self.slug),
+                    'lastmod': (self.last_published_at or self.latest_revision_created_at),
+                }
+            ]
+        else:
+            return []
 
     def get_url_parts(self, *args, **kwargs):
         url_parts = super(GeneralPage, self).get_url_parts(*args, **kwargs)
