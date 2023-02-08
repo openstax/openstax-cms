@@ -154,6 +154,20 @@ class FacultyResources(models.Model):
         return self.resource.unlocked_resource
     resource_unlocked = property(get_resource_unlocked)
 
+    resource_icon = models.ForeignKey(
+        'wagtaildocs.Document',
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        help_text='Icon for K12 resources listings'
+    )
+
+    def get_resource_icon_url(self):
+        if self.resource_icon:
+                return build_document_url(self.resource_icon.url)
+        else:
+            return None
+
     def get_resource_creator_fest_resource(self):
         return self.resource.creator_fest_resource
     creator_fest_resource = property(get_resource_creator_fest_resource)
@@ -196,6 +210,7 @@ class FacultyResources(models.Model):
         APIField('resource_heading'),
         APIField('resource_description'),
         APIField('resource_unlocked'),
+        APIField('resource_icon_url'),
         APIField('creator_fest_resource'),
         APIField('link_external'),
         APIField('link_page'),
@@ -256,6 +271,20 @@ class StudentResources(models.Model):
     def get_resource_unlocked(self):
         return self.resource.unlocked_resource
     resource_unlocked = property(get_resource_unlocked)
+  
+    resource_icon = models.ForeignKey(
+        'wagtaildocs.Document',
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        help_text='Icon for K12 resources listings'
+    )
+    
+    def get_resource_icon_url(self):
+        if self.resource_icon:
+                return build_document_url(self.resource_icon.url)
+        else:
+            return None
 
     link_external = models.URLField("External link", blank=True, help_text="Provide an external URL starting with http:// (or fill out either one of the following two).")
     link_page = models.ForeignKey(
@@ -287,11 +316,13 @@ class StudentResources(models.Model):
     coming_soon_text = models.CharField(max_length=255, null=True, blank=True, help_text="If there is text in this field a coming soon banner will be added with this description.")
     updated = models.DateTimeField(blank=True, null=True, help_text='Late date resource was updated')
     print_link = models.URLField(blank=True, null=True, help_text="Link for Buy Print link on resource")
+    k12 = models.BooleanField(default=False, help_text="Add to K12 student resources.")
 
     api_fields = [
         APIField('resource_heading'),
         APIField('resource_description'),
         APIField('resource_unlocked'),
+        APIField('resource_icon_url'),
         APIField('link_external'),
         APIField('link_page'),
         APIField('link_document_url'),
@@ -299,7 +330,8 @@ class StudentResources(models.Model):
         APIField('link_text'),
         APIField('coming_soon_text'),
         APIField('updated'),
-        APIField('print_link')
+        APIField('print_link'),
+        APIField('k12')
     ]
 
     panels = [
@@ -310,7 +342,8 @@ class StudentResources(models.Model):
         FieldPanel('link_text'),
         FieldPanel('coming_soon_text'),
         FieldPanel('updated'),
-        FieldPanel('print_link')
+        FieldPanel('print_link'),
+        FieldPanel('k12')
     ]
 
     def clean(self):
@@ -447,7 +480,6 @@ class SharedContentBlock(blocks.StreamBlock):
 class BookFacultyResources(Orderable, FacultyResources):
     book_faculty_resource = ParentalKey('books.Book', related_name='book_faculty_resources')
 
-
 class VideoFacultyResources(Orderable, VideoFacultyResource):
     book_video_faculty_resource = ParentalKey('books.Book', related_name='book_video_faculty_resources')
 
@@ -484,7 +516,6 @@ class Book(Page):
     salesforce_book_id = models.CharField(max_length=255, blank=True, null=True,
                                        help_text='No tracking and not included on adoption and interest forms if left blank)')
     updated = models.DateTimeField(blank=True, null=True, help_text='Late date web content was updated')
-    k12_subject = models.CharField(max_length=255, choices=K12_CATEGORIES, default='none')
     is_ap = models.BooleanField(default=False, help_text='Whether this book is an AP (Advanced Placement) book.')
     description = RichTextField(
         blank=True, help_text="Description shown on Book Detail page.")
@@ -627,7 +658,6 @@ class Book(Page):
     partner_list_label = models.CharField(max_length=255, null=True, blank=True, help_text="Controls the heading text on the book detail page for partners. This will update ALL books to use this value!")
     partner_page_link_text = models.CharField(max_length=255, null=True, blank=True, help_text="Link to partners page on top right of list.")
     featured_resources_header = models.CharField(max_length=255, null=True, blank=True, help_text="Featured resource header on instructor resources tab.")
-
     customization_form_heading = models.CharField(max_length=255, null=True, blank=True, help_text="Heading for the CE customization form. This will update ALL books to use this value!", default="Customization Form")
     customization_form_subheading = models.CharField(max_length=255, null=True, blank=True, help_text="Subheading for the CE customization form. This will update ALL books to use this value!", default="Please select the modules (up to 10), that you want to customize with Google Docs.")
     customization_form_disclaimer = RichTextField(blank=True, help_text="This will update ALL books to use this value!", default="<p><b>Disclaimer</b></p><p>The following features and functionality are not available to teachers and students using Google Docs customized content:</p><ul><li><b>Errata updates</b>. OpenStax webview is updated at least twice yearly. Customized Google Docs will not receive these content updates.</li><li><b>Access to study tools</b>. OpenStax webview has in-book search, highlighting, study guides, and more available for free. This functionality will not be available in Google Docs versions.</li><li><b>Formatting. </b>Print books and webview have a specific design and structure format developed for those platforms. These functionalities are not available in the Google Docs versions.</li></ul>")
@@ -773,6 +803,7 @@ class Book(Page):
         APIField('book_cover_text_color'),
         APIField('reverse_gradient'),
         APIField('book_student_resources'),
+        APIField('book_faculty_resources'),
         APIField('publish_date'),
         APIField('authors'),
         APIField('print_isbn_10'),
@@ -933,8 +964,6 @@ class Book(Page):
         if self._state.adding:
             self.print_isbn_10 = None
             self.digital_isbn_10 = None
-
-
         return super(Book, self).save(*args, **kwargs)
 
 

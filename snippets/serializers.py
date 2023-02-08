@@ -31,9 +31,7 @@ class K12SubjectSerializer(serializers.ModelSerializer):
         model = K12Subject
         fields = ('id',
                   'name', 
-                  'description', 
-                  'seo_title', 
-                  'search_description', 
+                  'intro_text', 
                   'subject_image', 
                   'subject_category' , 
                   'subject_color', 
