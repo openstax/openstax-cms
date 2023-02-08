@@ -2927,7 +2927,6 @@ class K12Subject(Page):
                         'last_updated_pdf': book.last_updated_pdf
                         })
             return book_data
-    
 
     def student_resource_headers(self):
         student_resource_data=[]
@@ -2940,10 +2939,9 @@ class K12Subject(Page):
             student_resource_data.append({
                 'id': resource.id,
                 'heading': resource.get_resource_heading(),
-                'icon': resource.get_resource_icon_url(),
+                'icon': resource.get_resource_icon(),
                 'book': book_ids[resource.book_student_resource_id],
                 'resource_id': resource.resource_id,
-                'resource_icon_id': resource.resource_icon_id,
                 'link_external': resource.link_external,
                 'link_page_id': resource.link_page_id,
                 'link_document_id': resource.link_document_id,
@@ -2966,10 +2964,9 @@ class K12Subject(Page):
             faculty_resource_data.append({
                 'id': resource.id,
                 'heading': resource.get_resource_heading(),
-                'icon': resource.get_resource_icon_url(),
+                'icon': resource.get_resource_icon(),
                 'book': book_ids[resource.book_faculty_resource_id],
                 'resource_id': resource.resource_id,
-                'resource_icon_id': resource.resource_icon_id,
                 'link_external': resource.link_external,
                 'link_page_id': resource.link_page_id,
                 'link_document_id': resource.link_document_id,

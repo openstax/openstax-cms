@@ -154,19 +154,9 @@ class FacultyResources(models.Model):
         return self.resource.unlocked_resource
     resource_unlocked = property(get_resource_unlocked)
 
-    resource_icon = models.ForeignKey(
-        'wagtaildocs.Document',
-        null=True, blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+',
-        help_text='Icon for K12 resources listings'
-    )
-
-    def get_resource_icon_url(self):
-        if self.resource_icon:
-                return build_document_url(self.resource_icon.url)
-        else:
-            return None
+    def get_resource_icon(self):
+        return self.resource.resource_icon
+    resource_icon = property(get_resource_icon)
 
     def get_resource_creator_fest_resource(self):
         return self.resource.creator_fest_resource
@@ -210,7 +200,7 @@ class FacultyResources(models.Model):
         APIField('resource_heading'),
         APIField('resource_description'),
         APIField('resource_unlocked'),
-        APIField('resource_icon_url'),
+        APIField('resource_icon'),
         APIField('creator_fest_resource'),
         APIField('link_external'),
         APIField('link_page'),
@@ -272,19 +262,9 @@ class StudentResources(models.Model):
         return self.resource.unlocked_resource
     resource_unlocked = property(get_resource_unlocked)
   
-    resource_icon = models.ForeignKey(
-        'wagtaildocs.Document',
-        null=True, blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+',
-        help_text='Icon for K12 resources listings'
-    )
-    
-    def get_resource_icon_url(self):
-        if self.resource_icon:
-                return build_document_url(self.resource_icon.url)
-        else:
-            return None
+    def get_resource_icon(self):
+        return self.resource.resource_icon
+    resource_icon = property(get_resource_icon)
 
     link_external = models.URLField("External link", blank=True, help_text="Provide an external URL starting with http:// (or fill out either one of the following two).")
     link_page = models.ForeignKey(
@@ -322,7 +302,7 @@ class StudentResources(models.Model):
         APIField('resource_heading'),
         APIField('resource_description'),
         APIField('resource_unlocked'),
-        APIField('resource_icon_url'),
+        APIField('resource_icon'),
         APIField('link_external'),
         APIField('link_page'),
         APIField('link_document_url'),
