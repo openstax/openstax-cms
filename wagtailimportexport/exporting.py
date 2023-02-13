@@ -18,7 +18,7 @@ from wagtailimportexport.config import app_settings
 
 
 def export_page(settings = {'root_page': None, 'export_unpublished': False, 
-    'export_documents': False, 'export_images': False, 'null_pk': False,
+    'export_documents': False, 'export_images': False, 'null_pk': True,
     'null_fk': False, 'null_users': False
     }):
     """
@@ -60,10 +60,13 @@ def export_page(settings = {'root_page': None, 'export_unpublished': False,
             
             # Turn page data to a dictionary.
             data = json.loads(page.to_json())
+            #print('page data: ' + str(data))
+            locale = data['locale']
 
             # Get list (and metadata) of images and documents to be exported.            
             images = list_fileobjects(page, settings, Image) if settings['export_images'] else {}
             documents = list_fileobjects(page, settings, Document) if settings['export_documents'] else {}
+            print('documents: ' + str(documents))
 
             # Remove PKs
             if settings['null_pk']:
@@ -73,7 +76,7 @@ def export_page(settings = {'root_page': None, 'export_unpublished': False,
             if settings['null_fk']:
                 functions.null_fks(page, data)
 
-            # Remove the owner of the page.
+            #Remove the owner of the page.
             if settings['null_users'] and not data.get('owner'):
                 data['owner'] = None
 
@@ -82,12 +85,16 @@ def export_page(settings = {'root_page': None, 'export_unpublished': False,
                 for image in images:
                     if data.get(image) is not None:
                         data[image] = None
-            
+
             # Null all the documents.
             if settings['export_documents']:
                 for doc in documents:
                     if data.get(doc) is not None:
                         data[doc] = None
+
+            data['pk'] = None
+            data['locale'] = locale
+            print('***locale 2: ' + str(data['locale']))
 
             # Export page data.
             page_data.append({
@@ -132,6 +139,8 @@ def list_fileobjects(page, settings, objtype):
                 try:
                     # Get the object instance.
                     instance = objtype.objects.get(pk=data[field.name])
+                    print('***file: ' + str(field.name))
+                    print('***file instance: ' + str(instance))
 
                     # Null the object if the filesize is larger.
                     if instance.file.size > app_settings['max_file_size'] and settings['ignore_large_files']:

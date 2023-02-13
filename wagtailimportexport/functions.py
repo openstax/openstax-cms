@@ -123,12 +123,12 @@ def null_fks(page, data):
             data[field.name] = None
 
         # StreamFields often have foreign keys associated with them.
-        if(isinstance(field, StreamField)):
-            find_null_child_blocks(field.stream_block, [field.name], data)
-
-        # Many to One relations often have foreign keys associated with them.
-        if(isinstance(field, ManyToOneRel)):
-            find_null_child_relations(field, [field.name], data)
+        # if(isinstance(field, StreamField)):
+        #     find_null_child_blocks(field.stream_block, [field.name], data)
+        #
+        # # Many to One relations often have foreign keys associated with them.
+        # if(isinstance(field, ManyToOneRel)):
+        #     find_null_child_relations(field, [field.name], data)
         
 def zip_contents(page_contents):
     """
@@ -213,3 +213,4 @@ def unzip_contents(zip_contents):
 
     # Return the mapping of all extracted members.
     return {member: tempdir+'/'+member for member in zip_contents.namelist()}
+
