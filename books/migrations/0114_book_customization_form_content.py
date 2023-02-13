@@ -3,7 +3,7 @@
 import books.models
 from django.db import migrations
 import snippets.models
-import wagtail.core.fields
+import wagtail.fields
 
 
 class Migration(migrations.Migration):
@@ -16,6 +16,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='book',
             name='customization_form_content',
-            field=wagtail.core.fields.StreamField([], blank=True, null=True),
+            field=wagtail.fields.StreamField([], blank=True, null=True),
         ),
     ]

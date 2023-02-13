@@ -1,8 +1,8 @@
 import json
 
 from django.db import models
-from wagtail.core import blocks
-from wagtail.core.fields import StreamField
+from wagtail import blocks
+from wagtail.fields import StreamField
 from news.models import SubjectBlock
 from snippets.models import Subject
 
@@ -30,7 +30,7 @@ class Webinar(models.Model):
     display_on_tutor_page = models.BooleanField(default=False)
     webinar_subjects = StreamField(blocks.StreamBlock([
         ('subject', blocks.ListBlock(SubjectBlock())
-         )]), null=True, blank=True)
+         )]), null=True, blank=True, use_json_field=True)
 
     @property
     def selected_subjects(self):

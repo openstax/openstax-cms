@@ -223,7 +223,7 @@ INSTALLED_APPS = [
     'wagtailimportexport',
     'versions',
     # wagtail
-    'wagtail.core',
+    'wagtail',
     'wagtail.admin',
     'wagtail.documents',
     'wagtail.snippets',
@@ -244,7 +244,7 @@ INSTALLED_APPS = [
 CRONJOBS = [
     ('0 2 * * *', 'django.core.management.call_command', ['delete_resource_downloads']),
     ('0 6 * * *', 'django.core.management.call_command', ['update_resource_downloads']),
-    ('0 8 * * *', 'django.core.management.call_command', ['update_schools_and_mapbox']),
+    ('0 0 8 * *', 'django.core.management.call_command', ['update_schools_and_mapbox']),
     ('0 9 * * *', 'django.core.management.call_command', ['update_opportunities']),
     ('0 10 * * *', 'django.core.management.call_command', ['update_partners']),
 ]
@@ -346,6 +346,8 @@ if BASE_URL is None:
         else:
             APPLICATION_DOMAIN = f'{ENVIRONMENT}.openstax.org'
     BASE_URL = f'https://{APPLICATION_DOMAIN}'
+
+WAGTAILADMIN_BASE_URL = BASE_URL
 
 ALLOWED_HOSTS = json.loads(os.getenv('ALLOWED_HOSTS', '[]'))
 

@@ -1,7 +1,7 @@
 from django.test import TestCase, Client
 from django.core.management import call_command
-from wagtail.tests.utils import WagtailTestUtils, WagtailPageTests
-from wagtail.core.models import Page
+from wagtail.test.utils import WagtailTestUtils, WagtailPageTests
+from wagtail.models import Page
 from pages.models import (HomePage,
                           ContactUs,
                           AboutUsPage,
