@@ -2928,6 +2928,7 @@ class K12Subject(Page):
                         })
             return book_data
 
+
     def student_resource_headers(self):
         student_resource_data=[]
         book_ids={}
@@ -2936,15 +2937,19 @@ class K12Subject(Page):
             book_title = book.get('title')
             book_ids[book_id]=book_title
         for resource in BookStudentResources.objects.filter(k12=True, book_student_resource_id__in = book_ids).all():
+            link_document_url= None
+            if resource.link_document_id is not None:
+                link_document_url = resource.link_document_url
             student_resource_data.append({
                 'id': resource.id,
                 'heading': resource.get_resource_heading(),
                 'icon': resource.get_resource_icon(),
                 'book': book_ids[resource.book_student_resource_id],
                 'resource_id': resource.resource_id,
+                'resource_unlocked': resource.resource_unlocked,
                 'link_external': resource.link_external,
-                'link_page_id': resource.link_page_id,
-                'link_document_id': resource.link_document_id,
+                'link_page': resource.link_page,
+                'link_document_url': link_document_url,
                 'link_text': resource.link_text,
                 'coming_soon_text': resource.coming_soon_text,
                 'updated': resource.updated,
@@ -2961,6 +2966,9 @@ class K12Subject(Page):
             book_title = book.get('title')
             book_ids[book_id]=book_title
         for resource in BookFacultyResources.objects.filter(k12=True, book_faculty_resource_id__in = book_ids).all():
+            link_document_url= None
+            if resource.link_document_id is not None:
+                link_document_url = resource.link_document_url
             faculty_resource_data.append({
                 'id': resource.id,
                 'heading': resource.get_resource_heading(),
@@ -2969,7 +2977,7 @@ class K12Subject(Page):
                 'resource_id': resource.resource_id,
                 'link_external': resource.link_external,
                 'link_page_id': resource.link_page_id,
-                'link_document_id': resource.link_document_id,
+                'link_document_url': link_document_url,
                 'link_text': resource.link_text,
                 'coming_soon_text': resource.coming_soon_text,
                 'updated': resource.updated,
@@ -3034,6 +3042,7 @@ class K12Subject(Page):
 
     parent_page_types = ['pages.K12MainPage']
 
+    
 
     class Meta:
             verbose_name = "K12 Subject"
