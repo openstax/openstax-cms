@@ -15,6 +15,7 @@ from wagtail.documents.models import Document
 
 from wagtailimportexport import functions
 from wagtailimportexport.config import app_settings
+from wagtail.documents.models import Document
 
 
 def export_page(settings = {'root_page': None, 'export_unpublished': False, 
@@ -63,16 +64,22 @@ def export_page(settings = {'root_page': None, 'export_unpublished': False,
             #print('page data: ' + str(data))
             locale = data['locale']
 
+            cover = data['cover']
+            #print('cover: ' + str(cover))
+            cover_doc = Document.objects.all().filter(pk=cover)
+            #print('cover_doc: ' + str(cover_doc[0]))
+            data['cover'] = cover_doc[0]
+
             # Get list (and metadata) of images and documents to be exported.            
             images = list_fileobjects(page, settings, Image) if settings['export_images'] else {}
             documents = list_fileobjects(page, settings, Document) if settings['export_documents'] else {}
-            print('documents: ' + str(documents))
+            #print('documents: ' + str(documents))
 
             # Remove PKs
-            if settings['null_pk']:
-                functions.null_pks(page, data)
+            # if settings['null_pk']:
+            #     functions.null_pks(page, data)
 
-            # Remove FKs
+            #Remove FKs
             if settings['null_fk']:
                 functions.null_fks(page, data)
 
@@ -87,14 +94,15 @@ def export_page(settings = {'root_page': None, 'export_unpublished': False,
                         data[image] = None
 
             # Null all the documents.
-            if settings['export_documents']:
-                for doc in documents:
-                    if data.get(doc) is not None:
-                        data[doc] = None
+            # if settings['export_documents']:
+            #     for doc in documents:
+            #         if data.get(doc) is not None:
+            #             data[doc] = None
 
             data['pk'] = None
             data['locale'] = locale
-            print('***locale 2: ' + str(data['locale']))
+            #data['cover'] = cover_doc[0]
+            #print('***locale 2: ' + str(data['locale']))
 
             # Export page data.
             page_data.append({
@@ -139,8 +147,8 @@ def list_fileobjects(page, settings, objtype):
                 try:
                     # Get the object instance.
                     instance = objtype.objects.get(pk=data[field.name])
-                    print('***file: ' + str(field.name))
-                    print('***file instance: ' + str(instance))
+                    #print('***file: ' + str(field.name))
+                    #print('***file instance: ' + str(instance))
 
                     # Null the object if the filesize is larger.
                     if instance.file.size > app_settings['max_file_size'] and settings['ignore_large_files']:

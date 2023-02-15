@@ -63,7 +63,8 @@ def find_null_child_blocks(subfield, location, data):
             # We want to catch the ForeignKey
             if isinstance(field_val, ForeignKey):
                 # TODO: Implement overwriting.
-                print(field_key, type(field_val), location)
+                #print(field_key, type(field_val), location)
+                pass
             
             # Recursive Calls
             find_null_child_blocks(field_val, location+[field_key], data)
