@@ -1,5 +1,5 @@
 appdirs==1.4.4
-django==4.0.8
+django==4.1.7
 django-admin-rangefilter
 django-crontab==0.7.1
 django-import-export
