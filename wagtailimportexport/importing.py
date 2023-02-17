@@ -166,7 +166,7 @@ def import_page(uploaded_archive, parent_page, overwrites = {}):
                     specific_page.__dict__.update(base_page.__dict__)
                     specific_page.content_type = ContentType.objects.get_for_model(model)
                     update_page_references(specific_page, pages_by_original_id)
-                    #specific_page.save()
+                    specific_page.save()
 
             return (len(contents)-len(existing_pages), len(existing_pages), error_msg)
 
