@@ -13,7 +13,6 @@ from modelcluster.models import get_all_child_relations
 
 from wagtail.core.models import Page
 from wagtail.images.models import Image
-from wagtail.documents.models import Document
 
 from wagtailimportexport import functions
 
@@ -73,20 +72,19 @@ def import_page(uploaded_archive, parent_page, overwrites = {}):
                         continue
 
                     # Reassign document IDs.
-                    for (fieldname, filedata) in page_record["documents"].items():
-
-                        new_field_datas[fieldname] = None
-
-                        # Skip if the document is set to null.
-                        if not filedata:
-                            continue
-
-                        local_file_query = get_fileobject(filedata["file"]["name"].split("/")[-1], Document)
-                        
-                        local_file_id = local_file_query if local_file_query else create_fileobject(
-                            filedata["title"], contents_mapping[filedata["file"]["name"]], Document)
-
-                        new_field_datas[fieldname] = local_file_id
+                    # for (fieldname, filedata) in page_record["documents"].items():
+                    #     new_field_datas[fieldname] = None
+                    #
+                    #     # Skip if the document is set to null.
+                    #     if not filedata:
+                    #         continue
+                    #
+                    #     local_file_query = get_fileobject(filedata["file"]["name"].split("/")[-1], Document)
+                    #
+                    #     local_file_id = local_file_query if local_file_query else create_fileobject(
+                    #         filedata["title"], contents_mapping[filedata["file"]["name"]], Document)
+                    #
+                    #     new_field_datas[fieldname] = local_file_id
                     
                     # Reassign image IDs.
                     for (fieldname, filedata) in page_record["images"].items():
@@ -111,6 +109,12 @@ def import_page(uploaded_archive, parent_page, overwrites = {}):
                     # Misc. overwrites
                     for (field, new_value) in overwrites.items():
                         page_record['content'][field] = new_value
+
+                    cover = functions.document_id(page_record['content']['cover'])
+                    page_record['content']['cover'] = cover
+                    page_record['content']['title_image'] = functions.document_id(page_record['content']['title_image'])
+                    page_record['content']['high_resolution_pdf'] = functions.document_id(page_record['content']['high_resolution_pdf'])
+                    page_record['content']['low_resolution_pdf'] = functions.document_id(page_record['content']['low_resolution_pdf'])
 
                     # set page.pk to null if pk already exists
                     pages = Page.objects.all()
@@ -162,7 +166,7 @@ def import_page(uploaded_archive, parent_page, overwrites = {}):
                     specific_page.__dict__.update(base_page.__dict__)
                     specific_page.content_type = ContentType.objects.get_for_model(model)
                     update_page_references(specific_page, pages_by_original_id)
-                    specific_page.save()
+                    #specific_page.save()
 
             return (len(contents)-len(existing_pages), len(existing_pages), error_msg)
 
