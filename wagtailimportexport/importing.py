@@ -13,17 +13,17 @@ from modelcluster.models import get_all_child_relations
 
 from wagtail.core.models import Page
 from wagtail.images.models import Image
-from wagtail.documents.models import Document
 
 from wagtailimportexport import functions
+import snippets.models as snippets
 
 
-def import_page(uploaded_archive, parent_page, overwrites = {}):
+def import_page(uploaded_archive, parent_page, overwrites={}):
     """
     Imports uploaded_archive as children of parent_page.
 
     Arguments:
-    uploaded_archive -- A file object, which includes contents.json 
+    uploaded_archive -- A file object, which includes contents.json
     and the media objects.
     parent_page -- Page object, where the page(s) will be imported to.
 
@@ -57,7 +57,7 @@ def import_page(uploaded_archive, parent_page, overwrites = {}):
 
                 # Get the list of pages to skip.
                 existing_pages = list_existing_pages(contents) if not overwrites else []
-                
+
                 # Dictionaries to store original paths.
                 pages_by_original_path = {}
                 pages_by_original_id = {}
@@ -72,22 +72,6 @@ def import_page(uploaded_archive, parent_page, overwrites = {}):
                         error_msg = 'Duplicate slug'
                         continue
 
-                    # Reassign document IDs.
-                    for (fieldname, filedata) in page_record["documents"].items():
-
-                        new_field_datas[fieldname] = None
-
-                        # Skip if the document is set to null.
-                        if not filedata:
-                            continue
-
-                        local_file_query = get_fileobject(filedata["file"]["name"].split("/")[-1], Document)
-                        
-                        local_file_id = local_file_query if local_file_query else create_fileobject(
-                            filedata["title"], contents_mapping[filedata["file"]["name"]], Document)
-
-                        new_field_datas[fieldname] = local_file_id
-                    
                     # Reassign image IDs.
                     for (fieldname, filedata) in page_record["images"].items():
 
@@ -98,7 +82,7 @@ def import_page(uploaded_archive, parent_page, overwrites = {}):
                             continue
 
                         local_file_query = get_fileobject(filedata["file"]["name"].split("/")[-1], Image)
-                        
+
                         local_file_id = local_file_query if local_file_query else create_fileobject(
                             filedata["title"], contents_mapping[filedata["file"]["name"]], Image)
 
@@ -107,10 +91,18 @@ def import_page(uploaded_archive, parent_page, overwrites = {}):
                     # Overwrite image and document IDs
                     for (field, new_value) in new_field_datas.items():
                         page_record['content'][field] = new_value
-                
+
                     # Misc. overwrites
                     for (field, new_value) in overwrites.items():
                         page_record['content'][field] = new_value
+
+                    # look up document ids
+                    page_record['content']['cover'] = functions.document_id(page_record['content']['cover'])
+                    page_record['content']['title_image'] = functions.document_id(page_record['content']['title_image'])
+                    page_record['content']['high_resolution_pdf'] = functions.document_id(page_record['content']['high_resolution_pdf'])
+                    page_record['content']['low_resolution_pdf'] = functions.document_id(page_record['content']['low_resolution_pdf'])
+                    page_record['content']['community_resource_logo'] = functions.document_id(page_record['content']['community_resource_logo'])
+                    page_record['content']['community_resource_feature_link'] = functions.document_id(page_record['content']['community_resource_feature_link'])
 
                     # set page.pk to null if pk already exists
                     pages = Page.objects.all()
@@ -152,10 +144,13 @@ def import_page(uploaded_archive, parent_page, overwrites = {}):
                     try:
                         model = apps.get_model(page_record['app_label'], page_record['model'])
                     except LookupError:
-                        logging.error("Importing file failed because the model "+page_record['model']+" does not exist on this environment.")
-                        return (0, 1, "Importing file failed because the model "+page_record['model']+" does not exist on this environment.")
+                        logging.error("Importing file failed because the model " + page_record[
+                            'model'] + " does not exist on this environment.")
+                        return (0, 1, "Importing file failed because the model " + page_record[
+                            'model'] + " does not exist on this environment.")
 
-                    specific_page = model.from_serializable_data(page_record['content'], check_fks=False, strict_fks=False)
+                    specific_page = model.from_serializable_data(page_record['content'], check_fks=False,
+                                                                 strict_fks=False)
 
                     base_page = pages_by_original_id[specific_page.id]
                     specific_page.page_ptr = base_page
@@ -164,15 +159,16 @@ def import_page(uploaded_archive, parent_page, overwrites = {}):
                     update_page_references(specific_page, pages_by_original_id)
                     specific_page.save()
 
-            return (len(contents)-len(existing_pages), len(existing_pages), error_msg)
+            return (len(contents) - len(existing_pages), len(existing_pages), error_msg)
 
         except LookupError as e:
             # If content.json does not exist, then return the error,
             # and terminate the import_page.
-            logging.error("Importing file failed because file does not exist: "+str(e))
-            return (0, 1, "File does not exist: "+str(e))
-    
+            logging.error("Importing file failed because file does not exist: " + str(e))
+            return (0, 1, "File does not exist: " + str(e))
+
     return (0, 1, "")
+
 
 def list_existing_pages(pages):
     """
@@ -199,8 +195,9 @@ def list_existing_pages(pages):
 
         except Page.DoesNotExist:
             continue
-    
+
     return existing_pages
+
 
 def get_fileobject(title, objtype):
     """
@@ -227,6 +224,7 @@ def get_fileobject(title, objtype):
         return False
 
     return False
+
 
 def create_fileobject(title, uploaded_file, objtype):
     """
@@ -265,9 +263,10 @@ def create_fileobject(title, uploaded_file, objtype):
                 logging.error("Integrity error while uploading a file:", title)
                 return None
     except FileNotFoundError:
-        logging.error("File "+uploaded_file+" is not found on imported archive, skipping.")
-    
+        logging.error("File " + uploaded_file + " is not found on imported archive, skipping.")
+
     return None
+
 
 def update_page_references(model, pages_by_original_id):
     """
