@@ -1,8 +1,10 @@
 from django.apps import AppConfig
 
+
 class GlobalSettingsConfig(AppConfig):
     name = 'global_settings'
     verbose_name = 'global_settings'
+    default = True
 
     def ready(self):
         import global_settings.signals  # noqa
