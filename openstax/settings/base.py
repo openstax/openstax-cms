@@ -140,6 +140,7 @@ MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'healthcheck.middleware.HealthCheckMiddleware', # has to be before CommonMiddleware
     'openstax.middleware.CommonMiddlewareAppendSlashWithoutRedirect',
+    'openstax.middleware.CommonMiddlewareOpenGraphRedirect',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
