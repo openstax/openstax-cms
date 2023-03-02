@@ -49,10 +49,11 @@ class CommonMiddlewareAppendSlashWithoutRedirect(CommonMiddleware):
 class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
     OG_USER_AGENTS = [
         'twitterbot',
-        'facebookexternalhit',
-        'pinterest',
+        'facebookbot',
+        'pinterestbot',
         'slackbot-linkexpanding',
     ]
+
     def __init__(self, get_response):
         self.get_response = get_response
 
@@ -60,11 +61,16 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
         user_agent = user_agent_parser.ParseUserAgent(request.META["HTTP_USER_AGENT"])
         if user_agent['family'].lower() in self.OG_USER_AGENTS:
             url_path = request.get_full_path()[:-1]
+            #print('url path: ' + str(url_path))
             full_url = request.build_absolute_uri()
             index = url_path.rindex('/')
             page_slug = url_path[index+1:]
-            if '/blog/' in url_path or '/details/books/' in url_path:
+            #print('page slug: ' + str(page_slug))
+            if self.redirect_path_found(url_path):
+                if page_slug == 'foundation':
+                    page_slug = 'supporters'
                 page = Page.objects.filter(slug = page_slug)
+                #print('page: ' + str(page[0]))
                 template = self.build_template(page[0], full_url)
                 return HttpResponse(template)
             else:
@@ -82,16 +88,21 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
         template += '<meta property="og:type" content="article" />'
         template += '<meta name = "og:title" content = "{}" >'.format(page.seo_title)
         template += '<meta name = "og:description" content = "{}" >'.format(page.search_description)
-        template += '<meta name = "og:image" content = "{}" >'.format(page.promote_image.url)
+        #template += '<meta name = "og:image" content = "{}" >'.format(page.promote_image.url)
         template += '<meta name = "og:image:alt" content = "{}" >'.format(page.seo_title)
         template += '<meta name = "twitter:card" content = "summary_large_image" >'
         template += '<meta name = "twitter:site" content = "@OpenStax" >'
         template += '<meta name = "twitter:title"content = "{}" >'.format(page.seo_title)
         template += '<meta name = "twitter:description" content = "{}" >'.format(page.search_description)
-        template += '< meta name = "twitter:image" content = "{}" >'.format(page.promote_image.url)
+        #template += '< meta name = "twitter:image" content = "{}" >'.format(page.promote_image.url)
         template += '<meta name = "twitter:image:alt"content = "OpenStax" >'
 
         template += '</head><body></body></html>'
-        print(str(template))
         return template
+
+    def redirect_path_found(self, url_path):
+        if '/blog/' in url_path or '/details/books/' in url_path or '/foundation' in url_path:
+            return True
+        else:
+            return False
 
