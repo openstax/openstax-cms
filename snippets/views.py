@@ -21,7 +21,7 @@ class SubjectList(viewsets.ReadOnlyModelViewSet):
     filter_backends = (DjangoFilterBackend,)
 
     def get_queryset(self):
-        queryset = Subject.objects.all()
+        queryset = Subject.objects.all().order_by('name')
         name = self.request.query_params.get('name', None)
         locale = self.request.query_params.get('locale', None)
         if name is not None:
