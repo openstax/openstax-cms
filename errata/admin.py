@@ -24,8 +24,8 @@ from .forms import ErrataForm
 class ErrataResource(resources.ModelResource):
     class Meta:
         model = Errata
-        fields = ('id', 'created', 'modified', 'book__title', 'number_of_errors', 'is_assessment_errata', 'assessment_id', 'status', 'resolution', 'archived', 'junk', 'location', 'additional_location_information', 'detail', 'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'resource', 'file_1', 'file_2',)
-        export_order = ('id', 'created', 'modified', 'book__title', 'number_of_errors', 'is_assessment_errata', 'assessment_id', 'status', 'resolution', 'archived', 'junk', 'location', 'additional_location_information', 'detail', 'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'resource',)
+        fields = ('id', 'created', 'modified', 'book_title', 'number_of_errors', 'is_assessment_errata', 'assessment_id', 'status', 'resolution', 'archived', 'junk', 'location', 'additional_location_information', 'detail', 'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'resource', 'file_1', 'file_2',)
+        export_order = ('id', 'created', 'modified', 'book_title', 'number_of_errors', 'is_assessment_errata', 'assessment_id', 'status', 'resolution', 'archived', 'junk', 'location', 'additional_location_information', 'detail', 'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'resource',)
 
 class InlineInternalImage(admin.TabularInline):
     model = InternalDocumentation
@@ -40,6 +40,7 @@ class ErrataAdmin(ImportExportActionModelAdmin, VersionAdmin):
             'errata/errata-admin-ui.js',  # custom errata javascript
         )
     resource_class = ErrataResource
+    # ordering = ['created']
 
     form = ErrataForm
     list_max_show_all = 10000
@@ -131,22 +132,24 @@ class ErrataAdmin(ImportExportActionModelAdmin, VersionAdmin):
             extra_context = extra_context or {}
             extra_context['readonly'] = True
         return super(ErrataAdmin, self).change_view(request, object_id, extra_context=extra_context)
-
-    def _book_title(self, obj):
+    
+    # To enable sorting by book title on the admin page, computing field using a method
+    def book_title(self, obj):
         return mark_safe(obj.book.title)
+    book_title.admin_order_field = 'book__title'
 
     """Model permissions"""
     @method_decorator(csrf_protect)
     def changelist_view(self, request, extra_context=None):
         if request.user.is_superuser or request.user.groups.filter(name__in=['Content Managers']).exists():
-            self.list_display = ['id', '_book_title', 'created', 'modified', 'short_detail', 'number_of_errors', 'status', 'error_type', 'resource', 'location', 'additional_location_information', 'resolution', 'archived', 'junk'] # list of fields to show if user is in Content Manager group or is a superuser
-            self.list_display_links = ['_book_title']
+            self.list_display = ['id', 'book_title', 'created', 'modified', 'short_detail', 'number_of_errors', 'status', 'error_type', 'resource', 'location', 'additional_location_information', 'resolution', 'archived', 'junk'] # list of fields to show if user is in Content Manager group or is a superuser
+            self.list_display_links = ['book_title']
             self.list_filter = (('created', DateRangeFilter), ('modified', DateRangeFilter), ('book', UnionFieldListFilter), 'status', 'created', 'modified', 'is_assessment_errata', 'modified', 'error_type', 'resolution', 'archived', 'junk', 'resource')
             self.editable = ['resolution']
 
         else:
-            self.list_display = ['id', '_book_title', 'created', 'short_detail', 'status', 'error_type', 'resource', 'location', 'created', 'archived'] # list of fields to show otherwise
-            self.list_display_links = ['_book_title']
+            self.list_display = ['id', 'book_title', 'created', 'short_detail', 'status', 'error_type', 'resource', 'location', 'created', 'archived'] # list of fields to show otherwise
+            self.list_display_links = ['book_title']
             self.list_filter = (('created', DateRangeFilter), ('modified', DateRangeFilter), ('book', UnionFieldListFilter), 'status', 'created', 'modified', 'is_assessment_errata', 'error_type', 'resolution', 'archived', 'resource')
         return super(ErrataAdmin, self).changelist_view(request, extra_context)
 
