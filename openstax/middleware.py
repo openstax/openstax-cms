@@ -7,6 +7,9 @@ from wagtail.models import Page
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django.http import HttpResponse
+from books.models import Book
+from openstax.functions import build_image_url
+from news.models import NewsArticle
 
 
 class HttpSmartRedirectResponse(HttpResponsePermanentRedirect):
@@ -61,16 +64,18 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
         user_agent = user_agent_parser.ParseUserAgent(request.META["HTTP_USER_AGENT"])
         if user_agent['family'].lower() in self.OG_USER_AGENTS:
             url_path = request.get_full_path()[:-1]
-            #print('url path: ' + str(url_path))
             full_url = request.build_absolute_uri()
             index = url_path.rindex('/')
             page_slug = url_path[index+1:]
-            #print('page slug: ' + str(page_slug))
             if self.redirect_path_found(url_path):
                 if page_slug == 'foundation':
                     page_slug = 'supporters'
-                page = Page.objects.filter(slug = page_slug)
-                #print('page: ' + str(page[0]))
+                if '/details/books/' in url_path:
+                    page = Book.objects.filter(slug = page_slug)
+                elif '/blog/' in url_path:
+                    page = NewsArticle.objects.filter(slug = page_slug)
+                else:
+                    page = Page.objects.filter(slug = page_slug)
                 template = self.build_template(page[0], full_url)
                 return HttpResponse(template)
             else:
@@ -80,6 +85,7 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
             return self.get_response(request)
 
     def build_template(self, page, page_url):
+        image_url = self.image_url(page.promote_image)
         template = '<!DOCTYPE html> <html> <head> <meta charset="utf-8">'
         template += '<title>' + str(page.seo_title) + '</title>'
         template += '<meta name = "description" content = "{}" >'.format(page.search_description)
@@ -88,13 +94,13 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
         template += '<meta property="og:type" content="article" />'
         template += '<meta name = "og:title" content = "{}" >'.format(page.seo_title)
         template += '<meta name = "og:description" content = "{}" >'.format(page.search_description)
-        #template += '<meta name = "og:image" content = "{}" >'.format(page.promote_image.url)
+        template += '<meta name = "og:image" content = "{}" >'.format(image_url)
         template += '<meta name = "og:image:alt" content = "{}" >'.format(page.seo_title)
         template += '<meta name = "twitter:card" content = "summary_large_image" >'
         template += '<meta name = "twitter:site" content = "@OpenStax" >'
         template += '<meta name = "twitter:title"content = "{}" >'.format(page.seo_title)
         template += '<meta name = "twitter:description" content = "{}" >'.format(page.search_description)
-        #template += '< meta name = "twitter:image" content = "{}" >'.format(page.promote_image.url)
+        template += '< meta name = "twitter:image" content = "{}" >'.format(image_url)
         template += '<meta name = "twitter:image:alt"content = "OpenStax" >'
 
         template += '</head><body></body></html>'
@@ -105,6 +111,9 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
             return True
         else:
             return False
+
+    def image_url(self, image):
+        return build_image_url(image)
 
 
 
