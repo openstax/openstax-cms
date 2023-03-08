@@ -402,8 +402,6 @@ class NewsArticle(Page):
         APIField('promote_image')
     ]
 
-    template = 'page.html'
-
     parent_page_types = ['news.NewsIndex']
 
     def save(self, *args, **kwargs):
