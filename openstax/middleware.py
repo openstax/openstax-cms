@@ -10,6 +10,7 @@ from django.http import HttpResponse
 from books.models import Book
 from openstax.functions import build_image_url
 from news.models import NewsArticle
+from pages.models import HomePage, Supporters
 
 
 class HttpSmartRedirectResponse(HttpResponsePermanentRedirect):
@@ -61,28 +62,40 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
         self.get_response = get_response
 
     def __call__(self, request, *args, **kwargs):
-        user_agent = user_agent_parser.ParseUserAgent(request.META["HTTP_USER_AGENT"])
-        if user_agent['family'].lower() in self.OG_USER_AGENTS:
-            url_path = request.get_full_path()[:-1]
-            full_url = request.build_absolute_uri()
-            index = url_path.rindex('/')
-            page_slug = url_path[index+1:]
-            if self.redirect_path_found(url_path):
-                if page_slug == 'foundation':
-                    page_slug = 'supporters'
-                if '/details/books/' in url_path:
-                    page = Book.objects.filter(slug = page_slug)
-                elif '/blog/' in url_path:
-                    page = NewsArticle.objects.filter(slug = page_slug)
-                else:
-                    page = Page.objects.filter(slug = page_slug)
-                template = self.build_template(page[0], full_url)
-                return HttpResponse(template)
-            else:
-                return self.get_response(request)
+        if 'HTTP_USER_AGENT' in request.META:
 
-        else:
-            return self.get_response(request)
+            user_agent = user_agent_parser.ParseUserAgent(request.META["HTTP_USER_AGENT"])
+            if user_agent['family'].lower() in self.OG_USER_AGENTS:
+                # url path minus the trailing /
+                url_path = request.get_full_path()[:-1]
+
+                full_url = request.build_absolute_uri()
+
+                # imdex of last / to find slug, except when there isn't a last /
+                if url_path == '':
+                    page_slug = "openstax-homepage"
+                else:
+                    index = url_path.rindex('/')
+                    page_slug = url_path[index+1:]
+
+                if self.redirect_path_found(url_path):
+                    # supporters page has the wrong slug
+                    if page_slug == 'foundation':
+                        page_slug = 'supporters'
+
+                    # look up correct object based on path
+                    if '/details/books/' in url_path:
+                        page = Book.objects.filter(slug = page_slug)
+                    elif '/blog/' in url_path:
+                        page = NewsArticle.objects.filter(slug = page_slug)
+                    else:
+                        page = self.page_by_slug(page_slug)
+
+                    template = self.build_template(page[0], full_url)
+                    return HttpResponse(template)
+                else:
+                    return self.get_response(request)
+        return self.get_response(request)
 
     def build_template(self, page, page_url):
         image_url = self.image_url(page.promote_image)
@@ -107,13 +120,22 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
         return template
 
     def redirect_path_found(self, url_path):
-        if '/blog/' in url_path or '/details/books/' in url_path or '/foundation' in url_path:
+        if '/blog/' in url_path or '/details/books/' in url_path or '/foundation' in url_path or '' == url_path:
             return True
         else:
             return False
 
     def image_url(self, image):
-        return build_image_url(image)
+        image_url = build_image_url(image)
+        if not image_url:
+            return ''
+        return image_url
+
+    def page_by_slug(self, page_slug):
+        if page_slug == 'supporters':
+            return Supporters.objects.all()
+        if page_slug == 'openstax-homepage':
+            return HomePage.objects.filter(locale = 1)
 
 
 
