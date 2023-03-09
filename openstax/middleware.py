@@ -99,22 +99,22 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
 
     def build_template(self, page, page_url):
         image_url = self.image_url(page.promote_image)
-        template = '<!DOCTYPE html> <html> <head> <meta charset="utf-8">'
-        template += '<title>' + str(page.seo_title) + '</title>'
-        template += '<meta name="description" content="{}" >'.format(page.search_description)
-        template += '<link rel="canonical" href="{}" />'.format(page_url)
-        template += '<meta property="og:url" content="{}" />'.format(page_url)
-        template += '<meta property="og:type" content="article" />'
-        template += '<meta property="og:title" content="{}" />'.format(page.seo_title)
-        template += '<meta property="og:description" content="{}" />'.format(page.search_description)
-        template += '<meta property="og:image" content="{}" />'.format(image_url)
-        template += '<meta property="og:image:alt" content="{}" />'.format(page.seo_title)
-        template += '<meta name="twitter:card" content="summary_large_image" >'
-        template += '<meta name="twitter:site" content="@OpenStax" >'
-        template += '<meta name="twitter:title" content="{}" >'.format(page.seo_title)
-        template += '<meta name="twitter:description" content="{}" >'.format(page.search_description)
-        template += '<meta name="twitter:image" content="{}" >'.format(image_url)
-        template += '<meta name="twitter:image:alt" content="OpenStax" >'
+        template = '<!DOCTYPE html> <html> <head> <meta charset="utf-8">\n'
+        template += '    <title>' + str(page.seo_title) + '</title>\n'
+        template += '    <meta name="description" content="{}" >\n'.format(page.search_description)
+        template += '    <link rel="canonical" href="{}" />\n'.format(page_url)
+        template += '    <meta property="og:url" content="{}" />\n'.format(page_url)
+        template += '    <meta property="og:type" content="article" />\n'
+        template += '    <meta property="og:title" content="{}" />\n'.format(page.seo_title)
+        template += '    <meta property="og:description" content="{}" />\n'.format(page.search_description)
+        template += '    <meta property="og:image" content="{}" />\n'.format(image_url)
+        template += '    <meta property="og:image:alt" content="{}" />\n'.format(page.seo_title)
+        template += '    <meta name="twitter:card" content="summary_large_image">\n'
+        template += '    <meta name="twitter:site" content="@OpenStax">\n'
+        template += '    <meta name="twitter:title" content="{}">\n'.format(page.seo_title)
+        template += '    <meta name="twitter:description" content="{}">\n'.format(page.search_description)
+        template += '    <meta name="twitter:image" content="{}">\n'.format(image_url)
+        template += '    <meta name="twitter:image:alt" content="OpenStax">\n'
 
         template += '</head><body></body></html>'
         return template
