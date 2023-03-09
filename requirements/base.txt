@@ -1,11 +1,12 @@
 appdirs==1.4.4
+chardet==4.0.0
 django==4.0.8
-django-admin-rangefilter
+django-admin-rangefilter==0.8.4
 django-crontab==0.7.1
-django-import-export
+django-import-export==2.8.0
 django-libsass==0.9
 django-rest-auth==0.9.5
-django-reversion
+django-reversion==5.0.0
 django-ses==3.0.1
 django-storages==1.12.3
 future==0.18.2

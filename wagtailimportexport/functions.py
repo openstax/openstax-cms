@@ -11,6 +11,7 @@ from django.db.models.fields.related import ForeignKey
 from django.db.models.fields.reverse_related import ManyToOneRel
 
 from wagtail.core.fields import StreamField
+from wagtail.documents.models import Document
 
 
 def null_pks(page, data):
@@ -63,7 +64,7 @@ def find_null_child_blocks(subfield, location, data):
             # We want to catch the ForeignKey
             if isinstance(field_val, ForeignKey):
                 # TODO: Implement overwriting.
-                print(field_key, type(field_val), location)
+                pass
             
             # Recursive Calls
             find_null_child_blocks(field_val, location+[field_key], data)
@@ -123,12 +124,12 @@ def null_fks(page, data):
             data[field.name] = None
 
         # StreamFields often have foreign keys associated with them.
-        if(isinstance(field, StreamField)):
-            find_null_child_blocks(field.stream_block, [field.name], data)
-
-        # Many to One relations often have foreign keys associated with them.
-        if(isinstance(field, ManyToOneRel)):
-            find_null_child_relations(field, [field.name], data)
+        # if(isinstance(field, StreamField)):
+        #     find_null_child_blocks(field.stream_block, [field.name], data)
+        #
+        # # Many to One relations often have foreign keys associated with them.
+        # if(isinstance(field, ManyToOneRel)):
+        #     find_null_child_relations(field, [field.name], data)
         
 def zip_contents(page_contents):
     """
@@ -213,3 +214,19 @@ def unzip_contents(zip_contents):
 
     # Return the mapping of all extracted members.
     return {member: tempdir+'/'+member for member in zip_contents.namelist()}
+
+
+def document_title(doc_pk):
+    doc = Document.objects.all().filter(pk=doc_pk)
+    if not doc:
+        return None
+    else:
+        return str(doc[0])
+
+
+def document_id(doc_title):
+    doc = Document.objects.all().filter(title=doc_title)
+    if not doc:
+        return None
+    else:
+        return doc[0].pk

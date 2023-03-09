@@ -11,14 +11,14 @@ from django.db.models.fields.files import FieldFile
 from wagtail.core.models import Page
 from wagtail.core.blocks import StreamValue
 from wagtail.images.models import Image
-from wagtail.documents.models import Document
 
 from wagtailimportexport import functions
 from wagtailimportexport.config import app_settings
+from wagtail.documents.models import Document
 
 
 def export_page(settings = {'root_page': None, 'export_unpublished': False, 
-    'export_documents': False, 'export_images': False, 'null_pk': False,
+    'export_documents': False, 'export_images': False, 'null_pk': True,
     'null_fk': False, 'null_users': False
     }):
     """
@@ -60,20 +60,25 @@ def export_page(settings = {'root_page': None, 'export_unpublished': False,
             
             # Turn page data to a dictionary.
             data = json.loads(page.to_json())
+            locale = data['locale']
+
+            # look up document titles
+            cover = functions.document_title(data['cover'])
+            title_image = functions.document_title(data['title_image'])
+            hi_res_pdf = functions.document_title(data['high_resolution_pdf'])
+            lo_res_pdf = functions.document_title(data['low_resolution_pdf'])
+            community_logo = functions.document_title(data['community_resource_logo'])
+            community_feature_link = functions.document_title(data['community_resource_feature_link'])
 
             # Get list (and metadata) of images and documents to be exported.            
             images = list_fileobjects(page, settings, Image) if settings['export_images'] else {}
             documents = list_fileobjects(page, settings, Document) if settings['export_documents'] else {}
 
-            # Remove PKs
-            if settings['null_pk']:
-                functions.null_pks(page, data)
-
-            # Remove FKs
+            #Remove FKs
             if settings['null_fk']:
                 functions.null_fks(page, data)
 
-            # Remove the owner of the page.
+            #Remove the owner of the page.
             if settings['null_users'] and not data.get('owner'):
                 data['owner'] = None
 
@@ -82,12 +87,16 @@ def export_page(settings = {'root_page': None, 'export_unpublished': False,
                 for image in images:
                     if data.get(image) is not None:
                         data[image] = None
-            
-            # Null all the documents.
-            if settings['export_documents']:
-                for doc in documents:
-                    if data.get(doc) is not None:
-                        data[doc] = None
+
+            data['pk'] = None
+            data['locale'] = locale
+            # add document titles to data
+            data['cover'] = cover
+            data['title_image'] = title_image
+            data['high_resolution_pdf'] = hi_res_pdf
+            data['low_resolution_pdf'] = lo_res_pdf
+            data['community_resource_logo'] = community_logo
+            data['community_resource_feature_link'] = community_feature_link
 
             # Export page data.
             page_data.append({
