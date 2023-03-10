@@ -194,6 +194,7 @@ class FacultyResources(models.Model):
     updated = models.DateTimeField(blank=True, null=True, help_text='Late date resource was updated')
     featured = models.BooleanField(default=False, help_text="Add to featured bar on resource page")
     k12 = models.BooleanField(default=False, help_text="Add K12 banner to resource")
+    display_on_k12 = models.BooleanField(default=False, help_text="Display resource on K12 subject pages")
     print_link = models.URLField(blank=True, null=True, help_text="Link for Buy Print link on resource")
 
     api_fields = [
@@ -212,6 +213,7 @@ class FacultyResources(models.Model):
         APIField('updated'),
         APIField('featured'),
         APIField('k12'),
+        APIField('display_on_k12'),
         APIField('print_link')
     ]
 
@@ -226,6 +228,7 @@ class FacultyResources(models.Model):
         FieldPanel('updated'),
         FieldPanel('featured'),
         FieldPanel('k12'),
+        FieldPanel('display_on_k12'),
         FieldPanel('print_link')
     ]
 
@@ -296,7 +299,8 @@ class StudentResources(models.Model):
     coming_soon_text = models.CharField(max_length=255, null=True, blank=True, help_text="If there is text in this field a coming soon banner will be added with this description.")
     updated = models.DateTimeField(blank=True, null=True, help_text='Late date resource was updated')
     print_link = models.URLField(blank=True, null=True, help_text="Link for Buy Print link on resource")
-    k12 = models.BooleanField(default=False, help_text="Add to K12 student resources.")
+    display_on_k12 = models.BooleanField(default=False, help_text="Display resource on K12 subject pages")
+
 
     api_fields = [
         APIField('resource_heading'),
@@ -311,7 +315,7 @@ class StudentResources(models.Model):
         APIField('coming_soon_text'),
         APIField('updated'),
         APIField('print_link'),
-        APIField('k12')
+        APIField('display_on_k12')
     ]
 
     panels = [
@@ -323,7 +327,7 @@ class StudentResources(models.Model):
         FieldPanel('coming_soon_text'),
         FieldPanel('updated'),
         FieldPanel('print_link'),
-        FieldPanel('k12')
+        FieldPanel('display_on_k12')
     ]
 
     def clean(self):
