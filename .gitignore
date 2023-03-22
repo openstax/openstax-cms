@@ -13,6 +13,7 @@ openstax/settings/local.py
 /.coverage
 .venv
 .DS_STORE
+*.icloud
 
 *.bk
 admin_templates/templates/wagtailadmin/login.html*

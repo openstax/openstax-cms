@@ -534,15 +534,10 @@ class Book(Page):
         ('author', AuthorBlock()),
     ], null=True, use_json_field=True)
 
-    print_isbn_10 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 10 for print version (hardcover).')
     print_isbn_13 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 13 for print version (hardcover).')
-    print_softcover_isbn_10 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 10 for print version (softcover).')
     print_softcover_isbn_13 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 13 for print version (softcover).')
-    digital_isbn_10 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 10 for digital version.')
     digital_isbn_13 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 13 for digital version.')
-    ibook_isbn_10 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 10 for iBook version.')
     ibook_isbn_13 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 13 for iBook version.')
-    ibook_volume_2_isbn_10 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 10 for iBook v2 version.')
     ibook_volume_2_isbn_13 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 13 for iBook v2 version.')
     license_text = models.TextField(
         blank=True, null=True, help_text="Overrides default license text.")
@@ -692,12 +687,9 @@ class Book(Page):
         FieldPanel('book_cover_text_color'),
         FieldPanel('reverse_gradient'),
         FieldPanel('print_isbn_13'),
-        FieldPanel('print_softcover_isbn_10'),
         FieldPanel('print_softcover_isbn_13'),
         FieldPanel('digital_isbn_13'),
-        FieldPanel('ibook_isbn_10'),
         FieldPanel('ibook_isbn_13'),
-        FieldPanel('ibook_volume_2_isbn_10'),
         FieldPanel('ibook_volume_2_isbn_13'),
         FieldPanel('license_text'),
         FieldPanel('license_name'),
@@ -790,15 +782,10 @@ class Book(Page):
         APIField('book_faculty_resources'),
         APIField('publish_date'),
         APIField('authors'),
-        APIField('print_isbn_10'),
         APIField('print_isbn_13'),
-        APIField('print_softcover_isbn_10'),
         APIField('print_softcover_isbn_13'),
-        APIField('digital_isbn_10'),
         APIField('digital_isbn_13'),
-        APIField('ibook_isbn_10'),
         APIField('ibook_isbn_13'),
-        APIField('ibook_volume_2_isbn_10'),
         APIField('ibook_volume_2_isbn_13'),
         APIField('license_text'),
         APIField('license_name'),
@@ -944,10 +931,6 @@ class Book(Page):
                 self.salesforce_abbreviation = salesforce_names['Name']
                 self.salesforce_name = salesforce_names['Official_Name']
 
-        # if book is new, clear out isbn 10 fields
-        if self._state.adding:
-            self.print_isbn_10 = None
-            self.digital_isbn_10 = None
         return super(Book, self).save(*args, **kwargs)
 
 
