@@ -34,7 +34,8 @@ from pages.models import (HomePage,
                           Subject,
                           FormHeadings,
                           AllyLogos,
-                          K12MainPage)
+                          K12MainPage,
+                          Assignable)
 from news.models import NewsIndex, PressIndex
 from books.models import BookIndex
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash, mock_user_login
@@ -97,7 +98,8 @@ class HomePageTests(WagtailPageTests):
             Subjects,
             FormHeadings,
             AllyLogos,
-            K12MainPage
+            K12MainPage,
+            Assignable,
         })
 
 class PageTests(WagtailPageTests):
