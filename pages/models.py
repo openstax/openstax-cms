@@ -2936,7 +2936,7 @@ class K12Subject(Page):
             book_id = book.get('id')
             book_title = book.get('title')
             book_ids[book_id]=book_title
-        for resource in BookStudentResources.objects.filter(k12=True, book_student_resource_id__in = book_ids).all():
+        for resource in BookStudentResources.objects.filter(display_on_k12=True, book_student_resource_id__in = book_ids).all():
             link_document_url= None
             if resource.link_document_id is not None:
                 link_document_url = resource.link_document_url
@@ -2954,7 +2954,7 @@ class K12Subject(Page):
                 'coming_soon_text': resource.coming_soon_text,
                 'updated': resource.updated,
                 'print_link': resource.print_link,
-                'k12': resource.k12,
+                'display_on_k12': resource.display_on_k12,
                 })
         return student_resource_data
 
@@ -2965,7 +2965,7 @@ class K12Subject(Page):
             book_id = book.get('id')
             book_title = book.get('title')
             book_ids[book_id]=book_title
-        for resource in BookFacultyResources.objects.filter(k12=True, book_faculty_resource_id__in = book_ids).all():
+        for resource in BookFacultyResources.objects.filter(display_on_k12=True, book_faculty_resource_id__in = book_ids).all():
             link_document_url= None
             if resource.link_document_id is not None:
                 link_document_url = resource.link_document_url
@@ -2983,6 +2983,7 @@ class K12Subject(Page):
                 'updated': resource.updated,
                 'print_link': resource.print_link,
                 'k12': resource.k12,
+                'display_on_k12': resource.display_on_k12,
                 })
         return faculty_resource_data
 
