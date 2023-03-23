@@ -444,6 +444,7 @@ class HomePage(Page):
         'pages.K12MainPage',
         'pages.K12Subject',
         'pages.AllyLogos',
+        'pages.Assignable',
         'books.BookIndex',
         'news.NewsIndex',
         'news.PressIndex',
@@ -3115,5 +3116,120 @@ class AllyLogos(Page):
     template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
+
+
+class Assignable(Page):
+    heading_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    heading = models.CharField(max_length=255,blank=True, null=True)
+    subheading = models.CharField(max_length=255,blank=True, null=True)
+    heading_description = RichTextField(blank=True, null=True)
+    heading_button_text = models.CharField(max_length=255,blank=True, null=True)
+    heading_button_link = models.URLField(blank=True, null=True)
+    courses_coming_soon = models.TextField(blank=True, null=True)
+    assignable_cta_text = models.CharField(max_length=255,blank=True, null=True)
+    assignable_cta_link = models.URLField(blank=True, null=True)
+    assignable_cta_button_text = models.CharField(max_length=255,blank=True, null=True)
+    section_2_heading = models.CharField(max_length=255,blank=True, null=True)
+    section_2_description = models.TextField(blank=True, null=True)
+    section_2_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    instructor_text = models.CharField(max_length=255,blank=True, null=True)
+    instructor_button_text = models.CharField(max_length=255,blank=True, null=True)
+    instructor_link = models.URLField(blank=True, null=True)
+    admin_text = models.CharField(max_length=255,blank=True, null=True)
+    admin_button_text = models.CharField(max_length=255,blank=True, null=True)
+    admin_link = models.URLField(blank=True, null=True)
+    quote = models.TextField(blank=True, null=True)
+    quote_author = models.CharField(max_length=255,blank=True, null=True)
+    quote_title = models.CharField(max_length=255, blank=True, null=True)
+    quote_school = models.CharField(max_length=255, blank=True, null=True)
+    tos_link = models.URLField(blank=True, null=True)
+
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    content_panels = [
+        FieldPanel('title'),
+        FieldPanel('heading_image'),
+        FieldPanel('heading'),
+        FieldPanel('subheading'),
+        FieldPanel('heading_description'),
+        FieldPanel('heading_button_text'),
+        FieldPanel('heading_button_link'),
+        FieldPanel('courses_coming_soon'),
+        FieldPanel('assignable_cta_text'),
+        FieldPanel('assignable_cta_link'),
+        FieldPanel('assignable_cta_button_text'),
+        FieldPanel('section_2_heading'),
+        FieldPanel('section_2_description'),
+        FieldPanel('section_2_image'),
+        FieldPanel('instructor_text'),
+        FieldPanel('instructor_button_text'),
+        FieldPanel('instructor_link'),
+        FieldPanel('admin_text'),
+        FieldPanel('admin_button_text'),
+        FieldPanel('admin_link'),
+        FieldPanel('quote'),
+        FieldPanel('quote_author'),
+        FieldPanel('quote_title'),
+        FieldPanel('quote_school'),
+        FieldPanel('tos_link'),
+    ]
+
+    api_fields = [
+        APIField('title'),
+        APIField('heading_image'),
+        APIField('heading'),
+        APIField('subheading'),
+        APIField('heading_description'),
+        APIField('heading_button_text'),
+        APIField('heading_button_link'),
+        APIField('courses_coming_soon'),
+        APIField('assignable_cta_text'),
+        APIField('assignable_cta_link'),
+        APIField('assignable_cta_button_text'),
+        APIField('section_2_heading'),
+        APIField('section_2_description'),
+        APIField('section_2_image'),
+        APIField('instructor_text'),
+        APIField('instructor_button_text'),
+        APIField('instructor_link'),
+        APIField('admin_text'),
+        APIField('admin_button_text'),
+        APIField('admin_link'),
+        APIField('quote'),
+        APIField('quote_author'),
+        APIField('quote_title'),
+        APIField('quote_school'),
+        APIField('tos_link'),
+    ]
+
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        FieldPanel('promote_image')
+    ]
+
+    parent_page_type = ['pages.HomePage']
+    template = 'page.html'
+    max_count = 1
+
 
 
