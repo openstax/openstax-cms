@@ -27,7 +27,8 @@ from .custom_blocks import ImageBlock, \
     AboutOpenStaxBlock, \
     InfoBoxBlock, \
     TestimonialBlock, \
-    AllyLogoBlock
+    AllyLogoBlock, \
+    AssignableBookBlock
 
 from .custom_fields import \
     Group
@@ -3129,12 +3130,14 @@ class Assignable(Page):
     heading = models.CharField(max_length=255,blank=True, null=True)
     subheading = models.CharField(max_length=255,blank=True, null=True)
     heading_description = RichTextField(blank=True, null=True)
-    heading_button_text = models.CharField(max_length=255,blank=True, null=True)
-    heading_button_link = models.URLField(blank=True, null=True)
     available_courses_header = models.CharField(max_length=255,blank=True, null=True)
-    available_courses = models.TextField(blank=True, null=True)
+    available_courses = StreamField([
+        ('course', AssignableBookBlock()),
+    ], null=True, blank=True, use_json_field=True)
     courses_coming_soon_header = models.CharField(max_length=255,blank=True, null=True)
-    courses_coming_soon = models.TextField(blank=True, null=True)
+    courses_coming_soon = StreamField([
+        ('course', AssignableBookBlock()),
+    ], null=True, blank=True, use_json_field=True)
     assignable_cta_text = models.CharField(max_length=255,blank=True, null=True)
     assignable_cta_link = models.URLField(blank=True, null=True)
     assignable_cta_button_text = models.CharField(max_length=255,blank=True, null=True)
@@ -3170,8 +3173,6 @@ class Assignable(Page):
         FieldPanel('heading'),
         FieldPanel('subheading'),
         FieldPanel('heading_description'),
-        FieldPanel('heading_button_text'),
-        FieldPanel('heading_button_link'),
         FieldPanel('available_courses_header'),
         FieldPanel('available_courses'),
         FieldPanel('courses_coming_soon_header'),
@@ -3198,8 +3199,6 @@ class Assignable(Page):
         APIField('heading'),
         APIField('subheading'),
         APIField('heading_description'),
-        APIField('heading_button_text'),
-        APIField('heading_button_link'),
         APIField('available_courses_header'),
         APIField('available_courses'),
         APIField('courses_coming_soon_header'),
