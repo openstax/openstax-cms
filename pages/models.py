@@ -3131,11 +3131,11 @@ class Assignable(Page):
     subheading = models.CharField(max_length=255,blank=True, null=True)
     heading_description = RichTextField(blank=True, null=True)
     available_courses_header = models.CharField(max_length=255,blank=True, null=True)
-    available_courses = StreamField([
+    available_books = StreamField([
         ('course', AssignableBookBlock()),
     ], null=True, blank=True, use_json_field=True)
     courses_coming_soon_header = models.CharField(max_length=255,blank=True, null=True)
-    courses_coming_soon = StreamField([
+    coming_soon_books = StreamField([
         ('course', AssignableBookBlock()),
     ], null=True, blank=True, use_json_field=True)
     assignable_cta_text = models.CharField(max_length=255,blank=True, null=True)
@@ -3174,9 +3174,9 @@ class Assignable(Page):
         FieldPanel('subheading'),
         FieldPanel('heading_description'),
         FieldPanel('available_courses_header'),
-        FieldPanel('available_courses'),
+        FieldPanel('available_books'),
         FieldPanel('courses_coming_soon_header'),
-        FieldPanel('courses_coming_soon'),
+        FieldPanel('coming_soon_books'),
         FieldPanel('assignable_cta_text'),
         FieldPanel('assignable_cta_link'),
         FieldPanel('assignable_cta_button_text'),
@@ -3200,9 +3200,9 @@ class Assignable(Page):
         APIField('subheading'),
         APIField('heading_description'),
         APIField('available_courses_header'),
-        APIField('available_courses'),
+        APIField('available_books'),
         APIField('courses_coming_soon_header'),
-        APIField('courses_coming_soon'),
+        APIField('coming_soon_books'),
         APIField('assignable_cta_text'),
         APIField('assignable_cta_link'),
         APIField('assignable_cta_button_text'),
