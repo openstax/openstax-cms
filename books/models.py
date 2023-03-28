@@ -1030,7 +1030,6 @@ class BookIndex(Page):
                     'has_faculty_resources': has_faculty_resources,
                     'has_student_resources': has_student_resources,
                     'assignable_book': book.assignable_book,
-                    'assignable_book_link': book.assignable_book_link
                 })
             except Exception as e:
                 print("Error: {}".format(e))
