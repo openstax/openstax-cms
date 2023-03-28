@@ -635,7 +635,6 @@ class Book(Page):
     comp_copy_content = StreamField(SharedContentBlock(), null=True, blank=True, help_text='Content of the free copy.', use_json_field=True)
     tutor_marketing_book = models.BooleanField(default=False, help_text='Whether this is a Tutor marketing book.')
     assignable_book = models.BooleanField(default=False, help_text='Whether this is an Assignable book.')
-    assignable_book_link = models.URLField(blank=True, null=True, help_text="Link to assignable page for book")
     partner_list_label = models.CharField(max_length=255, null=True, blank=True, help_text="Controls the heading text on the book detail page for partners. This will update ALL books to use this value!")
     partner_page_link_text = models.CharField(max_length=255, null=True, blank=True, help_text="Link to partners page on top right of list.")
     featured_resources_header = models.CharField(max_length=255, null=True, blank=True, help_text="Featured resource header on instructor resources tab.")
@@ -726,7 +725,6 @@ class Book(Page):
         FieldPanel('comp_copy_content'),
         FieldPanel('tutor_marketing_book'),
         FieldPanel('assignable_book'),
-        FieldPanel('assignable_book_link'),
         FieldPanel('partner_list_label'),
         FieldPanel('partner_page_link_text'),
         FieldPanel('customization_form_heading'),
@@ -827,7 +825,6 @@ class Book(Page):
         APIField('errata_content'),
         APIField('tutor_marketing_book'),
         APIField('assignable_book'),
-        APIField('assignable_book_link'),
         APIField('partner_list_label'),
         APIField('partner_page_link_text'),
         APIField('customization_form_heading'),
@@ -1033,7 +1030,6 @@ class BookIndex(Page):
                     'has_faculty_resources': has_faculty_resources,
                     'has_student_resources': has_student_resources,
                     'assignable_book': book.assignable_book,
-                    'assignable_book_link': book.assignable_book_link
                 })
             except Exception as e:
                 print("Error: {}".format(e))
