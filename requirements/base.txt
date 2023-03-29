@@ -3,6 +3,7 @@ chardet==4.0.0
 django==4.1.7
 django-admin-rangefilter==0.8.4
 django-crontab==0.7.1
+django-extensions==3.2.1
 django-import-export==2.8.0
 django-libsass==0.9
 django-rest-auth==0.9.5
