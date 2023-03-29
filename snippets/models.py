@@ -1,10 +1,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
-from modelcluster.fields import ParentalKey
 from wagtail.search import index
 from wagtail.admin.edit_handlers import FieldPanel, InlinePanel
-from wagtail.snippets.edit_handlers import SnippetChooserPanel
-from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.fields import RichTextField
 from wagtail.models import TranslatableMixin, Orderable
 from wagtail.snippets.models import register_snippet
@@ -75,7 +72,7 @@ class K12Subject(TranslatableMixin, models.Model):
     panels = [
         FieldPanel('name'),
         FieldPanel('intro_text'),
-        ImageChooserPanel('image'),
+        FieldPanel('image'),
         FieldPanel('subject_category'),
         FieldPanel('subject_color'),
         FieldPanel('subject_link'),
@@ -113,9 +110,10 @@ class FacultyResource(TranslatableMixin, index.Indexed, models.Model):
         FieldPanel('description'),
         FieldPanel('unlocked_resource'),
         FieldPanel('creator_fest_resource'),
-        ImageChooserPanel('icon'),
+        FieldPanel('icon'),
         FieldPanel('resource_category')
     ]
+
 
     search_fields = [
         index.SearchField('heading', partial_match=True),
@@ -152,7 +150,7 @@ class StudentResource(TranslatableMixin, index.Indexed, models.Model):
         FieldPanel('heading'),
         FieldPanel('description'),
         FieldPanel('unlocked_resource'),
-        ImageChooserPanel('icon'),
+        FieldPanel('icon'),
         FieldPanel('resource_category')
     ]
 
