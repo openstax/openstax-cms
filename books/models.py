@@ -503,7 +503,10 @@ class Book(Page):
         help_text='The book cover to be shown on the website.'
     )
     def get_cover_url(self):
-        return build_document_url(self.cover.url)
+        if self.cover:
+            return build_document_url(self.cover.url)
+        else:
+            return ''
     cover_url = property(get_cover_url)
 
     title_image = models.ForeignKey(
