@@ -10,18 +10,18 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RemoveField(
-            model_name='studentresources',
-            name='k12',
-        ),
-        migrations.AddField(
-            model_name='facultyresources',
-            name='display_on_k12',
-            field=models.BooleanField(default=False, help_text='Display resource on K12 subject pages'),
-        ),
-        migrations.AddField(
-            model_name='studentresources',
-            name='display_on_k12',
-            field=models.BooleanField(default=False, help_text='Display resource on K12 subject pages'),
-        ),
+        # migrations.RemoveField(
+        #     model_name='studentresources',
+        #     name='k12',
+        # ),
+        # migrations.AddField(
+        #     model_name='facultyresources',
+        #     name='display_on_k12',
+        #     field=models.BooleanField(default=False, help_text='Display resource on K12 subject pages'),
+        # ),
+        # migrations.AddField(
+        #     model_name='studentresources',
+        #     name='display_on_k12',
+        #     field=models.BooleanField(default=False, help_text='Display resource on K12 subject pages'),
+        # ),
     ]
