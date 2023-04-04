@@ -3,8 +3,8 @@
 from django.db import migrations, models
 import django.db.models.deletion
 import pages.models
-import wagtail.core.blocks
-import wagtail.core.fields
+import wagtail.blocks
+import wagtail.fields
 import wagtail.documents.blocks
 import wagtail.images.blocks
 
@@ -27,13 +27,13 @@ class Migration(migrations.Migration):
                 ('description', models.TextField()),
                 ('header_cta_button_text', models.CharField(max_length=255)),
                 ('header_cta_button_link', models.URLField()),
-                ('quote', wagtail.core.fields.RichTextField()),
+                ('quote', wagtail.fields.RichTextField()),
                 ('features_header', models.CharField(max_length=255)),
-                ('features_cards', wagtail.core.fields.StreamField([('card', wagtail.core.blocks.StreamBlock([('icon', wagtail.core.blocks.StructBlock([('image', wagtail.images.blocks.ImageChooserBlock(required=False)), ('alt_text', wagtail.core.blocks.CharBlock(required=False)), ('link', wagtail.core.blocks.URLBlock(required=False)), ('alignment', pages.custom_blocks.ImageFormatChoiceBlock()), ('identifier', wagtail.core.blocks.CharBlock(help_text='Used by the frontend for Google Analytics.', required=False))])), ('title', wagtail.core.blocks.TextBlock()), ('description', wagtail.core.blocks.TextBlock())], icon='placeholder'))])),
+                ('features_cards', wagtail.fields.StreamField([('card', wagtail.blocks.StreamBlock([('icon', wagtail.blocks.StructBlock([('image', wagtail.images.blocks.ImageChooserBlock(required=False)), ('alt_text', wagtail.blocks.CharBlock(required=False)), ('link', wagtail.blocks.URLBlock(required=False)), ('alignment', pages.custom_blocks.ImageFormatChoiceBlock()), ('identifier', wagtail.blocks.CharBlock(help_text='Used by the frontend for Google Analytics.', required=False))])), ('title', wagtail.blocks.TextBlock()), ('description', wagtail.blocks.TextBlock())], icon='placeholder'))])),
                 ('available_books_header', models.CharField(max_length=255)),
                 ('cost_header', models.CharField(max_length=255)),
                 ('cost_description', models.TextField()),
-                ('cost_cards', wagtail.core.fields.StreamField([('card', wagtail.core.blocks.StreamBlock([('title', wagtail.core.blocks.CharBlock()), ('description', wagtail.core.blocks.TextBlock())], icon='placeholder'))])),
+                ('cost_cards', wagtail.fields.StreamField([('card', wagtail.blocks.StreamBlock([('title', wagtail.blocks.CharBlock()), ('description', wagtail.blocks.TextBlock())], icon='placeholder'))])),
                 ('cost_institution_message', models.CharField(max_length=255)),
                 ('feedback_heading', models.CharField(max_length=255)),
                 ('feedback_quote', models.TextField()),
@@ -42,7 +42,7 @@ class Migration(migrations.Migration):
                 ('feedback_organization', models.CharField(max_length=255)),
                 ('webinars_header', models.CharField(max_length=255)),
                 ('faq_header', models.CharField(max_length=255)),
-                ('faqs', wagtail.core.fields.StreamField([('faq', wagtail.core.blocks.StructBlock([('question', wagtail.core.blocks.RichTextBlock(required=True)), ('slug', wagtail.core.blocks.CharBlock(required=True)), ('answer', wagtail.core.blocks.RichTextBlock(required=True)), ('document', wagtail.documents.blocks.DocumentChooserBlock(required=False))]))])),
+                ('faqs', wagtail.fields.StreamField([('faq', wagtail.blocks.StructBlock([('question', wagtail.blocks.RichTextBlock(required=True)), ('slug', wagtail.blocks.CharBlock(required=True)), ('answer', wagtail.blocks.RichTextBlock(required=True)), ('document', wagtail.documents.blocks.DocumentChooserBlock(required=False))]))])),
                 ('demo_cta_text', models.CharField(max_length=255)),
                 ('demo_cta_link', models.URLField()),
                 ('tutor_login_link', models.URLField()),

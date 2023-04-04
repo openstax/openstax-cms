@@ -8,8 +8,8 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models.base import ModelState
 from django.db.models.fields.files import FieldFile
 
-from wagtail.core.models import Page
-from wagtail.core.blocks import StreamValue
+from wagtail.models import Page
+from wagtail.blocks import StreamValue
 from wagtail.images.models import Image
 
 from wagtailimportexport import functions

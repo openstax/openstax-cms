@@ -7,7 +7,7 @@ from django import forms
 
 from wagtail.models import Page, Orderable
 from wagtail.fields import RichTextField, StreamField
-from wagtail.admin.edit_handlers import FieldPanel, StreamFieldPanel, InlinePanel
+from wagtail.admin.panels import FieldPanel, StreamFieldPanel, InlinePanel
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.documents.edit_handlers import DocumentChooserPanel
 from wagtail.embeds.blocks import EmbedBlock

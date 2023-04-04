@@ -3,7 +3,7 @@
 from django.db import migrations, models
 import django.db.models.deletion
 import uuid
-import wagtail.core.fields
+import wagtail.fields
 
 
 class Migration(migrations.Migration):
@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('translation_key', models.UUIDField(default=uuid.uuid4, editable=False)),
                 ('name', models.CharField(max_length=255)),
-                ('intro_text', wagtail.core.fields.RichTextField(blank=True, null=True)),
+                ('intro_text', wagtail.fields.RichTextField(blank=True, null=True)),
                 ('subject_category', models.CharField(choices=[('math', 'Math'), ('social-studies', 'Social Studies'), ('science', 'Science'), ('english', 'English Language Areas & Reading'), ('career-technical', 'Career and Technical Education'), ('college_readiness', 'College Readiness'), ('fine_arts', 'Fine Arts'), ('health', 'Health Education'), ('languages', 'Languages other than English'), ('physical_education', 'Physical Education'), ('technology_applications', 'Technology Applications'), ('other', 'Other'), ('none', 'None')], default='none', help_text='The category used in the K12 subjects listings', max_length=255)),
                 ('subject_color', models.CharField(choices=[('blue', 'Blue'), ('deep-green', 'Deep Green'), ('gold', 'Gold'), ('gray', 'Gray'), ('green', 'Green'), ('light-blue', 'Light Blue'), ('light-gray', 'Light Gray'), ('medium-blue', 'Medium Blue'), ('orange', 'Orange'), ('red', 'Red'), ('yellow', 'Yellow')], default='blue', help_text='The color of the vertical stripe on Subject page.', max_length=255)),
                 ('subject_link', models.CharField(blank=True, max_length=255, null=True)),

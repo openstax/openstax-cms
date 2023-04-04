@@ -2,8 +2,8 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
-import wagtail.core.blocks
-import wagtail.core.fields
+import wagtail.blocks
+import wagtail.fields
 import wagtail.images.blocks
 
 
@@ -18,12 +18,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='tutormarketing',
             name='cost_cards',
-            field=wagtail.core.fields.StreamField([('cards', wagtail.core.blocks.StructBlock([('icon', wagtail.images.blocks.ImageChooserBlock(required=False)), ('title', wagtail.core.blocks.CharBlock(required=True)), ('description', wagtail.core.blocks.RichTextBlock(required=True))]))]),
+            field=wagtail.fields.StreamField([('cards', wagtail.blocks.StructBlock([('icon', wagtail.images.blocks.ImageChooserBlock(required=False)), ('title', wagtail.blocks.CharBlock(required=True)), ('description', wagtail.blocks.RichTextBlock(required=True))]))]),
         ),
         migrations.AlterField(
             model_name='tutormarketing',
             name='features_cards',
-            field=wagtail.core.fields.StreamField([('cards', wagtail.core.blocks.StructBlock([('icon', wagtail.images.blocks.ImageChooserBlock(required=False)), ('title', wagtail.core.blocks.CharBlock(required=True)), ('description', wagtail.core.blocks.RichTextBlock(required=True))]))]),
+            field=wagtail.fields.StreamField([('cards', wagtail.blocks.StructBlock([('icon', wagtail.images.blocks.ImageChooserBlock(required=False)), ('title', wagtail.blocks.CharBlock(required=True)), ('description', wagtail.blocks.RichTextBlock(required=True))]))]),
         ),
         migrations.AlterField(
             model_name='tutormarketing',

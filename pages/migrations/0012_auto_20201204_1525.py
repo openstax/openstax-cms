@@ -2,8 +2,8 @@
 
 from django.db import migrations
 import pages.models
-import wagtail.core.blocks
-import wagtail.core.fields
+import wagtail.blocks
+import wagtail.fields
 
 
 class Migration(migrations.Migration):
@@ -16,6 +16,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='tutormarketing',
             name='features_cards',
-            field=wagtail.core.fields.StreamField([('cards', wagtail.core.blocks.StructBlock([('icon', pages.models.APIImageChooserBlock(required=False)), ('title', wagtail.core.blocks.CharBlock(required=True)), ('description', wagtail.core.blocks.RichTextBlock(required=True))]))]),
+            field=wagtail.fields.StreamField([('cards', wagtail.blocks.StructBlock([('icon', pages.models.APIImageChooserBlock(required=False)), ('title', wagtail.blocks.CharBlock(required=True)), ('description', wagtail.blocks.RichTextBlock(required=True))]))]),
         ),
     ]

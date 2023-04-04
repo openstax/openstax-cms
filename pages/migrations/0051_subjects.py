@@ -3,8 +3,8 @@
 from django.db import migrations, models
 import django.db.models.deletion
 import pages.custom_blocks
-import wagtail.core.blocks
-import wagtail.core.fields
+import wagtail.blocks
+import wagtail.fields
 
 
 class Migration(migrations.Migration):
@@ -22,11 +22,11 @@ class Migration(migrations.Migration):
                 ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.page')),
                 ('heading', models.CharField(max_length=255)),
                 ('description', models.TextField(blank=True, null=True)),
-                ('tutor_ad', wagtail.core.fields.StreamField([('content', wagtail.core.blocks.StructBlock([('heading', wagtail.core.blocks.CharBlock()), ('image', pages.custom_blocks.APIImageChooserBlock()), ('ad_html', wagtail.core.blocks.TextBlock()), ('link_text', wagtail.core.blocks.CharBlock()), ('link_href', wagtail.core.blocks.URLBlock())]))])),
-                ('about_os', wagtail.core.fields.StreamField([('content', wagtail.core.blocks.StructBlock([('heading', wagtail.core.blocks.CharBlock()), ('image', pages.custom_blocks.APIImageChooserBlock()), ('os_text', wagtail.core.blocks.TextBlock()), ('link_text', wagtail.core.blocks.CharBlock()), ('link_href', wagtail.core.blocks.URLBlock())]))])),
-                ('info_boxes', wagtail.core.fields.StreamField([('info_box', wagtail.core.blocks.ListBlock(wagtail.core.blocks.StructBlock([('image', pages.custom_blocks.APIImageChooserBlock()), ('heading', wagtail.core.blocks.CharBlock()), ('text', wagtail.core.blocks.CharBlock())])))])),
+                ('tutor_ad', wagtail.fields.StreamField([('content', wagtail.blocks.StructBlock([('heading', wagtail.blocks.CharBlock()), ('image', pages.custom_blocks.APIImageChooserBlock()), ('ad_html', wagtail.blocks.TextBlock()), ('link_text', wagtail.blocks.CharBlock()), ('link_href', wagtail.blocks.URLBlock())]))])),
+                ('about_os', wagtail.fields.StreamField([('content', wagtail.blocks.StructBlock([('heading', wagtail.blocks.CharBlock()), ('image', pages.custom_blocks.APIImageChooserBlock()), ('os_text', wagtail.blocks.TextBlock()), ('link_text', wagtail.blocks.CharBlock()), ('link_href', wagtail.blocks.URLBlock())]))])),
+                ('info_boxes', wagtail.fields.StreamField([('info_box', wagtail.blocks.ListBlock(wagtail.blocks.StructBlock([('image', pages.custom_blocks.APIImageChooserBlock()), ('heading', wagtail.blocks.CharBlock()), ('text', wagtail.blocks.CharBlock())])))])),
                 ('philanthropic_support', models.TextField(blank=True, null=True)),
-                ('translations', wagtail.core.fields.StreamField([('translation', wagtail.core.blocks.ListBlock(wagtail.core.blocks.StructBlock([('locale', wagtail.core.blocks.CharBlock()), ('slug', wagtail.core.blocks.CharBlock())])))], blank=True, null=True)),
+                ('translations', wagtail.fields.StreamField([('translation', wagtail.blocks.ListBlock(wagtail.blocks.StructBlock([('locale', wagtail.blocks.CharBlock()), ('slug', wagtail.blocks.CharBlock())])))], blank=True, null=True)),
                 ('heading_image', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='wagtailimages.image')),
                 ('promote_image', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='wagtailimages.image')),
             ],

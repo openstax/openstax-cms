@@ -1,7 +1,7 @@
 from django.urls import include, path
 from django.urls import reverse
 
-from wagtail.core import hooks
+from wagtail import hooks
 from wagtail.admin.menu import MenuItem
 
 from wagtailimportexport import admin_urls

@@ -1,9 +1,9 @@
 from django.db import models
 from modelcluster.fields import ParentalKey
-from wagtail.admin.edit_handlers import (FieldPanel, InlinePanel,
+from wagtail.admin.panels import (FieldPanel, InlinePanel,
                                                 MultiFieldPanel)
-from wagtail.core.fields import RichTextField
-from wagtail.core.models import Page
+from wagtail.fields import RichTextField
+from wagtail.models import Page
 from wagtail.images.edit_handlers import ImageChooserPanel
 
 from openstax.functions import build_image_url

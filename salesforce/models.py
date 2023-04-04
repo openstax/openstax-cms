@@ -3,7 +3,7 @@ from django.db.models import Avg
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.core.exceptions import ValidationError
 
-from wagtail.core import hooks
+from wagtail import hooks
 from wagtail.admin.menu import MenuItem
 
 from books.models import Book

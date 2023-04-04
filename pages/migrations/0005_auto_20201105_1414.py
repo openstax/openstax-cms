@@ -2,7 +2,7 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
-import wagtail.core.fields
+import wagtail.fields
 
 
 class Migration(migrations.Migration):
@@ -35,6 +35,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='llphpage',
             name='book_description',
-            field=wagtail.core.fields.RichTextField(),
+            field=wagtail.fields.RichTextField(),
         ),
     ]

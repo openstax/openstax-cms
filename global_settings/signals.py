@@ -1,7 +1,7 @@
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from wagtail.core.signals import page_published
+from wagtail.signals import page_published
 
 from .functions import invalidate_cloudfront_caches
 from .models import StickyNote, Footer, GiveToday

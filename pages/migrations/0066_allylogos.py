@@ -3,8 +3,8 @@
 from django.db import migrations, models
 import django.db.models.deletion
 import pages.custom_blocks
-import wagtail.core.blocks
-import wagtail.core.fields
+import wagtail.blocks
+import wagtail.fields
 
 
 class Migration(migrations.Migration):
@@ -21,16 +21,16 @@ class Migration(migrations.Migration):
             fields=[
                 ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.page')),
                 ('heading', models.CharField(max_length=255)),
-                ('description', wagtail.core.fields.RichTextField()),
+                ('description', wagtail.fields.RichTextField()),
                 ('ally_logos_heading', models.CharField(max_length=255)),
-                ('ally_logos_description', wagtail.core.fields.RichTextField()),
-                ('ally_logos', wagtail.core.fields.StreamField([('ally_logo', wagtail.core.blocks.ListBlock(wagtail.core.blocks.StructBlock([('image', pages.custom_blocks.APIImageChooserBlock())])))])),
+                ('ally_logos_description', wagtail.fields.RichTextField()),
+                ('ally_logos', wagtail.fields.StreamField([('ally_logo', wagtail.blocks.ListBlock(wagtail.blocks.StructBlock([('image', pages.custom_blocks.APIImageChooserBlock())])))])),
                 ('openstax_logos_heading', models.CharField(max_length=255)),
-                ('openstax_logos_description', wagtail.core.fields.RichTextField()),
-                ('openstax_logos', wagtail.core.fields.StreamField([('openstax_logo', wagtail.core.blocks.ListBlock(wagtail.core.blocks.StructBlock([('image', pages.custom_blocks.APIImageChooserBlock())])))])),
+                ('openstax_logos_description', wagtail.fields.RichTextField()),
+                ('openstax_logos', wagtail.fields.StreamField([('openstax_logo', wagtail.blocks.ListBlock(wagtail.blocks.StructBlock([('image', pages.custom_blocks.APIImageChooserBlock())])))])),
                 ('book_ally_logos_heading', models.CharField(max_length=255)),
-                ('book_ally_logos_description', wagtail.core.fields.RichTextField()),
-                ('book_ally_logos', wagtail.core.fields.StreamField([('book_ally_logo', wagtail.core.blocks.ListBlock(wagtail.core.blocks.StructBlock([('image', pages.custom_blocks.APIImageChooserBlock())])))])),
+                ('book_ally_logos_description', wagtail.fields.RichTextField()),
+                ('book_ally_logos', wagtail.fields.StreamField([('book_ally_logo', wagtail.blocks.ListBlock(wagtail.blocks.StructBlock([('image', pages.custom_blocks.APIImageChooserBlock())])))])),
                 ('promote_image', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='wagtailimages.image')),
             ],
             options={

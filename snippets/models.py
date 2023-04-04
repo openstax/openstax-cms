@@ -1,7 +1,7 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from wagtail.search import index
-from wagtail.admin.edit_handlers import FieldPanel, InlinePanel
+from wagtail.admin.panels import FieldPanel, InlinePanel
 from wagtail.fields import RichTextField
 from wagtail.models import TranslatableMixin, Orderable
 from wagtail.snippets.models import register_snippet
