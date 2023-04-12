@@ -194,6 +194,7 @@ class FacultyResources(models.Model):
     updated = models.DateTimeField(blank=True, null=True, help_text='Late date resource was updated')
     featured = models.BooleanField(default=False, help_text="Add to featured bar on resource page")
     k12 = models.BooleanField(default=False, help_text="Add K12 banner to resource")
+    display_on_k12 = models.BooleanField(default=False, help_text="Display resource on K12 subject pages")
     print_link = models.URLField(blank=True, null=True, help_text="Link for Buy Print link on resource")
 
     api_fields = [
@@ -212,6 +213,7 @@ class FacultyResources(models.Model):
         APIField('updated'),
         APIField('featured'),
         APIField('k12'),
+        APIField('display_on_k12'),
         APIField('print_link')
     ]
 
@@ -226,6 +228,7 @@ class FacultyResources(models.Model):
         FieldPanel('updated'),
         FieldPanel('featured'),
         FieldPanel('k12'),
+        FieldPanel('display_on_k12'),
         FieldPanel('print_link')
     ]
 
@@ -296,7 +299,7 @@ class StudentResources(models.Model):
     coming_soon_text = models.CharField(max_length=255, null=True, blank=True, help_text="If there is text in this field a coming soon banner will be added with this description.")
     updated = models.DateTimeField(blank=True, null=True, help_text='Late date resource was updated')
     print_link = models.URLField(blank=True, null=True, help_text="Link for Buy Print link on resource")
-    k12 = models.BooleanField(default=False, help_text="Add to K12 student resources.")
+    display_on_k12 = models.BooleanField(default=False, help_text="Display resource on K12 subject pages")
 
     api_fields = [
         APIField('resource_heading'),
@@ -311,7 +314,7 @@ class StudentResources(models.Model):
         APIField('coming_soon_text'),
         APIField('updated'),
         APIField('print_link'),
-        APIField('k12')
+        APIField('display_on_k12')
     ]
 
     panels = [
@@ -323,7 +326,7 @@ class StudentResources(models.Model):
         FieldPanel('coming_soon_text'),
         FieldPanel('updated'),
         FieldPanel('print_link'),
-        FieldPanel('k12')
+        FieldPanel('display_on_k12')
     ]
 
     def clean(self):
@@ -530,15 +533,10 @@ class Book(Page):
         ('author', AuthorBlock()),
     ], null=True, use_json_field=True)
 
-    print_isbn_10 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 10 for print version (hardcover).')
     print_isbn_13 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 13 for print version (hardcover).')
-    print_softcover_isbn_10 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 10 for print version (softcover).')
     print_softcover_isbn_13 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 13 for print version (softcover).')
-    digital_isbn_10 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 10 for digital version.')
     digital_isbn_13 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 13 for digital version.')
-    ibook_isbn_10 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 10 for iBook version.')
     ibook_isbn_13 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 13 for iBook version.')
-    ibook_volume_2_isbn_10 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 10 for iBook v2 version.')
     ibook_volume_2_isbn_13 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 13 for iBook v2 version.')
     license_text = models.TextField(
         blank=True, null=True, help_text="Overrides default license text.")
@@ -635,6 +633,7 @@ class Book(Page):
     comp_copy_available = models.BooleanField(default=True, help_text='Whether free compy available for teachers.')
     comp_copy_content = StreamField(SharedContentBlock(), null=True, blank=True, help_text='Content of the free copy.', use_json_field=True)
     tutor_marketing_book = models.BooleanField(default=False, help_text='Whether this is a Tutor marketing book.')
+    assignable_book = models.BooleanField(default=False, help_text='Whether this is an Assignable book.')
     partner_list_label = models.CharField(max_length=255, null=True, blank=True, help_text="Controls the heading text on the book detail page for partners. This will update ALL books to use this value!")
     partner_page_link_text = models.CharField(max_length=255, null=True, blank=True, help_text="Link to partners page on top right of list.")
     featured_resources_header = models.CharField(max_length=255, null=True, blank=True, help_text="Featured resource header on instructor resources tab.")
@@ -688,12 +687,9 @@ class Book(Page):
         FieldPanel('book_cover_text_color'),
         FieldPanel('reverse_gradient'),
         FieldPanel('print_isbn_13'),
-        FieldPanel('print_softcover_isbn_10'),
         FieldPanel('print_softcover_isbn_13'),
         FieldPanel('digital_isbn_13'),
-        FieldPanel('ibook_isbn_10'),
         FieldPanel('ibook_isbn_13'),
-        FieldPanel('ibook_volume_2_isbn_10'),
         FieldPanel('ibook_volume_2_isbn_13'),
         FieldPanel('license_text'),
         FieldPanel('license_name'),
@@ -727,6 +723,7 @@ class Book(Page):
         FieldPanel('comp_copy_available'),
         FieldPanel('comp_copy_content'),
         FieldPanel('tutor_marketing_book'),
+        FieldPanel('assignable_book'),
         FieldPanel('partner_list_label'),
         FieldPanel('partner_page_link_text'),
         FieldPanel('customization_form_heading'),
@@ -786,15 +783,10 @@ class Book(Page):
         APIField('book_faculty_resources'),
         APIField('publish_date'),
         APIField('authors'),
-        APIField('print_isbn_10'),
         APIField('print_isbn_13'),
-        APIField('print_softcover_isbn_10'),
         APIField('print_softcover_isbn_13'),
-        APIField('digital_isbn_10'),
         APIField('digital_isbn_13'),
-        APIField('ibook_isbn_10'),
         APIField('ibook_isbn_13'),
-        APIField('ibook_volume_2_isbn_10'),
         APIField('ibook_volume_2_isbn_13'),
         APIField('license_text'),
         APIField('license_name'),
@@ -831,6 +823,7 @@ class Book(Page):
         APIField('comp_copy_content'),
         APIField('errata_content'),
         APIField('tutor_marketing_book'),
+        APIField('assignable_book'),
         APIField('partner_list_label'),
         APIField('partner_page_link_text'),
         APIField('customization_form_heading'),
@@ -940,10 +933,6 @@ class Book(Page):
                 self.salesforce_abbreviation = salesforce_names['Name']
                 self.salesforce_name = salesforce_names['Official_Name']
 
-        # if book is new, clear out isbn 10 fields
-        if self._state.adding:
-            self.print_isbn_10 = None
-            self.digital_isbn_10 = None
         return super(Book, self).save(*args, **kwargs)
 
 
@@ -1038,7 +1027,8 @@ class BookIndex(Page):
                     'urls': book.book_urls(),
                     'last_updated_pdf': book.last_updated_pdf,
                     'has_faculty_resources': has_faculty_resources,
-                    'has_student_resources': has_student_resources
+                    'has_student_resources': has_student_resources,
+                    'assignable_book': book.assignable_book,
                 })
             except Exception as e:
                 print("Error: {}".format(e))

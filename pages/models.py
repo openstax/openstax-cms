@@ -27,7 +27,8 @@ from .custom_blocks import ImageBlock, \
     AboutOpenStaxBlock, \
     InfoBoxBlock, \
     TestimonialBlock, \
-    AllyLogoBlock
+    AllyLogoBlock, \
+    AssignableBookBlock
 
 from .custom_fields import \
     Group
@@ -444,6 +445,7 @@ class HomePage(Page):
         'pages.K12MainPage',
         'pages.K12Subject',
         'pages.AllyLogos',
+        'pages.Assignable',
         'books.BookIndex',
         'news.NewsIndex',
         'news.PressIndex',
@@ -728,7 +730,7 @@ class GeneralPage(Page):
         if self.slug == 'kinetic':
             return [
                 {
-                    'location': '{}/general/{}'.format(Site.find_for_request(request).root_url, self.slug),
+                    'location': '{}/{}'.format(Site.find_for_request(request).root_url, self.slug),
                     'lastmod': (self.last_published_at or self.latest_revision_created_at),
                 }
             ]
@@ -2936,7 +2938,7 @@ class K12Subject(Page):
             book_id = book.get('id')
             book_title = book.get('title')
             book_ids[book_id]=book_title
-        for resource in BookStudentResources.objects.filter(k12=True, book_student_resource_id__in = book_ids).all():
+        for resource in BookStudentResources.objects.filter(display_on_k12=True, book_student_resource_id__in = book_ids).all():
             link_document_url= None
             if resource.link_document_id is not None:
                 link_document_url = resource.link_document_url
@@ -2954,7 +2956,7 @@ class K12Subject(Page):
                 'coming_soon_text': resource.coming_soon_text,
                 'updated': resource.updated,
                 'print_link': resource.print_link,
-                'k12': resource.k12,
+                'display_on_k12': resource.display_on_k12,
                 })
         return student_resource_data
 
@@ -2965,7 +2967,7 @@ class K12Subject(Page):
             book_id = book.get('id')
             book_title = book.get('title')
             book_ids[book_id]=book_title
-        for resource in BookFacultyResources.objects.filter(k12=True, book_faculty_resource_id__in = book_ids).all():
+        for resource in BookFacultyResources.objects.filter(display_on_k12=True, book_faculty_resource_id__in = book_ids).all():
             link_document_url= None
             if resource.link_document_id is not None:
                 link_document_url = resource.link_document_url
@@ -2983,6 +2985,7 @@ class K12Subject(Page):
                 'updated': resource.updated,
                 'print_link': resource.print_link,
                 'k12': resource.k12,
+                'display_on_k12': resource.display_on_k12,
                 })
         return faculty_resource_data
 
@@ -3114,5 +3117,121 @@ class AllyLogos(Page):
     template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
+
+
+class Assignable(Page):
+    heading_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    heading = models.CharField(max_length=255,blank=True, null=True)
+    subheading = models.CharField(max_length=255,blank=True, null=True)
+    heading_description = RichTextField(blank=True, null=True)
+    available_courses_header = models.CharField(max_length=255,blank=True, null=True)
+    available_books = StreamField([
+        ('course', AssignableBookBlock()),
+    ], null=True, blank=True, use_json_field=True)
+    courses_coming_soon_header = models.CharField(max_length=255,blank=True, null=True)
+    coming_soon_books = StreamField([
+        ('course', AssignableBookBlock()),
+    ], null=True, blank=True, use_json_field=True)
+    assignable_cta_text = models.CharField(max_length=255,blank=True, null=True)
+    assignable_cta_link = models.URLField(blank=True, null=True)
+    assignable_cta_button_text = models.CharField(max_length=255,blank=True, null=True)
+    section_2_heading = models.CharField(max_length=255,blank=True, null=True)
+    section_2_description = models.TextField(blank=True, null=True)
+    section_2_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+    add_assignable_header = models.CharField(max_length=255,blank=True, null=True)
+    add_assignable_description = models.TextField(blank=True, null=True)
+    add_assignable_html = RichTextField(blank=True, null=True)
+    quote = models.TextField(blank=True, null=True)
+    quote_author = models.CharField(max_length=255,blank=True, null=True)
+    quote_title = models.CharField(max_length=255, blank=True, null=True)
+    quote_school = models.CharField(max_length=255, blank=True, null=True)
+    tos_link = models.URLField(blank=True, null=True)
+
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    content_panels = [
+        FieldPanel('title'),
+        FieldPanel('heading_image'),
+        FieldPanel('heading'),
+        FieldPanel('subheading'),
+        FieldPanel('heading_description'),
+        FieldPanel('available_courses_header'),
+        FieldPanel('available_books'),
+        FieldPanel('courses_coming_soon_header'),
+        FieldPanel('coming_soon_books'),
+        FieldPanel('assignable_cta_text'),
+        FieldPanel('assignable_cta_link'),
+        FieldPanel('assignable_cta_button_text'),
+        FieldPanel('section_2_heading'),
+        FieldPanel('section_2_description'),
+        FieldPanel('section_2_image'),
+        FieldPanel('add_assignable_header'),
+        FieldPanel('add_assignable_description'),
+        FieldPanel('add_assignable_html'),
+        FieldPanel('quote'),
+        FieldPanel('quote_author'),
+        FieldPanel('quote_title'),
+        FieldPanel('quote_school'),
+        FieldPanel('tos_link'),
+    ]
+
+    api_fields = [
+        APIField('title'),
+        APIField('heading_image'),
+        APIField('heading'),
+        APIField('subheading'),
+        APIField('heading_description'),
+        APIField('available_courses_header'),
+        APIField('available_books'),
+        APIField('courses_coming_soon_header'),
+        APIField('coming_soon_books'),
+        APIField('assignable_cta_text'),
+        APIField('assignable_cta_link'),
+        APIField('assignable_cta_button_text'),
+        APIField('section_2_heading'),
+        APIField('section_2_description'),
+        APIField('section_2_image'),
+        APIField('add_assignable_header'),
+        APIField('add_assignable_description'),
+        APIField('add_assignable_html'),
+        APIField('quote'),
+        APIField('quote_author'),
+        APIField('quote_title'),
+        APIField('quote_school'),
+        APIField('tos_link'),
+        APIField('seo_title'),
+        APIField('search_description'),
+        APIField('promote_image')
+    ]
+
+    promote_panels = [
+        FieldPanel('slug'),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        FieldPanel('promote_image')
+    ]
+
+    parent_page_type = ['pages.HomePage']
+    template = 'page.html'
+    max_count = 1
+
 
 

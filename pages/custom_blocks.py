@@ -6,7 +6,7 @@ from wagtail.images.blocks import ImageChooserBlock
 from wagtail.documents.blocks import DocumentChooserBlock
 
 from api.serializers import ImageSerializer
-from openstax.functions import build_image_url
+from openstax.functions import build_image_url, build_document_url
 
 
 class ImageFormatChoiceBlock(FieldBlock):
@@ -149,3 +149,17 @@ class AllyLogoBlock(blocks.StructBlock):
     class Meta:
         icon = 'placeholder'
 
+
+class AssignableBookBlock(blocks.StructBlock):
+    cover = DocumentChooserBlock(required=False)
+    title = blocks.CharBlock(required=False)
+
+    class Meta:
+        icon = 'image'
+
+    def get_api_representation(self, value, context=None):
+        if value:
+            return {
+                'cover': build_document_url(value['cover'].url),
+                'title': value['title'],
+            }
