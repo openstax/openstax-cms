@@ -182,7 +182,7 @@ vcrpy==4.1.1
   yarl==1.8.2
     idna==3.4
     multidict==6.0.4
-wagtail==3.0.3
+wagtail==4.1.4
   anyascii==0.3.1
   beautifulsoup4==4.9.3
     soupsieve==2.3.2.post1
