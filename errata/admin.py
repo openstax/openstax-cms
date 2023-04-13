@@ -24,8 +24,8 @@ from .forms import ErrataForm
 class ErrataResource(resources.ModelResource):
     class Meta:
         model = Errata
-        fields = ('id', 'created', 'modified', 'book_title', 'number_of_errors', 'is_assessment_errata', 'assessment_id', 'status', 'resolution', 'archived', 'junk', 'location', 'additional_location_information', 'detail', 'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'resource', 'file_1', 'file_2',)
-        export_order = ('id', 'created', 'modified', 'book_title', 'number_of_errors', 'is_assessment_errata', 'assessment_id', 'status', 'resolution', 'archived', 'junk', 'location', 'additional_location_information', 'detail', 'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'resource',)
+        fields = ('id', 'created', 'modified', 'book__title', 'number_of_errors', 'is_assessment_errata', 'assessment_id', 'status', 'resolution', 'archived', 'junk', 'location', 'additional_location_information', 'detail', 'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'resource', 'file_1', 'file_2',)
+        export_order = ('id', 'created', 'modified', 'book__title', 'number_of_errors', 'is_assessment_errata', 'assessment_id', 'status', 'resolution', 'archived', 'junk', 'location', 'additional_location_information', 'detail', 'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'resource',)
 
 class InlineInternalImage(admin.TabularInline):
     model = InternalDocumentation
@@ -135,7 +135,11 @@ class ErrataAdmin(ImportExportActionModelAdmin, VersionAdmin):
     
     # To enable sorting by book title on the admin page, computing field using a method
     def book_title(self, obj):
-        return mark_safe(obj.book.title)
+        if obj.book:
+            return mark_safe(obj.book.title)
+        else:
+            return ''
+        
     book_title.admin_order_field = 'book__title'
 
     """Model permissions"""
