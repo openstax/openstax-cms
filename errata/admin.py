@@ -135,11 +135,8 @@ class ErrataAdmin(ImportExportActionModelAdmin, VersionAdmin):
     
     # To enable sorting by book title on the admin page, computing field using a method
     def book_title(self, obj):
-        if obj.book:
-            return mark_safe(obj.book.title)
-        else:
-            return ''
-        
+        return mark_safe(obj.book.title)
+
     book_title.admin_order_field = 'book__title'
 
     """Model permissions"""
