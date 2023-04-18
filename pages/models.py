@@ -1120,7 +1120,6 @@ class FAQ(Page):
     template = 'page.html'
 
     parent_page_types = ['pages.HomePage']
-    max_count = 1
 
 
 class GiveForm(Page):
