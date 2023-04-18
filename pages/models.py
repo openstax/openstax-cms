@@ -3127,7 +3127,17 @@ class Assignable(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
-    heading = models.CharField(max_length=255,blank=True, null=True)
+    heading_title_image = models.ForeignKey(
+        'wagtaildocs.Document',
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        help_text='Title to be displayed on the page. Should be an svg file.'
+    )
+
+    def get_heading_title_image_url(self):
+        return build_document_url(self.heading_title_image.url)
+    heading_title_image_url = property(get_heading_title_image_url)
     subheading = models.CharField(max_length=255,blank=True, null=True)
     heading_description = RichTextField(blank=True, null=True)
     available_courses_header = models.CharField(max_length=255,blank=True, null=True)
@@ -3170,7 +3180,7 @@ class Assignable(Page):
     content_panels = [
         FieldPanel('title'),
         FieldPanel('heading_image'),
-        FieldPanel('heading'),
+        FieldPanel('heading_title_image'),
         FieldPanel('subheading'),
         FieldPanel('heading_description'),
         FieldPanel('available_courses_header'),
@@ -3196,7 +3206,7 @@ class Assignable(Page):
     api_fields = [
         APIField('title'),
         APIField('heading_image'),
-        APIField('heading'),
+        APIField('heading_title_image_url'),
         APIField('subheading'),
         APIField('heading_description'),
         APIField('available_courses_header'),
