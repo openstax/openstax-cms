@@ -2977,6 +2977,7 @@ class K12Subject(Page):
                 'icon': resource.get_resource_icon(),
                 'book': book_ids[resource.book_faculty_resource_id],
                 'resource_id': resource.resource_id,
+                'resource_unlocked': resource.resource_unlocked,
                 'link_external': resource.link_external,
                 'link_page_id': resource.link_page_id,
                 'link_document_url': link_document_url,
