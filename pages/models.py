@@ -3164,9 +3164,10 @@ class Assignable(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
-    add_assignable_header = models.CharField(max_length=255,blank=True, null=True)
-    add_assignable_description = models.TextField(blank=True, null=True)
-    add_assignable_html = RichTextField(blank=True, null=True)
+    faq_header = models.CharField(max_length=255, blank=True, null=True)
+    faqs = StreamField([
+        ('faq', FAQBlock()),
+    ], blank=True, null=True, use_json_field=True)
     quote = models.TextField(blank=True, null=True)
     quote_author = models.CharField(max_length=255,blank=True, null=True)
     quote_title = models.CharField(max_length=255, blank=True, null=True)
@@ -3201,9 +3202,8 @@ class Assignable(Page):
         FieldPanel('section_2_heading'),
         FieldPanel('section_2_description'),
         FieldPanel('section_2_image'),
-        FieldPanel('add_assignable_header'),
-        FieldPanel('add_assignable_description'),
-        FieldPanel('add_assignable_html'),
+        FieldPanel('faq_header'),
+        FieldPanel('faqs'),
         FieldPanel('quote'),
         FieldPanel('quote_author'),
         FieldPanel('quote_title'),
@@ -3231,9 +3231,8 @@ class Assignable(Page):
         APIField('section_2_heading'),
         APIField('section_2_description'),
         APIField('section_2_image'),
-        APIField('add_assignable_header'),
-        APIField('add_assignable_description'),
-        APIField('add_assignable_html'),
+        APIField('faq_header'),
+        APIField('faqs'),
         APIField('quote'),
         APIField('quote_author'),
         APIField('quote_title'),
