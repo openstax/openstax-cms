@@ -63,12 +63,13 @@ def export_page(settings = {'root_page': None, 'export_unpublished': False,
             locale = data['locale']
 
             # look up document titles
-            cover = functions.document_title(data['cover'])
-            title_image = functions.document_title(data['title_image'])
-            hi_res_pdf = functions.document_title(data['high_resolution_pdf'])
-            lo_res_pdf = functions.document_title(data['low_resolution_pdf'])
-            community_logo = functions.document_title(data['community_resource_logo'])
-            community_feature_link = functions.document_title(data['community_resource_feature_link'])
+            if page.content_type.model == 'book':
+                cover = functions.document_title(data['cover'])
+                title_image = functions.document_title(data['title_image'])
+                hi_res_pdf = functions.document_title(data['high_resolution_pdf'])
+                lo_res_pdf = functions.document_title(data['low_resolution_pdf'])
+                community_logo = functions.document_title(data['community_resource_logo'])
+                community_feature_link = functions.document_title(data['community_resource_feature_link'])
 
             # Get list (and metadata) of images and documents to be exported.            
             images = list_fileobjects(page, settings, Image) if settings['export_images'] else {}
@@ -91,12 +92,13 @@ def export_page(settings = {'root_page': None, 'export_unpublished': False,
             data['pk'] = None
             data['locale'] = locale
             # add document titles to data
-            data['cover'] = cover
-            data['title_image'] = title_image
-            data['high_resolution_pdf'] = hi_res_pdf
-            data['low_resolution_pdf'] = lo_res_pdf
-            data['community_resource_logo'] = community_logo
-            data['community_resource_feature_link'] = community_feature_link
+            if page.content_type.model == 'book':
+                data['cover'] = cover
+                data['title_image'] = title_image
+                data['high_resolution_pdf'] = hi_res_pdf
+                data['low_resolution_pdf'] = lo_res_pdf
+                data['community_resource_logo'] = community_logo
+                data['community_resource_feature_link'] = community_feature_link
 
             # Export page data.
             page_data.append({
