@@ -1004,6 +1004,7 @@ class BookIndex(Page):
             try:
                 book_data.append({
                     'id': book.id,
+                    'cnx_id': book.cnx_id,
                     'slug': 'books/{}'.format(book.slug),
                     'book_state': book.book_state,
                     'title': book.title,
