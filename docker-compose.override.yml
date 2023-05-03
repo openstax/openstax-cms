@@ -13,7 +13,7 @@ services:
     depends_on:
       - postgres
   postgres:
-    image: "postgres:9.5"
+    image: "postgres:13"
     volumes:
       - pgdata:/var/lib/postgresql/data
     networks:
