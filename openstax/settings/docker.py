@@ -28,11 +28,17 @@ SECRET_KEY = 'enter-a-long-unguessable-string-here'
 # DEBUG_TOOLBAR_CONFIG = {
 #     'INTERCEPT_REDIRECTS': False,
 # }
+INSTALLED_APPS += (
+    'corsheaders',
+)
+MIDDLEWARE += (
+    'corsheaders.middleware.CorsMiddleware',
+)
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'postgres',
+        'ENGINE': "django.db.backends.postgresql",
+        'NAME': 'openstax',
         'USER': 'postgres',
         'HOST': 'postgres',
         'PASSWORD': 'password',
@@ -45,10 +51,23 @@ SALESFORCE = { 'username' : '',
                'security_token' : '',
                'sandbox': True }
 
-# locally, we want to use local storage for uploaded files
+MAPBOX_TOKEN = '' # should be the sk from mapbox
+
+#################
+#  Media        #
+#################
+# locally, we want to use local storage for uploaded (media) files
 DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+
+#################
+#  CORS         #
+#################
+CORS_ORIGIN_ALLOW_ALL = False
+CORS_ALLOW_CREDENTIALS = True
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:3000' # http://localhost:3000, not http://localhost:3000/
+]
 
 # As of Django 1.10, we need to be explicit with localhost being allowed
 ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '0.0.0.0']
-
-MAPBOX_TOKEN = '' # should be the sk from mapbox
