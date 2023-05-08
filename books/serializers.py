@@ -38,8 +38,8 @@ class FacultyResourcesSerializer(serializers.ModelSerializer):
                     if resource['link_document'] is not None:
                         resource['link_document']['file'] = ''
 
-        book_video_faculty_rresources = ret['book_video_faculty_resources']
-        for resource in book_video_faculty_rresources:
+        book_video_faculty_resources = ret['book_video_faculty_resources']
+        for resource in book_video_faculty_resources:
             # remove listing of linked book data
             resource['book_video_faculty_resource'] = {}
         return ret

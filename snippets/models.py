@@ -99,20 +99,22 @@ class FacultyResource(TranslatableMixin, index.Indexed, models.Model):
         related_name='+',
         help_text = 'icon used on K12 Subject pages'
     )
+    resource_category = models.CharField(max_length=255, blank=True, null=True, help_text="Category for GA4")
 
     def get_resource_icon(self):
         return build_image_url(self.icon)
 
     resource_icon = property(get_resource_icon)
 
-    api_fields = ('heading', 'description', 'unlocked_resource', 'creator_fest_resource',  'resource_icon')
+    api_fields = ('heading', 'description', 'unlocked_resource', 'creator_fest_resource',  'resource_icon', 'resource_category')
 
     panels = [
         FieldPanel('heading'),
         FieldPanel('description'),
         FieldPanel('unlocked_resource'),
         FieldPanel('creator_fest_resource'),
-        ImageChooserPanel('icon')
+        ImageChooserPanel('icon'),
+        FieldPanel('resource_category')
     ]
 
     search_fields = [
@@ -138,18 +140,20 @@ class StudentResource(TranslatableMixin, index.Indexed, models.Model):
         related_name='+',
         help_text = 'icon used on K12 Subject pages'
     )
+    resource_category = models.CharField(max_length=255, blank=True, null=True, help_text="Category for GA4")
     def get_resource_icon(self):
         return build_image_url(self.icon)
 
     resource_icon = property(get_resource_icon)
 
-    api_fields = ('heading', 'description', 'unlocked_resource', 'resource_icon')
+    api_fields = ('heading', 'description', 'unlocked_resource', 'resource_icon', 'resource_category')
 
     panels = [
         FieldPanel('heading'),
         FieldPanel('description'),
         FieldPanel('unlocked_resource'),
-        ImageChooserPanel('icon')
+        ImageChooserPanel('icon'),
+        FieldPanel('resource_category')
     ]
 
     search_fields = [
