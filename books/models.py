@@ -197,6 +197,10 @@ class FacultyResources(models.Model):
     display_on_k12 = models.BooleanField(default=False, help_text="Display resource on K12 subject pages")
     print_link = models.URLField(blank=True, null=True, help_text="Link for Buy Print link on resource")
 
+    def get_resource_category(self):
+        return self.resource.resource_category
+    resource_category = property(get_resource_category)
+
     api_fields = [
         APIField('resource_heading'),
         APIField('resource_description'),
@@ -214,7 +218,8 @@ class FacultyResources(models.Model):
         APIField('featured'),
         APIField('k12'),
         APIField('display_on_k12'),
-        APIField('print_link')
+        APIField('print_link'),
+        APIField('resource_category')
     ]
 
     panels = [
