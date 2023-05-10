@@ -93,7 +93,6 @@ ERRATA_RESOURCES = (
     ('OpenStax + SE', 'OpenStax + SE'),
     ('Kindle', 'Kindle'),
     ('Study guide in online view', 'Study guide in online view'),
-    ('Assignable', 'Assignable'),
     ('Other', 'Other'),
 )
 
