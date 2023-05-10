@@ -301,7 +301,6 @@ class StudentResources(models.Model):
     print_link = models.URLField(blank=True, null=True, help_text="Link for Buy Print link on resource")
     display_on_k12 = models.BooleanField(default=False, help_text="Display resource on K12 subject pages")
 
-
     api_fields = [
         APIField('resource_heading'),
         APIField('resource_description'),
