@@ -2956,6 +2956,7 @@ class K12Subject(Page):
                 'updated': resource.updated,
                 'print_link': resource.print_link,
                 'display_on_k12': resource.display_on_k12,
+                'resource_category': resource.resource_category,
                 })
         return student_resource_data
 
@@ -2986,6 +2987,7 @@ class K12Subject(Page):
                 'print_link': resource.print_link,
                 'k12': resource.k12,
                 'display_on_k12': resource.display_on_k12,
+                'resource_category': resource.resource_category,
                 })
         return faculty_resource_data
 
