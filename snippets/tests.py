@@ -6,7 +6,7 @@ from django.test import TestCase, Client
 from django.conf import settings
 from django.urls import reverse
 
-from snippets.models import Subject, ErrataContent, GiveBanner, BlogContentType
+from snippets.models import Subject, ErrataContent, GiveBanner, BlogContentType, NoWebinarMessage
 
 
 class SnippetsTestCase(TestCase):
@@ -35,6 +35,9 @@ class SnippetsTestCase(TestCase):
         self.video.save()
         self.whitepaper = BlogContentType(content_type="Whitepaper")
         self.whitepaper.save()
+
+        self.no_webinar_message = NoWebinarMessage(no_webinar_message="No webinars currently scheduled. In the meantime, please watch any of our past webinars.")
+        self.no_webinar_message.save()
 
     def test_can_create_subject(self):
         subject = Subject(name="Science", page_content="Science page content.", seo_title="Science SEO Title",
@@ -68,3 +71,7 @@ class SnippetsTestCase(TestCase):
     def test_can_fetch_all_blog_content_types(self):
         response = self.client.get('/apps/cms/api/snippets/blogcontenttype/?format=json')
         self.assertIn(b"Whitepaper", response.content)
+
+    def test_can_fetch_no_webinar_message(self):
+        response = self.client.get('/apps/cms/api/snippets/nowebinarmessage/?format=json')
+        self.assertIn(b"No webinars currently scheduled", response.content)

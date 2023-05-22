@@ -382,3 +382,18 @@ class BlogCollection(TranslatableMixin, models.Model):
 
 register_snippet(BlogCollection)
 
+
+class NoWebinarMessage(TranslatableMixin, models.Model):
+    no_webinar_message = models.TextField()
+
+    api_fields = ('no_webinar_message')
+
+    panels = [
+        FieldPanel('no_webinar_message')
+    ]
+
+    def __str__(self):
+        return 'No Webinar Message'
+
+
+register_snippet(NoWebinarMessage)
