@@ -223,6 +223,7 @@ INSTALLED_APPS = [
     'donations',
     'wagtailimportexport',
     'versions',
+    'menus',
     # wagtail
     'wagtail',
     'wagtail.admin',
