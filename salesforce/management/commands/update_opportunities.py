@@ -28,8 +28,8 @@ class Command(BaseCommand):
             for record in records:
                 opportunity, created = AdoptionOpportunityRecord.objects.update_or_create(
                     opportunity_id=record['Id'],
-                    defaults = {'account_uuid': record['Contact__r.Accounts_UUID__c'],
-                                'book_name': record['Book__r.Name'],
+                    defaults = {'account_uuid': record['Contact__r']['Accounts_UUID__c'],
+                                'book_name': record['Book__r']['Name'],
                                 'fall_student_number': record['Fall_Students__c'],
                                 'spring_student_number': record['Spring_Students__c'],
                                 'summer_student_number': record['Summer_Students__c'],
