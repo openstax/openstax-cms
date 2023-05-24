@@ -61,6 +61,7 @@ def export_page(settings = {'root_page': None, 'export_unpublished': False,
             # Turn page data to a dictionary.
             data = json.loads(page.to_json())
             locale = data['locale']
+            data['content_type'] = page.content_type
 
             # look up document titles
             if page.content_type.model == 'book':
