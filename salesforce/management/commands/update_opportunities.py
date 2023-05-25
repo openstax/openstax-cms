@@ -19,7 +19,7 @@ class Command(BaseCommand):
             AdoptionOpportunityRecord.objects.all().delete()
 
             # then we will get any new records
-            command = "SELECT Id, Contact__r.Accounts_UUID__c, Book__r.Name, Base_Year__c, IsWon, Fall_Students__c, Spring_Students__c, Summer_Students__c from Opportunity WHERE Contact__r.Accounts_UUID__c != null AND Base_Year__c = {} AND IsWon = True".format(year)
+            command = "SELECT Id, Contact__r.Accounts_UUID__c, Book__r.Name, Base_Year__c, IsWon from Opportunity WHERE Contact__r.Accounts_UUID__c != null AND Base_Year__c = {} AND IsWon = True".format(year)
 
             response = sf.query_all(command)
             records = response['records']
@@ -30,9 +30,6 @@ class Command(BaseCommand):
                     opportunity_id=record['Id'],
                     defaults = {'account_uuid': record['Contact__r']['Accounts_UUID__c'],
                                 'book_name': record['Book__r']['Name'],
-                                'fall_student_number': record['Fall_Students__c'],
-                                'spring_student_number': record['Spring_Students__c'],
-                                'summer_student_number': record['Summer_Students__c'],
                                 }
                     )
                 opportunity.save()
