@@ -2,10 +2,11 @@ from rest_framework import serializers
 from .models import Menus
 
 
-class MenusSerializer(serializers.ModelSerializer):
+class OXMenusSerializer(serializers.ModelSerializer):
+
     class Meta:
         model = Menus
-        fields = ('id',
+        fields = ('name',
                   'menu')
-        read_only_fields = ('id',
+        read_only_fields = ('name',
                             'menu')

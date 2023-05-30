@@ -2,5 +2,5 @@ from rest_framework import routers
 from . import views
 
 router = routers.SimpleRouter()
-router.register('menus', views.MenusViewSet)
+router.register('oxmenus', views.OXMenusViewSet)
 urlpatterns = router.urls
