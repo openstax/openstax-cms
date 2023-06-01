@@ -7,10 +7,11 @@ from wagtail.models import Page
 from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django.http import HttpResponse
+from urllib.parse import unquote
 from books.models import Book
 from openstax.functions import build_image_url
 from news.models import NewsArticle
-from pages.models import HomePage, Supporters
+from pages.models import HomePage, Supporters, GeneralPage, PrivacyPolicy
 
 
 class HttpSmartRedirectResponse(HttpResponsePermanentRedirect):
@@ -67,9 +68,9 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
             user_agent = user_agent_parser.ParseUserAgent(request.META["HTTP_USER_AGENT"])
             if user_agent['family'].lower() in self.OG_USER_AGENTS:
                 # url path minus the trailing /
-                url_path = request.get_full_path()[:-1]
+                url_path = unquote(request.get_full_path()[:-1])
 
-                full_url = request.build_absolute_uri()
+                full_url = unquote(request.build_absolute_uri())
 
                 # imdex of last / to find slug, except when there isn't a last /
                 if url_path == '':
@@ -85,9 +86,11 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
 
                     # look up correct object based on path
                     if '/details/books/' in url_path:
-                        page = Book.objects.filter(slug = page_slug)
+                        page = Book.objects.filter(slug=page_slug)
                     elif '/blog/' in url_path:
-                        page = NewsArticle.objects.filter(slug = page_slug)
+                        page = NewsArticle.objects.filter(slug=page_slug)
+                    elif '/privacy' in url_path:
+                        page = PrivacyPolicy.objects.filter(slug='privacy-policy')
                     else:
                         page = self.page_by_slug(page_slug)
 
@@ -120,7 +123,7 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
         return template
 
     def redirect_path_found(self, url_path):
-        if '/blog/' in url_path or '/details/books/' in url_path or '/foundation' in url_path or '' == url_path:
+        if '/blog/' in url_path or '/details/books/' in url_path or '/foundation' in url_path or '/privacy' in url_path or '' == url_path:
             return True
         else:
             return False
