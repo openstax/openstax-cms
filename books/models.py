@@ -162,7 +162,7 @@ class FacultyResources(models.Model):
         return self.resource.creator_fest_resource
     creator_fest_resource = property(get_resource_creator_fest_resource)
 
-    link_external = models.URLField("External link", null=True, blank=True, help_text="Provide an external URL starting with https:// (or fill out either one of the following two).")
+    link_external = models.URLField("External link", default='', blank=True, help_text="Provide an external URL starting with https:// (or fill out either one of the following two).")
     link_page = models.ForeignKey(
         'wagtailcore.Page',
         null=True,
@@ -274,7 +274,7 @@ class StudentResources(models.Model):
         return self.resource.resource_icon
     resource_icon = property(get_resource_icon)
 
-    link_external = models.URLField("External link", null=True, blank=True, help_text="Provide an external URL starting with http:// (or fill out either one of the following two).")
+    link_external = models.URLField("External link", default='', blank=True, help_text="Provide an external URL starting with http:// (or fill out either one of the following two).")
     link_page = models.ForeignKey(
         'wagtailcore.Page',
         null=True,

@@ -477,6 +477,7 @@ class NewsMentionBlock(blocks.StructBlock):
     url = blocks.URLBlock()
     headline = blocks.CharBlock()
     date = blocks.DateBlock()
+    featured_in = blocks.BooleanBlock(required=False, default=False, help_text="Check if displayed in Featured In section")
 
     class Meta:
         icon = 'document'
