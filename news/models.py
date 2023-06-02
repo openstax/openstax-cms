@@ -28,6 +28,7 @@ from modelcluster.contrib.taggit import ClusterTaggableManager
 from taggit.models import TaggedItemBase
 from openstax.functions import build_image_url
 from snippets.models import NewsSource, BlogContentType, BlogCollection, Subject
+from pages.custom_blocks import APIImageChooserBlock, FAQBlock
 
 
 class ImageChooserBlock(ImageChooserBlock):
@@ -509,6 +510,23 @@ class PressIndex(Page):
     press_inquiry_email = models.EmailField()
     experts_heading = models.CharField(max_length=255)
     experts_blurb = models.TextField()
+    infographic_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+    )
+    infographic_text = models.TextField(default='', blank=True)
+    testimonials = StreamField(
+        blocks.StreamBlock([
+            ('testimonial', blocks.ListBlock(blocks.StructBlock([
+                ('image', APIImageChooserBlock(required=False)),
+                ('testimonial', blocks.TextBlock(required=False)),
+            ])))]), blank=True, null=True, use_json_field=True)
+    faqs = StreamField([
+        ('faq', FAQBlock()),
+    ], blank=True, null=True, use_json_field=True)
     mentions = StreamField([
         ('mention', NewsMentionBlock(icon='document')),
     ], null=True, use_json_field=True)
@@ -550,6 +568,10 @@ class PressIndex(Page):
         FieldPanel('experts_heading'),
         FieldPanel('experts_blurb'),
         InlinePanel('experts_bios', label="Experts"),
+        FieldPanel('infographic_image'),
+        FieldPanel('infographic_text'),
+        FieldPanel('testimonials'),
+        FieldPanel('faqs'),
         FieldPanel('mentions'),
         InlinePanel('mission_statements', label="Mission Statement"),
     ]
@@ -572,6 +594,10 @@ class PressIndex(Page):
         APIField('experts_heading'),
         APIField('experts_blurb'),
         APIField('experts_bios'),
+        APIField('infographic_image'),
+        APIField('infographic_text'),
+        APIField('testimonials'),
+        APIField('faqs'),
         APIField('mentions'),
         APIField('mission_statements'),
         APIField('press_inquiry_name'),
