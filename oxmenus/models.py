@@ -18,7 +18,7 @@ class Menus(models.Model):
     name = models.CharField(max_length=255)
     menu = StreamField(
         blocks.StreamBlock([
-            ('menus', MenuBlock(required=True))
+            ('menu_block', MenuBlock(required=True))
             ]), use_json_field=True)
 
     def menu_block_json(self):
