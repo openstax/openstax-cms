@@ -11,3 +11,4 @@ class GlobalSettingsConfig(AppConfig):
         import webinars.signals
         import snippets.signals
         import salesforce.signals
+        import oxmenus.signals
