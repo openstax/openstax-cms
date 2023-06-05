@@ -220,6 +220,7 @@ class FacultyResources(models.Model):
         APIField('display_on_k12'),
         APIField('print_link'),
         APIField('resource_category')
+
     ]
 
     panels = [
