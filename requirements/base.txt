@@ -1,6 +1,6 @@
 appdirs==1.4.4
 chardet==4.0.0
-django==4.0.8
+django==4.1.9
 django-admin-rangefilter==0.8.4
 django-crontab==0.7.1
 django-import-export==2.8.0

@@ -2,41 +2,41 @@ appdirs==1.4.4
 chardet==4.0.0
 django-admin-rangefilter==0.8.4
 django-crontab==0.7.1
-  Django==4.0.8
+  Django==4.1.9
     asgiref==3.6.0
     sqlparse==0.4.3
 django_debug_toolbar==3.8.1
-  Django==4.0.8
+  Django==4.1.9
     asgiref==3.6.0
     sqlparse==0.4.3
   sqlparse==0.4.3
 django-import-export==2.8.0
   diff-match-patch==20200713
-  Django==4.0.8
+  Django==4.1.9
     asgiref==3.6.0
     sqlparse==0.4.3
   tablib==3.3.0
 django-libsass==0.9
   django-compressor==4.1
     django-appconf==1.0.5
-      Django==4.0.8
+      Django==4.1.9
         asgiref==3.6.0
         sqlparse==0.4.3
     rcssmin==1.1.0
     rjsmin==1.2.0
   libsass==0.22.0
 django-rest-auth==0.9.5
-  Django==4.0.8
+  Django==4.1.9
     asgiref==3.6.0
     sqlparse==0.4.3
   djangorestframework==3.14.0
-    Django==4.0.8
+    Django==4.1.9
       asgiref==3.6.0
       sqlparse==0.4.3
     pytz==2022.7
   six==1.16.0
 django-reversion==5.0.0
-  Django==4.0.8
+  Django==4.1.9
     asgiref==3.6.0
     sqlparse==0.4.3
 django-ses==3.0.1
@@ -53,18 +53,18 @@ django-ses==3.0.1
         python-dateutil==2.8.2
           six==1.16.0
         urllib3==1.26.13
-  Django==4.0.8
+  Django==4.1.9
     asgiref==3.6.0
     sqlparse==0.4.3
   pytz==2022.7
 django-storages==1.12.3
-  Django==4.0.8
+  Django==4.1.9
     asgiref==3.6.0
     sqlparse==0.4.3
 future==0.18.2
 html2text==2020.1.16
 jsonfield==3.1.0
-  Django==4.0.8
+  Django==4.1.9
     asgiref==3.6.0
     sqlparse==0.4.3
 mapbox==0.18.0
@@ -186,32 +186,32 @@ wagtail==3.0.3
   anyascii==0.3.1
   beautifulsoup4==4.9.3
     soupsieve==2.3.2.post1
-  Django==4.0.8
+  Django==4.1.9
     asgiref==3.6.0
     sqlparse==0.4.3
   django-filter==21.1
-    Django==4.0.8
+    Django==4.1.9
       asgiref==3.6.0
       sqlparse==0.4.3
   django-modelcluster==6.0
-    Django==4.0.8
+    Django==4.1.9
       asgiref==3.6.0
       sqlparse==0.4.3
     pytz==2022.7
   django-permissionedforms==0.1
-    Django==4.0.8
+    Django==4.1.9
       asgiref==3.6.0
       sqlparse==0.4.3
   django-taggit==2.1.0
-    Django==4.0.8
+    Django==4.1.9
       asgiref==3.6.0
       sqlparse==0.4.3
   django-treebeard==4.6.0
-    Django==4.0.8
+    Django==4.1.9
       asgiref==3.6.0
       sqlparse==0.4.3
   djangorestframework==3.14.0
-    Django==4.0.8
+    Django==4.1.9
       asgiref==3.6.0
       sqlparse==0.4.3
     pytz==2022.7
