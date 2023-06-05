@@ -39,7 +39,7 @@ django-reversion==5.0.0
   Django==4.0.8
     asgiref==3.6.0
     sqlparse==0.4.3
-django-ses==3.0.1
+django-ses==3.5.0
   boto3==1.26.42
     botocore==1.29.42
       jmespath==1.0.1

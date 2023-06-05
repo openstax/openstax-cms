@@ -7,7 +7,7 @@ django-import-export==2.8.0
 django-libsass==0.9
 django-rest-auth==0.9.5
 django-reversion==5.0.0
-django-ses==3.0.1
+django-ses==3.5.0
 django-storages==1.12.3
 future==0.18.2
 html2text==2020.1.16 # used in news feed
