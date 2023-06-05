@@ -2956,6 +2956,7 @@ class K12Subject(Page):
                 'updated': resource.updated,
                 'print_link': resource.print_link,
                 'display_on_k12': resource.display_on_k12,
+                'resource_category': resource.resource_category,
                 })
         return student_resource_data
 
@@ -2986,6 +2987,7 @@ class K12Subject(Page):
                 'print_link': resource.print_link,
                 'k12': resource.k12,
                 'display_on_k12': resource.display_on_k12,
+                'resource_category': resource.resource_category,
                 })
         return faculty_resource_data
 
@@ -3157,13 +3159,11 @@ class Assignable(Page):
     assignable_cta_button_text = models.CharField(max_length=255,blank=True, null=True)
     section_2_heading = models.CharField(max_length=255,blank=True, null=True)
     section_2_description = models.TextField(blank=True, null=True)
-    section_2_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
+    image_carousel = StreamField(
+        blocks.StreamBlock([
+            ('carousel_image', blocks.ListBlock(blocks.StructBlock([
+                ('image', APIImageChooserBlock(required=False)),
+            ])))]), blank=True, null=True, use_json_field=True)
     faq_header = models.CharField(max_length=255, blank=True, null=True)
     faqs = StreamField([
         ('faq', FAQBlock()),
@@ -3201,7 +3201,7 @@ class Assignable(Page):
         FieldPanel('assignable_cta_button_text'),
         FieldPanel('section_2_heading'),
         FieldPanel('section_2_description'),
-        FieldPanel('section_2_image'),
+        FieldPanel('image_carousel'),
         FieldPanel('faq_header'),
         FieldPanel('faqs'),
         FieldPanel('quote'),
@@ -3230,7 +3230,7 @@ class Assignable(Page):
         APIField('assignable_cta_button_text'),
         APIField('section_2_heading'),
         APIField('section_2_description'),
-        APIField('section_2_image'),
+        APIField('image_carousel'),
         APIField('faq_header'),
         APIField('faqs'),
         APIField('quote'),
