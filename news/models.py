@@ -477,6 +477,7 @@ class NewsMentionBlock(blocks.StructBlock):
     url = blocks.URLBlock()
     headline = blocks.CharBlock()
     date = blocks.DateBlock()
+    featured_in = blocks.BooleanBlock(required=False, default=False, help_text="Check if displayed in Featured In section")
 
     class Meta:
         icon = 'document'
@@ -505,6 +506,7 @@ class PressIndex(Page):
         return build_image_url(self.press_kit)
     press_kit_url = property(get_press_kit)
 
+    about = RichTextField(blank=True, null=True)
     press_inquiry_name = models.CharField(max_length=255, blank=True, null=True)
     press_inquiry_phone = models.CharField(max_length=255)
     press_inquiry_email = models.EmailField()
@@ -562,6 +564,7 @@ class PressIndex(Page):
 
     content_panels = Page.content_panels + [
         FieldPanel('press_kit'),
+        FieldPanel('about'),
         FieldPanel('press_inquiry_name'),
         FieldPanel('press_inquiry_phone'),
         FieldPanel('press_inquiry_email'),
@@ -586,6 +589,7 @@ class PressIndex(Page):
     api_fields = [
         APIField('press_kit'),
         APIField('press_kit_url'),
+        APIField('about'),
         APIField('releases'),
         APIField('slug'),
         APIField('seo_title'),
