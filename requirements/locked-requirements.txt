@@ -109,7 +109,7 @@ pipdeptree==2.3.3
 psycopg2==2.9.5
 pycryptodome==3.14.1
 PyJWE==1.0.0
-  cryptography==39.0.0
+  cryptography==41.0.0
     cffi==1.15.1
       pycparser==2.21
 sentry-sdk==1.12.1
@@ -118,7 +118,7 @@ sentry-sdk==1.12.1
 setuptools==65.5.0
 simple-salesforce==1.11.6
   Authlib==1.2.0
-    cryptography==39.0.0
+    cryptography==41.0.0
       cffi==1.15.1
         pycparser==2.21
   requests==2.28.1
@@ -153,7 +153,7 @@ simple-salesforce==1.11.6
         urllib3==1.26.13
 social-auth-app-django==5.0.0
   social-auth-core==4.3.0
-    cryptography==39.0.0
+    cryptography==41.0.0
       cffi==1.15.1
         pycparser==2.21
     defusedxml==0.7.1
