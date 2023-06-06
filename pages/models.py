@@ -238,6 +238,14 @@ class HomePage(Page):
         related_name='+'
     )
 
+    k12_cta_header = models.CharField(max_length=255, blank=True, null=True)
+    k12_cta_description = models.TextField(blank=True, null=True)
+    k12_cta_link = models.URLField(blank=True, null=True)
+    k12_cta_button_text = models.CharField(max_length=255, blank=True, null=True)
+    research_cta_header = models.CharField(max_length=255, blank=True, null=True)
+    research_cta_description = models.TextField(blank=True, null=True)
+    research_cta_link = models.URLField(blank=True, null=True)
+    research_cta_button_text = models.CharField(max_length=255, blank=True, null=True)
     quotes_headline = models.CharField(default='', blank=True, max_length=255)
     quotes = StreamField(
         blocks.StreamBlock([
@@ -324,6 +332,14 @@ class HomePage(Page):
         APIField('features_tab2_explore_text'),
         APIField('features_tab2_explore_url'),
         APIField('features_bg_image'),
+        APIField('k12_cta_header'),
+        APIField('k12_cta_description'),
+        APIField('k12_cta_link'),
+        APIField('k12_cta_button_text'),
+        APIField('research_cta_header'),
+        APIField('research_cta_description'),
+        APIField('research_cta_link'),
+        APIField('research_cta_button_text'),
         APIField('quotes_headline'),
         APIField('quotes'),
         APIField('quotes_instructor_image'),
@@ -379,6 +395,14 @@ class HomePage(Page):
         FieldPanel('features_tab2_explore_text'),
         FieldPanel('features_tab2_explore_url'),
         FieldPanel('features_bg_image'),
+        FieldPanel('k12_cta_header'),
+        FieldPanel('k12_cta_description'),
+        FieldPanel('k12_cta_link'),
+        FieldPanel('k12_cta_button_text'),
+        FieldPanel('research_cta_header'),
+        FieldPanel('research_cta_description'),
+        FieldPanel('research_cta_link'),
+        FieldPanel('research_cta_button_text'),
         FieldPanel('quotes_headline'),
         FieldPanel('quotes'),
         FieldPanel('quotes_instructor_image'),
