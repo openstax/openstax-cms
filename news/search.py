@@ -57,7 +57,7 @@ def search(request):
     if ('q' in request.GET) and request.GET['q'].strip():
         query_string = request.GET['q']
 
-        vector = SearchVector('title', weight='A') + SearchVector('body', weight='B') + SearchVector('author', weight='B') + SearchVector('tags__name', weight='C')
+        vector = SearchVector('title', weight='A') + SearchVector('article_subjects__name', weight='B') + SearchVector('body', weight='B') + SearchVector('author', weight='B') + SearchVector('tags__name', weight='C')  + SearchVector('collections__name', weight='C')  + SearchVector('content_types__content_type', weight='C')
         query = get_query(query_string)
 
         found_entries = NewsArticle.objects.annotate(
