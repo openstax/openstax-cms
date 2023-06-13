@@ -751,13 +751,27 @@ class GeneralPage(Page):
     ], use_json_field=True)
 
     def get_sitemap_urls(self, request=None):
-        if self.slug == 'kinetic':
+        if self.slug in ['kinetic', 'write-for-us', 'editorial-calendar']:
             return [
                 {
                     'location': '{}/{}'.format(Site.find_for_request(request).root_url, self.slug),
                     'lastmod': (self.last_published_at or self.latest_revision_created_at),
                 }
             ]
+        # elif self.slug == 'write-for-us':
+        #     return [
+        #         {
+        #             'location': '{}/{}'.format(Site.find_for_request(request).root_url, self.slug),
+        #             'lastmod': (self.last_published_at or self.latest_revision_created_at),
+        #         }
+        #     ]
+        # elif self.slug == 'editorial-calendar':
+        #     return [
+        #         {
+        #             'location': '{}/{}'.format(Site.find_for_request(request).root_url, self.slug),
+        #             'lastmod': (self.last_published_at or self.latest_revision_created_at),
+        #         }
+        #     ]
         else:
             return []
 
