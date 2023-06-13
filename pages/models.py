@@ -2719,7 +2719,7 @@ class Subject(Page):
             categories = {}
 
             subject_categories['icon'] = subject.subject_icon
-            all_books = Book.objects.all().order_by('title')
+            all_books = [book for book in Book.objects.all().order_by('title') if subject.name in book.subjects()]
             for category in snippets.SubjectCategory.objects.filter(subject_id=subject.id).order_by('subject_category'):
                 books = {}
                 book_list = {}
