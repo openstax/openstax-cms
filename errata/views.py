@@ -35,7 +35,7 @@ class ErrataFilter(FilterSet):
 
 
 class ErrataView(ModelViewSet):
-    queryset = Errata.objects.prefetch_related("book")
+    queryset = Errata.objects.prefetch_related("book").all()
     serializer_class = ErrataSerializer
     http_method_names = ['get', 'post', 'head']
     filter_backends = (DjangoFilterBackend, OrderingFilter)
