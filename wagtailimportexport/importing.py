@@ -1,6 +1,8 @@
 import io
 import json
 import logging
+import uuid
+from random import randrange
 from zipfile import ZipFile
 
 from django.apps import apps
@@ -66,11 +68,15 @@ def import_page(uploaded_archive, parent_page, overwrites={}):
                 for (i, page_record) in enumerate(contents):
 
                     new_field_datas = {}
+                    content_type = functions.content_type(page_record['content']['model'])
+                    print('***content type: ' + str(content_type))
 
                     # Skip the existing pages.
                     if i in existing_pages:
-                        error_msg = 'Duplicate slug'
-                        continue
+                        page_record['content']['slug'] = page_record['content']['slug'] + str(randrange(10))
+                        print('slug: ' + str(page_record['content']['slug']))
+                        #error_msg = 'Duplicate slug. Slug changed to ' + str(page_record['content']['slug'])
+                        #continue
 
                     # Reassign image IDs.
                     for (fieldname, filedata) in page_record["images"].items():
@@ -96,13 +102,15 @@ def import_page(uploaded_archive, parent_page, overwrites={}):
                     for (field, new_value) in overwrites.items():
                         page_record['content'][field] = new_value
 
-                    # look up document ids
-                    page_record['content']['cover'] = functions.document_id(page_record['content']['cover'])
-                    page_record['content']['title_image'] = functions.document_id(page_record['content']['title_image'])
-                    page_record['content']['high_resolution_pdf'] = functions.document_id(page_record['content']['high_resolution_pdf'])
-                    page_record['content']['low_resolution_pdf'] = functions.document_id(page_record['content']['low_resolution_pdf'])
-                    page_record['content']['community_resource_logo'] = functions.document_id(page_record['content']['community_resource_logo'])
-                    page_record['content']['community_resource_feature_link'] = functions.document_id(page_record['content']['community_resource_feature_link'])
+                    if content_type == 'book':
+                        # look up document ids
+                        page_record['content']['cover'] = functions.document_id(page_record['content']['cover'])
+                        page_record['content']['title_image'] = functions.document_id(page_record['content']['title_image'])
+                        page_record['content']['high_resolution_pdf'] = functions.document_id(page_record['content']['high_resolution_pdf'])
+                        page_record['content']['low_resolution_pdf'] = functions.document_id(page_record['content']['low_resolution_pdf'])
+                        page_record['content']['community_resource_logo'] = functions.document_id(page_record['content']['community_resource_logo'])
+                        page_record['content']['community_resource_feature_link'] = functions.document_id(page_record['content']['community_resource_feature_link'])
+                        print('***page: ' + str(page_record['content']))
 
                     # set page.pk to null if pk already exists
                     pages = Page.objects.all()
@@ -124,6 +132,7 @@ def import_page(uploaded_archive, parent_page, overwrites={}):
                     page.numchild = 0
                     page.url_path = None
                     page.content_type = page_content_type
+                    page.translation_key = uuid.uuid4()
 
                     # Handle children of the imported page(s).
                     if i == 0:
@@ -157,7 +166,10 @@ def import_page(uploaded_archive, parent_page, overwrites={}):
                     specific_page.__dict__.update(base_page.__dict__)
                     specific_page.content_type = ContentType.objects.get_for_model(model)
                     update_page_references(specific_page, pages_by_original_id)
-                    specific_page.save()
+                    try:
+                        specific_page.save()
+                    except Exception as e:
+                        print(str(e))
 
             return (len(contents) - len(existing_pages), len(existing_pages), error_msg)
 
