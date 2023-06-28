@@ -178,8 +178,7 @@ def zip_contents(page_contents):
                         with file_storage.open(filename, 'rb') as f:
                             zf.writestr(filename, f.read())
                     except FileNotFoundError:
-                        logging.error(
-                            "File " + str(filename) + " is not found on local file storage and was not exported.")
+                        logging.error("File " + str(filename) + " is not found on local file storage and was not exported.")
 
                 # Export all the documents.
                 for doc_def in page['documents'].values():
@@ -192,8 +191,7 @@ def zip_contents(page_contents):
                         with file_storage.open(filename, 'rb') as f:
                             zf.writestr(filename, f.read())
                     except FileNotFoundError:
-                        logging.error(
-                            "File " + str(filename) + " is not found on local file storage and was not exported.")
+                        logging.error("File " + str(filename) + " is not found on local file storage and was not exported.")
 
         with open(zfname, 'rb') as zf:
             fd = zf.read()
@@ -239,9 +237,9 @@ def document_id(doc_title):
         return doc[0].pk
 
 
-def content_type(content_type_id):
-    content_type = ContentType.objects.all().filter(pk=content_type_id)
+def content_type_by_model(model):
+    content_type = ContentType.objects.all().filter(model=model)
     if not content_type:
         return None
     else:
-        return str(content_type[0])
+        return str(content_type[0].pk)
