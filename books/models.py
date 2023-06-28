@@ -162,7 +162,7 @@ class FacultyResources(models.Model):
         return self.resource.creator_fest_resource
     creator_fest_resource = property(get_resource_creator_fest_resource)
 
-    link_external = models.URLField("External link", blank=True, help_text="Provide an external URL starting with https:// (or fill out either one of the following two).")
+    link_external = models.URLField("External link", default='', blank=True, help_text="Provide an external URL starting with https:// (or fill out either one of the following two).")
     link_page = models.ForeignKey(
         'wagtailcore.Page',
         null=True,
@@ -188,7 +188,7 @@ class FacultyResources(models.Model):
         return self.link_document.title
     link_document_title = property(get_document_title)
 
-    link_text = models.CharField(max_length=255, help_text="Call to Action Text")
+    link_text = models.CharField(max_length=255, null=True, blank=True, help_text="Call to Action Text")
     coming_soon_text = models.CharField(max_length=255, null=True, blank=True, help_text="If there is text in this field a coming soon banner will be added with this description.")
     video_reference_number = models.IntegerField(blank=True, null=True)
     updated = models.DateTimeField(blank=True, null=True, help_text='Late date resource was updated')
@@ -196,6 +196,10 @@ class FacultyResources(models.Model):
     k12 = models.BooleanField(default=False, help_text="Add K12 banner to resource")
     display_on_k12 = models.BooleanField(default=False, help_text="Display resource on K12 subject pages")
     print_link = models.URLField(blank=True, null=True, help_text="Link for Buy Print link on resource")
+
+    def get_resource_category(self):
+        return self.resource.resource_category
+    resource_category = property(get_resource_category)
 
     api_fields = [
         APIField('resource_heading'),
@@ -214,7 +218,8 @@ class FacultyResources(models.Model):
         APIField('featured'),
         APIField('k12'),
         APIField('display_on_k12'),
-        APIField('print_link')
+        APIField('print_link'),
+        APIField('resource_category')
     ]
 
     panels = [
@@ -231,17 +236,6 @@ class FacultyResources(models.Model):
         FieldPanel('display_on_k12'),
         FieldPanel('print_link')
     ]
-
-    def clean(self):
-        errors = {}
-        external = self.link_external
-        page = self.link_page
-        document = self.link_document
-        if not external and not page and not document:
-            errors.setdefault('link_external', []).append('One of these fields must be populated: External link, Link page or Link document.')
-
-        if errors:
-            raise ValidationError(errors)
 
 
 class StudentResources(models.Model):
@@ -269,7 +263,7 @@ class StudentResources(models.Model):
         return self.resource.resource_icon
     resource_icon = property(get_resource_icon)
 
-    link_external = models.URLField("External link", blank=True, help_text="Provide an external URL starting with http:// (or fill out either one of the following two).")
+    link_external = models.URLField("External link", default='', blank=True, help_text="Provide an external URL starting with http:// (or fill out either one of the following two).")
     link_page = models.ForeignKey(
         'wagtailcore.Page',
         null=True,
@@ -295,11 +289,16 @@ class StudentResources(models.Model):
         return self.link_document.title
     link_document_title = property(get_document_title)
 
-    link_text = models.CharField(max_length=255, help_text="Call to Action Text")
+    link_text = models.CharField(max_length=255, null=True, blank=True, help_text="Call to Action Text")
     coming_soon_text = models.CharField(max_length=255, null=True, blank=True, help_text="If there is text in this field a coming soon banner will be added with this description.")
     updated = models.DateTimeField(blank=True, null=True, help_text='Late date resource was updated')
     print_link = models.URLField(blank=True, null=True, help_text="Link for Buy Print link on resource")
     display_on_k12 = models.BooleanField(default=False, help_text="Display resource on K12 subject pages")
+
+    def get_resource_category(self):
+        return self.resource.resource_category
+    resource_category = property(get_resource_category)
+
 
     api_fields = [
         APIField('resource_heading'),
@@ -314,7 +313,8 @@ class StudentResources(models.Model):
         APIField('coming_soon_text'),
         APIField('updated'),
         APIField('print_link'),
-        APIField('display_on_k12')
+        APIField('display_on_k12'),
+        APIField('resource_category')
     ]
 
     panels = [
@@ -328,17 +328,6 @@ class StudentResources(models.Model):
         FieldPanel('print_link'),
         FieldPanel('display_on_k12')
     ]
-
-    def clean(self):
-        errors = {}
-        external = self.link_external
-        page = self.link_page
-        document = self.link_document
-        if not external and not page and not document:
-            errors.setdefault('link_external', []).append('One of these fields must be populated: External link, Link page or Link document.')
-
-        if errors:
-            raise ValidationError(errors)
 
 
 class Authors(models.Model):
@@ -1003,6 +992,7 @@ class BookIndex(Page):
             try:
                 book_data.append({
                     'id': book.id,
+                    'cnx_id': book.cnx_id,
                     'slug': 'books/{}'.format(book.slug),
                     'book_state': book.book_state,
                     'title': book.title,

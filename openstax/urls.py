@@ -49,6 +49,7 @@ urlpatterns = [
     path('apps/cms/api/events/', include('events.urls')),
     path('apps/cms/api/webinars/', include('webinars.urls')),
     path('apps/cms/api/donations/', include('donations.urls')),
+    path('apps/cms/api/oxmenus/', include('oxmenus.urls')),
 
     # route everything to /api/spike also...
     path('apps/cms/api/spike/', include(wagtail_urls)),

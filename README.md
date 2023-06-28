@@ -12,11 +12,11 @@ Built using [Wagtail CMS](http://wagtail.io) on top of [Django Framework](https:
 
 Dependencies
 =======================
-* [PostgreSQL](http://www.postgresql.org) (≥ 11.3)  
+* [PostgreSQL](http://www.postgresql.org) (≥ 13)  
 ```bash
 brew install postgresql
 ```
-* [Python](https://www.python.org/) (≥ 3.6)
+* [Python](https://www.python.org/) (≥ 3.10)
 * [PIP](https://github.com/pypa/pip) (≥ 8.0.0)
 ```bash
 brew install python3

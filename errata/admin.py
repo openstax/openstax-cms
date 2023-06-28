@@ -139,8 +139,6 @@ class ErrataAdmin(ImportExportActionModelAdmin, VersionAdmin):
     
     book_title.admin_order_field = 'book__title'
 
-    book_title.admin_order_field = 'book__title'
-
     """Model permissions"""
     @method_decorator(csrf_protect)
     def changelist_view(self, request, extra_context=None):

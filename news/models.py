@@ -28,6 +28,7 @@ from modelcluster.contrib.taggit import ClusterTaggableManager
 from taggit.models import TaggedItemBase
 from openstax.functions import build_image_url
 from snippets.models import NewsSource, BlogContentType, BlogCollection, Subject
+from pages.custom_blocks import APIImageChooserBlock, FAQBlock
 
 
 class ImageChooserBlock(ImageChooserBlock):
@@ -476,6 +477,7 @@ class NewsMentionBlock(blocks.StructBlock):
     url = blocks.URLBlock()
     headline = blocks.CharBlock()
     date = blocks.DateBlock()
+    featured_in = blocks.BooleanBlock(required=False, default=False, help_text="Check if displayed in Featured In section")
 
     class Meta:
         icon = 'document'
@@ -504,11 +506,29 @@ class PressIndex(Page):
         return build_image_url(self.press_kit)
     press_kit_url = property(get_press_kit)
 
+    about = RichTextField(blank=True, null=True)
     press_inquiry_name = models.CharField(max_length=255, blank=True, null=True)
     press_inquiry_phone = models.CharField(max_length=255)
     press_inquiry_email = models.EmailField()
     experts_heading = models.CharField(max_length=255)
     experts_blurb = models.TextField()
+    infographic_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+    )
+    infographic_text = models.TextField(default='', blank=True)
+    testimonials = StreamField(
+        blocks.StreamBlock([
+            ('testimonial', blocks.ListBlock(blocks.StructBlock([
+                ('image', APIImageChooserBlock(required=False)),
+                ('testimonial', blocks.TextBlock(required=False)),
+            ])))]), blank=True, null=True, use_json_field=True)
+    faqs = StreamField([
+        ('faq', FAQBlock()),
+    ], blank=True, null=True, use_json_field=True)
     mentions = StreamField([
         ('mention', NewsMentionBlock(icon='document')),
     ], null=True, use_json_field=True)
@@ -544,12 +564,17 @@ class PressIndex(Page):
 
     content_panels = Page.content_panels + [
         FieldPanel('press_kit'),
+        FieldPanel('about'),
         FieldPanel('press_inquiry_name'),
         FieldPanel('press_inquiry_phone'),
         FieldPanel('press_inquiry_email'),
         FieldPanel('experts_heading'),
         FieldPanel('experts_blurb'),
         InlinePanel('experts_bios', label="Experts"),
+        FieldPanel('infographic_image'),
+        FieldPanel('infographic_text'),
+        FieldPanel('testimonials'),
+        FieldPanel('faqs'),
         FieldPanel('mentions'),
         InlinePanel('mission_statements', label="Mission Statement"),
     ]
@@ -564,6 +589,7 @@ class PressIndex(Page):
     api_fields = [
         APIField('press_kit'),
         APIField('press_kit_url'),
+        APIField('about'),
         APIField('releases'),
         APIField('slug'),
         APIField('seo_title'),
@@ -572,6 +598,10 @@ class PressIndex(Page):
         APIField('experts_heading'),
         APIField('experts_blurb'),
         APIField('experts_bios'),
+        APIField('infographic_image'),
+        APIField('infographic_text'),
+        APIField('testimonials'),
+        APIField('faqs'),
         APIField('mentions'),
         APIField('mission_statements'),
         APIField('press_inquiry_name'),
