@@ -60,7 +60,6 @@ def export_page(settings={'root_page': None, 'export_unpublished': False,
 
             # Turn page data to a dictionary.
             data = json.loads(page.to_json())
-            #print('data: ' + str(data))
             locale = data['locale']
 
             # look up document titles
@@ -109,7 +108,6 @@ def export_page(settings={'root_page': None, 'export_unpublished': False,
                 'images': images,
                 'documents': documents
             })
-            print('page data:' + str(page_data))
 
             exported_paths.add(page.path)
 
