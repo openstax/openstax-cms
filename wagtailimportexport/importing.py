@@ -1,8 +1,7 @@
 import io
 import json
 import logging
-import uuid
-from random import randrange
+import traceback
 from zipfile import ZipFile
 
 from django.apps import apps
@@ -53,6 +52,7 @@ def import_page(uploaded_archive, parent_page, overwrites={}):
                 # specific page models, which may require us to rewrite page IDs within foreign keys / rich
                 # text / streamfields.
                 page_content_type = ContentType.objects.get_for_model(Page)
+                print('page content type: ' + str(page_content_type))
 
                 # Unzip all the files in the zip directory.
                 contents_mapping = functions.unzip_contents(zf)
@@ -66,17 +66,17 @@ def import_page(uploaded_archive, parent_page, overwrites={}):
 
                 # Loop through all the pages.
                 for (i, page_record) in enumerate(contents):
+                    #print('page_record: '+ str(page_record))
 
                     new_field_datas = {}
-                    content_type = functions.content_type(page_record['content']['model'])
+                    content_type = functions.content_type_by_model(page_record['model'])
+                    #content_type = page_record['content']['content_type']
                     print('***content type: ' + str(content_type))
 
                     # Skip the existing pages.
                     if i in existing_pages:
-                        page_record['content']['slug'] = page_record['content']['slug'] + str(randrange(10))
-                        print('slug: ' + str(page_record['content']['slug']))
-                        #error_msg = 'Duplicate slug. Slug changed to ' + str(page_record['content']['slug'])
-                        #continue
+                        error_msg = 'Import stopped. Duplicate slug: ' + str(page_record['content']['slug'])
+                        continue
 
                     # Reassign image IDs.
                     for (fieldname, filedata) in page_record["images"].items():
@@ -102,7 +102,7 @@ def import_page(uploaded_archive, parent_page, overwrites={}):
                     for (field, new_value) in overwrites.items():
                         page_record['content'][field] = new_value
 
-                    if content_type == 'book':
+                    if page_record['model'] == 'book':
                         # look up document ids
                         page_record['content']['cover'] = functions.document_id(page_record['content']['cover'])
                         page_record['content']['title_image'] = functions.document_id(page_record['content']['title_image'])
@@ -119,6 +119,7 @@ def import_page(uploaded_archive, parent_page, overwrites={}):
                             page_record['content']['pk'] = None
                             break
 
+                    page_record['content']['content_type'] = content_type
                     # Create page instance.
                     page = Page.from_serializable_data(page_record['content'])
 
@@ -132,7 +133,6 @@ def import_page(uploaded_archive, parent_page, overwrites={}):
                     page.numchild = 0
                     page.url_path = None
                     page.content_type = page_content_type
-                    page.translation_key = uuid.uuid4()
 
                     # Handle children of the imported page(s).
                     if i == 0:
@@ -166,10 +166,7 @@ def import_page(uploaded_archive, parent_page, overwrites={}):
                     specific_page.__dict__.update(base_page.__dict__)
                     specific_page.content_type = ContentType.objects.get_for_model(model)
                     update_page_references(specific_page, pages_by_original_id)
-                    try:
-                        specific_page.save()
-                    except Exception as e:
-                        print(str(e))
+                    specific_page.save()
 
             return (len(contents) - len(existing_pages), len(existing_pages), error_msg)
 
@@ -177,6 +174,7 @@ def import_page(uploaded_archive, parent_page, overwrites={}):
             # If content.json does not exist, then return the error,
             # and terminate the import_page.
             logging.error("Importing file failed because file does not exist: " + str(e))
+            traceback.print_exception(type(e), e, e.__traceback__)
             return (0, 1, "File does not exist: " + str(e))
 
     return (0, 1, "")

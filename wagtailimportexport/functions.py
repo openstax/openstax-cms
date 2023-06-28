@@ -9,6 +9,7 @@ from django.core.files.storage import get_storage_class
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models.fields.related import ForeignKey
 from django.db.models.fields.reverse_related import ManyToOneRel
+from django.contrib.contenttypes.models import ContentType
 
 from wagtail.core.fields import StreamField
 from wagtail.documents.models import Document
@@ -25,7 +26,7 @@ def null_pks(page, data):
     Returns:
     N/A. Overwrites the argument.
     """
-    
+
     # Nullify the main ID
     data['id'] = None
     data['pk'] = None
@@ -34,10 +35,11 @@ def null_pks(page, data):
     for field_name, field_val in data.items():
         if type(field_val) != list:
             continue
-        
+
         for i, sub_item in enumerate(field_val):
             if 'pk' in sub_item:
                 data[field_name][i]['pk'] = None
+
 
 def find_null_child_blocks(subfield, location, data):
     """
@@ -65,9 +67,10 @@ def find_null_child_blocks(subfield, location, data):
             if isinstance(field_val, ForeignKey):
                 # TODO: Implement overwriting.
                 pass
-            
+
             # Recursive Calls
-            find_null_child_blocks(field_val, location+[field_key], data)
+            find_null_child_blocks(field_val, location + [field_key], data)
+
 
 def find_null_child_relations(subfield, location, data):
     """
@@ -95,12 +98,13 @@ def find_null_child_relations(subfield, location, data):
             if isinstance(field, ForeignKey):
                 if not location[0] in data:
                     continue
-                
+
                 for i, value in enumerate(data[location[0]]):
                     if not field.name in data[location[0]][i]:
                         continue
-                    
+
                     data[location[0]][i][field.name] = None
+
 
 def null_fks(page, data):
     """
@@ -116,11 +120,11 @@ def null_fks(page, data):
 
     # Loop through all fields.
     for field in page._meta.get_fields():
-        
+
         # Check whether the field is a ForeignKey.
         # By nature, owner, content_type, live_revision
         # are foreign keys defined by wagtail core pages.
-        if(isinstance(field, ForeignKey)):
+        if (isinstance(field, ForeignKey)):
             data[field.name] = None
 
         # StreamFields often have foreign keys associated with them.
@@ -130,7 +134,8 @@ def null_fks(page, data):
         # # Many to One relations often have foreign keys associated with them.
         # if(isinstance(field, ManyToOneRel)):
         #     find_null_child_relations(field, [field.name], data)
-        
+
+
 def zip_contents(page_contents):
     """
     Creates and returns a zip archive of all supplied items.
@@ -158,7 +163,7 @@ def zip_contents(page_contents):
                 'content.json',
                 json.dumps(page_contents, indent=2, cls=DjangoJSONEncoder)
             )
-            
+
             # Loop through pages to explore all used images and documents.
             for page in page_contents:
 
@@ -166,33 +171,35 @@ def zip_contents(page_contents):
                 for image_def in page['images'].values():
                     if not image_def:
                         continue
-                    
+
                     filename = image_def['file']['name']
 
                     try:
                         with file_storage.open(filename, 'rb') as f:
                             zf.writestr(filename, f.read())
                     except FileNotFoundError:
-                        logging.error("File "+str(filename)+" is not found on local file storage and was not exported.")
+                        logging.error(
+                            "File " + str(filename) + " is not found on local file storage and was not exported.")
 
-                
                 # Export all the documents.
                 for doc_def in page['documents'].values():
                     if not doc_def:
                         continue
-                    
+
                     filename = doc_def['file']['name']
 
                     try:
                         with file_storage.open(filename, 'rb') as f:
                             zf.writestr(filename, f.read())
                     except FileNotFoundError:
-                        logging.error("File "+str(filename)+" is not found on local file storage and was not exported.")
-        
+                        logging.error(
+                            "File " + str(filename) + " is not found on local file storage and was not exported.")
+
         with open(zfname, 'rb') as zf:
             fd = zf.read()
 
     return io.BytesIO(fd)
+
 
 def unzip_contents(zip_contents):
     """
@@ -213,7 +220,7 @@ def unzip_contents(zip_contents):
     zip_contents.extractall(tempdir)
 
     # Return the mapping of all extracted members.
-    return {member: tempdir+'/'+member for member in zip_contents.namelist()}
+    return {member: tempdir + '/' + member for member in zip_contents.namelist()}
 
 
 def document_title(doc_pk):
@@ -230,3 +237,11 @@ def document_id(doc_title):
         return None
     else:
         return doc[0].pk
+
+
+def content_type(content_type_id):
+    content_type = ContentType.objects.all().filter(pk=content_type_id)
+    if not content_type:
+        return None
+    else:
+        return str(content_type[0])
