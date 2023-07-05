@@ -17,10 +17,10 @@ from wagtailimportexport.config import app_settings
 from wagtail.documents.models import Document
 
 
-def export_page(settings = {'root_page': None, 'export_unpublished': False, 
-    'export_documents': False, 'export_images': False, 'null_pk': True,
-    'null_fk': False, 'null_users': False
-    }):
+def export_page(settings={'root_page': None, 'export_unpublished': False,
+                          'export_documents': False, 'export_images': False, 'null_pk': True,
+                          'null_fk': False, 'null_users': False
+                          }):
     """
     Exports the root_page as well as its children (if the setting is set).
 
@@ -37,11 +37,11 @@ def export_page(settings = {'root_page': None, 'export_unpublished': False,
     # If root_page is not set, then set it the main directory as default.
     if not settings['root_page']:
         settings['root_page'] = Page.objects.filter(url_path='/').first()
-    
+
     # Get the list of the pages, (that are the descendant of the root_page).
     pages = Page.objects.descendant_of(
         settings['root_page'], inclusive=True).order_by('path').specific()
-    
+
     # Filter the pages if export_unpublished is set to false.
     if not settings['export_unpublished']:
         pages = pages.filter(live=True)
@@ -57,28 +57,29 @@ def export_page(settings = {'root_page': None, 'export_unpublished': False,
         # skip over pages whose parents haven't already been exported
         # (which means that export_unpublished is false and the parent was unpublished)
         if i == 0 or (parent_path in exported_paths):
-            
+
             # Turn page data to a dictionary.
             data = json.loads(page.to_json())
             locale = data['locale']
 
             # look up document titles
-            cover = functions.document_title(data['cover'])
-            title_image = functions.document_title(data['title_image'])
-            hi_res_pdf = functions.document_title(data['high_resolution_pdf'])
-            lo_res_pdf = functions.document_title(data['low_resolution_pdf'])
-            community_logo = functions.document_title(data['community_resource_logo'])
-            community_feature_link = functions.document_title(data['community_resource_feature_link'])
+            if page.content_type.model == 'book':
+                cover = functions.document_title(data['cover'])
+                title_image = functions.document_title(data['title_image'])
+                hi_res_pdf = functions.document_title(data['high_resolution_pdf'])
+                lo_res_pdf = functions.document_title(data['low_resolution_pdf'])
+                community_logo = functions.document_title(data['community_resource_logo'])
+                community_feature_link = functions.document_title(data['community_resource_feature_link'])
 
-            # Get list (and metadata) of images and documents to be exported.            
+            # Get list (and metadata) of images and documents to be exported.
             images = list_fileobjects(page, settings, Image) if settings['export_images'] else {}
             documents = list_fileobjects(page, settings, Document) if settings['export_documents'] else {}
 
-            #Remove FKs
+            # Remove FKs
             if settings['null_fk']:
                 functions.null_fks(page, data)
 
-            #Remove the owner of the page.
+            # Remove the owner of the page.
             if settings['null_users'] and not data.get('owner'):
                 data['owner'] = None
 
@@ -91,12 +92,13 @@ def export_page(settings = {'root_page': None, 'export_unpublished': False,
             data['pk'] = None
             data['locale'] = locale
             # add document titles to data
-            data['cover'] = cover
-            data['title_image'] = title_image
-            data['high_resolution_pdf'] = hi_res_pdf
-            data['low_resolution_pdf'] = lo_res_pdf
-            data['community_resource_logo'] = community_logo
-            data['community_resource_feature_link'] = community_feature_link
+            if page.content_type.model == 'book':
+                data['cover'] = cover
+                data['title_image'] = title_image
+                data['high_resolution_pdf'] = hi_res_pdf
+                data['low_resolution_pdf'] = lo_res_pdf
+                data['community_resource_logo'] = community_logo
+                data['community_resource_feature_link'] = community_feature_link
 
             # Export page data.
             page_data.append({
@@ -110,6 +112,7 @@ def export_page(settings = {'root_page': None, 'export_unpublished': False,
             exported_paths.add(page.path)
 
     return functions.zip_contents(page_data)
+
 
 def list_fileobjects(page, settings, objtype):
     """
@@ -149,13 +152,14 @@ def list_fileobjects(page, settings, objtype):
                         objects[field.name] = instance_to_data(instance, null_users=settings['null_users'])
 
                 except (FileNotFoundError, objtype.DoesNotExist):
-                    logging.error("File for "+str(field.name)+" is not found on the environment, skipping.")
+                    logging.error("File for " + str(field.name) + " is not found on the environment, skipping.")
                     objects[field.name] = None
 
             else:
                 objects[field.name] = None
-    
+
     return objects
+
 
 def instance_to_data(instance, null_users=False):
     """
@@ -164,7 +168,7 @@ def instance_to_data(instance, null_users=False):
     Arguments:
     instance -- objects.get() object instance.
     null_users -- Whether to null user references.
-    
+
     Returns:
     A dictionary of metadata of instance.
     """
