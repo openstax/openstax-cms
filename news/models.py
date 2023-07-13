@@ -212,7 +212,7 @@ def news_article_collection_search(collection, content_types=None, subjects=None
         subjects = []
     if content_types is None:
         content_types = []
-    news_articles = NewsArticle.objects.all().order_by('-date')
+    news_articles = NewsArticle.objects.filter(live=True).order_by('-date')
     collection_articles = []
     articles_to_return = []
 
@@ -252,7 +252,7 @@ def news_article_collection_search(collection, content_types=None, subjects=None
 
 
 def news_article_subject_search(subject):
-    news_articles = NewsArticle.objects.all().order_by('-date')
+    news_articles = NewsArticle.objects.filter(live=True).order_by('-date')
     articles_to_return = []
     for article in news_articles:
         blog_subjects = article.blog_subjects
