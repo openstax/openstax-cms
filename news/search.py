@@ -39,7 +39,7 @@ def get_query(query_string):
     query = SearchQuery(query_items.pop())
 
     for term in query_items:
-        query &= SearchQuery(term)
+        query &= SearchQuery(term, search_type='websearch')
        
     return query
 
@@ -57,13 +57,13 @@ def search(request):
     if ('q' in request.GET) and request.GET['q'].strip():
         query_string = request.GET['q']
 
-        vector = SearchVector('title', weight='A') + SearchVector('subheading', weight='B') + SearchVector('author', weight='B') + SearchVector('body', weight='C') + SearchVector('tags__name', weight='C')
+        vector = SearchVector('title', weight='A') + SearchVector('article_subjects__name', weight='B') + SearchVector('body', weight='B') + SearchVector('author', weight='B') + SearchVector('tags__name', weight='C')  + SearchVector('collections__name', weight='C')  + SearchVector('content_types__content_type', weight='C')
         query = get_query(query_string)
 
         found_entries = NewsArticle.objects.annotate(
             rank=SearchRank(vector, query),
             search=vector,
-        ).filter(search=query).order_by('rank', '-date')
+        ).filter(rank__gte=0.3).order_by('rank', '-date')
 
     if ('collection' in request.GET) and request.GET['collection'].strip():
         collection_name = request.GET['collection']

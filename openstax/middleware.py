@@ -124,7 +124,6 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
 
     def redirect_path_found(self, url_path):
         if '/blog/' in url_path or '/details/books/' in url_path or '/foundation' in url_path or '/privacy' in url_path or '' == url_path:
-
             return True
         else:
             return False

@@ -1,6 +1,7 @@
 import io
 import json
 import logging
+import traceback
 from zipfile import ZipFile
 
 from django.apps import apps
@@ -66,10 +67,12 @@ def import_page(uploaded_archive, parent_page, overwrites={}):
                 for (i, page_record) in enumerate(contents):
 
                     new_field_datas = {}
+                    content_type = functions.content_type_by_model(page_record['model'])
+                    #content_type = page_record['content']['content_type']
 
                     # Skip the existing pages.
                     if i in existing_pages:
-                        error_msg = 'Duplicate slug'
+                        error_msg = 'Import stopped. Duplicate slug: ' + str(page_record['content']['slug'])
                         continue
 
                     # Reassign image IDs.
@@ -96,13 +99,14 @@ def import_page(uploaded_archive, parent_page, overwrites={}):
                     for (field, new_value) in overwrites.items():
                         page_record['content'][field] = new_value
 
-                    # look up document ids
-                    page_record['content']['cover'] = functions.document_id(page_record['content']['cover'])
-                    page_record['content']['title_image'] = functions.document_id(page_record['content']['title_image'])
-                    page_record['content']['high_resolution_pdf'] = functions.document_id(page_record['content']['high_resolution_pdf'])
-                    page_record['content']['low_resolution_pdf'] = functions.document_id(page_record['content']['low_resolution_pdf'])
-                    page_record['content']['community_resource_logo'] = functions.document_id(page_record['content']['community_resource_logo'])
-                    page_record['content']['community_resource_feature_link'] = functions.document_id(page_record['content']['community_resource_feature_link'])
+                    if page_record['model'] == 'book':
+                        # look up document ids
+                        page_record['content']['cover'] = functions.document_id(page_record['content']['cover'])
+                        page_record['content']['title_image'] = functions.document_id(page_record['content']['title_image'])
+                        page_record['content']['high_resolution_pdf'] = functions.document_id(page_record['content']['high_resolution_pdf'])
+                        page_record['content']['low_resolution_pdf'] = functions.document_id(page_record['content']['low_resolution_pdf'])
+                        page_record['content']['community_resource_logo'] = functions.document_id(page_record['content']['community_resource_logo'])
+                        page_record['content']['community_resource_feature_link'] = functions.document_id(page_record['content']['community_resource_feature_link'])
 
                     # set page.pk to null if pk already exists
                     pages = Page.objects.all()
@@ -111,6 +115,7 @@ def import_page(uploaded_archive, parent_page, overwrites={}):
                             page_record['content']['pk'] = None
                             break
 
+                    page_record['content']['content_type'] = content_type
                     # Create page instance.
                     page = Page.from_serializable_data(page_record['content'])
 
@@ -165,6 +170,7 @@ def import_page(uploaded_archive, parent_page, overwrites={}):
             # If content.json does not exist, then return the error,
             # and terminate the import_page.
             logging.error("Importing file failed because file does not exist: " + str(e))
+            traceback.print_exception(type(e), e, e.__traceback__)
             return (0, 1, "File does not exist: " + str(e))
 
     return (0, 1, "")
@@ -303,3 +309,4 @@ def update_page_references(model, pages_by_original_id):
             child.pk = None
             # update page references on the child model, including the ParentalKey
             update_page_references(child, pages_by_original_id)
+            

@@ -150,6 +150,10 @@ class NewsIndex(Page):
             ('button_text', blocks.CharBlock()),
             ('button_href', blocks.URLBlock())
          ], null=True, use_json_field=True)
+    footer_text = models.CharField(max_length=255, blank=True, null=True)
+    footer_link = models.URLField(blank=True, null=True)
+    footer_button_text = models.CharField(max_length=255, blank=True, null=True)
+    display_footer = models.BooleanField(default=False)
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -160,6 +164,10 @@ class NewsIndex(Page):
 
     content_panels = Page.content_panels + [
         FieldPanel('interest_block'),
+        FieldPanel('footer_text'),
+        FieldPanel('footer_link'),
+        FieldPanel('footer_button_text'),
+        FieldPanel('display_footer'),
     ]
 
     promote_panels = [
@@ -171,6 +179,10 @@ class NewsIndex(Page):
 
     api_fields = [
         APIField('interest_block'),
+        APIField('footer_text'),
+        APIField('footer_link'),
+        APIField('footer_button_text'),
+        APIField('display_footer'),
         APIField('slug'),
         APIField('seo_title'),
         APIField('search_description'),

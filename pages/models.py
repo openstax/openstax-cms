@@ -751,13 +751,27 @@ class GeneralPage(Page):
     ], use_json_field=True)
 
     def get_sitemap_urls(self, request=None):
-        if self.slug == 'kinetic':
+        if self.slug in ['kinetic', 'write-for-us', 'editorial-calendar']:
             return [
                 {
                     'location': '{}/{}'.format(Site.find_for_request(request).root_url, self.slug),
                     'lastmod': (self.last_published_at or self.latest_revision_created_at),
                 }
             ]
+        # elif self.slug == 'write-for-us':
+        #     return [
+        #         {
+        #             'location': '{}/{}'.format(Site.find_for_request(request).root_url, self.slug),
+        #             'lastmod': (self.last_published_at or self.latest_revision_created_at),
+        #         }
+        #     ]
+        # elif self.slug == 'editorial-calendar':
+        #     return [
+        #         {
+        #             'location': '{}/{}'.format(Site.find_for_request(request).root_url, self.slug),
+        #             'lastmod': (self.last_published_at or self.latest_revision_created_at),
+        #         }
+        #     ]
         else:
             return []
 
@@ -2719,7 +2733,7 @@ class Subject(Page):
             categories = {}
 
             subject_categories['icon'] = subject.subject_icon
-            all_books = Book.objects.all().order_by('title')
+            all_books = [book for book in Book.objects.all().order_by('title') if subject.name in book.subjects()]
             for category in snippets.SubjectCategory.objects.filter(subject_id=subject.id).order_by('subject_category'):
                 books = {}
                 book_list = {}

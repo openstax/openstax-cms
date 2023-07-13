@@ -271,15 +271,19 @@ class Partner(models.Model):
 
     @property
     def average_rating(self):
-        ratings = PartnerReview.objects.filter(partner=self, status='Approved').aggregate(Avg('rating'))
-        if None in ratings.values():
-            return {'rating__avg': 0.0}
-        else:
-            return ratings
+        # returning zero since reviews are not displayed
+        # ratings = PartnerReview.objects.filter(partner=self, status='Approved').aggregate(Avg('rating'))
+        # if None in ratings.values():
+        #     return {'rating__avg': 0.0}
+        # else:
+        #     return ratings
+        return {'rating__avg': 0.0}
 
     @property
     def rating_count(self):
-        return PartnerReview.objects.filter(partner=self, status='Approved').count()
+        # returning zero since reviews are not displayed
+        #return PartnerReview.objects.filter(partner=self, status='Approved').count()
+        return 0
 
     @hooks.register('register_admin_menu_item')
     def register_partner_menu_item():
