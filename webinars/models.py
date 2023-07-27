@@ -76,13 +76,8 @@ class Webinar(models.Model):
             if len(c['value']) > 0:
                 if 'value' in c['value'][0]:
                     collection_id = c['value'][0]['value']['collection']
-                    #featured = c['value'][0]['value']['featured']
-                    #popular = c['value'][0]['value']['popular']
                     collection = WebinarCollection.objects.filter(id=collection_id)
-                    print('selected collection: ' + str(collection[0]))
                     cols.append(str(collection[0]))
-                    #data = {'name': str(collection[0]), 'featured': featured, 'popular': popular}
-                    #cols.append(data)
         return cols
 
     def selected_subjects_json(self):
@@ -97,7 +92,6 @@ class Webinar(models.Model):
         return subjects
 
     def selected_collections_json(self):
-        print('collection json called')
         prep_value = self.webinar_collections.get_prep_value()
         cols = []
         for c in prep_value:
