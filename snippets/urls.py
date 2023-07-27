@@ -11,4 +11,5 @@ router.register('givebanner', views.GiveBannerViewSet, basename="GiveBanner")
 router.register('blogcontenttype', views.BlogContentTypeViewSet, basename="BlogContentType")
 router.register('blogcollection', views.BlogCollectionViewSet, basename="BlogCollection")
 router.register('nowebinarmessage', views.NoWebinarMessageViewSet, basename="NoWebinarMessage")
+router.register('webinarcollection', views.WebinarCollectionViewSet, basename="WebinarCollection")
 urlpatterns = router.urls

@@ -163,3 +163,4 @@ class AssignableBookBlock(blocks.StructBlock):
                 'cover': build_document_url(value['cover'].url),
                 'title': value['title'],
             }
+

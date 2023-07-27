@@ -2,7 +2,8 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from global_settings.functions import invalidate_cloudfront_caches
-from snippets.models import Subject, Role, ErrataContent, SubjectCategory, GiveBanner, BlogContentType, BlogCollection
+from snippets.models import Subject, Role, ErrataContent, SubjectCategory, GiveBanner, BlogContentType, BlogCollection, \
+    WebinarCollection
 
 
 @receiver(post_save, sender=Subject)
@@ -38,3 +39,8 @@ def clear_cloudfront_on_blog_content_type_save(sender, **kwargs):
 @receiver(post_save, sender=BlogCollection)
 def clear_cloudfront_on_blog_collection_save(sender, **kwargs):
     invalidate_cloudfront_caches('snippets/blogcollection')
+
+
+@receiver(post_save, sender=WebinarCollection)
+def clear_cloudfront_on_webinar_collection_save(sender, **kwargs):
+    invalidate_cloudfront_caches('snippets/webinarcollection')

@@ -4,7 +4,7 @@ from django.test import TestCase
 from django.utils import timezone
 from wagtail.test.utils import WagtailPageTests
 
-from snippets.models import Subject
+from snippets.models import Subject, WebinarCollection
 from webinars.models import Webinar
 
 
@@ -21,6 +21,11 @@ class WebinarTests(WagtailPageTests, TestCase):
                                  search_description="Economics page description.")
         self.economics.save()
         economics_id = self.economics.id
+
+        self.research = WebinarCollection(name="Research", description="this is a description",
+                                 image=None)
+        self.research.save()
+        research_id = self.research.id
 
         # create webinars
         self.webinar = Webinar(title="Webinar 1",
@@ -61,12 +66,25 @@ class WebinarTests(WagtailPageTests, TestCase):
                                         }
                                    ]
                                ),
+                               webinar_collections=json.dumps(
+                                   [
+                                       {"type": "collection", "value": [
+                                        {"id": "0e8074ca-5cb6-4637-9411-8c5e20776a04", "type": "item",
+                                        "value": {"popular": False, "featured": False, "collection": research_id}
+                                         }
+                                       ]}
+                                   ]
+                               ),
                                )
         self.webinar2.save()
 
     def test_search_subject_only(self):
         response = self.client.get('/apps/cms/api/webinars/?subject=Math')
         self.assertContains(response, 'Math')
+
+    def test_search_collection_only(self):
+        response = self.client.get('/apps/cms/api/webinars/?collection=Research')
+        self.assertContains(response, 'Research')
 
     def test_all_webinars(self):
         response = self.client.get('/apps/cms/api/webinars/')
