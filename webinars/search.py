@@ -39,7 +39,7 @@ def get_query(query_string):
     query = SearchQuery(query_items.pop())
 
     for term in query_items:
-        query &= SearchQuery(term, search_type='websearch')
+        query &= SearchQuery(term)
 
     return query
 
