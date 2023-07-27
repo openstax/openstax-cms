@@ -3,7 +3,6 @@ import re
 from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.http import JsonResponse
 
-from news.models import NewsArticle, news_article_collection_search, news_article_subject_search
 from webinars.models import Webinar
 
 
