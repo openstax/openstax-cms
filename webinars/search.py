@@ -45,15 +45,12 @@ def get_query(query_string):
     return query
 
 
-def search(query_string):
-    #query_string = ''
+def search(request):
     found_entries = []
-    # filter by tags
 
     # search by keyword
-    #if ('q' in request.GET) and request.GET['q'].strip():
-    if(query_string):
-        #query_string = request.GET['q']
+    if ('q' in request.GET) and request.GET['q'].strip():
+        query_string = request.GET['q']
 
         vector = SearchVector('title', weight='A') + SearchVector('description', weight='A') + SearchVector(
             'speakers', weight='B')
@@ -65,13 +62,7 @@ def search(query_string):
         ).filter(rank__gte=0.3).order_by('-start', 'rank')
 
     search_results_json = []
-    #search_results_shown = set()
     for result in found_entries:
-        # if result.slug in search_results_shown:
-        #     continue
-
-        #search_results_shown.add(result.slug)
-
         search_results_json.append({
             'id': result.id,
             'title': result.title,
