@@ -3099,11 +3099,6 @@ class AllyLogos(Page):
     ally_logos = StreamField([
         ('ally_logo', blocks.ListBlock(AllyLogoBlock())),
     ], use_json_field=True)
-    openstax_logos_heading = models.CharField(max_length=255)
-    openstax_logos_description = RichTextField()
-    openstax_logos = StreamField([
-        ('openstax_logo', blocks.ListBlock(AllyLogoBlock())),
-    ], use_json_field=True)
     book_ally_logos_heading = models.CharField(max_length=255)
     book_ally_logos_description = RichTextField()
     book_ally_logos = StreamField([
@@ -3125,9 +3120,6 @@ class AllyLogos(Page):
         FieldPanel('ally_logos_heading'),
         FieldPanel('ally_logos_description'),
         FieldPanel('ally_logos'),
-        FieldPanel('openstax_logos_heading'),
-        FieldPanel('openstax_logos_description'),
-        FieldPanel('openstax_logos'),
         FieldPanel('book_ally_logos_heading'),
         FieldPanel('book_ally_logos_description'),
         FieldPanel('book_ally_logos')
@@ -3139,9 +3131,6 @@ class AllyLogos(Page):
         APIField('ally_logos_heading'),
         APIField('ally_logos_description'),
         APIField('ally_logos'),
-        APIField('openstax_logos_heading'),
-        APIField('openstax_logos_description'),
-        APIField('openstax_logos'),
         APIField('book_ally_logos_heading'),
         APIField('book_ally_logos_description'),
         APIField('book_ally_logos'),

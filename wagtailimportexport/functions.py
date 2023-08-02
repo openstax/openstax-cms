@@ -135,7 +135,7 @@ def null_fks(page, data):
         # if(isinstance(field, ManyToOneRel)):
         #     find_null_child_relations(field, [field.name], data)
 
-        
+
 def zip_contents(page_contents):
     """
     Creates and returns a zip archive of all supplied items.

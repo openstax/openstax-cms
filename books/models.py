@@ -481,7 +481,10 @@ class Book(Page):
     created = models.DateTimeField(auto_now_add=True)
     book_state = models.CharField(max_length=255, choices=BOOK_STATES, default='live', help_text='The state of the book.')
     cnx_id = models.CharField(
-        max_length=255, help_text="This is used to pull relevant information from CNX.",
+        max_length=255, help_text="collection.xml UUID. Should be same as book UUID",
+        blank=True, null=True)
+    book_uuid = models.CharField(
+        max_length=255, help_text="collection.xml UUID. Should be same as cnx id.",
         blank=True, null=True)
     salesforce_abbreviation = models.CharField(max_length=255, blank=True, null=True)
     salesforce_name = models.CharField(max_length=255, blank=True, null=True)
@@ -662,6 +665,7 @@ class Book(Page):
     book_detail_panel = Page.content_panels + [
         FieldPanel('book_state'),
         FieldPanel('cnx_id'),
+        FieldPanel('book_uuid'),
         FieldPanel('salesforce_abbreviation'),
         FieldPanel('salesforce_name'),
         FieldPanel('salesforce_book_id'),
@@ -757,6 +761,7 @@ class Book(Page):
         APIField('title'),
         APIField('book_state'),
         APIField('cnx_id'),
+        APIField('book_uuid'),
         APIField('salesforce_abbreviation'),
         APIField('salesforce_name'),
         APIField('salesforce_book_id'),

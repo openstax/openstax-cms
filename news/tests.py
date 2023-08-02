@@ -135,6 +135,40 @@ class NewsTests(WagtailPageTests, TestCase):
                                         ]
                                     ))
         news_index.add_child(instance=self.article3)
+        self.article4 = NewsArticle(title="Article 4",
+                                    slug="article4",
+                                    date=timezone.now(),
+                                    heading="Sample Article 4",
+                                    subheading="Sample Subheading 4",
+                                    author="OpenStax",
+                                    body=json.dumps(
+                                        [
+                                            {"type": "paragraph",
+                                             "value": "<p>This is the body of the post</p><p>This is the second paragraph</p>"}
+                                        ]
+                                    ),
+                                    article_subjects=json.dumps(
+                                        [
+                                            {'type': 'subject', 'value': [
+                                                {'type': 'item', 'value': {'subject': math_id, 'featured': False}}]}
+                                        ]
+                                    ),
+                                    content_types=json.dumps(
+                                        [
+                                            {'type': 'content_type', 'value': [
+                                                {'type': 'item', 'value': {'content_type': case_study_id}}]}
+                                        ]
+                                    ),
+                                    collections=json.dumps(
+                                        [
+                                            {'type': 'collection', 'value': [
+                                                {'type': 'item', 'value': {'collection': update_id, 'featured': False,
+                                                                           'popular': False}}]}
+
+                                        ]
+                                    ),
+                                    live=False)
+        news_index.add_child(instance=self.article4)
 
     @classmethod
     def setUpTestData(cls):
@@ -174,14 +208,26 @@ class NewsTests(WagtailPageTests, TestCase):
         response = self.client.get('/apps/cms/api/search/',{'subjects': 'Math'})
         self.assertContains(response, 'Math')
 
+    def test_search_live_subject_only(self):
+        response = self.client.get('/apps/cms/api/search/',{'subjects': 'Math'})
+        self.assertNotContains(response, 'Article 4')
+
     def test_search_blog_collection(self):
         response = self.client.get('/apps/cms/api/search/', {'collection': 'OpenStax Updates'})
         self.assertContains(response, 'OpenStax Updates')
+
+    def test_search_live_blog_collection(self):
+        response = self.client.get('/apps/cms/api/search/', {'collection': 'OpenStax Updates'})
+        self.assertNotContains(response, 'Article 4')
 
     def test_search_blog_content_type(self):
         response = self.client.get('/apps/cms/api/search/', {'collection': 'OpenStax Updates', 'types': 'Video'})
         self.assertContains(response, 'OpenStax Updates')
         self.assertContains(response, 'Video')
+
+    def test_search_live_blog_content_type(self):
+        response = self.client.get('/apps/cms/api/search/', {'collection': 'OpenStax Updates', 'types': 'Case Study'})
+        self.assertNotContains(response, 'Article 4')
 
     def test_search_blogcollection_and_subject(self):
         response = self.client.get('/apps/cms/api/search/', {'collection': 'OpenStax Updates', 'subjects': 'Economics'})
