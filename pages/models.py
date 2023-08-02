@@ -581,7 +581,7 @@ class K12MainPage(Page):
     def get_sitemap_urls(self, request=None):
         return [
             {
-                'location': '{}/k12/{}'.format(Site.find_for_request(request).root_url, self.slug),
+                'location': '{}/k12/{}'.format(Site.find_for_request(request).root_url, self.slug[4:]),
                 'lastmod': (self.last_published_at or self.latest_revision_created_at),
             }
         ]
@@ -2582,6 +2582,14 @@ class Subjects(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+
+    def get_sitemap_urls(self, request=None):
+        return [
+            {
+                'location': '{}/subjects/{}'.format(Site.find_for_request(request).root_url, self.slug),
+                'lastmod': (self.last_published_at or self.latest_revision_created_at),
+            }
+        ]
 
     @property
     def subjects(self):
