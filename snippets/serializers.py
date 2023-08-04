@@ -1,5 +1,5 @@
 from .models import Role, Subject, K12Subject, ErrataContent, SubjectCategory, GiveBanner, BlogContentType, \
-    BlogCollection, NoWebinarMessage
+    BlogCollection, NoWebinarMessage, WebinarCollection
 
 from rest_framework import serializers, generics
 
@@ -83,4 +83,12 @@ class NoWebinarMessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = NoWebinarMessage
         fields = ('no_webinar_message',)
+
+
+class WebinarCollectionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WebinarCollection
+        fields = ('name',
+                  'description',
+                  'collection_image')
 

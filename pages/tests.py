@@ -145,6 +145,36 @@ class PageTests(WagtailPageTests):
 
         self.assertEqual(retrieved_page.title, "Team Page")
 
+    def test_can_create_about_us_page(self):
+        about_us = AboutUsPage(title='About Us',
+                               who_heading='About Us',
+                               who_paragraph='Who paragraph',
+                               what_heading='what heading',
+                               what_paragraph='what paragraph',
+                               where_heading='where heading',
+                               where_paragraph='where paragraph',
+        )
+        self.homepage.add_child(instance=about_us)
+        self.assertCanCreateAt(HomePage, AboutUsPage)
+
+        retrieved_page = Page.objects.get(id=about_us.id)
+        self.assertEqual(retrieved_page.title, "About Us")
+
+    def test_can_create_k12_main_page(self):
+        k12_page = K12MainPage(title='K12 Main Page',
+                               banner_headline='banner heading',
+                               banner_description='banner description',
+                               subject_list_default='subject list default',
+                               highlights_header='highlights header',
+                               subject_library_header='subjects library header',
+                               subject_library_description='subjects library description',
+        )
+        self.homepage.add_child(instance=k12_page)
+        self.assertCanCreateAt(HomePage, K12MainPage)
+
+        retrieved_page = Page.objects.get(id=k12_page.id)
+        self.assertEqual(retrieved_page.title, "K12 Main Page")
+
 
 class ErrataListTest(WagtailPageTests):
 
