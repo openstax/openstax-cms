@@ -581,7 +581,7 @@ class K12MainPage(Page):
     def get_sitemap_urls(self, request=None):
         return [
             {
-                'location': '{}/k12/{}'.format(Site.find_for_request(request).root_url, self.slug[4:]),
+                'location': '{}/k12'.format(Site.find_for_request(request).root_url),
                 'lastmod': (self.last_published_at or self.latest_revision_created_at),
             }
         ]
@@ -2583,14 +2583,6 @@ class Subjects(Page):
         related_name='+'
     )
 
-    def get_sitemap_urls(self, request=None):
-        return [
-            {
-                'location': '{}/subjects/{}'.format(Site.find_for_request(request).root_url, self.slug),
-                'lastmod': (self.last_published_at or self.latest_revision_created_at),
-            }
-        ]
-
     @property
     def subjects(self):
         subject_list = {}
@@ -2716,6 +2708,14 @@ class Subject(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+
+    def get_sitemap_urls(self, request=None):
+        return [
+            {
+                'location': '{}/subjects/{}'.format(Site.find_for_request(request).root_url, self.slug),
+                'lastmod': (self.last_published_at or self.latest_revision_created_at),
+            }
+        ]
 
     @property
     def selected_subject(self):
@@ -3024,6 +3024,14 @@ class K12Subject(Page):
                 'resource_category': resource.resource_category,
                 })
         return faculty_resource_data
+
+    def get_sitemap_urls(self, request=None):
+        return [
+            {
+                'location': '{}/k12/{}'.format(Site.find_for_request(request).root_url, self.slug[4:]),
+                'lastmod': (self.last_published_at or self.latest_revision_created_at),
+            }
+        ]
 
     api_fields = [
         APIField('subheader'),
