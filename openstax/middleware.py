@@ -8,10 +8,12 @@ from django.shortcuts import get_object_or_404
 from django.template.response import TemplateResponse
 from django.http import HttpResponse
 from urllib.parse import unquote
-from books.models import Book
+
+from api.models import FeatureFlag
+from books.models import Book, BookIndex
 from openstax.functions import build_image_url
 from news.models import NewsArticle
-from pages.models import HomePage, Supporters, GeneralPage, PrivacyPolicy
+from pages.models import HomePage, Supporters, GeneralPage, PrivacyPolicy, K12Subject, Subject, Subjects
 
 
 class HttpSmartRedirectResponse(HttpResponsePermanentRedirect):
@@ -91,6 +93,19 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
                         page = NewsArticle.objects.filter(slug=page_slug)
                     elif '/privacy' in url_path:
                         page = PrivacyPolicy.objects.filter(slug='privacy-policy')
+                    elif '/k12' in url_path:
+                        page = K12Subject.objects.filter(slug='k12-' + page_slug)
+                    elif '/subjects' in url_path:
+                        flag = FeatureFlag.objects.filter(name='new_subjects')
+                        if flag[0].feature_active:
+                            if page_slug == 'subjects':
+                                page_slug = 'new-subjects-2'
+                                page = Subjects.objects.filter(slug=page_slug)
+                            else:
+                                page = Subject.objects.filter(slug=page_slug)
+                        else:
+                            page_slug = 'subjects'
+                            page = BookIndex.objects.filter(slug=page_slug)
                     else:
                         page = self.page_by_slug(page_slug)
 
@@ -103,28 +118,34 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
     def build_template(self, page, page_url):
         image_url = self.image_url(page.promote_image)
         template = '<!DOCTYPE html> <html> <head> <meta charset="utf-8">\n'
-        template += '    <title>' + str(page.seo_title) + '</title>\n'
+        template += '    <title>' + str(page.title) + '</title>\n'
         template += '    <meta name="description" content="{}" >\n'.format(page.search_description)
         template += '    <link rel="canonical" href="{}" />\n'.format(page_url)
         template += '    <meta property="og:url" content="{}" />\n'.format(page_url)
         template += '    <meta property="og:type" content="article" />\n'
-        template += '    <meta property="og:title" content="{}" />\n'.format(page.seo_title)
+        template += '    <meta property="og:title" content="{}" />\n'.format(page.title)
         template += '    <meta property="og:description" content="{}" />\n'.format(page.search_description)
         template += '    <meta property="og:image" content="{}" />\n'.format(image_url)
-        template += '    <meta property="og:image:alt" content="{}" />\n'.format(page.seo_title)
+        template += '    <meta property="og:image:alt" content="{}" />\n'.format(page.title)
         template += '    <meta name="twitter:card" content="summary_large_image">\n'
         template += '    <meta name="twitter:site" content="@OpenStax">\n'
-        template += '    <meta name="twitter:title" content="{}">\n'.format(page.seo_title)
+        template += '    <meta name="twitter:title" content="{}">\n'.format(page.title)
         template += '    <meta name="twitter:description" content="{}">\n'.format(page.search_description)
         template += '    <meta name="twitter:image" content="{}">\n'.format(image_url)
         template += '    <meta name="twitter:image:alt" content="OpenStax">\n'
-
         template += '</head><body></body></html>'
         return template
 
     def redirect_path_found(self, url_path):
-        if '/blog/' in url_path or '/details/books/' in url_path or '/foundation' in url_path or '/privacy' in url_path or '' == url_path:
+        if '/blog/' in url_path or '/details/books/' in url_path or '/foundation' in url_path or '/privacy' in url_path or '/subjects' in url_path or '' == url_path:
             return True
+        elif '/k12' in url_path:
+            last_slash = url_path.rfind('/')
+            k12_index = url_path.rfind('k12')
+            if last_slash < k12_index:
+                return False
+            else:
+                return True
         else:
             return False
 

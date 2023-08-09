@@ -9,6 +9,7 @@ from wagtail.models import Orderable, Page
 from wagtail.api import APIField
 from wagtail.models import Site
 
+from api.models import FeatureFlag
 from openstax.functions import build_image_url, build_document_url
 from books.models import Book, SubjectBooks, BookFacultyResources, BookStudentResources
 from webinars.models import Webinar
@@ -758,20 +759,6 @@ class GeneralPage(Page):
                     'lastmod': (self.last_published_at or self.latest_revision_created_at),
                 }
             ]
-        # elif self.slug == 'write-for-us':
-        #     return [
-        #         {
-        #             'location': '{}/{}'.format(Site.find_for_request(request).root_url, self.slug),
-        #             'lastmod': (self.last_published_at or self.latest_revision_created_at),
-        #         }
-        #     ]
-        # elif self.slug == 'editorial-calendar':
-        #     return [
-        #         {
-        #             'location': '{}/{}'.format(Site.find_for_request(request).root_url, self.slug),
-        #             'lastmod': (self.last_published_at or self.latest_revision_created_at),
-        #         }
-        #     ]
         else:
             return []
 
@@ -2597,6 +2584,18 @@ class Subjects(Page):
 
         return subject_list
 
+    def get_sitemap_urls(self, request=None):
+        flag = FeatureFlag.objects.filter(name='new_subjects')
+        if flag[0].feature_active:
+            return [
+                {
+                    'location': '{}/subjects'.format(Site.find_for_request(request).root_url),
+                    'lastmod': (self.last_published_at or self.latest_revision_created_at),
+                }
+            ]
+        else:
+            return []
+
     api_fields = [
         APIField('heading'),
         APIField('description'),
@@ -2710,12 +2709,16 @@ class Subject(Page):
     )
 
     def get_sitemap_urls(self, request=None):
-        return [
-            {
-                'location': '{}/subjects/{}'.format(Site.find_for_request(request).root_url, self.slug),
-                'lastmod': (self.last_published_at or self.latest_revision_created_at),
-            }
-        ]
+        flag = FeatureFlag.objects.filter(name='new_subjects')
+        if flag[0].feature_active:
+            return [
+                {
+                    'location': '{}/subjects/{}'.format(Site.find_for_request(request).root_url, self.slug),
+                    'lastmod': (self.last_published_at or self.latest_revision_created_at),
+                }
+            ]
+        else:
+            return []
 
     @property
     def selected_subject(self):
