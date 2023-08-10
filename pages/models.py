@@ -2713,7 +2713,7 @@ class Subject(Page):
         if flag[0].feature_active:
             return [
                 {
-                    'location': '{}/subjects/{}'.format(Site.find_for_request(request).root_url, self.slug),
+                    'location': '{}/subjects/{}'.format(Site.find_for_request(request).root_url, self.slug[0:-6]),
                     'lastmod': (self.last_published_at or self.latest_revision_created_at),
                 }
             ]

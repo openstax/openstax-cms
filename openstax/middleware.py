@@ -99,10 +99,10 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
                         flag = FeatureFlag.objects.filter(name='new_subjects')
                         if flag[0].feature_active:
                             if page_slug == 'subjects':
-                                page_slug = 'new-subjects-2'
+                                page_slug = 'new-subjects'
                                 page = Subjects.objects.filter(slug=page_slug)
                             else:
-                                page = Subject.objects.filter(slug=page_slug)
+                                page = Subject.objects.filter(slug=page_slug+'-books')
                         else:
                             page_slug = 'subjects'
                             page = BookIndex.objects.filter(slug=page_slug)
