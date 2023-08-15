@@ -1,3 +1,5 @@
+import json
+
 from django.test import TestCase, Client
 from django.core.management import call_command
 from wagtail.test.utils import WagtailTestUtils, WagtailPageTests
@@ -174,6 +176,36 @@ class PageTests(WagtailPageTests):
 
         retrieved_page = Page.objects.get(id=k12_page.id)
         self.assertEqual(retrieved_page.title, "K12 Main Page")
+
+    def test_can_create_contact_us_page(self):
+        contact_us_page = ContactUs(title='Contact Us',
+                               tagline='this is a tagline',
+                               mailing_header='Mailing header',
+                               mailing_address='123 Street, East SomeTown, Tx',
+                               customer_service='How can I help you?',
+        )
+        self.homepage.add_child(instance=contact_us_page)
+        self.assertCanCreateAt(HomePage, ContactUs)
+
+        retrieved_page = Page.objects.get(id=contact_us_page.id)
+        self.assertEqual(retrieved_page.title, "Contact Us")
+
+    def test_can_create_general_page(self):
+        general_page = GeneralPage(title='General Page',
+                               body=json.dumps(
+                                   [{"id": "ae6f048b-6eb5-42e7-844f-cfcd459f81b5", "type": "heading",
+                                     "value": "General Page"},
+                                    {"id": "a21bcbd4-fec4-432e-bf06-966d739c6de9", "type": "paragraph",
+                                     "value": "<p data-block-key=\"wr6bg\">This is a test of a general page.</p><p data-block-key=\"d57h\">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>"},
+                                    {"id": "4d339739-131c-4547-954b-0787afdc4914", "type": "tagline",
+                                     "value": "This is a test"}]
+                               ),
+        )
+        self.homepage.add_child(instance=general_page)
+        self.assertCanCreateAt(HomePage, GeneralPage)
+
+        retrieved_page = Page.objects.get(id=general_page.id)
+        self.assertEqual(retrieved_page.title, "General Page")
 
 
 class ErrataListTest(WagtailPageTests):
