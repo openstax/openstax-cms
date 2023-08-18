@@ -207,6 +207,134 @@ class PageTests(WagtailPageTests):
         retrieved_page = Page.objects.get(id=general_page.id)
         self.assertEqual(retrieved_page.title, "General Page")
 
+    def test_can_create_supporters_page(self):
+        supporters_page = Supporters(title='Supporters Page',
+                                  banner_heading='Banner heading',
+                                  banner_description='Banner description',
+                                  funder_groups=json.dumps(
+                                       [{"id": "5cf47334-37f6-433c-b695-80936bc7d236", "type": "content", "value":
+                                           {"image": None, "funders": [{"id": "647ce8be-eabb-40a2-abb9-136c2bb00e53", "type": "item", "value": {"url": "https://openstax.org", "funder_name": "Musser Foundation"}},
+                                                                       {"id": "c31a9a7a-f6e2-4b74-929b-5bc39f96568d", "type": "item", "value": {"url": "https://openstax.org", "funder_name": "Mike and Patricia Foundation"}}
+                                                                       ]}}]
+                                  ),
+                                  disclaimer='This field cannot be left blank',
+                          )
+        self.homepage.add_child(instance=supporters_page)
+        self.assertCanCreateAt(HomePage, Supporters)
+
+        retrieved_page = Page.objects.get(id=supporters_page.id)
+        self.assertEqual(retrieved_page.title, "Supporters Page")
+
+    def test_can_create_tos_page(self):
+        tos_page = TermsOfService(title='Terms of Service Page',
+                                  intro_heading='Intro heading',
+                                  terms_of_service_content='This is the terms of service',
+                          )
+        self.homepage.add_child(instance=tos_page)
+        self.assertCanCreateAt(HomePage, TermsOfService)
+
+        retrieved_page = Page.objects.get(id=tos_page.id)
+        self.assertEqual(retrieved_page.title, "Terms of Service Page")
+
+    def test_can_create_faq_page(self):
+        faq_page = FAQ(title='FAQ Page',
+                       intro_heading='Intro heading',
+                       intro_description='This is the FAQ page',
+                       questions=json.dumps(
+                           [{"id": "bc328439-9ad5-4fe7-9adc-1dba59389330", "type": "question",
+                             "value": {"slug": "how-does-openstax-work",
+                                       "answer": "<p>Using OpenStax is simple! Review the textbook online, and if you decide to use it in your class, <a href=\"https://openstax.org/adoption\">let us know</a>. To access faculty-only materials, you can create an OpenStax account and request faculty access. Once we manually verify that you’re an instructor, you will have access to all faculty content. Include the textbook URL in your course materials, and from there, students can choose how they want to view the book.</p><p>If you’re a student, simply access the web view, download a PDF, or purchase a hard copy via Amazon or your campus. Even students whose professors have not adopted OpenStax are welcome to use OpenStax textbooks.<br/></p>",
+                                       "document": None, "question": "<p>How does OpenStax work?</p>"}},
+                            {"id": "c985605f-cc41-4758-84dc-a5e42098814c", "type": "question",
+                             "value": {"slug": "why-use-openstax-textbooks",
+                                       "answer": "<p>The costs of textbooks are rising, and students have difficulty keeping up with the high price of required materials. A large percentage of students show up for the first day of class without the course textbook. Imagine if every student had immediate, unlimited access to the text. How would that help you meet your goals?</p><p>Open resources also allow you to use the text in a way that’s best for you and your students. You aren’t bound by copyright or digital rights restrictions, and you can adapt the book as you see fit.</p>",
+                                       "document": None,
+                                       "question": "<p>Why should instructors use OpenStax textbooks?<br/></p>"}}
+                            ]
+                       )
+              )
+        self.homepage.add_child(instance=faq_page)
+        self.assertCanCreateAt(HomePage, FAQ)
+
+        retrieved_page = Page.objects.get(id=faq_page.id)
+        self.assertEqual(retrieved_page.title, "FAQ Page")
+
+    def test_can_create_accessibility_page(self):
+        accessibility_page = Accessibility(title='Accessibility Page',
+                                  intro_heading='Intro heading',
+                                  accessibility_content='This is about accessibility',
+                          )
+        self.homepage.add_child(instance=accessibility_page)
+        self.assertCanCreateAt(HomePage, Accessibility)
+
+        retrieved_page = Page.objects.get(id=accessibility_page.id)
+        self.assertEqual(retrieved_page.title, "Accessibility Page")
+
+    def test_can_create_licensing_page(self):
+        licensing_page = Licensing(title='Licensing Page',
+                                  intro_heading='Intro heading',
+                                  licensing_content='This is about licensing',
+                          )
+        self.homepage.add_child(instance=licensing_page)
+        self.assertCanCreateAt(HomePage, Licensing)
+
+        retrieved_page = Page.objects.get(id=licensing_page.id)
+        self.assertEqual(retrieved_page.title, "Licensing Page")
+
+    def test_can_create_technology_page(self):
+        technology_page = Technology(title='Technology Page',
+                                  intro_heading='Intro heading',
+                                  intro_description='intro description',
+                                  banner_cta='CTA!, CTA!',
+                                  select_tech_heading='select tech heading',
+                                  select_tech_step_1='Step 1',
+                                  select_tech_step_2='Step 2',
+                                  select_tech_step_3='Step 3',
+                                  new_frontier_heading='new frontier heading',
+                                  new_frontier_subheading='subheading',
+                                  new_frontier_description='new frontier description',
+                                  new_frontier_cta_1='CTA 1',
+                                  new_frontier_cta_2='CTA 2',
+                          )
+        self.homepage.add_child(instance=technology_page)
+        self.assertCanCreateAt(HomePage, Technology)
+
+        retrieved_page = Page.objects.get(id=technology_page.id)
+        self.assertEqual(retrieved_page.title, "Technology Page")
+
+    def test_can_create_privacy_policy_page(self):
+        privacy_page = PrivacyPolicy(title='Privacy Policy Page',
+                                  intro_heading='Intro heading',
+                                  privacy_content='This is about privacy',
+                          )
+        self.homepage.add_child(instance=privacy_page)
+        self.assertCanCreateAt(HomePage, PrivacyPolicy)
+
+        retrieved_page = Page.objects.get(id=privacy_page.id)
+        self.assertEqual(retrieved_page.title, "Privacy Policy Page")
+
+    def test_can_create_print_order_page(self):
+        print_page = PrintOrder(title='Print Order Page',
+                                  intro_heading='Intro heading',
+                                  intro_description='Intro description',
+                                featured_provider_intro_blurb='Blurb, blurb, blurb',
+                                other_providers_intro_blurb='Another blurb',
+                                providers=json.dumps(
+                                    [{"id": "18ff0a7a-4f63-4c51-bd01-c6f8daf47b77", "type": "provider",
+                                      "value": {"cta": "Order from UnknownEdu",
+                                                "url": "http://info.unknownedu.com/openstax", "icon": None,
+                                                "name": "UnknownEdu",
+                                                "blurb": "UnknownEdu handles the fulfillment and distribution of all formats of OpenStax textbooks to college bookstore and K12 schools.",
+                                                "canadian": False}}]
+                                )
+
+                          )
+        self.homepage.add_child(instance=print_page)
+        self.assertCanCreateAt(HomePage, PrintOrder)
+
+        retrieved_page = Page.objects.get(id=print_page.id)
+        self.assertEqual(retrieved_page.title, "Print Order Page")
+
 
 class ErrataListTest(WagtailPageTests):
 
