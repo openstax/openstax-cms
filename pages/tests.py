@@ -1,3 +1,4 @@
+import datetime
 import json
 
 from django.test import TestCase, Client
@@ -37,7 +38,7 @@ from pages.models import (HomePage,
                           FormHeadings,
                           AllyLogos,
                           K12MainPage,
-                          Assignable)
+                          Assignable, ImpactStory)
 from news.models import NewsIndex, PressIndex
 from books.models import BookIndex
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash, mock_user_login
@@ -302,6 +303,17 @@ class PageTests(WagtailPageTests):
         retrieved_page = Page.objects.get(id=technology_page.id)
         self.assertEqual(retrieved_page.title, "Technology Page")
 
+    def test_can_create_careers_page(self):
+        careers_page = Careers(title='Careers Page',
+                                  intro_heading='Intro heading',
+                                  careers_content='This is about careers',
+                          )
+        self.homepage.add_child(instance=careers_page)
+        self.assertCanCreateAt(HomePage, Careers)
+
+        retrieved_page = Page.objects.get(id=careers_page.id)
+        self.assertEqual(retrieved_page.title, "Careers Page")
+
     def test_can_create_privacy_policy_page(self):
         privacy_page = PrivacyPolicy(title='Privacy Policy Page',
                                   intro_heading='Intro heading',
@@ -334,6 +346,154 @@ class PageTests(WagtailPageTests):
 
         retrieved_page = Page.objects.get(id=print_page.id)
         self.assertEqual(retrieved_page.title, "Print Order Page")
+
+    def test_can_create_impact_page(self):
+        impact_page = Impact(title='Impact Page',
+                            improving_access=json.dumps(
+                                [{"id": "b42f66a2-a4b2-4c84-a581-3535a0fbc20b", "type": "content", "value": {"image": {"link": "", "image": None},
+                                                                                                             "heading": "Why Open Education Matters",
+                                                                                                             "button_href": "https://riceconnect.rice.edu/donation/support-openstax-impact",
+                                                                                                             "button_text": "Give today",
+                                                                                                             "description": "<p data-block-key=\"zmm6z\">OpenStax believes that learning is a public good and that every learner has the fundamental right to pursue their education in areas that inspire them most. Our goal is to remain 100% free and easily accessible, while improving learning proficiency for every learner. Open education can open doorways to new careers, intellectual pursuits, and the betterment of society.</p><p data-block-key=\"2066m\">What might you achieve if you had the right resources at your fingertips? Join us today and help millions of learners experience an affordable and engaging education.</p><p data-block-key=\"6glab\"></p>"}}]
+                            ),
+                            reach=json.dumps(
+                                [{"id": "0b1d5fe8-f77a-4eb6-ae6a-1dc58cb08c10", "type": "content", "value": {"cards": [
+                                    {"id": "ce31a4fb-b929-493e-96ce-5ea945c82ddd", "type": "item",
+                                     "value": {"icon": None,
+                                               "link_href": "https://openstax.org/press/openstax-surpasses-1-billion-textbook-savings-wide-ranging-impact-teaching-learning-and-student-success",
+                                               "link_text": "Read more",
+                                               "description": "$1.8 billion saved in education costs since 2012"}}]}}]
+                            ),
+                            quote=json.dumps(
+                                [{"id": "49d89977-5433-4b1f-9e0f-ed4982ac4201", "type": "content",
+                                  "value": {"image": {"link": "", "image": None},
+                                            "quote": "<p data-block-key=\"caakp\">I believe that knowledge should be free. And that means we shouldn’t be tying up ideas and knowledge in proprietary systems. We should be finding ways to share ideas and knowledge to make the world a better place. <b>– Prof. Richard Baraniuk,</b></p><p data-block-key=\"m9bee\">Founder of OpenStax, the C. Sidney Burrus Professor of Electrical and Computer Engineering at Rice University, and Fellow of the American Academy of Arts and Sciences</p>"}}]
+                            ),
+                            making_a_difference=json.dumps(
+                                [{"id": "c1dc4294-2b44-4320-9d72-2286af863302", "type": "content",
+                                  "value": {"heading": "Community Stories", "stories": [
+                                      {"id": "8593338c-752a-491c-8b07-33ef8d42bc10", "type": "item",
+                                       "value": {"image": None,
+                                                 "story_text": "Rahul Kane grew up in India in a family of educators, and upon completing his undergraduate studies, moved to the United States in 2005 to pursue graduate school. Now, he teaches biology at Century College and the University of St. Thomas. Read more about why he prefers open educational resources!",
+                                                 "linked_story": None, "embedded_video": ""}},
+                                      {"id": "29293e1b-bd9c-4f66-8e7d-d35e279aaee9", "type": "item",
+                                       "value": {"image": None,
+                                                 "story_text": "Megan expects to get her nursing diploma in five years and sees herself as a successful nurse working in a hospital.",
+                                                 "linked_story": None, "embedded_video": ""}}]}}]
+                            ),
+                            disruption=json.dumps(
+                                [{"id": "81f78c27-d65b-449a-b930-21a3449c11f1", "type": "content",
+                                  "value": {"graph": {"image": {"link": "", "image": None}, "image_alt_text": ""},
+                                            "heading": "Positive Disruption",
+                                            "description": "The price of textbooks is declining due to open education’s disruption of the college textbook market, removing financial barriers to advanced education, and reducing student debt. According to an economist, “The ‘textbook bubble’ is finally starting to deflate, due to the creative destruction and competition from free/low-cost textbooks from groups like OpenStax” (Mark Perry, AEI, 2019)."}}]
+                            ),
+                            supporter_community=json.dumps(
+                                [{"id": "0d555d88-1c47-483f-bdd7-bd64aa4fae39", "type": "content",
+                                  "value": {"image": {"link": "", "image": None},
+                                            "quote": "<p data-block-key=\"p94bw\">OpenStax continues to expand to new subject areas, grade levels, and languages to reach more students. Yet, OpenStax is more than free textbooks. With a team of researchers, educators, and learning engineers at Rice University, OpenStax is creating research-based learning tools to help teachers and learners better personalize the education experience. OpenStax needs your partnership to continue its impact.</p><p data-block-key=\"566uh\"></p><p data-block-key=\"67bds\">– <b>Ann Doerr</b>, OpenStax Advisor</p>",
+                                            "heading": "Our Supporter Community",
+                                            "link_href": "https://openstax.org/foundation",
+                                            "link_text": "View our supporters"}}]
+                            ),
+                            giving=json.dumps(
+                                [{"id": "e5a9a3ad-f8c6-409f-a774-f6c99daf4990", "type": "content",
+                                  "value": {"heading": "Students need your help today.",
+                                            "link_href": "https://example.com/donate", "link_text": "Give today",
+                                            "description": "Together, we can increase educational equity and quality for millions of students worldwide.",
+                                            "nonprofit_statement": "As a part of Rice University, a 501(c)(3) nonprofit, gifts to OpenStax are tax deductible to the fullest extent allowed by law. Our tax ID number is 00-111111. Read our latest Annual Report",
+                                            "annual_report_link_href": "https://example.com/annual-report",
+                                            "annual_report_link_text": "Read our latest OpenStax Brochure"}}]
+                            )
+
+                          )
+        self.homepage.add_child(instance=impact_page)
+        self.assertCanCreateAt(HomePage, Impact)
+
+        retrieved_page = Page.objects.get(id=impact_page.id)
+        self.assertEqual(retrieved_page.title, "Impact Page")
+
+        story_page = ImpactStory(title='Impact Story Page',
+                                 date=datetime.datetime.now(),
+                                 heading='Impact Story',
+                                 author='Jane Doe',
+                                 body=json.dumps([{"id": "ae6f048b-6eb5-42e7-844f-cfcd459f81b5", "type": "heading",
+                                     "value": "Impact Story"}])
+                                 )
+        impact_page.add_child(instance=story_page)
+        self.assertCanCreateAt(Impact, ImpactStory)
+
+        retrieved_page = Page.objects.get(id=story_page.id)
+        self.assertEqual(retrieved_page.title, "Impact Story Page")
+
+    def test_can_create_learning_research_page(self):
+        research_page = LearningResearchPage(title='Learning Research Page',
+                                  mission_body='This is our mission',
+                                  research_area_header='Research area header',
+                                  research_area_description_mobile='Research area mobile header',
+                                  people_header='People header',
+                                  publication_header='Publication header'
+                          )
+        self.homepage.add_child(instance=research_page)
+        self.assertCanCreateAt(HomePage, LearningResearchPage)
+
+        retrieved_page = Page.objects.get(id=research_page.id)
+        self.assertEqual(retrieved_page.title, "Learning Research Page")
+
+    def test_can_create_webinar_page(self):
+        webinar_page = WebinarPage(title='Webinar Page',
+                                  heading='Heading',
+                          )
+        self.homepage.add_child(instance=webinar_page)
+        self.assertCanCreateAt(HomePage, WebinarPage)
+
+        retrieved_page = Page.objects.get(id=webinar_page.id)
+        self.assertEqual(retrieved_page.title, "Webinar Page")
+
+    def test_can_create_form_headings_page(self):
+        form_page = FormHeadings(title='Form Headings Page',
+                                  adoption_intro_heading='Adoption intro heading',
+                                 adoption_intro_description='Adoption intro description',
+                                 interest_intro_heading='Interest intro heading',
+                                 interest_intro_description='Interest intro description'
+                          )
+        self.homepage.add_child(instance=form_page)
+        self.assertCanCreateAt(HomePage, FormHeadings)
+
+        retrieved_page = Page.objects.get(id=form_page.id)
+        self.assertEqual(retrieved_page.title, "Form Headings Page")
+
+    def test_can_create_ally_logos_page(self):
+        ally_page = AllyLogos(title='Ally Logos Page',
+                                  heading='Ally logos heading',
+                                 description='Alloy logos description',
+                                 ally_logos_heading='Ally logos heading',
+                                 ally_logos_description='Ally logos description',
+                                 ally_logos='',
+                                 book_ally_logos_heading='Book ally logo heading',
+                                 book_ally_logos_description='Book ally logo description',
+                                 book_ally_logos = '',
+                          )
+        self.homepage.add_child(instance=ally_page)
+        self.assertCanCreateAt(HomePage, AllyLogos)
+
+        retrieved_page = Page.objects.get(id=ally_page.id)
+        self.assertEqual(retrieved_page.title, "Ally Logos Page")
+
+    def test_can_create_assignable_page(self):
+        assignable_page = Assignable(title='Assignable Page',
+                                  subheading='Assignable subheading',
+                                 heading_description='Assignable heading description',
+                                 add_assignable_cta_header='Add assignable heading',
+                                 add_assignable_cta_description='Add assignable description',
+                                 add_assignable_cta_button_text='Add assignable',
+                                 available_courses_header='Available courses header',
+                                 courses_coming_soon_header = 'Courses coming soon header',
+                          )
+        self.homepage.add_child(instance=assignable_page)
+        self.assertCanCreateAt(HomePage, Assignable)
+
+        retrieved_page = Page.objects.get(id=assignable_page.id)
+        self.assertEqual(retrieved_page.title, "Assignable Page")
 
 
 class ErrataListTest(WagtailPageTests):
