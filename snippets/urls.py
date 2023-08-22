@@ -12,4 +12,5 @@ router.register('blogcontenttype', views.BlogContentTypeViewSet, basename="BlogC
 router.register('blogcollection', views.BlogCollectionViewSet, basename="BlogCollection")
 router.register('nowebinarmessage', views.NoWebinarMessageViewSet, basename="NoWebinarMessage")
 router.register('webinarcollection', views.WebinarCollectionViewSet, basename="WebinarCollection")
+router.register('assignableavailable', views.AssignableAvailableViewSet, basename="AssignableAvailable")
 urlpatterns = router.urls

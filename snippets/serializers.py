@@ -1,5 +1,5 @@
 from .models import Role, Subject, K12Subject, ErrataContent, SubjectCategory, GiveBanner, BlogContentType, \
-    BlogCollection, NoWebinarMessage, WebinarCollection
+    BlogCollection, NoWebinarMessage, WebinarCollection, AssignableAvailable
 
 from rest_framework import serializers, generics
 
@@ -91,4 +91,11 @@ class WebinarCollectionSerializer(serializers.ModelSerializer):
         fields = ('name',
                   'description',
                   'collection_image')
+
+
+class AssignableAvailableSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AssignableAvailable
+        fields = ('assignable_description',
+                  'assignable_available_image')
 
