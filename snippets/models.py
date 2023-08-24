@@ -430,3 +430,4 @@ class WebinarCollection(TranslatableMixin, models.Model):
 
 
 register_snippet(WebinarCollection)
+
