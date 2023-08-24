@@ -430,3 +430,35 @@ class WebinarCollection(TranslatableMixin, models.Model):
 
 
 register_snippet(WebinarCollection)
+
+
+class AssignableAvailable(TranslatableMixin, models.Model):
+    name = models.CharField(max_length=255, null=True, blank=True)
+    assignable_description = models.TextField(default='')
+    image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    def get_assignable_available_image(self):
+        return build_image_url(self.image)
+
+    assignable_available_image = property(get_assignable_available_image)
+
+    api_fields = ('assignable_description',
+                  'assignable_available_image')
+
+    panels = [
+        FieldPanel('name'),
+        FieldPanel('assignable_description'),
+        FieldPanel('image'),
+    ]
+
+    def __str__(self):
+        return self.name
+
+
+register_snippet(AssignableAvailable)
