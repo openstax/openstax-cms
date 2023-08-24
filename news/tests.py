@@ -1,3 +1,4 @@
+import datetime
 import json
 
 from django.utils import timezone
@@ -170,6 +171,24 @@ class NewsTests(WagtailPageTests, TestCase):
                                     live=False)
         news_index.add_child(instance=self.article4)
 
+        # press_index = PressIndex.objects.all()[0]
+        # self.press_release = PressRelease(title='Press release',
+        #                                   date=datetime.datetime.now(),
+        #                                   author='someone',
+        #                                   heading='heading',
+        #                                   excerpt='this is a press release',
+        #                                   slug='press-release-1',
+        #                                   body=json.dumps(
+        #                                       [{"id": "ae6f048b-6eb5-42e7-844f-cfcd459f81b5", "type": "heading",
+        #                                         "value": "Press release"},
+        #                                        {"id": "a21bcbd4-fec4-432e-bf06-966d739c6de9", "type": "paragraph",
+        #                                         "value": "<p data-block-key=\"wr6bg\">This is a test of a press release.</p><p data-block-key=\"d57h\">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>"},
+        #                                        {"id": "4d339739-131c-4547-954b-0787afdc4914", "type": "tagline",
+        #                                         "value": "This is a test"}]
+        #                                   )
+        #                                   )
+        # press_index.add_child(instance=self.press_release)
+
     @classmethod
     def setUpTestData(cls):
         # create root page
@@ -182,10 +201,23 @@ class NewsTests(WagtailPageTests, TestCase):
         root_page.add_child(instance=homepage)
         # create book index page
         news_index = NewsIndex(title="News Index")
+
+        # press_index = PressIndex(about='About press index',
+        #                               press_inquiry_phone='111-111-1111',
+        #                               press_inquiry_email='press@example.com',
+        #                               experts_heading='expoerts heading',
+        #                               experts_blurb='experts blurb',
+        #                               infographic_text='infographic text',
+        #                               title='Press Index',
+        #                               path=' ',
+        #                               slug='news',
+        #                               depth=1)
         # add book index to homepage
         homepage.add_child(instance=news_index)
+        #homepage.add_child(instance=press_index)
 
         cls.news_index = Page.objects.get(id=news_index.id)
+        #cls.press_index = Page.objects.get(id=press_index.id)
 
     def test_bad_slug_returns_404(self):
         response = self.client.get('/apps/cms/api/news/bad-slug/', format='json')
@@ -255,6 +287,16 @@ class NewsTests(WagtailPageTests, TestCase):
         response = self.client.get('/apps/cms/api/search/', {'collection': 'OpenStax Updates', 'subjects': 'Economics,Math'})
         self.assertContains(response, 'Economics')
         self.assertContains(response, 'Math')
+
+    # def test_press_index_api(self):
+    #     response = self.client.get('apps/cms/api/press/', format='json')
+    #     self.assertContains(response, 'About press index')
+    #
+    # def test_press_release_api(self):
+    #     response = self.client.get('/apps/cms/api/press/press-release-1', format='json')
+    #     self.assertContains(response, 'this is a press release')
+
+
 
 
 
