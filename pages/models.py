@@ -9,6 +9,7 @@ from wagtail.models import Orderable, Page
 from wagtail.api import APIField
 from wagtail.models import Site
 
+from api.models import FeatureFlag
 from openstax.functions import build_image_url, build_document_url
 from books.models import Book, SubjectBooks, BookFacultyResources, BookStudentResources
 from webinars.models import Webinar
@@ -581,7 +582,7 @@ class K12MainPage(Page):
     def get_sitemap_urls(self, request=None):
         return [
             {
-                'location': '{}/k12/{}'.format(Site.find_for_request(request).root_url, self.slug),
+                'location': '{}/k12'.format(Site.find_for_request(request).root_url),
                 'lastmod': (self.last_published_at or self.latest_revision_created_at),
             }
         ]
@@ -758,20 +759,6 @@ class GeneralPage(Page):
                     'lastmod': (self.last_published_at or self.latest_revision_created_at),
                 }
             ]
-        # elif self.slug == 'write-for-us':
-        #     return [
-        #         {
-        #             'location': '{}/{}'.format(Site.find_for_request(request).root_url, self.slug),
-        #             'lastmod': (self.last_published_at or self.latest_revision_created_at),
-        #         }
-        #     ]
-        # elif self.slug == 'editorial-calendar':
-        #     return [
-        #         {
-        #             'location': '{}/{}'.format(Site.find_for_request(request).root_url, self.slug),
-        #             'lastmod': (self.last_published_at or self.latest_revision_created_at),
-        #         }
-        #     ]
         else:
             return []
 
@@ -2241,27 +2228,15 @@ class PartnersPage(Page):
 
 class WebinarPage(Page):
     heading = models.CharField(max_length=255)
-    description = models.TextField()
-    hero_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
 
     content_panels = [
         FieldPanel('title', classname='full title', help_text="Internal name for page."),
         FieldPanel('heading'),
-        FieldPanel('description'),
-        FieldPanel('hero_image')
     ]
 
     api_fields = [
         APIField('title'),
         APIField('heading'),
-        APIField('description'),
-        APIField('hero_image'),
         APIField('slug'),
         APIField('seo_title'),
         APIField('search_description'),
@@ -2609,6 +2584,18 @@ class Subjects(Page):
 
         return subject_list
 
+    def get_sitemap_urls(self, request=None):
+        flag = FeatureFlag.objects.filter(name='new_subjects')
+        if flag[0].feature_active:
+            return [
+                {
+                    'location': '{}/subjects'.format(Site.find_for_request(request).root_url),
+                    'lastmod': (self.last_published_at or self.latest_revision_created_at),
+                }
+            ]
+        else:
+            return []
+
     api_fields = [
         APIField('heading'),
         APIField('description'),
@@ -2720,6 +2707,18 @@ class Subject(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+
+    def get_sitemap_urls(self, request=None):
+        flag = FeatureFlag.objects.filter(name='new_subjects')
+        if flag[0].feature_active:
+            return [
+                {
+                    'location': '{}/subjects/{}'.format(Site.find_for_request(request).root_url, self.slug[0:-6]),
+                    'lastmod': (self.last_published_at or self.latest_revision_created_at),
+                }
+            ]
+        else:
+            return []
 
     @property
     def selected_subject(self):
@@ -3028,6 +3027,14 @@ class K12Subject(Page):
                 'resource_category': resource.resource_category,
                 })
         return faculty_resource_data
+
+    def get_sitemap_urls(self, request=None):
+        return [
+            {
+                'location': '{}/k12/{}'.format(Site.find_for_request(request).root_url, self.slug[4:]),
+                'lastmod': (self.last_published_at or self.latest_revision_created_at),
+            }
+        ]
 
     api_fields = [
         APIField('subheader'),
