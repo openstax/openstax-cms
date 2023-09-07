@@ -11,7 +11,5 @@ class TestMockUserLogin(TestCase):
 class TestMockRequest(TestCase):
     def test_create_mock_request(self):
         req = RequestMock()
-        #print('req: ' + str(req.cookies))
-        #print('req2: ' + str(req.defaults))
         self.assertEqual(req.cookies, {})
 
