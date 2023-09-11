@@ -90,7 +90,6 @@ ERRATA_RESOURCES = (
     ('OpenStax Tutor', 'OpenStax Tutor'),
     ('OpenStax Concept Coach', 'OpenStax Concept Coach'),
     ('Rover by OpenStax', 'Rover by OpenStax'),
-    ('OpenStax + SE', 'OpenStax + SE'),
     ('Kindle', 'Kindle'),
     ('Study guide in online view', 'Study guide in online view'),
     ('Assignable', 'Assignable'),
