@@ -264,7 +264,7 @@ class Errata(models.Model):
             self.resolution_notes = 'This issue is occurring within a deprecated product that OpenStax no longer maintains. For updated content, please refer to openstax.org and view online or download a free PDF that may be used on your device.'
 
         #auto filling a couple of fields if it is clear that it is an assessment errata based on the text that tutor fills into the additional_location_information field
-        if self.additional_location_information and self.resource == 'OpenStax Tutor' and ('@' in self.additional_location_information.split()[0]):
+        if self.additional_location_information and (self.resource == 'OpenStax Tutor' or self.resource == 'Assignable') and ('@' in self.additional_location_information.split()[0]):
             self.is_assessment_errata = 'Yes'
             self.assessment_id = self.additional_location_information.split('@', )[0]
 
