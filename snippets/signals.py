@@ -49,3 +49,4 @@ def clear_cloudfront_on_webinar_collection_save(sender, **kwargs):
 @receiver(post_save, sender=AssignableAvailable)
 def clear_cloudfront_on_assignable_available_save(sender, **kwargs):
     invalidate_cloudfront_caches('snippets/assignableavailable')
+
