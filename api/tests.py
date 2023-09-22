@@ -5,7 +5,7 @@ from wagtail.test.utils import WagtailTestUtils
 from wagtail.images.tests.utils import Image, get_test_image_file
 from wagtail.documents.models import Document
 
-from api.models import FeatureFlag
+from api.models import FeatureFlag, WebviewSettings
 
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash, mock_user_login
 
@@ -164,3 +164,10 @@ class APITests(TestCase, WagtailTestUtils):
         self.assertNotIn('content', 'OpenStax Concept Coach')
         self.assertNotIn('content', 'Rover by OpenStax')
         self.assertEqual(response.status_code, 200)
+
+    def test_webview_settings_api(self):
+        wvs = WebviewSettings.objects.create(name='Test', value='Test value')
+        response = self.client.get('/apps/cms/api/webview-settings/')
+        self.assertEqual(response.status_code, 200)
+        self.assertIn("\"value\": \"Test value\"", response.content.decode("utf-8"))
+
