@@ -462,3 +462,4 @@ class AssignableAvailable(TranslatableMixin, models.Model):
 
 
 register_snippet(AssignableAvailable)
+
