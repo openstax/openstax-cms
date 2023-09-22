@@ -65,7 +65,6 @@ def search(request):
             search=vector,
         ).filter(rank__gte=0.3,live=True).order_by('-date', 'rank')
 
-
     if ('collection' in request.GET) and request.GET['collection'].strip():
         collection_name = request.GET['collection']
         types = []

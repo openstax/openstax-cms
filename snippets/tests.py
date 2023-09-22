@@ -6,7 +6,9 @@ from django.test import TestCase, Client
 from django.conf import settings
 from django.urls import reverse
 
-from snippets.models import Subject, ErrataContent, GiveBanner, BlogContentType, NoWebinarMessage
+from snippets.models import Subject, ErrataContent, GiveBanner, BlogContentType, NoWebinarMessage, K12Subject, \
+    FacultyResource, StudentResource, Role, SharedContent, NewsSource, SubjectCategory, BlogCollection, AssignableAvailable
+import snippets
 
 
 class SnippetsTestCase(TestCase):
@@ -38,6 +40,35 @@ class SnippetsTestCase(TestCase):
 
         self.no_webinar_message = NoWebinarMessage(no_webinar_message="No webinars currently scheduled. In the meantime, please watch any of our past webinars.")
         self.no_webinar_message.save()
+
+        self.k12subject = K12Subject(name="Test Subject", intro_text='Intro text',subject_link="https://example.com/openstaxk12")
+        self.k12subject.save()
+
+        self.faculty_resource = FacultyResource(heading="Faculty Resource", description='resource description',unlocked_resource=True)
+        self.faculty_resource.save()
+
+        self.student_resource = StudentResource(heading="Student Resource", description='resource description',
+                                                unlocked_resource=True)
+        self.student_resource.save()
+
+        self.role = Role(display_name="role display name", salesforce_name='role salesforce name')
+        self.role.save()
+
+        self.shared_content = SharedContent(title="shared content", heading='shared content heading', content='shared content')
+        self.shared_content.save()
+
+        self.news_source = NewsSource(name="news source")
+        self.news_source.save()
+
+        self.subject_category = SubjectCategory(subject_category="subject category", description='subject category description')
+        self.subject_category.save()
+
+        self.blog_collection = BlogCollection(name="blog collection", description='blog collection description')
+        self.blog_collection.save()
+
+        self.assignable_available = AssignableAvailable(
+            assignable_description="Assignable is ...")
+        self.assignable_available.save()
 
     def test_can_create_subject(self):
         subject = Subject(name="Science", page_content="Science page content.", seo_title="Science SEO Title",
@@ -75,3 +106,40 @@ class SnippetsTestCase(TestCase):
     def test_can_fetch_no_webinar_message(self):
         response = self.client.get('/apps/cms/api/snippets/nowebinarmessage/?format=json')
         self.assertIn(b"No webinars currently scheduled", response.content)
+
+    def test_can_fetch_k12_subject(self):
+        response = self.client.get('/apps/cms/api/snippets/k12subjects/?format=json')
+        self.assertIn(b"https://example.com/openstaxk12", response.content)
+
+    def test_can_fetch_faculty_resource(self):
+        faculty_resource = FacultyResource.objects.all()[0]
+        self.assertEquals(True, faculty_resource.unlocked_resource)
+
+    def test_can_fetch_student_resource(self):
+        student_resource = StudentResource.objects.all()[0]
+        self.assertEquals(True, student_resource.unlocked_resource)
+
+    def test_can_fetch_role(self):
+        response = self.client.get('/apps/cms/api/snippets/roles/?format=json')
+        self.assertIn(b"role display name", response.content)
+
+    def test_can_fetch_shared_content(self):
+        shared_content = SharedContent.objects.all()[0]
+        self.assertEquals('shared content', shared_content.title)
+
+    def test_can_fetch_news_source(self):
+        news_source = NewsSource.objects.all()[0]
+        self.assertEquals('news source', news_source.name)
+
+    def test_can_fetch_subject_category(self):
+        response = self.client.get('/apps/cms/api/snippets/subjectcategory/?format=json')
+        self.assertIn(b"subject category description", response.content)
+
+    def test_can_fetch_blog_collection(self):
+        response = self.client.get('/apps/cms/api/snippets/blogcollection/?format=json')
+        self.assertIn(b"blog collection description", response.content)
+
+    def test_can_fetch_assignable_available(self):
+        response = self.client.get('/apps/cms/api/snippets/assignableavailable/?format=json')
+        self.assertIn(b"Assignable is ...", response.content)
+

@@ -1,11 +1,11 @@
 from rest_framework import viewsets
 
 from .models import Role, Subject, K12Subject, ErrataContent, SubjectCategory, GiveBanner, BlogContentType, \
-    BlogCollection, NoWebinarMessage, WebinarCollection
+    BlogCollection, NoWebinarMessage, WebinarCollection, AssignableAvailable
 from .serializers import RoleSerializer, SubjectSerializer, K12SubjectSerializer, ErrataContentSerializer, \
     SubjectCategorySerializer, \
     GiveBannerSerializer, BlogContentTypeSerializer, BlogCollectionSerializer, NoWebinarMessageSerializer, \
-    WebinarCollectionSerializer
+    WebinarCollectionSerializer, AssignableAvailableSerializer
 
 from rest_framework import generics, viewsets
 from django_filters.rest_framework import DjangoFilterBackend
@@ -102,6 +102,11 @@ class NoWebinarMessageViewSet(viewsets.ModelViewSet):
 class WebinarCollectionViewSet(viewsets.ModelViewSet):
     queryset = WebinarCollection.objects.all()
     serializer_class = WebinarCollectionSerializer
+
+
+class AssignableAvailableViewSet(viewsets.ModelViewSet):
+    queryset = AssignableAvailable.objects.all()
+    serializer_class = AssignableAvailableSerializer
 
 
 def convert_locale(locale):
