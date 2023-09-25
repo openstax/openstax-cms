@@ -204,9 +204,6 @@ class Errata(models.Model):
     resource_other = models.CharField(max_length=255, blank=True, null=True)
 
     submitted_by_account_id = models.IntegerField(blank=True, null=True, validators=[MinValueValidator(0), is_user_blocked])
-    accounts_user_email = models.CharField(max_length=255, null=True, blank=True)
-    accounts_user_name = models.CharField(max_length=255, null=True, blank=True)
-    accounts_user_faculty_status = models.CharField(max_length=255, null=True, blank=True)
 
     file_1 = models.FileField(upload_to='errata/user_uploads/1/', blank=True, null=True)
     file_2 = models.FileField(upload_to='errata/user_uploads/2/', blank=True, null=True)
