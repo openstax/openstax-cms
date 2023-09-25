@@ -73,8 +73,7 @@ class ErrataAdmin(ImportExportActionModelAdmin, VersionAdmin):
                      'detail',
                      'location',
                      'additional_location_information',
-                     'accounts_user_name',
-                     'accounts_user_email')
+                     )
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
     }
@@ -179,18 +178,12 @@ class ErrataAdmin(ImportExportActionModelAdmin, VersionAdmin):
                            'accounts_link',
                            'file_1',
                            'file_2',
-                           'accounts_user_name',
-                           'accounts_user_email',
-                           'accounts_user_faculty_status',
                            'archived',
                            'junk',
                            ] # fields to show on the actual form
             self.readonly_fields = ['id',
                                     'created',
                                     'modified',
-                                    'accounts_user_name',
-                                    'accounts_user_email',
-                                    'accounts_user_faculty_status',
                                     'accounts_link',
                                     ]
 
