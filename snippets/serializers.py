@@ -24,6 +24,13 @@ class SubjectSerializer(serializers.ModelSerializer):
                   'search_description',
                   'subject_icon',
                   'subject_color')
+        read_only_fields = ('id',
+                              'name',
+                              'page_content',
+                              'seo_title',
+                              'search_description',
+                              'subject_icon',
+                              'subject_color')
 
 
 
@@ -38,6 +45,14 @@ class K12SubjectSerializer(serializers.ModelSerializer):
                   'subject_color', 
                   'subject_link'
                   )
+        read_only_fields = ('id',
+                              'name',
+                              'intro_text',
+                              'subject_image',
+                              'subject_category',
+                              'subject_color',
+                              'subject_link'
+                              )
 
 
 class ErrataContentSerializer(serializers.ModelSerializer):
@@ -46,6 +61,9 @@ class ErrataContentSerializer(serializers.ModelSerializer):
         fields = ('heading',
                   'book_state',
                   'content')
+        read_only_fields = ('heading',
+                              'book_state',
+                              'content')
 
 
 class SubjectCategorySerializer(serializers.ModelSerializer):
@@ -54,6 +72,9 @@ class SubjectCategorySerializer(serializers.ModelSerializer):
         fields = ('subject_name',
                   'subject_category',
                   'description')
+        read_only_fields = ('subject_name',
+                              'subject_category',
+                              'description')
 
 
 class GiveBannerSerializer(serializers.ModelSerializer):
@@ -63,12 +84,17 @@ class GiveBannerSerializer(serializers.ModelSerializer):
                   'link_text',
                   'link_url',
                   'banner_thumbnail')
+        read_only_fields = ('html_message',
+                              'link_text',
+                              'link_url',
+                              'banner_thumbnail')
 
 
 class BlogContentTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = BlogContentType
         fields = ('content_type',)
+        read_only_fields = ('content_type',)
 
 
 class BlogCollectionSerializer(serializers.ModelSerializer):
@@ -77,12 +103,16 @@ class BlogCollectionSerializer(serializers.ModelSerializer):
         fields = ('name',
                   'description',
                   'collection_image')
+        read_only_fields = ('name',
+                              'description',
+                              'collection_image')
 
 
 class NoWebinarMessageSerializer(serializers.ModelSerializer):
     class Meta:
         model = NoWebinarMessage
         fields = ('no_webinar_message',)
+        read_only_fields = ('no_webinar_message',)
 
 
 class WebinarCollectionSerializer(serializers.ModelSerializer):
@@ -91,6 +121,9 @@ class WebinarCollectionSerializer(serializers.ModelSerializer):
         fields = ('name',
                   'description',
                   'collection_image')
+        read_only_fields = ('name',
+                              'description',
+                              'collection_image')
 
 
 class AssignableAvailableSerializer(serializers.ModelSerializer):
@@ -98,4 +131,6 @@ class AssignableAvailableSerializer(serializers.ModelSerializer):
         model = AssignableAvailable
         fields = ('assignable_description',
                   'assignable_available_image')
+        read_only_fields = ('assignable_description',
+                            'assignable_available_image')
 

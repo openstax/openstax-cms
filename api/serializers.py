@@ -11,6 +11,9 @@ class AdopterSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('name',
                   'description',
                   'website',)
+        read_only_fields = ('name',
+                            'description',
+                            'website',)
 
 
 class ImageSerializer(serializers.HyperlinkedModelSerializer):
@@ -24,6 +27,13 @@ class ImageSerializer(serializers.HyperlinkedModelSerializer):
                   'width',
                   'created_at',
                   )
+        read_only_fields = ('id',
+                          'file',
+                          'title',
+                          'height',
+                          'width',
+                          'created_at',
+                          )
 
 
 class DocumentSerializer(serializers.HyperlinkedModelSerializer):
@@ -35,6 +45,11 @@ class DocumentSerializer(serializers.HyperlinkedModelSerializer):
                   'title',
                   'created_at',
                   )
+        read_only_fields = ('id',
+                          'file',
+                          'title',
+                          'created_at',
+                          )
 
 
 class ProgressSerializer(serializers.HyperlinkedModelSerializer):
