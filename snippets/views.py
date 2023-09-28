@@ -14,7 +14,7 @@ SPANISH_LOCALE_ID = 2
 ENGLISH_LOCALE_ID = 1
 
 
-class RoleViewSet(viewsets.ModelViewSet):
+class RoleViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
 
@@ -47,7 +47,7 @@ class K12SubjectList(viewsets.ReadOnlyModelViewSet):
             queryset = queryset.filter(locale=convert_locale(locale))
         return queryset
 
-class ErrataContentViewSet(viewsets.ModelViewSet):
+class ErrataContentViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ErrataContentSerializer
     filter_backends = (DjangoFilterBackend,)
 
@@ -62,7 +62,7 @@ class ErrataContentViewSet(viewsets.ModelViewSet):
         return queryset
 
 
-class SubjectCategoryViewSet(viewsets.ModelViewSet):
+class SubjectCategoryViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = SubjectCategorySerializer
     filter_backends = (DjangoFilterBackend,)
 
@@ -78,33 +78,33 @@ class SubjectCategoryViewSet(viewsets.ModelViewSet):
         return queryset
 
 
-class GiveBannerViewSet(viewsets.ModelViewSet):
+class GiveBannerViewSet(viewsets.ReadOnlyModelViewSet):
     # validation prevents multiple Give Banners, so this is safe
     queryset = GiveBanner.objects.all()
     serializer_class = GiveBannerSerializer
 
 
-class BlogContentTypeViewSet(viewsets.ModelViewSet):
+class BlogContentTypeViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = BlogContentType.objects.all()
     serializer_class = BlogContentTypeSerializer
 
 
-class BlogCollectionViewSet(viewsets.ModelViewSet):
+class BlogCollectionViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = BlogCollection.objects.all()
     serializer_class = BlogCollectionSerializer
 
 
-class NoWebinarMessageViewSet(viewsets.ModelViewSet):
+class NoWebinarMessageViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = NoWebinarMessage.objects.all()
     serializer_class = NoWebinarMessageSerializer
 
 
-class WebinarCollectionViewSet(viewsets.ModelViewSet):
+class WebinarCollectionViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = WebinarCollection.objects.all()
     serializer_class = WebinarCollectionSerializer
 
 
-class AssignableAvailableViewSet(viewsets.ModelViewSet):
+class AssignableAvailableViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = AssignableAvailable.objects.all()
     serializer_class = AssignableAvailableSerializer
 
