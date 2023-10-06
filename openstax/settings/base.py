@@ -218,7 +218,6 @@ INSTALLED_APPS = [
     'extraadminfilters',
     'redirects',
     'oxauth',
-    'events',
     'webinars',
     'donations',
     'wagtailimportexport',
