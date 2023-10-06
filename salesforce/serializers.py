@@ -33,6 +33,32 @@ class SchoolSerializer(serializers.ModelSerializer):
                   'physical_zip_postal_code',
                   'long',
                   'lat')
+        read_only_fields = ('id',
+                              'name',
+                              'phone',
+                              'website',
+                              'type',
+                              'location',
+                              'adoption_date',
+                              'key_institutional_partner',
+                              'achieving_the_dream_school',
+                              'hbcu',
+                              'texas_higher_ed',
+                              'undergraduate_enrollment',
+                              'pell_grant_recipients',
+                              'percent_students_pell_grant',
+                              'current_year_students',
+                              'all_time_students',
+                              'total_school_enrollment',
+                              'current_year_savings',
+                              'all_time_savings',
+                              'physical_country',
+                              'physical_street',
+                              'physical_city',
+                              'physical_state_province',
+                              'physical_zip_postal_code',
+                              'long',
+                              'lat')
 
 
 class AdoptionOpportunityRecordSerializer(serializers.ModelSerializer):
@@ -118,6 +144,7 @@ class SavingsNumberSerializer(serializers.ModelSerializer):
     class Meta:
         model = SavingsNumber
         fields = ('adoptions_count', 'savings', 'updated')
+        read_only_fields = ('adoptions_count', 'savings', 'updated')
 
 class PartnerReviewSerializer(serializers.ModelSerializer):
     class Meta:

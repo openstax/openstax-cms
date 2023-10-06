@@ -17,19 +17,19 @@ from oxauth.functions import get_logged_in_user_uuid
 from global_settings.functions import invalidate_cloudfront_caches
 
 
-class SchoolViewSet(viewsets.ModelViewSet):
+class SchoolViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = School.objects.all()
     serializer_class = SchoolSerializer
     filter_backends = [filters.SearchFilter]
     search_fields = ['name',]
 
 
-class PartnerViewSet(viewsets.ModelViewSet):
+class PartnerViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Partner.objects.filter(visible_on_website=True)
     serializer_class = PartnerSerializer
 
 
-class SalesforceFormsViewSet(viewsets.ModelViewSet):
+class SalesforceFormsViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = SalesforceForms.objects.all()
     serializer_class = SalesforceFormsSerializer
 

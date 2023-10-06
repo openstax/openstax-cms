@@ -17,17 +17,17 @@ from wagtail.models import Site
 from .models import ProgressTracker, FeatureFlag, WebviewSettings
 from .serializers import AdopterSerializer, ImageSerializer, DocumentSerializer, ProgressSerializer, CustomizationRequestSerializer
 
-class AdopterViewSet(viewsets.ModelViewSet):
+class AdopterViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Adopter.objects.all()
     serializer_class = AdopterSerializer
 
 
-class ImageViewSet(viewsets.ModelViewSet):
+class ImageViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Image.objects.all()
     serializer_class = ImageSerializer
 
 
-class DocumentViewSet(viewsets.ModelViewSet):
+class DocumentViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Document.objects.all()
     serializer_class = DocumentSerializer
 
@@ -39,7 +39,7 @@ class DocumentViewSet(viewsets.ModelViewSet):
         return queryset
 
 
-class ProgressViewSet(viewsets.ModelViewSet):
+class ProgressViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = ProgressTracker.objects.all()
     serializer_class = ProgressSerializer
 
