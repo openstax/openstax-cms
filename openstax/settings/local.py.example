@@ -57,14 +57,6 @@ SOCIAL_AUTH_LOGIN_REDIRECT_URL = 'https://dev.openstax.org'
 SOCIAL_AUTH_SANITIZE_REDIRECTS = False
 
 #################
-#  Eventbrite   #
-#################
-EVENTBRITE_API_KEY = 'xxx'
-EVENTBRITE_API_SECRET = 'xxx'
-EVENTBRITE_API_PRIVATE_TOKEN = 'xxx'
-EVENTBRITE_API_PUBLIC_TOKEN = 'xxx'
-
-#################
 #  GoToWebinar  #
 #################
 GOTOWEBINAR_CONSUMER_KEY='xxx'
