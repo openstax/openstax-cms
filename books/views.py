@@ -20,9 +20,6 @@ def book_index(request):
 def book_detail(request, slug):
     try:
         page = Book.objects.get(slug=slug)
-        if page.book_state == 'retired':
-            raise NotFound('This book is retired. The latest version can be found at https://openstax.org')
-
         return redirect('/apps/cms/api/v2/pages/{}/'.format(page.pk))
     except Book.DoesNotExist:
         raise Http404("Book does not exist.")
