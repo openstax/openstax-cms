@@ -1,0 +1,134 @@
+interactions:
+- request:
+    body: "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n        <env:Envelope\n                xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\n
+      \               xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n                xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\"\n
+      \               xmlns:urn=\"urn:partner.soap.sforce.com\">\n            <env:Header>\n
+      \               <urn:CallOptions>\n                    <urn:client>RestForce</urn:client>\n
+      \                   <urn:defaultNamespace>sf</urn:defaultNamespace>\n                </urn:CallOptions>\n
+      \           </env:Header>\n            <env:Body>\n                <n1:login
+      xmlns:n1=\"urn:partner.soap.sforce.com\">\n                    <n1:username>SALESFORCE_USERNAME</n1:username>\n
+      \                   <n1:password>SALESFORCE_PASSWORD</n1:password>\n
+      \               </n1:login>\n            </env:Body>\n        </env:Envelope>"
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Connection:
+      - keep-alive
+      Content-Length:
+      - '888'
+      SOAPAction:
+      - login
+      User-Agent:
+      - python-requests/2.28.2
+      charset:
+      - UTF-8
+      content-type:
+      - text/xml
+    method: POST
+    uri: https://test.salesforce.com/services/Soap/u/52.0
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAK1V0XLaOBT9FdbT11iGhJYyQq1DIKUD2xBDmslLRrEuoK0tuZIcTL5+JdtAIKSz
+        D8uDMfeco3suulfCX4o0aTyD0lyKntf0A68BIpaMi2XPm8+GZx3vC8Fa0gzEc3cgniGRGTSsSuhu
+        He55K2OyLkI6XkFKtW9RB/lSLZF7QVDrkFcpe16uRDejyghQfsnVC6li8GOZ1pxuoflu5fV67a/P
+        ywVbQdBE95NxVCY740IbKmLw9i4vJdsQnMglF7egMyk0EKxA54khOAVDGTU0AmXLnquEuBTa5rD+
+        3FrF2Zl9Wu3S11SwJ1n46ca+JrC3iLRV8xg0ilx5KWq3/AAFwVVwEZSfc7X8idHbXDijWq+lYoMi
+        4woYWdBEA0bHYVynJkblFt7+wvp/dJ2/43qfw6bTrjFGjByx/gqn03B6dTG+18+dB/X78+zXsDm5
+        GIGaNe98Pf00umzNH2+uP0bjy1nRb4uHaf8uWBffvy9+qscsu35Zjri5/mfw0Lxl009RfMlub2d6
+        /dTU56w9Gt44G9vcOLeWSg/teWWhPbln6Si8xqiGKopYSIJpHDvlE0+42Uwkg+1//BbA8YoaA2pQ
+        2IegyZZ5HMZxrpQdi020SZ9kQj5YymEE284MjaHxKgVhhjyBiL/AmKfckHbrotXpBBj9geP0V7Cg
+        tkX79cojLfvO5Dy6KqXvwCeUYxnbfScgHufRKWmNl0puWySR628mTfbe9PaP+APDqb9RfWOPDinC
+        OJa5i1btehJyAir4CzUnO2oQTkvha8qBZGIr4NsSXhl8h3Cg/ZumQH7YSYnspByqSghnSi7shpS2
+        oG6y4DeTxSgM7XTuUKyk+27Ys6kreNLzXMEe2k1KBLEUTN/RhDPS+Wjr2zXyAVT26+kdfbu24w5S
+        yhOiF5SlXHzdDr07EKsZqPCSOsyTpKxqpmj8y54IjbmNVrQd9l9nakzFMqfLXTcdxCrGQbe9ipRo
+        mczURlzgq7InkA8s9+vzqtLsTc14Cg9SAAlTsFyK+iv7XMqKt0Mr7iYDYvdUMKpYTXChEpzzyCYl
+        M3tNwHkF1qG6xPK4QNuLAR1dGOjwOkHHdyD5F+EhLOg8BwAA
+    headers:
+      Cache-Control:
+      - no-cache,must-revalidate,max-age=0,no-store,private
+      Content-Encoding:
+      - gzip
+      Content-Length:
+      - '834'
+      Content-Type:
+      - text/xml; charset=utf-8
+      Date:
+      - Thu, 28 Sep 2023 20:09:04 GMT
+      Set-Cookie:
+      - BrowserId=37EL2146Ee66sY0fRuLF2A; domain=.salesforce.com; path=/; expires=Fri,
+        27-Sep-2024 20:09:04 GMT; Max-Age=31536000
+      Vary:
+      - Accept-Encoding
+    status:
+      code: 200
+      message: OK
+- request:
+    body: null
+    headers:
+      Accept:
+      - '*/*'
+      Accept-Encoding:
+      - gzip, deflate
+      Authorization:
+      - Bearer zzz
+      Connection:
+      - keep-alive
+      Content-Type:
+      - application/json
+      Cookie:
+      - BrowserId=37EL2146Ee66sY0fRuLF2A
+      User-Agent:
+      - python-requests/2.28.2
+      X-PrettyPrint:
+      - '1'
+    method: GET
+    uri: https://openstax--staging.sandbox.my.salesforce.com/services/data/v52.0/query/?q=Select+Name%2C+Official_Name__c+from+Book__c+where+Id+%3D+%27a0ZU0000008pyvQMAQ%27
+  response:
+    body:
+      string: !!binary |
+        H4sIAAAAAAAAAG2OywrCMBBF935FyEqhmCoI4k5d+yjSjSIlTVOMxqYk00As/XebtO6c3ZzLuTPt
+        BCEMCqi8iA/HaIMWkUeFqsIGuuEBaM6ULoxnN9T2pGcUQIu8AR7wAH2dq4OLd0q9sozh6Jc0WoaA
+        GK6tYNyQggIldrWcx8So/MkZGDJqhMbXNA6zrp1NDtsEh6Ju6MNH+h7upJWwXBsBDp0fzghm0HRP
+        JZuNl/GpLAUTVGZe8R/9t3x9h+6T7gu/7HQIFgEAAA==
+    headers:
+      Cache-Control:
+      - no-cache,must-revalidate,max-age=0,no-store,private
+      Connection:
+      - keep-alive
+      Content-Encoding:
+      - gzip
+      Content-Type:
+      - application/json;charset=UTF-8
+      Date:
+      - Thu, 28 Sep 2023 20:09:05 GMT
+      Server:
+      - sfdcedge
+      Set-Cookie:
+      - CookieConsentPolicy=0:1; path=/; expires=Fri, 27-Sep-2024 20:09:05 GMT; Max-Age=31536000
+      - LSKey-c$CookieConsentPolicy=0:1; path=/; expires=Fri, 27-Sep-2024 20:09:05
+        GMT; Max-Age=31536000
+      Sforce-Limit-Info:
+      - api-usage=28/5000000
+      Strict-Transport-Security:
+      - max-age=63072000; includeSubDomains
+      Transfer-Encoding:
+      - chunked
+      Vary:
+      - Accept-Encoding
+      X-Content-Type-Options:
+      - nosniff
+      X-Robots-Tag:
+      - none
+      X-SFDC-Edge-Cache:
+      - MISS
+      X-SFDC-Request-Id:
+      - de7460cb9cb123e276dad1ba1de51d0f
+      X-XSS-Protection:
+      - 1; mode=block
+    status:
+      code: 200
+      message: OK
+version: 1
