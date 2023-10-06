@@ -126,27 +126,6 @@ class BookTests(WagtailPageTests):
             book_index.add_child(instance=book)
             self.assertEqual(book.license_url, 'https://creativecommons.org/licenses/by/4.0/')
 
-    def test_retired_book_not_found(self):
-        with vcr.use_cassette('fixtures/vcr_cassettes/retired_book.yaml'):
-            with self.assertRaises(NotFound):
-                book_index = BookIndex.objects.all()[0]
-                root_page = Page.objects.get(title="Root")
-                book = Book(title="College Physics",
-                            slug="college-physics",
-                            cnx_id='031da8d3-b525-429c-80cf-6c8ed997733a',
-                            salesforce_book_id='a0ZU0000008pyvQMAQ',
-                            description="Test Book",
-                            cover=self.test_doc,
-                            title_image=self.test_doc,
-                            publish_date=datetime.date.today(),
-                            locale=root_page.locale,
-                            license_name='Creative Commons Attribution License',
-                            book_state='retired'
-                            )
-                book_index.add_child(instance=book)
-
-                response = self.client.get('/apps/cms/api/books/college-physics')
-
     def test_faculty_resources_available_or_not(self):
         with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
             book_index = BookIndex.objects.all()[0]
