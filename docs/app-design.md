@@ -73,12 +73,6 @@
 * Emails are sent to users who entered the errata as it moves through the workflow. 
 * Errata can be filtered in the UI
 
-### Eventbrite
-* Wrappers around the eventbrite API
-
-### Events
-* API to register and view Eventbrite event registrations
-
 ### Extra Admin Filters
 * Used to filter errata
 * Allows users to filter multiple books in the same query
