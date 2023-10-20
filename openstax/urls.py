@@ -4,7 +4,7 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.views.generic.base import RedirectView
 from wagtail.admin import urls as wagtailadmin_urls
-from wagtail.core import urls as wagtail_urls
+from wagtail import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
 from wagtail.images.views.serve import ServeView
 from accounts import urls as accounts_urls
@@ -17,6 +17,7 @@ from news.feeds import RssBlogFeed, AtomBlogFeed
 from api import urls as api_urls
 from global_settings.views import throw_error, clear_entire_cache
 from wagtail.contrib.sitemaps.views import sitemap
+#from wagtailimportexport import urls as wagtailimportexport_urls
 
 admin.site.site_header = 'OpenStax'
 
@@ -54,6 +55,7 @@ urlpatterns = [
     # route everything to /api/spike also...
     path('apps/cms/api/spike/', include(wagtail_urls)),
     path('sitemap.xml', sitemap),
+    #path(r'', include(wagtailimportexport_urls)),
 
     # For anything not caught by a more specific rule above, hand over to Wagtail's serving mechanism
     path('', include(wagtail_urls)),

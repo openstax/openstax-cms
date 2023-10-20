@@ -2,8 +2,8 @@
 
 from django.db import migrations
 import pages.custom_blocks
-import wagtail.core.blocks
-import wagtail.core.fields
+import wagtail.blocks
+import wagtail.fields
 
 
 class Migration(migrations.Migration):
@@ -16,6 +16,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='impact',
             name='reach',
-            field=wagtail.core.fields.StreamField([('content', wagtail.core.blocks.StructBlock([('heading', wagtail.core.blocks.CharBlock()), ('description', wagtail.core.blocks.RichTextBlock()), ('cards', wagtail.core.blocks.ListBlock(wagtail.core.blocks.StreamBlock([('image', pages.custom_blocks.APIImageChooserBlock()), ('description', wagtail.core.blocks.CharBlock()), ('link_text', wagtail.core.blocks.CharBlock()), ('link_href', wagtail.core.blocks.URLBlock())])))]))]),
+            field=wagtail.fields.StreamField([('content', wagtail.blocks.StructBlock([('heading', wagtail.blocks.CharBlock()), ('description', wagtail.blocks.RichTextBlock()), ('cards', wagtail.blocks.ListBlock(wagtail.blocks.StreamBlock([('image', pages.custom_blocks.APIImageChooserBlock()), ('description', wagtail.blocks.CharBlock()), ('link_text', wagtail.blocks.CharBlock()), ('link_href', wagtail.blocks.URLBlock())])))]))]),
         ),
     ]

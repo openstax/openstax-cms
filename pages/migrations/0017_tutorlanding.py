@@ -3,8 +3,8 @@
 from django.db import migrations, models
 import django.db.models.deletion
 import pages.custom_blocks
-import wagtail.core.blocks
-import wagtail.core.fields
+import wagtail.blocks
+import wagtail.fields
 
 
 class Migration(migrations.Migration):
@@ -26,7 +26,7 @@ class Migration(migrations.Migration):
                 ('available_books_header', models.CharField(max_length=255)),
                 ('case_study_cta', models.CharField(max_length=255)),
                 ('features_header', models.CharField(max_length=255)),
-                ('features_cards', wagtail.core.fields.StreamField([('cards', wagtail.core.blocks.StructBlock([('icon', pages.custom_blocks.APIImageChooserBlock(required=False)), ('title', wagtail.core.blocks.CharBlock(required=True)), ('description', wagtail.core.blocks.RichTextBlock(required=True))]))])),
+                ('features_cards', wagtail.fields.StreamField([('cards', wagtail.blocks.StructBlock([('icon', pages.custom_blocks.APIImageChooserBlock(required=False)), ('title', wagtail.blocks.CharBlock(required=True)), ('description', wagtail.blocks.RichTextBlock(required=True))]))])),
                 ('other_resources_text', models.TextField()),
                 ('other_resources_cta', models.CharField(max_length=255)),
                 ('other_resources_link', models.URLField()),

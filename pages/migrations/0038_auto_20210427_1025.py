@@ -3,8 +3,8 @@
 from django.db import migrations, models
 import django.db.models.deletion
 import pages.custom_blocks
-import wagtail.core.blocks
-import wagtail.core.fields
+import wagtail.blocks
+import wagtail.fields
 
 
 class Migration(migrations.Migration):
@@ -105,7 +105,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='homepage',
             name='features_tab1_features',
-            field=wagtail.core.fields.StreamField([('resources', wagtail.core.blocks.ListBlock(wagtail.core.blocks.StructBlock([('icon', pages.custom_blocks.APIImageChooserBlock(required=False)), ('link_text', wagtail.core.blocks.CharBlock(required=False))])))], default=''),
+            field=wagtail.fields.StreamField([('resources', wagtail.blocks.ListBlock(wagtail.blocks.StructBlock([('icon', pages.custom_blocks.APIImageChooserBlock(required=False)), ('link_text', wagtail.blocks.CharBlock(required=False))])))], default=''),
             preserve_default=False,
         ),
         migrations.AddField(
@@ -128,7 +128,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='homepage',
             name='features_tab2_features',
-            field=wagtail.core.fields.StreamField([('resources', wagtail.core.blocks.ListBlock(wagtail.core.blocks.StructBlock([('icon', pages.custom_blocks.APIImageChooserBlock(required=False)), ('link_text', wagtail.core.blocks.CharBlock(required=False))])))], default=''),
+            field=wagtail.fields.StreamField([('resources', wagtail.blocks.ListBlock(wagtail.blocks.StructBlock([('icon', pages.custom_blocks.APIImageChooserBlock(required=False)), ('link_text', wagtail.blocks.CharBlock(required=False))])))], default=''),
             preserve_default=False,
         ),
         migrations.AddField(
@@ -140,7 +140,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='homepage',
             name='quotes',
-            field=wagtail.core.fields.StreamField([('content', wagtail.core.blocks.StructBlock([('testimonial', wagtail.core.blocks.TextBlock()), ('author', wagtail.core.blocks.CharBlock())]))], default=''),
+            field=wagtail.fields.StreamField([('content', wagtail.blocks.StructBlock([('testimonial', wagtail.blocks.TextBlock()), ('author', wagtail.blocks.CharBlock())]))], default=''),
             preserve_default=False,
         ),
         migrations.AddField(
@@ -190,7 +190,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='homepage',
             name='tutor_features_cards',
-            field=wagtail.core.fields.StreamField([('cards', wagtail.core.blocks.StructBlock([('title', wagtail.core.blocks.CharBlock(required=True)), ('description', wagtail.core.blocks.RichTextBlock(required=True))]))], default=''),
+            field=wagtail.fields.StreamField([('cards', wagtail.blocks.StructBlock([('title', wagtail.blocks.CharBlock(required=True)), ('description', wagtail.blocks.RichTextBlock(required=True))]))], default=''),
             preserve_default=False,
         ),
         migrations.AddField(

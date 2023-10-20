@@ -1,1 +1,1 @@
-default_app_config = 'wagtailimportexport.apps.WagtailImportExportAppConfig'
+#default_app_config = 'wagtailimportexport.apps.WagtailImportExportAppConfig'

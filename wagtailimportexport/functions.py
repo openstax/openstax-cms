@@ -11,7 +11,7 @@ from django.db.models.fields.related import ForeignKey
 from django.db.models.fields.reverse_related import ManyToOneRel
 from django.contrib.contenttypes.models import ContentType
 
-from wagtail.core.fields import StreamField
+from wagtail.fields import StreamField
 from wagtail.documents.models import Document
 
 

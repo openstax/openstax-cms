@@ -2,7 +2,7 @@
 
 from django.db import migrations
 import wagtail.blocks
-import wagtail.core.fields
+import wagtail.fields
 
 
 class Migration(migrations.Migration):
@@ -25,11 +25,11 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='homepage',
             name='features_tab1_features',
-            field=wagtail.core.fields.StreamField([('resources', wagtail.core.blocks.ListBlock(wagtail.core.blocks.StructBlock([('link_text', wagtail.core.blocks.CharBlock(required=False))])))]),
+            field=wagtail.fields.StreamField([('resources', wagtail.blocks.ListBlock(wagtail.blocks.StructBlock([('link_text', wagtail.blocks.CharBlock(required=False))])))]),
         ),
         migrations.AlterField(
             model_name='homepage',
             name='features_tab2_features',
-            field=wagtail.core.fields.StreamField([('resources', wagtail.core.blocks.ListBlock(wagtail.core.blocks.StructBlock([('link_text', wagtail.core.blocks.CharBlock(required=False))])))]),
+            field=wagtail.fields.StreamField([('resources', wagtail.blocks.ListBlock(wagtail.blocks.StructBlock([('link_text', wagtail.blocks.CharBlock(required=False))])))]),
         ),
     ]

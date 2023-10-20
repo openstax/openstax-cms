@@ -2,8 +2,8 @@
 
 from django.db import migrations
 import pages.custom_blocks
-import wagtail.core.blocks
-import wagtail.core.fields
+import wagtail.blocks
+import wagtail.fields
 import wagtail.images.blocks
 
 
@@ -17,6 +17,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='impact',
             name='improving_access',
-            field=wagtail.core.fields.StreamField([('content', wagtail.core.blocks.StructBlock([('image', wagtail.core.blocks.StructBlock([('image', wagtail.images.blocks.ImageChooserBlock(required=False)), ('alt_text', wagtail.core.blocks.CharBlock(required=False)), ('link', wagtail.core.blocks.URLBlock(required=False)), ('alignment', pages.custom_blocks.ImageFormatChoiceBlock()), ('identifier', wagtail.core.blocks.CharBlock(help_text='Used by the frontend for Google Analytics.', required=False))])), ('heading', wagtail.core.blocks.CharBlock()), ('description', wagtail.core.blocks.RichTextBlock()), ('button_text', wagtail.core.blocks.CharBlock()), ('button_href', wagtail.core.blocks.URLBlock())], max_num=1))], blank=True),
+            field=wagtail.fields.StreamField([('content', wagtail.blocks.StructBlock([('image', wagtail.blocks.StructBlock([('image', wagtail.images.blocks.ImageChooserBlock(required=False)), ('alt_text', wagtail.blocks.CharBlock(required=False)), ('link', wagtail.blocks.URLBlock(required=False)), ('alignment', pages.custom_blocks.ImageFormatChoiceBlock()), ('identifier', wagtail.blocks.CharBlock(help_text='Used by the frontend for Google Analytics.', required=False))])), ('heading', wagtail.blocks.CharBlock()), ('description', wagtail.blocks.RichTextBlock()), ('button_text', wagtail.blocks.CharBlock()), ('button_href', wagtail.blocks.URLBlock())], max_num=1))], blank=True),
         ),
     ]

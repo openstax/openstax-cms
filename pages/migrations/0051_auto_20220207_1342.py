@@ -2,8 +2,8 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
-import wagtail.core.blocks
-import wagtail.core.fields
+import wagtail.blocks
+import wagtail.fields
 
 
 class Migration(migrations.Migration):
@@ -23,7 +23,7 @@ class Migration(migrations.Migration):
                 ('page_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='wagtailcore.page')),
                 ('banner_heading', models.CharField(default='', max_length=255)),
                 ('banner_description', models.TextField(default='')),
-                ('funder_groups', wagtail.core.fields.StreamField([('groups', wagtail.core.blocks.StructBlock([('funders', wagtail.core.blocks.ListBlock(wagtail.core.blocks.StructBlock([('funder_name', wagtail.core.blocks.CharBlock(required=True)), ('url', wagtail.core.blocks.URLBlock(required=False))])))]))])),
+                ('funder_groups', wagtail.fields.StreamField([('groups', wagtail.blocks.StructBlock([('funders', wagtail.blocks.ListBlock(wagtail.blocks.StructBlock([('funder_name', wagtail.blocks.CharBlock(required=True)), ('url', wagtail.blocks.URLBlock(required=False))])))]))])),
                 ('banner_image', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='wagtailimages.image')),
                 ('promote_image', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='wagtailimages.image')),
             ],

@@ -2,7 +2,7 @@
 
 from django.db import migrations, models
 import django.db.models.deletion
-import wagtail.core.fields
+import wagtail.fields
 import wagtail.search.index
 
 
@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('heading', models.CharField(max_length=255)),
-                ('description', wagtail.core.fields.RichTextField(blank=True, null=True)),
+                ('description', wagtail.fields.RichTextField(blank=True, null=True)),
                 ('unlocked_resource', models.BooleanField(default=False)),
                 ('creator_fest_resource', models.BooleanField(default=False)),
             ],
@@ -30,7 +30,7 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('heading', models.CharField(max_length=255)),
-                ('description', wagtail.core.fields.RichTextField(blank=True, null=True)),
+                ('description', wagtail.fields.RichTextField(blank=True, null=True)),
                 ('unlocked_resource', models.BooleanField(default=True)),
             ],
         ),

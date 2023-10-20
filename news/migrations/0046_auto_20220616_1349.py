@@ -2,8 +2,8 @@
 
 from django.db import migrations
 import news.models
-import wagtail.core.blocks
-import wagtail.core.fields
+import wagtail.blocks
+import wagtail.fields
 
 
 class Migration(migrations.Migration):
@@ -16,16 +16,16 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='newsarticle',
             name='article_subjects',
-            field=wagtail.core.fields.StreamField([('subject', wagtail.core.blocks.ListBlock(wagtail.core.blocks.StructBlock([('subject', news.models.BlogCollectionChooserBlock(label='Blog Subject', required=True, target_model='snippets.Subject')), ('featured', wagtail.core.blocks.BooleanBlock(label='Featured', required=False))])))], blank=True, null=True),
+            field=wagtail.fields.StreamField([('subject', wagtail.blocks.ListBlock(wagtail.blocks.StructBlock([('subject', news.models.BlogCollectionChooserBlock(label='Blog Subject', required=True, target_model='snippets.Subject')), ('featured', wagtail.blocks.BooleanBlock(label='Featured', required=False))])))], blank=True, null=True),
         ),
         migrations.AlterField(
             model_name='newsarticle',
             name='collections',
-            field=wagtail.core.fields.StreamField([('collection', wagtail.core.blocks.ListBlock(wagtail.core.blocks.StructBlock([('collection', news.models.BlogCollectionChooserBlock(label='Blog Collection', required=True, target_model='snippets.BlogCollection')), ('featured', wagtail.core.blocks.BooleanBlock(label='Featured', required=False)), ('popular', wagtail.core.blocks.BooleanBlock(label='Popular', required=False))])))], blank=True, null=True),
+            field=wagtail.fields.StreamField([('collection', wagtail.blocks.ListBlock(wagtail.blocks.StructBlock([('collection', news.models.BlogCollectionChooserBlock(label='Blog Collection', required=True, target_model='snippets.BlogCollection')), ('featured', wagtail.blocks.BooleanBlock(label='Featured', required=False)), ('popular', wagtail.blocks.BooleanBlock(label='Popular', required=False))])))], blank=True, null=True),
         ),
         migrations.AlterField(
             model_name='newsarticle',
             name='content_types',
-            field=wagtail.core.fields.StreamField([('content_type', wagtail.core.blocks.ListBlock(wagtail.core.blocks.StructBlock([('content_type', news.models.ContentTypeChooserBlock(label='Blog Content Type', required=True, target_model='snippets.BlogContentType'))])))], blank=True, null=True),
+            field=wagtail.fields.StreamField([('content_type', wagtail.blocks.ListBlock(wagtail.blocks.StructBlock([('content_type', news.models.ContentTypeChooserBlock(label='Blog Content Type', required=True, target_model='snippets.BlogContentType'))])))], blank=True, null=True),
         ),
     ]

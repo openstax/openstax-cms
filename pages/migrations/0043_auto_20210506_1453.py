@@ -2,8 +2,8 @@
 
 from django.db import migrations
 import pages.custom_blocks
-import wagtail.core.blocks
-import wagtail.core.fields
+import wagtail.blocks
+import wagtail.fields
 
 
 class Migration(migrations.Migration):
@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='homepage',
             name='tutor_features',
-            field=wagtail.core.fields.StreamField([('features', wagtail.core.blocks.ListBlock(wagtail.core.blocks.StructBlock([('image', pages.custom_blocks.APIImageChooserBlock(required=False)), ('title', wagtail.core.blocks.CharBlock(required=False))])))], default=''),
+            field=wagtail.fields.StreamField([('features', wagtail.blocks.ListBlock(wagtail.blocks.StructBlock([('image', pages.custom_blocks.APIImageChooserBlock(required=False)), ('title', wagtail.blocks.CharBlock(required=False))])))], default=''),
             preserve_default=False,
         ),
     ]

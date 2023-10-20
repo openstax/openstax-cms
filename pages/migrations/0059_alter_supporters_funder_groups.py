@@ -2,8 +2,8 @@
 
 from django.db import migrations
 import pages.custom_blocks
-import wagtail.core.blocks
-import wagtail.core.fields
+import wagtail.blocks
+import wagtail.fields
 
 
 class Migration(migrations.Migration):
@@ -16,6 +16,6 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='supporters',
             name='funder_groups',
-            field=wagtail.core.fields.StreamField([('content', wagtail.core.blocks.StructBlock([('group_title', wagtail.core.blocks.CharBlock(form_classname='name of funder group')), ('description', wagtail.core.blocks.TextBlock(form_classname='description of funder group')), ('image', pages.custom_blocks.APIImageChooserBlock(required=False)), ('funders', wagtail.core.blocks.ListBlock(wagtail.core.blocks.StructBlock([('funder_name', wagtail.core.blocks.CharBlock(required=True)), ('url', wagtail.core.blocks.URLBlock(required=False))])))]))]),
+            field=wagtail.fields.StreamField([('content', wagtail.blocks.StructBlock([('group_title', wagtail.blocks.CharBlock(form_classname='name of funder group')), ('description', wagtail.blocks.TextBlock(form_classname='description of funder group')), ('image', pages.custom_blocks.APIImageChooserBlock(required=False)), ('funders', wagtail.blocks.ListBlock(wagtail.blocks.StructBlock([('funder_name', wagtail.blocks.CharBlock(required=True)), ('url', wagtail.blocks.URLBlock(required=False))])))]))]),
         ),
     ]

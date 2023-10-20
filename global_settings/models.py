@@ -1,9 +1,9 @@
 from django.db import models
-from wagtail.contrib.settings.models import BaseSetting, register_setting
+from wagtail.contrib.settings.models import BaseSiteSetting, register_setting
 
 
 @register_setting(icon='doc-empty')
-class StickyNote(BaseSetting):
+class StickyNote(BaseSiteSetting):
     start = models.DateTimeField(null=True, help_text="Set the start date to override the content of the Give Sticky. Set the header and body below to change.")
     expires = models.DateTimeField(null=True, help_text="Set the date to expire overriding the content of the Give Sticky.")
     show_popup = models.BooleanField(default=False, help_text="Replaces the top banner with a popup, start and expire dates still control timing.")
@@ -19,7 +19,7 @@ class StickyNote(BaseSetting):
 
 
 @register_setting(icon='collapse-down')
-class Footer(BaseSetting):
+class Footer(BaseSiteSetting):
     supporters = models.TextField()
     copyright = models.TextField()
     ap_statement = models.TextField()
@@ -31,7 +31,7 @@ class Footer(BaseSetting):
         verbose_name = 'Footer'
 
 @register_setting(icon='cogs')
-class CloudfrontDistribution(BaseSetting):
+class CloudfrontDistribution(BaseSiteSetting):
     distribution_id = models.CharField(max_length=255, null=True, blank=True)
 
     class Meta:
@@ -39,7 +39,7 @@ class CloudfrontDistribution(BaseSetting):
 
 
 @register_setting(icon='date')
-class GiveToday(BaseSetting):
+class GiveToday(BaseSiteSetting):
     give_link_text = models.CharField(max_length=255)
     give_link = models.URLField("Give link", blank=True, help_text="URL to Rice Give page or something similar")
     start = models.DateTimeField(null=True,

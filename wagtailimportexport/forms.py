@@ -1,7 +1,7 @@
 from django import forms
 
 from wagtail.admin.widgets import AdminPageChooser
-from wagtail.core.models import Page
+from wagtail.models import Page
 from wagtail.admin import widgets as wagtailadmin_widgets
 
 

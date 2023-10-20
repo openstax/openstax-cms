@@ -4,8 +4,8 @@ from django.db import migrations, models
 import django.db.models.deletion
 import news.models
 import pages.custom_blocks
-import wagtail.core.blocks
-import wagtail.core.fields
+import wagtail.blocks
+import wagtail.fields
 import wagtail.documents.blocks
 import wagtail.embeds.blocks
 
@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='impact',
             name='making_a_difference',
-            field=wagtail.core.fields.StreamField([('content', wagtail.core.blocks.StructBlock([('heading', wagtail.core.blocks.CharBlock()), ('description', wagtail.core.blocks.RichTextBlock()), ('stories', wagtail.core.blocks.ListBlock(wagtail.core.blocks.StructBlock([('image', pages.custom_blocks.APIImageChooserBlock(required=False)), ('story_text', wagtail.core.blocks.TextBlock(required=False)), ('linked_story', wagtail.core.blocks.PageChooserBlock(page_type=['pages.ImpactStory'])), ('embedded_video', wagtail.core.blocks.RawHTMLBlock(required=False))])))]))]),
+            field=wagtail.fields.StreamField([('content', wagtail.blocks.StructBlock([('heading', wagtail.blocks.CharBlock()), ('description', wagtail.blocks.RichTextBlock()), ('stories', wagtail.blocks.ListBlock(wagtail.blocks.StructBlock([('image', pages.custom_blocks.APIImageChooserBlock(required=False)), ('story_text', wagtail.blocks.TextBlock(required=False)), ('linked_story', wagtail.blocks.PageChooserBlock(page_type=['pages.ImpactStory'])), ('embedded_video', wagtail.blocks.RawHTMLBlock(required=False))])))]))]),
         ),
         migrations.CreateModel(
             name='ImpactStory',
@@ -33,7 +33,7 @@ class Migration(migrations.Migration):
                 ('subheading', models.CharField(blank=True, max_length=250, null=True)),
                 ('author', models.CharField(max_length=250)),
                 ('featured_image_alt_text', models.CharField(blank=True, max_length=250, null=True)),
-                ('body', wagtail.core.fields.StreamField([('paragraph', wagtail.core.blocks.RichTextBlock(icon='pilcrow')), ('aligned_image', wagtail.core.blocks.StructBlock([('image', news.models.ImageChooserBlock()), ('caption', wagtail.core.blocks.RichTextBlock()), ('alignment', news.models.ImageFormatChoiceBlock()), ('alt_text', wagtail.core.blocks.CharBlock(required=False))], icon='image', label='Aligned image')), ('pullquote', wagtail.core.blocks.StructBlock([('quote', wagtail.core.blocks.TextBlock('quote title')), ('attribution', wagtail.core.blocks.CharBlock())])), ('aligned_html', wagtail.core.blocks.RawHTMLBlock()), ('document', wagtail.documents.blocks.DocumentChooserBlock(icon='doc-full-inverse')), ('embed', wagtail.embeds.blocks.EmbedBlock(icon='media', label='Embed Media URL'))])),
+                ('body', wagtail.fields.StreamField([('paragraph', wagtail.blocks.RichTextBlock(icon='pilcrow')), ('aligned_image', wagtail.blocks.StructBlock([('image', news.models.ImageChooserBlock()), ('caption', wagtail.blocks.RichTextBlock()), ('alignment', news.models.ImageFormatChoiceBlock()), ('alt_text', wagtail.blocks.CharBlock(required=False))], icon='image', label='Aligned image')), ('pullquote', wagtail.blocks.StructBlock([('quote', wagtail.blocks.TextBlock('quote title')), ('attribution', wagtail.blocks.CharBlock())])), ('aligned_html', wagtail.blocks.RawHTMLBlock()), ('document', wagtail.documents.blocks.DocumentChooserBlock(icon='doc-full-inverse')), ('embed', wagtail.embeds.blocks.EmbedBlock(icon='media', label='Embed Media URL'))])),
                 ('featured_image', models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='+', to='wagtailimages.Image')),
             ],
             options={

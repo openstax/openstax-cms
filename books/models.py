@@ -11,7 +11,7 @@ from django.utils.html import format_html, mark_safe
 from django.contrib.postgres.fields import ArrayField
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
-from wagtail.admin.edit_handlers import (FieldPanel,
+from wagtail.admin.panels import (FieldPanel,
                                          InlinePanel,
                                          PageChooserPanel,
                                          StreamFieldPanel)
@@ -22,7 +22,7 @@ from wagtail.documents.edit_handlers import DocumentChooserPanel
 from wagtail.snippets.blocks import SnippetChooserBlock
 from wagtail.images.edit_handlers import ImageChooserPanel
 from wagtail.snippets.edit_handlers import SnippetChooserPanel
-from wagtail.admin.edit_handlers import TabbedInterface, ObjectList
+from wagtail.admin.panels import TabbedInterface, ObjectList
 from wagtail.api import APIField
 from wagtail.snippets.models import register_snippet
 from wagtail.models import Site
@@ -503,7 +503,10 @@ class Book(Page):
         help_text='The book cover to be shown on the website.'
     )
     def get_cover_url(self):
-        return build_document_url(self.cover.url)
+        if self.cover:
+            return build_document_url(self.cover.url)
+        else:
+            return ''
     cover_url = property(get_cover_url)
 
     title_image = models.ForeignKey(
