@@ -283,7 +283,7 @@ class Errata(models.Model):
 
     class Meta:
         verbose_name = "erratum"
-        verbose_name_plural = "erratum"
+        verbose_name_plural = "errata"
 
 
 class EmailText(models.Model):
