@@ -282,8 +282,8 @@ class Errata(models.Model):
         return self.book.book_title
 
     class Meta:
-        verbose_name = "erratum"
-        verbose_name_plural = "errata"
+        verbose_name = "erratum list"
+        verbose_name_plural = "errata list"
 
 
 class EmailText(models.Model):
