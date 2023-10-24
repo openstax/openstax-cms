@@ -1,3 +1,5 @@
+import datetime
+
 import vcr
 import unittest
 from unittest import skip
@@ -7,7 +9,10 @@ from django.core.management import call_command
 from django.test import LiveServerTestCase, TestCase, Client
 from six import StringIO
 from django.core.exceptions import ValidationError
+from django.core.files.uploadedfile import SimpleUploadedFile
 
+from books.models import BookIndex, Book
+from pages.models import HomePage
 from salesforce.models import Adopter, SalesforceSettings, MapBoxDataset, Partner, AdoptionOpportunityRecord, PartnerReview, SalesforceForms
 from salesforce.views import Salesforce
 from salesforce.salesforce import Salesforce as SF
@@ -18,6 +23,8 @@ from rest_framework.test import APITestCase
 from rest_framework.test import APIRequestFactory
 
 from wagtail.test.utils import WagtailPageTests
+from wagtail.models import Page
+from wagtail.documents.models import Document
 
 from shared.test_utilities import mock_user_login
 
@@ -163,3 +170,67 @@ class AdoptionOpportunityTest(TestCase):
         response = self.client.get('/apps/cms/api/salesforce/renewal?account_uuid=f826f1b1-ead5-4594-82b3-df9a2753cb43')
         self.assertIn(b'"students": "123"', response.content)
 
+
+class ResourceDownloadTest(TestCase):
+    def setUp(self):
+        self.client = Client()
+
+    @classmethod
+    def setUpTestData(cls):
+        # create root page
+        root_page = Page.objects.get(title="Root")
+        # create homepage
+        homepage = HomePage(title="Hello World",
+                            slug="hello-world",
+                            )
+        # add homepage to root page
+        root_page.add_child(instance=homepage)
+        # create book index page
+        book_index = BookIndex(title="Book Index",
+                               page_description="Test",
+                               dev_standard_1_description="Test",
+                               dev_standard_2_description="Test",
+                               dev_standard_3_description="Test",
+                               dev_standard_4_description="Test",
+                               )
+        # add book index to homepage
+        homepage.add_child(instance=book_index)
+        test_image = SimpleUploadedFile(name='openstax.png',
+                                        content=open("oxauth/static/images/openstax.png", 'rb').read())
+        cls.test_doc = Document.objects.create(title='Test Doc', file=test_image)
+
+    def test_resource_download_post(self):
+        root_page = Page.objects.get(title="Root")
+        book_index = BookIndex.objects.all()[0]
+        book = Book(title="University Physics",
+                    slug="university-physics",
+                    cnx_id='031da8d3-b525-429c-80cf-6c8ed997733a',
+                    salesforce_book_id='',
+                    description="Test Book",
+                    cover=self.test_doc,
+                    title_image=self.test_doc,
+                    publish_date=datetime.date.today(),
+                    locale=root_page.locale
+                    )
+        book_index.add_child(instance=book)
+        data = {"book": book.pk,"book_format": "PDF","account_uuid": "310bb96b-0df8-4d10-a759-c7d366c1f524", "resource_name": "Book PDF", "contact_id": "0032f00003zYVdSAAZ"}
+        response = self.client.post('/apps/cms/api/salesforce/download-tracking/', data, format='json')
+        self.assertEqual("PDF", response.data['book_format'])
+
+    def test_resource_download_post_rejection(self):
+        root_page = Page.objects.get(title="Root")
+        book_index = BookIndex.objects.all()[0]
+        book = Book(title="Biology 2e",
+                    slug="biology-2e",
+                    cnx_id='031da8d3-b525-429c-80cf-6c8ed997744b',
+                    salesforce_book_id='',
+                    description="Test Book",
+                    cover=self.test_doc,
+                    title_image=self.test_doc,
+                    publish_date=datetime.date.today(),
+                    locale=root_page.locale
+                    )
+        book_index.add_child(instance=book)
+        data = {"book": book.pk,"book_format": "PDF","account_uuid": "310bb96b-0df8-4d10-a759-c7d366c1f524", "resource_name": "Book PDF", "contact_id": ""}
+        response = self.client.post('/apps/cms/api/salesforce/download-tracking/', data, format='json')
+        self.assertEqual(None, response.data['book'])
