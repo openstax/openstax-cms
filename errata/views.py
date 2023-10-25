@@ -39,6 +39,8 @@ class ErrataView(ModelViewSet):
     serializer_class = ErrataSerializer
     http_method_names = ['get', 'post', 'head']
     filter_backends = (DjangoFilterBackend, OrderingFilter)
+    filterset_fields = ['book_title', 'book_id', 'archived', 'is_assessment_errata', 'is_assessment_errata__not',
+                        'status__not']
     filter_class = ErrataFilter
     ordering_fields = ('id', 'resolution_date', 'created', 'modified', )
 
