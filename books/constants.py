@@ -3,12 +3,14 @@ COMING_SOON = 'coming_soon'
 NEW_EDITION_AVAILABLE = 'new_edition_available'
 DEPRECATED = 'deprecated'
 RETIRED = 'retired'
+UNLISTED = 'unlisted'
 BOOK_STATES = (
     (LIVE, 'Live'),
     (COMING_SOON, 'Coming Soon'),
     (NEW_EDITION_AVAILABLE, 'New Edition Forthcoming (Show new edition correction schedule)'),
     (DEPRECATED, 'Deprecated (Disallow errata submissions and show deprecated schedule)'),
-    (RETIRED, 'Retired (Remove from website)')
+    (RETIRED, 'Retired (Remove from website)'),
+    (UNLISTED, 'Unlisted (Not included in books sent to site)')
 )
 
 YELLOW = 'yellow'
