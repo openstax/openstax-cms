@@ -7,7 +7,8 @@ from django.conf import settings
 from django.urls import reverse
 
 from snippets.models import Subject, ErrataContent, GiveBanner, BlogContentType, NoWebinarMessage, K12Subject, \
-    FacultyResource, StudentResource, Role, SharedContent, NewsSource, SubjectCategory, BlogCollection, AssignableAvailable
+    FacultyResource, StudentResource, Role, SharedContent, NewsSource, SubjectCategory, BlogCollection, \
+    AssignableAvailable, AmazonBookBlurb
 import snippets
 
 
@@ -69,6 +70,10 @@ class SnippetsTestCase(TestCase):
         self.assignable_available = AssignableAvailable(
             assignable_description="Assignable is ...")
         self.assignable_available.save()
+
+        self.amazon_book_blurb = AmazonBookBlurb(
+            amazon_book_blurb="Amazon Book Blurb. Amazon Book Blurb. Amazon Book Blurb.")
+        self.amazon_book_blurb.save()
 
     def test_can_create_subject(self):
         subject = Subject(name="Science", page_content="Science page content.", seo_title="Science SEO Title",
@@ -142,4 +147,8 @@ class SnippetsTestCase(TestCase):
     def test_can_fetch_assignable_available(self):
         response = self.client.get('/apps/cms/api/snippets/assignableavailable/?format=json')
         self.assertIn(b"Assignable is ...", response.content)
+
+    def test_can_fetch_amazon_book_blurb(self):
+        response = self.client.get('/apps/cms/api/snippets/amazonbookblurb/?format=json')
+        self.assertIn(b"Amazon Book Blurb", response.content)
 
