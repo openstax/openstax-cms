@@ -2,6 +2,7 @@ import unicodecsv
 from import_export import resources
 from import_export.admin import ExportActionMixin, ImportExportActionModelAdmin
 from import_export.formats import base_formats
+from import_export.fields import Field
 
 from django.contrib import admin
 from django.db import models
@@ -26,6 +27,27 @@ class ErrataResource(resources.ModelResource):
         model = Errata
         fields = ('id', 'created', 'modified', 'book__title', 'number_of_errors', 'is_assessment_errata', 'assessment_id', 'status', 'resolution', 'archived', 'junk', 'location', 'additional_location_information', 'detail', 'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'resource', 'file_1', 'file_2',)
         export_order = ('id', 'created', 'modified', 'book__title', 'number_of_errors', 'is_assessment_errata', 'assessment_id', 'status', 'resolution', 'archived', 'junk', 'location', 'additional_location_information', 'detail', 'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'resource',)
+        
+# custom export for release note generation
+class CustomExportResource(resources.ModelResource):
+    location = Field(attribute='location', column_name='Location')
+    detail = Field(attribute='detail', column_name='Detail')
+    resolution = Field(attribute='resolution', column_name='Resolution')
+    error_type = Field(attribute='error_type', column_name='Error Type')
+
+    class Meta:
+        model = Errata
+        fields = ('location', 'detail', 'resolution', 'error_type')
+        export_order = ('location', 'detail', 'resolution', 'error_type')
+
+def custom_export_action(modeladmin, request, queryset):
+    resource = CustomExportResource()
+    dataset = resource.export(queryset)
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="Release Notes.csv"'
+    response.write(dataset.csv)
+    return response
+custom_export_action.short_description = 'Export Errata Release Notes CSV'
 
 class InlineInternalImage(admin.TabularInline):
     model = InternalDocumentation
@@ -77,7 +99,7 @@ class ErrataAdmin(ImportExportActionModelAdmin, VersionAdmin):
     formfield_overrides = {
         models.ManyToManyField: {'widget': CheckboxSelectMultiple},
     }
-    actions = ['mark_in_review', 'mark_OpenStax_editorial_review', 'mark_cartridge_review', 'mark_reviewed', 'mark_archived', 'mark_completed', ExportActionMixin.export_admin_action]
+    actions = ['mark_in_review', 'mark_OpenStax_editorial_review', 'mark_cartridge_review', 'mark_reviewed', 'mark_archived', 'mark_completed', ExportActionMixin.export_admin_action, custom_export_action]
     inlines = [InlineInternalImage, ]
     raw_id_fields = ('duplicate_id', )
 
