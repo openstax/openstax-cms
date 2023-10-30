@@ -2739,7 +2739,7 @@ class Subject(Page):
                 for book in all_books:
                     if book.subject_categories is not None \
                             and category.subject_category in book.subject_categories \
-                            and book.book_state != 'retired':
+                            and book.book_state not in ['retired', 'unlisted']:
                         book_data = []
                         book_data.append({
                             'id': book.id,
