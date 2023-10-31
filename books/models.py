@@ -620,6 +620,7 @@ class Book(Page):
     bookshare_link = models.URLField(blank=True, help_text="Link to Bookshare resources")
     amazon_coming_soon = models.BooleanField(default=False, verbose_name="Individual Print Coming Soon")
     amazon_link = models.URLField(blank=True, verbose_name="Individual Print Link")
+    amazon_iframe = models.TextField(blank=True, null=True, help_text='Amazon iframe code block')
     kindle_link = models.URLField(blank=True, help_text="Link to Kindle version")
     chegg_link = models.URLField(blank=True, null=True, help_text="Link to Chegg e-reader")
     chegg_link_text = models.CharField(max_length=255, blank=True, null=True, help_text='Text for Chegg link.')
@@ -713,6 +714,7 @@ class Book(Page):
         FieldPanel('bookshare_link'),
         FieldPanel('amazon_coming_soon'),
         FieldPanel('amazon_link'),
+        FieldPanel('amazon_iframe'),
         FieldPanel('kindle_link'),
         FieldPanel('chegg_link'),
         FieldPanel('chegg_link_text'),
@@ -813,6 +815,7 @@ class Book(Page):
         APIField('bookshare_link'),
         APIField('amazon_coming_soon'),
         APIField('amazon_link'),
+        APIField('amazon_iframe'),
         APIField('kindle_link'),
         APIField('chegg_link'),
         APIField('chegg_link_text'),
