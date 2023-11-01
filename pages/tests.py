@@ -3,7 +3,7 @@ import json
 
 from django.test import TestCase, Client
 from django.core.management import call_command
-from wagtail.test.utils import WagtailTestUtils, WagtailPageTests
+from wagtail.test.utils import WagtailTestUtils, WagtailPageTestCase
 from wagtail.models import Page
 from pages.models import (HomePage,
                           ContactUs,
@@ -44,7 +44,7 @@ from books.models import BookIndex
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash, mock_user_login
 from http import cookies
 
-class HomePageTests(WagtailPageTests):
+class HomePageTests(WagtailPageTestCase):
 
     def setUp(self):
         mock_user_login()
@@ -105,7 +105,7 @@ class HomePageTests(WagtailPageTests):
             Assignable,
         })
 
-class PageTests(WagtailPageTests):
+class PageTests(WagtailPageTestCase):
     def setUp(self):
         mock_user_login()
         root_page = Page.objects.get(title="Root")
@@ -496,7 +496,7 @@ class PageTests(WagtailPageTests):
         self.assertEqual(retrieved_page.title, "Assignable Page")
 
 
-class ErrataListTest(WagtailPageTests):
+class ErrataListTest(WagtailPageTestCase):
 
     def setUp(self):
         mock_user_login()
@@ -521,7 +521,7 @@ class ErrataListTest(WagtailPageTests):
         self.assertEqual(retrieved_page.title, "Errata List Template")
 
 
-class SubjectsPageTest(WagtailPageTests):
+class SubjectsPageTest(WagtailPageTestCase):
 
     def setUp(self):
         mock_user_login()
@@ -543,7 +543,7 @@ class SubjectsPageTest(WagtailPageTests):
         self.assertEqual(retrieved_page.title, "Subjects")
 
 
-class SubjectPageTest(WagtailPageTests):
+class SubjectPageTest(WagtailPageTestCase):
 
     def setUp(self):
         mock_user_login()

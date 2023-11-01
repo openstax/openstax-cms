@@ -1,6 +1,6 @@
 import vcr
 
-from wagtail.test.utils import WagtailPageTests
+from wagtail.test.utils import WagtailPageTestCase
 from wagtail.models import Page
 
 import snippets.models
@@ -14,7 +14,7 @@ from wagtail.documents.models import Document
 import datetime
 
 
-class BookTests(WagtailPageTests):
+class BookTests(WagtailPageTestCase):
 
     def setUp(self):
         self.client = Client()

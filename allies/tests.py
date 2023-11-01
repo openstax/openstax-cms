@@ -3,10 +3,10 @@ from unittest import TestCase
 from allies.models import AllySubject, Ally
 from snippets.models import Subject
 
-from wagtail.test.utils import WagtailTestUtils, WagtailPageTests
+from wagtail.test.utils import WagtailTestUtils, WagtailPageTestCase
 
 
-class AlliesTests(WagtailPageTests):
+class AlliesTests(WagtailPageTestCase):
     def setUp(self):
         self.math = Subject(name="Math", page_content="Math page content.", seo_title="Math SEO Title",
                             search_description="Math page description.")
@@ -42,8 +42,5 @@ class AlliesTests(WagtailPageTests):
         self.assertEquals('Math', result.get_subject_name())
 
     def test_can_create_ally(self):
-        #ally_subject = AllySubject(subject=self.math, ally=self.ally)
-        #ally_subject.save()
         result = Ally.objects.all()[0]
-        #print('ally subject: ' + str(result))
         self.assertEquals('Ally Heading', result.heading)
