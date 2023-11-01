@@ -460,3 +460,19 @@ class AssignableAvailable(TranslatableMixin, models.Model):
 
 
 register_snippet(AssignableAvailable)
+
+
+class AmazonBookBlurb(TranslatableMixin, models.Model):
+    amazon_book_blurb = models.TextField()
+
+    api_fields = ('amazon_book_blurb')
+
+    panels = [
+        FieldPanel('amazon_book_blurb')
+    ]
+
+    def __str__(self):
+        return 'Amazon Book Blurb'
+
+
+register_snippet(AmazonBookBlurb)

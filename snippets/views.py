@@ -1,11 +1,11 @@
 from rest_framework import viewsets
 
 from .models import Role, Subject, K12Subject, ErrataContent, SubjectCategory, GiveBanner, BlogContentType, \
-    BlogCollection, NoWebinarMessage, WebinarCollection, AssignableAvailable
+    BlogCollection, NoWebinarMessage, WebinarCollection, AssignableAvailable, AmazonBookBlurb
 from .serializers import RoleSerializer, SubjectSerializer, K12SubjectSerializer, ErrataContentSerializer, \
     SubjectCategorySerializer, \
     GiveBannerSerializer, BlogContentTypeSerializer, BlogCollectionSerializer, NoWebinarMessageSerializer, \
-    WebinarCollectionSerializer, AssignableAvailableSerializer
+    WebinarCollectionSerializer, AssignableAvailableSerializer, AmazonBookBlurbSerializer
 
 from rest_framework import generics, viewsets
 from django_filters.rest_framework import DjangoFilterBackend
@@ -107,6 +107,11 @@ class WebinarCollectionViewSet(viewsets.ReadOnlyModelViewSet):
 class AssignableAvailableViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = AssignableAvailable.objects.all()
     serializer_class = AssignableAvailableSerializer
+
+
+class AmazonBookBlurbViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = AmazonBookBlurb.objects.all()
+    serializer_class = AmazonBookBlurbSerializer
 
 
 def convert_locale(locale):
