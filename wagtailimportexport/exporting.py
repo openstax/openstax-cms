@@ -79,7 +79,7 @@ def export_page(settings={'root_page': None, 'export_unpublished': False,
             if settings['null_fk']:
                 functions.null_fks(page, data)
 
-            # Remove the owner of the page.
+            #Remove the owner of the page.
             if settings['null_users'] and not data.get('owner'):
                 data['owner'] = None
 

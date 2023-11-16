@@ -26,6 +26,7 @@ from wagtail.test.utils import WagtailPageTests
 from wagtail.models import Page
 from wagtail.documents.models import Document
 
+
 from shared.test_utilities import mock_user_login
 
 
