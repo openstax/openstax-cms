@@ -22,7 +22,7 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 from rest_framework.test import APIRequestFactory
 
-from wagtail.test.utils import WagtailPageTests
+from wagtail.test.utils import WagtailPageTestCase
 from wagtail.models import Page
 from wagtail.documents.models import Document
 
@@ -103,7 +103,7 @@ class PartnerTest(APITestCase, TestCase):
     #     self.assertEqual(response.data['status'], 'Deleted')
 
 
-class SalesforceTest(LiveServerTestCase, WagtailPageTests):
+class SalesforceTest(LiveServerTestCase, WagtailPageTestCase):
 
     def setUp(self):
         mock_user_login()

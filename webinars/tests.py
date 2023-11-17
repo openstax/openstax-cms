@@ -2,13 +2,13 @@ import json
 
 from django.test import TestCase
 from django.utils import timezone
-from wagtail.test.utils import WagtailPageTests
+from wagtail.test.utils import WagtailPageTestCase
 
 from snippets.models import Subject, WebinarCollection
 from webinars.models import Webinar
 
 
-class WebinarTests(WagtailPageTests, TestCase):
+class WebinarTests(WagtailPageTestCase, TestCase):
     def setUp(self):
         # create subjects
         self.math = Subject(name="Math", page_content="Math page content.", seo_title="Math SEO Title",
