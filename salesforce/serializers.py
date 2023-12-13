@@ -125,7 +125,7 @@ class ResourceDownloadSerializer(serializers.ModelSerializer):
             if resource_name:
                 rd.filter(resource_name=resource_name)
 
-            rd = rd.first
+            rd = rd[0]
             rd.contact_id = contact_id
             rd.save()
         except (ResourceDownload.DoesNotExist, IndexError):
