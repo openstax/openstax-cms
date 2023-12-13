@@ -12,7 +12,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name="resourcedownload",
             name="account_uuid",
-            field=models.UUIDField(default=""),
+            field=models.UUIDField(default="19d58898-0b29-488f-a35a-6288e3c0b44c"),
             preserve_default=False,
         ),
         migrations.AlterField(
