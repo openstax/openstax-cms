@@ -120,17 +120,16 @@ class ResourceDownloadSerializer(serializers.ModelSerializer):
         resource_name = validated_data.get('resource_name', None)
         contact_id = validated_data.get('contact_id', None)
         rd = []
-        if book and contact_id:
-            try:
-                rd = ResourceDownload.objects.filter(account_uuid=account_uuid, book=book)
-                if resource_name:
-                    rd.filter(resource_name=resource_name)
+        try:
+            rd = ResourceDownload.objects.filter(account_uuid=account_uuid, book=book)
+            if resource_name:
+                rd.filter(resource_name=resource_name)
 
-                rd = rd[0] # we only need the first result - but there might already be duplicates so this should handle that
-                rd.contact_id = contact_id
-                rd.save()
-            except (ResourceDownload.DoesNotExist, IndexError):
-                rd = ResourceDownload.objects.create(**validated_data)
+            rd = rd.first
+            rd.contact_id = contact_id
+            rd.save()
+        except (ResourceDownload.DoesNotExist, IndexError):
+            rd = ResourceDownload.objects.create(**validated_data)
 
         return rd
 
