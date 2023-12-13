@@ -389,7 +389,6 @@ class ResourceDownload(models.Model):
     )
     book = models.ForeignKey(Book, on_delete=models.SET_NULL, null=True, blank=True)
     book_format = models.CharField(max_length=100, choices=BOOK_FORMATS, null=True , blank=True)
-    account_id = models.IntegerField(blank=True, null=True) # TODO: remove this field after migrating data to UUID (see management command)
     account_uuid = models.UUIDField(null=True)
     created = models.DateTimeField(auto_now_add=True)
     edited = models.DateTimeField(auto_now=True)
@@ -399,7 +398,6 @@ class ResourceDownload(models.Model):
 
     class Meta:
         indexes = [
-            models.Index(fields=['account_id', ]),
             models.Index(fields=['account_uuid', ]),
             models.Index(fields=['book', ]),
         ]
