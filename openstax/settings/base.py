@@ -248,6 +248,8 @@ CRONJOBS = [
     ('0 0 8 * *', 'django.core.management.call_command', ['update_schools_and_mapbox']),
     ('0 9 * * *', 'django.core.management.call_command', ['update_opportunities']),
     ('0 10 * * *', 'django.core.management.call_command', ['update_partners']),
+    # https://docs.wagtail.org/en/stable/topics/search/indexing.html#the-update-index-command
+    ('0 4 * * 6', 'django.core.management.call_command', ['update_index']),
 ]
 
 if ENVIRONMENT == 'prod':
