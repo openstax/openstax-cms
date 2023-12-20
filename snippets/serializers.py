@@ -1,6 +1,7 @@
 from .models import Role, Subject, K12Subject, ErrataContent, SubjectCategory, GiveBanner, BlogContentType, \
     BlogCollection, NoWebinarMessage, WebinarCollection, AssignableAvailable, AmazonBookBlurb
 
+
 from rest_framework import serializers, generics
 
 
@@ -140,4 +141,5 @@ class AmazonBookBlurbSerializer(serializers.ModelSerializer):
         model = AmazonBookBlurb
         fields = ('amazon_book_blurb',)
         read_only_fields = ('amazon_book_blurb',)
+
 

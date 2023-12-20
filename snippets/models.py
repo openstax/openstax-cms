@@ -476,3 +476,4 @@ class AmazonBookBlurb(TranslatableMixin, models.Model):
 
 
 register_snippet(AmazonBookBlurb)
+

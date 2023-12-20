@@ -14,4 +14,5 @@ router.register('nowebinarmessage', views.NoWebinarMessageViewSet, basename="NoW
 router.register('webinarcollection', views.WebinarCollectionViewSet, basename="WebinarCollection")
 router.register('assignableavailable', views.AssignableAvailableViewSet, basename="AssignableAvailable")
 router.register('amazonbookblurb', views.AmazonBookBlurbViewSet, basename="AmazonBookBlurb")
+
 urlpatterns = router.urls

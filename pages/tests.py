@@ -39,6 +39,7 @@ from pages.models import (HomePage,
                           AllyLogos,
                           K12MainPage,
                           Assignable, ImpactStory)
+
 from news.models import NewsIndex, PressIndex
 from books.models import BookIndex
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash, mock_user_login

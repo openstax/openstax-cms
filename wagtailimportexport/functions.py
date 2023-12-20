@@ -243,3 +243,4 @@ def content_type_by_model(model):
         return None
     else:
         return str(content_type[0].pk)
+

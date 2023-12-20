@@ -5,6 +5,7 @@ import wagtail.blocks
 import wagtail.fields
 
 
+
 class Migration(migrations.Migration):
 
     dependencies = [

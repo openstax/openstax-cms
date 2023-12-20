@@ -9,6 +9,7 @@ from django.urls import reverse
 from snippets.models import Subject, ErrataContent, GiveBanner, BlogContentType, NoWebinarMessage, K12Subject, \
     FacultyResource, StudentResource, Role, SharedContent, NewsSource, SubjectCategory, BlogCollection, \
     AssignableAvailable, AmazonBookBlurb
+
 import snippets
 
 
@@ -74,6 +75,7 @@ class SnippetsTestCase(TestCase):
         self.amazon_book_blurb = AmazonBookBlurb(
             amazon_book_blurb="Amazon Book Blurb. Amazon Book Blurb. Amazon Book Blurb.")
         self.amazon_book_blurb.save()
+
 
     def test_can_create_subject(self):
         subject = Subject(name="Science", page_content="Science page content.", seo_title="Science SEO Title",

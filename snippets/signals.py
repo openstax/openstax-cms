@@ -6,6 +6,7 @@ from snippets.models import Subject, Role, ErrataContent, SubjectCategory, GiveB
     WebinarCollection, AssignableAvailable, AmazonBookBlurb
 
 
+
 @receiver(post_save, sender=Subject)
 def clear_cloudfront_on_subject_save(sender, **kwargs):
     invalidate_cloudfront_caches('snippets/subjects')
@@ -54,3 +55,4 @@ def clear_cloudfront_on_assignable_available_save(sender, **kwargs):
 @receiver(post_save, sender=AmazonBookBlurb)
 def clear_cloudfront_on_amazon_book_blurb_save(sender, **kwargs):
     invalidate_cloudfront_caches('snippets/amazonbookblurb')
+
