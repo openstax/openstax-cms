@@ -1,7 +1,6 @@
 from django.test import TestCase, Client
 
 from shared.test_utilities import RequestMock
-from oxauth.models import OpenStaxUserProfile
 from oxauth.functions import decrypt_cookie, get_logged_in_user_id, get_logged_in_user_uuid
 from http import cookies
 
@@ -27,12 +26,4 @@ class AccountsTestCase(TestCase):
         response = self.client.get('/admin')
         request = response.wsgi_request
         uuid = get_logged_in_user_uuid(request, bypass_sso_cookie_check=False)
-        # self.assertEqual(uuid, '467cea6c-8159-40b1-90f1-e9b0dc26344c')
-
-    def creates_openstax_profile_on_login(self):
-        biscuits = cookies.SimpleCookie()
-        biscuits['oxa'] = self.sso_cookie
-        self.client.cookies = biscuits
-        response = self.client.get('/admin')
-        profile = OpenStaxUserProfile.objects.last('id')
-        self.assertEqual(profile.openstax_accounts_uuid, '467cea6c-8159-40b1-90f1-e9b0dc26344c')
+        self.assertEqual(uuid, '467cea6c-8159-40b1-90f1-e9b0dc26344c')

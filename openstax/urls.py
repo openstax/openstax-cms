@@ -19,7 +19,6 @@ from wagtail.contrib.sitemaps.views import sitemap
 admin.site.site_header = 'OpenStax'
 
 urlpatterns = [
-    path('oxauth/', include('oxauth.urls')), # new auth package
     path('admin/', include(wagtailadmin_urls)),
 
     path('django-admin/error/', throw_error, name='throw_error'),
