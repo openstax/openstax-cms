@@ -25,7 +25,7 @@ else:
 # These should both be set to true. The openstax.middleware will handle resolving the URL
 # without a redirect if needed.
 APPEND_SLASH = True
-WAGTAIL_APPEND_SLASH=True
+WAGTAIL_APPEND_SLASH = True
 
 # urls.W002 warns about slashes at the start of URLs.  But we need those so
 #   we don't have to have slashes at the end of URLs.  So ignore.
@@ -223,6 +223,7 @@ INSTALLED_APPS = [
     'wagtailimportexport',
     'versions',
     'oxmenus',
+    "wagtail_modeladmin",
     # wagtail
     'wagtail',
     'wagtail.admin',
@@ -238,8 +239,7 @@ INSTALLED_APPS = [
     'wagtail.contrib.forms',
     'wagtail.sites',
     'wagtail.api.v2',
-    'wagtail.contrib.settings',
-    'wagtail.contrib.modeladmin'
+    'wagtail.contrib.settings'
 ]
 
 CRONJOBS = [
@@ -352,7 +352,7 @@ WAGTAILADMIN_BASE_URL = BASE_URL
 
 ALLOWED_HOSTS = json.loads(os.getenv('ALLOWED_HOSTS', '[]'))
 
-CNX_URL = os.getenv('CNX_URL')
+CNX_URL = os.getenv('CNX_URL', 'https://openstax.org')
 
 # used in page.models to retrieve book information
 CNX_ARCHIVE_URL = 'https://archive.cnx.org'
