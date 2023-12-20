@@ -4,7 +4,7 @@ from .models import Menus
 
 class OXMenusAdmin(ModelAdmin):
     model = Menus
-    menu_icon = 'media'
+    menu_icon = 'grip'
     menu_label = 'OX Menu'
     menu_order = 5000
     list_display = ('name',)
