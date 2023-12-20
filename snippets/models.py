@@ -1,9 +1,9 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from wagtail.search import index
-from wagtail.admin.panels import FieldPanel, InlinePanel
+from wagtail.admin.panels import FieldPanel
 from wagtail.fields import RichTextField
-from wagtail.models import TranslatableMixin, Orderable
+from wagtail.models import TranslatableMixin
 from wagtail.snippets.models import register_snippet
 from openstax.functions import build_image_url
 from books.constants import BOOK_STATES, COVER_COLORS, K12_CATEGORIES
@@ -114,14 +114,16 @@ class FacultyResource(TranslatableMixin, index.Indexed, models.Model):
         FieldPanel('resource_category')
     ]
 
-
     search_fields = [
-        index.SearchField('heading', partial_match=True),
+        index.SearchField('heading', boost=10),
+        index.AutocompleteField('heading'),
+        index.FilterField('heading'),
         index.FilterField('locale_id'),
     ]
 
     def __str__(self):
         return self.heading
+
 
 register_snippet(FacultyResource)
 
@@ -155,7 +157,10 @@ class StudentResource(TranslatableMixin, index.Indexed, models.Model):
     ]
 
     search_fields = [
-        index.SearchField('heading', partial_match=True),
+        index.SearchField('heading', boost=10),
+        index.AutocompleteField('heading'),
+        index.FilterField('heading'),
+        index.FilterField('locale_id'),
     ]
 
     def __str__(self):
@@ -204,7 +209,9 @@ class SharedContent(TranslatableMixin, index.Indexed, models.Model):
     ]
 
     search_fields = [
-        index.SearchField('title', partial_match=True),
+        index.SearchField('title', boost=10),
+        index.AutocompleteField('title'),
+        index.FilterField('title'),
     ]
 
     def __str__(self):
@@ -237,7 +244,9 @@ class NewsSource(TranslatableMixin, index.Indexed, models.Model):
     ]
 
     search_fields = [
-        index.SearchField('name', partial_match=True),
+        index.SearchField('name', boost=10),
+        index.AutocompleteField('name'),
+        index.FilterField('name'),
     ]
 
     def __str__(self):

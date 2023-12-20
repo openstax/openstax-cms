@@ -1,6 +1,4 @@
 from django.contrib.admin.filters import FieldListFilter
-from django.db.models.fields import IntegerField, AutoField
-from django.db.models.fields.related import OneToOneField, ForeignKey, ManyToOneRel
 
 
 class MultipleSelectFieldListFilter(FieldListFilter):

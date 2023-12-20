@@ -1,5 +1,5 @@
 import json
-from django.test import TestCase, Client
+from django.test import TestCase
 
 from wagtail.test.utils import WagtailTestUtils
 from wagtail.images.tests.utils import Image, get_test_image_file
@@ -7,7 +7,7 @@ from wagtail.documents.models import Document
 
 from api.models import FeatureFlag, WebviewSettings
 
-from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash, mock_user_login
+from shared.test_utilities import mock_user_login
 
 class PagesAPI(TestCase, WagtailTestUtils):
     def setUp(self):

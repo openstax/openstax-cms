@@ -1,7 +1,7 @@
 from django.db import models
 from wagtail import blocks
 from wagtail.fields import RichTextField, StreamField
-from wagtail.admin.edit_handlers import FieldPanel
+from wagtail.admin.panels import FieldPanel
 from wagtail.api import APIField
 
 class MenuItemBlock(blocks.StructBlock):
@@ -34,7 +34,10 @@ class Menus(models.Model):
     def __str__(self):
         return self.name
 
-    content_panels = [
+    class Meta:
+        verbose_name_plural = "Menus"
+
+    panels = [
         FieldPanel('name'),
         FieldPanel('menu')
     ]

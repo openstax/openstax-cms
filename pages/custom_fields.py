@@ -2,8 +2,7 @@ from django.db import models
 
 from wagtail import blocks
 from wagtail.fields import RichTextField, StreamField
-from wagtail.admin.panels import FieldPanel, StreamFieldPanel
-from wagtail.images.edit_handlers import ImageChooserPanel
+from wagtail.admin.panels import FieldPanel
 
 from .custom_blocks import APIImageChooserBlock
 from openstax.functions import build_image_url
