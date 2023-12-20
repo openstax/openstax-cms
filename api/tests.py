@@ -18,7 +18,7 @@ class PagesAPI(TestCase, WagtailTestUtils):
         response = self.client.get('/apps/cms/api/v2/pages/')
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.get('/apps/cms/api/v2/pages')
+        response = self.client.get('/apps/cms/api/v2/pages', follow=True)
         self.assertEqual(response.status_code, 200)
 
 
@@ -160,7 +160,7 @@ class APITests(TestCase, WagtailTestUtils):
         self.assertEqual(response.status_code, 200)
 
     def test_errata_resource_api(self):
-        response = self.client.get('/apps/cms/api/errata-fields?field=resources')
+        response = self.client.get('/apps/cms/api/errata-fields/?field=resources')
         self.assertNotIn('content', 'OpenStax Concept Coach')
         self.assertNotIn('content', 'Rover by OpenStax')
         self.assertEqual(response.status_code, 200)

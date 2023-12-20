@@ -92,6 +92,6 @@ class WebinarTests(WagtailPageTestCase, TestCase):
         self.assertContains(response, 'Economics')
 
     def test_webinar_search(self):
-        response = self.client.get('/apps/cms/api/webinars/search?q=Webinar 2')
+        response = self.client.get('/apps/cms/api/webinars/search/?q=Webinar 2')
         self.assertContains(response, 'Economics')
         self.assertContains(response, 'Research')
