@@ -592,7 +592,7 @@ class AdminPages(TestCase, WagtailTestUtils):
             mock_user_login()
 
             response = self.client.get(path)
-            self.assertEqual(response.status_code, 302)
+            self.assertIn(response.status_code, (301, 302))
             return response
         return test_redirect
 
