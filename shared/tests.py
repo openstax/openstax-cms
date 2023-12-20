@@ -1,5 +1,9 @@
 from django.test import TestCase
 from shared.test_utilities import mock_user_login, RequestMock
+<<<<<<< HEAD
+=======
+
+>>>>>>> 8e0972ecb0cb613b6bf9a96425fc017e5fe918e7
 from unittest.mock import MagicMock
 
 class TestMockUserLogin(TestCase):

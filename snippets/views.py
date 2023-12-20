@@ -7,6 +7,7 @@ from .serializers import RoleSerializer, SubjectSerializer, K12SubjectSerializer
     GiveBannerSerializer, BlogContentTypeSerializer, BlogCollectionSerializer, NoWebinarMessageSerializer, \
     WebinarCollectionSerializer, AssignableAvailableSerializer, AmazonBookBlurbSerializer
 
+
 from rest_framework import generics, viewsets
 from django_filters.rest_framework import DjangoFilterBackend
 
