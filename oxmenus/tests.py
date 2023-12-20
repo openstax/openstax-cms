@@ -1,11 +1,11 @@
 import json
 
 from django.test import TestCase
-from wagtail.test.utils import WagtailPageTestCase
+from wagtail.test.utils import WagtailPageTests
 from oxmenus.models import Menus
 
 
-class OXMenuTests(WagtailPageTestCase, TestCase):
+class OXMenuTests(WagtailPageTests, TestCase):
     def setUp(self):
         oxmenu = Menus(name="What we do",
                         menu=json.dumps(

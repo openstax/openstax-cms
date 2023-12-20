@@ -32,13 +32,13 @@ class ErrataResource(resources.ModelResource):
 class CustomExportResource(resources.ModelResource):
     location = Field(attribute='location', column_name='Location')
     detail = Field(attribute='detail', column_name='Detail')
-    resolution_notes = Field(attribute='resolution_notes', column_name='Resolution Notes')
+    resolution = Field(attribute='resolution', column_name='Resolution')
     error_type = Field(attribute='error_type', column_name='Error Type')
 
     class Meta:
         model = Errata
-        fields = ('location', 'detail', 'resolution_notes', 'error_type')
-        export_order = ('location', 'detail', 'resolution_notes', 'error_type')
+        fields = ('location', 'detail', 'resolution', 'error_type')
+        export_order = ('location', 'detail', 'resolution', 'error_type')
 
 def custom_export_action(modeladmin, request, queryset):
     resource = CustomExportResource()

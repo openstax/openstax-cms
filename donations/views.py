@@ -17,15 +17,13 @@ class ThankYouNoteViewSet(viewsets.ModelViewSet):
         institution = request.data['institution']
         consent_to_share_or_contact = request.data.get('consent_to_share_or_contact', False)
         contact_email_address = request.data.get('contact_email_address', '')
-        source = request.data.get('source', '')
 
         ty_note = ThankYouNote.objects.create(thank_you_note=thank_you_note,
                                               first_name=first_name,
                                               last_name=last_name,
                                               institution=institution,
                                               consent_to_share_or_contact=consent_to_share_or_contact,
-                                              contact_email_address=contact_email_address,
-                                              source=source)
+                                              contact_email_address=contact_email_address)
 
         serializer = ThankYouNoteSerializer(data=request.data)
         if serializer.is_valid():

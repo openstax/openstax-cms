@@ -3,7 +3,7 @@ import json
 
 from django.utils import timezone
 from django.test import TestCase
-from wagtail.test.utils import WagtailPageTestCase
+from wagtail.test.utils import WagtailPageTests
 from wagtail.models import Page
 from pages.models import HomePage
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
@@ -12,7 +12,7 @@ from news.models import NewsIndex, NewsArticle, PressIndex, PressRelease
 from snippets.models import Subject, BlogContentType, BlogCollection
 
 
-class NewsTests(WagtailPageTestCase, TestCase):
+class NewsTests(WagtailPageTests, TestCase):
     def setUp(self):
         # create collections
         self.learning = BlogCollection(name='Teaching and Learning', description='this is a collection')
@@ -258,7 +258,7 @@ class NewsTests(WagtailPageTestCase, TestCase):
         self.assertContains(response, 'Math')
 
 
-class PressTests(WagtailPageTestCase):
+class PressTests(WagtailPageTests):
     def setUp(self):
         press_index = PressIndex.objects.all()[0]
         self.press_release = PressRelease(title='Press release',
