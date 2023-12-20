@@ -309,3 +309,4 @@ def update_page_references(model, pages_by_original_id):
             child.pk = None
             # update page references on the child model, including the ParentalKey
             update_page_references(child, pages_by_original_id)
+            
