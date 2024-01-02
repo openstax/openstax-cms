@@ -388,18 +388,16 @@ class ResourceDownload(models.Model):
         ('Chegg Reader', 'Chegg Reader'),
     )
     book = models.ForeignKey(Book, on_delete=models.SET_NULL, null=True, blank=True)
-    book_format = models.CharField(max_length=100, choices=BOOK_FORMATS, null=True , blank=True)
-    account_id = models.IntegerField(blank=True, null=True) # TODO: remove this field after migrating data to UUID (see management command)
-    account_uuid = models.UUIDField(null=True)
+    book_format = models.CharField(max_length=100, choices=BOOK_FORMATS, null=True, blank=True)
+    account_uuid = models.UUIDField(null=False)
     created = models.DateTimeField(auto_now_add=True)
     edited = models.DateTimeField(auto_now=True)
     last_access = models.DateTimeField()
-    resource_name = models.CharField(max_length=255, null=True, blank=False)
+    resource_name = models.CharField(max_length=255, null=True, blank=True)
     contact_id = models.CharField(max_length=100, null=True, blank=True)
 
     class Meta:
         indexes = [
-            models.Index(fields=['account_id', ]),
             models.Index(fields=['account_uuid', ]),
             models.Index(fields=['book', ]),
         ]
