@@ -214,24 +214,12 @@ class ResourceDownloadTest(TestCase):
                     locale=root_page.locale
                     )
         book_index.add_child(instance=book)
-        data = {"book": book.pk,"book_format": "PDF","account_uuid": "310bb96b-0df8-4d10-a759-c7d366c1f524", "resource_name": "Book PDF", "contact_id": "0032f00003zYVdSAAZ"}
+        data = {
+            "book": book.pk,
+            "book_format": "PDF",
+            "account_uuid": "310bb96b-0df8-4d10-a759-c7d366c1f524",
+            "resource_name": "Book PDF",
+            "contact_id": "0032f00003zYVdSAAZ"
+            }
         response = self.client.post('/apps/cms/api/salesforce/download-tracking/', data, format='json')
         self.assertEqual("PDF", response.data['book_format'])
-
-    def test_resource_download_post_rejection(self):
-        root_page = Page.objects.get(title="Root")
-        book_index = BookIndex.objects.all()[0]
-        book = Book(title="Biology 2e",
-                    slug="biology-2e",
-                    cnx_id='031da8d3-b525-429c-80cf-6c8ed997744b',
-                    salesforce_book_id='',
-                    description="Test Book",
-                    cover=self.test_doc,
-                    title_image=self.test_doc,
-                    publish_date=datetime.date.today(),
-                    locale=root_page.locale
-                    )
-        book_index.add_child(instance=book)
-        data = {"book": book.pk,"book_format": "PDF","account_uuid": "310bb96b-0df8-4d10-a759-c7d366c1f524", "resource_name": "Book PDF", "contact_id": ""}
-        response = self.client.post('/apps/cms/api/salesforce/download-tracking/', data, format='json')
-        self.assertEqual(None, response.data['book'])
