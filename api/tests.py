@@ -1,5 +1,5 @@
 import json
-from django.test import TestCase, Client
+from django.test import TestCase
 
 from wagtail.test.utils import WagtailTestUtils
 from wagtail.images.tests.utils import Image, get_test_image_file
@@ -7,7 +7,7 @@ from wagtail.documents.models import Document
 
 from api.models import FeatureFlag, WebviewSettings
 
-from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash, mock_user_login
+from shared.test_utilities import mock_user_login
 
 class PagesAPI(TestCase, WagtailTestUtils):
     def setUp(self):
@@ -18,7 +18,7 @@ class PagesAPI(TestCase, WagtailTestUtils):
         response = self.client.get('/apps/cms/api/v2/pages/')
         self.assertEqual(response.status_code, 200)
 
-        response = self.client.get('/apps/cms/api/v2/pages')
+        response = self.client.get('/apps/cms/api/v2/pages', follow=True)
         self.assertEqual(response.status_code, 200)
 
 
@@ -160,7 +160,7 @@ class APITests(TestCase, WagtailTestUtils):
         self.assertEqual(response.status_code, 200)
 
     def test_errata_resource_api(self):
-        response = self.client.get('/apps/cms/api/errata-fields?field=resources')
+        response = self.client.get('/apps/cms/api/errata-fields/?field=resources')
         self.assertNotIn('content', 'OpenStax Concept Coach')
         self.assertNotIn('content', 'Rover by OpenStax')
         self.assertEqual(response.status_code, 200)

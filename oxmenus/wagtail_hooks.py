@@ -1,10 +1,10 @@
-from wagtail.contrib.modeladmin.options import ModelAdmin, ModelAdminGroup, modeladmin_register
+from wagtail_modeladmin.options import ModelAdmin, modeladmin_register
 from .models import Menus
 
 
 class OXMenusAdmin(ModelAdmin):
     model = Menus
-    menu_icon = 'media'
+    menu_icon = 'grip'
     menu_label = 'OX Menu'
     menu_order = 5000
     list_display = ('name',)

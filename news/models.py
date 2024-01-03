@@ -1,5 +1,3 @@
-import json
-
 from bs4 import BeautifulSoup
 
 from django.db import models
@@ -7,9 +5,8 @@ from django import forms
 
 from wagtail.models import Page, Orderable
 from wagtail.fields import RichTextField, StreamField
-from wagtail.admin.panels import FieldPanel, StreamFieldPanel, InlinePanel
-from wagtail.images.edit_handlers import ImageChooserPanel
-from wagtail.documents.edit_handlers import DocumentChooserPanel
+from wagtail.admin.panels import FieldPanel, InlinePanel
+from wagtail.admin.widgets.slug import SlugInput
 from wagtail.embeds.blocks import EmbedBlock
 from wagtail.search import index
 from wagtail import blocks
@@ -17,8 +14,6 @@ from wagtail.blocks import TextBlock, StructBlock, StreamBlock, FieldBlock, Char
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.documents.blocks import DocumentChooserBlock
 from wagtail.snippets.blocks import SnippetChooserBlock
-from wagtail.snippets.edit_handlers import SnippetChooserPanel
-from wagtail.snippets.models import register_snippet
 from wagtail.api import APIField
 from wagtail.images.api.fields import ImageRenditionField
 from wagtail.models import Site
@@ -171,7 +166,7 @@ class NewsIndex(Page):
     ]
 
     promote_panels = [
-        FieldPanel('slug'),
+        FieldPanel('slug', widget=SlugInput),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
         FieldPanel('promote_image')
@@ -385,7 +380,7 @@ class NewsArticle(Page):
     ]
 
     promote_panels = [
-        FieldPanel('slug'),
+        FieldPanel('slug', widget=SlugInput),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
         FieldPanel('promote_image')
@@ -592,7 +587,7 @@ class PressIndex(Page):
     ]
 
     promote_panels = [
-        FieldPanel('slug'),
+        FieldPanel('slug', widget=SlugInput),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
         FieldPanel('promote_image')
@@ -681,7 +676,7 @@ class PressRelease(Page):
     ]
 
     promote_panels = [
-        FieldPanel('slug'),
+        FieldPanel('slug', widget=SlugInput),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
         FieldPanel('promote_image')
