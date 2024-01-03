@@ -152,7 +152,6 @@ MIDDLEWARE = [
 
 AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
-    'oxauth.backend.OpenStaxAccountsBackend',
 )
 
 TEMPLATES = [
