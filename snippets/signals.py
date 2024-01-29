@@ -3,7 +3,7 @@ from django.dispatch import receiver
 
 from global_settings.functions import invalidate_cloudfront_caches
 from snippets.models import Subject, Role, ErrataContent, SubjectCategory, GiveBanner, BlogContentType, BlogCollection, \
-    WebinarCollection, AssignableAvailable, AmazonBookBlurb
+    WebinarCollection, AssignableAvailable, AmazonBookBlurb, PromoteSnippet
 
 
 
@@ -51,6 +51,9 @@ def clear_cloudfront_on_webinar_collection_save(sender, **kwargs):
 def clear_cloudfront_on_assignable_available_save(sender, **kwargs):
     invalidate_cloudfront_caches('snippets/assignableavailable')
 
+@receiver(post_save, sender=PromoteSnippet)
+def clear_cloudfront_on_assignable_available_save(sender, **kwargs):
+    invalidate_cloudfront_caches('snippets/promotesnippet')
 
 @receiver(post_save, sender=AmazonBookBlurb)
 def clear_cloudfront_on_amazon_book_blurb_save(sender, **kwargs):

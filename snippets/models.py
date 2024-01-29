@@ -462,6 +462,37 @@ class AssignableAvailable(TranslatableMixin, models.Model):
 register_snippet(AssignableAvailable)
 
 
+class PromoteSnippet(TranslatableMixin, models.Model):
+    name = models.CharField(max_length=255, null=True, blank=True)
+    description = models.TextField(default='')
+    image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    def get_promote_image(self):
+        return build_image_url(self.image)
+    promote_image = property(get_promote_image)
+
+    api_fields = ('description',
+                  'promote_image')
+
+    panels = [
+        FieldPanel('name'),
+        FieldPanel('description'),
+        FieldPanel('image'),
+    ]
+
+    def __str__(self):
+        return self.name
+
+
+register_snippet(PromoteSnippet)
+
+
 class AmazonBookBlurb(TranslatableMixin, models.Model):
     amazon_book_blurb = models.TextField()
 
