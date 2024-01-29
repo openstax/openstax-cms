@@ -461,7 +461,7 @@ class PromoteSnippetContentChooserBlock(SnippetChooserBlock):
 
 
 class PromoteSnippetBlock(blocks.StreamBlock):
-    content = SharedContentChooserBlock(snippets.PromoteSnippet)
+    content = PromoteSnippetContentChooserBlock(snippets.PromoteSnippet)
 
     class Meta:
         icon = 'snippet'
@@ -489,9 +489,6 @@ class K12BookSubjects(Orderable, K12SubjectBooks):
 
 class BookCategories(Orderable, BookCategory):
     book_category = ParentalKey('books.Book', related_name='book_categories')
-
-class PromoteSnippets(Orderable, snippets.PromoteSnippet):
-    promote_snippet = ParentalKey('books.Book', related_name='promote_snippets')
 
 
 class Book(Page):
