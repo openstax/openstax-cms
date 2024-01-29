@@ -454,9 +454,9 @@ class PromoteSnippetContentChooserBlock(SnippetChooserBlock):
         if value:
             return {
                 'id': value.id,
-                'heading': value.name,
-                'content': value.description,
-                'content_logged_in': value.promote_image
+                'name': value.name,
+                'description': value.description,
+                'image': value.promote_image
             }
 
 
