@@ -1,5 +1,5 @@
 from .models import Role, Subject, K12Subject, ErrataContent, SubjectCategory, GiveBanner, BlogContentType, \
-    BlogCollection, NoWebinarMessage, WebinarCollection, AssignableAvailable, AmazonBookBlurb
+    BlogCollection, NoWebinarMessage, WebinarCollection, AmazonBookBlurb
 
 
 from rest_framework import serializers, generics
@@ -125,15 +125,6 @@ class WebinarCollectionSerializer(serializers.ModelSerializer):
         read_only_fields = ('name',
                               'description',
                               'collection_image')
-
-
-class AssignableAvailableSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = AssignableAvailable
-        fields = ('assignable_description',
-                  'assignable_available_image')
-        read_only_fields = ('assignable_description',
-                            'assignable_available_image')
 
 
 class AmazonBookBlurbSerializer(serializers.ModelSerializer):

@@ -430,9 +430,9 @@ class WebinarCollection(TranslatableMixin, models.Model):
 register_snippet(WebinarCollection)
 
 
-class AssignableAvailable(TranslatableMixin, models.Model):
+class PromoteSnippet(TranslatableMixin, models.Model):
     name = models.CharField(max_length=255, null=True, blank=True)
-    assignable_description = models.TextField(default='')
+    description = models.TextField(default='')
     image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -441,17 +441,16 @@ class AssignableAvailable(TranslatableMixin, models.Model):
         related_name='+'
     )
 
-    def get_assignable_available_image(self):
+    def get_promote_image(self):
         return build_image_url(self.image)
+    promote_image = property(get_promote_image)
 
-    assignable_available_image = property(get_assignable_available_image)
-
-    api_fields = ('assignable_description',
-                  'assignable_available_image')
+    api_fields = ('description',
+                  'promote_image')
 
     panels = [
         FieldPanel('name'),
-        FieldPanel('assignable_description'),
+        FieldPanel('description'),
         FieldPanel('image'),
     ]
 
@@ -459,7 +458,7 @@ class AssignableAvailable(TranslatableMixin, models.Model):
         return self.name
 
 
-register_snippet(AssignableAvailable)
+register_snippet(PromoteSnippet)
 
 
 class AmazonBookBlurb(TranslatableMixin, models.Model):
