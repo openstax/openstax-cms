@@ -8,7 +8,7 @@ from django.urls import reverse
 
 from snippets.models import Subject, ErrataContent, GiveBanner, BlogContentType, NoWebinarMessage, K12Subject, \
     FacultyResource, StudentResource, Role, SharedContent, NewsSource, SubjectCategory, BlogCollection, \
-    AssignableAvailable, AmazonBookBlurb
+    AmazonBookBlurb, PromoteSnippet
 
 import snippets
 
@@ -67,10 +67,6 @@ class SnippetsTestCase(TestCase):
 
         self.blog_collection = BlogCollection(name="blog collection", description='blog collection description')
         self.blog_collection.save()
-
-        self.assignable_available = AssignableAvailable(
-            assignable_description="Assignable is ...")
-        self.assignable_available.save()
 
         self.amazon_book_blurb = AmazonBookBlurb(
             amazon_book_blurb="Amazon Book Blurb. Amazon Book Blurb. Amazon Book Blurb.")
@@ -146,11 +142,13 @@ class SnippetsTestCase(TestCase):
         response = self.client.get('/apps/cms/api/snippets/blogcollection/?format=json')
         self.assertIn(b"blog collection description", response.content)
 
-    def test_can_fetch_assignable_available(self):
-        response = self.client.get('/apps/cms/api/snippets/assignableavailable/?format=json')
-        self.assertIn(b"Assignable is ...", response.content)
-
     def test_can_fetch_amazon_book_blurb(self):
         response = self.client.get('/apps/cms/api/snippets/amazonbookblurb/?format=json')
         self.assertIn(b"Amazon Book Blurb", response.content)
+
+    def test_can_create_promote_snippet(self):
+        promote_snippet = PromoteSnippet(name="Assignable", description="Assignable is available on this book.")
+        promote_snippet.save()
+
+        self.assertEqual(promote_snippet.name, "Assignable")
 

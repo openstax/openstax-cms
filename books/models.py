@@ -1,5 +1,6 @@
 import re
 import html
+from sentry_sdk import capture_exception
 
 from django.conf import settings
 from django.db import models
@@ -475,6 +476,25 @@ class SharedContentBlock(blocks.StreamBlock):
         required = False
 
 
+class PromoteSnippetContentChooserBlock(SnippetChooserBlock):
+    def get_api_representation(self, value, context=None):
+        if value:
+            return {
+                'id': value.id,
+                'name': value.name,
+                'description': value.description,
+                'image': value.promote_image
+            }
+
+
+class PromoteSnippetBlock(blocks.StreamBlock):
+    content = PromoteSnippetContentChooserBlock(snippets.PromoteSnippet)
+
+    class Meta:
+        icon = 'snippet'
+        required = False
+
+
 class BookFacultyResources(Orderable, FacultyResources):
     book_faculty_resource = ParentalKey('books.Book', related_name='book_faculty_resources')
 
@@ -707,6 +727,8 @@ class Book(Page):
     support_statement = models.TextField(blank=True, null=True,
                                          default="With philanthropic support, this book is used in <span id='adoption_number'></span> classrooms, saving students <span id='savings'></span> dollars this school year. <a href='/impact'>Learn more about our impact</a> and how you can help.",
                                          help_text="Updating this statement updates it for all book pages.")
+    
+    promote_snippet = StreamField(PromoteSnippetBlock(), null=True, blank=True, use_json_field=True)
 
     videos = StreamField([
         ('video', blocks.ListBlock(blocks.StructBlock([
@@ -791,6 +813,7 @@ class Book(Page):
         FieldPanel('comp_copy_content'),
         FieldPanel('tutor_marketing_book'),
         FieldPanel('assignable_book'),
+        FieldPanel('promote_snippet'),
         FieldPanel('partner_list_label'),
         FieldPanel('partner_page_link_text'),
         FieldPanel('customization_form_heading'),
@@ -872,6 +895,7 @@ class Book(Page):
         APIField('community_resource_feature_link_url'),
         APIField('community_resource_feature_text'),
         APIField('webinar_content'),
+        APIField('promote_snippet'),
         APIField('ibook_link'),
         APIField('ibook_link_volume_2'),
         APIField('webview_link'),
@@ -1101,9 +1125,10 @@ class BookIndex(Page):
                     'has_faculty_resources': has_faculty_resources,
                     'has_student_resources': has_student_resources,
                     'assignable_book': book.assignable_book,
+                    'promote_tags': [snippet.value.name for snippet in book.promote_snippet],
                 })
             except Exception as e:
-                print("Error: {}".format(e))
+                capture_exception(e)
         return book_data
 
     content_panels = Page.content_panels + [
