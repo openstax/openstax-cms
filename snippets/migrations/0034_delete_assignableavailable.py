@@ -2,25 +2,12 @@
 
 from django.db import migrations
 
-
-def migrate_old_data(apps, schema_editor):
-    PromoteSnippet = apps.get_model("snippets", "PromoteSnippet")
-    AssignableAvailable = apps.get_model("snippets", "AssignableAvailable")
-    for assignable_snippet in AssignableAvailable.objects.all():
-        snippet = PromoteSnippet.objects.create(
-            name=assignable_snippet.name,
-            description=assignable_snippet.assignable_description,
-            image=assignable_snippet.image
-        )
-        snippet.save()
-
 class Migration(migrations.Migration):
     dependencies = [
         ("snippets", "0033_promotesnippet"),
     ]
 
     operations = [
-        migrations.RunPython(migrate_old_data),
         migrations.DeleteModel(
             name="AssignableAvailable",
         ),
