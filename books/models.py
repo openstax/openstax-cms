@@ -3,6 +3,7 @@ import html
 import json
 import urllib
 import ssl
+from sentry_sdk import capture_exception
 
 from django.conf import settings
 from django.db import models
@@ -1053,9 +1054,10 @@ class BookIndex(Page):
                     'has_faculty_resources': has_faculty_resources,
                     'has_student_resources': has_student_resources,
                     'assignable_book': book.assignable_book,
+                    'promote_tags': [snippet.name for snippet in book.promote_snippet],
                 })
             except Exception as e:
-                print("Error: {}".format(e))
+                capture_exception(e)
         return book_data
 
     content_panels = Page.content_panels + [

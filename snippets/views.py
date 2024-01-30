@@ -1,11 +1,11 @@
 from rest_framework import viewsets
 
 from .models import Role, Subject, K12Subject, ErrataContent, SubjectCategory, GiveBanner, BlogContentType, \
-    BlogCollection, NoWebinarMessage, WebinarCollection, AssignableAvailable, AmazonBookBlurb
+    BlogCollection, NoWebinarMessage, WebinarCollection, AmazonBookBlurb
 from .serializers import RoleSerializer, SubjectSerializer, K12SubjectSerializer, ErrataContentSerializer, \
     SubjectCategorySerializer, \
     GiveBannerSerializer, BlogContentTypeSerializer, BlogCollectionSerializer, NoWebinarMessageSerializer, \
-    WebinarCollectionSerializer, AssignableAvailableSerializer, AmazonBookBlurbSerializer
+    WebinarCollectionSerializer, AmazonBookBlurbSerializer
 
 
 from rest_framework import generics, viewsets
@@ -103,11 +103,6 @@ class NoWebinarMessageViewSet(viewsets.ReadOnlyModelViewSet):
 class WebinarCollectionViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = WebinarCollection.objects.all()
     serializer_class = WebinarCollectionSerializer
-
-
-class AssignableAvailableViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = AssignableAvailable.objects.all()
-    serializer_class = AssignableAvailableSerializer
 
 
 class AmazonBookBlurbViewSet(viewsets.ReadOnlyModelViewSet):
