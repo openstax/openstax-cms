@@ -1054,7 +1054,7 @@ class BookIndex(Page):
                     'has_faculty_resources': has_faculty_resources,
                     'has_student_resources': has_student_resources,
                     'assignable_book': book.assignable_book,
-                    'promote_tags': [snippet.name for snippet in book.promote_snippet],
+                    'promote_tags': [snippet.value.name for snippet in book.promote_snippet],
                 })
             except Exception as e:
                 capture_exception(e)
