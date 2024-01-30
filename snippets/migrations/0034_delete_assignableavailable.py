@@ -9,7 +9,7 @@ def migrate_old_data(apps, schema_editor):
     for assignable_snippet in AssignableAvailable.objects.all():
         snippet = PromoteSnippet.objects.create(
             name=assignable_snippet.name,
-            description=assignable_snippet.description,
+            description=assignable_snippet.assignable_description,
             image=assignable_snippet.image
         )
         snippet.save()
