@@ -4,7 +4,7 @@ from django.urls import reverse
 
 from wagtail import hooks
 
-@hooks.register('insert_editor_css')
+@hooks.register('insert_global_admin_css')
 def editor_css():
     return format_html(
         '<link rel="stylesheet" href="{}">',

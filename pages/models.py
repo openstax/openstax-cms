@@ -2,7 +2,8 @@ from django import forms
 from django.db import models
 
 from modelcluster.fields import ParentalKey
-from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel
+from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel, TitleFieldPanel
+from wagtail.admin.widgets.slug import SlugInput
 from wagtail import blocks
 from wagtail.fields import RichTextField, StreamField
 from wagtail.models import Orderable, Page
@@ -13,7 +14,7 @@ from api.models import FeatureFlag
 from openstax.functions import build_image_url, build_document_url
 from books.models import Book, SubjectBooks, BookFacultyResources, BookStudentResources
 from webinars.models import Webinar
-from news.models import BlogStreamBlock # for use on the ImpactStories
+from news.models import BlogStreamBlock  # for use on the ImpactStories
 
 from salesforce.models import PartnerTypeMapping, PartnerFieldNameMapping, PartnerCategoryMapping, Partner
 
@@ -46,8 +47,10 @@ class AboutUsPage(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+
     def get_who_image(self):
         return build_image_url(self.who_image)
+
     who_image_url = property(get_who_image)
     what_heading = models.CharField(max_length=255)
     what_paragraph = models.TextField()
@@ -68,8 +71,10 @@ class AboutUsPage(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+
     def get_where_map(self):
         return build_image_url(self.where_map)
+
     where_map_alt = models.CharField(max_length=255, blank=True, null=True)
     where_map_url = property(get_where_map)
     promote_image = models.ForeignKey(
@@ -100,7 +105,7 @@ class AboutUsPage(Page):
     ]
 
     content_panels = [
-        FieldPanel('title', classname="full title"),
+        TitleFieldPanel('title', classname="full title"),
         FieldPanel('who_heading'),
         FieldPanel('who_paragraph'),
         FieldPanel('who_image'),
@@ -114,7 +119,7 @@ class AboutUsPage(Page):
     ]
 
     promote_panels = [
-        FieldPanel('slug'),
+        FieldPanel('slug', widget=SlugInput),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
         FieldPanel('promote_image')
@@ -141,8 +146,10 @@ class TeamPage(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+
     def get_header_image(self):
         return build_image_url(self.header_image)
+
     header_image_url = property(get_header_image)
 
     team_header = models.CharField(max_length=255, null=True, blank=True)
@@ -155,7 +162,7 @@ class TeamPage(Page):
     )
 
     content_panels = [
-        FieldPanel('title', classname="full title"),
+        TitleFieldPanel('title', classname="full title"),
         FieldPanel('header'),
         FieldPanel('subheader'),
         FieldPanel('header_image'),
@@ -164,7 +171,7 @@ class TeamPage(Page):
     ]
 
     promote_panels = [
-        FieldPanel('slug'),
+        FieldPanel('slug', widget=SlugInput),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
         FieldPanel('promote_image')
@@ -218,7 +225,7 @@ class HomePage(Page):
     features_tab1_features = StreamField(
         blocks.StreamBlock([
             ('feature_text', blocks.CharBlock())
-        ], max_num=4),use_json_field=True
+        ], max_num=4), use_json_field=True
     )
     features_tab1_explore_text = models.CharField(default='', blank=True, max_length=255)
     features_tab1_explore_url = models.URLField(blank=True, default='')
@@ -227,7 +234,7 @@ class HomePage(Page):
     features_tab2_features = StreamField(
         blocks.StreamBlock([
             ('feature_text', blocks.CharBlock())
-        ], max_num=4),use_json_field=True
+        ], max_num=4), use_json_field=True
     )
     features_tab2_explore_text = models.CharField(default='', blank=True, max_length=255)
     features_tab2_explore_url = models.URLField(blank=True, default='')
@@ -371,9 +378,8 @@ class HomePage(Page):
     class Meta:
         verbose_name = "Home Page"
 
-
     content_panels = [
-        FieldPanel('title', classname="full title"),
+        TitleFieldPanel('title', classname="full title"),
         FieldPanel('banner_headline'),
         FieldPanel('banner_description'),
         FieldPanel('banner_get_started_text'),
@@ -426,7 +432,7 @@ class HomePage(Page):
     ]
 
     promote_panels = [
-        FieldPanel('slug'),
+        FieldPanel('slug', widget=SlugInput),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
         FieldPanel('promote_image')
@@ -499,9 +505,7 @@ class HomePage(Page):
         verbose_name = "homepage"
 
 
-
 class K12MainPage(Page):
-
     banner_headline = models.CharField(default='', blank=True, max_length=255)
     banner_description = models.TextField(default='', blank=True)
     banner_right_image = models.ForeignKey(
@@ -517,63 +521,63 @@ class K12MainPage(Page):
     ], use_json_field=True)
     highlights_header = RichTextField(default='', blank=True)
     highlights = StreamField(
-            blocks.StreamBlock([
-                ('highlight', blocks.ListBlock(blocks.StructBlock([
-                    ('highlight_subheader', blocks.TextBlock(required=False)),
-                    ('highlight_text', blocks.CharBlock(Required=False)),
-                ])))], max_num=3),use_json_field=True)
+        blocks.StreamBlock([
+            ('highlight', blocks.ListBlock(blocks.StructBlock([
+                ('highlight_subheader', blocks.TextBlock(required=False)),
+                ('highlight_text', blocks.CharBlock(Required=False)),
+            ])))], max_num=3), use_json_field=True)
     highlights_icon = models.ForeignKey(
-            'wagtailimages.Image',
-            null=True,
-            blank=True,
-            on_delete=models.SET_NULL,
-            related_name='+'
-        )
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
     stats_grid = StreamField(
-            blocks.StreamBlock([
-                ('stat', blocks.ListBlock(blocks.StructBlock([
-                    ('bold_stat_text', blocks.TextBlock(required=False)),
-                    ('normal_stat_text', blocks.CharBlock(required=False)),
-                ])))], max_num=3), use_json_field=True)
+        blocks.StreamBlock([
+            ('stat', blocks.ListBlock(blocks.StructBlock([
+                ('bold_stat_text', blocks.TextBlock(required=False)),
+                ('normal_stat_text', blocks.CharBlock(required=False)),
+            ])))], max_num=3), use_json_field=True)
     stats_image1 = models.ForeignKey(
-            'wagtailimages.Image',
-            null=True,
-            blank=True,
-            on_delete=models.SET_NULL,
-            related_name='+'
-        )
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
     stats_image2 = models.ForeignKey(
-                'wagtailimages.Image',
-                null=True,
-                blank=True,
-                on_delete=models.SET_NULL,
-                related_name='+'
-            )
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
     stats_image3 = models.ForeignKey(
-                'wagtailimages.Image',
-                null=True,
-                blank=True,
-                on_delete=models.SET_NULL,
-                related_name='+'
-            )
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
     subject_library_header = models.CharField(default='', blank=True, max_length=255)
     subject_library_description = models.TextField(default='', blank=True)
     testimonials_header = models.CharField(default='', blank=True, max_length=255)
     testimonials_description = models.TextField(default='', blank=True)
     testimonials = StreamField([
         ('testimonials', TestimonialBlock()),
-    ])
+    ], use_json_field=True)
     faq_header = models.CharField(default='', blank=True, max_length=255)
     faqs = StreamField([
         ('faq', FAQBlock()),
     ], use_json_field=True)
     rfi_image = models.ForeignKey(
-                'wagtailimages.Image',
-                null=True,
-                blank=True,
-                on_delete=models.SET_NULL,
-                related_name='+'
-            )
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
     rfi_header = models.CharField(default='', blank=True, max_length=255)
     rfi_description = models.TextField(default='', blank=True)
     sticky_header = models.CharField(default='', blank=True, max_length=255)
@@ -586,7 +590,6 @@ class K12MainPage(Page):
                 'lastmod': (self.last_published_at or self.latest_revision_created_at),
             }
         ]
-
 
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
@@ -646,9 +649,8 @@ class K12MainPage(Page):
     class Meta:
         verbose_name = "K12 Main Page"
 
-
     content_panels = [
-        FieldPanel('title', classname="full title"),
+        TitleFieldPanel('title', classname="full title"),
         FieldPanel('banner_headline'),
         FieldPanel('banner_description'),
         FieldPanel('banner_right_image'),
@@ -675,12 +677,11 @@ class K12MainPage(Page):
     ]
 
     promote_panels = [
-        FieldPanel('slug'),
+        FieldPanel('slug', widget=SlugInput),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
         FieldPanel('promote_image')
     ]
-
 
     template = 'page.html'
     parent_page_types = ['pages.HomePage']
@@ -688,11 +689,8 @@ class K12MainPage(Page):
 
     max_count = 1
 
-
-
     class Meta:
         verbose_name = "K12 Main Page"
-
 
 
 class ContactUs(Page):
@@ -709,7 +707,7 @@ class ContactUs(Page):
     )
 
     content_panels = [
-        FieldPanel('title', classname="full title"),
+        TitleFieldPanel('title', classname="full title"),
         FieldPanel('tagline'),
         FieldPanel('mailing_header'),
         FieldPanel('mailing_address'),
@@ -717,7 +715,7 @@ class ContactUs(Page):
     ]
 
     promote_panels = [
-        FieldPanel('slug'),
+        FieldPanel('slug', widget=SlugInput),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
         FieldPanel('promote_image')
@@ -791,12 +789,12 @@ class GeneralPage(Page):
     ]
 
     content_panels = [
-        FieldPanel('title'),
+        TitleFieldPanel('title'),
         FieldPanel('body'),
     ]
 
     promote_panels = [
-        FieldPanel('slug'),
+        FieldPanel('slug', widget=SlugInput),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
         FieldPanel('promote_image')
@@ -851,7 +849,7 @@ class Supporters(Page):
     ]
 
     content_panels = [
-        FieldPanel('title', classname="full title"),
+        TitleFieldPanel('title', classname="full title"),
         FieldPanel('banner_heading'),
         FieldPanel('banner_description'),
         FieldPanel('banner_image'),
@@ -860,7 +858,7 @@ class Supporters(Page):
     ]
 
     promote_panels = [
-        FieldPanel('slug'),
+        FieldPanel('slug', widget=SlugInput),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
         FieldPanel('promote_image')
@@ -881,8 +879,10 @@ class MapPage(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+
     def get_map_image(self):
         return build_image_url(self.map_image)
+
     map_image_url = property(get_map_image)
     section_1_cards = StreamField([
         ('card', blocks.StructBlock([
@@ -903,8 +903,10 @@ class MapPage(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+
     def get_section_2_image_1(self):
         return build_image_url(self.section_2_image_1)
+
     section_2_image_1_url = property(get_section_2_image_1)
     section_2_header_2 = models.CharField(max_length=255)
     section_2_blurb_2 = models.TextField()
@@ -917,8 +919,10 @@ class MapPage(Page):
         on_delete=models.SET_NULL,
         related_name='+'
     )
+
     def get_section_2_image_2(self):
         return build_image_url(self.section_2_image_2)
+
     section_2_image_2_url = property(get_section_2_image_2)
     section_3_heading = models.CharField(max_length=255)
     section_3_blurb = models.TextField()
@@ -959,7 +963,7 @@ class MapPage(Page):
     ]
 
     content_panels = [
-        FieldPanel('title', classname='full title'),
+        TitleFieldPanel('title', classname='full title'),
         FieldPanel('header_text'),
         FieldPanel('map_image'),
         FieldPanel('section_1_cards'),
@@ -980,7 +984,7 @@ class MapPage(Page):
     ]
 
     promote_panels = [
-        FieldPanel('slug'),
+        FieldPanel('slug', widget=SlugInput),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
         FieldPanel('promote_image')
@@ -1035,7 +1039,7 @@ class Give(Page):
     ]
 
     content_panels = [
-        FieldPanel('title', classname='full title'),
+        TitleFieldPanel('title', classname='full title'),
         FieldPanel('intro_heading'),
         FieldPanel('intro_description'),
         FieldPanel('other_payment_methods_heading'),
@@ -1052,7 +1056,7 @@ class Give(Page):
     ]
 
     promote_panels = [
-        FieldPanel('slug'),
+        FieldPanel('slug', widget=SlugInput),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
         FieldPanel('promote_image')
@@ -1086,13 +1090,13 @@ class TermsOfService(Page):
     ]
 
     content_panels = [
-        FieldPanel('title', classname='full title'),
+        TitleFieldPanel('title', classname='full title'),
         FieldPanel('intro_heading'),
         FieldPanel('terms_of_service_content'),
     ]
 
     promote_panels = [
-        FieldPanel('slug'),
+        FieldPanel('slug', widget=SlugInput),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
         FieldPanel('promote_image')
@@ -1129,14 +1133,14 @@ class FAQ(Page):
     ]
 
     content_panels = [
-        FieldPanel('title', classname="full title"),
+        TitleFieldPanel('title', classname="full title"),
         FieldPanel('intro_heading'),
         FieldPanel('intro_description'),
         FieldPanel('questions'),
     ]
 
     promote_panels = [
-        FieldPanel('slug'),
+        FieldPanel('slug', widget=SlugInput),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
         FieldPanel('promote_image')
@@ -1167,12 +1171,12 @@ class GiveForm(Page):
     ]
 
     content_panels = [
-        FieldPanel('title', classname="full title"),
+        TitleFieldPanel('title', classname="full title"),
         FieldPanel('page_description'),
     ]
 
     promote_panels = [
-        FieldPanel('slug'),
+        FieldPanel('slug', widget=SlugInput),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
         FieldPanel('promote_image')
@@ -1206,13 +1210,13 @@ class Accessibility(Page):
     ]
 
     content_panels = [
-        FieldPanel('title', classname='full title'),
+        TitleFieldPanel('title', classname='full title'),
         FieldPanel('intro_heading'),
         FieldPanel('accessibility_content'),
     ]
 
     promote_panels = [
-        FieldPanel('slug'),
+        FieldPanel('slug', widget=SlugInput),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
         FieldPanel('promote_image')
@@ -1246,13 +1250,13 @@ class Licensing(Page):
     ]
 
     content_panels = [
-        FieldPanel('title', classname='full title'),
+        TitleFieldPanel('title', classname='full title'),
         FieldPanel('intro_heading'),
         FieldPanel('licensing_content'),
     ]
 
     promote_panels = [
-        FieldPanel('slug'),
+        FieldPanel('slug', widget=SlugInput),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
         FieldPanel('promote_image')
@@ -1313,7 +1317,7 @@ class Technology(Page):
     ]
 
     content_panels = [
-        FieldPanel('title', classname="full title"),
+        TitleFieldPanel('title', classname="full title"),
         FieldPanel('intro_heading'),
         FieldPanel('intro_description'),
         FieldPanel('banner_cta'),
@@ -1332,7 +1336,7 @@ class Technology(Page):
     ]
 
     promote_panels = [
-        FieldPanel('slug'),
+        FieldPanel('slug', widget=SlugInput),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
         FieldPanel('promote_image')
@@ -1347,12 +1351,13 @@ class Technology(Page):
 
 class ErrataList(Page):
     correction_schedule = RichTextField()
-    deprecated_errata_message = RichTextField(help_text="Errata message for deprecated books, controlled via the book state field.")
-    new_edition_errata_message = RichTextField(help_text="Errata message for books with new editions, controlled via the book state field.")
+    deprecated_errata_message = RichTextField(
+        help_text="Errata message for deprecated books, controlled via the book state field.")
+    new_edition_errata_message = RichTextField(
+        help_text="Errata message for books with new editions, controlled via the book state field.")
     about_header = models.CharField(max_length=255, help_text="About our correction schedule")
     about_text = RichTextField(help_text="Errata received from March through...\" the stuff that will show on the page")
-    about_popup = RichTextField(help_text= "Instructor and student resources...\" the stuff that will be in the popup")
-
+    about_popup = RichTextField(help_text="Instructor and student resources...\" the stuff that will be in the popup")
 
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
@@ -1375,7 +1380,7 @@ class ErrataList(Page):
     ]
 
     content_panels = [
-        FieldPanel('title', classname="full title"),
+        TitleFieldPanel('title', classname="full title"),
         FieldPanel('correction_schedule'),
         FieldPanel('deprecated_errata_message'),
         FieldPanel('new_edition_errata_message'),
@@ -1385,7 +1390,7 @@ class ErrataList(Page):
     ]
 
     promote_panels = [
-        FieldPanel('slug'),
+        FieldPanel('slug', widget=SlugInput),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
         FieldPanel('promote_image')
@@ -1422,13 +1427,13 @@ class PrivacyPolicy(Page):
     ]
 
     content_panels = [
-        FieldPanel('title', classname='full title'),
+        TitleFieldPanel('title', classname='full title'),
         FieldPanel('intro_heading'),
         FieldPanel('privacy_content'),
     ]
 
     promote_panels = [
-        FieldPanel('slug'),
+        FieldPanel('slug', widget=SlugInput),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
         FieldPanel('promote_image')
@@ -1475,7 +1480,7 @@ class PrintOrder(Page):
     ]
 
     content_panels = [
-        FieldPanel('title', classname='full title'),
+        TitleFieldPanel('title', classname='full title'),
         FieldPanel('intro_heading'),
         FieldPanel('intro_description'),
         FieldPanel('featured_provider_intro_blurb'),
@@ -1485,7 +1490,7 @@ class PrintOrder(Page):
     ]
 
     promote_panels = [
-        FieldPanel('slug'),
+        FieldPanel('slug', widget=SlugInput),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
         FieldPanel('promote_image')
@@ -1588,7 +1593,7 @@ class LearningResearchPage(Page):
     )
 
     content_panels = [
-        FieldPanel('title', classname='full title', help_text="Internal name for page."),
+        TitleFieldPanel('title', classname='full title', help_text="Internal name for page."),
         FieldPanel('mission_body'),
         FieldPanel('banner_header'),
         FieldPanel('banner_body'),
@@ -1606,7 +1611,7 @@ class LearningResearchPage(Page):
     ]
 
     promote_panels = [
-        FieldPanel('slug'),
+        FieldPanel('slug', widget=SlugInput),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
         FieldPanel('promote_image')
@@ -1661,13 +1666,13 @@ class Careers(Page):
     ]
 
     content_panels = [
-        FieldPanel('title', classname='full title'),
+        TitleFieldPanel('title', classname='full title'),
         FieldPanel('intro_heading'),
         FieldPanel('careers_content'),
     ]
 
     promote_panels = [
-        FieldPanel('slug'),
+        FieldPanel('slug', widget=SlugInput),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
         FieldPanel('promote_image')
@@ -1696,7 +1701,7 @@ class ImpactStory(Page):
 
     content_panels = Page.content_panels + [
         FieldPanel('date'),
-        FieldPanel('title'),
+        TitleFieldPanel('title'),
         FieldPanel('heading'),
         FieldPanel('subheading'),
         FieldPanel('author'),
@@ -1725,72 +1730,72 @@ class ImpactStory(Page):
 class Impact(Page):
     improving_access = StreamField(
         blocks.StreamBlock([
-        ('content', blocks.StructBlock([
-            ('image', ImageBlock()),
-            ('heading', blocks.CharBlock()),
-            ('description', blocks.RichTextBlock()),
-            ('button_text', blocks.CharBlock()),
-            ('button_href', blocks.URLBlock())
-         ]))], max_num=1), use_json_field=True)
+            ('content', blocks.StructBlock([
+                ('image', ImageBlock()),
+                ('heading', blocks.CharBlock()),
+                ('description', blocks.RichTextBlock()),
+                ('button_text', blocks.CharBlock()),
+                ('button_href', blocks.URLBlock())
+            ]))], max_num=1), use_json_field=True)
     reach = StreamField(
         blocks.StreamBlock([
-        ('content', blocks.StructBlock([
-            ('image', ImageBlock()),
-            ('heading', blocks.CharBlock()),
-            ('description', blocks.RichTextBlock()),
-            ('cards', blocks.ListBlock(blocks.StructBlock([
-                ('icon', APIImageChooserBlock(required=False)),
-                ('description', blocks.CharBlock()),
-                ('link_text', blocks.CharBlock(required=False)),
-                ('link_href', blocks.URLBlock(required=False))
-            ])))
-        ]))], max_num=1), use_json_field=True)
+            ('content', blocks.StructBlock([
+                ('image', ImageBlock()),
+                ('heading', blocks.CharBlock()),
+                ('description', blocks.RichTextBlock()),
+                ('cards', blocks.ListBlock(blocks.StructBlock([
+                    ('icon', APIImageChooserBlock(required=False)),
+                    ('description', blocks.CharBlock()),
+                    ('link_text', blocks.CharBlock(required=False)),
+                    ('link_href', blocks.URLBlock(required=False))
+                ])))
+            ]))], max_num=1), use_json_field=True)
     quote = StreamField(
         blocks.StreamBlock([
-        ('content', blocks.StructBlock([
-            ('image', ImageBlock()),
-            ('quote', blocks.RichTextBlock())
-        ]))], max_num=1), use_json_field=True)
+            ('content', blocks.StructBlock([
+                ('image', ImageBlock()),
+                ('quote', blocks.RichTextBlock())
+            ]))], max_num=1), use_json_field=True)
     making_a_difference = StreamField(
         blocks.StreamBlock([
-        ('content', blocks.StructBlock([
-            ('heading', blocks.CharBlock()),
-            ('description', blocks.RichTextBlock()),
-            ('stories', blocks.ListBlock(StoryBlock()))
-        ]))], max_num=1), use_json_field=True)
+            ('content', blocks.StructBlock([
+                ('heading', blocks.CharBlock()),
+                ('description', blocks.RichTextBlock()),
+                ('stories', blocks.ListBlock(StoryBlock()))
+            ]))], max_num=1), use_json_field=True)
     disruption = StreamField(
         blocks.StreamBlock([
-        ('content', blocks.StructBlock([
-            ('heading', blocks.CharBlock()),
-            ('description', blocks.TextBlock()),
-            ('graph', blocks.StructBlock([
-                ('image', ImageBlock(required=False)),
-                ('image_alt_text', blocks.CharBlock(required=False)),
-            ]))
-        ]))], max_num=1), use_json_field=True)
+            ('content', blocks.StructBlock([
+                ('heading', blocks.CharBlock()),
+                ('description', blocks.TextBlock()),
+                ('graph', blocks.StructBlock([
+                    ('image', ImageBlock(required=False)),
+                    ('image_alt_text', blocks.CharBlock(required=False)),
+                ]))
+            ]))], max_num=1), use_json_field=True)
     supporter_community = StreamField(
         blocks.StreamBlock([
-        ('content', blocks.StructBlock([
-            ('heading', blocks.CharBlock()),
-            ('image', ImageBlock()),
-            ('quote', blocks.RichTextBlock()),
-            ('link_text', blocks.CharBlock()),
-            ('link_href', blocks.URLBlock())
-        ]))], max_num=1), use_json_field=True)
+            ('content', blocks.StructBlock([
+                ('heading', blocks.CharBlock()),
+                ('image', ImageBlock()),
+                ('quote', blocks.RichTextBlock()),
+                ('link_text', blocks.CharBlock()),
+                ('link_href', blocks.URLBlock())
+            ]))], max_num=1), use_json_field=True)
     giving = StreamField(
         blocks.StreamBlock([
-        ('content', blocks.StructBlock([
-            ('heading', blocks.CharBlock()),
-            ('description', blocks.TextBlock()),
-            ('link_text', blocks.CharBlock()),
-            ('link_href', blocks.URLBlock()),
-            ('nonprofit_statement', blocks.TextBlock()),
-            ('annual_report_link_text', blocks.CharBlock()),
-            ('annual_report_link_href', blocks.URLBlock()),
-        ]))], max_num=1), use_json_field=True)
+            ('content', blocks.StructBlock([
+                ('heading', blocks.CharBlock()),
+                ('description', blocks.TextBlock()),
+                ('link_text', blocks.CharBlock()),
+                ('link_href', blocks.URLBlock()),
+                ('nonprofit_statement', blocks.TextBlock()),
+                ('annual_report_link_text', blocks.CharBlock()),
+                ('annual_report_link_href', blocks.URLBlock()),
+            ]))], max_num=1), use_json_field=True)
 
     content_panels = [
-        FieldPanel('title', classname='full title', help_text="Internal name for page."),
+        TitleFieldPanel('title', classname='full title', help_text="Internal name for page."),
         FieldPanel('improving_access'),
         FieldPanel('reach'),
         FieldPanel('quote'),
@@ -1847,7 +1852,7 @@ class InstitutionalPartnership(Page):
     application_link = models.URLField(blank=True, null=True)
 
     content_panels = [
-        FieldPanel('title'),
+        TitleFieldPanel('title'),
         FieldPanel('heading_image'),
         FieldPanel('heading_year'),
         FieldPanel('heading'),
@@ -1982,7 +1987,7 @@ class InstitutionalPartnerProgramPage(Page):
     section_9_contact_html = RichTextField()
 
     content_panels = [
-        FieldPanel('title', classname='full title', help_text="Internal name for page."),
+        TitleFieldPanel('title', classname='full title', help_text="Internal name for page."),
         FieldPanel('section_1_heading'),
         FieldPanel('section_1_description'),
         FieldPanel('section_1_link_text'),
@@ -2123,7 +2128,7 @@ class CreatorFestPage(Page):
     ], null=True, use_json_field=True)
 
     content_panels = [
-        FieldPanel('title', classname='full title', help_text="Internal name for page."),
+        TitleFieldPanel('title', classname='full title', help_text="Internal name for page."),
         FieldPanel('banner_headline'),
         FieldPanel('banner_content'),
         FieldPanel('banner_image'),
@@ -2152,8 +2157,10 @@ class CreatorFestPage(Page):
 class PartnersPage(Page):
     heading = models.CharField(max_length=255)
     description = RichTextField()
-    partner_landing_page_link = models.CharField(max_length=255, null=True, blank=True, help_text="Link text to partner landing page.")
-    partner_request_info_link = models.CharField(max_length=255, null=True, blank=True, help_text="Forstack form link text")
+    partner_landing_page_link = models.CharField(max_length=255, null=True, blank=True,
+                                                 help_text="Link text to partner landing page.")
+    partner_request_info_link = models.CharField(max_length=255, null=True, blank=True,
+                                                 help_text="Forstack form link text")
     partner_full_partner_heading = models.CharField(max_length=255, null=True, blank=True)
     partner_full_partner_description = models.TextField(null=True, blank=True)
     partner_ally_heading = models.CharField(max_length=255, null=True, blank=True)
@@ -2163,7 +2170,8 @@ class PartnersPage(Page):
     def category_mapping():
         field_mappings = PartnerCategoryMapping.objects.all()
         mapping_dict = {}
-        field_name_mappings = PartnerFieldNameMapping.objects.values_list('salesforce_name', flat=True).filter(hidden=False)
+        field_name_mappings = PartnerFieldNameMapping.objects.values_list('salesforce_name', flat=True).filter(
+            hidden=False)
         field_name_mappings = list(field_name_mappings)
 
         for field in field_mappings:
@@ -2194,7 +2202,7 @@ class PartnersPage(Page):
         return partner_types_array
 
     content_panels = [
-        FieldPanel('title', classname='full title', help_text="Internal name for page."),
+        TitleFieldPanel('title', classname='full title', help_text="Internal name for page."),
         FieldPanel('heading'),
         FieldPanel('description'),
         FieldPanel('partner_landing_page_link'),
@@ -2226,11 +2234,12 @@ class PartnersPage(Page):
     parent_page_type = ['pages.HomePage']
     template = 'page.html'
 
+
 class WebinarPage(Page):
     heading = models.CharField(max_length=255)
 
     content_panels = [
-        FieldPanel('title', classname='full title', help_text="Internal name for page."),
+        TitleFieldPanel('title', classname='full title', help_text="Internal name for page."),
         FieldPanel('heading'),
     ]
 
@@ -2271,6 +2280,7 @@ class PartnerChooserBlock(blocks.ChooserBlock):
                 'logo': None
             }
 
+
 class MathQuizPage(Page):
     heading = models.CharField(max_length=255)
     description = models.TextField()
@@ -2281,12 +2291,12 @@ class MathQuizPage(Page):
             ('description', blocks.TextBlock()),
             ('partners', blocks.ListBlock(blocks.StructBlock([
                 ('partner', PartnerChooserBlock()),
-             ]))),
+            ]))),
         ])))
     ], use_json_field=True)
 
     content_panels = [
-        FieldPanel('title', classname='full title', help_text="Internal name for page."),
+        TitleFieldPanel('title', classname='full title', help_text="Internal name for page."),
         FieldPanel('heading'),
         FieldPanel('description'),
         FieldPanel('results')
@@ -2327,8 +2337,8 @@ class LLPHPage(Page):
 
     def get_book_cover(self):
         return build_document_url(self.book_cover.url)
-    book_cover_url = property(get_book_cover)
 
+    book_cover_url = property(get_book_cover)
 
     info_link_slug = models.CharField(max_length=255, default="/details/books/life-liberty-and-pursuit-happiness")
     info_link_text = models.CharField(max_length=255, default="Not an educator? Take a look at the book here.")
@@ -2336,7 +2346,7 @@ class LLPHPage(Page):
     book_description = RichTextField()
 
     content_panels = [
-        FieldPanel('title', classname='full title', help_text="Internal name for page."),
+        TitleFieldPanel('title', classname='full title', help_text="Internal name for page."),
         FieldPanel('heading'),
         FieldPanel('subheading'),
         FieldPanel('hero_background'),
@@ -2381,16 +2391,16 @@ class TutorMarketing(Page):
     header_cta_button_link = models.URLField()
     quote = RichTextField()
 
-    #features
+    # features
     features_header = models.CharField(max_length=255)
     features_cards = StreamField([
         ('cards', CardImageBlock()),
     ], use_json_field=True)
 
-    #availble books
+    # availble books
     available_books_header = models.CharField(max_length=255)
 
-    #cost
+    # cost
     cost_header = models.CharField(max_length=255)
     cost_description = models.TextField()
     cost_cards = StreamField([
@@ -2398,7 +2408,7 @@ class TutorMarketing(Page):
     ], use_json_field=True)
     cost_institution_message = models.CharField(max_length=255)
 
-    #feedback
+    # feedback
     feedback_media = StreamField(
         blocks.StreamBlock([
             ('image', ImageBlock()),
@@ -2410,10 +2420,10 @@ class TutorMarketing(Page):
     feedback_occupation = models.CharField(max_length=255)
     feedback_organization = models.CharField(max_length=255)
 
-    #webinars
+    # webinars
     webinars_header = models.CharField(max_length=255)
 
-    #faq
+    # faq
     faq_header = models.CharField(max_length=255)
     faqs = StreamField([
         ('faq', FAQBlock()),
@@ -2492,7 +2502,7 @@ class TutorMarketing(Page):
     ]
 
     content_panels = [
-        FieldPanel('title', classname="full title"),
+        TitleFieldPanel('title', classname="full title"),
         FieldPanel('header'),
         FieldPanel('description'),
         FieldPanel('header_cta_button_text'),
@@ -2520,7 +2530,7 @@ class TutorMarketing(Page):
     ]
 
     promote_panels = [
-        FieldPanel('slug'),
+        FieldPanel('slug', widget=SlugInput),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
         FieldPanel('promote_image')
@@ -2623,7 +2633,7 @@ class Subjects(Page):
     ]
 
     promote_panels = [
-        FieldPanel('slug'),
+        FieldPanel('slug', widget=SlugInput),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
         FieldPanel('promote_image')
@@ -2820,7 +2830,7 @@ class Subject(Page):
     ]
 
     promote_panels = [
-        FieldPanel('slug'),
+        FieldPanel('slug', widget=SlugInput),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
         FieldPanel('promote_image')
@@ -2858,7 +2868,7 @@ class FormHeadings(Page):
     ]
 
     content_panels = [
-        FieldPanel('title'),
+        TitleFieldPanel('title'),
         FieldPanel('adoption_intro_heading'),
         FieldPanel('adoption_intro_description'),
         FieldPanel('interest_intro_heading'),
@@ -2866,7 +2876,7 @@ class FormHeadings(Page):
     ]
 
     promote_panels = [
-        FieldPanel('slug'),
+        FieldPanel('slug', widget=SlugInput),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
         FieldPanel('promote_image')
@@ -2885,15 +2895,18 @@ class K12Subject(Page):
     about_books_heading = models.TextField(default='About the Books')
     about_books_text = models.CharField(default='FIND SUPPLEMENTAL RESOURCES', blank=True, max_length=255)
     adoption_heading = models.TextField(default='Using an OpenStax resource in your classroom? Let us know!')
-    adoption_text = RichTextField(default="<p>Help us continue to make high-quality educational materials accessible by letting us know you've adopted! Our future grant funding is based on educator adoptions and the number of students we impact.</p>")
+    adoption_text = RichTextField(
+        default="<p>Help us continue to make high-quality educational materials accessible by letting us know you've adopted! Our future grant funding is based on educator adoptions and the number of students we impact.</p>")
     adoption_link_text = models.CharField(default='Report Your Adoption', max_length=255)
     adoption_link = models.URLField(blank=True, default='/adoption')
-    quote_heading = models.TextField(default='What Our Teachers Say', blank=True,)
+    quote_heading = models.TextField(default='What Our Teachers Say', blank=True, )
     quote_text = models.CharField(default='', blank=True, max_length=255)
     resources_heading = models.TextField(default='Supplemental Resources')
-    blogs_heading = models.TextField(default='Blogs for High School Teachers', blank=True,)
+    blogs_heading = models.TextField(default='Blogs for High School Teachers', blank=True, )
     rfi_heading = models.TextField(default="Don't see what you're looking for?")
-    rfi_text = models.CharField(default="We're here to answer any questions you may have. Complete the form to get in contact with a member of our team.", max_length=255)
+    rfi_text = models.CharField(
+        default="We're here to answer any questions you may have. Complete the form to get in contact with a member of our team.",
+        max_length=255)
 
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
@@ -2923,59 +2936,59 @@ class K12Subject(Page):
 
     @property
     def books(self):
-            books = Book.objects.order_by('path')
-            book_data = []
-            for book in books:
-                k12subjects=[]
-                for subject in book.k12book_subjects.all():
-                    k12subjects.append(subject.subject_name)
-                subjects=[]
-                for subject in book.book_subjects.all():
-                    subjects.append(subject.subject_name)
-                if book.k12book_subjects is not None \
-                            and self.title in k12subjects \
-                            and book.book_state not in ['retired', 'draft']:
-                    book_data.append({
-                        'id': book.id,
-                        'slug': 'books/{}'.format(book.slug),
-                        'title': book.title,
-                        'description': book.description,
-                        'cover_url': book.cover_url,
-                        'is_ap': book.is_ap,
-                        'is_hs': 'High School' in subjects,
-                        'cover_color': book.cover_color,
-                        'high_resolution_pdf_url': book.high_resolution_pdf_url,
-                        'low_resolution_pdf_url': book.low_resolution_pdf_url,
-                        'ibook_link': book.ibook_link,
-                        'ibook_link_volume_2': book.ibook_link_volume_2,
-                        'webview_link': book.webview_link,
-                        'webview_rex_link': book.webview_rex_link,
-                        'bookshare_link': book.bookshare_link,
-                        'kindle_link': book.kindle_link,
-                        'amazon_coming_soon': book.amazon_coming_soon,
-                        'amazon_link': book.amazon_link,
-                        'bookstore_coming_soon': book.bookstore_coming_soon,
-                        'comp_copy_available': book.comp_copy_available,
-                        'salesforce_abbreviation': book.salesforce_abbreviation,
-                        'salesforce_name': book.salesforce_name,
-                        'urls': book.book_urls(),
-                        'updated': book.updated,
-                        'created': book.created,
-                        'publish_date': book.publish_date,
-                        'last_updated_pdf': book.last_updated_pdf
-                        })
-            return book_data
-
+        books = Book.objects.order_by('path')
+        book_data = []
+        for book in books:
+            k12subjects = []
+            for subject in book.k12book_subjects.all():
+                k12subjects.append(subject.subject_name)
+            subjects = []
+            for subject in book.book_subjects.all():
+                subjects.append(subject.subject_name)
+            if book.k12book_subjects is not None \
+                    and self.title in k12subjects \
+                    and book.book_state not in ['retired', 'draft']:
+                book_data.append({
+                    'id': book.id,
+                    'slug': 'books/{}'.format(book.slug),
+                    'title': book.title,
+                    'description': book.description,
+                    'cover_url': book.cover_url,
+                    'is_ap': book.is_ap,
+                    'is_hs': 'High School' in subjects,
+                    'cover_color': book.cover_color,
+                    'high_resolution_pdf_url': book.high_resolution_pdf_url,
+                    'low_resolution_pdf_url': book.low_resolution_pdf_url,
+                    'ibook_link': book.ibook_link,
+                    'ibook_link_volume_2': book.ibook_link_volume_2,
+                    'webview_link': book.webview_link,
+                    'webview_rex_link': book.webview_rex_link,
+                    'bookshare_link': book.bookshare_link,
+                    'kindle_link': book.kindle_link,
+                    'amazon_coming_soon': book.amazon_coming_soon,
+                    'amazon_link': book.amazon_link,
+                    'bookstore_coming_soon': book.bookstore_coming_soon,
+                    'comp_copy_available': book.comp_copy_available,
+                    'salesforce_abbreviation': book.salesforce_abbreviation,
+                    'salesforce_name': book.salesforce_name,
+                    'urls': book.book_urls(),
+                    'updated': book.updated,
+                    'created': book.created,
+                    'publish_date': book.publish_date,
+                    'last_updated_pdf': book.last_updated_pdf
+                })
+        return book_data
 
     def student_resource_headers(self):
-        student_resource_data=[]
-        book_ids={}
+        student_resource_data = []
+        book_ids = {}
         for book in self.books:
             book_id = book.get('id')
             book_title = book.get('title')
-            book_ids[book_id]=book_title
-        for resource in BookStudentResources.objects.filter(display_on_k12=True, book_student_resource_id__in = book_ids).all():
-            link_document_url= None
+            book_ids[book_id] = book_title
+        for resource in BookStudentResources.objects.filter(display_on_k12=True,
+                                                            book_student_resource_id__in=book_ids).all():
+            link_document_url = None
             if resource.link_document_id is not None:
                 link_document_url = resource.link_document_url
             student_resource_data.append({
@@ -2994,18 +3007,19 @@ class K12Subject(Page):
                 'print_link': resource.print_link,
                 'display_on_k12': resource.display_on_k12,
                 'resource_category': resource.resource_category,
-                })
+            })
         return student_resource_data
 
     def faculty_resource_headers(self):
-        faculty_resource_data=[]
-        book_ids={}
+        faculty_resource_data = []
+        book_ids = {}
         for book in self.books:
             book_id = book.get('id')
             book_title = book.get('title')
-            book_ids[book_id]=book_title
-        for resource in BookFacultyResources.objects.filter(display_on_k12=True, book_faculty_resource_id__in = book_ids).all():
-            link_document_url= None
+            book_ids[book_id] = book_title
+        for resource in BookFacultyResources.objects.filter(display_on_k12=True,
+                                                            book_faculty_resource_id__in=book_ids).all():
+            link_document_url = None
             if resource.link_document_id is not None:
                 link_document_url = resource.link_document_url
             faculty_resource_data.append({
@@ -3025,7 +3039,7 @@ class K12Subject(Page):
                 'k12': resource.k12,
                 'display_on_k12': resource.display_on_k12,
                 'resource_category': resource.resource_category,
-                })
+            })
         return faculty_resource_data
 
     def get_sitemap_urls(self, request=None):
@@ -3082,7 +3096,7 @@ class K12Subject(Page):
     ]
 
     promote_panels = [
-        FieldPanel('slug'),
+        FieldPanel('slug', widget=SlugInput),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
         FieldPanel('promote_image')
@@ -3092,10 +3106,8 @@ class K12Subject(Page):
 
     parent_page_types = ['pages.K12MainPage']
 
-    
-
     class Meta:
-            verbose_name = "K12 Subject"
+        verbose_name = "K12 Subject"
 
 
 class AllyLogos(Page):
@@ -3121,7 +3133,7 @@ class AllyLogos(Page):
     )
 
     content_panels = [
-        FieldPanel('title'),
+        TitleFieldPanel('title'),
         FieldPanel('heading'),
         FieldPanel('description'),
         FieldPanel('ally_logos_heading'),
@@ -3144,7 +3156,7 @@ class AllyLogos(Page):
     ]
 
     promote_panels = [
-        FieldPanel('slug'),
+        FieldPanel('slug', widget=SlugInput),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
         FieldPanel('promote_image')
@@ -3173,25 +3185,26 @@ class Assignable(Page):
 
     def get_heading_title_image_url(self):
         return build_document_url(self.heading_title_image.url)
+
     heading_title_image_url = property(get_heading_title_image_url)
-    subheading = models.CharField(max_length=255,blank=True, null=True)
+    subheading = models.CharField(max_length=255, blank=True, null=True)
     heading_description = RichTextField(blank=True, null=True)
     add_assignable_cta_header = models.CharField(max_length=255, blank=True, null=True)
     add_assignable_cta_description = models.TextField(blank=True, null=True)
     add_assignable_cta_link = models.URLField(blank=True, null=True)
     add_assignable_cta_button_text = models.CharField(max_length=255, blank=True, null=True)
-    available_courses_header = models.CharField(max_length=255,blank=True, null=True)
+    available_courses_header = models.CharField(max_length=255, blank=True, null=True)
     available_books = StreamField([
         ('course', AssignableBookBlock()),
     ], null=True, blank=True, use_json_field=True)
-    courses_coming_soon_header = models.CharField(max_length=255,blank=True, null=True)
+    courses_coming_soon_header = models.CharField(max_length=255, blank=True, null=True)
     coming_soon_books = StreamField([
         ('course', AssignableBookBlock()),
     ], null=True, blank=True, use_json_field=True)
-    assignable_cta_text = models.CharField(max_length=255,blank=True, null=True)
+    assignable_cta_text = models.CharField(max_length=255, blank=True, null=True)
     assignable_cta_link = models.URLField(blank=True, null=True)
-    assignable_cta_button_text = models.CharField(max_length=255,blank=True, null=True)
-    section_2_heading = models.CharField(max_length=255,blank=True, null=True)
+    assignable_cta_button_text = models.CharField(max_length=255, blank=True, null=True)
+    section_2_heading = models.CharField(max_length=255, blank=True, null=True)
     section_2_description = models.TextField(blank=True, null=True)
     image_carousel = StreamField(
         blocks.StreamBlock([
@@ -3203,7 +3216,7 @@ class Assignable(Page):
         ('faq', FAQBlock()),
     ], blank=True, null=True, use_json_field=True)
     quote = models.TextField(blank=True, null=True)
-    quote_author = models.CharField(max_length=255,blank=True, null=True)
+    quote_author = models.CharField(max_length=255, blank=True, null=True)
     quote_title = models.CharField(max_length=255, blank=True, null=True)
     quote_school = models.CharField(max_length=255, blank=True, null=True)
     tos_link = models.URLField(blank=True, null=True)
@@ -3217,7 +3230,7 @@ class Assignable(Page):
     )
 
     content_panels = [
-        FieldPanel('title'),
+        TitleFieldPanel('title'),
         FieldPanel('heading_image'),
         FieldPanel('heading_title_image'),
         FieldPanel('subheading'),
@@ -3278,7 +3291,7 @@ class Assignable(Page):
     ]
 
     promote_panels = [
-        FieldPanel('slug'),
+        FieldPanel('slug', widget=SlugInput),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
         FieldPanel('promote_image')
@@ -3287,6 +3300,3 @@ class Assignable(Page):
     parent_page_type = ['pages.HomePage']
     template = 'page.html'
     max_count = 1
-
-
-

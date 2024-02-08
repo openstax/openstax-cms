@@ -33,5 +33,5 @@ def register_import_export_menu_item():
     Add the menu item to admin side menu.
     """
     return ImportExportMenuItem(
-        'Import / Export', reverse('wagtailimportexport:index'), classnames='icon icon-download', order=800
+        'Import / Export', reverse('wagtailimportexport:index'), classname='icon icon-download', order=800
     )

@@ -4,7 +4,6 @@ from wagtail.admin.panels import (FieldPanel, InlinePanel,
                                                 MultiFieldPanel)
 from wagtail.fields import RichTextField
 from wagtail.models import Page
-from wagtail.images.edit_handlers import ImageChooserPanel
 
 from openstax.functions import build_image_url
 from snippets.models import Subject

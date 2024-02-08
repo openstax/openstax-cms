@@ -168,7 +168,7 @@ class AdoptionOpportunityTest(TestCase):
         self.opportunity.save()
 
     def test_query_opportunity_by_account_uuid(self):
-        response = self.client.get('/apps/cms/api/salesforce/renewal?account_uuid=f826f1b1-ead5-4594-82b3-df9a2753cb43')
+        response = self.client.get('/apps/cms/api/salesforce/renewal/?account_uuid=f826f1b1-ead5-4594-82b3-df9a2753cb43')
         self.assertIn(b'"students": "123"', response.content)
 
 

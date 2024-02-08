@@ -134,7 +134,7 @@ class TestOpenGraphMiddleware(TestCase):
                     )
         book_index.add_child(instance=book)
         self.client = Client(HTTP_USER_AGENT='Slackbot-LinkExpanding 1.0 (+https://api.slack.com/robots)')
-        response = self.client.get('/details/books/biology-2e')
+        response = self.client.get('/details/books/biology-2e/')
         self.assertContains(response, 'og:image')
 
     def test_blog_link_preview(self):
@@ -185,6 +185,6 @@ class TestOpenGraphMiddleware(TestCase):
                                    ))
         self.news_index.add_child(instance=self.article)
         self.client = Client(HTTP_USER_AGENT='facebookexternalhit/1.1')
-        response = self.client.get('/blog/article-1')
+        response = self.client.get('/blog/article-1/')
         self.assertContains(response, 'og:image')
 
