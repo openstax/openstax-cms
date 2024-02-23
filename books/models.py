@@ -538,6 +538,8 @@ class Book(Page):
     book_uuid = models.CharField(
         max_length=255, help_text="collection.xml UUID. Should be same as cnx id.",
         blank=True, null=True)
+    polish_site_link = models.URLField(blank=True, null=True,
+                                       help_text="Stores target URL to the Polish site so that REX Polish page headers lead back to each individual book on the Polish site")
     salesforce_abbreviation = models.CharField(max_length=255, blank=True, null=True)
     salesforce_name = models.CharField(max_length=255, blank=True, null=True)
     salesforce_book_id = models.CharField(max_length=255, blank=True, null=True,
@@ -759,6 +761,7 @@ class Book(Page):
         FieldPanel('book_state'),
         FieldPanel('cnx_id'),
         FieldPanel('book_uuid'),
+        FieldPanel('polish_site_link'),
         FieldPanel('salesforce_abbreviation'),
         FieldPanel('salesforce_name'),
         FieldPanel('salesforce_book_id'),
@@ -857,6 +860,7 @@ class Book(Page):
         APIField('book_state'),
         APIField('cnx_id'),
         APIField('book_uuid'),
+        APIField('polish_site_link'),
         APIField('salesforce_abbreviation'),
         APIField('salesforce_name'),
         APIField('salesforce_book_id'),
