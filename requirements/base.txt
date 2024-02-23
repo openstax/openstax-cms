@@ -21,7 +21,7 @@ MarkupPy==1.14
 odfpy==1.4.1
 openpyxl==3.0.10
 psycopg2>=2.9.9
-pycryptodome==3.14.1 # for using the SSO cookie from accounts
+pycryptodome==3.19.1 # for using the SSO cookie from accounts
 PyJWE==1.0.0
 sentry-sdk
 setuptools==65.5.1
