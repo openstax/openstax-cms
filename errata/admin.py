@@ -14,7 +14,7 @@ from django.utils.encoding import smart_str
 from django.utils.html import mark_safe
 
 from extraadminfilters.filters import UnionFieldListFilter
-from rangefilter.filter import DateRangeFilter
+from rangefilter.filters import DateRangeFilter
 
 from reversion.admin import VersionAdmin
 
