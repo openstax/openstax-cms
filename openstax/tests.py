@@ -109,7 +109,7 @@ class TestOpenGraphMiddleware(TestCase):
 
     def test_book_link_preview(self):
         test_image = SimpleUploadedFile(name='openstax.png',
-                                        content=open("oxauth/static/images/openstax.png", 'rb').read())
+                                        content=open("pages/static/images/openstax.png", 'rb').read())
         self.test_doc = Document.objects.create(title='Test Doc', file=test_image)
         book_index = BookIndex(title="Book Index",
                                page_description="Test",

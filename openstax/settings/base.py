@@ -5,6 +5,7 @@ import os
 import sys
 import logging.config
 from django.utils.log import DEFAULT_LOGGING
+from dotenv import load_dotenv
 
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
@@ -19,6 +20,7 @@ BASE_DIR = PROJECT_ROOT
 # check if running local dev server - else default to DEBUG=False
 if len(sys.argv) > 1:
     DEBUG = (sys.argv[1] == 'runserver')
+    load_dotenv()
 else:
     DEBUG = False
 

@@ -3,23 +3,27 @@ botocore==1.34.49
 bs4==0.0.2
 certifi==2024.2.2
 django-admin-rangefilter==0.12.1
+django-crontab==0.7.1
+django-compressor==4.4
 django-filter==23.5
 django-import-export==2.8.0
 django-modelcluster==6.2.1
+django-rest-auth==0.9.5
 django-reversion==5.0.0
+django-ses==3.5.2
 django-storages==1.12.3
 django-taggit>=4.0.0
 djangorestframework==3.14.0
 html2text==2020.1.16 # news feed
 mapbox==0.18.1
-openstax-accounts==1.0.0
+django-openstax-accounts
 Pillow==10.2.0
 psycopg2
+python-dotenv
 requests==2.31.0
 sentry-sdk
-simple-salesforce==1.12.5
+simple-salesforce==1.11.6
 six==1.16.0
-social-auth-app-django==5.4.0
 ua-parser==0.18.0
 unicodecsv==0.14.1
 vcrpy==6.0.1 # recoding Salesforce interactions in tests

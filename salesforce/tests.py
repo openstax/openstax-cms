@@ -197,7 +197,7 @@ class ResourceDownloadTest(TestCase):
         # add book index to homepage
         homepage.add_child(instance=book_index)
         test_image = SimpleUploadedFile(name='openstax.png',
-                                        content=open("oxauth/static/images/openstax.png", 'rb').read())
+                                        content=open("pages/static/images/openstax.png", 'rb').read())
         cls.test_doc = Document.objects.create(title='Test Doc', file=test_image)
 
     def test_resource_download_post(self):

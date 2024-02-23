@@ -40,7 +40,7 @@ class BookTests(WagtailPageTestCase):
         # add book index to homepage
         homepage.add_child(instance=book_index)
 
-        test_image = SimpleUploadedFile(name='openstax.png', content=open("oxauth/static/images/openstax.png", 'rb').read())
+        test_image = SimpleUploadedFile(name='openstax.png', content=open("pages/static/images/openstax.png", 'rb').read())
         cls.test_doc = Document.objects.create(title='Test Doc', file=test_image)
 
         cls.book_index = Page.objects.get(id=book_index.id)
