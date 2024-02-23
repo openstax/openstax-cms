@@ -7,7 +7,7 @@ from wagtail.admin.menu import MenuItem
 
 from books.models import Book
 
-from oxauth.functions import get_user_info_by_uuid
+from openstax_accounts.functions import get_user_info_by_uuid
 
 
 class Adopter(models.Model):

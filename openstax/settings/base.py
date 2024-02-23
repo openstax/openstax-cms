@@ -196,7 +196,6 @@ INSTALLED_APPS = [
     'rest_auth',
     'django_crontab',
     'django_filters',
-    'social_django',
     'storages',
     'django_ses',
     'import_export',
