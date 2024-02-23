@@ -12,8 +12,7 @@ django-taggit>=4.0.0
 djangorestframework==3.14.0
 html2text==2020.1.16 # news feed
 mapbox==0.18.1
-# openstax-accounts==1.0.0
-git+https://github.com/openstax/django-openstax-accounts
+openstax-accounts==1.0.0
 Pillow==10.2.0
 psycopg2
 requests==2.31.0
