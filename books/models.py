@@ -538,10 +538,12 @@ class Book(Page):
     book_uuid = models.CharField(
         max_length=255, help_text="collection.xml UUID. Should be same as cnx id.",
         blank=True, null=True)
+
     polish_site_link = models.URLField(blank=True, null=True,
                                        help_text="Stores target URL to the Polish site so that REX Polish page headers lead back to each individual book on the Polish site")
-    salesforce_abbreviation = models.CharField(max_length=255, blank=True, null=True)
-    salesforce_name = models.CharField(max_length=255, blank=True, null=True)
+    salesforce_abbreviation = models.CharField(max_length=255, blank=True, null=True, verbose_name='Subject Book Name', help_text='This should match the Books Name from Salesforce.')
+    salesforce_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Name displayed on website forms',
+                                       help_text='This is the name shown on interest/adoption forms and used in Partner filtering. The website only shows unique values from here, so it is possible to combine books for forms')
     salesforce_book_id = models.CharField(max_length=255, blank=True, null=True,
                                           help_text='No tracking and not included on adoption and interest forms if left blank)')
     updated = models.DateTimeField(blank=True, null=True, help_text='Late date web content was updated')
@@ -764,7 +766,6 @@ class Book(Page):
         FieldPanel('polish_site_link'),
         FieldPanel('salesforce_abbreviation'),
         FieldPanel('salesforce_name'),
-        FieldPanel('salesforce_book_id'),
         FieldPanel('updated'),
         FieldPanel('publish_date'),
         InlinePanel('book_subjects', label='Subjects'),
