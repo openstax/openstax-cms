@@ -1,7 +1,7 @@
 appdirs==1.4.4
 chardet==4.0.0
-django==4.2.8
-django-admin-rangefilter==0.8.4
+django==4.2.10
+django-admin-rangefilter==0.12.1
 django-crontab==0.7.1
 django-extensions==3.2.1
 django-filter==23.5
@@ -21,7 +21,7 @@ MarkupPy==1.14
 odfpy==1.4.1
 openpyxl==3.0.10
 psycopg2>=2.9.9
-pycryptodome==3.14.1 # for using the SSO cookie from accounts
+pycryptodome==3.19.1 # for using the SSO cookie from accounts
 PyJWE==1.0.0
 sentry-sdk
 setuptools==65.5.1
