@@ -8,9 +8,8 @@ coverage:
   range: "70...100"
 
   status:
-    project: yes
-    patch: no
-    changes: no
+    project: false
+    patch: true
 
 parsers:
   gcov:
@@ -20,11 +19,11 @@ parsers:
       method: no
       macro: no
 
-comment:
-  layout: "header, diff"
-  behavior: default
-  require_changes: no
-
+comment: false
 ignore:
-  - "*/tests/*"
-  - "*/migrations/*"
+  - "*tests.py"
+  - 'healthcheck/*'
+  - 'manage.py'
+  - '*/migrations/*'
+  - '*settings.py'
+  - '*wsgi.py'
