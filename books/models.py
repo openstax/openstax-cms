@@ -538,8 +538,6 @@ class Book(Page):
     book_uuid = models.CharField(
         max_length=255, help_text="collection.xml UUID. Should be same as cnx id.",
         blank=True, null=True)
-    salesforce_abbreviation = models.CharField(max_length=255, blank=True, null=True, label='Subject Book Name', help_text='This should match the Books Name from Salesforce.')
-    salesforce_name = models.CharField(max_length=255, blank=True, null=True, label='Name displayed on website forms',
     salesforce_abbreviation = models.CharField(max_length=255, blank=True, null=True, verbose_name='Subject Book Name', help_text='This should match the Books Name from Salesforce.')
     salesforce_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Name displayed on website forms',
                                        help_text='This is the name shown on interest/adoption forms and used in Partner filtering. The website only shows unique values from here, so it is possible to combine books for forms')
