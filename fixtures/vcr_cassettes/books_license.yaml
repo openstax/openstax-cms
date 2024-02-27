@@ -30,7 +30,9 @@ interactions:
   response:
     body:
       string: <?xml version="1.0" encoding="UTF-8"?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
-        xmlns="urn:partner.soap.sforce.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><soapenv:Body><loginResponse></loginResponse></soapenv:Body></soapenv:Envelope>
+        xmlns="urn:partner.soap.sforce.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><soapenv:Body><loginResponse><result><metadataServerUrl>https://openstax--staging.sandbox.my.salesforce.com/services/Soap/m/57.0/00DOx000002qc01</metadataServerUrl><passwordExpired>false</passwordExpired><sandbox>true</sandbox><serverUrl>https://openstax--staging.sandbox.my.salesforce.com/services/Soap/u/57.0/00DOx000002qc01</serverUrl><sessionId>00DOx000002qc01!AQEAQF2cYbO.p0JWJlBNDnChZd7X5xizdDbtmoe.29hI9rztJW0J8hN8VuzWnVfb55rN0PWexxpTHIeHrW7U5sFx4.trlQ85</sessionId><userId>005U0000005akrEIAQ</userId><userInfo><accessibilityMode>false</accessibilityMode><chatterExternal>false</chatterExternal><currencySymbol>$</currencySymbol><orgAttachmentFileSizeLimit>5242880</orgAttachmentFileSizeLimit><orgDefaultCurrencyIsoCode>USD</orgDefaultCurrencyIsoCode><orgDefaultCurrencyLocale>en_US</orgDefaultCurrencyLocale><orgDisallowHtmlAttachments>false</orgDisallowHtmlAttachments><orgHasPersonAccounts>true</orgHasPersonAccounts><organizationId>00DOx000002qc01MAA</organizationId><organizationMultiCurrency>false</organizationMultiCurrency><organizationName>OpenStax</organizationName><profileId>00eU0000000qdoxIAA</profileId><roleId>00E6f000001ybA2EAI</roleId><sessionSecondsValid>86400</sessionSecondsValid><userDefaultCurrencyIsoCode
+        xsi:nil="true"/><userEmail>volo@rice.edu</userEmail><userFullName>Michael
+        Volo</userFullName><userId>005U0000005akrEIAQ</userId><userLanguage>en_US</userLanguage><userLocale>en_US</userLocale><userName>volo@rice.edu.staging</userName><userTimeZone>America/Chicago</userTimeZone><userType>Standard</userType><userUiSkin>Theme3</userUiSkin></userInfo></result></loginResponse></soapenv:Body></soapenv:Envelope>
     headers:
       Cache-Control:
       - no-cache,must-revalidate,max-age=0,no-store,private
@@ -41,10 +43,10 @@ interactions:
       Content-Type:
       - text/xml; charset=utf-8
       Date:
-      - Tue, 27 Feb 2024 23:19:19 GMT
+      - Wed, 28 Feb 2024 00:30:00 GMT
       Set-Cookie:
-      - BrowserId=odYhydXGEe6Bq9PTdWh10g; domain=.salesforce.com; path=/; expires=Wed,
-        26-Feb-2025 23:19:19 GMT; Max-Age=31536000
+      - BrowserId=gc8VMdXQEe6miukBr8Go3g; domain=.salesforce.com; path=/; expires=Thu,
+        27-Feb-2025 00:30:00 GMT; Max-Age=31536000
       Vary:
       - Accept-Encoding
     status:
@@ -64,7 +66,7 @@ interactions:
       Content-Type:
       - application/json
       Cookie:
-      - BrowserId=odYhydXGEe6Bq9PTdWh10g
+      - BrowserId=gc8VMdXQEe6miukBr8Go3g
       User-Agent:
       - python-requests/2.31.0
       X-PrettyPrint:
@@ -87,16 +89,16 @@ interactions:
       Content-Type:
       - application/json;charset=UTF-8
       Date:
-      - Tue, 27 Feb 2024 23:19:19 GMT
+      - Wed, 28 Feb 2024 00:30:01 GMT
       Server:
       - sfdcedge
       Set-Cookie:
-      - CookieConsentPolicy=0:1; path=/; expires=Wed, 26-Feb-2025 23:19:19 GMT; Max-Age=31536000;
+      - CookieConsentPolicy=0:1; path=/; expires=Thu, 27-Feb-2025 00:30:01 GMT; Max-Age=31536000;
         secure
-      - LSKey-c$CookieConsentPolicy=0:1; path=/; expires=Wed, 26-Feb-2025 23:19:19
+      - LSKey-c$CookieConsentPolicy=0:1; path=/; expires=Thu, 27-Feb-2025 00:30:01
         GMT; Max-Age=31536000; secure
       Sforce-Limit-Info:
-      - api-usage=63310/5000000
+      - api-usage=64987/5000000
       Strict-Transport-Security:
       - max-age=63072000; includeSubDomains
       Transfer-Encoding:
@@ -110,7 +112,7 @@ interactions:
       X-SFDC-Edge-Cache:
       - MISS
       X-SFDC-Request-Id:
-      - 3233ff3372b10b91c7661daca024ca60
+      - 2f53fd0746bc84b7370c052e05f9780c
     status:
       code: 200
       message: OK
