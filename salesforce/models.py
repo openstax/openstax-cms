@@ -84,6 +84,7 @@ class SalesforceSettings(models.Model):
     password = models.CharField(max_length=255)
     security_token = models.CharField(max_length=255)
     sandbox = models.BooleanField(default=False)
+    # domain = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return self.username

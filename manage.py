@@ -1,35 +1,12 @@
-#!/usr/bin/python3
+#!/usr/bin/env python
+"""Django's command-line utility for administrative tasks."""
 import os
 import sys
 
+
 def main():
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "openstax.settings")
-
-    # run coverage.py around tests automatically
-    try:
-        command = sys.argv[1]
-    except IndexError:
-        command = "help"
-
-    # logic to start codecov if in test environment
-    # codecov is only installed in requirements/test.txt
-    try:
-        from coverage import Coverage
-        running_tests = command == "test"
-    except ImportError:
-        running_tests = False
-
-    if running_tests:
-        try:
-            from coverage import Coverage
-
-            cov = Coverage()
-            cov.erase()
-            cov.start()
-        except Error as e:
-            print(e)
-
-
+    """Run administrative tasks."""
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'openstax.settings')
     try:
         from django.core.management import execute_from_command_line
     except ImportError as exc:
@@ -40,11 +17,6 @@ def main():
         ) from exc
     execute_from_command_line(sys.argv)
 
-    if running_tests:
-        cov.stop()
-        cov.save()
-        covered = cov.report()
 
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

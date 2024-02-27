@@ -8,6 +8,8 @@ django-compressor==4.4
 django-filter==23.5
 django-import-export==2.8.0
 django-modelcluster==6.2.1
+django-openstax-accounts
+django-openstax-healthcheck
 django-rest-auth==0.9.5
 django-reversion==5.0.0
 django-ses==3.5.2
@@ -16,13 +18,12 @@ django-taggit>=4.0.0
 djangorestframework==3.14.0
 html2text==2020.1.16 # news feed
 mapbox==0.18.1
-django-openstax-accounts
 Pillow==10.2.0
 psycopg2
 python-dotenv
 requests==2.31.0
 sentry-sdk
-simple-salesforce==1.11.6
+simple-salesforce==1.12.5
 six==1.16.0
 ua-parser==0.18.0
 unicodecsv==0.14.1
