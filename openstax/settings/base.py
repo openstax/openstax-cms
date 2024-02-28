@@ -97,27 +97,27 @@ MEDIA_ROOT = os.path.join(BASE_DIR, 'public', 'media')
 # AWS settings #
 ################
 # Amazon SES mail settings
-# DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
-# SERVER_EMAIL = os.getenv('SERVER_EMAIL')
-# AWS_SES_REGION_NAME = os.getenv('AWS_SES_REGION_NAME')
-# AWS_SES_REGION_ENDPOINT = os.getenv('AWS_SES_REGION_ENDPOINT', 'replaceme')
+DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'noreply@openstax.org')
+SERVER_EMAIL = os.getenv('SERVER_EMAIL', 'noreply@openstax.org')
+AWS_SES_REGION_NAME = os.getenv('AWS_SES_REGION_NAME', 'us-west-2')
+AWS_SES_REGION_ENDPOINT = os.getenv('AWS_SES_REGION_ENDPOINT', 'email.us-west-2.amazonaws.com')
 
 # S3 settings
-AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME')
+AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME', 'openstax-assets')
 AWS_STORAGE_DIR = os.getenv('AWS_STORAGE_DIR', 'oscms-test')
-AWS_S3_CUSTOM_DOMAIN = os.getenv('AWS_S3_CUSTOM_DOMAIN')
+AWS_S3_CUSTOM_DOMAIN = os.getenv('AWS_S3_CUSTOM_DOMAIN', 'assets.openstax.org')
 AWS_DEFAULT_ACL = 'public-read'
 AWS_HEADERS = {'Access-Control-Allow-Origin': '*'}
-
-# S3 media storage using custom backend
-MEDIAFILES_LOCATION = '{}/media'.format(AWS_STORAGE_DIR)
-MEDIA_URL = "https://%s/%s/media/" % (AWS_S3_CUSTOM_DOMAIN, AWS_STORAGE_DIR)
-DEFAULT_FILE_STORAGE = 'openstax.custom_storages.MediaStorage'
 
 # Use local storage for media and static files in local environment
 if DEBUG or ENVIRONMENT == 'test':
     DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
     STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+else:
+    # S3 media storage using custom backend
+    MEDIAFILES_LOCATION = '{}/media'.format(AWS_STORAGE_DIR)
+    MEDIA_URL = "https://%s/%s/media/" % (AWS_S3_CUSTOM_DOMAIN, AWS_STORAGE_DIR)
+    DEFAULT_FILE_STORAGE = 'openstax.custom_storages.MediaStorage'
 
 # Default to dummy email backend. Configure dev/production/local backend
 EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')

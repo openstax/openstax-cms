@@ -1,6 +1,6 @@
-[![CI](https://github.com/openstax/openstax-cms/actions/workflows/tests.yml/badge.svg)](https://github.com/openstax/openstax-cms/actions/workflows/tests.yml)
+[![OpenStax](https://img.shields.io/badge/OpenStax-Web-00A6C9?style=for-the-badge&logo=openstax&logoColor=white)](https://openstax.org)\
 [![codecov](https://codecov.io/gh/openstax/openstax-cms/branch/main/graph/badge.svg?token=hHMb4KUGYC)](https://codecov.io/gh/openstax/openstax-cms)
-
+[![CI](https://github.com/openstax/openstax-cms/actions/workflows/tests.yml/badge.svg)](https://github.com/openstax/openstax-cms/actions/workflows/tests.yml)
 ![](https://codebuild.us-west-2.amazonaws.com/badges?uuid=eyJlbmNyeXB0ZWREYXRhIjoiek9QM293aWxTZkdOZ0kwb00yTlZPaFJqck53RENqMFFaWGNGS2xQZFpEbThaOENrWnFUQmd2cFZIdHJoUkNFekN6Z3ozc2d3MFh6dlBaT29nNVcrM2RBPSIsIml2UGFyYW1ldGVyU3BlYyI6IklqT2p6T3NwT1pHVVVKRU0iLCJtYXRlcmlhbFNldFNlcmlhbCI6MX0%3D&branch=main)
 ![](https://img.shields.io/github/v/tag/openstax/openstax-cms?label=latest%20tag)
 
@@ -16,15 +16,15 @@ Dependencies
 ```bash
 brew install postgresql
 ```
-* [Python](https://www.python.org/) (≥ 3.10)
-* [PIP](https://github.com/pypa/pip) (≥ 8.0.0)
+* [Python](https://www.python.org/) (≥ 3.11)
+* [PIP](https://github.com/pypa/pip)
 ```bash
 brew install python3
 ```
 
 Installation
 =======================
-Verify you have Python ≥ 3.6 installed:  
+Verify you have Python ≥ 3.11 installed:  
 ```bash
 python --version
 python3 --version
@@ -54,7 +54,7 @@ After all the modules in requirements are installed, run the migration script:
 ```bash
 python3 manage.py migrate
 ```
-Now, create a super user. Run the following command and then proceed with the instructions:
+Now, create a superuser. Run the following command and then proceed with the instructions:
 
 ```bash
 python3 manage.py createsuperuser
@@ -69,14 +69,16 @@ python3 manage.py runserver
 Testing
 =======================
 To test OpenStax CMS on a local device, you need to overwrite some settings. This can be streamlined by introducing `local.py` in `openstax/settings/`. Any changes on or additions to `local.py` will overwrite settings. Make copy of `local.py.example` and rename it to `local.py`:
+Alternatively, and maybe more conveniently, use a `.env` file in the project root to set environmental variables.
+
 ```bash
 cd openstax/settings/
 cp local.py.example local.py
 ```
 
-Start the server:
+Run the tests:
 ```bash
-python3 manage.py test --liveserver=localhost:8001 --settings=openstax.settings.dev
+python3 manage.py test --settings=openstax.settings.test
 ```
 
 SQLite Support
