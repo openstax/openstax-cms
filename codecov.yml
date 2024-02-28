@@ -24,5 +24,6 @@ ignore:
   - "*tests.py"
   - 'manage.py'
   - '*/migrations/*'
+  - '*/settings/*'
   - '*settings.py'
   - '*wsgi.py'
