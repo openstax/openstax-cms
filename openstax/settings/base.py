@@ -1,20 +1,26 @@
 import os
 import sys
-import logging.config
-from django.utils.log import DEFAULT_LOGGING
-from dotenv import load_dotenv
-from pathlib import Path
+
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
+from dotenv import load_dotenv
+
+import logging.config
+from django.utils.log import DEFAULT_LOGGING
+
+# Load environment variables from .env file
 load_dotenv()
 
-ENVIRONMENT = os.getenv('ENVIRONMENT')
+ENVIRONMENT = os.getenv('ENVIRONMENT', 'local')
 RELEASE_VERSION = os.getenv('RELEASE_VERSION')
 DEPLOYMENT_VERSION = os.getenv('DEPLOYMENT_VERSION')
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
+BASE_DIR = os.path.join(os.path.dirname(__file__), '..', '..')
+
+# Default to a key starting with django-insecure for local development.
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-wq21wtjo3@d_qfjvd-#td!%7gfy2updj2z+nev^k$iy%=m4_tr')
 
 # check if running local dev server - else default to DEBUG=False
 if len(sys.argv) > 1:
@@ -58,40 +64,28 @@ SALESFORCE = {
     'username': os.getenv('SALESFORCE_USERNAME'),
     'password': os.getenv('SALESFORCE_PASSWORD'),
     'security_token': os.getenv('SALESFORCE_SECURITY_TOKEN'),
-    'host': os.getenv('SALESFORCE_HOST', 'test')
+    'host': os.getenv('SALESFORCE_HOST', 'test'),
 }
 
 DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
-
-# Local time zone for this installation.
-TIME_ZONE = 'America/Chicago'
-
-# Language code for this installation.
-LANGUAGE_CODE = 'en-us'
-
 SITE_ID = 1
 
-# If you set this to False, Django will make some optimizations so as not
-# to load the internationalization machinery.
+########################
+# Internationalization #
+########################
+
+TIME_ZONE = 'America/Chicago'
+LANGUAGE_CODE = 'en-us'
 USE_I18N = True
+USE_L10N = True
+USE_TZ = True
+DATE_FORMAT = 'j F Y'
 WAGTAIL_I18N_ENABLED = True
 
-# If you set this to False, Django will not format dates, numbers and
-# calendars according to the current locale.
-# Note that with this set to True, Wagtail will fall back on using numeric dates
-# in date fields, as opposed to 'friendly' dates like "24 Sep 2013", because
-# Python's strptime doesn't support localised month names: https://code.djangoproject.com/ticket/13339
-USE_L10N = True
-
-# If you set this to False, Django will not use timezone-aware datetimes.
-USE_TZ = True
-
-DATE_FORMAT = 'j F Y'
-
-# A "public" directory is used so it can be set as the root directory for nginx
-# Media (uploaded) files are stored in S3
-# Note: used only if media is set to local storage (local config)
-MEDIA_ROOT = os.path.join(BASE_DIR, 'public', 'media')
+WAGTAIL_CONTENT_LANGUAGES = [
+    ('en', "English"),
+    ('es', "Spanish"),
+]
 
 ################
 # AWS settings #
@@ -101,6 +95,8 @@ DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'noreply@openstax.org')
 SERVER_EMAIL = os.getenv('SERVER_EMAIL', 'noreply@openstax.org')
 AWS_SES_REGION_NAME = os.getenv('AWS_SES_REGION_NAME', 'us-west-2')
 AWS_SES_REGION_ENDPOINT = os.getenv('AWS_SES_REGION_ENDPOINT', 'email.us-west-2.amazonaws.com')
+# Default to dummy email backend. Configure dev/production/local backend
+EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
 
 # S3 settings
 AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME', 'openstax-assets')
@@ -109,20 +105,22 @@ AWS_S3_CUSTOM_DOMAIN = os.getenv('AWS_S3_CUSTOM_DOMAIN', 'assets.openstax.org')
 AWS_DEFAULT_ACL = 'public-read'
 AWS_HEADERS = {'Access-Control-Allow-Origin': '*'}
 
+################
+# Static/Media #
+################
+
 # Use local storage for media and static files in local environment
 if DEBUG or ENVIRONMENT == 'test':
     DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
-    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 else:
     # S3 media storage using custom backend
     MEDIAFILES_LOCATION = '{}/media'.format(AWS_STORAGE_DIR)
     MEDIA_URL = "https://%s/%s/media/" % (AWS_S3_CUSTOM_DOMAIN, AWS_STORAGE_DIR)
     DEFAULT_FILE_STORAGE = 'openstax.custom_storages.MediaStorage'
 
-# Default to dummy email backend. Configure dev/production/local backend
-EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.console.EmailBackend')
-
 # Static files are stored on the server and served by nginx
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
@@ -139,14 +137,15 @@ STATICFILES_FINDERS = [
     'compressor.finders.CompressorFinder',
 ]
 
+# A "public" directory is used so it can be set as the root directory for nginx
+# Media (uploaded) files are stored in S3
+# Note: used only if DEFAULT_FILE_STORAGE is set to local storage (local config set by DEBUG)
+MEDIA_ROOT = os.path.join(BASE_DIR, 'public', 'media')
+
 # django-compressor settings
 COMPRESS_PRECOMPILERS = (
     ('text/x-scss', 'django_libsass.SassCompiler'),
 )
-
-# The default secret key is for local use only
-# Make this unique, and don't share it with anybody
-SECRET_KEY = os.getenv('SECRET_KEY', 'wq21wtjo3@d_qfjvd-#td!%7gfy2updj2z+nev^k$iy%=m4_tr')
 
 MIDDLEWARE = [
     'whitenoise.middleware.WhiteNoiseMiddleware',
@@ -411,11 +410,6 @@ WAGTAILSEARCH_BACKENDS = {
         'BACKEND': 'wagtail.search.backends.database',
     }
 }
-
-WAGTAIL_CONTENT_LANGUAGES = [
-    ('en', "English"),
-    ('es', "Spanish"),
-]
 
 from PIL import ImageFile
 
