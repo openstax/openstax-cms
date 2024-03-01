@@ -22,8 +22,8 @@ parsers:
 comment: false
 ignore:
   - "*tests.py"
-  - 'healthcheck/*'
   - 'manage.py'
   - '*/migrations/*'
+  - '*/settings/*'
   - '*settings.py'
   - '*wsgi.py'

@@ -30,7 +30,7 @@ class ErrataTest(TestCase):
         # add book index to homepage
         homepage.add_child(instance=book_index)
         # create book (finally! needed for Errata reports)
-        test_image = SimpleUploadedFile(name='openstax.png', content=open("oxauth/static/images/openstax.png", 'rb').read())
+        test_image = SimpleUploadedFile(name='openstax.png', content=open("pages/static/images/openstax.png", 'rb').read())
         test_doc = Document.objects.create(title='Test Doc', file=test_image)
         book = Book(cnx_id='d50f6e32-0fda-46ef-a362-9bd36ca7c97d',
                             title='University Physics',

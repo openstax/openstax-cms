@@ -13,7 +13,7 @@ from .serializers import SchoolSerializer, AdoptionOpportunityRecordSerializer, 
 
 from salesforce.salesforce import Salesforce
 from books.models import Book
-from oxauth.functions import get_logged_in_user_uuid
+from openstax_accounts.functions import get_logged_in_user_uuid
 from global_settings.functions import invalidate_cloudfront_caches
 
 

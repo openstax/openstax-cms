@@ -15,7 +15,7 @@ from wagtail.admin.menu import MenuItem
 
 from books.models import Book
 from django.conf import settings
-from oxauth.functions import get_user_info
+from openstax_accounts.functions import get_user_info
 from global_settings.functions import invalidate_cloudfront_caches
 
 

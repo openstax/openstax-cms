@@ -1,39 +1,33 @@
-appdirs==1.4.4
-chardet==4.0.0
-django==4.2.10
+boto3==1.34.49
+botocore==1.34.49
+bs4==0.0.2
+certifi==2024.2.2
 django-admin-rangefilter==0.12.1
 django-crontab==0.7.1
-django-extensions==3.2.1
+django-compressor==4.4
 django-filter==23.5
 django-import-export==2.8.0
-django-libsass==0.9
+django-modelcluster==6.2.1
+django-openstax-accounts
+django-openstax-healthcheck
 django-rest-auth==0.9.5
 django-reversion==5.0.0
-djangorestframework==3.14.0
-django-ses==3.0.1
+django-ses==3.5.2
 django-storages==1.12.3
-django-taggit>=3.1.0
-future==0.18.2
-html2text==2020.1.16 # used in news feed
-jsonfield==3.1.0
+django-taggit>=4.0.0
+djangorestframework==3.14.0
+html2text==2020.1.16 # news feed
 mapbox==0.18.1
-MarkupPy==1.14
-odfpy==1.4.1
-openpyxl==3.0.10
-psycopg2>=2.9.9
-pycryptodome==3.19.1 # for using the SSO cookie from accounts
-PyJWE==1.0.0
+Pillow==10.2.0
+psycopg2
+python-dotenv
+requests==2.31.0
 sentry-sdk
-setuptools==65.5.1
-simple_salesforce==1.11.6
-social-auth-app-django==5.0.0
-ua_parser==0.16.1
+simple-salesforce==1.12.5
+six==1.16.0
+ua-parser==0.18.0
 unicodecsv==0.14.1
-Unidecode==1.3.4
-vcrpy==4.1.1 # for recording test interactions with third-party APIs
+vcrpy==6.0.1 # recoding Salesforce interactions in tests
 wagtail==5.2.3
-wagtail-modeladmin==1.0.0
-Wand==0.6.7 # for supporting animated gifs
-whitenoise==6.1.0
-xlrd==2.0.1
-xlwt==1.3.0
+wagtail-modeladmin==2.0.0
+whitenoise==6.6.0

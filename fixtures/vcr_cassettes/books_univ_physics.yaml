@@ -1,14 +1,13 @@
 interactions:
 - request:
-    body: "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n        <env:Envelope\n                xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\n
-      \               xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n                xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\"\n
-      \               xmlns:urn=\"urn:partner.soap.sforce.com\">\n            <env:Header>\n
-      \               <urn:CallOptions>\n                    <urn:client>RestForce</urn:client>\n
-      \                   <urn:defaultNamespace>sf</urn:defaultNamespace>\n                </urn:CallOptions>\n
-      \           </env:Header>\n            <env:Body>\n                <n1:login
-      xmlns:n1=\"urn:partner.soap.sforce.com\">\n                    <n1:username>SALESFORCE_USERNAME</n1:username>\n
-      \                   <n1:password>SALESFORCE_PASSWORD</n1:password>\n
-      \               </n1:login>\n            </env:Body>\n        </env:Envelope>"
+    body: "<?xml version=\"1.0\" encoding=\"utf-8\" ?>\n<env:Envelope\n        xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\"\n
+      \       xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n        xmlns:env=\"http://schemas.xmlsoap.org/soap/envelope/\"\n
+      \       xmlns:urn=\"urn:partner.soap.sforce.com\">\n    <env:Header>\n        <urn:CallOptions>\n
+      \           <urn:client>simple-salesforce</urn:client>\n            <urn:defaultNamespace>sf</urn:defaultNamespace>\n
+      \       </urn:CallOptions>\n    </env:Header>\n    <env:Body>\n        <n1:login
+      xmlns:n1=\"urn:partner.soap.sforce.com\">\n            <n1:username></n1:username>\n
+      \           <n1:password></n1:password>\n
+      \       </n1:login>\n    </env:Body>\n</env:Envelope>"
     headers:
       Accept:
       - '*/*'
@@ -17,49 +16,37 @@ interactions:
       Connection:
       - keep-alive
       Content-Length:
-      - '888'
+      - '744'
       SOAPAction:
       - login
       User-Agent:
-      - python-requests/2.27.1
+      - python-requests/2.31.0
       charset:
       - UTF-8
       content-type:
       - text/xml
     method: POST
-    uri: https://test.salesforce.com/services/Soap/u/52.0
+    uri: https://test.salesforce.com/services/Soap/u/57.0
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAAK1VXXPaOBT9K6xnX2M5NCSEEWrdBNaZQrOJcZrmpaPYF9BWlhxJDh+/vrJsIJCk
-        04flwWPuOUf3yLr3Cn9c5rz1DEozKfresR94LRCpzJiY9b1kMjzqeh8J1pIWIJ57A/EMXBbQsiqh
-        e024782NKXoI6XQOOdW+RSvIl2qGqhcEjQ55tbLvlUr0CqqMAOU7rp5KlYKfyrzh9JaabVdeLBb+
-        4oNbsB0Ex+h+PIpdsiMmtKEiBW/n8rPMVgRzOWPiFnQhhQaCFeiSG4JzMDSjhsag7LYTxUmVQtsc
-        1l+11vLoyD6tduZrKrJHufTzlX3lsLOItFWzFDSKq+3lqNP2AxQEl91R4H5d+vU7Rq9z4YJqvZAq
-        GywLpiAjU8o1YHQYxk1qYlRp4c0/rP9H1+U7rnc5bDpdFcZVRg5Yf4U3aXgTqrOHtborliEvz5Ph
-        8ClKTjuL+AuXk7OL65/fJoMfQ1mO7m+TNj2PVhBGd0H0NP7SHbfVY3j839pPumw9jW5UHN1P4Do6
-        75wkN+virH1b2djkxqW15Dx0ktpCZ3yf5VfhPxg1UE0RU0kwTdNK+cg4M6uxzGDzjV8DOJ1TY0AN
-        lvYhKN8wD8M4LZWybbGKV/mj5ORvS9mPYFuZoTE0necgzJBxiNkaRixnhnTaJ+1uN8DoN5xKfwlT
-        akv0oln5SsuLymQSXzrpO/AbypFM7bkTED+S+C1pgzslsyXC5SIyOd9505sP8RtGpY6o/teODinC
-        NJXlvu41VimoYGtq3iypJPzuhC8pe5Kx3QLb7OFFpncIe9qvNAdybVsltq2Cbm0TtBLB3Nwzq/1V
-        HBUXSk7tCTmb0FRd8JTJ5VUY2nbdoljJhjU4nTrS8eeHSA/Ca4waaNNFMaRSZPqOcpaR7ulJEGyL
-        fA9ytfz2abfsTOwJxvteNRc8VHMHOWWc6CnNciY+bQZCNSzr/qhxRx2WnLsNThRNf9pp0UpstKZt
-        sT/ttxEVs5LOtpW2F6sZe5X4IuJQl8w0RqrAJ2UPxoes9JtZVmt2piYshwcpgIQ5WC5FF3P7nMma
-        t0Vr7qoAYo9bZFRlDaEKOTBhsU1KJvYKgQ812ISaLbpRgjaXBjq4TND+VYMO70fyC1U/cQFYBwAA
+      string: <?xml version="1.0" encoding="UTF-8"?><soapenv:Envelope xmlns:soapenv="http://schemas.xmlsoap.org/soap/envelope/"
+        xmlns="urn:partner.soap.sforce.com" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"><soapenv:Body><loginResponse><result><metadataServerUrl>https://openstax--staging.sandbox.my.salesforce.com/services/Soap/m/57.0/00DOx000002qc01</metadataServerUrl><passwordExpired>false</passwordExpired><sandbox>true</sandbox><serverUrl>https://openstax--staging.sandbox.my.salesforce.com/services/Soap/u/57.0/00DOx000002qc01</serverUrl><sessionId>00DOx000002qc01!AQEAQF2cYbO.p0JWJlBNDnChZd7X5xizdDbtmoe.29hI9rztJW0J8hN8VuzWnVfb55rN0PWexxpTHIeHrW7U5sFx4.trlQ85</sessionId><userId>005U0000005akrEIAQ</userId><userInfo><accessibilityMode>false</accessibilityMode><chatterExternal>false</chatterExternal><currencySymbol>$</currencySymbol><orgAttachmentFileSizeLimit>5242880</orgAttachmentFileSizeLimit><orgDefaultCurrencyIsoCode>USD</orgDefaultCurrencyIsoCode><orgDefaultCurrencyLocale>en_US</orgDefaultCurrencyLocale><orgDisallowHtmlAttachments>false</orgDisallowHtmlAttachments><orgHasPersonAccounts>true</orgHasPersonAccounts><organizationId>00DOx000002qc01MAA</organizationId><organizationMultiCurrency>false</organizationMultiCurrency><organizationName>OpenStax</organizationName><profileId>00eU0000000qdoxIAA</profileId><roleId>00E6f000001ybA2EAI</roleId><sessionSecondsValid>86400</sessionSecondsValid><userDefaultCurrencyIsoCode
+        xsi:nil="true"/><userEmail>volo@rice.edu</userEmail><userFullName>Michael
+        Volo</userFullName><userId>005U0000005akrEIAQ</userId><userLanguage>en_US</userLanguage><userLocale>en_US</userLocale><userName>volo@rice.edu.staging</userName><userTimeZone>America/Chicago</userTimeZone><userType>Standard</userType><userUiSkin>Theme3</userUiSkin></userInfo></result></loginResponse></soapenv:Body></soapenv:Envelope>
     headers:
       Cache-Control:
       - no-cache,must-revalidate,max-age=0,no-store,private
       Content-Encoding:
       - gzip
       Content-Length:
-      - '855'
+      - '831'
       Content-Type:
       - text/xml; charset=utf-8
       Date:
-      - Thu, 15 Sep 2022 14:31:59 GMT
+      - Wed, 28 Feb 2024 00:29:58 GMT
       Set-Cookie:
-      - BrowserId=KAf_YjUDEe23lrNDsiuAyw; domain=.salesforce.com; path=/; expires=Fri,
-        15-Sep-2023 14:31:59 GMT; Max-Age=31536000
+      - BrowserId=gPhkGdXQEe6Bm2F5LRKfGw; domain=.salesforce.com; path=/; expires=Thu,
+        27-Feb-2025 00:29:58 GMT; Max-Age=31536000
       Vary:
       - Accept-Encoding
     status:
@@ -73,41 +60,45 @@ interactions:
       Accept-Encoding:
       - gzip, deflate
       Authorization:
-      - Bearer zzz
+      - Bearer 00DOx000002qc01!AQEAQF2cYbO.p0JWJlBNDnChZd7X5xizdDbtmoe.29hI9rztJW0J8hN8VuzWnVfb55rN0PWexxpTHIeHrW7U5sFx4.trlQ85
       Connection:
       - keep-alive
       Content-Type:
       - application/json
       Cookie:
-      - BrowserId=KAf_YjUDEe23lrNDsiuAyw
+      - BrowserId=gPhkGdXQEe6Bm2F5LRKfGw
       User-Agent:
-      - python-requests/2.27.1
+      - python-requests/2.31.0
       X-PrettyPrint:
       - '1'
     method: GET
-    uri: https://openstax--staging.sandbox.my.salesforce.com/services/data/v52.0/query/?q=Select+Name%2C+Official_Name__c+from+Book__c+where+Id+%3D+%27a0ZU0000008pyvQMAQ%27
+    uri: https://openstax--staging.sandbox.my.salesforce.com/services/data/v57.0/query/?q=Select+Name%2C+Official_Name__c+from+Book__c+where+Id+%3D+%27a0ZU0000008pyvQMAQ%27
   response:
     body:
-      string: !!binary |
-        H4sIAAAAAAAAAG2OywrCMBBF935FyEqhmCoI4k5d+yjSjSIlTVOMxqYk00As/XebtO6c3ZzLuTPt
-        BCEMCqi8iA/HaIMWkUeFqsIGuuEBaM6ULoxnN9T2pGcUQIu8AR7wAH2dq4OLd0q9sozh6Jc0WoaA
-        GK6tYNyQggIldrWcx8So/MkZGDJqhMbXNA6zrp1NDtsEh6Ju6MNH+h7upJWwXBsBDp0fzghm0HRP
-        JZuNl/GpLAUTVGZe8R/9t3x9h+6T7gu/7HQIFgEAAA==
+      string: "{\n  \"totalSize\" : 1,\n  \"done\" : true,\n  \"records\" : [ {\n
+        \   \"attributes\" : {\n      \"type\" : \"Book__c\",\n      \"url\" : \"/services/data/v57.0/sobjects/Book__c/a0ZU0000008pyvQMAQ\"\n
+        \   },\n    \"Name\" : \"University Physics (Calc)\",\n    \"Official_Name__c\"
+        : \"University Physics\"\n  } ]\n}"
     headers:
       Cache-Control:
       - no-cache,must-revalidate,max-age=0,no-store,private
+      Connection:
+      - keep-alive
       Content-Encoding:
       - gzip
       Content-Type:
       - application/json;charset=UTF-8
       Date:
-      - Thu, 15 Sep 2022 14:31:59 GMT
+      - Wed, 28 Feb 2024 00:29:59 GMT
+      Server:
+      - sfdcedge
       Set-Cookie:
-      - CookieConsentPolicy=0:1; path=/; expires=Fri, 15-Sep-2023 14:31:59 GMT; Max-Age=31536000
-      - LSKey-c$CookieConsentPolicy=0:1; path=/; expires=Fri, 15-Sep-2023 14:31:59
-        GMT; Max-Age=31536000
+      - CookieConsentPolicy=0:1; path=/; expires=Thu, 27-Feb-2025 00:29:59 GMT; Max-Age=31536000;
+        secure
+      - LSKey-c$CookieConsentPolicy=0:1; path=/; expires=Thu, 27-Feb-2025 00:29:59
+        GMT; Max-Age=31536000; secure
       Sforce-Limit-Info:
-      - api-usage=86659/5000000
+      - api-usage=64987/5000000
       Strict-Transport-Security:
       - max-age=63072000; includeSubDomains
       Transfer-Encoding:
@@ -118,8 +109,10 @@ interactions:
       - nosniff
       X-Robots-Tag:
       - none
-      X-XSS-Protection:
-      - 1; mode=block
+      X-SFDC-Edge-Cache:
+      - MISS
+      X-SFDC-Request-Id:
+      - 54b61e4f06b6a34e374038de512427af
     status:
       code: 200
       message: OK

@@ -1,7 +1,5 @@
 import django_filters
 from django.http import HttpResponse
-from django.db import models
-from django.contrib.auth.decorators import permission_required
 from rest_framework.renderers import JSONRenderer
 from rest_framework.viewsets import ModelViewSet
 from rest_framework.filters import OrderingFilter
@@ -10,7 +8,7 @@ from django.shortcuts import render, redirect
 from .models import Errata, ERRATA_STATUS
 from .serializers import ErrataSerializer
 from .forms import ErrataModelForm
-from oxauth.functions import get_user_info
+from openstax_accounts.functions import get_user_info
 
 
 class JSONResponse(HttpResponse):

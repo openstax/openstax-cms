@@ -266,8 +266,6 @@ class Command(BaseCommand):
             PartnerFieldNameMapping.objects.filter(salesforce_name__in=(list(hidden_fields_to_update))).update(hidden=False)
 
             invalidate_cloudfront_caches('salesforce/partners')
-            response = self.style.SUCCESS("Successfully updated {} partners, created {} partners.".format(updated_partners, created_partners))
-        self.stdout.write(response)
 
     def check_field_names(self, partner, field_names):
         attributes_to_remove = []

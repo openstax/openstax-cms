@@ -7,7 +7,7 @@ from wagtail.admin.menu import MenuItem
 
 from books.models import Book
 
-from oxauth.functions import get_user_info_by_uuid
+from openstax_accounts.functions import get_user_info_by_uuid
 
 
 class Adopter(models.Model):
@@ -79,11 +79,13 @@ class MapBoxDataset(models.Model):
         return self.name
 
 
+# TODO: remove this, use param store instead
 class SalesforceSettings(models.Model):
     username = models.CharField(max_length=255)
     password = models.CharField(max_length=255)
     security_token = models.CharField(max_length=255)
     sandbox = models.BooleanField(default=False)
+    # domain = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         return self.username
