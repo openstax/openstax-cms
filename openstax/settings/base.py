@@ -35,8 +35,8 @@ else:
         # Prod only
         ALLOWED_HOSTS = ['openstax.org']
     else:
-        # All non-local and non-prod environments
-        ALLOWED_HOSTS = [f"{ENVIRONMENT}.openstax.org"]
+        # All non-local and non-prod environments - rex uses env.cms.openstax.org
+        ALLOWED_HOSTS = [f"{ENVIRONMENT}.openstax.org", f"{ENVIRONMENT}.cms.openstax.org"]
 
 # These should both be set to true. The openstax.middleware will handle resolving the URL
 # without a redirect if needed.
