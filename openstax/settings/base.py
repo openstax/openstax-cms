@@ -1,6 +1,6 @@
 import os
 import sys
-
+import json
 import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
@@ -31,12 +31,7 @@ else:
 if DEBUG:
     ALLOWED_HOSTS = ['*']
 else:
-    if ENVIRONMENT == 'prod':
-        # Prod only
-        ALLOWED_HOSTS = ['openstax.org']
-    else:
-        # All non-local and non-prod environments
-        ALLOWED_HOSTS = [f"{ENVIRONMENT}.openstax.org"]
+    ALLOWED_HOSTS = json.loads(os.getenv('ALLOWED_HOSTS', '[]'))
 
 # These should both be set to true. The openstax.middleware will handle resolving the URL
 # without a redirect if needed.
