@@ -16,6 +16,7 @@ BOOK_STATES = (
 YELLOW = 'yellow'
 LIGHT_BLUE = 'light_blue'
 DARK_BLUE = 'dark_blue'
+MIDNIGHT = 'midnight'
 GREEN = 'green'
 WHITE = 'white'
 GREY = 'grey'
@@ -31,6 +32,7 @@ BOOK_COVER_TEXT_COLOR = (
     (YELLOW, 'Yellow'),
     (LIGHT_BLUE, 'Light Blue'),
     (DARK_BLUE, 'Dark Blue'),
+    (MIDNIGHT, 'Midnight'),
     (GREEN, 'Green'),
     (WHITE, 'White'),
     (GREY, 'Grey'),
@@ -45,6 +47,7 @@ BOOK_COVER_TEXT_COLOR = (
 )
 
 BLUE = 'blue'
+MIDNIGHT = 'midnight'
 DEEP_GREEN = 'deep-green'
 GOLD = 'gold'
 GRAY = 'gray'
@@ -57,6 +60,7 @@ RED = 'red'
 YELLOW = 'yellow'
 COVER_COLORS = (
     (BLUE, 'Blue'),
+    (MIDNIGHT, 'Midnight'),
     (DEEP_GREEN, 'Deep Green'),
     (GOLD, 'Gold'),
     (GRAY, 'Gray'),
@@ -70,7 +74,7 @@ COVER_COLORS = (
 )
 
 MATH = 'Math'
-SOCIAL_STUDIES='Social Studies'
+SOCIAL_STUDIES = 'Social Studies'
 SCIENCE = 'Science'
 ENGLISH = 'English Language Areas & Reading'
 CAREER_TECHNICAL = 'Career and Technical Education'
@@ -83,23 +87,21 @@ TECHNOLOGY_APPLICATIONS = 'Technology Applications'
 OTHER = 'Other'
 NONE = 'None'
 
-
 K12_CATEGORIES = (
-(MATH, 'Math'),
-(SOCIAL_STUDIES, 'Social Studies'),
-(SCIENCE, 'Science'),
-(ENGLISH, 'English Language Areas & Reading'),
-(CAREER_TECHNICAL, 'Career and Technical Education'),
-(COLLEGE_READINESS, 'College Readiness'),
-(FINE_ARTS, 'Fine Arts'),
-(HEALTH, 'Health Education'),
-(LANGUAGES, 'Languages other than English'),
-(PHYSICAL_ED, 'Physical Education'),
-(TECHNOLOGY_APPLICATIONS, 'Technology Applications'),
-(OTHER, 'Other'),
-(NONE, 'None'),
+    (MATH, 'Math'),
+    (SOCIAL_STUDIES, 'Social Studies'),
+    (SCIENCE, 'Science'),
+    (ENGLISH, 'English Language Areas & Reading'),
+    (CAREER_TECHNICAL, 'Career and Technical Education'),
+    (COLLEGE_READINESS, 'College Readiness'),
+    (FINE_ARTS, 'Fine Arts'),
+    (HEALTH, 'Health Education'),
+    (LANGUAGES, 'Languages other than English'),
+    (PHYSICAL_ED, 'Physical Education'),
+    (TECHNOLOGY_APPLICATIONS, 'Technology Applications'),
+    (OTHER, 'Other'),
+    (NONE, 'None'),
 )
-
 
 CC_BY_LICENSE_NAME = 'Creative Commons Attribution License'
 CC_BY_LICENSE_VERSION = '4.0'
