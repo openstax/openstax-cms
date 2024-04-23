@@ -93,6 +93,8 @@ WAGTAIL_CONTENT_LANGUAGES = [
 # Amazon SES mail settings
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'noreply@openstax.org')
 SERVER_EMAIL = os.getenv('SERVER_EMAIL', 'noreply@openstax.org')
+AWS_SES_FROM_EMAIL = 'noreply@openstax.org'
+USE_SES_V2 = True
 AWS_SES_REGION_NAME = os.getenv('AWS_SES_REGION_NAME', 'us-west-2')
 AWS_SES_REGION_ENDPOINT = os.getenv('AWS_SES_REGION_ENDPOINT', 'email.us-west-2.amazonaws.com')
 # Default to dummy email backend. Configure dev/production/local backend
@@ -225,7 +227,6 @@ INSTALLED_APPS = [
     'mail',
     'global_settings',
     'errata',
-    'extraadminfilters',
     'redirects',
     'oxauth',
     'webinars',
@@ -353,6 +354,8 @@ if BASE_URL is None:
         if ENVIRONMENT == 'prod':
             APPLICATION_DOMAIN = 'openstax.org'
         elif ENVIRONMENT == 'test':
+            APPLICATION_DOMAIN = 'dev.openstax.org'
+        elif ENVIRONMENT == 'local':
             APPLICATION_DOMAIN = 'dev.openstax.org'
         else:
             APPLICATION_DOMAIN = f'{ENVIRONMENT}.openstax.org'

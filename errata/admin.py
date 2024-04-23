@@ -10,10 +10,8 @@ from django.forms import CheckboxSelectMultiple
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 from django.http import HttpResponse
-from django.utils.encoding import smart_str
 from django.utils.html import mark_safe
 
-from extraadminfilters.filters import UnionFieldListFilter
 from rangefilter.filters import DateRangeFilter
 
 from reversion.admin import VersionAdmin
@@ -56,6 +54,9 @@ class BlockedUserAdmin(admin.ModelAdmin):
     list_display = ('account_id', 'fullname', 'reason',)
 
 class ErrataAdmin(ImportExportActionModelAdmin, VersionAdmin):
+    def get_queryset(self, request):
+        return super(ErrataAdmin, self).get_queryset(request).prefetch_related('book')
+
     class Media:
         js = (
             '//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js',  # jquery
@@ -166,13 +167,13 @@ class ErrataAdmin(ImportExportActionModelAdmin, VersionAdmin):
         if request.user.is_superuser or request.user.groups.filter(name__in=['Content Managers']).exists():
             self.list_display = ['id', 'book_title', 'created', 'modified', 'short_detail', 'number_of_errors', 'status', 'error_type', 'resource', 'location', 'additional_location_information', 'resolution', 'archived', 'junk'] # list of fields to show if user is in Content Manager group or is a superuser
             self.list_display_links = ['book_title']
-            self.list_filter = (('created', DateRangeFilter), ('modified', DateRangeFilter), ('book', UnionFieldListFilter), 'status', 'created', 'modified', 'is_assessment_errata', 'modified', 'error_type', 'resolution', 'archived', 'junk', 'resource')
+            self.list_filter = (('created', DateRangeFilter), ('modified', DateRangeFilter), 'book', 'status', 'created', 'modified', 'is_assessment_errata', 'modified', 'error_type', 'resolution', 'archived', 'junk', 'resource')
             self.editable = ['resolution']
 
         else:
             self.list_display = ['id', 'book_title', 'created', 'short_detail', 'status', 'error_type', 'resource', 'location', 'created', 'archived'] # list of fields to show otherwise
             self.list_display_links = ['book_title']
-            self.list_filter = (('created', DateRangeFilter), ('modified', DateRangeFilter), ('book', UnionFieldListFilter), 'status', 'created', 'modified', 'is_assessment_errata', 'error_type', 'resolution', 'archived', 'resource')
+            self.list_filter = (('created', DateRangeFilter), ('modified', DateRangeFilter), 'book', 'status', 'created', 'modified', 'is_assessment_errata', 'error_type', 'resolution', 'archived', 'resource')
         return super(ErrataAdmin, self).changelist_view(request, extra_context)
 
     @method_decorator(csrf_protect)
