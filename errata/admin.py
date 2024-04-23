@@ -54,6 +54,9 @@ class BlockedUserAdmin(admin.ModelAdmin):
     list_display = ('account_id', 'fullname', 'reason',)
 
 class ErrataAdmin(ImportExportActionModelAdmin, VersionAdmin):
+    def get_queryset(self, request):
+        return super(ErrataAdmin, self).get_queryset(request).prefetch_related('book')
+
     class Media:
         js = (
             '//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js',  # jquery
