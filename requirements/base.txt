@@ -18,7 +18,7 @@ django-taggit>=4.0.0
 djangorestframework==3.14.0
 html2text==2020.1.16 # news feed
 mapbox==0.18.1
-Pillow==10.2.0
+Pillow==10.3.0
 psycopg2
 python-dotenv
 requests==2.31.0
