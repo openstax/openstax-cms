@@ -64,11 +64,33 @@ def process_response(self, request, response):
 
 class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
     OG_USER_AGENTS = [
-        'twitterbot',
+        'baiduspider',
+        'bingbot',
+        'embedly',
         'facebookbot',
         'facebookexternalhit/1.1',
+        'facebookexternalhit',
+        'facebot',
+        'google.*snippet',
+        'googlebot',
+        'linkedinbot',
+        'MetadataScraper',
+        'outbrain',
+        'pinterest',
         'pinterestbot',
+        'quora',
+        'quora link preview',
+        'rogerbot',
+        'showyoubot',
+        'slackbot',
         'slackbot-linkexpanding',
+        'twitterbot',
+        'vkShare',
+        'W3C_Validator',
+        'WhatsApp',
+        'MetadataScraper',
+        'yandex',
+        'yahoo',
     ]
 
     def __init__(self, get_response):
@@ -84,7 +106,7 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
 
                 full_url = unquote(request.build_absolute_uri())
 
-                # imdex of last / to find slug, except when there isn't a last /
+                # index of last / to find slug, except when there isn't a last /
                 if url_path == '':
                     page_slug = "openstax-homepage"
                 else:
@@ -119,8 +141,11 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
                     else:
                         page = self.page_by_slug(page_slug)
 
-                    template = self.build_template(page[0], full_url)
-                    return HttpResponse(template)
+                    if page:
+                        template = self.build_template(page[0], full_url)
+                        return HttpResponse(template)
+                    else:
+                        return self.get_response(request)
                 else:
                     return self.get_response(request)
         return self.get_response(request)
@@ -169,7 +194,7 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
         if page_slug == 'supporters':
             return Supporters.objects.all()
         if page_slug == 'openstax-homepage':
-            return HomePage.objects.filter(locale = 1)
+            return HomePage.objects.filter(locale=1)
 
 
 
