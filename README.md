@@ -83,7 +83,7 @@ python3 manage.py test --settings=openstax.settings.test
 
 ## Postman API Testing
 To test the API, use can request access to the OpenStax Postman account.  
-The collection is available [here](https://openstax.postman.co/workspace/CMS~2390e38a-b720-4734-a409-7d279139e1b2/overview).
+The collection is available [here](https://www.postman.com/openstax/workspace/cms/overview).
 
 SQLite Support
 =======================
