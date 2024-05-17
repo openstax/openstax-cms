@@ -247,6 +247,7 @@ class NewsSource(TranslatableMixin, index.Indexed, models.Model):
         index.SearchField('name', boost=10),
         index.AutocompleteField('name'),
         index.FilterField('name'),
+        index.FilterField('locale_id')
     ]
 
     def __str__(self):
