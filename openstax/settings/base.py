@@ -400,7 +400,7 @@ ENCRYPTION_PRIVATE_KEY = os.getenv('SSO_ENCRYPTION_PRIVATE_KEY', "c6d9b8683fddce
 # Wagtail #
 ###########
 
-WAGTAIL_SITE_NAME = 'openstax'
+WAGTAIL_SITE_NAME = 'OpenStax'
 WAGTAILAPI_BASE_URL = os.getenv('WAGTAILAPI_BASE_URL', BASE_URL)
 # Wagtail API number of results
 WAGTAILAPI_LIMIT_MAX = None
