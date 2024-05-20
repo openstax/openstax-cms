@@ -81,6 +81,10 @@ Run the tests:
 python3 manage.py test --settings=openstax.settings.test
 ```
 
+## Postman API Testing
+To test the API, use can request access to the OpenStax Postman account.  
+The collection is available [here](https://www.postman.com/openstax/workspace/cms/overview).
+
 SQLite Support
 =======================
 SQLite is supported as an alternative to PostgreSQL. In order to switch to SQLite, change the `DATABASES` setting
