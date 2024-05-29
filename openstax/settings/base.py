@@ -94,7 +94,6 @@ WAGTAIL_CONTENT_LANGUAGES = [
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'noreply@openstax.org')
 SERVER_EMAIL = os.getenv('SERVER_EMAIL', 'noreply@openstax.org')
 AWS_SES_FROM_EMAIL = 'noreply@openstax.org'
-USE_SES_V2 = True
 AWS_SES_REGION_NAME = os.getenv('AWS_SES_REGION_NAME', 'us-west-2')
 AWS_SES_REGION_ENDPOINT = os.getenv('AWS_SES_REGION_ENDPOINT', 'email.us-west-2.amazonaws.com')
 # Default to dummy email backend. Configure dev/production/local backend
