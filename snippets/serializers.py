@@ -1,5 +1,5 @@
 from .models import Role, Subject, K12Subject, ErrataContent, SubjectCategory, GiveBanner, BlogContentType, \
-    BlogCollection, NoWebinarMessage, WebinarCollection, AmazonBookBlurb
+    BlogCollection, NoWebinarMessage, WebinarCollection, AmazonBookBlurb, ContentWarningMessage
 
 
 from rest_framework import serializers, generics
@@ -39,11 +39,11 @@ class K12SubjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = K12Subject
         fields = ('id',
-                  'name', 
-                  'intro_text', 
-                  'subject_image', 
-                  'subject_category' , 
-                  'subject_color', 
+                  'name',
+                  'intro_text',
+                  'subject_image',
+                  'subject_category' ,
+                  'subject_color',
                   'subject_link'
                   )
         read_only_fields = ('id',
@@ -133,4 +133,8 @@ class AmazonBookBlurbSerializer(serializers.ModelSerializer):
         fields = ('amazon_book_blurb',)
         read_only_fields = ('amazon_book_blurb',)
 
-
+class ContentWarningMessageSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ContentWarningMessage
+        fields = ('content_warning_message',)
+        read_only_fields = ('content_warning_message',)

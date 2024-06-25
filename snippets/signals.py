@@ -2,7 +2,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from global_settings.functions import invalidate_cloudfront_caches
-from snippets.models import Subject, Role, ErrataContent, SubjectCategory, GiveBanner, BlogContentType, BlogCollection, \
+from snippets.models import ContentWarningMessage, Subject, Role, ErrataContent, SubjectCategory, GiveBanner, BlogContentType, BlogCollection, \
     WebinarCollection, AmazonBookBlurb, PromoteSnippet
 
 
@@ -53,3 +53,6 @@ def clear_cloudfront_on_assignable_available_save(sender, **kwargs):
 def clear_cloudfront_on_amazon_book_blurb_save(sender, **kwargs):
     invalidate_cloudfront_caches('snippets/amazonbookblurb')
 
+@receiver(post_save, sender=ContentWarningMessage)
+def clear_cloudfront_on_content_warning_message_save(sender, **kwargs):
+    invalidate_cloudfront_caches('snippets/contentwarningmessage')
