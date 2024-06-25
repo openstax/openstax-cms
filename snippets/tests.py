@@ -6,7 +6,7 @@ from django.test import TestCase, Client
 from django.conf import settings
 from django.urls import reverse
 
-from snippets.models import Subject, ErrataContent, GiveBanner, BlogContentType, NoWebinarMessage, K12Subject, \
+from snippets.models import ContentWarning, Subject, ErrataContent, GiveBanner, BlogContentType, NoWebinarMessage, K12Subject, \
     FacultyResource, StudentResource, Role, SharedContent, NewsSource, SubjectCategory, BlogCollection, \
     AmazonBookBlurb, PromoteSnippet
 
@@ -71,6 +71,11 @@ class SnippetsTestCase(TestCase):
         self.amazon_book_blurb = AmazonBookBlurb(
             amazon_book_blurb="Amazon Book Blurb. Amazon Book Blurb. Amazon Book Blurb.")
         self.amazon_book_blurb.save()
+
+        self.content_warning = ContentWarning(
+            content_warning = "Content Warning"
+        )
+        self.content_warning.save()
 
 
     def test_can_create_subject(self):
@@ -152,3 +157,6 @@ class SnippetsTestCase(TestCase):
 
         self.assertEqual(promote_snippet.name, "Assignable")
 
+    def test_can_fetch_content_warning(self):
+        response = self.client.get('/apps/cms/api/snippets/contentwarning/?format=json')
+        self.assertIn(b"Content Warning", response.content)
