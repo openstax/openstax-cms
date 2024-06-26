@@ -1,5 +1,5 @@
 from .models import Role, Subject, K12Subject, ErrataContent, SubjectCategory, GiveBanner, BlogContentType, \
-    BlogCollection, NoWebinarMessage, WebinarCollection, AmazonBookBlurb, ContentWarning
+    BlogCollection, NoWebinarMessage, WebinarCollection, AmazonBookBlurb
 
 
 from rest_framework import serializers, generics
