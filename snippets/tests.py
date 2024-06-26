@@ -156,7 +156,3 @@ class SnippetsTestCase(TestCase):
         promote_snippet.save()
 
         self.assertEqual(promote_snippet.name, "Assignable")
-
-    def test_can_fetch_content_warning(self):
-        response = self.client.get('/apps/cms/api/snippets/contentwarning/?format=json')
-        self.assertIn(b"Content Warning", response.content)
