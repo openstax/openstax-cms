@@ -496,6 +496,7 @@ class ContentWarning(TranslatableMixin, models.Model):
     ]
 
     def __str__(self):
-        return 'content_warning'
+        return 'Content Warning'
+
 
 register_snippet(ContentWarning)

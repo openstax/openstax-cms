@@ -551,6 +551,14 @@ class Book(Page):
     description = RichTextField(
         blank=True, help_text="Description shown on Book Detail page.")
 
+    content_warning = models.ForeignKey(
+        snippets.ContentWarning,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='content_warnings_content_warning',
+        help_text="Message shown in the content warning modal.")
+
     cover = models.ForeignKey(
         'wagtaildocs.Document',
         null=True, blank=True,
@@ -731,7 +739,7 @@ class Book(Page):
     support_statement = models.TextField(blank=True, null=True,
                                          default="With philanthropic support, this book is used in <span id='adoption_number'></span> classrooms, saving students <span id='savings'></span> dollars this school year. <a href='/impact'>Learn more about our impact</a> and how you can help.",
                                          help_text="Updating this statement updates it for all book pages.")
-    
+
     promote_snippet = StreamField(PromoteSnippetBlock(), null=True, blank=True, use_json_field=True)
 
     videos = StreamField([
@@ -773,6 +781,7 @@ class Book(Page):
         InlinePanel('k12book_subjects', label='K12 Subjects'),
         FieldPanel('is_ap'),
         FieldPanel('description', classname="full"),
+        FieldPanel('content_warning'),
         FieldPanel('cover'),
         FieldPanel('title_image'),
         FieldPanel('cover_color'),
@@ -870,6 +879,7 @@ class Book(Page):
         APIField('k12book_subjects'),
         APIField('is_ap'),
         APIField('description'),
+        APIField('content_warning_text'),
         APIField('cover_url'),
         APIField('title_image_url'),
         APIField('cover_color'),
@@ -977,6 +987,10 @@ class Book(Page):
         if self.locale == 'es':
             return snippets.ErrataContent.objects.filter(locale=self.locale).first().content
         return snippets.ErrataContent.objects.filter(book_state=self.book_state, locale=self.locale).first().content
+
+    @property
+    def content_warning_text(self):
+        return self.content_warning.content_warning if self.content_warning else None
 
     def get_slug(self):
         return 'books/{}'.format(self.slug)

@@ -132,10 +132,3 @@ class AmazonBookBlurbSerializer(serializers.ModelSerializer):
         model = AmazonBookBlurb
         fields = ('amazon_book_blurb',)
         read_only_fields = ('amazon_book_blurb',)
-
-
-class ContentWarningSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ContentWarning
-        fields = ('content_warning',)
-        read_only_fields = ('content_warning',)
