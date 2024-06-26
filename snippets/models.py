@@ -496,7 +496,8 @@ class ContentWarning(TranslatableMixin, models.Model):
     ]
 
     def __str__(self):
-        return 'Content Warning'
+        return (self.content_warning[:100] + '...') if len(self.content_warning) > 100 else self.content_warning
+
 
 
 register_snippet(ContentWarning)
