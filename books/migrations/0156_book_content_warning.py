@@ -3,7 +3,6 @@
 import django.db.models.deletion
 from django.db import migrations, models
 
-
 class Migration(migrations.Migration):
 
     dependencies = [
@@ -16,6 +15,8 @@ class Migration(migrations.Migration):
             model_name="book",
             name="content_warning",
             field=models.ForeignKey(
+                blank=True,
+                help_text="Message shown in the content warning modal.",
                 null=True,
                 on_delete=django.db.models.deletion.SET_NULL,
                 related_name="content_warnings_content_warning",
