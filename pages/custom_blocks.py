@@ -8,6 +8,41 @@ from wagtail.documents.blocks import DocumentChooserBlock
 from api.serializers import ImageSerializer
 from openstax.functions import build_image_url, build_document_url
 
+class HeroBlock(blocks.StructBlock):
+    heading = blocks.CharBlock(required=True)
+    sub_heading = blocks.CharBlock(required=False)
+    description = blocks.RichTextBlock(required=False)
+    image = ImageChooserBlock(required=False)
+    primary_cta_text = blocks.CharBlock(required=False)
+    primary_cta_link = blocks.URLBlock(required=False)
+    secondary_cta_text = blocks.CharBlock(required=False)
+    secondary_cta_link = blocks.URLBlock(required=False)
+
+    class Meta:
+        icon = 'image'
+
+class CardBlock(blocks.StructBlock):
+    STYLE_CHOICES = [
+        ('rounded', 'Rounded'),
+        ('square', 'Square'),
+    ]
+    style = blocks.ChoiceBlock(choices=STYLE_CHOICES, default='rounded')
+    heading = blocks.CharBlock(required=True)
+    description = blocks.RichTextBlock(required=True)
+    link = blocks.URLBlock(required=False)
+    cta = blocks.CharBlock(required=False)
+    image = ImageChooserBlock(required=False)
+
+    class Meta:
+        icon = 'form'
+
+class SectionBlock(blocks.StructBlock):
+    heading = blocks.CharBlock(required=False)
+    html = blocks.RawHTMLBlock(required=False)
+    cards = blocks.ListBlock(CardBlock(required=False))
+
+    class Meta:
+        icon = 'table'
 
 class ImageFormatChoiceBlock(FieldBlock):
     field = forms.ChoiceField(choices=(
