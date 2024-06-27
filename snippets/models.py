@@ -501,3 +501,34 @@ class ContentWarning(TranslatableMixin, models.Model):
 
 
 register_snippet(ContentWarning)
+
+class PageLayout(TranslatableMixin, models.Model):
+    LAYOUT_CHOICES = (
+        ('default', 'Default'),
+        ('splash_image', 'Splash Image'),
+    )
+    layout = models.CharField(max_length=255, choices=LAYOUT_CHOICES, default='default')
+    background_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    @property
+    def background_image_api_response(self):
+        return build_image_url(self.background_image)
+
+    api_fields = ('layout', 'background_image_api_response')
+
+    panels = [
+        FieldPanel('layout'),
+        FieldPanel('background_image')
+    ]
+
+    def __str__(self):
+        return self.layout
+
+
+register_snippet(PageLayout)

@@ -30,11 +30,47 @@ from .custom_blocks import ImageBlock, \
     InfoBoxBlock, \
     TestimonialBlock, \
     AllyLogoBlock, \
-    AssignableBookBlock
+    AssignableBookBlock, \
+    CardBlock, \
+    SectionBlock, \
+    HeroBlock
 
 from .custom_fields import \
     Group
 import snippets.models as snippets
+
+
+class CustomizablePage(Page):
+    page_layout = models.ForeignKey(snippets.PageLayout, on_delete=models.PROTECT)
+    body = StreamField([
+        ('hero', HeroBlock()),
+        ('section', SectionBlock()),
+        ('paragraph', blocks.RichTextBlock()),
+        ('image', APIImageChooserBlock()),
+        ('html', blocks.RawHTMLBlock()),
+        ('paragraph', blocks.RichTextBlock()),
+        ('image', APIImageChooserBlock()),
+    ], use_json_field=True)
+
+    api_fields = [
+        APIField('page_layout'),
+        APIField('body'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+    ]
+
+    content_panels = [
+        TitleFieldPanel('title'),
+        FieldPanel('page_layout'),
+        FieldPanel('body'),
+    ]
+
+    promote_panels = [
+        FieldPanel('slug', widget=SlugInput),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+    ]
 
 
 class AboutUsPage(Page):
@@ -480,6 +516,7 @@ class HomePage(Page):
         'books.BookIndex',
         'news.NewsIndex',
         'news.PressIndex',
+        'pages.CustomizablePage',
     ]
 
     max_count = 1
