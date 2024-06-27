@@ -39,11 +39,11 @@ class K12SubjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = K12Subject
         fields = ('id',
-                  'name', 
-                  'intro_text', 
-                  'subject_image', 
-                  'subject_category' , 
-                  'subject_color', 
+                  'name',
+                  'intro_text',
+                  'subject_image',
+                  'subject_category' ,
+                  'subject_color',
                   'subject_link'
                   )
         read_only_fields = ('id',
@@ -132,5 +132,3 @@ class AmazonBookBlurbSerializer(serializers.ModelSerializer):
         model = AmazonBookBlurb
         fields = ('amazon_book_blurb',)
         read_only_fields = ('amazon_book_blurb',)
-
-
