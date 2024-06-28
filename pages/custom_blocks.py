@@ -8,45 +8,41 @@ from wagtail.documents.blocks import DocumentChooserBlock
 from api.serializers import ImageSerializer
 from openstax.functions import build_image_url, build_document_url
 
-class HeroBlock(blocks.StructBlock):
-    heading = blocks.CharBlock(required=True)
-    sub_heading = blocks.CharBlock(required=False)
-    description = blocks.RichTextBlock(required=False)
+
+class APIRichTextBlock(blocks.RichTextBlock):
+    def get_api_representation(self, value, context=None):
+        return value.source
+
+    class Meta:
+        icon = 'doc-full'
+class ImageFormatChoiceBlock(FieldBlock):
+    field = forms.ChoiceField(required=False, choices=(
+        ('left', 'Wrap left'), ('right', 'Wrap right'), ('mid', 'Mid width'), ('full', 'Full width'),))
+
+# Use this block to return the path in the page API, does not support alt_text and alignment
+class APIImageBlock(StructBlock):
     image = ImageChooserBlock(required=False)
-    primary_cta_text = blocks.CharBlock(required=False)
-    primary_cta_link = blocks.URLBlock(required=False)
-    secondary_cta_text = blocks.CharBlock(required=False)
-    secondary_cta_link = blocks.URLBlock(required=False)
+    alt_text = blocks.CharBlock(required=False)
+    link = blocks.URLBlock(required=False)
+    alignment = ImageFormatChoiceBlock(required=False)
+    identifier = blocks.CharBlock(required=False, help_text="Used by the frontend for Google Analytics.")
+
+    def get_api_representation(self, value, context=None):
+        try:
+            return ImageSerializer(context=context).to_representation(value)
+        except AttributeError:
+            return
 
     class Meta:
         icon = 'image'
 
-class CardBlock(blocks.StructBlock):
-    STYLE_CHOICES = [
-        ('rounded', 'Rounded'),
-        ('square', 'Square'),
-    ]
-    style = blocks.ChoiceBlock(choices=STYLE_CHOICES, default='rounded')
-    heading = blocks.CharBlock(required=True)
-    description = blocks.RichTextBlock(required=True)
-    link = blocks.URLBlock(required=False)
-    cta = blocks.CharBlock(required=False)
-    image = ImageChooserBlock(required=False)
-
-    class Meta:
-        icon = 'form'
-
-class SectionBlock(blocks.StructBlock):
-    heading = blocks.CharBlock(required=False)
-    html = blocks.RawHTMLBlock(required=False)
-    cards = blocks.ListBlock(CardBlock(required=False))
-
-    class Meta:
-        icon = 'table'
-
-class ImageFormatChoiceBlock(FieldBlock):
-    field = forms.ChoiceField(choices=(
-        ('left', 'Wrap left'), ('right', 'Wrap right'), ('mid', 'Mid width'), ('full', 'Full width'),))
+# TODO: deprecate this black and move to the APIImageBlock
+class APIImageChooserBlock(ImageChooserBlock):
+    def get_api_representation(self, value, context=None):
+        try:
+            return ImageSerializer(context=context).to_representation(value)
+        except AttributeError:
+            return None
 
 
 class ImageBlock(StructBlock):
@@ -56,13 +52,6 @@ class ImageBlock(StructBlock):
     alignment = ImageFormatChoiceBlock()
     identifier = blocks.CharBlock(required=False, help_text="Used by the frontend for Google Analytics.")
 
-
-class APIImageChooserBlock(ImageChooserBlock): # Use this block to return the path in the page API, does not support alt_text and alignment
-    def get_api_representation(self, value, context=None):
-        try:
-            return ImageSerializer(context=context).to_representation(value)
-        except AttributeError:
-            return None
 
 class ColumnBlock(blocks.StructBlock):
     heading = blocks.CharBlock(required=False)
@@ -83,7 +72,7 @@ class FAQBlock(blocks.StructBlock):
     document = DocumentChooserBlock(required=False)
 
     class Meta:
-        icon = 'placeholder'
+        icon = 'bars'
 
 
 class BookProviderBlock(blocks.StructBlock):
@@ -199,3 +188,47 @@ class AssignableBookBlock(blocks.StructBlock):
                 'title': value['title'],
             }
 
+class HeroBlock(blocks.StructBlock):
+    heading = blocks.CharBlock(required=True)
+    sub_heading = blocks.CharBlock(required=False)
+    description = APIRichTextBlock(required=False)
+    image = APIImageBlock(required=False)
+    primary_cta_text = blocks.CharBlock(required=False)
+    primary_cta_link = blocks.URLBlock(required=False)
+    secondary_cta_text = blocks.CharBlock(required=False)
+    secondary_cta_link = blocks.URLBlock(required=False)
+
+    class Meta:
+        icon = 'pilcrow'
+
+class CardsBlock(blocks.StructBlock):
+    STYLE_CHOICES = [
+        ('rounded', 'Rounded'),
+        ('square', 'Square'),
+    ]
+    style = blocks.ChoiceBlock(choices=STYLE_CHOICES, default='rounded')
+    heading = blocks.CharBlock(required=True)
+    description = APIRichTextBlock(required=True)
+    link = blocks.URLBlock(required=False)
+    cta = blocks.CharBlock(required=False)
+    image = APIImageBlock(required=False)
+
+    class Meta:
+        icon = 'form'
+
+class SectionContentBlock(blocks.StreamBlock):
+    cards = blocks.ListBlock(CardsBlock(required=False))
+    paragraph = APIRichTextBlock(required=False)
+    html = blocks.RawHTMLBlock(required=False)
+    image = APIImageBlock(required=False)
+    faqs = blocks.ListBlock(FAQBlock(required=False))
+
+    class Meta:
+        icon = 'cogs'
+
+class SectionBlock(blocks.StructBlock):
+    heading = blocks.CharBlock(required=False)
+    content = blocks.ListBlock(SectionContentBlock(required=True))
+
+    class Meta:
+        icon = 'cog'

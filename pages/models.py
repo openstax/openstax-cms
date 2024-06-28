@@ -33,23 +33,25 @@ from .custom_blocks import ImageBlock, \
     AssignableBookBlock, \
     CardBlock, \
     SectionBlock, \
-    HeroBlock
+    HeroBlock, \
+    APIRichTextBlock, \
+    APIImageBlock
 
 from .custom_fields import \
     Group
 import snippets.models as snippets
 
 
-class CustomizablePage(Page):
+# we have one RootPage, which is the parent of all other pages
+# this is the only page that should be created at the top level of the page tree
+class RootPage(Page):
     page_layout = models.ForeignKey(snippets.PageLayout, on_delete=models.PROTECT)
     body = StreamField([
         ('hero', HeroBlock()),
         ('section', SectionBlock()),
-        ('paragraph', blocks.RichTextBlock()),
-        ('image', APIImageChooserBlock()),
+        ('paragraph', APIRichTextBlock()),
+        ('image', APIImageBlock()),
         ('html', blocks.RawHTMLBlock()),
-        ('paragraph', blocks.RichTextBlock()),
-        ('image', APIImageChooserBlock()),
     ], use_json_field=True)
 
     api_fields = [
@@ -61,7 +63,7 @@ class CustomizablePage(Page):
     ]
 
     content_panels = [
-        TitleFieldPanel('title'),
+        TitleFieldPanel('title', help_text="For internal use only. This title will not be displayed on the site."),
         FieldPanel('page_layout'),
         FieldPanel('body'),
     ]
@@ -72,6 +74,49 @@ class CustomizablePage(Page):
         FieldPanel('search_description'),
     ]
 
+    template = 'page.html'
+
+    parent_page_types = ['wagtailcore.Page']
+
+    def __str__(self):
+        return self.path
+
+    def get_url_parts(self, *args, **kwargs):
+        url_parts = super(RootPage, self).get_url_parts(*args, **kwargs)
+
+        if url_parts is None:
+            # in this case, the page doesn't have a well-defined URL in the first place -
+            # for example, it's been created at the top level of the page tree
+            # and hasn't been associated with a site record
+            return None
+
+        site_id, root_url, page_path = url_parts
+
+        # return '/' in place of the real page path for the root page
+        return site_id, root_url, '/'
+
+    def get_sitemap_urls(self, request=None):
+        return [
+            {
+                'location': '{}/'.format(Site.find_for_request(request).root_url),
+                'lastmod': (self.last_published_at or self.latest_revision_created_at),
+            }
+        ]
+
+# change the RootPage to update fields in FlexiblePage
+class FlexiblePage(RootPage):
+    parent_page_types = ['pages.RootPage']
+
+    def get_sitemap_urls(self, request=None):
+        return [
+            {
+                'location': '{}/{}'.format(Site.find_for_request(request).root_url, self.slug),
+                'lastmod': (self.last_published_at or self.latest_revision_created_at),
+            }
+        ]
+
+
+#TODO: start removing these pages as we move to the above structure for all pages.
 
 class AboutUsPage(Page):
     who_heading = models.CharField(max_length=255)
@@ -516,7 +561,6 @@ class HomePage(Page):
         'books.BookIndex',
         'news.NewsIndex',
         'news.PressIndex',
-        'pages.CustomizablePage',
     ]
 
     max_count = 1
