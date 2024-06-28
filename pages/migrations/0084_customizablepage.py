@@ -12,7 +12,6 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("pages", "0083_alter_k12mainpage_testimonials"),
-        ("wagtailcore", "0093_uploadedfile"),
     ]
 
     operations = [

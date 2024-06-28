@@ -9,8 +9,6 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("snippets", "0036_contentwarning"),
-        ("wagtailcore", "0093_uploadedfile"),
-        ("wagtailimages", "0026_delete_uploadedimage"),
     ]
 
     operations = [
