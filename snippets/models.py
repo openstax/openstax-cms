@@ -504,8 +504,7 @@ register_snippet(ContentWarning)
 
 class PageLayout(TranslatableMixin, models.Model):
     LAYOUT_CHOICES = (
-        ('default', 'Default'),
-        ('splash_image', 'Splash Image'),
+        ('Default', 'default'),
     )
     layout = models.CharField(max_length=255, choices=LAYOUT_CHOICES, default='default')
     background_image = models.ForeignKey(

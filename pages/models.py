@@ -53,6 +53,13 @@ class RootPage(Page):
         ('image', APIImageBlock()),
         ('html', blocks.RawHTMLBlock()),
     ], use_json_field=True)
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
 
     api_fields = [
         APIField('page_layout'),
@@ -72,10 +79,11 @@ class RootPage(Page):
         FieldPanel('slug', widget=SlugInput),
         FieldPanel('seo_title'),
         FieldPanel('search_description'),
+        FieldPanel('promote_image')
     ]
 
     template = 'page.html'
-
+    max_count = 1
     parent_page_types = ['wagtailcore.Page']
 
     def __str__(self):
@@ -106,6 +114,16 @@ class RootPage(Page):
 # change the RootPage to update fields in FlexiblePage
 class FlexiblePage(RootPage):
     parent_page_types = ['pages.RootPage']
+
+    def get_url_parts(self, *args, **kwargs):
+        url_parts = super(FlexiblePage, self).get_url_parts(*args, **kwargs)
+
+        if url_parts is None:
+            return None
+
+        site_id, root_url, page_path = url_parts
+
+        return site_id, root_url, page_path
 
     def get_sitemap_urls(self, request=None):
         return [

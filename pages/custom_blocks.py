@@ -23,7 +23,8 @@ class ImageFormatChoiceBlock(FieldBlock):
 class APIImageBlock(StructBlock):
     image = ImageChooserBlock(required=False)
     alt_text = blocks.CharBlock(required=False)
-    link = blocks.URLBlock(required=False)
+    link_url = blocks.URLBlock(required=False)
+    link_aria_label = blocks.CharBlock(required=False)
     alignment = ImageFormatChoiceBlock(required=False)
     identifier = blocks.CharBlock(required=False, help_text="Used by the frontend for Google Analytics.")
 
@@ -36,7 +37,7 @@ class APIImageBlock(StructBlock):
     class Meta:
         icon = 'image'
 
-# TODO: deprecate this black and move to the APIImageBlock
+# TODO: deprecate this block and move to the APIImageBlock
 class APIImageChooserBlock(ImageChooserBlock):
     def get_api_representation(self, value, context=None):
         try:
