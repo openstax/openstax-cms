@@ -46,9 +46,9 @@ class LinkBlock(blocks.StreamBlock):
         max_num = 1
 
 class CTAButtonBlock(blocks.StructBlock):
-    text = blocks.CharBlock(required=True)
-    link = LinkBlock(required=True)
-    link_aria_label = blocks.CharBlock(required=True)
+    text = blocks.CharBlock(required=False)
+    link = LinkBlock(required=False)
+    link_aria_label = blocks.CharBlock(required=False)
 
     class Meta:
         icon = 'placeholder'
@@ -241,7 +241,7 @@ class HeroBlock(blocks.StructBlock):
     sub_heading = blocks.CharBlock(required=False)
     description = APIRichTextBlock(required=False)
     image = blocks.ListBlock(APIImageBlock(required=False), max_num=1)
-    cta = blocks.ListBlock(CTAButtonBlock(required=False), max_num=2)
+    cta = blocks.ListBlock(CTAButtonBlock(required=False), max_num=2, label="CTA")
 
     class Meta:
         icon = 'pilcrow'
@@ -277,7 +277,7 @@ class SectionBlock(blocks.StructBlock):
     class Meta:
         icon = 'cog'
 
-class PageBodyBlock(blocks.StreamBlock):
+class PageContentSectionBlock(blocks.StreamBlock):
     hero = HeroBlock(required=False)
     cards = blocks.ListBlock(CardsBlock(required=False))
     section = SectionBlock(required=False)
@@ -287,8 +287,6 @@ class PageBodyBlock(blocks.StreamBlock):
 
     class Meta:
         icon = 'doc-full'
-        label = 'Page body'
+        label = 'Content Section'
         group = 'Custom blocks'
-        max_num = 1
         required = True
-        help_text = 'This block is required and should be used only once per page.'

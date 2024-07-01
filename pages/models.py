@@ -31,7 +31,7 @@ from .custom_blocks import ImageBlock, \
     TestimonialBlock, \
     AllyLogoBlock, \
     AssignableBookBlock, \
-    PageBodyBlock
+    PageContentSectionBlock
 
 from .custom_fields import \
     Group
@@ -44,7 +44,7 @@ import snippets.models as snippets
 class RootPage(Page):
     layout = models.ForeignKey(snippets.PageLayout, on_delete=models.PROTECT)
     body = StreamField([
-        ('content', PageBodyBlock()),
+        ('content', PageContentSectionBlock()),
     ], use_json_field=True)
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
