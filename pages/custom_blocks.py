@@ -80,6 +80,12 @@ class APIImageBlock(StructBlock):
     alignment = ImageFormatChoiceBlock(required=False)
     cta = CTAButtonBlock(required=False, label="CTA")
 
+    def get_api_representation(self, value, context=None):
+        try:
+            return ImageSerializer(context=context).to_representation(value)
+        except AttributeError:
+            return None
+
     class Meta:
         icon = 'image'
         value_class = ImageStructValue
@@ -240,8 +246,8 @@ class HeroBlock(blocks.StructBlock):
     heading = blocks.CharBlock(required=True)
     sub_heading = blocks.CharBlock(required=False)
     description = APIRichTextBlock(required=False)
-    image = blocks.ListBlock(APIImageBlock(required=False), max_num=1)
-    cta = blocks.ListBlock(CTAButtonBlock(required=False), max_num=2, label="CTA")
+    image = blocks.ListBlock(APIImageBlock(required=False), max_num=1, collapsed=True)
+    cta = blocks.ListBlock(CTAButtonBlock(required=False), max_num=2,  collapsed=True, label="CTA")
 
     class Meta:
         icon = 'pilcrow'
@@ -251,11 +257,11 @@ class CardsBlock(blocks.StructBlock):
         ('rounded', 'Rounded'),
         ('square', 'Square'),
     ]
-    style = blocks.ChoiceBlock(choices=STYLE_CHOICES, default='rounded')
     heading = blocks.CharBlock(required=True)
-    description = APIRichTextBlock(required=True)
+    description = APIRichTextBlock(required=False)
     cta = CTAButtonBlock(required=False)
     image = APIImageBlock(required=False)
+    style = blocks.ChoiceBlock(choices=STYLE_CHOICES, default='rounded')
 
     class Meta:
         icon = 'form'
@@ -279,7 +285,6 @@ class SectionBlock(blocks.StructBlock):
 
 class PageContentSectionBlock(blocks.StreamBlock):
     hero = HeroBlock(required=False)
-    cards = blocks.ListBlock(CardsBlock(required=False))
     section = SectionBlock(required=False)
     paragraph = APIRichTextBlock(required=False)
     html = blocks.RawHTMLBlock(required=False)

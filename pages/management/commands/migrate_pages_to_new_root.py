@@ -4,7 +4,7 @@ from pages.models import HomePage, RootPage
 
 
 class Command(BaseCommand):
-    help="Use this to move the pages the currently exist under the home page to the new root. This keeps the homepage under the new root page."
+    help="Use this to move the pages that currently exist under the home page to the new root. This keeps the homepage under the new root page."
 
     def handle(self, *args, **options):
         try:

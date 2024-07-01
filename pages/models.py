@@ -45,7 +45,7 @@ class RootPage(Page):
     layout = models.ForeignKey(snippets.PageLayout, on_delete=models.PROTECT)
     body = StreamField([
         ('content', PageContentSectionBlock()),
-    ], use_json_field=True)
+    ], use_json_field=True, max_num=1)
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
