@@ -1,7 +1,7 @@
 from django import forms
 
 from wagtail import blocks
-from wagtail.blocks import FieldBlock, StructBlock
+from wagtail.blocks import FieldBlock, StructBlock, StructValue
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.documents.blocks import DocumentChooserBlock
 
@@ -15,27 +15,74 @@ class APIRichTextBlock(blocks.RichTextBlock):
 
     class Meta:
         icon = 'doc-full'
+
+class LinkStructValue(StructValue):
+    def url(self):
+        if self['external']:
+            return self['external']
+        elif self['internal']:
+            return self['internal']
+        elif self['document']:
+            return build_document_url(self['document'].url)
+        else:
+            return None
+
+    def text(self):
+        return self['text']
+
+    def link_aria_label(self):
+        return self['link_aria_label']
+
+    def __bool__(self):
+        return bool(self.url())
+
+class LinkBlock(blocks.StreamBlock):
+    external = blocks.URLBlock(required=False)
+    internal = blocks.PageChooserBlock(required=False)
+    document = DocumentChooserBlock(required=False)
+
+    class Meta:
+        icon = 'link'
+        max_num = 1
+
+class CTAButtonBlock(blocks.StructBlock):
+    text = blocks.CharBlock(required=True)
+    link = LinkBlock(required=True)
+    link_aria_label = blocks.CharBlock(required=True)
+
+    class Meta:
+        icon = 'placeholder'
+        label = "CTA Button"
+        value_class = LinkStructValue
+
 class ImageFormatChoiceBlock(FieldBlock):
     field = forms.ChoiceField(required=False, choices=(
         ('left', 'Wrap left'), ('right', 'Wrap right'), ('mid', 'Mid width'), ('full', 'Full width'),))
+
+
+class ImageStructValue(StructValue):
+    def image(self):
+        return build_image_url(self['image'])
+
+    def alt_text(self):
+        return self['alt_text']
+
+    def alignment(self):
+        return self['alignment']
+
+    def cta(self):
+        return self['cta']
 
 # Use this block to return the path in the page API, does not support alt_text and alignment
 class APIImageBlock(StructBlock):
     image = ImageChooserBlock(required=False)
     alt_text = blocks.CharBlock(required=False)
-    link_url = blocks.URLBlock(required=False)
-    link_aria_label = blocks.CharBlock(required=False)
     alignment = ImageFormatChoiceBlock(required=False)
-    identifier = blocks.CharBlock(required=False, help_text="Used by the frontend for Google Analytics.")
-
-    def get_api_representation(self, value, context=None):
-        try:
-            return ImageSerializer(context=context).to_representation(value)
-        except AttributeError:
-            return
+    cta = CTAButtonBlock(required=False, label="CTA")
 
     class Meta:
         icon = 'image'
+        value_class = ImageStructValue
 
 # TODO: deprecate this block and move to the APIImageBlock
 class APIImageChooserBlock(ImageChooserBlock):
@@ -193,11 +240,8 @@ class HeroBlock(blocks.StructBlock):
     heading = blocks.CharBlock(required=True)
     sub_heading = blocks.CharBlock(required=False)
     description = APIRichTextBlock(required=False)
-    image = APIImageBlock(required=False)
-    primary_cta_text = blocks.CharBlock(required=False)
-    primary_cta_link = blocks.URLBlock(required=False)
-    secondary_cta_text = blocks.CharBlock(required=False)
-    secondary_cta_link = blocks.URLBlock(required=False)
+    image = blocks.ListBlock(APIImageBlock(required=False), max_num=1)
+    cta = blocks.ListBlock(CTAButtonBlock(required=False), max_num=2)
 
     class Meta:
         icon = 'pilcrow'
@@ -210,8 +254,7 @@ class CardsBlock(blocks.StructBlock):
     style = blocks.ChoiceBlock(choices=STYLE_CHOICES, default='rounded')
     heading = blocks.CharBlock(required=True)
     description = APIRichTextBlock(required=True)
-    link = blocks.URLBlock(required=False)
-    cta = blocks.CharBlock(required=False)
+    cta = CTAButtonBlock(required=False)
     image = APIImageBlock(required=False)
 
     class Meta:
@@ -233,3 +276,19 @@ class SectionBlock(blocks.StructBlock):
 
     class Meta:
         icon = 'cog'
+
+class PageBodyBlock(blocks.StreamBlock):
+    hero = HeroBlock(required=False)
+    cards = blocks.ListBlock(CardsBlock(required=False))
+    section = SectionBlock(required=False)
+    paragraph = APIRichTextBlock(required=False)
+    html = blocks.RawHTMLBlock(required=False)
+    image = APIImageBlock(required=False)
+
+    class Meta:
+        icon = 'doc-full'
+        label = 'Page body'
+        group = 'Custom blocks'
+        max_num = 1
+        required = True
+        help_text = 'This block is required and should be used only once per page.'

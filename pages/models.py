@@ -31,11 +31,7 @@ from .custom_blocks import ImageBlock, \
     TestimonialBlock, \
     AllyLogoBlock, \
     AssignableBookBlock, \
-    CardBlock, \
-    SectionBlock, \
-    HeroBlock, \
-    APIRichTextBlock, \
-    APIImageBlock
+    PageBodyBlock
 
 from .custom_fields import \
     Group
@@ -44,25 +40,22 @@ import snippets.models as snippets
 
 # we have one RootPage, which is the parent of all other pages
 # this is the only page that should be created at the top level of the page tree
+# this should be the homepage
 class RootPage(Page):
-    page_layout = models.ForeignKey(snippets.PageLayout, on_delete=models.PROTECT)
+    layout = models.ForeignKey(snippets.PageLayout, on_delete=models.PROTECT)
     body = StreamField([
-        ('hero', HeroBlock()),
-        ('section', SectionBlock()),
-        ('paragraph', APIRichTextBlock()),
-        ('image', APIImageBlock()),
-        ('html', blocks.RawHTMLBlock()),
+        ('content', PageBodyBlock()),
     ], use_json_field=True)
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
-        blank=True,
+        blank=False,
         on_delete=models.SET_NULL,
         related_name='+'
     )
 
     api_fields = [
-        APIField('page_layout'),
+        APIField('layout'),
         APIField('body'),
         APIField('slug'),
         APIField('seo_title'),
@@ -70,8 +63,8 @@ class RootPage(Page):
     ]
 
     content_panels = [
-        TitleFieldPanel('title', help_text="For internal use only. This title will not be displayed on the site."),
-        FieldPanel('page_layout'),
+        TitleFieldPanel('title', help_text="For CMS use only. This title will not be displayed on the site."),
+        FieldPanel('layout'),
         FieldPanel('body'),
     ]
 
@@ -85,6 +78,7 @@ class RootPage(Page):
     template = 'page.html'
     max_count = 1
     parent_page_types = ['wagtailcore.Page']
+    subpage_types = ['pages.FlexPage']
 
     def __str__(self):
         return self.path
@@ -111,12 +105,12 @@ class RootPage(Page):
             }
         ]
 
-# change the RootPage to update fields in FlexiblePage
-class FlexiblePage(RootPage):
+# subclass of RootPage with a few overrides for
+class FlexPage(RootPage):
     parent_page_types = ['pages.RootPage']
 
     def get_url_parts(self, *args, **kwargs):
-        url_parts = super(FlexiblePage, self).get_url_parts(*args, **kwargs)
+        url_parts = super(FlexPage, self).get_url_parts(*args, **kwargs)
 
         if url_parts is None:
             return None
