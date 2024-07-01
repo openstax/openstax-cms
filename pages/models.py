@@ -77,8 +77,10 @@ class RootPage(Page):
 
     template = 'page.html'
     max_count = 1
-    parent_page_types = ['wagtailcore.Page']
-    subpage_types = ['pages.FlexPage']
+    # TODO: we are allowing this to be built as a child of the homepage. Not ideal.
+    # Once the home page is released, use something to migrate homepage children to root page and remove this parent type.
+    parent_page_types = ['wagtailcore.Page', 'pages.HomePage']
+    subpage_types = ['pages.FlexPage']  # which might also require allowing all pages to be children.
 
     def __str__(self):
         return self.path
@@ -573,9 +575,8 @@ class HomePage(Page):
         'books.BookIndex',
         'news.NewsIndex',
         'news.PressIndex',
+        'pages.RootPage',
     ]
-
-    max_count = 1
 
     def __str__(self):
         return self.path
