@@ -30,12 +30,107 @@ from .custom_blocks import ImageBlock, \
     InfoBoxBlock, \
     TestimonialBlock, \
     AllyLogoBlock, \
-    AssignableBookBlock
+    AssignableBookBlock, \
+    PageContentSectionBlock
 
 from .custom_fields import \
     Group
 import snippets.models as snippets
 
+
+# we have one RootPage, which is the parent of all other pages
+# this is the only page that should be created at the top level of the page tree
+# this should be the homepage
+class RootPage(Page):
+    layout = models.ForeignKey(snippets.PageLayout, on_delete=models.PROTECT)
+    body = StreamField([
+        ('content', PageContentSectionBlock()),
+    ], use_json_field=True, max_num=1)
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=False,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    api_fields = [
+        APIField('layout'),
+        APIField('body'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+    ]
+
+    content_panels = [
+        TitleFieldPanel('title', help_text="For CMS use only. This title will not be displayed on the site."),
+        FieldPanel('layout'),
+        FieldPanel('body'),
+    ]
+
+    promote_panels = [
+        FieldPanel('slug', widget=SlugInput),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        FieldPanel('promote_image')
+    ]
+
+    template = 'page.html'
+    max_count = 1
+    # TODO: we are allowing this to be built as a child of the homepage. Not ideal.
+    # Once the home page is released, use something to migrate homepage children to root page and remove this parent type.
+    parent_page_types = ['wagtailcore.Page', 'pages.HomePage']
+    subpage_types = ['pages.FlexPage']  # which might also require allowing all pages to be children.
+
+    def __str__(self):
+        return self.path
+
+    def get_url_parts(self, *args, **kwargs):
+        url_parts = super(RootPage, self).get_url_parts(*args, **kwargs)
+
+        if url_parts is None:
+            # in this case, the page doesn't have a well-defined URL in the first place -
+            # for example, it's been created at the top level of the page tree
+            # and hasn't been associated with a site record
+            return None
+
+        site_id, root_url, page_path = url_parts
+
+        # return '/' in place of the real page path for the root page
+        return site_id, root_url, '/'
+
+    def get_sitemap_urls(self, request=None):
+        return [
+            {
+                'location': '{}/'.format(Site.find_for_request(request).root_url),
+                'lastmod': (self.last_published_at or self.latest_revision_created_at),
+            }
+        ]
+
+# subclass of RootPage with a few overrides for
+class FlexPage(RootPage):
+    parent_page_types = ['pages.RootPage']
+
+    def get_url_parts(self, *args, **kwargs):
+        url_parts = super(FlexPage, self).get_url_parts(*args, **kwargs)
+
+        if url_parts is None:
+            return None
+
+        site_id, root_url, page_path = url_parts
+
+        return site_id, root_url, page_path
+
+    def get_sitemap_urls(self, request=None):
+        return [
+            {
+                'location': '{}/{}'.format(Site.find_for_request(request).root_url, self.slug),
+                'lastmod': (self.last_published_at or self.latest_revision_created_at),
+            }
+        ]
+
+
+#TODO: start removing these pages as we move to the above structure for all pages.
 
 class AboutUsPage(Page):
     who_heading = models.CharField(max_length=255)
@@ -480,9 +575,8 @@ class HomePage(Page):
         'books.BookIndex',
         'news.NewsIndex',
         'news.PressIndex',
+        'pages.RootPage',
     ]
-
-    max_count = 1
 
     def __str__(self):
         return self.path

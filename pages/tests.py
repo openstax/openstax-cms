@@ -38,7 +38,7 @@ from pages.models import (HomePage,
                           FormHeadings,
                           AllyLogos,
                           K12MainPage,
-                          Assignable, ImpactStory)
+                          Assignable, ImpactStory, CustomizablePage)
 
 from news.models import NewsIndex, PressIndex
 from books.models import BookIndex
@@ -104,6 +104,7 @@ class HomePageTests(WagtailPageTestCase):
             AllyLogos,
             K12MainPage,
             Assignable,
+            CustomizablePage
         })
 
 class PageTests(WagtailPageTestCase):
