@@ -7,11 +7,11 @@ from wagtail.documents.blocks import DocumentChooserBlock
 
 from api.serializers import ImageSerializer
 from openstax.functions import build_image_url, build_document_url
-
+from wagtail.templatetags import wagtailcore_tags
 
 class APIRichTextBlock(blocks.RichTextBlock):
     def get_api_representation(self, value, context=None):
-        return value.source
+        return wagtailcore_tags.richtext(value.source)
 
     class Meta:
         icon = 'doc-full'
@@ -57,7 +57,6 @@ class CTAButtonBlock(blocks.StructBlock):
         icon = 'placeholder'
         label = "Button"
         value_class = LinkStructValue
-
 
 class ImageFormatChoiceBlock(FieldBlock):
     field = forms.ChoiceField(required=False, choices=(
