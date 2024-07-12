@@ -88,7 +88,8 @@ class APIImageBlock(StructBlock):
 
     class Meta:
         icon = 'image'
-        value_class = ImageStructValue
+        # value_class = ImageStructValue
+
 
 # TODO: deprecate this block and move to the APIImageBlock
 class APIImageChooserBlock(ImageChooserBlock):
@@ -242,56 +243,16 @@ class AssignableBookBlock(blocks.StructBlock):
                 'title': value['title'],
             }
 
-class HeroBlock(blocks.StructBlock):
-    heading = blocks.CharBlock(required=True)
-    sub_heading = blocks.CharBlock(required=False)
-    description = APIRichTextBlock(required=False)
-    image = blocks.ListBlock(APIImageBlock(required=False), max_num=1, collapsed=True)
-    cta = blocks.ListBlock(CTAButtonBlock(required=False), max_num=2,  collapsed=True, label="CTA")
-
-    class Meta:
-        icon = 'pilcrow'
 
 class CardsBlock(blocks.StructBlock):
     STYLE_CHOICES = [
         ('rounded', 'Rounded'),
         ('square', 'Square'),
     ]
-    heading = blocks.CharBlock(required=True)
-    description = APIRichTextBlock(required=False)
+    text = APIRichTextBlock(required=False)
     cta = CTAButtonBlock(required=False)
     image = APIImageBlock(required=False)
     style = blocks.ChoiceBlock(choices=STYLE_CHOICES, default='rounded')
 
     class Meta:
         icon = 'form'
-
-class SectionContentBlock(blocks.StreamBlock):
-    cards = blocks.ListBlock(CardsBlock(required=False))
-    paragraph = APIRichTextBlock(required=False)
-    html = blocks.RawHTMLBlock(required=False)
-    image = APIImageBlock(required=False)
-    faqs = blocks.ListBlock(FAQBlock(required=False))
-
-    class Meta:
-        icon = 'cogs'
-
-class SectionBlock(blocks.StructBlock):
-    heading = blocks.CharBlock(required=False)
-    content = blocks.ListBlock(SectionContentBlock(required=True))
-
-    class Meta:
-        icon = 'cog'
-
-class PageContentSectionBlock(blocks.StreamBlock):
-    hero = HeroBlock(required=False)
-    section = SectionBlock(required=False)
-    paragraph = APIRichTextBlock(required=False)
-    html = blocks.RawHTMLBlock(required=False)
-    image = APIImageBlock(required=False)
-
-    class Meta:
-        icon = 'doc-full'
-        label = 'Content Section'
-        group = 'Custom blocks'
-        required = True

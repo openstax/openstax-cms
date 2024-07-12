@@ -31,7 +31,7 @@ from .custom_blocks import ImageBlock, \
     TestimonialBlock, \
     AllyLogoBlock, \
     AssignableBookBlock, \
-    PageContentSectionBlock
+    APIRichTextBlock, APIImageBlock, CTAButtonBlock, CardsBlock, FAQBlock
 
 from .custom_fields import \
     Group
@@ -43,9 +43,25 @@ import snippets.models as snippets
 # this should be the homepage
 class RootPage(Page):
     layout = models.ForeignKey(snippets.PageLayout, on_delete=models.PROTECT)
+
     body = StreamField([
-        ('content', PageContentSectionBlock()),
-    ], use_json_field=True, max_num=1)
+        ('hero', blocks.StructBlock([
+            ('text', APIRichTextBlock()),
+            ('image', blocks.ListBlock(APIImageBlock(required=False), max_num=1, collapsed=True)),
+            ('cta', blocks.ListBlock(CTAButtonBlock(required=False), max_num=2, collapsed=True))
+        ])),
+        ('section', blocks.StreamBlock([
+            ('cards', blocks.ListBlock(CardsBlock())),
+            ('text', APIRichTextBlock()),
+            ('html', blocks.RawHTMLBlock()),
+            ('image', APIImageBlock()),
+            ('faq', blocks.ListBlock(FAQBlock()))
+        ], icon='form')),
+        ('text', APIRichTextBlock()),
+        ('html', blocks.RawHTMLBlock()),
+        ('image', APIImageBlock())
+    ], use_json_field=True)
+
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -63,7 +79,7 @@ class RootPage(Page):
     ]
 
     content_panels = [
-        TitleFieldPanel('title', help_text="For CMS use only. This title will not be displayed on the site."),
+        TitleFieldPanel('title', help_text="For CMS use only. Use 'Promote' tab above to edit SEO information."),
         FieldPanel('layout'),
         FieldPanel('body'),
     ]
