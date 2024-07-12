@@ -73,7 +73,8 @@ class ImageStructValue(StructValue):
     def cta(self):
         return self['cta']
 
-# Use this block to return the path in the page API, does not support alt_text and alignment
+
+# Use this block to return the path in the v2/pages API
 class APIImageBlock(StructBlock):
     image = ImageChooserBlock(required=False)
     alt_text = blocks.CharBlock(required=False)
@@ -242,17 +243,3 @@ class AssignableBookBlock(blocks.StructBlock):
                 'cover': build_document_url(value['cover'].url),
                 'title': value['title'],
             }
-
-
-class CardsBlock(blocks.StructBlock):
-    STYLE_CHOICES = [
-        ('rounded', 'Rounded'),
-        ('square', 'Square'),
-    ]
-    text = APIRichTextBlock(required=False)
-    cta = CTAButtonBlock(required=False)
-    image = APIImageBlock(required=False)
-    style = blocks.ChoiceBlock(choices=STYLE_CHOICES, default='rounded')
-
-    class Meta:
-        icon = 'form'

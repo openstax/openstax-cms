@@ -31,12 +31,16 @@ from .custom_blocks import ImageBlock, \
     TestimonialBlock, \
     AllyLogoBlock, \
     AssignableBookBlock, \
-    APIRichTextBlock, APIImageBlock, CTAButtonBlock, CardsBlock, FAQBlock
+    APIRichTextBlock, APIImageBlock, CTAButtonBlock, FAQBlock
 
 from .custom_fields import \
     Group
 import snippets.models as snippets
 
+CARD_STYLE_CHOICES = [
+    ('rounded', 'Rounded'),
+    ('square', 'Square'),
+]
 
 # we have one RootPage, which is the parent of all other pages
 # this is the only page that should be created at the top level of the page tree
@@ -51,7 +55,14 @@ class RootPage(Page):
             ('cta', blocks.ListBlock(CTAButtonBlock(required=False), max_num=2, collapsed=True))
         ])),
         ('section', blocks.StreamBlock([
-            ('cards', blocks.ListBlock(CardsBlock())),
+            ('cards', blocks.StructBlock([
+                ('text', APIRichTextBlock()),
+                ('image', APIImageChooserBlock()),
+                ('cta', CTAButtonBlock()),
+                ('config', blocks.StreamBlock([
+                    ('corner_style', blocks.ChoiceBlock(choices=CARD_STYLE_CHOICES))
+                ]))
+            ])),
             ('text', APIRichTextBlock()),
             ('html', blocks.RawHTMLBlock()),
             ('image', APIImageBlock()),
