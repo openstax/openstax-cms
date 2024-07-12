@@ -41,7 +41,19 @@ CARD_STYLE_CHOICES = [
     ('rounded', 'Rounded'),
     ('square', 'Square'),
 ]
-
+HERO_ALIGNMENT_CHOICES = [
+    ('left', 'Left'),
+    ('right', 'Right'),
+    ('topLeft', 'Top Left'),
+    ('topRight', 'Top Right'),
+    ('bottomLeft', 'Bottom Left'),
+    ('bottomRight', 'Bottom Right'),
+]
+HERO_SIZE_CHOICES = [
+    ('auto', 'Auto'),
+    ('curtain', 'Curtain'),
+    ('cover', 'Cover'),
+]
 # we have one RootPage, which is the parent of all other pages
 # this is the only page that should be created at the top level of the page tree
 # this should be the homepage
@@ -51,26 +63,26 @@ class RootPage(Page):
     body = StreamField([
         ('hero', blocks.StructBlock([
             ('text', APIRichTextBlock()),
-            ('image', blocks.ListBlock(APIImageBlock(required=False), max_num=1, collapsed=True)),
-            ('cta', blocks.ListBlock(CTAButtonBlock(required=False), max_num=2, collapsed=True))
+            ('image', APIImageChooserBlock(required=False)),
+            ('cta', blocks.ListBlock(CTAButtonBlock(required=False), max_num=2, label='Calls to Action')),
+            ('config', blocks.StreamBlock([
+                ('alignment', blocks.ChoiceBlock(choices=HERO_ALIGNMENT_CHOICES)),
+                ('size', blocks.ChoiceBlock(choices=HERO_SIZE_CHOICES)),
+            ], max_num=2))  # set this to the number of config options to somewhat prevent duplicates
         ])),
         ('section', blocks.StreamBlock([
             ('cards', blocks.StructBlock([
                 ('text', APIRichTextBlock()),
-                ('image', APIImageChooserBlock()),
-                ('cta', CTAButtonBlock()),
+                ('cta', CTAButtonBlock(label="CTA")),
                 ('config', blocks.StreamBlock([
                     ('corner_style', blocks.ChoiceBlock(choices=CARD_STYLE_CHOICES))
-                ]))
+                ], max_num=1))
             ])),
             ('text', APIRichTextBlock()),
             ('html', blocks.RawHTMLBlock()),
-            ('image', APIImageBlock()),
-            ('faq', blocks.ListBlock(FAQBlock()))
         ], icon='form')),
         ('text', APIRichTextBlock()),
         ('html', blocks.RawHTMLBlock()),
-        ('image', APIImageBlock())
     ], use_json_field=True)
 
     promote_image = models.ForeignKey(

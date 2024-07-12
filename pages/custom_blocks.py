@@ -16,6 +16,7 @@ class APIRichTextBlock(blocks.RichTextBlock):
     class Meta:
         icon = 'doc-full'
 
+
 class LinkStructValue(StructValue):
     def url(self):
         if self['external']:
@@ -25,7 +26,7 @@ class LinkStructValue(StructValue):
         elif self['document']:
             return build_document_url(self['document'].url)
         else:
-            return None
+            return 'link issue'
 
     def text(self):
         return self['text']
@@ -36,6 +37,7 @@ class LinkStructValue(StructValue):
     def __bool__(self):
         return bool(self.url())
 
+
 class LinkBlock(blocks.StreamBlock):
     external = blocks.URLBlock(required=False)
     internal = blocks.PageChooserBlock(required=False)
@@ -45,15 +47,17 @@ class LinkBlock(blocks.StreamBlock):
         icon = 'link'
         max_num = 1
 
+
 class CTAButtonBlock(blocks.StructBlock):
     text = blocks.CharBlock(required=False)
-    link = LinkBlock(required=False)
-    link_aria_label = blocks.CharBlock(required=False)
+    aria_label = blocks.CharBlock(required=False)
+    target = LinkBlock(required=False)
 
     class Meta:
         icon = 'placeholder'
-        label = "CTA Button"
+        label = "Button"
         value_class = LinkStructValue
+
 
 class ImageFormatChoiceBlock(FieldBlock):
     field = forms.ChoiceField(required=False, choices=(
@@ -92,7 +96,6 @@ class APIImageBlock(StructBlock):
         # value_class = ImageStructValue
 
 
-# TODO: deprecate this block and move to the APIImageBlock
 class APIImageChooserBlock(ImageChooserBlock):
     def get_api_representation(self, value, context=None):
         try:
