@@ -37,11 +37,13 @@ from .custom_fields import \
     Group
 import snippets.models as snippets
 
-CARD_STYLE_CHOICES = [
+# Constants for styling options on Root/Flex pages
+# consider moving to a constants.py file
+CARDS_STYLE_CHOICES = [
     ('rounded', 'Rounded'),
     ('square', 'Square'),
 ]
-HERO_ALIGNMENT_CHOICES = [
+HERO_IMAGE_ALIGNMENT_CHOICES = [
     ('left', 'Left'),
     ('right', 'Right'),
     ('topLeft', 'Top Left'),
@@ -49,11 +51,13 @@ HERO_ALIGNMENT_CHOICES = [
     ('bottomLeft', 'Bottom Left'),
     ('bottomRight', 'Bottom Right'),
 ]
-HERO_SIZE_CHOICES = [
+HERO_IMAGE_SIZE_CHOICES = [
     ('auto', 'Auto'),
-    ('curtain', 'Curtain'),
+    ('contain', 'Contain'),
     ('cover', 'Cover'),
 ]
+
+
 # we have one RootPage, which is the parent of all other pages
 # this is the only page that should be created at the top level of the page tree
 # this should be the homepage
@@ -66,22 +70,23 @@ class RootPage(Page):
             ('image', APIImageChooserBlock(required=False)),
             ('cta', blocks.ListBlock(CTAButtonBlock(required=False), max_num=2, label='Calls to Action')),
             ('config', blocks.StreamBlock([
-                ('alignment', blocks.ChoiceBlock(choices=HERO_ALIGNMENT_CHOICES)),
-                ('size', blocks.ChoiceBlock(choices=HERO_SIZE_CHOICES)),
-            ], max_num=2))  # set this to the number of config options to somewhat prevent duplicates
+                ('image_alignment', blocks.ChoiceBlock(choices=HERO_IMAGE_ALIGNMENT_CHOICES)),
+                ('image_size', blocks.ChoiceBlock(choices=HERO_IMAGE_SIZE_CHOICES)),
+            ], required=False, max_num=2))  # set this to the number of config options to somewhat prevent duplicates
         ])),
         ('section', blocks.StreamBlock([
-            ('cards', blocks.StructBlock([
-                ('text', APIRichTextBlock()),
-                ('cta', CTAButtonBlock(label="CTA")),
+            ('cards', blocks.StreamBlock([
+                ('card', blocks.StructBlock([
+                    ('text', APIRichTextBlock()),
+                    ('cta', CTAButtonBlock(required=False, label="Calls to Action")),
+                ])),
                 ('config', blocks.StreamBlock([
-                    ('corner_style', blocks.ChoiceBlock(choices=CARD_STYLE_CHOICES))
-                ], max_num=1))
+                    ('corner_style', blocks.ChoiceBlock(choices=CARDS_STYLE_CHOICES))
+                ], required=False, max_num=1))
             ])),
             ('text', APIRichTextBlock()),
             ('html', blocks.RawHTMLBlock()),
         ], icon='form')),
-        ('text', APIRichTextBlock()),
         ('html', blocks.RawHTMLBlock()),
     ], use_json_field=True)
 
@@ -146,9 +151,10 @@ class RootPage(Page):
             }
         ]
 
-# subclass of RootPage with a few overrides for
+# subclass of RootPage with a few overrides for subpages
 class FlexPage(RootPage):
     parent_page_types = ['pages.RootPage']
+    template = 'page.html'
 
     def get_url_parts(self, *args, **kwargs):
         url_parts = super(FlexPage, self).get_url_parts(*args, **kwargs)
