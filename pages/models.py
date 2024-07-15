@@ -9,6 +9,7 @@ from wagtail.fields import RichTextField, StreamField
 from wagtail.models import Orderable, Page
 from wagtail.api import APIField
 from wagtail.models import Site
+from rest_framework.fields import Field
 
 from api.models import FeatureFlag
 from openstax.functions import build_image_url, build_document_url
@@ -57,6 +58,13 @@ HERO_IMAGE_SIZE_CHOICES = [
     ('cover', 'Cover'),
 ]
 
+class LayoutSnippetSerializer(Field):
+    def to_representation(self, page):
+        return {
+            'layout': page.layout,
+            'background_image': page.background_image_api_response,
+        }
+
 
 # we have one RootPage, which is the parent of all other pages
 # this is the only page that should be created at the top level of the page tree
@@ -75,18 +83,18 @@ class RootPage(Page):
             ], required=False, max_num=2))  # set this to the number of config options to somewhat prevent duplicates
         ])),
         ('section', blocks.StreamBlock([
-            ('cards', blocks.StreamBlock([
-                ('card', blocks.StructBlock([
+            ('cards', blocks.ListBlock(
+                blocks.StructBlock([
                     ('text', APIRichTextBlock()),
-                    ('cta', CTAButtonBlock(required=False, label="Calls to Action")),
+                    ('cta', CTAButtonBlock(required=False)),
                 ])),
-                ('config', blocks.StreamBlock([
-                    ('corner_style', blocks.ChoiceBlock(choices=CARDS_STYLE_CHOICES))
-                ], required=False, max_num=1))
-            ])),
+             ),
+            ('config', blocks.StreamBlock([
+                ('corner_style', blocks.ChoiceBlock(choices=CARDS_STYLE_CHOICES))
+            ], max_num=1)),
             ('text', APIRichTextBlock()),
             ('html', blocks.RawHTMLBlock()),
-        ], icon='form')),
+        ])),
         ('html', blocks.RawHTMLBlock()),
     ], use_json_field=True)
 
@@ -99,7 +107,7 @@ class RootPage(Page):
     )
 
     api_fields = [
-        APIField('layout'),
+        APIField('layout', serializer=LayoutSnippetSerializer()),
         APIField('body'),
         APIField('slug'),
         APIField('seo_title'),
@@ -120,6 +128,7 @@ class RootPage(Page):
     ]
 
     template = 'page.html'
+    preview_modes = []
     max_count = 1
     # TODO: we are allowing this to be built as a child of the homepage. Not ideal.
     # Once the home page is released, use something to migrate homepage children to root page and remove this parent type.
