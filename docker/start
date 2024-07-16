@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 
+set -o errexit
+set -o pipefail
+set -o nounset
+
 cd /code/ || (echo "application code must be mounted at /code/"; exit 1);
 
 DJANGO_SETTINGS_MODULE=openstax.settings.docker python3 manage.py migrate
-DJANGO_SETTINGS_MODULE=openstax.settings.docker python3 manage.py createsuperuser
 DJANGO_SETTINGS_MODULE=openstax.settings.docker python3 manage.py runserver 0.0.0.0:8000

@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
-set -e
+
+set -o errexit
+set -o pipefail
+set -o nounset
 
 # uncomment this to load docker secrets into environment variables
 # export $(egrep  -v '^#'  /run/secrets/* | xargs)
