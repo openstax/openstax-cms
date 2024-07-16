@@ -2,6 +2,7 @@ from django import forms
 from django.db import models
 
 from modelcluster.fields import ParentalKey
+from wagtail import hooks
 from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel, TitleFieldPanel
 from wagtail.admin.widgets.slug import SlugInput
 from wagtail import blocks
@@ -9,7 +10,11 @@ from wagtail.fields import RichTextField, StreamField
 from wagtail.models import Orderable, Page
 from wagtail.api import APIField
 from wagtail.models import Site
+from wagtail.rich_text import LinkHandler
+from wagtail.images.models import Image
+import rest_framework.fields as fields
 from rest_framework.fields import Field
+from rest_framework import serializers
 
 from api.models import FeatureFlag
 from openstax.functions import build_image_url, build_document_url
@@ -33,7 +38,7 @@ from .custom_blocks import ImageBlock, \
     AllyLogoBlock, \
     AssignableBookBlock, \
     DividerBlock, \
-    APIRichTextBlock, APIImageBlock, CTALinkBlock, FAQBlock
+    APIRichTextBlock, CTALinkBlock, FAQBlock
 
 from .custom_fields import \
     Group

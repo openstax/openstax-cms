@@ -1,17 +1,21 @@
 from django import forms
+from filetype.types import document
 
 from wagtail import blocks
 from wagtail.blocks import FieldBlock, StructBlock, StructValue
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.documents.blocks import DocumentChooserBlock
+from wagtail.models import Page
 
 from api.serializers import ImageSerializer
 from openstax.functions import build_image_url, build_document_url
-from wagtail.templatetags import wagtailcore_tags
+from wagtail.rich_text import expand_db_html
+
 
 class APIRichTextBlock(blocks.RichTextBlock):
     def get_api_representation(self, value, context=None):
-        return wagtailcore_tags.richtext(value.source)
+        representation = super().get_api_representation(value, context)
+        return expand_db_html(representation)
 
     class Meta:
         icon = 'doc-full'
@@ -47,6 +51,8 @@ class LinkBlock(blocks.StreamBlock):
         icon = 'link'
         max_num = 1
 
+    def get_api_representation(self, value, context=None):
+        return self.render_basic(value)
 
 class CTALinkBlock(blocks.StructBlock):
     text = blocks.CharBlock(required=True)
@@ -63,43 +69,13 @@ class ImageFormatChoiceBlock(FieldBlock):
         ('left', 'Wrap left'), ('right', 'Wrap right'), ('mid', 'Mid width'), ('full', 'Full width'),))
 
 
-class ImageStructValue(StructValue):
-    def image(self):
-        return build_image_url(self['image'])
-
-    def alt_text(self):
-        return self['alt_text']
-
-    def alignment(self):
-        return self['alignment']
-
-    def cta(self):
-        return self['cta']
-
-
-# Use this block to return the path in the v2/pages API
-class APIImageBlock(StructBlock):
-    image = ImageChooserBlock(required=False)
-    alt_text = blocks.CharBlock(required=False)
-    alignment = ImageFormatChoiceBlock(required=False)
-    cta = CTALinkBlock(required=False, label="CTA")
-
-    def get_api_representation(self, value, context=None):
-        try:
-            return ImageSerializer(context=context).to_representation(value)
-        except AttributeError:
-            return None
-
-    class Meta:
-        icon = 'image'
-        # value_class = ImageStructValue
-
 class APIImageChooserBlock(ImageChooserBlock):
     def get_api_representation(self, value, context=None):
         try:
             return ImageSerializer(context=context).to_representation(value)
         except AttributeError:
             return None
+
 
 class DividerBlock(StructBlock):
     image = APIImageChooserBlock()
