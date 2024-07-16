@@ -94,7 +94,6 @@ class APIImageBlock(StructBlock):
         icon = 'image'
         # value_class = ImageStructValue
 
-
 class APIImageChooserBlock(ImageChooserBlock):
     def get_api_representation(self, value, context=None):
         try:
@@ -102,6 +101,35 @@ class APIImageChooserBlock(ImageChooserBlock):
         except AttributeError:
             return None
 
+class DividerBlock(StructBlock):
+    image = APIImageChooserBlock()
+    config = blocks.StreamBlock([
+        ('alignment', blocks.ChoiceBlock(choices=[
+            ('center', 'Center'),
+            ('content_left', 'Left side of content.'),
+            ('content_right', 'Right side of content.'),
+            ('body_left', 'Left side of window.'),
+            ('body_right', 'Right side of window.'),
+        ], default='center')),
+        ('width', blocks.RegexBlock(regex=r'^[0-9]+(px|%|rem)$', required=False, error_messages={
+            'invalid': "must be valid css measurement. eg: 30px, 50%, 10rem"
+        })),
+        ('height', blocks.RegexBlock(regex=r'^[0-9]+(px|%|rem)$', required=False, error_messages={
+            'invalid': "must be valid css measurement. eg: 30px, 50%, 10rem"
+        })),
+        ('offset_vertical', blocks.RegexBlock(regex=r'^[0-9]+(px|%|rem)$', required=False, error_messages={
+            'invalid': "must be valid css measurement. eg: 30px, 50%, 10rem"
+        })),
+        ('offset_horizontal', blocks.RegexBlock(regex=r'^[0-9]+(px|%|rem)$', required=False, error_messages={
+            'invalid': "must be valid css measurement. eg: 30px, 50%, 10rem"
+        }))
+    ], block_counts={
+        'alignment': {'max_num': 1},
+        'width': {'max_num': 1},
+        'height': {'max_num': 1},
+        'offset_vertical': {'max_num': 1},
+        'offset_horizontal': {'max_num': 1},
+    }, required=False)
 
 class ImageBlock(StructBlock):
     image = ImageChooserBlock(required=False)

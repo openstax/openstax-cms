@@ -32,6 +32,7 @@ from .custom_blocks import ImageBlock, \
     TestimonialBlock, \
     AllyLogoBlock, \
     AssignableBookBlock, \
+    DividerBlock, \
     APIRichTextBlock, APIImageBlock, CTALinkBlock, FAQBlock
 
 from .custom_fields import \
@@ -77,6 +78,7 @@ class RootPage(Page):
         ('hero', blocks.StructBlock([
             ('text', APIRichTextBlock()),
             ('image', APIImageChooserBlock(required=False)),
+            ('image_alt', blocks.CharBlock(required=False)),
             ('cta', blocks.ListBlock(CTALinkBlock(required=False, label="Button"),
                 default=[],
                 max_num=2,
@@ -88,7 +90,7 @@ class RootPage(Page):
             ], block_counts={
                 'image_alignment': {'max_num': 1},
                 'image_size': {'max_num': 1},
-            }, required=False))  # set this to the number of config options to somewhat prevent duplicates
+            }, required=False))
         ])),
         ('section', blocks.StructBlock([
             ('content', blocks.StreamBlock([
@@ -112,7 +114,25 @@ class RootPage(Page):
                 ('text', APIRichTextBlock()),
                 ('html', blocks.RawHTMLBlock()),
             ])),
+            ('config', blocks.StreamBlock([
+                ('background_color', blocks.RegexBlock(
+                    regex=r'#[a-z0-9]{6}',
+                    help_text='eg: #ff0000',
+                    error_mssages={'invalid': 'not a valid hex color.'}
+                )),
+                ('padding', blocks.IntegerBlock(min_value=0, help_text='Padding multiplier.')),
+                ('text_alignment', blocks.ChoiceBlock(choices=[
+                    ('center', 'Center'),
+                    ('left', 'Left'),
+                    ('right', 'Right'),
+                ], default='left')),
+            ], block_counts={
+                'background_color': {'max_num': 1},
+                'padding': {'max_num': 1},
+                'text_alignment': {'max_num': 1},
+            }, required=False))
         ])),
+        ('divider', DividerBlock()),
         ('html', blocks.RawHTMLBlock()),
     ], use_json_field=True)
 
