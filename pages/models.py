@@ -58,11 +58,12 @@ HERO_IMAGE_SIZE_CHOICES = [
     ('cover', 'Cover'),
 ]
 
+
 class LayoutSnippetSerializer(Field):
-    def to_representation(self, page):
+    def to_representation(self, value):
         return {
-            'layout': page.layout,
-            'background_image': page.background_image_api_response,
+            'layout': value.layout,
+            'background_image': value.background_image_api_response,
         }
 
 
