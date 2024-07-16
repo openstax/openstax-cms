@@ -48,14 +48,14 @@ class LinkBlock(blocks.StreamBlock):
         max_num = 1
 
 
-class CTAButtonBlock(blocks.StructBlock):
-    text = blocks.CharBlock(required=False)
+class CTALinkBlock(blocks.StructBlock):
+    text = blocks.CharBlock(required=True)
     aria_label = blocks.CharBlock(required=False)
-    target = LinkBlock(required=False)
+    target = LinkBlock(required=True)
 
     class Meta:
         icon = 'placeholder'
-        label = "Button"
+        label = "Call to Action"
         value_class = LinkStructValue
 
 class ImageFormatChoiceBlock(FieldBlock):
@@ -82,7 +82,7 @@ class APIImageBlock(StructBlock):
     image = ImageChooserBlock(required=False)
     alt_text = blocks.CharBlock(required=False)
     alignment = ImageFormatChoiceBlock(required=False)
-    cta = CTAButtonBlock(required=False, label="CTA")
+    cta = CTALinkBlock(required=False, label="CTA")
 
     def get_api_representation(self, value, context=None):
         try:

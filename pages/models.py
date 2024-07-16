@@ -32,7 +32,7 @@ from .custom_blocks import ImageBlock, \
     TestimonialBlock, \
     AllyLogoBlock, \
     AssignableBookBlock, \
-    APIRichTextBlock, APIImageBlock, CTAButtonBlock, FAQBlock
+    APIRichTextBlock, APIImageBlock, CTALinkBlock, FAQBlock
 
 from .custom_fields import \
     Group
@@ -77,24 +77,41 @@ class RootPage(Page):
         ('hero', blocks.StructBlock([
             ('text', APIRichTextBlock()),
             ('image', APIImageChooserBlock(required=False)),
-            ('cta', blocks.ListBlock(CTAButtonBlock(required=False), max_num=2, label='Calls to Action')),
+            ('cta', blocks.ListBlock(CTALinkBlock(required=False, label="Button"),
+                default=[],
+                max_num=2,
+                label='Calls to Action')
+            ),
             ('config', blocks.StreamBlock([
                 ('image_alignment', blocks.ChoiceBlock(choices=HERO_IMAGE_ALIGNMENT_CHOICES)),
                 ('image_size', blocks.ChoiceBlock(choices=HERO_IMAGE_SIZE_CHOICES)),
-            ], required=False, max_num=2))  # set this to the number of config options to somewhat prevent duplicates
+            ], block_counts={
+                'image_alignment': {'max_num': 1},
+                'image_size': {'max_num': 1},
+            }, required=False))  # set this to the number of config options to somewhat prevent duplicates
         ])),
-        ('section', blocks.StreamBlock([
-            ('cards', blocks.ListBlock(
-                blocks.StructBlock([
-                    ('text', APIRichTextBlock()),
-                    ('cta', CTAButtonBlock(required=False)),
-                ])),
-             ),
-            ('config', blocks.StreamBlock([
-                ('corner_style', blocks.ChoiceBlock(choices=CARDS_STYLE_CHOICES))
-            ], max_num=1)),
-            ('text', APIRichTextBlock()),
-            ('html', blocks.RawHTMLBlock()),
+        ('section', blocks.StructBlock([
+            ('content', blocks.StreamBlock([
+                ('cards_block', blocks.StructBlock([
+                    ('cards', blocks.ListBlock(
+                        blocks.StructBlock([
+                            ('text', APIRichTextBlock()),
+                            ('cta', blocks.ListBlock(CTALinkBlock(required=False, label='Link'),
+                                default=[],
+                                max_num=1,
+                                label='Calls to Action')
+                            ),
+                        ]),
+                    )),
+                    ('config', blocks.StreamBlock([
+                        ('corner_style', blocks.ChoiceBlock(choices=CARDS_STYLE_CHOICES))
+                    ], block_counts={
+                        'corner_style': {'max_num': 1}
+                    }, required=False, max_num=1)),
+                ], label="Cards Block")),
+                ('text', APIRichTextBlock()),
+                ('html', blocks.RawHTMLBlock()),
+            ])),
         ])),
         ('html', blocks.RawHTMLBlock()),
     ], use_json_field=True)
