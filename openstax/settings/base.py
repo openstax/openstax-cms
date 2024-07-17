@@ -417,6 +417,7 @@ from PIL import ImageFile
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
+WAGTAILIMAGES_EXTENSIONS = ["gif", "jpg", "jpeg", "png", "webp", "svg"]
 WAGTAILIMAGES_FORMAT_CONVERSIONS = {
     'webp': 'webp',
     'jpeg': 'webp',
