@@ -63,17 +63,12 @@ SECTION_CONTENT_BLOCKS = [
         ('cards', blocks.ListBlock(
             blocks.StructBlock([
                 ('text', APIRichTextBlock()),
-                ('cta', blocks.ListBlock(CTALinkBlock(required=False, label='Link'),
-                    default=[],
-                    max_num=1,
-                    label='Calls to Action')
-                ),
             ]),
         )),
         ('config', blocks.StreamBlock([
-            ('corner_style', blocks.ChoiceBlock(choices=CARDS_STYLE_CHOICES))
+            ('card_style', blocks.ChoiceBlock(choices=CARDS_STYLE_CHOICES))
         ], block_counts={
-            'corner_style': {'max_num': 1}
+            'card_style': {'max_num': 1}
         }, required=False, max_num=1)),
     ], label="Cards Block")),
     ('text', APIRichTextBlock()),
