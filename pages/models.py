@@ -103,9 +103,11 @@ class RootPage(Page):
             ('config', blocks.StreamBlock([
                 ('image_alignment', blocks.ChoiceBlock(choices=HERO_IMAGE_ALIGNMENT_CHOICES)),
                 ('image_size', blocks.ChoiceBlock(choices=HERO_IMAGE_SIZE_CHOICES)),
+                ('padding', blocks.IntegerBlock(min_value=0, help_text='Padding multiplier. default 0.')),
             ], block_counts={
                 'image_alignment': {'max_num': 1},
                 'image_size': {'max_num': 1},
+                'padding': {'max_num': 1},
             }, required=False))
         ])),
         ('section', blocks.StructBlock([
@@ -116,7 +118,7 @@ class RootPage(Page):
                     help_text='eg: #ff0000',
                     error_mssages={'invalid': 'not a valid hex color.'}
                 )),
-                ('padding', blocks.IntegerBlock(min_value=0, help_text='Padding multiplier.')),
+                ('padding', blocks.IntegerBlock(min_value=0, help_text='Padding multiplier. default 0.')),
                 ('text_alignment', blocks.ChoiceBlock(choices=[
                     ('center', 'Center'),
                     ('left', 'Left'),
