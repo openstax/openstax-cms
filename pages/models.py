@@ -2,7 +2,6 @@ from django import forms
 from django.db import models
 
 from modelcluster.fields import ParentalKey
-from wagtail import hooks
 from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel, TitleFieldPanel
 from wagtail.admin.widgets.slug import SlugInput
 from wagtail import blocks
@@ -10,11 +9,7 @@ from wagtail.fields import RichTextField, StreamField
 from wagtail.models import Orderable, Page
 from wagtail.api import APIField
 from wagtail.models import Site
-from wagtail.rich_text import LinkHandler
-from wagtail.images.models import Image
-import rest_framework.fields as fields
 from rest_framework.fields import Field
-from rest_framework import serializers
 
 from api.models import FeatureFlag
 from openstax.functions import build_image_url, build_document_url
@@ -38,7 +33,7 @@ from .custom_blocks import ImageBlock, \
     AllyLogoBlock, \
     AssignableBookBlock, \
     DividerBlock, \
-    APIRichTextBlock, CTALinkBlock, FAQBlock
+    APIRichTextBlock, CTAButtonBarBlock, CTALinkBlock, FAQBlock
 
 from .custom_fields import \
     Group
@@ -63,7 +58,28 @@ HERO_IMAGE_SIZE_CHOICES = [
     ('contain', 'Contain'),
     ('cover', 'Cover'),
 ]
-
+SECTION_CONTENT_BLOCKS = [
+    ('cards_block', blocks.StructBlock([
+        ('cards', blocks.ListBlock(
+            blocks.StructBlock([
+                ('text', APIRichTextBlock()),
+                ('cta', blocks.ListBlock(CTALinkBlock(required=False, label='Link'),
+                    default=[],
+                    max_num=1,
+                    label='Calls to Action')
+                ),
+            ]),
+        )),
+        ('config', blocks.StreamBlock([
+            ('corner_style', blocks.ChoiceBlock(choices=CARDS_STYLE_CHOICES))
+        ], block_counts={
+            'corner_style': {'max_num': 1}
+        }, required=False, max_num=1)),
+    ], label="Cards Block")),
+    ('text', APIRichTextBlock()),
+    ('html', blocks.RawHTMLBlock()),
+    ('cta_block', CTAButtonBarBlock()),
+]
 
 class LayoutSnippetSerializer(Field):
     def to_representation(self, value):
@@ -81,14 +97,9 @@ class RootPage(Page):
 
     body = StreamField([
         ('hero', blocks.StructBlock([
-            ('text', APIRichTextBlock()),
+            ('content', blocks.StreamBlock(SECTION_CONTENT_BLOCKS)),
             ('image', APIImageChooserBlock(required=False)),
             ('image_alt', blocks.CharBlock(required=False)),
-            ('cta', blocks.ListBlock(CTALinkBlock(required=False, label="Button"),
-                default=[],
-                max_num=2,
-                label='Calls to Action')
-            ),
             ('config', blocks.StreamBlock([
                 ('image_alignment', blocks.ChoiceBlock(choices=HERO_IMAGE_ALIGNMENT_CHOICES)),
                 ('image_size', blocks.ChoiceBlock(choices=HERO_IMAGE_SIZE_CHOICES)),
@@ -98,27 +109,7 @@ class RootPage(Page):
             }, required=False))
         ])),
         ('section', blocks.StructBlock([
-            ('content', blocks.StreamBlock([
-                ('cards_block', blocks.StructBlock([
-                    ('cards', blocks.ListBlock(
-                        blocks.StructBlock([
-                            ('text', APIRichTextBlock()),
-                            ('cta', blocks.ListBlock(CTALinkBlock(required=False, label='Link'),
-                                default=[],
-                                max_num=1,
-                                label='Calls to Action')
-                            ),
-                        ]),
-                    )),
-                    ('config', blocks.StreamBlock([
-                        ('corner_style', blocks.ChoiceBlock(choices=CARDS_STYLE_CHOICES))
-                    ], block_counts={
-                        'corner_style': {'max_num': 1}
-                    }, required=False, max_num=1)),
-                ], label="Cards Block")),
-                ('text', APIRichTextBlock()),
-                ('html', blocks.RawHTMLBlock()),
-            ])),
+            ('content', blocks.StreamBlock(SECTION_CONTENT_BLOCKS)),
             ('config', blocks.StreamBlock([
                 ('background_color', blocks.RegexBlock(
                     regex=r'#[a-z0-9]{6}',

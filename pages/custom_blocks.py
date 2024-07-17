@@ -64,6 +64,18 @@ class CTALinkBlock(blocks.StructBlock):
         label = "Call to Action"
         value_class = LinkStructValue
 
+class CTAButtonBarBlock(blocks.StructBlock):
+    actions=blocks.ListBlock(CTALinkBlock(required=False, label="Button"),
+        default=[],
+        max_num=2,
+        label='Actions'
+    )
+
+    class Meta:
+        icon = 'placeholder'
+        label = "Calls to Action"
+        value_class = LinkStructValue
+
 class ImageFormatChoiceBlock(FieldBlock):
     field = forms.ChoiceField(required=False, choices=(
         ('left', 'Wrap left'), ('right', 'Wrap right'), ('mid', 'Mid width'), ('full', 'Full width'),))
@@ -93,10 +105,10 @@ class DividerBlock(StructBlock):
         ('height', blocks.RegexBlock(regex=r'^[0-9]+(px|%|rem)$', required=False, error_messages={
             'invalid': "must be valid css measurement. eg: 30px, 50%, 10rem"
         })),
-        ('offset_vertical', blocks.RegexBlock(regex=r'^[0-9]+(px|%|rem)$', required=False, error_messages={
+        ('offset_vertical', blocks.RegexBlock(regex=r'^\-?[0-9]+(px|%|rem)$', required=False, error_messages={
             'invalid': "must be valid css measurement. eg: 30px, 50%, 10rem"
         })),
-        ('offset_horizontal', blocks.RegexBlock(regex=r'^[0-9]+(px|%|rem)$', required=False, error_messages={
+        ('offset_horizontal', blocks.RegexBlock(regex=r'^\-?[0-9]+(px|%|rem)$', required=False, error_messages={
             'invalid': "must be valid css measurement. eg: 30px, 50%, 10rem"
         }))
     ], block_counts={
