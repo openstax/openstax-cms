@@ -71,7 +71,7 @@ SECTION_CONTENT_BLOCKS = [
         ], block_counts={
             'card_size': {'max_num': 1},
             'card_style': {'max_num': 1},
-        }, required=False, max_num=1)),
+        }, required=False)),
     ], label="Cards Block")),
     ('text', APIRichTextBlock()),
     ('html', blocks.RawHTMLBlock()),
