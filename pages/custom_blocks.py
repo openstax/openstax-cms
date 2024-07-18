@@ -1,11 +1,9 @@
 from django import forms
-from filetype.types import document
 
 from wagtail import blocks
-from wagtail.blocks import FieldBlock, StructBlock, StructValue
+from wagtail.blocks import FieldBlock, StructBlock
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.documents.blocks import DocumentChooserBlock
-from wagtail.models import Page
 
 from api.serializers import ImageSerializer
 from openstax.functions import build_image_url, build_document_url
@@ -21,27 +19,6 @@ class APIRichTextBlock(blocks.RichTextBlock):
         icon = 'doc-full'
 
 
-class LinkStructValue(StructValue):
-    def url(self):
-        if self['external']:
-            return self['external']
-        elif self['internal']:
-            return self['internal']
-        elif self['document']:
-            return build_document_url(self['document'].url)
-        else:
-            return 'link issue'
-
-    def text(self):
-        return self['text']
-
-    def link_aria_label(self):
-        return self['link_aria_label']
-
-    def __bool__(self):
-        return bool(self.url())
-
-
 class LinkBlock(blocks.StreamBlock):
     external = blocks.URLBlock(required=False)
     internal = blocks.PageChooserBlock(required=False)
@@ -52,7 +29,26 @@ class LinkBlock(blocks.StreamBlock):
         max_num = 1
 
     def get_api_representation(self, value, context=None):
-        return self.render_basic(value)
+        for child in value:
+            if child.block_type == 'document':
+                return {
+                    'value': child.value.url,
+                    'type': child.block_type,
+                    'metadata': child.value.content_type,
+                }
+            elif child.block_type == 'external':
+                return {
+                    'value': child.block.get_prep_value(child.value),
+                    'type': child.block_type,
+                }
+            elif child.block_type == 'internal':
+                return {
+                    'value': child.value.url_path,
+                    'type': child.block_type,
+                }
+            else:
+                return None
+
 
 class CTALinkBlock(blocks.StructBlock):
     text = blocks.CharBlock(required=True)
@@ -62,7 +58,7 @@ class CTALinkBlock(blocks.StructBlock):
     class Meta:
         icon = 'placeholder'
         label = "Call to Action"
-        value_class = LinkStructValue
+
 
 class CTAButtonBarBlock(blocks.StructBlock):
     actions=blocks.ListBlock(CTALinkBlock(required=False, label="Button"),
@@ -74,7 +70,6 @@ class CTAButtonBarBlock(blocks.StructBlock):
     class Meta:
         icon = 'placeholder'
         label = "Calls to Action"
-        value_class = LinkStructValue
 
 class ImageFormatChoiceBlock(FieldBlock):
     field = forms.ChoiceField(required=False, choices=(

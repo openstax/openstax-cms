@@ -33,10 +33,10 @@ from .custom_blocks import ImageBlock, \
     AllyLogoBlock, \
     AssignableBookBlock, \
     DividerBlock, \
-    APIRichTextBlock, CTAButtonBarBlock, CTALinkBlock, FAQBlock
+    APIRichTextBlock, \
+    CTAButtonBarBlock
 
-from .custom_fields import \
-    Group
+from .custom_fields import Group
 import snippets.models as snippets
 
 # Constants for styling options on Root/Flex pages
@@ -77,6 +77,7 @@ SECTION_CONTENT_BLOCKS = [
     ('html', blocks.RawHTMLBlock()),
     ('cta_block', CTAButtonBarBlock()),
 ]
+
 
 class LayoutSnippetSerializer(Field):
     def to_representation(self, value):

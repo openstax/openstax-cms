@@ -406,6 +406,10 @@ WAGTAILAPI_LIMIT_MAX = None
 WAGTAIL_USAGE_COUNT_ENABLED = False
 WAGTAIL_USER_CUSTOM_FIELDS = ['is_staff']
 WAGTAIL_GRAVATAR_PROVIDER_URL = '//www.gravatar.com/avatar'
+# serve wagtail documents direct for use with remote (s3) storage
+WAGTAILADMIN_EXTERNAL_LINK_CONVERSION = 'exact'
+WAGTAIL_REDIRECTS_FILE_STORAGE = 'cache'
+WAGTAILFORMS_HELP_TEXT_ALLOW_HTML = True
 
 WAGTAILSEARCH_BACKENDS = {
     'default': {
@@ -454,6 +458,14 @@ WAGTAILADMIN_RICH_TEXT_EDITORS = {
         }
     },
 }
+
+from wagtail.embeds.oembed_providers import youtube, vimeo
+WAGTAILEMBEDS_FINDERS = [
+    {
+        'class': 'wagtail.embeds.finders.oembed',
+        'providers': [youtube, vimeo]
+    }
+]
 
 ##########
 # Sentry #
