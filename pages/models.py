@@ -66,9 +66,11 @@ SECTION_CONTENT_BLOCKS = [
             ]),
         )),
         ('config', blocks.StreamBlock([
-            ('card_style', blocks.ChoiceBlock(choices=CARDS_STYLE_CHOICES))
+            ('card_size', blocks.IntegerBlock(min_value=0, help_text='Width multiplier. default 27.')),
+            ('card_style', blocks.ChoiceBlock(choices=CARDS_STYLE_CHOICES)),
         ], block_counts={
-            'card_style': {'max_num': 1}
+            'card_size': {'max_num': 1},
+            'card_style': {'max_num': 1},
         }, required=False, max_num=1)),
     ], label="Cards Block")),
     ('text', APIRichTextBlock()),
@@ -99,17 +101,23 @@ class RootPage(Page):
                 ('image_alignment', blocks.ChoiceBlock(choices=HERO_IMAGE_ALIGNMENT_CHOICES)),
                 ('image_size', blocks.ChoiceBlock(choices=HERO_IMAGE_SIZE_CHOICES)),
                 ('padding', blocks.IntegerBlock(min_value=0, help_text='Padding multiplier. default 0.')),
+                ('background_color', blocks.RegexBlock(
+                    regex=r'#[a-zA-Z0-9]{6}',
+                    help_text='eg: #ff0000',
+                    error_mssages={'invalid': 'not a valid hex color.'}
+                )),
             ], block_counts={
                 'image_alignment': {'max_num': 1},
                 'image_size': {'max_num': 1},
                 'padding': {'max_num': 1},
+                'background_color': {'max_num': 1},
             }, required=False))
         ])),
         ('section', blocks.StructBlock([
             ('content', blocks.StreamBlock(SECTION_CONTENT_BLOCKS)),
             ('config', blocks.StreamBlock([
                 ('background_color', blocks.RegexBlock(
-                    regex=r'#[a-z0-9]{6}',
+                    regex=r'#[a-zA-Z0-9]{6}',
                     help_text='eg: #ff0000',
                     error_mssages={'invalid': 'not a valid hex color.'}
                 )),
