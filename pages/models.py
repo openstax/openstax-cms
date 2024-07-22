@@ -34,7 +34,8 @@ from .custom_blocks import ImageBlock, \
     AssignableBookBlock, \
     DividerBlock, \
     APIRichTextBlock, \
-    CTAButtonBarBlock
+    CTAButtonBarBlock, \
+    CTALinkBlock
 
 from .custom_fields import Group
 import snippets.models as snippets
@@ -63,7 +64,7 @@ SECTION_CONTENT_BLOCKS = [
         ('cards', blocks.ListBlock(
             blocks.StructBlock([
                 ('text', APIRichTextBlock()),
-                ('cta_block', CTAButtonBarBlock()),
+                ('cta_block', CTALinkBlock()),
             ]),
         )),
         ('config', blocks.StreamBlock([
