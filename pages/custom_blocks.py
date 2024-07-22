@@ -61,19 +61,24 @@ class CTALinkBlock(blocks.StructBlock):
 
 
 class CTAButtonBarBlock(blocks.StructBlock):
-    actions=blocks.ListBlock(CTALinkBlock(required=False, label="Button"),
-        default=[],
-        max_num=2,
-        label='Actions'
-    )
+    actions = blocks.ListBlock(CTALinkBlock(required=False, label="Button"),
+                               default=[],
+                               max_num=2,
+                               label='Actions'
+                               )
 
     class Meta:
         icon = 'placeholder'
         label = "Calls to Action"
 
+
 class ImageFormatChoiceBlock(FieldBlock):
     field = forms.ChoiceField(required=False, choices=(
-        ('left', 'Wrap left'), ('right', 'Wrap right'), ('mid', 'Mid width'), ('full', 'Full width'),))
+        ('left', 'Wrap left'),
+        ('right', 'Wrap right'),
+        ('mid', 'Mid width'),
+        ('full', 'Full width'),
+    ))
 
 
 class APIImageChooserBlock(ImageChooserBlock):
@@ -113,6 +118,7 @@ class DividerBlock(StructBlock):
         'offset_vertical': {'max_num': 1},
         'offset_horizontal': {'max_num': 1},
     }, required=False)
+
 
 class ImageBlock(StructBlock):
     image = ImageChooserBlock(required=False)
@@ -183,10 +189,11 @@ class CardImageBlock(blocks.StructBlock):
     class Meta:
         icon = 'image'
 
+
 class StoryBlock(blocks.StructBlock):
     image = APIImageChooserBlock(required=False)
     story_text = blocks.TextBlock(required=False)
-    linked_story = blocks.PageChooserBlock(target_model='pages.ImpactStory')
+    linked_story = blocks.PageChooserBlock(page_type=['pages.ImpactStory', 'news.NewsArticle'])
     embedded_video = blocks.RawHTMLBlock(required=False)
 
     class Meta:
@@ -231,6 +238,7 @@ class TestimonialBlock(blocks.StructBlock):
     author_name = blocks.CharBlock(required=True)
     author_title = blocks.CharBlock(required=True)
     testimonial = blocks.RichTextBlock(required=True)
+
     class Meta:
         author_icon = 'image'
         max_num = 4
