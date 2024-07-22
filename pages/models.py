@@ -63,6 +63,7 @@ SECTION_CONTENT_BLOCKS = [
         ('cards', blocks.ListBlock(
             blocks.StructBlock([
                 ('text', APIRichTextBlock()),
+                ('cta_block', CTAButtonBarBlock()),
             ]),
         )),
         ('config', blocks.StreamBlock([
@@ -98,7 +99,6 @@ class RootPage(Page):
             ('content', blocks.StreamBlock(SECTION_CONTENT_BLOCKS)),
             ('image', APIImageChooserBlock(required=False)),
             ('image_alt', blocks.CharBlock(required=False)),
-            ('cta_block', CTAButtonBarBlock()),
             ('config', blocks.StreamBlock([
                 ('image_alignment', blocks.ChoiceBlock(choices=HERO_IMAGE_ALIGNMENT_CHOICES)),
                 ('image_size', blocks.ChoiceBlock(choices=HERO_IMAGE_SIZE_CHOICES)),
