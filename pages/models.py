@@ -64,7 +64,7 @@ SECTION_CONTENT_BLOCKS = [
         ('cards', blocks.ListBlock(
             blocks.StructBlock([
                 ('text', APIRichTextBlock()),
-                ('cta_block', blocks.ListBlock(CTALinkBlock(required=False, label="Button"),
+                ('cta_block', blocks.ListBlock(CTALinkBlock(required=False, label="Link"),
                     default=[],
                     max_num=1,
                     label='Call To Action'
