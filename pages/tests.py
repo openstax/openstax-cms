@@ -38,12 +38,13 @@ from pages.models import (HomePage,
                           FormHeadings,
                           AllyLogos,
                           K12MainPage,
-                          Assignable, ImpactStory, CustomizablePage)
+                          Assignable, ImpactStory, RootPage, FlexPage)
 
 from news.models import NewsIndex, PressIndex
 from books.models import BookIndex
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash, mock_user_login
 from http import cookies
+
 
 class HomePageTests(WagtailPageTestCase):
 
@@ -104,8 +105,9 @@ class HomePageTests(WagtailPageTestCase):
             AllyLogos,
             K12MainPage,
             Assignable,
-            CustomizablePage
+            RootPage
         })
+
 
 class PageTests(WagtailPageTestCase):
     def setUp(self):

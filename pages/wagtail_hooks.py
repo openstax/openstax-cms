@@ -1,3 +1,0 @@
-from wagtail import hooks
-
-
