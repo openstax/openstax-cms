@@ -89,7 +89,6 @@ class LayoutSnippetSerializer(Field):
     def to_representation(self, value):
         return {
             'layout': value.layout,
-            'background_image': value.background_image_api_response,
         }
 
 
