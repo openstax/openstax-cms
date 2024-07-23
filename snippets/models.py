@@ -507,23 +507,11 @@ class PageLayout(TranslatableMixin, models.Model):
         ('default', 'Default'),
     )
     layout = models.CharField(max_length=255, choices=LAYOUT_CHOICES, default='default')
-    background_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
 
-    @property
-    def background_image_api_response(self):
-        return build_image_url(self.background_image)
-
-    api_fields = ('layout', 'background_image_api_response')
+    api_fields = ('layout',)
 
     panels = [
         FieldPanel('layout'),
-        FieldPanel('background_image')
     ]
 
     def __str__(self):
