@@ -23,6 +23,7 @@ class LinkBlock(blocks.StreamBlock):
     external = blocks.URLBlock(required=False)
     internal = blocks.PageChooserBlock(required=False)
     document = DocumentChooserBlock(required=False)
+    anchor = blocks.CharBlock(required=False)
 
     class Meta:
         icon = 'link'
@@ -46,6 +47,11 @@ class LinkBlock(blocks.StreamBlock):
                     'value': child.value.url_path,
                     'type': child.block_type,
                 }
+            elif child.block_type == 'anchor':
+                return {
+                    'value': "#{anchor}".format(anchor=child.value),
+                    'type': child.block_type,
+                }
             else:
                 return None
 
@@ -60,12 +66,26 @@ class CTALinkBlock(blocks.StructBlock):
         label = "Call to Action"
 
 
+class LinksGroupBlock(blocks.StructBlock):
+    style = blocks.ChoiceBlock(required=False, choices=(
+        ('rainbow', 'Colored Outlines'),
+        ('blue', 'Blue'),
+        ('deep-green', 'Deep Green'),
+    ))
+    links = blocks.ListBlock(
+        CTALinkBlock(required=False, label="Link"),
+        default=[], label='Links'
+    )
+
+    class Meta:
+        icon = 'placeholder'
+        label = "Links Group"
+
 class CTAButtonBarBlock(blocks.StructBlock):
-    actions = blocks.ListBlock(CTALinkBlock(required=False, label="Button"),
-                               default=[],
-                               max_num=2,
-                               label='Actions'
-                               )
+    actions = blocks.ListBlock(
+        CTALinkBlock(required=False, label="Button"),
+        default=[], max_num=2, label='Actions'
+    )
 
     class Meta:
         icon = 'placeholder'
@@ -88,6 +108,9 @@ class APIImageChooserBlock(ImageChooserBlock):
         except AttributeError:
             return None
 
+class QuoteBlock(StructBlock):
+    image = APIImageChooserBlock()
+    content = blocks.RichTextBlock()
 
 class DividerBlock(StructBlock):
     image = APIImageChooserBlock()
