@@ -5,7 +5,7 @@ from .functions import remove_locked_links_detail, remove_locked_links_listing, 
 from django.test import TestCase, Client
 from django.core.files.uploadedfile import SimpleUploadedFile
 from wagtail.models import Page
-from pages.models import HomePage, WebinarPage
+from pages.models import HomePage, RootPage
 from books.models import BookIndex, Book
 from news.models import NewsIndex, NewsArticle
 from snippets.models import Subject, BlogContentType, BlogCollection
@@ -95,7 +95,7 @@ class TestOpenGraphMiddleware(TestCase):
     def setUp(self):
         self.client = Client(HTTP_USER_AGENT='twitterbot')
         self.root_page = Page.objects.get(title="Root")
-        self.homepage = HomePage(title="Hello World",
+        self.homepage = RootPage(title="Hello World",
                             slug="openstax-homepage",
                             seo_title='OpenStax Home',
                             search_description='Home page for OpenStax'
