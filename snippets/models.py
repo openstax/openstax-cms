@@ -501,21 +501,3 @@ class ContentWarning(TranslatableMixin, models.Model):
 
 
 register_snippet(ContentWarning)
-
-class PageLayout(TranslatableMixin, models.Model):
-    LAYOUT_CHOICES = (
-        ('default', 'Default'),
-    )
-    layout = models.CharField(max_length=255, choices=LAYOUT_CHOICES, default='default')
-
-    api_fields = ('layout',)
-
-    panels = [
-        FieldPanel('layout'),
-    ]
-
-    def __str__(self):
-        return self.layout
-
-
-register_snippet(PageLayout)

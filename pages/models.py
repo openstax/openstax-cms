@@ -84,19 +84,20 @@ SECTION_CONTENT_BLOCKS = [
     ('cta_block', CTAButtonBarBlock()),
 ]
 
-
-class LayoutSnippetSerializer(Field):
-    def to_representation(self, value):
-        return {
-            'layout': value.layout,
-        }
-
-
 # we have one RootPage, which is the parent of all other pages
 # this is the only page that should be created at the top level of the page tree
 # this should be the homepage
 class RootPage(Page):
-    layout = models.ForeignKey(snippets.PageLayout, on_delete=models.PROTECT)
+    layout = StreamField([
+        ('default', blocks.StructBlock([
+        ])),
+        ('landing', blocks.StructBlock([
+            ('nav_links', blocks.ListBlock(CTALinkBlock(required=False, label="Link"),
+                default=[],
+                label='Nav Links'
+            )),
+        ], label='Landing Page')),
+    ], max_num=1, blank=True, collapsed=True, use_json_field=True, default=[])
 
     body = StreamField([
         ('hero', blocks.StructBlock([
@@ -152,7 +153,7 @@ class RootPage(Page):
     )
 
     api_fields = [
-        APIField('layout', serializer=LayoutSnippetSerializer()),
+        APIField('layout'),
         APIField('body'),
         APIField('slug'),
         APIField('seo_title'),
