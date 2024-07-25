@@ -67,15 +67,19 @@ class CTALinkBlock(blocks.StructBlock):
 
 
 class LinksGroupBlock(blocks.StructBlock):
-    style = blocks.ChoiceBlock(required=False, choices=(
-        ('rainbow', 'Colored Outlines'),
-        ('blue', 'Blue'),
-        ('deep-green', 'Deep Green'),
-    ))
     links = blocks.ListBlock(
         CTALinkBlock(required=False, label="Link"),
         default=[], label='Links'
     )
+    config = blocks.StreamBlock([
+        ('color', blocks.ChoiceBlock(choices=[
+            ('white', 'White'),
+            ('blue', 'Blue'),
+            ('deep-green', 'Deep Green'),
+        ], default='descending')),
+    ], block_counts={
+        'color': {'max_num': 1},
+    }, required=False)
 
     class Meta:
         icon = 'placeholder'
@@ -86,6 +90,14 @@ class CTAButtonBarBlock(blocks.StructBlock):
         CTALinkBlock(required=False, label="Button"),
         default=[], max_num=2, label='Actions'
     )
+    config = blocks.StreamBlock([
+        ('priority', blocks.ChoiceBlock(choices=[
+            ('descending', 'Descending'),
+            ('equal', 'Equal'),
+        ], default='descending')),
+    ], block_counts={
+        'priority': {'max_num': 1},
+    }, required=False)
 
     class Meta:
         icon = 'placeholder'
