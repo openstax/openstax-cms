@@ -73,8 +73,8 @@ class CTALinkBlock(LinkInfoBlock):
         ('style', blocks.ChoiceBlock(choices=[
             ('primary', 'Primary'),
             ('white', 'White'),
-            ('blue-outline', 'Blue Outline'),
-            ('deep-green', 'Deep Green Outline'),
+            ('blue_outline', 'Blue Outline'),
+            ('deep_green_outline', 'Deep Green Outline'),
         ], default='descending')),
     ], block_counts={
         'style': {'max_num': 1},
@@ -94,7 +94,7 @@ class LinksGroupBlock(blocks.StructBlock):
         ('color', blocks.ChoiceBlock(choices=[
             ('white', 'White'),
             ('blue', 'Blue'),
-            ('deep-green', 'Deep Green'),
+            ('deep_green', 'Deep Green'),
         ], default='descending')),
     ], block_counts={
         'color': {'max_num': 1},
