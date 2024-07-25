@@ -56,10 +56,29 @@ class LinkBlock(blocks.StreamBlock):
                 return None
 
 
-class CTALinkBlock(blocks.StructBlock):
+class LinkInfoBlock(blocks.StructBlock):
     text = blocks.CharBlock(required=True)
     aria_label = blocks.CharBlock(required=False)
     target = LinkBlock(required=True)
+
+    class Meta:
+        icon = 'placeholder'
+        label = "Link"
+
+class CTALinkBlock(LinkInfoBlock):
+    text = blocks.CharBlock(required=True)
+    aria_label = blocks.CharBlock(required=False)
+    target = LinkBlock(required=True)
+    config = blocks.StreamBlock([
+        ('style', blocks.ChoiceBlock(choices=[
+            ('primary', 'Primary'),
+            ('white', 'White'),
+            ('blue-outline', 'Blue Outline'),
+            ('deep-green', 'Deep Green Outline'),
+        ], default='descending')),
+    ], block_counts={
+        'style': {'max_num': 1},
+    }, required=False)
 
     class Meta:
         icon = 'placeholder'
@@ -68,7 +87,7 @@ class CTALinkBlock(blocks.StructBlock):
 
 class LinksGroupBlock(blocks.StructBlock):
     links = blocks.ListBlock(
-        CTALinkBlock(required=False, label="Link"),
+        LinkInfoBlock(required=False, label="Link"),
         default=[], label='Links'
     )
     config = blocks.StreamBlock([
