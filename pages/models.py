@@ -86,6 +86,9 @@ SECTION_CONTENT_BLOCKS = [
     ('cta_block', CTAButtonBarBlock()),
     ('links_group', LinksGroupBlock()),
     ('quote', QuoteBlock()),
+    ('faq', blocks.StreamBlock([
+        ('faq', FAQBlock()),
+    ]))
 ]
 
 # we have one RootPage, which is the parent of all other pages

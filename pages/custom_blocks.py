@@ -71,7 +71,7 @@ class CTALinkBlock(LinkInfoBlock):
     target = LinkBlock(required=True)
     config = blocks.StreamBlock([
         ('style', blocks.ChoiceBlock(choices=[
-            ('primary', 'Primary'),
+            ('orange', 'Orange'),
             ('white', 'White'),
             ('blue_outline', 'Blue Outline'),
             ('deep_green_outline', 'Deep Green Outline'),
@@ -94,7 +94,7 @@ class LinksGroupBlock(blocks.StructBlock):
         ('color', blocks.ChoiceBlock(choices=[
             ('white', 'White'),
             ('blue', 'Blue'),
-            ('deep_green', 'Deep Green'),
+            ('deep-green', 'Deep Green'),
         ], default='descending')),
     ], block_counts={
         'color': {'max_num': 1},
@@ -142,6 +142,8 @@ class APIImageChooserBlock(ImageChooserBlock):
 class QuoteBlock(StructBlock):
     image = APIImageChooserBlock()
     content = blocks.RichTextBlock()
+    name = blocks.CharBlock()
+    title = blocks.CharBlock(requred=False)
 
 class DividerBlock(StructBlock):
     image = APIImageChooserBlock()
