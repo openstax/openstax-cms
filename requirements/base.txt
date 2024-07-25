@@ -28,6 +28,6 @@ six==1.16.0
 ua-parser==0.18.0
 unicodecsv==0.14.1
 vcrpy==6.0.1 # recoding Salesforce interactions in tests
-wagtail==5.2.3
+wagtail==5.2.6
 wagtail-modeladmin==2.0.0
 whitenoise==6.6.0
