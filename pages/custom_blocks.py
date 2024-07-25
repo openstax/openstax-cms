@@ -7,11 +7,117 @@ from wagtail.documents.blocks import DocumentChooserBlock
 
 from api.serializers import ImageSerializer
 from openstax.functions import build_image_url, build_document_url
+from wagtail.rich_text import expand_db_html
+
+
+class APIRichTextBlock(blocks.RichTextBlock):
+    def get_api_representation(self, value, context=None):
+        representation = super().get_api_representation(value, context)
+        return expand_db_html(representation)
+
+    class Meta:
+        icon = 'doc-full'
+
+
+class LinkBlock(blocks.StreamBlock):
+    external = blocks.URLBlock(required=False)
+    internal = blocks.PageChooserBlock(required=False)
+    document = DocumentChooserBlock(required=False)
+
+    class Meta:
+        icon = 'link'
+        max_num = 1
+
+    def get_api_representation(self, value, context=None):
+        for child in value:
+            if child.block_type == 'document':
+                return {
+                    'value': child.value.url,
+                    'type': child.block_type,
+                    'metadata': child.value.content_type,
+                }
+            elif child.block_type == 'external':
+                return {
+                    'value': child.block.get_prep_value(child.value),
+                    'type': child.block_type,
+                }
+            elif child.block_type == 'internal':
+                return {
+                    'value': child.value.url_path,
+                    'type': child.block_type,
+                }
+            else:
+                return None
+
+
+class CTALinkBlock(blocks.StructBlock):
+    text = blocks.CharBlock(required=True)
+    aria_label = blocks.CharBlock(required=False)
+    target = LinkBlock(required=True)
+
+    class Meta:
+        icon = 'placeholder'
+        label = "Call to Action"
+
+
+class CTAButtonBarBlock(blocks.StructBlock):
+    actions = blocks.ListBlock(CTALinkBlock(required=False, label="Button"),
+                               default=[],
+                               max_num=2,
+                               label='Actions'
+                               )
+
+    class Meta:
+        icon = 'placeholder'
+        label = "Calls to Action"
 
 
 class ImageFormatChoiceBlock(FieldBlock):
-    field = forms.ChoiceField(choices=(
-        ('left', 'Wrap left'), ('right', 'Wrap right'), ('mid', 'Mid width'), ('full', 'Full width'),))
+    field = forms.ChoiceField(required=False, choices=(
+        ('left', 'Wrap left'),
+        ('right', 'Wrap right'),
+        ('mid', 'Mid width'),
+        ('full', 'Full width'),
+    ))
+
+
+class APIImageChooserBlock(ImageChooserBlock):
+    def get_api_representation(self, value, context=None):
+        try:
+            return ImageSerializer(context=context).to_representation(value)
+        except AttributeError:
+            return None
+
+
+class DividerBlock(StructBlock):
+    image = APIImageChooserBlock()
+    config = blocks.StreamBlock([
+        ('alignment', blocks.ChoiceBlock(choices=[
+            ('center', 'Center'),
+            ('content_left', 'Left side of content.'),
+            ('content_right', 'Right side of content.'),
+            ('body_left', 'Left side of window.'),
+            ('body_right', 'Right side of window.'),
+        ], default='center')),
+        ('width', blocks.RegexBlock(regex=r'^[0-9]+(px|%|rem)$', required=False, error_messages={
+            'invalid': "must be valid css measurement. eg: 30px, 50%, 10rem"
+        })),
+        ('height', blocks.RegexBlock(regex=r'^[0-9]+(px|%|rem)$', required=False, error_messages={
+            'invalid': "must be valid css measurement. eg: 30px, 50%, 10rem"
+        })),
+        ('offset_vertical', blocks.RegexBlock(regex=r'^\-?[0-9]+(px|%|rem)$', required=False, error_messages={
+            'invalid': "must be valid css measurement. eg: 30px, 50%, 10rem"
+        })),
+        ('offset_horizontal', blocks.RegexBlock(regex=r'^\-?[0-9]+(px|%|rem)$', required=False, error_messages={
+            'invalid': "must be valid css measurement. eg: 30px, 50%, 10rem"
+        }))
+    ], block_counts={
+        'alignment': {'max_num': 1},
+        'width': {'max_num': 1},
+        'height': {'max_num': 1},
+        'offset_vertical': {'max_num': 1},
+        'offset_horizontal': {'max_num': 1},
+    }, required=False)
 
 
 class ImageBlock(StructBlock):
@@ -21,13 +127,6 @@ class ImageBlock(StructBlock):
     alignment = ImageFormatChoiceBlock()
     identifier = blocks.CharBlock(required=False, help_text="Used by the frontend for Google Analytics.")
 
-
-class APIImageChooserBlock(ImageChooserBlock): # Use this block to return the path in the page API, does not support alt_text and alignment
-    def get_api_representation(self, value, context=None):
-        try:
-            return ImageSerializer(context=context).to_representation(value)
-        except AttributeError:
-            return None
 
 class ColumnBlock(blocks.StructBlock):
     heading = blocks.CharBlock(required=False)
@@ -48,7 +147,7 @@ class FAQBlock(blocks.StructBlock):
     document = DocumentChooserBlock(required=False)
 
     class Meta:
-        icon = 'placeholder'
+        icon = 'bars'
 
 
 class BookProviderBlock(blocks.StructBlock):
@@ -90,10 +189,11 @@ class CardImageBlock(blocks.StructBlock):
     class Meta:
         icon = 'image'
 
+
 class StoryBlock(blocks.StructBlock):
     image = APIImageChooserBlock(required=False)
     story_text = blocks.TextBlock(required=False)
-    linked_story = blocks.PageChooserBlock(target_model='pages.ImpactStory')
+    linked_story = blocks.PageChooserBlock(page_type=['pages.ImpactStory', 'news.NewsArticle'])
     embedded_video = blocks.RawHTMLBlock(required=False)
 
     class Meta:
@@ -138,6 +238,7 @@ class TestimonialBlock(blocks.StructBlock):
     author_name = blocks.CharBlock(required=True)
     author_title = blocks.CharBlock(required=True)
     testimonial = blocks.RichTextBlock(required=True)
+
     class Meta:
         author_icon = 'image'
         max_num = 4
@@ -163,4 +264,3 @@ class AssignableBookBlock(blocks.StructBlock):
                 'cover': build_document_url(value['cover'].url),
                 'title': value['title'],
             }
-

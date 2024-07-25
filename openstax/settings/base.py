@@ -406,6 +406,10 @@ WAGTAILAPI_LIMIT_MAX = None
 WAGTAIL_USAGE_COUNT_ENABLED = False
 WAGTAIL_USER_CUSTOM_FIELDS = ['is_staff']
 WAGTAIL_GRAVATAR_PROVIDER_URL = '//www.gravatar.com/avatar'
+# serve wagtail documents direct for use with remote (s3) storage
+WAGTAILADMIN_EXTERNAL_LINK_CONVERSION = 'exact'
+WAGTAIL_REDIRECTS_FILE_STORAGE = 'cache'
+WAGTAILFORMS_HELP_TEXT_ALLOW_HTML = True
 
 WAGTAILSEARCH_BACKENDS = {
     'default': {
@@ -417,6 +421,7 @@ from PIL import ImageFile
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
+WAGTAILIMAGES_EXTENSIONS = ["gif", "jpg", "jpeg", "png", "webp", "svg"]
 WAGTAILIMAGES_FORMAT_CONVERSIONS = {
     'webp': 'webp',
     'jpeg': 'webp',
@@ -425,6 +430,42 @@ WAGTAILIMAGES_FORMAT_CONVERSIONS = {
 }
 WAGTAILIMAGES_MAX_UPLOAD_SIZE = 2 * 1024 * 1024  # 2MB
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
+
+WAGTAILADMIN_RICH_TEXT_EDITORS = {
+    'default': {
+        'WIDGET': 'wagtail.admin.rich_text.DraftailRichTextArea',
+        'OPTIONS': {
+            'features': ['h1',
+                         'h2',
+                         'h3',
+                         'h4',
+                         'h5',
+                         'h6',
+                         'bold',
+                         'italic',
+                         'ol',
+                         'ul',
+                         'hr',
+                         'link',
+                         'document-link',
+                         'image',
+                         'embed',
+                         'code',
+                         'blockquote',
+                         'superscript',
+                         'subscript',
+                         'strikethrough']
+        }
+    },
+}
+
+from wagtail.embeds.oembed_providers import youtube, vimeo
+WAGTAILEMBEDS_FINDERS = [
+    {
+        'class': 'wagtail.embeds.finders.oembed',
+        'providers': [youtube, vimeo]
+    }
+]
 
 ##########
 # Sentry #

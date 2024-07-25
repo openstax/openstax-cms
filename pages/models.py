@@ -9,6 +9,7 @@ from wagtail.fields import RichTextField, StreamField
 from wagtail.models import Orderable, Page
 from wagtail.api import APIField
 from wagtail.models import Site
+from rest_framework.fields import Field
 
 from api.models import FeatureFlag
 from openstax.functions import build_image_url, build_document_url
@@ -30,12 +31,206 @@ from .custom_blocks import ImageBlock, \
     InfoBoxBlock, \
     TestimonialBlock, \
     AllyLogoBlock, \
-    AssignableBookBlock
+    AssignableBookBlock, \
+    DividerBlock, \
+    APIRichTextBlock, \
+    CTAButtonBarBlock, \
+    CTALinkBlock
 
-from .custom_fields import \
-    Group
+from .custom_fields import Group
 import snippets.models as snippets
 
+# Constants for styling options on Root/Flex pages
+# consider moving to a constants.py file
+CARDS_STYLE_CHOICES = [
+    ('rounded', 'Rounded'),
+    ('square', 'Square'),
+]
+HERO_IMAGE_ALIGNMENT_CHOICES = [
+    ('left', 'Left'),
+    ('right', 'Right'),
+    ('topLeft', 'Top Left'),
+    ('topRight', 'Top Right'),
+    ('bottomLeft', 'Bottom Left'),
+    ('bottomRight', 'Bottom Right'),
+]
+HERO_IMAGE_SIZE_CHOICES = [
+    ('auto', 'Auto'),
+    ('contain', 'Contain'),
+    ('cover', 'Cover'),
+]
+SECTION_CONTENT_BLOCKS = [
+    ('cards_block', blocks.StructBlock([
+        ('cards', blocks.ListBlock(
+            blocks.StructBlock([
+                ('text', APIRichTextBlock()),
+                ('cta_block', blocks.ListBlock(CTALinkBlock(required=False, label="Link"),
+                    default=[],
+                    max_num=1,
+                    label='Call To Action'
+                )),
+            ]),
+        )),
+        ('config', blocks.StreamBlock([
+            ('card_size', blocks.IntegerBlock(min_value=0, help_text='Width multiplier. default 27.')),
+            ('card_style', blocks.ChoiceBlock(choices=CARDS_STYLE_CHOICES)),
+        ], block_counts={
+            'card_size': {'max_num': 1},
+            'card_style': {'max_num': 1},
+        }, required=False)),
+    ], label="Cards Block")),
+    ('text', APIRichTextBlock()),
+    ('html', blocks.RawHTMLBlock()),
+    ('cta_block', CTAButtonBarBlock()),
+]
+
+# we have one RootPage, which is the parent of all other pages
+# this is the only page that should be created at the top level of the page tree
+# this should be the homepage
+class RootPage(Page):
+    layout = StreamField([
+        ('default', blocks.StructBlock([
+        ])),
+        ('landing', blocks.StructBlock([
+            ('nav_links', blocks.ListBlock(CTALinkBlock(required=False, label="Link"),
+                default=[],
+                label='Nav Links'
+            )),
+        ], label='Landing Page')),
+    ], max_num=1, blank=True, collapsed=True, use_json_field=True, default=[])
+
+    body = StreamField([
+        ('hero', blocks.StructBlock([
+            ('content', blocks.StreamBlock(SECTION_CONTENT_BLOCKS)),
+            ('image', APIImageChooserBlock(required=False)),
+            ('image_alt', blocks.CharBlock(required=False)),
+            ('config', blocks.StreamBlock([
+                ('image_alignment', blocks.ChoiceBlock(choices=HERO_IMAGE_ALIGNMENT_CHOICES)),
+                ('image_size', blocks.ChoiceBlock(choices=HERO_IMAGE_SIZE_CHOICES)),
+                ('padding', blocks.IntegerBlock(min_value=0, help_text='Padding multiplier. default 0.')),
+                ('background_color', blocks.RegexBlock(
+                    regex=r'#[a-zA-Z0-9]{6}',
+                    help_text='eg: #ff0000',
+                    error_mssages={'invalid': 'not a valid hex color.'}
+                )),
+            ], block_counts={
+                'image_alignment': {'max_num': 1},
+                'image_size': {'max_num': 1},
+                'padding': {'max_num': 1},
+                'background_color': {'max_num': 1},
+            }, required=False))
+        ])),
+        ('section', blocks.StructBlock([
+            ('content', blocks.StreamBlock(SECTION_CONTENT_BLOCKS)),
+            ('config', blocks.StreamBlock([
+                ('background_color', blocks.RegexBlock(
+                    regex=r'#[a-zA-Z0-9]{6}',
+                    help_text='eg: #ff0000',
+                    error_mssages={'invalid': 'not a valid hex color.'}
+                )),
+                ('padding', blocks.IntegerBlock(min_value=0, help_text='Padding multiplier. default 0.')),
+                ('text_alignment', blocks.ChoiceBlock(choices=[
+                    ('center', 'Center'),
+                    ('left', 'Left'),
+                    ('right', 'Right'),
+                ], default='left')),
+            ], block_counts={
+                'background_color': {'max_num': 1},
+                'padding': {'max_num': 1},
+                'text_alignment': {'max_num': 1},
+            }, required=False))
+        ])),
+        ('divider', DividerBlock()),
+        ('html', blocks.RawHTMLBlock()),
+    ], use_json_field=True)
+
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=False,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    api_fields = [
+        APIField('layout'),
+        APIField('body'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+    ]
+
+    content_panels = [
+        TitleFieldPanel('title', help_text="For CMS use only. Use 'Promote' tab above to edit SEO information."),
+        FieldPanel('layout'),
+        FieldPanel('body'),
+    ]
+
+    promote_panels = [
+        FieldPanel('slug', widget=SlugInput),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        FieldPanel('promote_image')
+    ]
+
+    template = 'page.html'
+    preview_modes = []
+    max_count = 1
+    # TODO: we are allowing this to be built as a child of the homepage. Not ideal.
+    # Once the home page is released, use something to migrate homepage children to root page and remove this parent type.
+    parent_page_types = ['wagtailcore.Page', 'pages.HomePage']
+    subpage_types = ['pages.FlexPage']  # which might also require allowing all pages to be children.
+
+    def __str__(self):
+        return self.path
+
+    def get_url_parts(self, *args, **kwargs):
+        url_parts = super(RootPage, self).get_url_parts(*args, **kwargs)
+
+        if url_parts is None:
+            # in this case, the page doesn't have a well-defined URL in the first place -
+            # for example, it's been created at the top level of the page tree
+            # and hasn't been associated with a site record
+            return None
+
+        site_id, root_url, page_path = url_parts
+
+        # return '/' in place of the real page path for the root page
+        return site_id, root_url, '/'
+
+    def get_sitemap_urls(self, request=None):
+        return [
+            {
+                'location': '{}/'.format(Site.find_for_request(request).root_url),
+                'lastmod': (self.last_published_at or self.latest_revision_created_at),
+            }
+        ]
+
+# subclass of RootPage with a few overrides for subpages
+class FlexPage(RootPage):
+    parent_page_types = ['pages.RootPage']
+    template = 'page.html'
+
+    def get_url_parts(self, *args, **kwargs):
+        url_parts = super(FlexPage, self).get_url_parts(*args, **kwargs)
+
+        if url_parts is None:
+            return None
+
+        site_id, root_url, page_path = url_parts
+
+        return site_id, root_url, page_path
+
+    def get_sitemap_urls(self, request=None):
+        return [
+            {
+                'location': '{}/{}'.format(Site.find_for_request(request).root_url, self.slug),
+                'lastmod': (self.last_published_at or self.latest_revision_created_at),
+            }
+        ]
+
+
+#TODO: start removing these pages as we move to the above structure for all pages.
 
 class AboutUsPage(Page):
     who_heading = models.CharField(max_length=255)
@@ -480,9 +675,8 @@ class HomePage(Page):
         'books.BookIndex',
         'news.NewsIndex',
         'news.PressIndex',
+        'pages.RootPage',
     ]
-
-    max_count = 1
 
     def __str__(self):
         return self.path

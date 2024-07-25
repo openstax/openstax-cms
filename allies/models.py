@@ -88,3 +88,5 @@ class Ally(Page):
         FieldPanel('short_description'),
         FieldPanel('long_description'),
     ]
+
+    parent_page_types = ['pages.HomePage']

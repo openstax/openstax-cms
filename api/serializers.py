@@ -4,6 +4,7 @@ from wagtail.images.models import Image
 from wagtail.documents.models import Document
 from api.models import ProgressTracker, CustomizationRequest
 
+
 class AdopterSerializer(serializers.HyperlinkedModelSerializer):
 
     class Meta:
@@ -71,6 +72,7 @@ class ProgressSerializer(serializers.HyperlinkedModelSerializer):
 class ModuleListingField(serializers.StringRelatedField):
     def to_internal_value(self, value):
         return value
+
 
 class CustomizationRequestSerializer(serializers.ModelSerializer):
     modules = ModuleListingField(many=True)
