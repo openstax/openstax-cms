@@ -37,6 +37,7 @@ from .custom_blocks import ImageBlock, \
     CTAButtonBarBlock, \
     LinksGroupBlock, \
     QuoteBlock, \
+    LinkInfoBlock, \
     CTALinkBlock
 
 from .custom_fields import Group
@@ -99,7 +100,7 @@ class RootPage(Page):
         ('default', blocks.StructBlock([
         ])),
         ('landing', blocks.StructBlock([
-            ('nav_links', blocks.ListBlock(CTALinkBlock(required=False, label="Link"),
+            ('nav_links', blocks.ListBlock(LinkInfoBlock(required=False, label="Link"),
                 default=[],
                 label='Nav Links'
             )),
