@@ -21,7 +21,7 @@ mapbox==0.18.1
 Pillow==10.3.0
 psycopg2
 python-dotenv
-requests==2.31.0
+requests==2.32.2
 sentry-sdk
 simple-salesforce==1.12.5
 six==1.16.0
