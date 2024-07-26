@@ -129,6 +129,8 @@ class RootPage(Page):
                     error_mssages={'invalid': 'not a valid hex color.'}
                 )),
                 ('padding', blocks.IntegerBlock(min_value=0, help_text='Padding multiplier. default 0.')),
+                ('padding_top', blocks.IntegerBlock(min_value=0, help_text='Padding multiplier. default 0.')),
+                ('padding_bottom', blocks.IntegerBlock(min_value=0, help_text='Padding multiplier. default 0.')),
                 ('text_alignment', blocks.ChoiceBlock(choices=[
                     ('center', 'Center'),
                     ('left', 'Left'),
