@@ -160,6 +160,8 @@ class RootPage(Page):
                 'id': {'max_num': 1},
                 'background_color': {'max_num': 1},
                 'padding': {'max_num': 1},
+                'padding_top': {'max_num': 1},
+                'padding_bottom': {'max_num': 1},
                 'text_alignment': {'max_num': 1},
                 'analytics_label': {'max_num': 1},
             }, required=False))
