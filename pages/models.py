@@ -155,11 +155,13 @@ class RootPage(Page):
                     ('left', 'Left'),
                     ('right', 'Right'),
                 ], default='left')),
+                ('analytics_label', blocks.CharBlock(required=False)),
             ], block_counts={
                 'id': {'max_num': 1},
                 'background_color': {'max_num': 1},
                 'padding': {'max_num': 1},
                 'text_alignment': {'max_num': 1},
+                'analytics_label': {'max_num': 1},
             }, required=False))
         ])),
         ('divider', DividerBlock()),
