@@ -35,6 +35,9 @@ from .custom_blocks import ImageBlock, \
     DividerBlock, \
     APIRichTextBlock, \
     CTAButtonBarBlock, \
+    LinksGroupBlock, \
+    QuoteBlock, \
+    LinkInfoBlock, \
     CTALinkBlock
 
 from .custom_fields import Group
@@ -82,6 +85,11 @@ SECTION_CONTENT_BLOCKS = [
     ('text', APIRichTextBlock()),
     ('html', blocks.RawHTMLBlock()),
     ('cta_block', CTAButtonBarBlock()),
+    ('links_group', LinksGroupBlock()),
+    ('quote', QuoteBlock()),
+    ('faq', blocks.StreamBlock([
+        ('faq', FAQBlock()),
+    ]))
 ]
 
 # we have one RootPage, which is the parent of all other pages
@@ -92,7 +100,7 @@ class RootPage(Page):
         ('default', blocks.StructBlock([
         ])),
         ('landing', blocks.StructBlock([
-            ('nav_links', blocks.ListBlock(CTALinkBlock(required=False, label="Link"),
+            ('nav_links', blocks.ListBlock(LinkInfoBlock(required=False, label="Link"),
                 default=[],
                 label='Nav Links'
             )),
@@ -105,6 +113,11 @@ class RootPage(Page):
             ('image', APIImageChooserBlock(required=False)),
             ('image_alt', blocks.CharBlock(required=False)),
             ('config', blocks.StreamBlock([
+                ('id', blocks.RegexBlock(
+                    regex=r'[a-zA-Z0-9\-_]',
+                    help_text='html id of this element. eg: cool_section',
+                    error_mssages={'invalid': 'not a valid id.'}
+                )),
                 ('image_alignment', blocks.ChoiceBlock(choices=HERO_IMAGE_ALIGNMENT_CHOICES)),
                 ('image_size', blocks.ChoiceBlock(choices=HERO_IMAGE_SIZE_CHOICES)),
                 ('padding', blocks.IntegerBlock(min_value=0, help_text='Padding multiplier. default 0.')),
@@ -114,6 +127,7 @@ class RootPage(Page):
                     error_mssages={'invalid': 'not a valid hex color.'}
                 )),
             ], block_counts={
+                'id': {'max_num': 1},
                 'image_alignment': {'max_num': 1},
                 'image_size': {'max_num': 1},
                 'padding': {'max_num': 1},
@@ -123,6 +137,11 @@ class RootPage(Page):
         ('section', blocks.StructBlock([
             ('content', blocks.StreamBlock(SECTION_CONTENT_BLOCKS)),
             ('config', blocks.StreamBlock([
+                ('id', blocks.RegexBlock(
+                    regex=r'[a-zA-Z0-9\-_]',
+                    help_text='html id of this element. eg: cool_section',
+                    error_mssages={'invalid': 'not a valid id.'}
+                )),
                 ('background_color', blocks.RegexBlock(
                     regex=r'#[a-zA-Z0-9]{6}',
                     help_text='eg: #ff0000',
@@ -135,6 +154,7 @@ class RootPage(Page):
                     ('right', 'Right'),
                 ], default='left')),
             ], block_counts={
+                'id': {'max_num': 1},
                 'background_color': {'max_num': 1},
                 'padding': {'max_num': 1},
                 'text_alignment': {'max_num': 1},
