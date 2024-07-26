@@ -148,16 +148,22 @@ class RootPage(Page):
                     error_mssages={'invalid': 'not a valid hex color.'}
                 )),
                 ('padding', blocks.IntegerBlock(min_value=0, help_text='Padding multiplier. default 0.')),
+                ('padding_top', blocks.IntegerBlock(min_value=0, help_text='Padding multiplier. default 0.')),
+                ('padding_bottom', blocks.IntegerBlock(min_value=0, help_text='Padding multiplier. default 0.')),
                 ('text_alignment', blocks.ChoiceBlock(choices=[
                     ('center', 'Center'),
                     ('left', 'Left'),
                     ('right', 'Right'),
                 ], default='left')),
+                ('analytics_label', blocks.CharBlock(required=False)),
             ], block_counts={
                 'id': {'max_num': 1},
                 'background_color': {'max_num': 1},
                 'padding': {'max_num': 1},
+                'padding_top': {'max_num': 1},
+                'padding_bottom': {'max_num': 1},
                 'text_alignment': {'max_num': 1},
+                'analytics_label': {'max_num': 1},
             }, required=False))
         ])),
         ('divider', DividerBlock()),

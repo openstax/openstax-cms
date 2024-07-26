@@ -96,8 +96,10 @@ class LinksGroupBlock(blocks.StructBlock):
             ('blue', 'Blue'),
             ('deep-green', 'Deep Green'),
         ], default='descending')),
+        ('analytics_label', blocks.CharBlock(required=False)),
     ], block_counts={
         'color': {'max_num': 1},
+        'analytics_label': {'max_num': 1},
     }, required=False)
 
     class Meta:
@@ -110,12 +112,9 @@ class CTAButtonBarBlock(blocks.StructBlock):
         default=[], max_num=2, label='Actions'
     )
     config = blocks.StreamBlock([
-        ('priority', blocks.ChoiceBlock(choices=[
-            ('descending', 'Descending'),
-            ('equal', 'Equal'),
-        ], default='descending')),
+        ('analytics_label', blocks.CharBlock(required=False)),
     ], block_counts={
-        'priority': {'max_num': 1},
+        'analytics_label': {'max_num': 1},
     }, required=False)
 
     class Meta:
