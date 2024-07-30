@@ -236,6 +236,7 @@ class RootPage(Page):
 class FlexPage(RootPage):
     parent_page_types = ['pages.RootPage']
     template = 'page.html'
+    max_count = None
 
     def get_url_parts(self, *args, **kwargs):
         url_parts = super(FlexPage, self).get_url_parts(*args, **kwargs)
