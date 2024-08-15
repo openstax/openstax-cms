@@ -23,6 +23,7 @@ class LinkBlock(blocks.StreamBlock):
     external = blocks.URLBlock(required=False)
     internal = blocks.PageChooserBlock(required=False)
     document = DocumentChooserBlock(required=False)
+    anchor = blocks.CharBlock(required=False)
 
     class Meta:
         icon = 'link'
@@ -46,26 +47,75 @@ class LinkBlock(blocks.StreamBlock):
                     'value': child.value.url_path,
                     'type': child.block_type,
                 }
+            elif child.block_type == 'anchor':
+                return {
+                    'value': "#{anchor}".format(anchor=child.value),
+                    'type': child.block_type,
+                }
             else:
                 return None
 
 
-class CTALinkBlock(blocks.StructBlock):
+class LinkInfoBlock(blocks.StructBlock):
     text = blocks.CharBlock(required=True)
     aria_label = blocks.CharBlock(required=False)
     target = LinkBlock(required=True)
 
     class Meta:
         icon = 'placeholder'
+        label = "Link"
+
+class CTALinkBlock(LinkInfoBlock):
+    text = blocks.CharBlock(required=True)
+    aria_label = blocks.CharBlock(required=False)
+    target = LinkBlock(required=True)
+    config = blocks.StreamBlock([
+        ('style', blocks.ChoiceBlock(choices=[
+            ('orange', 'Orange'),
+            ('white', 'White'),
+            ('blue_outline', 'Blue Outline'),
+            ('deep_green_outline', 'Deep Green Outline'),
+        ], default='descending')),
+    ], block_counts={
+        'style': {'max_num': 1},
+    }, required=False)
+
+    class Meta:
+        icon = 'placeholder'
         label = "Call to Action"
 
 
+class LinksGroupBlock(blocks.StructBlock):
+    links = blocks.ListBlock(
+        LinkInfoBlock(required=False, label="Link"),
+        default=[], label='Links'
+    )
+    config = blocks.StreamBlock([
+        ('color', blocks.ChoiceBlock(choices=[
+            ('white', 'White'),
+            ('blue', 'Blue'),
+            ('deep-green', 'Deep Green'),
+        ], default='descending')),
+        ('analytics_label', blocks.CharBlock(required=False)),
+    ], block_counts={
+        'color': {'max_num': 1},
+        'analytics_label': {'max_num': 1},
+    }, required=False)
+
+    class Meta:
+        icon = 'placeholder'
+        label = "Links Group"
+
 class CTAButtonBarBlock(blocks.StructBlock):
-    actions = blocks.ListBlock(CTALinkBlock(required=False, label="Button"),
-                               default=[],
-                               max_num=2,
-                               label='Actions'
-                               )
+    actions = blocks.ListBlock(
+        CTALinkBlock(required=False, label="Button"),
+        default=[], max_num=2, label='Actions'
+    )
+    config = blocks.StreamBlock([
+        ('analytics_label', blocks.CharBlock(required=False)),
+    ], block_counts={
+        'analytics_label': {'max_num': 1},
+    }, required=False)
 
     class Meta:
         icon = 'placeholder'
@@ -88,6 +138,11 @@ class APIImageChooserBlock(ImageChooserBlock):
         except AttributeError:
             return None
 
+class QuoteBlock(StructBlock):
+    image = APIImageChooserBlock()
+    content = blocks.RichTextBlock()
+    name = blocks.CharBlock()
+    title = blocks.CharBlock(requred=False)
 
 class DividerBlock(StructBlock):
     image = APIImageChooserBlock()

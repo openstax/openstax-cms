@@ -35,6 +35,9 @@ from .custom_blocks import ImageBlock, \
     DividerBlock, \
     APIRichTextBlock, \
     CTAButtonBarBlock, \
+    LinksGroupBlock, \
+    QuoteBlock, \
+    LinkInfoBlock, \
     CTALinkBlock
 
 from .custom_fields import Group
@@ -77,6 +80,11 @@ SECTION_CONTENT_BLOCKS = [
     ('text', APIRichTextBlock()),
     ('html', blocks.RawHTMLBlock()),
     ('cta_block', CTAButtonBarBlock()),
+    ('links_group', LinksGroupBlock()),
+    ('quote', QuoteBlock()),
+    ('faq', blocks.StreamBlock([
+        ('faq', FAQBlock()),
+    ]))
 ]
 
 # we have one RootPage, which is the parent of all other pages
@@ -87,7 +95,7 @@ class RootPage(Page):
         ('default', blocks.StructBlock([
         ])),
         ('landing', blocks.StructBlock([
-            ('nav_links', blocks.ListBlock(CTALinkBlock(required=False, label="Link"),
+            ('nav_links', blocks.ListBlock(LinkInfoBlock(required=False, label="Link"),
                 default=[],
                 label='Nav Links'
             )),
@@ -101,6 +109,11 @@ class RootPage(Page):
             ('image_alt', blocks.CharBlock(required=False)),
             ('config', blocks.StreamBlock([
                 ('image_alignment', blocks.ChoiceBlock(choices=HERO_IMAGE_ALIGNMENT_CHOICES, help_text='Controls if the image is on the left or right side of the content, and if it prefers to be at the top, center, or bottom of the available space.')),
+                ('id', blocks.RegexBlock(
+                    regex=r'[a-zA-Z0-9\-_]',
+                    help_text='HTML id of this element. not visible to users, but is visible in urls and is used to link to a certain part of the page with an anchor link. eg: cool_section',
+                    error_mssages={'invalid': 'not a valid id.'}
+                )),
                 ('background_color', blocks.RegexBlock(
                     regex=r'#[a-zA-Z0-9]{6}',
                     help_text='Sets the background color of the section. value must be hex eg: #ff0000. Default grey.',
@@ -114,16 +127,26 @@ class RootPage(Page):
                     ('left', 'Left'),
                     ('right', 'Right'),
                 ], default='left', help_text='Configures text alignment within the container. Default Left.')),
+                ('analytics_label', blocks.CharBlock(required=False, help_text='Sets the "analytics nav" field for links within this section.')),
             ], block_counts={
                 'image_alignment': {'max_num': 1},
-                'image_size': {'max_num': 1},
-                'padding': {'max_num': 1},
+                'id': {'max_num': 1},
                 'background_color': {'max_num': 1},
+                'padding': {'max_num': 1},
+                'padding_top': {'max_num': 1},
+                'padding_bottom': {'max_num': 1},
+                'text_alignment': {'max_num': 1},
+                'analytics_label': {'max_num': 1},
             }, required=False))
         ])),
         ('section', blocks.StructBlock([
             ('content', blocks.StreamBlock(SECTION_CONTENT_BLOCKS)),
             ('config', blocks.StreamBlock([
+                ('id', blocks.RegexBlock(
+                    regex=r'[a-zA-Z0-9\-_]',
+                    help_text='HTML id of this element. not visible to users, but is visible in urls and is used to link to a certain part of the page with an anchor link. eg: cool_section',
+                    error_mssages={'invalid': 'not a valid id.'}
+                )),
                 ('background_color', blocks.RegexBlock(
                     regex=r'#[a-zA-Z0-9]{6}',
                     help_text='Sets the background color of the section. value must be hex eg: #ff0000. Default grey.',
@@ -137,10 +160,15 @@ class RootPage(Page):
                     ('left', 'Left'),
                     ('right', 'Right'),
                 ], default='left', help_text='Configures text alignment within the container. Default Left.')),
+                ('analytics_label', blocks.CharBlock(required=False, help_text='Sets the "analytics nav" field for links within this section.')),
             ], block_counts={
+                'id': {'max_num': 1},
                 'background_color': {'max_num': 1},
                 'padding': {'max_num': 1},
+                'padding_top': {'max_num': 1},
+                'padding_bottom': {'max_num': 1},
                 'text_alignment': {'max_num': 1},
+                'analytics_label': {'max_num': 1},
             }, required=False))
         ])),
         ('divider', DividerBlock()),
@@ -213,6 +241,7 @@ class RootPage(Page):
 class FlexPage(RootPage):
     parent_page_types = ['pages.RootPage']
     template = 'page.html'
+    max_count = None
 
     def get_url_parts(self, *args, **kwargs):
         url_parts = super(FlexPage, self).get_url_parts(*args, **kwargs)
