@@ -52,15 +52,10 @@ CARDS_STYLE_CHOICES = [
 HERO_IMAGE_ALIGNMENT_CHOICES = [
     ('left', 'Left'),
     ('right', 'Right'),
-    ('topLeft', 'Top Left'),
-    ('topRight', 'Top Right'),
-    ('bottomLeft', 'Bottom Left'),
-    ('bottomRight', 'Bottom Right'),
-]
-HERO_IMAGE_SIZE_CHOICES = [
-    ('auto', 'Auto'),
-    ('contain', 'Contain'),
-    ('cover', 'Cover'),
+    ('top_left', 'Top Left'),
+    ('top_right', 'Top Right'),
+    ('bottom_left', 'Bottom Left'),
+    ('bottom_right', 'Bottom Right'),
 ]
 SECTION_CONTENT_BLOCKS = [
     ('cards_block', blocks.StructBlock([
@@ -75,8 +70,8 @@ SECTION_CONTENT_BLOCKS = [
             ]),
         )),
         ('config', blocks.StreamBlock([
-            ('card_size', blocks.IntegerBlock(min_value=0, help_text='Width multiplier. default 27.')),
-            ('card_style', blocks.ChoiceBlock(choices=CARDS_STYLE_CHOICES)),
+            ('card_size', blocks.IntegerBlock(min_value=0, help_text='Sets the width of the individual cards. default 27.')),
+            ('card_style', blocks.ChoiceBlock(choices=CARDS_STYLE_CHOICES, help_text='The border style of the cards. default borderless.')),
         ], block_counts={
             'card_size': {'max_num': 1},
             'card_style': {'max_num': 1},
@@ -113,25 +108,35 @@ class RootPage(Page):
             ('image', APIImageChooserBlock(required=False)),
             ('image_alt', blocks.CharBlock(required=False)),
             ('config', blocks.StreamBlock([
+                ('image_alignment', blocks.ChoiceBlock(choices=HERO_IMAGE_ALIGNMENT_CHOICES, help_text='Controls if the image is on the left or right side of the content, and if it prefers to be at the top, center, or bottom of the available space.')),
                 ('id', blocks.RegexBlock(
                     regex=r'[a-zA-Z0-9\-_]',
-                    help_text='html id of this element. eg: cool_section',
+                    help_text='HTML id of this element. not visible to users, but is visible in urls and is used to link to a certain part of the page with an anchor link. eg: cool_section',
                     error_mssages={'invalid': 'not a valid id.'}
                 )),
-                ('image_alignment', blocks.ChoiceBlock(choices=HERO_IMAGE_ALIGNMENT_CHOICES)),
-                ('image_size', blocks.ChoiceBlock(choices=HERO_IMAGE_SIZE_CHOICES)),
-                ('padding', blocks.IntegerBlock(min_value=0, help_text='Padding multiplier. default 0.')),
                 ('background_color', blocks.RegexBlock(
                     regex=r'#[a-zA-Z0-9]{6}',
-                    help_text='eg: #ff0000',
+                    help_text='Sets the background color of the section. value must be hex eg: #ff0000. Default grey.',
                     error_mssages={'invalid': 'not a valid hex color.'}
                 )),
+                ('padding', blocks.IntegerBlock(min_value=0, help_text='Creates space above and below this section. default 0.')),
+                ('padding_top', blocks.IntegerBlock(min_value=0, help_text='Creates space above this section. default 0.')),
+                ('padding_bottom', blocks.IntegerBlock(min_value=0, help_text='Creates space below this section. default 0.')),
+                ('text_alignment', blocks.ChoiceBlock(choices=[
+                    ('center', 'Center'),
+                    ('left', 'Left'),
+                    ('right', 'Right'),
+                ], default='left', help_text='Configures text alignment within the container. Default Left.')),
+                ('analytics_label', blocks.CharBlock(required=False, help_text='Sets the "analytics nav" field for links within this section.')),
             ], block_counts={
-                'id': {'max_num': 1},
                 'image_alignment': {'max_num': 1},
-                'image_size': {'max_num': 1},
-                'padding': {'max_num': 1},
+                'id': {'max_num': 1},
                 'background_color': {'max_num': 1},
+                'padding': {'max_num': 1},
+                'padding_top': {'max_num': 1},
+                'padding_bottom': {'max_num': 1},
+                'text_alignment': {'max_num': 1},
+                'analytics_label': {'max_num': 1},
             }, required=False))
         ])),
         ('section', blocks.StructBlock([
@@ -139,23 +144,23 @@ class RootPage(Page):
             ('config', blocks.StreamBlock([
                 ('id', blocks.RegexBlock(
                     regex=r'[a-zA-Z0-9\-_]',
-                    help_text='html id of this element. eg: cool_section',
+                    help_text='HTML id of this element. not visible to users, but is visible in urls and is used to link to a certain part of the page with an anchor link. eg: cool_section',
                     error_mssages={'invalid': 'not a valid id.'}
                 )),
                 ('background_color', blocks.RegexBlock(
                     regex=r'#[a-zA-Z0-9]{6}',
-                    help_text='eg: #ff0000',
+                    help_text='Sets the background color of the section. value must be hex eg: #ff0000. Default grey.',
                     error_mssages={'invalid': 'not a valid hex color.'}
                 )),
-                ('padding', blocks.IntegerBlock(min_value=0, help_text='Padding multiplier. default 0.')),
-                ('padding_top', blocks.IntegerBlock(min_value=0, help_text='Padding multiplier. default 0.')),
-                ('padding_bottom', blocks.IntegerBlock(min_value=0, help_text='Padding multiplier. default 0.')),
+                ('padding', blocks.IntegerBlock(min_value=0, help_text='Creates space above and below this section. default 0.')),
+                ('padding_top', blocks.IntegerBlock(min_value=0, help_text='Creates space above this section. default 0.')),
+                ('padding_bottom', blocks.IntegerBlock(min_value=0, help_text='Creates space below this section. default 0.')),
                 ('text_alignment', blocks.ChoiceBlock(choices=[
                     ('center', 'Center'),
                     ('left', 'Left'),
                     ('right', 'Right'),
-                ], default='left')),
-                ('analytics_label', blocks.CharBlock(required=False)),
+                ], default='left', help_text='Configures text alignment within the container. Default Left.')),
+                ('analytics_label', blocks.CharBlock(required=False, help_text='Sets the "analytics nav" field for links within this section.')),
             ], block_counts={
                 'id': {'max_num': 1},
                 'background_color': {'max_num': 1},

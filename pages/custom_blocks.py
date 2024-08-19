@@ -20,10 +20,10 @@ class APIRichTextBlock(blocks.RichTextBlock):
 
 
 class LinkBlock(blocks.StreamBlock):
-    external = blocks.URLBlock(required=False)
+    external = blocks.URLBlock(required=False, help_text='External links are full urls that can go anywhere')
     internal = blocks.PageChooserBlock(required=False)
     document = DocumentChooserBlock(required=False)
-    anchor = blocks.CharBlock(required=False)
+    anchor = blocks.CharBlock(required=False, help_text='Anchor links reference the ID of an element on the page, and scroll the page there.')
 
     class Meta:
         icon = 'link'
@@ -57,8 +57,8 @@ class LinkBlock(blocks.StreamBlock):
 
 
 class LinkInfoBlock(blocks.StructBlock):
-    text = blocks.CharBlock(required=True)
-    aria_label = blocks.CharBlock(required=False)
+    text = blocks.CharBlock(required=True, help_text='Visible text of the link or button.')
+    aria_label = blocks.CharBlock(required=False, help_text='Accessible label for the link or button. if provided, must begin with the visible text.')
     target = LinkBlock(required=True)
 
     class Meta:
@@ -66,8 +66,8 @@ class LinkInfoBlock(blocks.StructBlock):
         label = "Link"
 
 class CTALinkBlock(LinkInfoBlock):
-    text = blocks.CharBlock(required=True)
-    aria_label = blocks.CharBlock(required=False)
+    text = blocks.CharBlock(required=True, help_text='Visible text of the link or button.')
+    aria_label = blocks.CharBlock(required=False, help_text='Accessible label for the link or button. if provided, must begin with the visible text.')
     target = LinkBlock(required=True)
     config = blocks.StreamBlock([
         ('style', blocks.ChoiceBlock(choices=[
@@ -75,7 +75,7 @@ class CTALinkBlock(LinkInfoBlock):
             ('white', 'White'),
             ('blue_outline', 'Blue Outline'),
             ('deep_green_outline', 'Deep Green Outline'),
-        ], default='descending')),
+        ], help_text='Specifies the button style. Default unspecified, meaning the first button in the block is orange and the second is white.')),
     ], block_counts={
         'style': {'max_num': 1},
     }, required=False)
@@ -95,8 +95,8 @@ class LinksGroupBlock(blocks.StructBlock):
             ('white', 'White'),
             ('blue', 'Blue'),
             ('deep-green', 'Deep Green'),
-        ], default='descending')),
-        ('analytics_label', blocks.CharBlock(required=False)),
+        ], help_text="The color of the link buttons. Default white.")),
+        ('analytics_label', blocks.CharBlock(required=False, help_text='Sets the "analytics nav" field for links within this group.')),
     ], block_counts={
         'color': {'max_num': 1},
         'analytics_label': {'max_num': 1},
@@ -112,7 +112,7 @@ class CTAButtonBarBlock(blocks.StructBlock):
         default=[], max_num=2, label='Actions'
     )
     config = blocks.StreamBlock([
-        ('analytics_label', blocks.CharBlock(required=False)),
+        ('analytics_label', blocks.CharBlock(required=False, help_text='Sets the "analytics nav" field for links within this group.')),
     ], block_counts={
         'analytics_label': {'max_num': 1},
     }, required=False)
@@ -140,9 +140,9 @@ class APIImageChooserBlock(ImageChooserBlock):
 
 class QuoteBlock(StructBlock):
     image = APIImageChooserBlock()
-    content = blocks.RichTextBlock()
-    name = blocks.CharBlock()
-    title = blocks.CharBlock(requred=False)
+    content = blocks.RichTextBlock(help_text="The quote content.")
+    name = blocks.CharBlock(help_text="The name of the person or entity to attribute the quote to.")
+    title = blocks.CharBlock(requred=False, help_text="Additional title or label about the quotee.")
 
 class DividerBlock(StructBlock):
     image = APIImageChooserBlock()
@@ -153,19 +153,23 @@ class DividerBlock(StructBlock):
             ('content_right', 'Right side of content.'),
             ('body_left', 'Left side of window.'),
             ('body_right', 'Right side of window.'),
-        ], default='center')),
-        ('width', blocks.RegexBlock(regex=r'^[0-9]+(px|%|rem)$', required=False, error_messages={
-            'invalid': "must be valid css measurement. eg: 30px, 50%, 10rem"
-        })),
-        ('height', blocks.RegexBlock(regex=r'^[0-9]+(px|%|rem)$', required=False, error_messages={
-            'invalid': "must be valid css measurement. eg: 30px, 50%, 10rem"
-        })),
-        ('offset_vertical', blocks.RegexBlock(regex=r'^\-?[0-9]+(px|%|rem)$', required=False, error_messages={
-            'invalid': "must be valid css measurement. eg: 30px, 50%, 10rem"
-        })),
-        ('offset_horizontal', blocks.RegexBlock(regex=r'^\-?[0-9]+(px|%|rem)$', required=False, error_messages={
-            'invalid': "must be valid css measurement. eg: 30px, 50%, 10rem"
-        }))
+        ], default='center', help_text='Sets the horizontal alignment of the image. can be further customized with the "Offset..." configurations. Default is Left side of window.')),
+        ('width', blocks.RegexBlock(regex=r'^[0-9]+(px|%|rem)$', required=False,
+            help_text="Specifies the width of the image. Percentages are relative to the container (body or content, depending on alignment option). Must be valid css measurement. eg: 30px, 50%, 10rem. Default is the size of the image.",
+            error_mssages={'invalid': 'not a valid size.'}
+        )),
+        ('height', blocks.RegexBlock(regex=r'^[0-9]+(px|%|rem)$', required=False,
+            help_text="Specifies the height of the image. Percentages are relative to the container (body or content, depending on alignment option). Must be valid css measurement. eg: 30px, 50%, 10rem. Default is the size of the image.",
+            error_mssages={'invalid': 'not a valid size.'}
+        )),
+        ('offset_vertical', blocks.RegexBlock(regex=r'^\-?[0-9]+(px|%|rem)$', required=False,
+            help_text="Moves the image up or down. Percentages are relative to the image size. Must be valid css measurement. eg: 30px, 50%, 10rem. Default is -50%, which moves the image up by half its width (centering it vertically on the divider).",
+            error_mssages={'invalid': 'not a valid size.'}
+        )),
+        ('offset_horizontal', blocks.RegexBlock(regex=r'^\-?[0-9]+(px|%|rem)$', required=False,
+            help_text="Moves the image left or right. Percentages are relative to the image size. Must be valid css measurement. eg: 30px, 50%, 10rem. Default is no offset, which means the image's outer edge will align with the container's edge for left and right alignment. or it'll be perfectly centered for centered alignment.",
+            error_mssages={'invalid': 'not a valid size.'}
+        ))
     ], block_counts={
         'alignment': {'max_num': 1},
         'width': {'max_num': 1},
@@ -196,10 +200,10 @@ class ColumnBlock(blocks.StructBlock):
 
 
 class FAQBlock(blocks.StructBlock):
-    question = blocks.RichTextBlock(required=True)
-    slug = blocks.CharBlock(required=True)
-    answer = blocks.RichTextBlock(required=True)
-    document = DocumentChooserBlock(required=False)
+    question = blocks.RichTextBlock(required=True, help_text='The visible text of the question (does not collapse).')
+    slug = blocks.CharBlock(required=True, help_text='Not visible to user, must be unique in this FAQ.')
+    answer = blocks.RichTextBlock(required=True, help_text='The answer to the question, is hidden until the question is expanded.')
+    document = DocumentChooserBlock(required=False, help_text='Not sure this does anything.')
 
     class Meta:
         icon = 'bars'
