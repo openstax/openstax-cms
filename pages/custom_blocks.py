@@ -20,10 +20,10 @@ class APIRichTextBlock(blocks.RichTextBlock):
 
 
 class LinkBlock(blocks.StreamBlock):
-    external = blocks.URLBlock(required=False)
+    external = blocks.URLBlock(required=False, help_text='External links are full urls that can go anywhere')
     internal = blocks.PageChooserBlock(required=False)
     document = DocumentChooserBlock(required=False)
-    anchor = blocks.CharBlock(required=False)
+    anchor = blocks.CharBlock(required=False, help_text='Anchor links reference the ID of an element on the page, and scroll the page there.')
 
     class Meta:
         icon = 'link'
@@ -57,8 +57,8 @@ class LinkBlock(blocks.StreamBlock):
 
 
 class LinkInfoBlock(blocks.StructBlock):
-    text = blocks.CharBlock(required=True)
-    aria_label = blocks.CharBlock(required=False)
+    text = blocks.CharBlock(required=True, help_text='Visible text of the link or button.')
+    aria_label = blocks.CharBlock(required=False, help_text='Accessible label for the link or button. if provided, must begin with the visible text.')
     target = LinkBlock(required=True)
 
     class Meta:
@@ -95,7 +95,7 @@ class LinksGroupBlock(blocks.StructBlock):
             ('white', 'White'),
             ('blue', 'Blue'),
             ('deep-green', 'Deep Green'),
-        ], help_text="The color of the link buttons. Default white."),
+        ], help_text="The color of the link buttons. Default white.")),
         ('analytics_label', blocks.CharBlock(required=False, help_text='Sets the "analytics nav" field for links within this group.')),
     ], block_counts={
         'color': {'max_num': 1},
