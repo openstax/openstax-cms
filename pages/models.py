@@ -216,50 +216,30 @@ class RootPage(Page):
         return self.path
 
     def get_url_parts(self, *args, **kwargs):
-        url_parts = super(RootPage, self).get_url_parts(*args, **kwargs)
+        url_parts = super().get_url_parts(*args, **kwargs)
 
         if url_parts is None:
-            # in this case, the page doesn't have a well-defined URL in the first place -
-            # for example, it's been created at the top level of the page tree
-            # and hasn't been associated with a site record
             return None
 
-        site_id, root_url, page_path = url_parts
-
-        # return '/' in place of the real page path for the root page
-        return site_id, root_url, '/'
-
-    def get_sitemap_urls(self, request=None):
-        return [
-            {
-                'location': '{}/'.format(Site.find_for_request(request).root_url),
-                'lastmod': (self.last_published_at or self.latest_revision_created_at),
-            }
-        ]
+        # note that we ignore the slug and hardcode this url to / for the root page
+        site_id, site_root_url, page_url_relative_to_site_root = url_parts
+        return (site_id, site_root_url, '/')
 
 # subclass of RootPage with a few overrides for subpages
 class FlexPage(RootPage):
-    parent_page_types = ['pages.RootPage']
+    parent_page_types = ['pages.RootPage', 'pages.FlexPage']
+    subpage_types = ['pages.FlexPage']
     template = 'page.html'
     max_count = None
 
     def get_url_parts(self, *args, **kwargs):
-        url_parts = super(FlexPage, self).get_url_parts(*args, **kwargs)
+        url_parts = super().get_url_parts(*args, **kwargs)
 
         if url_parts is None:
             return None
 
-        site_id, root_url, page_path = url_parts
-
-        return site_id, root_url, page_path
-
-    def get_sitemap_urls(self, request=None):
-        return [
-            {
-                'location': '{}/{}'.format(Site.find_for_request(request).root_url, self.slug),
-                'lastmod': (self.last_published_at or self.latest_revision_created_at),
-            }
-        ]
+        site_id, site_root_url, page_url_relative_to_site_root = url_parts
+        return (site_id, site_root_url, '/{}'.format(self.slug))
 
 
 #TODO: start removing these pages as we move to the above structure for all pages.
@@ -1951,6 +1931,12 @@ class ImpactStory(Page):
     ]
 
     parent_page_types = ['pages.Impact']
+
+    def get_url_parts(self, *args, **kwargs):
+        return None
+
+    def get_sitemap_urls(self, request=None):
+        return []
 
 
 class Impact(Page):
