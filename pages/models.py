@@ -216,50 +216,30 @@ class RootPage(Page):
         return self.path
 
     def get_url_parts(self, *args, **kwargs):
-        url_parts = super(RootPage, self).get_url_parts(*args, **kwargs)
+        url_parts = super().get_url_parts(*args, **kwargs)
 
         if url_parts is None:
-            # in this case, the page doesn't have a well-defined URL in the first place -
-            # for example, it's been created at the top level of the page tree
-            # and hasn't been associated with a site record
             return None
 
-        site_id, root_url, page_path = url_parts
-
-        # return '/' in place of the real page path for the root page
-        return site_id, root_url, '/'
-
-    def get_sitemap_urls(self, request=None):
-        return [
-            {
-                'location': '{}/'.format(Site.find_for_request(request).root_url),
-                'lastmod': (self.last_published_at or self.latest_revision_created_at),
-            }
-        ]
+        # note that we ignore the slug and hardcode this url to / for the root page
+        site_id, site_root_url, page_url_relative_to_site_root = url_parts
+        return (site_id, site_root_url, '/')
 
 # subclass of RootPage with a few overrides for subpages
 class FlexPage(RootPage):
-    parent_page_types = ['pages.RootPage']
+    parent_page_types = ['pages.RootPage', 'pages.FlexPage']
+    subpage_types = ['pages.FlexPage']
     template = 'page.html'
     max_count = None
 
     def get_url_parts(self, *args, **kwargs):
-        url_parts = super(FlexPage, self).get_url_parts(*args, **kwargs)
+        url_parts = super().get_url_parts(*args, **kwargs)
 
         if url_parts is None:
             return None
 
-        site_id, root_url, page_path = url_parts
-
-        return site_id, root_url, page_path
-
-    def get_sitemap_urls(self, request=None):
-        return [
-            {
-                'location': '{}/{}'.format(Site.find_for_request(request).root_url, self.slug),
-                'lastmod': (self.last_published_at or self.latest_revision_created_at),
-            }
-        ]
+        site_id, site_root_url, page_url_relative_to_site_root = url_parts
+        return (site_id, site_root_url, '/{}'.format(self.slug))
 
 
 #TODO: start removing these pages as we move to the above structure for all pages.
@@ -809,13 +789,15 @@ class K12MainPage(Page):
     sticky_header = models.CharField(default='', blank=True, max_length=255)
     sticky_description = models.TextField(default='', blank=True)
 
-    def get_sitemap_urls(self, request=None):
-        return [
-            {
-                'location': '{}/k12'.format(Site.find_for_request(request).root_url),
-                'lastmod': (self.last_published_at or self.latest_revision_created_at),
-            }
-        ]
+    def get_url_parts(self, *args, **kwargs):
+        url_parts = super().get_url_parts(*args, **kwargs)
+
+        if url_parts is None:
+            return None
+
+        # note that we ignore the slug and hardcode this url to /k12
+        site_id, site_root_url, page_url_relative_to_site_root = url_parts
+        return (site_id, site_root_url, '/k12')
 
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
@@ -975,27 +957,21 @@ class GeneralPage(Page):
         ('html', blocks.RawHTMLBlock()),
     ], use_json_field=True)
 
-    def get_sitemap_urls(self, request=None):
-        if self.slug in ['kinetic', 'write-for-us', 'editorial-calendar']:
-            return [
-                {
-                    'location': '{}/{}'.format(Site.find_for_request(request).root_url, self.slug),
-                    'lastmod': (self.last_published_at or self.latest_revision_created_at),
-                }
-            ]
-        else:
+    def get_sitemap_urls(self, *args, **kwargs):
+        if self.slug not in ['kinetic', 'write-for-us', 'editorial-calendar']:
             return []
 
+        return super().get_sitemap_urls(*args, **kwargs)
+
     def get_url_parts(self, *args, **kwargs):
-        url_parts = super(GeneralPage, self).get_url_parts(*args, **kwargs)
+        url_parts = super().get_url_parts(*args, **kwargs)
 
         if url_parts is None:
             return None
 
-        site_id, root_url, page_path = url_parts
-        page_path = '/general' + page_path
-
-        return (site_id, root_url, page_path)
+        # note that we ignore the parents, all general pages are /{slug}
+        site_id, site_root_url, page_url_relative_to_site_root = url_parts
+        return (site_id, site_root_url, '/{}'.format(self.slug))
 
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
@@ -1952,6 +1928,12 @@ class ImpactStory(Page):
 
     parent_page_types = ['pages.Impact']
 
+    def get_url_parts(self, *args, **kwargs):
+        return None
+
+    def get_sitemap_urls(self, request=None):
+        return []
+
 
 class Impact(Page):
     improving_access = StreamField(
@@ -2820,17 +2802,15 @@ class Subjects(Page):
 
         return subject_list
 
-    def get_sitemap_urls(self, request=None):
-        flag = FeatureFlag.objects.filter(name='new_subjects')
-        if flag[0].feature_active:
-            return [
-                {
-                    'location': '{}/subjects'.format(Site.find_for_request(request).root_url),
-                    'lastmod': (self.last_published_at or self.latest_revision_created_at),
-                }
-            ]
-        else:
-            return []
+    def get_url_parts(self, *args, **kwargs):
+        url_parts = super().get_url_parts(*args, **kwargs)
+
+        if url_parts is None:
+            return None
+
+        # note that we ignore the slug and hardcode this url to /subjects
+        site_id, site_root_url, page_url_relative_to_site_root = url_parts
+        return (site_id, site_root_url, '/subjects')
 
     api_fields = [
         APIField('heading'),
@@ -2944,17 +2924,15 @@ class Subject(Page):
         related_name='+'
     )
 
-    def get_sitemap_urls(self, request=None):
-        flag = FeatureFlag.objects.filter(name='new_subjects')
-        if flag[0].feature_active:
-            return [
-                {
-                    'location': '{}/subjects/{}'.format(Site.find_for_request(request).root_url, self.slug[0:-6]),
-                    'lastmod': (self.last_published_at or self.latest_revision_created_at),
-                }
-            ]
-        else:
-            return []
+    def get_url_parts(self, *args, **kwargs):
+        url_parts = super().get_url_parts(*args, **kwargs)
+
+        if url_parts is None:
+            return None
+
+        # note that we ignore the slug and hardcode this url to /subjects
+        site_id, site_root_url, page_url_relative_to_site_root = url_parts
+        return (site_id, site_root_url, '/subjects/{}'.format(self.slug[0:-6]))
 
     @property
     def selected_subject(self):
@@ -3268,13 +3246,14 @@ class K12Subject(Page):
             })
         return faculty_resource_data
 
-    def get_sitemap_urls(self, request=None):
-        return [
-            {
-                'location': '{}/k12/{}'.format(Site.find_for_request(request).root_url, self.slug[4:]),
-                'lastmod': (self.last_published_at or self.latest_revision_created_at),
-            }
-        ]
+    def get_url_parts(self, *args, **kwargs):
+        url_parts = super().get_url_parts(*args, **kwargs)
+
+        if url_parts is None:
+            return None
+
+        site_id, site_root_url, page_url_relative_to_site_root = url_parts
+        return (site_id, site_root_url, '/k12/{}'.format(self.slug[4:]))
 
     api_fields = [
         APIField('subheader'),

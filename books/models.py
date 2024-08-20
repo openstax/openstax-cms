@@ -1051,29 +1051,18 @@ class Book(Page):
         return super(Book, self).save(*args, **kwargs)
 
     def get_url_parts(self, *args, **kwargs):
-        # This overrides the "Live" link in admin to take you to proper FE page
-        url_parts = super(Book, self).get_url_parts(*args, **kwargs)
+        url_parts = super().get_url_parts(*args, **kwargs)
 
         if url_parts is None:
             return None
 
-        site_id, root_url, page_path = url_parts
-        page_path = '/details/books/' + self.slug
-
-        return (site_id, root_url, page_path)
-
-    def get_sitemap_urls(self, request=None):
-        return [
-            {
-                'location': '{}/details/books/{}'.format(Site.find_for_request(request).root_url, self.slug),
-                'lastmod': (self.last_published_at or self.latest_revision_created_at),
-            }
-        ]
+        site_id, site_root_url, page_url_relative_to_site_root = url_parts
+        return (site_id, site_root_url, '/details/books/{}'.format(self.slug))
 
     def __str__(self):
         return self.book_title
 
-
+# old subjects interface, deprecated
 class BookIndex(Page):
     page_description = models.TextField()
     dev_standards_heading = models.CharField(
@@ -1197,3 +1186,10 @@ class BookIndex(Page):
     parent_page_types = ['pages.HomePage']
     subpage_types = ['books.Book']
     max_count = 1
+
+    # BookIndex model is old subjects interface and is deprecated
+    def get_url_parts(self, *args, **kwargs):
+        return None
+
+    def get_sitemap_urls(self, request=None):
+        return []

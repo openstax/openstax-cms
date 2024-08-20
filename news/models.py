@@ -188,13 +188,15 @@ class NewsIndex(Page):
     parent_page_types = ['pages.HomePage']
     max_count = 1
 
-    def get_sitemap_urls(self, request=None):
-        return [
-            {
-                'location': '{}/blog'.format(Site.find_for_request(request).root_url),
-                'lastmod': (self.last_published_at or self.latest_revision_created_at),
-            }
-        ]
+    def get_url_parts(self, *args, **kwargs):
+        url_parts = super().get_url_parts(*args, **kwargs)
+
+        if url_parts is None:
+            return None
+        
+        # note that we ignore the slug and hardcode this url to /blog
+        site_id, site_root_url, page_url_relative_to_site_root = url_parts
+        return (site_id, site_root_url, '/blog')
 
 
 
@@ -422,13 +424,14 @@ class NewsArticle(Page):
 
         return super(NewsArticle, self).save(*args, **kwargs)
 
-    def get_sitemap_urls(self, request=None):
-        return [
-            {
-                'location': '{}/blog/{}'.format(Site.find_for_request(request).root_url, self.slug),
-                'lastmod': (self.last_published_at or self.latest_revision_created_at),
-            }
-        ]
+    def get_url_parts(self, *args, **kwargs):
+        url_parts = super().get_url_parts(*args, **kwargs)
+
+        if url_parts is None:
+            return None
+
+        site_id, site_root_url, page_url_relative_to_site_root = url_parts
+        return (site_id, site_root_url, '/blog/{}'.format(self.slug))
 
 
 class Experts(models.Model):
@@ -547,13 +550,15 @@ class PressIndex(Page):
         related_name='+'
     )
 
-    def get_sitemap_urls(self, request=None):
-        return [
-            {
-                'location': '{}/press'.format(Site.find_for_request(request).root_url),
-                'lastmod': (self.last_published_at or self.latest_revision_created_at),
-            }
-        ]
+    def get_url_parts(self, *args, **kwargs):
+        url_parts = super().get_url_parts(*args, **kwargs)
+
+        if url_parts is None:
+            return None
+
+        # note that we ignore the slug and hardcode this url to /press
+        site_id, site_root_url, page_url_relative_to_site_root = url_parts
+        return (site_id, site_root_url, '/press')
 
     @property
     def releases(self):
@@ -651,13 +656,14 @@ class PressRelease(Page):
         related_name='+'
     )
 
-    def get_sitemap_urls(self, request=None):
-        return [
-            {
-                'location': '{}/press/{}'.format(Site.find_for_request(request).root_url, self.slug),
-                'lastmod': (self.last_published_at or self.latest_revision_created_at),
-            }
-        ]
+    def get_url_parts(self, *args, **kwargs):
+        url_parts = super().get_url_parts(*args, **kwargs)
+
+        if url_parts is None:
+            return None
+
+        site_id, site_root_url, page_url_relative_to_site_root = url_parts
+        return (site_id, site_root_url, '/press/{}'.format(self.slug))
 
     search_fields = Page.search_fields + [
         index.SearchField('body'),
