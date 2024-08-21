@@ -1,5 +1,6 @@
 from django import forms
 from django.db import models
+from django.shortcuts import render
 
 from modelcluster.fields import ParentalKey
 from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel, TitleFieldPanel
@@ -205,7 +206,6 @@ class RootPage(Page):
     ]
 
     template = 'page.html'
-    preview_modes = []
     max_count = 1
     # TODO: we are allowing this to be built as a child of the homepage. Not ideal.
     # Once the home page is released, use something to migrate homepage children to root page and remove this parent type.
@@ -223,7 +223,18 @@ class RootPage(Page):
 
         # note that we ignore the slug and hardcode this url to / for the root page
         site_id, site_root_url, page_url_relative_to_site_root = url_parts
+
         return (site_id, site_root_url, '/')
+
+    def serve_preview(self, request, mode_name):
+        site_id, site_root, relative_page_url = self.get_url_parts(request)
+        preview_url = '{}{}/?preview={}'.format(site_root, relative_page_url, mode_name)
+
+        return render(
+            request,
+            "preview.html",
+            {"preview_url": preview_url},
+        )
 
 # subclass of RootPage with a few overrides for subpages
 class FlexPage(RootPage):
