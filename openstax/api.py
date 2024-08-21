@@ -2,8 +2,6 @@ from django.core.exceptions import MultipleObjectsReturned
 from django.shortcuts import redirect
 from django.urls import reverse, path
 from django.conf import settings
-from django.shortcuts import get_object_or_404
-
 
 from rest_framework.response import Response
 
