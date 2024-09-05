@@ -5,16 +5,16 @@ Django==5.0.4
 certifi==2024.7.4
 django-admin-rangefilter==0.12.1
 django-crontab==0.7.1
-django-compressor==4.4
+django-compressor==4.5.1
 django-filter==23.5
 django-import-export==2.8.0
 django-modelcluster==6.2.1
 django-openstax-accounts
 django-openstax-healthcheck
 django-rest-auth==0.9.5
-django-reversion==5.0.12
+django-reversion==5.1.0
 django-ses==3.5.2
-django-storages==1.12.3
+django-storages==1.14.4
 django-taggit>=5.0.0
 djangorestframework==3.15.2
 html2text==2020.1.16 # news feed
