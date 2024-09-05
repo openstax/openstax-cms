@@ -1,5 +1,6 @@
 from django import forms
 from django.db import models
+from django.shortcuts import render
 
 from modelcluster.fields import ParentalKey
 from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel, TitleFieldPanel
@@ -9,6 +10,7 @@ from wagtail.fields import RichTextField, StreamField
 from wagtail.models import Orderable, Page
 from wagtail.api import APIField
 from wagtail.models import Site
+from rest_framework.fields import Field
 
 from api.models import FeatureFlag
 from openstax.functions import build_image_url, build_document_url
@@ -30,12 +32,228 @@ from .custom_blocks import ImageBlock, \
     InfoBoxBlock, \
     TestimonialBlock, \
     AllyLogoBlock, \
-    AssignableBookBlock
+    AssignableBookBlock, \
+    DividerBlock, \
+    APIRichTextBlock, \
+    CTAButtonBarBlock, \
+    LinksGroupBlock, \
+    QuoteBlock, \
+    LinkInfoBlock, \
+    CTALinkBlock
 
-from .custom_fields import \
-    Group
+from .custom_fields import Group
 import snippets.models as snippets
 
+# Constants for styling options on Root/Flex pages
+# consider moving to a constants.py file
+CARDS_STYLE_CHOICES = [
+    ('rounded', 'Rounded'),
+    ('square', 'Square'),
+]
+HERO_IMAGE_ALIGNMENT_CHOICES = [
+    ('left', 'Left'),
+    ('right', 'Right'),
+    ('top_left', 'Top Left'),
+    ('top_right', 'Top Right'),
+    ('bottom_left', 'Bottom Left'),
+    ('bottom_right', 'Bottom Right'),
+]
+SECTION_CONTENT_BLOCKS = [
+    ('cards_block', blocks.StructBlock([
+        ('cards', blocks.ListBlock(
+            blocks.StructBlock([
+                ('text', APIRichTextBlock()),
+                ('cta_block', blocks.ListBlock(CTALinkBlock(required=False, label="Link"),
+                    default=[],
+                    max_num=1,
+                    label='Call To Action'
+                )),
+            ]),
+        )),
+        ('config', blocks.StreamBlock([
+            ('card_size', blocks.IntegerBlock(min_value=0, help_text='Sets the width of the individual cards. default 27.')),
+            ('card_style', blocks.ChoiceBlock(choices=CARDS_STYLE_CHOICES, help_text='The border style of the cards. default borderless.')),
+        ], block_counts={
+            'card_size': {'max_num': 1},
+            'card_style': {'max_num': 1},
+        }, required=False)),
+    ], label="Cards Block")),
+    ('text', APIRichTextBlock()),
+    ('html', blocks.RawHTMLBlock()),
+    ('cta_block', CTAButtonBarBlock()),
+    ('links_group', LinksGroupBlock()),
+    ('quote', QuoteBlock()),
+    ('faq', blocks.StreamBlock([
+        ('faq', FAQBlock()),
+    ]))
+]
+
+# we have one RootPage, which is the parent of all other pages
+# this is the only page that should be created at the top level of the page tree
+# this should be the homepage
+class RootPage(Page):
+    layout = StreamField([
+        ('default', blocks.StructBlock([
+        ])),
+        ('landing', blocks.StructBlock([
+            ('nav_links', blocks.ListBlock(LinkInfoBlock(required=False, label="Link"),
+                default=[],
+                label='Nav Links'
+            )),
+        ], label='Landing Page')),
+    ], max_num=1, blank=True, collapsed=True, use_json_field=True, default=[])
+
+    body = StreamField([
+        ('hero', blocks.StructBlock([
+            ('content', blocks.StreamBlock(SECTION_CONTENT_BLOCKS)),
+            ('image', APIImageChooserBlock(required=False)),
+            ('image_alt', blocks.CharBlock(required=False)),
+            ('config', blocks.StreamBlock([
+                ('image_alignment', blocks.ChoiceBlock(choices=HERO_IMAGE_ALIGNMENT_CHOICES, help_text='Controls if the image is on the left or right side of the content, and if it prefers to be at the top, center, or bottom of the available space.')),
+                ('id', blocks.RegexBlock(
+                    regex=r'[a-zA-Z0-9\-_]',
+                    help_text='HTML id of this element. not visible to users, but is visible in urls and is used to link to a certain part of the page with an anchor link. eg: cool_section',
+                    error_mssages={'invalid': 'not a valid id.'}
+                )),
+                ('background_color', blocks.RegexBlock(
+                    regex=r'#[a-zA-Z0-9]{6}',
+                    help_text='Sets the background color of the section. value must be hex eg: #ff0000. Default grey.',
+                    error_mssages={'invalid': 'not a valid hex color.'}
+                )),
+                ('padding', blocks.IntegerBlock(min_value=0, help_text='Creates space above and below this section. default 0.')),
+                ('padding_top', blocks.IntegerBlock(min_value=0, help_text='Creates space above this section. default 0.')),
+                ('padding_bottom', blocks.IntegerBlock(min_value=0, help_text='Creates space below this section. default 0.')),
+                ('text_alignment', blocks.ChoiceBlock(choices=[
+                    ('center', 'Center'),
+                    ('left', 'Left'),
+                    ('right', 'Right'),
+                ], default='left', help_text='Configures text alignment within the container. Default Left.')),
+                ('analytics_label', blocks.CharBlock(required=False, help_text='Sets the "analytics nav" field for links within this section.')),
+            ], block_counts={
+                'image_alignment': {'max_num': 1},
+                'id': {'max_num': 1},
+                'background_color': {'max_num': 1},
+                'padding': {'max_num': 1},
+                'padding_top': {'max_num': 1},
+                'padding_bottom': {'max_num': 1},
+                'text_alignment': {'max_num': 1},
+                'analytics_label': {'max_num': 1},
+            }, required=False))
+        ])),
+        ('section', blocks.StructBlock([
+            ('content', blocks.StreamBlock(SECTION_CONTENT_BLOCKS)),
+            ('config', blocks.StreamBlock([
+                ('id', blocks.RegexBlock(
+                    regex=r'[a-zA-Z0-9\-_]',
+                    help_text='HTML id of this element. not visible to users, but is visible in urls and is used to link to a certain part of the page with an anchor link. eg: cool_section',
+                    error_mssages={'invalid': 'not a valid id.'}
+                )),
+                ('background_color', blocks.RegexBlock(
+                    regex=r'#[a-zA-Z0-9]{6}',
+                    help_text='Sets the background color of the section. value must be hex eg: #ff0000. Default grey.',
+                    error_mssages={'invalid': 'not a valid hex color.'}
+                )),
+                ('padding', blocks.IntegerBlock(min_value=0, help_text='Creates space above and below this section. default 0.')),
+                ('padding_top', blocks.IntegerBlock(min_value=0, help_text='Creates space above this section. default 0.')),
+                ('padding_bottom', blocks.IntegerBlock(min_value=0, help_text='Creates space below this section. default 0.')),
+                ('text_alignment', blocks.ChoiceBlock(choices=[
+                    ('center', 'Center'),
+                    ('left', 'Left'),
+                    ('right', 'Right'),
+                ], default='left', help_text='Configures text alignment within the container. Default Left.')),
+                ('analytics_label', blocks.CharBlock(required=False, help_text='Sets the "analytics nav" field for links within this section.')),
+            ], block_counts={
+                'id': {'max_num': 1},
+                'background_color': {'max_num': 1},
+                'padding': {'max_num': 1},
+                'padding_top': {'max_num': 1},
+                'padding_bottom': {'max_num': 1},
+                'text_alignment': {'max_num': 1},
+                'analytics_label': {'max_num': 1},
+            }, required=False))
+        ])),
+        ('divider', DividerBlock()),
+        ('html', blocks.RawHTMLBlock()),
+    ], use_json_field=True)
+
+    promote_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    api_fields = [
+        APIField('layout'),
+        APIField('body'),
+        APIField('slug'),
+        APIField('seo_title'),
+        APIField('search_description'),
+    ]
+
+    content_panels = [
+        TitleFieldPanel('title', help_text="For CMS use only. Use 'Promote' tab above to edit SEO information."),
+        FieldPanel('layout'),
+        FieldPanel('body'),
+    ]
+
+    promote_panels = [
+        FieldPanel('slug', widget=SlugInput),
+        FieldPanel('seo_title'),
+        FieldPanel('search_description'),
+        FieldPanel('promote_image')
+    ]
+
+    template = 'page.html'
+    max_count = 1
+    # TODO: we are allowing this to be built as a child of the homepage. Not ideal.
+    # Once the home page is released, use something to migrate homepage children to root page and remove this parent type.
+    parent_page_types = ['wagtailcore.Page', 'pages.HomePage']
+    subpage_types = ['pages.FlexPage']  # which might also require allowing all pages to be children.
+
+    def __str__(self):
+        return self.path
+
+    def get_url_parts(self, *args, **kwargs):
+        url_parts = super().get_url_parts(*args, **kwargs)
+
+        if url_parts is None:
+            return None
+
+        # note that we ignore the slug and hardcode this url to / for the root page
+        site_id, site_root_url, page_url_relative_to_site_root = url_parts
+
+        return (site_id, site_root_url, '/')
+
+    def serve_preview(self, request, mode_name):
+        site_id, site_root, relative_page_url = self.get_url_parts(request)
+        preview_url = '{}{}/?preview={}'.format(site_root, relative_page_url, mode_name)
+
+        return render(
+            request,
+            "preview.html",
+            {"preview_url": preview_url},
+        )
+
+# subclass of RootPage with a few overrides for subpages
+class FlexPage(RootPage):
+    parent_page_types = ['pages.RootPage', 'pages.FlexPage']
+    subpage_types = ['pages.FlexPage']
+    template = 'page.html'
+    max_count = None
+
+    def get_url_parts(self, *args, **kwargs):
+        url_parts = super().get_url_parts(*args, **kwargs)
+
+        if url_parts is None:
+            return None
+
+        site_id, site_root_url, page_url_relative_to_site_root = url_parts
+        return (site_id, site_root_url, '/{}'.format(self.slug))
+
+
+#TODO: start removing these pages as we move to the above structure for all pages.
 
 class AboutUsPage(Page):
     who_heading = models.CharField(max_length=255)
@@ -480,9 +698,8 @@ class HomePage(Page):
         'books.BookIndex',
         'news.NewsIndex',
         'news.PressIndex',
+        'pages.RootPage',
     ]
-
-    max_count = 1
 
     def __str__(self):
         return self.path
@@ -583,13 +800,15 @@ class K12MainPage(Page):
     sticky_header = models.CharField(default='', blank=True, max_length=255)
     sticky_description = models.TextField(default='', blank=True)
 
-    def get_sitemap_urls(self, request=None):
-        return [
-            {
-                'location': '{}/k12'.format(Site.find_for_request(request).root_url),
-                'lastmod': (self.last_published_at or self.latest_revision_created_at),
-            }
-        ]
+    def get_url_parts(self, *args, **kwargs):
+        url_parts = super().get_url_parts(*args, **kwargs)
+
+        if url_parts is None:
+            return None
+
+        # note that we ignore the slug and hardcode this url to /k12
+        site_id, site_root_url, page_url_relative_to_site_root = url_parts
+        return (site_id, site_root_url, '/k12')
 
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
@@ -749,27 +968,21 @@ class GeneralPage(Page):
         ('html', blocks.RawHTMLBlock()),
     ], use_json_field=True)
 
-    def get_sitemap_urls(self, request=None):
-        if self.slug in ['kinetic', 'write-for-us', 'editorial-calendar']:
-            return [
-                {
-                    'location': '{}/{}'.format(Site.find_for_request(request).root_url, self.slug),
-                    'lastmod': (self.last_published_at or self.latest_revision_created_at),
-                }
-            ]
-        else:
+    def get_sitemap_urls(self, *args, **kwargs):
+        if self.slug not in ['kinetic', 'write-for-us', 'editorial-calendar']:
             return []
 
+        return super().get_sitemap_urls(*args, **kwargs)
+
     def get_url_parts(self, *args, **kwargs):
-        url_parts = super(GeneralPage, self).get_url_parts(*args, **kwargs)
+        url_parts = super().get_url_parts(*args, **kwargs)
 
         if url_parts is None:
             return None
 
-        site_id, root_url, page_path = url_parts
-        page_path = '/general' + page_path
-
-        return (site_id, root_url, page_path)
+        # note that we ignore the parents, all general pages are /{slug}
+        site_id, site_root_url, page_url_relative_to_site_root = url_parts
+        return (site_id, site_root_url, '/{}'.format(self.slug))
 
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
@@ -1726,6 +1939,12 @@ class ImpactStory(Page):
 
     parent_page_types = ['pages.Impact']
 
+    def get_url_parts(self, *args, **kwargs):
+        return None
+
+    def get_sitemap_urls(self, request=None):
+        return []
+
 
 class Impact(Page):
     improving_access = StreamField(
@@ -2594,17 +2813,15 @@ class Subjects(Page):
 
         return subject_list
 
-    def get_sitemap_urls(self, request=None):
-        flag = FeatureFlag.objects.filter(name='new_subjects')
-        if flag[0].feature_active:
-            return [
-                {
-                    'location': '{}/subjects'.format(Site.find_for_request(request).root_url),
-                    'lastmod': (self.last_published_at or self.latest_revision_created_at),
-                }
-            ]
-        else:
-            return []
+    def get_url_parts(self, *args, **kwargs):
+        url_parts = super().get_url_parts(*args, **kwargs)
+
+        if url_parts is None:
+            return None
+
+        # note that we ignore the slug and hardcode this url to /subjects
+        site_id, site_root_url, page_url_relative_to_site_root = url_parts
+        return (site_id, site_root_url, '/subjects')
 
     api_fields = [
         APIField('heading'),
@@ -2718,17 +2935,15 @@ class Subject(Page):
         related_name='+'
     )
 
-    def get_sitemap_urls(self, request=None):
-        flag = FeatureFlag.objects.filter(name='new_subjects')
-        if flag[0].feature_active:
-            return [
-                {
-                    'location': '{}/subjects/{}'.format(Site.find_for_request(request).root_url, self.slug[0:-6]),
-                    'lastmod': (self.last_published_at or self.latest_revision_created_at),
-                }
-            ]
-        else:
-            return []
+    def get_url_parts(self, *args, **kwargs):
+        url_parts = super().get_url_parts(*args, **kwargs)
+
+        if url_parts is None:
+            return None
+
+        # note that we ignore the slug and hardcode this url to /subjects
+        site_id, site_root_url, page_url_relative_to_site_root = url_parts
+        return (site_id, site_root_url, '/subjects/{}'.format(self.slug[0:-6]))
 
     @property
     def selected_subject(self):
@@ -3042,13 +3257,14 @@ class K12Subject(Page):
             })
         return faculty_resource_data
 
-    def get_sitemap_urls(self, request=None):
-        return [
-            {
-                'location': '{}/k12/{}'.format(Site.find_for_request(request).root_url, self.slug[4:]),
-                'lastmod': (self.last_published_at or self.latest_revision_created_at),
-            }
-        ]
+    def get_url_parts(self, *args, **kwargs):
+        url_parts = super().get_url_parts(*args, **kwargs)
+
+        if url_parts is None:
+            return None
+
+        site_id, site_root_url, page_url_relative_to_site_root = url_parts
+        return (site_id, site_root_url, '/k12/{}'.format(self.slug[4:]))
 
     api_fields = [
         APIField('subheader'),

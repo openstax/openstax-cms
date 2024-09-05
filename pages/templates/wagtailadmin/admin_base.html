@@ -1,0 +1,12 @@
+{% extends "wagtailadmin/admin_base.html" %}
+{% load static %}
+
+{% block branding_title %}OpenStax CMS{% endblock %}
+
+{% block branding_logo %}
+    <img src="{% static 'images/openstax.png' %}" alt="OpenStax CMS" width="80" />
+{% endblock %}
+
+{% block branding_favicon %}
+    <link rel="shortcut icon" href="https://openstax.org/dist/assets/favicon-16x16.png" />
+{% endblock %}

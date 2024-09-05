@@ -551,6 +551,14 @@ class Book(Page):
     description = RichTextField(
         blank=True, help_text="Description shown on Book Detail page.")
 
+    content_warning = models.ForeignKey(
+        snippets.ContentWarning,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='content_warnings_content_warning',
+        help_text="Message shown in the content warning modal.")
+
     cover = models.ForeignKey(
         'wagtaildocs.Document',
         null=True, blank=True,
@@ -591,9 +599,9 @@ class Book(Page):
     ], null=True, use_json_field=True)
 
     print_isbn_13 = models.CharField(max_length=255, blank=True, null=True,
-                                     help_text='ISBN 13 for print version (hardcover).')
+                                     help_text='ISBN 13 for print version (color).')
     print_softcover_isbn_13 = models.CharField(max_length=255, blank=True, null=True,
-                                               help_text='ISBN 13 for print version (softcover).')
+                                               help_text='ISBN 13 for print version (black and white).')
     digital_isbn_13 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 13 for digital version.')
     ibook_isbn_13 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 13 for iBook version.')
     ibook_volume_2_isbn_13 = models.CharField(max_length=255, blank=True, null=True,
@@ -731,7 +739,7 @@ class Book(Page):
     support_statement = models.TextField(blank=True, null=True,
                                          default="With philanthropic support, this book is used in <span id='adoption_number'></span> classrooms, saving students <span id='savings'></span> dollars this school year. <a href='/impact'>Learn more about our impact</a> and how you can help.",
                                          help_text="Updating this statement updates it for all book pages.")
-    
+
     promote_snippet = StreamField(PromoteSnippetBlock(), null=True, blank=True, use_json_field=True)
 
     videos = StreamField([
@@ -773,6 +781,7 @@ class Book(Page):
         InlinePanel('k12book_subjects', label='K12 Subjects'),
         FieldPanel('is_ap'),
         FieldPanel('description', classname="full"),
+        FieldPanel('content_warning'),
         FieldPanel('cover'),
         FieldPanel('title_image'),
         FieldPanel('cover_color'),
@@ -870,6 +879,7 @@ class Book(Page):
         APIField('k12book_subjects'),
         APIField('is_ap'),
         APIField('description'),
+        APIField('content_warning_text'),
         APIField('cover_url'),
         APIField('title_image_url'),
         APIField('cover_color'),
@@ -978,6 +988,10 @@ class Book(Page):
             return snippets.ErrataContent.objects.filter(locale=self.locale).first().content
         return snippets.ErrataContent.objects.filter(book_state=self.book_state, locale=self.locale).first().content
 
+    @property
+    def content_warning_text(self):
+        return self.content_warning.content_warning if self.content_warning else None
+
     def get_slug(self):
         return 'books/{}'.format(self.slug)
 
@@ -1037,29 +1051,18 @@ class Book(Page):
         return super(Book, self).save(*args, **kwargs)
 
     def get_url_parts(self, *args, **kwargs):
-        # This overrides the "Live" link in admin to take you to proper FE page
-        url_parts = super(Book, self).get_url_parts(*args, **kwargs)
+        url_parts = super().get_url_parts(*args, **kwargs)
 
         if url_parts is None:
             return None
 
-        site_id, root_url, page_path = url_parts
-        page_path = '/details/books/' + self.slug
-
-        return (site_id, root_url, page_path)
-
-    def get_sitemap_urls(self, request=None):
-        return [
-            {
-                'location': '{}/details/books/{}'.format(Site.find_for_request(request).root_url, self.slug),
-                'lastmod': (self.last_published_at or self.latest_revision_created_at),
-            }
-        ]
+        site_id, site_root_url, page_url_relative_to_site_root = url_parts
+        return (site_id, site_root_url, '/details/books/{}'.format(self.slug))
 
     def __str__(self):
         return self.book_title
 
-
+# old subjects interface, deprecated
 class BookIndex(Page):
     page_description = models.TextField()
     dev_standards_heading = models.CharField(
@@ -1183,3 +1186,10 @@ class BookIndex(Page):
     parent_page_types = ['pages.HomePage']
     subpage_types = ['books.Book']
     max_count = 1
+
+    # BookIndex model is old subjects interface and is deprecated
+    def get_url_parts(self, *args, **kwargs):
+        return None
+
+    def get_sitemap_urls(self, request=None):
+        return []

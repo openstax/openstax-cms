@@ -94,7 +94,6 @@ WAGTAIL_CONTENT_LANGUAGES = [
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL', 'noreply@openstax.org')
 SERVER_EMAIL = os.getenv('SERVER_EMAIL', 'noreply@openstax.org')
 AWS_SES_FROM_EMAIL = 'noreply@openstax.org'
-USE_SES_V2 = True
 AWS_SES_REGION_NAME = os.getenv('AWS_SES_REGION_NAME', 'us-west-2')
 AWS_SES_REGION_ENDPOINT = os.getenv('AWS_SES_REGION_ENDPOINT', 'email.us-west-2.amazonaws.com')
 # Default to dummy email backend. Configure dev/production/local backend
@@ -407,6 +406,10 @@ WAGTAILAPI_LIMIT_MAX = None
 WAGTAIL_USAGE_COUNT_ENABLED = False
 WAGTAIL_USER_CUSTOM_FIELDS = ['is_staff']
 WAGTAIL_GRAVATAR_PROVIDER_URL = '//www.gravatar.com/avatar'
+# serve wagtail documents direct for use with remote (s3) storage
+WAGTAILADMIN_EXTERNAL_LINK_CONVERSION = 'exact'
+WAGTAIL_REDIRECTS_FILE_STORAGE = 'cache'
+WAGTAILFORMS_HELP_TEXT_ALLOW_HTML = True
 
 WAGTAILSEARCH_BACKENDS = {
     'default': {
@@ -418,14 +421,51 @@ from PIL import ImageFile
 
 ImageFile.LOAD_TRUNCATED_IMAGES = True
 
+WAGTAILIMAGES_EXTENSIONS = ["gif", "jpg", "jpeg", "png", "webp", "svg"]
 WAGTAILIMAGES_FORMAT_CONVERSIONS = {
     'webp': 'webp',
     'jpeg': 'webp',
     'jpg': 'webp',
     'png': 'webp',
 }
-WAGTAILIMAGES_MAX_UPLOAD_SIZE = 2 * 1024 * 1024  # 2MB
+WAGTAILIMAGES_MAX_UPLOAD_SIZE = 4 * 1024 * 1024  # 4MB
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
+
+WAGTAILADMIN_RICH_TEXT_EDITORS = {
+    'default': {
+        'WIDGET': 'wagtail.admin.rich_text.DraftailRichTextArea',
+        'OPTIONS': {
+            'features': ['h1',
+                         'h2',
+                         'h3',
+                         'h4',
+                         'h5',
+                         'h6',
+                         'bold',
+                         'italic',
+                         'ol',
+                         'ul',
+                         'hr',
+                         'link',
+                         'document-link',
+                         'image',
+                         'embed',
+                         'code',
+                         'blockquote',
+                         'superscript',
+                         'subscript',
+                         'strikethrough']
+        }
+    },
+}
+
+from wagtail.embeds.oembed_providers import youtube, vimeo
+WAGTAILEMBEDS_FINDERS = [
+    {
+        'class': 'wagtail.embeds.finders.oembed',
+        'providers': [youtube, vimeo]
+    }
+]
 
 ##########
 # Sentry #

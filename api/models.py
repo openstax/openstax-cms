@@ -19,6 +19,7 @@ class CustomizationRequest(models.Model):
     complete = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
 
+
 class FeatureFlag(models.Model):
     name = models.CharField(max_length=255, unique=True, help_text='Create flag names with underscores to be more machine friendly. Eg. awesome_feature')
     description = models.TextField(blank=True, default='')
@@ -28,6 +29,7 @@ class FeatureFlag(models.Model):
 
     def __str__(self):
         return self.name
+
 
 class WebviewSettings(models.Model):
     name = models.CharField(max_length=255, unique=True)

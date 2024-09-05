@@ -1,8 +1,8 @@
 boto3==1.34.49
 botocore==1.34.49
 bs4==0.0.2
-certifi==2024.2.2
 Django==5.0.4
+certifi==2024.7.4
 django-admin-rangefilter==0.12.1
 django-crontab==0.7.1
 django-compressor==4.4
@@ -16,13 +16,13 @@ django-reversion==5.0.12
 django-ses==3.5.2
 django-storages==1.12.3
 django-taggit>=4.0.0
-djangorestframework==3.15.1
+djangorestframework==3.15.2
 html2text==2020.1.16 # news feed
 mapbox==0.18.1
 Pillow==10.3.0
 psycopg2
 python-dotenv
-requests==2.31.0
+requests==2.32.2
 sentry-sdk
 simple-salesforce==1.12.5
 six==1.16.0

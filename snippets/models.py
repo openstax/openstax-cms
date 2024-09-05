@@ -485,3 +485,19 @@ class AmazonBookBlurb(TranslatableMixin, models.Model):
 
 
 register_snippet(AmazonBookBlurb)
+
+class ContentWarning(TranslatableMixin, models.Model):
+    content_warning = models.TextField()
+
+    api_fields = ('content_warning')
+
+    panels = [
+        FieldPanel('content_warning')
+    ]
+
+    def __str__(self):
+        return (self.content_warning[:100] + '...') if len(self.content_warning) > 100 else self.content_warning
+
+
+
+register_snippet(ContentWarning)
