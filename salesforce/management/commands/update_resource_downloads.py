@@ -1,8 +1,6 @@
 from django.core.management.base import BaseCommand
-#from django.db import transaction
 from salesforce.models import ResourceDownload
 from salesforce.salesforce import Salesforce
-#from simple_salesforce.exceptions import SalesforceResourceNotFound
 from django.utils import timezone
 from datetime import timedelta
 
@@ -32,7 +30,8 @@ class Command(BaseCommand):
                                       'Accounts_UUID__c': str(nrd.account_uuid)}
                     new_data.append(data_dict_item)
 
-            new_results = sf.bulk.Resource__c.insert(new_data)
+            if len(new_data) > 0:
+                new_results = sf.bulk.Resource__c.insert(new_data)
 
             response = self.style.SUCCESS("SF Resource Download Completed. Sent: {}.".format(len(new_data)))
             self.stdout.write(response)
