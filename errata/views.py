@@ -7,8 +7,7 @@ from django_filters.rest_framework import DjangoFilterBackend, FilterSet, Multip
 from django.shortcuts import render, redirect
 from .models import Errata, ERRATA_STATUS
 from .serializers import ErrataSerializer
-from .forms import ErrataModelForm
-from openstax_accounts.functions import get_user_info
+from wagtail.admin.viewsets.model import ModelViewSet as WagtailModelViewSet
 
 
 class JSONResponse(HttpResponse):
@@ -40,6 +39,20 @@ class ErrataView(ModelViewSet):
     filterset_class = ErrataFilter
     ordering_fields = ('id', 'resolution_date', 'created', 'modified', )
 
+class ErrataModelViewSet(WagtailModelViewSet):
+    queryset = Errata.objects.prefetch_related("book")
+    model = Errata
+    icon = "warning"
+    list_display = ("id", "book", "created", "modified", 'status', 'error_type', 'resource')
+    list_filter = ('created', "book", "status", 'archived', 'junk')
+    list_export = ("id", "book", "created", "modified", 'status', 'error_type', 'resource', 'location', 'detail', 'resolution_notes')
+    search_fields = ("book__title",)
+    menu_label = "Errata (Beta)"
+    menu_order = 9000
+    add_to_admin_menu = True
+    exclude_form_fields = []
+
+errata_viewset = ErrataModelViewSet("errata")
 
 def duplicate(errata):
     errata.pk = None

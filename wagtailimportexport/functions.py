@@ -5,7 +5,7 @@ import io
 import json
 import logging
 
-from django.core.files.storage import get_storage_class
+from django.core.files.storage import storages as get_storage_class
 from django.core.serializers.json import DjangoJSONEncoder
 from django.db.models.fields.related import ForeignKey
 from django.db.models.fields.reverse_related import ManyToOneRel

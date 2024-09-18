@@ -25,8 +25,8 @@ import snippets.models as snippets
 
 
 def cleanhtml(raw_html):
-    remove_numbers = re.sub('<span class=\W*(os-number)\W*>.*?>', '', raw_html)
-    remove_dividers = re.sub('<span class=\W*(os-divider)\W*>.*?>', '', remove_numbers)
+    remove_numbers = re.sub('<span class=\\W*(os-number)\\W*>.*?>', '', raw_html)
+    remove_dividers = re.sub('<span class=\\W*(os-divider)\\W*>.*?>', '', remove_numbers)
     cleanr = re.compile('<.*?>')
     cleantext = html.unescape(re.sub(cleanr, '', remove_dividers))
     return cleantext
@@ -541,8 +541,10 @@ class Book(Page):
 
     polish_site_link = models.URLField(blank=True, null=True,
                                        help_text="Stores target URL to the Polish site so that REX Polish page headers lead back to each individual book on the Polish site")
-    salesforce_abbreviation = models.CharField(max_length=255, blank=True, null=True, verbose_name='Subject Book Name', help_text='This should match the Books Name from Salesforce.')
-    salesforce_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Name displayed on website forms',
+    salesforce_abbreviation = models.CharField(max_length=255, blank=True, null=True, verbose_name='Subject Book Name',
+                                               help_text='This should match the Books Name from Salesforce.')
+    salesforce_name = models.CharField(max_length=255, blank=True, null=True,
+                                       verbose_name='Name displayed on website forms',
                                        help_text='This is the name shown on interest/adoption forms and used in Partner filtering. The website only shows unique values from here, so it is possible to combine books for forms')
     salesforce_book_id = models.CharField(max_length=255, blank=True, null=True,
                                           help_text='No tracking and not included on adoption and interest forms if left blank)')
@@ -999,7 +1001,7 @@ class Book(Page):
         book_urls = []
         for field in self.api_fields:
             try:
-                url = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+',
+                url = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+',
                                  getattr(self, field))
                 if url:
                     book_urls.append(url)
@@ -1061,6 +1063,7 @@ class Book(Page):
 
     def __str__(self):
         return self.book_title
+
 
 # old subjects interface, deprecated
 class BookIndex(Page):
