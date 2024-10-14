@@ -126,7 +126,7 @@ class SalesforceForms(models.Model):
 
 
 class Partner(models.Model):
-    salesforce_id = models.CharField(max_length=255, blank=True, null=True)
+    salesforce_id = models.CharField(max_length=255, blank=True, null=True, help_text="The partner solution ID from Salesforce")
     partner_name = models.CharField(max_length=255, blank=True, null=True)
     partner_logo = models.ImageField(upload_to='partner_logos/', null=True, blank=True)
     image_1 = models.ImageField(upload_to='partner_images/', null=True, blank=True)
@@ -137,7 +137,7 @@ class Partner(models.Model):
     video_1 = models.FileField(upload_to='partner_videos/', null=True, blank=True)
     video_2 = models.FileField(upload_to='partner_videos/', null=True, blank=True)
     partner_list_label = models.CharField(max_length=255, null=True, blank=True)
-    visible_on_website = models.BooleanField(default=True)
+    visible_on_website = models.BooleanField(default=True, help_text="If unchecked, partner will not display on openstax.org")
     lead_sharing = models.BooleanField(default=False)
     partner_type = models.CharField(max_length=255, blank=True, null=True)
     rich_description = models.TextField(blank=True, null=True)
@@ -148,7 +148,7 @@ class Partner(models.Model):
     landing_page = models.CharField(max_length=255, blank=True, null=True)
     verified_by_instructor = models.BooleanField(default=False)
     integrated = models.BooleanField(default=False)
-    partner_sf_account_id = models.CharField(max_length=255, blank=True, null=True)
+    partner_sf_account_id = models.CharField(max_length=255, blank=True, null=True, help_text="Deprecated. Use Account Id.")
     affordability_cost = models.CharField(max_length=255, blank=True, null=True)
     affordability_institutional = models.BooleanField(default=False)
     app_available = models.BooleanField(default=False)
@@ -237,10 +237,11 @@ class Partner(models.Model):
     online_teaching_academic_integrity = models.BooleanField(default=False)
     online_teaching_teaching_labs = models.BooleanField(default=False)
     international = models.BooleanField(default=False)
-    partnership_level = models.CharField(max_length=255, default='', null=True)
+    partnership_level = models.CharField(max_length=255, default='', null=True, help_text="Deprecated. Use Partner Status on the Salesforce Partner Account.")
     equity_rating = models.CharField(max_length=255, default='', null=True)
-    salesforce_created_date = models.DateTimeField(null=True)
     partner_anniversary_date = models.DateField(null=True)
+    account_id = models.CharField(max_length=255, default='', null=True, help_text="The Account record for this partner solution")
+    partner_status = models.CharField(max_length=255, default='', null=True, help_text="The current status of the partner Account in Salesforce.")
 
     def __str__(self):
         return self.partner_name
