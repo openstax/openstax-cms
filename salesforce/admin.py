@@ -10,7 +10,6 @@ from .models import AdoptionOpportunityRecord, \
     PartnerCategoryMapping, \
     PartnerFieldNameMapping, \
     PartnerTypeMapping, \
-    PartnerReview, \
     ResourceDownload, \
     SavingsNumber
 
@@ -53,7 +52,7 @@ class SalesforceFormsAdmin(admin.ModelAdmin):
 
 
 class PartnerAdmin(admin.ModelAdmin):
-    list_display = ['partner_logo_tag', 'salesforce_id', 'partner_name', 'partner_type', 'visible_on_website', 'lead_sharing']
+    list_display = ['partner_logo_tag', 'partner_name', 'partner_type', 'visible_on_website']
     list_display_links = ('partner_name', )
     list_filter = ('visible_on_website', 'partner_type')
     search_fields = ('partner_name', 'salesforce_id')
@@ -184,6 +183,7 @@ class PartnerAdmin(admin.ModelAdmin):
         obj.from_admin_site = True
         super().save_model(request, obj, form, change)
 
+
 class PartnerCategoryMappingAdmin(admin.ModelAdmin):
     list_display = ('display_name', 'salesforce_name')
 
@@ -194,44 +194,6 @@ class PartnerFieldNameMappingAdmin(admin.ModelAdmin):
 
 class PartnerTypeMappingAdmin(admin.ModelAdmin):
     list_display = ('display_name',)
-
-
-class PartnerReviewAdmin(admin.ModelAdmin):
-    list_display = ('submitted_by_name',
-                    'partner',
-                    'created',
-                    'updated',
-                    '_synced_with_salesforce',
-                    '_partner_responded',
-                    'status')
-    list_filter = ('rating',
-                   'partner',
-                   'status')
-    search_fields = ['review_salesforce_id', 'submitted_by_name', 'submitted_by_account_uuid', ]
-    actions = ['populate_review_faculty_status']
-    readonly_fields = ('partner',
-                       'review_salesforce_id',
-                       'rating',
-                       'review',
-                       'partner_response',
-                       'partner_response_date',
-                       'submitted_by_name',
-                       'submitted_by_account_id',
-                       'submitted_by_account_uuid',
-                       'user_faculty_status',
-                       'status',
-                       'created',
-                       'updated' )
-
-    def sync_with_salesforce(self, request, queryset):
-        management.call_command('sync_reviews', verbosity=0)
-    sync_with_salesforce.short_description = "Sync Reviews with Salesforce"
-    sync_with_salesforce.allowed_permissions = ('change',)
-
-    def populate_review_faculty_status(self, request, queryset):
-        management.call_command('update_review_faculty_status', verbosity=0)
-    populate_review_faculty_status.short_description = "sync review faculty status with accounts"
-    populate_review_faculty_status.allowed_permissions = ('change',)
 
 
 class ResourceDownloadAdmin(admin.ModelAdmin):
@@ -247,6 +209,5 @@ admin.site.register(Partner, PartnerAdmin)
 admin.site.register(PartnerCategoryMapping, PartnerCategoryMappingAdmin)
 admin.site.register(PartnerFieldNameMapping, PartnerFieldNameMappingAdmin)
 admin.site.register(PartnerTypeMapping, PartnerTypeMappingAdmin)
-admin.site.register(PartnerReview, PartnerReviewAdmin)
 admin.site.register(ResourceDownload, ResourceDownloadAdmin)
 admin.site.register(SavingsNumber)

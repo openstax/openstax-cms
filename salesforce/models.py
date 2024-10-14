@@ -1,13 +1,10 @@
 from django.db import models
-from django.core.validators import MaxValueValidator, MinValueValidator
 from django.core.exceptions import ValidationError
 
 from wagtail import hooks
 from wagtail.admin.menu import MenuItem
 
 from books.models import Book
-
-from openstax_accounts.functions import get_user_info_by_uuid
 
 
 class Adopter(models.Model):
@@ -242,6 +239,8 @@ class Partner(models.Model):
     international = models.BooleanField(default=False)
     partnership_level = models.CharField(max_length=255, default='', null=True)
     equity_rating = models.CharField(max_length=255, default='', null=True)
+    salesforce_created_date = models.DateTimeField(null=True)
+    partner_anniversary_date = models.DateField(null=True)
 
     def __str__(self):
         return self.partner_name
@@ -252,39 +251,6 @@ class Partner(models.Model):
             return mark_safe(u'<img src="%s" height=50 />' % escape(self.partner_logo.url))
         else:
             return mark_safe(u'<img src="" />')
-        image_tag.short_description = 'Image'
-        image_tag.allow_tags = True
-
-    @property
-    def reviews(self):
-        # empty array for now
-        return []
-        # return list(PartnerReview.objects.filter(partner=self).values('id',
-        #                                                                  'status',
-        #                                                                  'rating',
-        #                                                                  'review',
-        #                                                                  'partner_response',
-        #                                                                  'submitted_by_name',
-        #                                                                  'submitted_by_account_uuid',
-        #                                                                  'user_faculty_status',
-        #                                                                  'created',
-        #                                                                  'updated'))
-
-    @property
-    def average_rating(self):
-        # returning zero since reviews are not displayed
-        # ratings = PartnerReview.objects.filter(partner=self, status='Approved').aggregate(Avg('rating'))
-        # if None in ratings.values():
-        #     return {'rating__avg': 0.0}
-        # else:
-        #     return ratings
-        return {'rating__avg': 0.0}
-
-    @property
-    def rating_count(self):
-        # returning zero since reviews are not displayed
-        #return PartnerReview.objects.filter(partner=self, status='Approved').count()
-        return 0
 
     @hooks.register('register_admin_menu_item')
     def register_partner_menu_item():
@@ -313,68 +279,6 @@ class PartnerTypeMapping(models.Model):
 
     def __str__(self):
         return self.display_name
-
-
-class PartnerReview(models.Model):
-    # To track what we need to do with these re: syncing.
-    # New = new to the cms (no SF ID)
-    # Edited = edited by author, needs to be resynced with SF, set to NEW (SF Status) to reenter the approval queue
-    STATUS_OPTIONS = (
-        ('New', 'New'),
-        ('Edited', 'Edited'),
-        ('Awaiting Approval', 'Awaiting Approval'),
-        ('Approved', 'Approved'),
-        ('Rejected', 'Rejected'),
-        ('Deleted', 'Deleted')
-    )
-
-    FACULTY_STATUS_OPTIONS = (
-        ('no_faculty_info', 'No Faculty Info'),
-        ('confirmed_faculty', 'Confirmed Faculty'),
-        ('rejected_faculty', 'Rejected Faculty'),
-        ('pending_faculty', 'Pending Faculty')
-    )
-
-    partner = models.ForeignKey(Partner, on_delete=models.SET_NULL, null=True)
-    review_salesforce_id = models.CharField(max_length=255, blank=True, null=True, unique=True)
-    rating = models.IntegerField(validators=[
-            MaxValueValidator(5),
-            MinValueValidator(0)
-        ])
-    review = models.TextField(null=True, blank=True)
-    partner_response = models.TextField(null=True, blank=True)
-    partner_response_date = models.DateField(null=True, blank=True)
-    submitted_by_name = models.CharField(max_length=255)
-    submitted_by_account_id = models.IntegerField(null=True, blank=True) # TODO: remove this field after migrating data and FE sending UUID instead of id
-    submitted_by_account_uuid = models.UUIDField(null=True)
-    user_faculty_status = models.CharField(max_length=255, choices=FACULTY_STATUS_OPTIONS, default='No Faculty Info')
-    status = models.CharField(max_length=255, choices=STATUS_OPTIONS, default='New')
-    created = models.DateField(auto_now_add=True)
-    updated = models.DateField(auto_now=True)
-
-    def _synced_with_salesforce(self):
-        if self.review_salesforce_id:
-            return True
-        return False
-    _synced_with_salesforce.boolean = True
-    synced_with_salesforce = property(_synced_with_salesforce)
-
-    def _partner_responded(self):
-        if self.partner_response:
-            return True
-        return False
-    _partner_responded.boolean = True
-    partner_responded = property(_partner_responded)
-
-    def __str__(self):
-        return self.submitted_by_name
-
-    def save(self, *args, **kwargs):
-        user = get_user_info_by_uuid(self.submitted_by_account_uuid)
-        if user:
-            if self.user_faculty_status != user['faculty_status']:
-                self.user_faculty_status = user['faculty_status']
-        super().save(*args, **kwargs)
 
 
 class ResourceDownload(models.Model):

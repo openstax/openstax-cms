@@ -21,6 +21,8 @@ class Command(BaseCommand):
             query = "SELECT " \
                     "Id, " \
                     "Name, " \
+                    "Logo__c, " \
+                    "Public_Logo_Link__c, " \
                     "Partner_Type__c, " \
                     "Books_Offered__c, " \
                     "Description__c, " \
@@ -120,8 +122,10 @@ class Command(BaseCommand):
                     "Online_teaching_labs__c, " \
                     "International__c, " \
                     "Partnership_Level__c, " \
-                    "Equity_Rating__c " \
-                    "FROM Partner__c WHERE Partner_Status__c = 'Current Partner' AND RecordType.Name = 'Child'"
+                    "Equity_Rating__c, " \
+                    "CreatedDate, " \
+                    "Partner_Anniversary_Date__c" \
+                    "FROM Partner__c"
             response = sf.query_all(query)
             sf_marketplace_partners = response['records']
 
@@ -136,6 +140,17 @@ class Command(BaseCommand):
                     affordability_cost=partner['Affordability_Cost__c'].replace(";", "; ")
                 else:
                     affordability_cost=None
+
+                if partner['Logo__c']:
+                    content_id = partner['Logo__c'].split('refid=')[1].split("\"")[0]
+                    print(partner['Logo__c'])
+                    print(content_id)
+
+                    document_response = sf.query("SELECT Id, RelatedRecordId FROM ContentDistribution WHERE RelatedRecordId='{}'".format(partner['Id']))
+                    print(document_response)
+
+                if partner['Public_Logo_Link__c']:
+                    print(partner['Public_Logo_Link__c'])
 
                 p, created = Partner.objects.get_or_create(salesforce_id=partner['Id'])
                 p.partner_name=partner['Name']

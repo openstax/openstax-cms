@@ -12,6 +12,5 @@ router.register(r'download-tracking', views.ResourceDownloadViewSet, basename='D
 urlpatterns = [
     path('', include(router.urls)),
     path('adoption-status/', views.get_adoption_status),
-    path('renewal/', views.AdoptionOpportunityRecordViewSet.as_view({'get': 'list'})),
-    path('reviews/', views.PartnerReviewViewSet.as_view({'get': 'list', 'post': 'post', 'patch': 'patch', 'delete': 'delete'})),
+    path('renewal/', views.AdoptionOpportunityRecordViewSet.as_view({'get': 'list'}))
 ]

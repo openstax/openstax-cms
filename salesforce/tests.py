@@ -55,11 +55,6 @@ class PartnerTest(APITestCase, TestCase):
         response = self.client.get('/apps/cms/api/salesforce/partners/{}/'.format(invalid_partner_id), format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_all_partners_no_reviews(self):
-        response = self.client.get('/apps/cms/api/salesforce/partners/', format='json')
-        self.assertNotIn('reviews', response.data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
 
 class SalesforceTest(LiveServerTestCase, WagtailPageTestCase):
 
