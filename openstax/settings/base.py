@@ -404,7 +404,6 @@ WAGTAILAPI_BASE_URL = os.getenv('WAGTAILAPI_BASE_URL', BASE_URL)
 # Wagtail API number of results
 WAGTAILAPI_LIMIT_MAX = None
 WAGTAIL_USAGE_COUNT_ENABLED = False
-WAGTAIL_USER_CUSTOM_FIELDS = ['is_staff']
 WAGTAIL_GRAVATAR_PROVIDER_URL = '//www.gravatar.com/avatar'
 # serve wagtail documents direct for use with remote (s3) storage
 WAGTAILADMIN_EXTERNAL_LINK_CONVERSION = 'exact'
