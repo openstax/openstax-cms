@@ -79,10 +79,8 @@ class SalesforceTest(LiveServerTestCase, WagtailPageTestCase):
     def test_database_query(self):
         with vcr.use_cassette('fixtures/vcr_cassettes/contact.yaml'):
             sf = SF()
-            contact_info = sf.query(
-                "SELECT Id FROM Contact")
-            self.assertIsNot(
-                contact_info, None)
+            contact_info = sf.query("SELECT Id FROM Contact")
+            self.assertIsNot(contact_info, None)
 
     def test_salesforce_forms_no_debug(self):
         form = SalesforceForms(oid='thisisanoid', posting_url='https://nowhereto.salesforce.com/nothing')
