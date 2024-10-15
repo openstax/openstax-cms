@@ -1,4 +1,6 @@
+import requests
 from django.core.management.base import BaseCommand
+from django.core.files.base import ContentFile
 
 from global_settings.functions import invalidate_cloudfront_caches
 from salesforce.models import Partner, PartnerFieldNameMapping
@@ -143,19 +145,8 @@ class Command(BaseCommand):
                 else:
                     affordability_cost = None
 
-                # TODO: WIP for syncing partner logos with the CMS
-                # if partner['Logo__c']:
-                #     content_id = partner['Logo__c'].split('refid=')[1].split("\"")[0]
-                #     print(partner['Logo__c'])
-                #     print(content_id)
-                #
-                #     document_response = sf.query(
-                #         "SELECT Id, RelatedRecordId FROM ContentDistribution WHERE RelatedRecordId='{}'".format(
-                #             partner['Id']))
-                #     print(document_response)
-
-                # if partner['Public_Logo_Link__c']:
-                #     print(partner['Public_Logo_Link__c'])
+                # the naming convention here doesn't align with Salesforce very well
+                # partner['Id'] = Partner Solution Id / partner['Account__r']['Id'] for the partner Account id
 
                 p, created = Partner.objects.get_or_create(salesforce_id=partner['Id'])
                 p.partner_name = partner['Name']
@@ -263,6 +254,32 @@ class Command(BaseCommand):
                 p.account_id = partner['Account__r']['Id']
                 p.partner_status = partner['Account__r']['Partner_Status__c']
                 p.save()
+
+                # There aren't that many partners, so we'll just loop within this loop to grab logos
+                document_query = sf.query("SELECT ContentDocumentId FROM ContentDocumentLink WHERE LinkedEntityId = '{}'".format(partner['Id']))
+                try:
+                    document_id = document_query['records'][0]['ContentDocumentId']
+
+                    version_query = sf.query("SELECT Id, CreatedDate, Title, VersionData FROM ContentVersion WHERE Title LIKE '%public_logo%' AND ContentDocumentId = '{}' ORDER BY CreatedDate DESC".format(document_id))
+                    content_version = version_query['records'][0]
+                    if content_version:
+                        content_title = content_version['Title']
+                        file_url = "https://openstax.my.salesforce.com" + content_version['VersionData']
+
+                        headers = {
+                            'Authorization': f'Bearer {sf.session_id}',
+                            'Content-Type': 'application/json'
+                        }
+
+                        response = requests.get(file_url, headers=headers)
+
+                        if response.status_code == 200:
+                            image_content = ContentFile(response.content, name=content_title)
+
+                            p.partner_logo = image_content
+                            p.save()
+                except IndexError:
+                    pass  # No documents / versions found
 
                 if created:
                     created_partners = created_partners + 1
