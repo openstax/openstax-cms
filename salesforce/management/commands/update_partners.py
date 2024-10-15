@@ -260,10 +260,10 @@ class Command(BaseCommand):
                 try:
                     document_id = document_query['records'][0]['ContentDocumentId']
 
-                    version_query = sf.query("SELECT Id, CreatedDate, Title, VersionData FROM ContentVersion WHERE Title LIKE '%public_logo%' AND ContentDocumentId = '{}' ORDER BY CreatedDate DESC".format(document_id))
+                    version_query = sf.query("SELECT Id, CreatedDate, Title, FileExtension, VersionData FROM ContentVersion WHERE Title LIKE '%public_logo%' AND ContentDocumentId = '{}' ORDER BY CreatedDate DESC".format(document_id))
                     content_version = version_query['records'][0]
                     if content_version:
-                        content_title = content_version['Title']
+                        content_title = "{}.{}".format(content_version['Title'], content_version['FileExtension'])
                         file_url = "https://openstax.my.salesforce.com" + content_version['VersionData']
 
                         headers = {
