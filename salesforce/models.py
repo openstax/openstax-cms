@@ -253,6 +253,19 @@ class Partner(models.Model):
         else:
             return mark_safe(u'<img src="" />')
 
+    # TODO: the next three methods about reviews should be removed once the FE is updated to not expect them
+    @property
+    def reviews(self):
+        return []
+
+    @property
+    def average_rating(self):
+        return {'rating__avg': 0.0}
+
+    @property
+    def rating_count(self):
+        return 0
+
     @hooks.register('register_admin_menu_item')
     def register_partner_menu_item():
         return MenuItem('Partners', '/django-admin/salesforce/partner/', classname='icon icon-group', order=3000)

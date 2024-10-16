@@ -77,6 +77,11 @@ class AdoptionOpportunityRecordSerializer(serializers.ModelSerializer):
                   )
 
 class PartnerSerializer(serializers.ModelSerializer):
+    # TODO: remove
+    reviews = serializers.ReadOnlyField()
+    average_rating = serializers.ReadOnlyField()
+    rating_count = serializers.ReadOnlyField()
+
     def __init__(self, *args, **kwargs):
         super(PartnerSerializer, self).__init__(*args, **kwargs)
 
@@ -85,6 +90,11 @@ class PartnerSerializer(serializers.ModelSerializer):
 
     def to_representation(self, instance):
         ret = super().to_representation(instance)
+
+        # TODO: remove
+        # if looking at an individual partner instance, include the reviews - else, exclude
+        if not isinstance(self.instance, Partner):
+            ret['reviews'] = False
 
         # Here we filter the null values and creates a new dictionary
         # We use OrderedDict like in original method

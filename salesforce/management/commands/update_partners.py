@@ -23,8 +23,6 @@ class Command(BaseCommand):
             query = "SELECT " \
                     "Id, " \
                     "Name, " \
-                    "Logo__c, " \
-                    "Public_Logo_Link__c, " \
                     "Partner_Type__c, " \
                     "Books_Offered__c, " \
                     "Description__c, " \
