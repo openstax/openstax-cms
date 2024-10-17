@@ -55,11 +55,6 @@ class PartnerTest(APITestCase, TestCase):
         response = self.client.get('/apps/cms/api/salesforce/partners/{}/'.format(invalid_partner_id), format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    def test_all_partners_no_reviews(self):
-        response = self.client.get('/apps/cms/api/salesforce/partners/', format='json')
-        self.assertNotIn('reviews', response.data)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-
 
 class SalesforceTest(LiveServerTestCase, WagtailPageTestCase):
 
@@ -84,10 +79,8 @@ class SalesforceTest(LiveServerTestCase, WagtailPageTestCase):
     def test_database_query(self):
         with vcr.use_cassette('fixtures/vcr_cassettes/contact.yaml'):
             sf = SF()
-            contact_info = sf.query(
-                "SELECT Id FROM Contact")
-            self.assertIsNot(
-                contact_info, None)
+            contact_info = sf.query("SELECT Id FROM Contact")
+            self.assertIsNot(contact_info, None)
 
     def test_salesforce_forms_no_debug(self):
         form = SalesforceForms(oid='thisisanoid', posting_url='https://nowhereto.salesforce.com/nothing')

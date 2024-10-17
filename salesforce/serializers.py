@@ -1,7 +1,7 @@
 from collections import OrderedDict
-from .models import School, AdoptionOpportunityRecord, Partner, SalesforceForms, ResourceDownload, SavingsNumber, PartnerReview
+from .models import School, AdoptionOpportunityRecord, Partner, SalesforceForms, ResourceDownload, SavingsNumber
 from rest_framework import serializers
-from rest_framework.validators import UniqueTogetherValidator
+
 
 class SchoolSerializer(serializers.ModelSerializer):
 
@@ -77,6 +77,7 @@ class AdoptionOpportunityRecordSerializer(serializers.ModelSerializer):
                   )
 
 class PartnerSerializer(serializers.ModelSerializer):
+    # TODO: remove
     reviews = serializers.ReadOnlyField()
     average_rating = serializers.ReadOnlyField()
     rating_count = serializers.ReadOnlyField()
@@ -90,6 +91,7 @@ class PartnerSerializer(serializers.ModelSerializer):
     def to_representation(self, instance):
         ret = super().to_representation(instance)
 
+        # TODO: remove
         # if looking at an individual partner instance, include the reviews - else, exclude
         if not isinstance(self.instance, Partner):
             ret['reviews'] = False
@@ -98,7 +100,6 @@ class PartnerSerializer(serializers.ModelSerializer):
         # We use OrderedDict like in original method
         ret = OrderedDict(filter(lambda x: x[1] is not False, ret.items()))
         return ret
-
 
     class Meta:
         model = Partner
@@ -144,10 +145,3 @@ class SavingsNumberSerializer(serializers.ModelSerializer):
         model = SavingsNumber
         fields = ('adoptions_count', 'savings', 'updated')
         read_only_fields = ('adoptions_count', 'savings', 'updated')
-
-class PartnerReviewSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = PartnerReview
-        fields = ('id', 'status', 'partner', 'partner_response', 'partner_response_date', 'review', 'rating', 'submitted_by_name', 'submitted_by_account_uuid', 'user_faculty_status', 'created', 'updated')
-        read_only_fields = ('partner_response', 'partner_response_date', 'created', 'updated', 'status')
-

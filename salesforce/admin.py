@@ -10,7 +10,6 @@ from .models import AdoptionOpportunityRecord, \
     PartnerCategoryMapping, \
     PartnerFieldNameMapping, \
     PartnerTypeMapping, \
-    PartnerReview, \
     ResourceDownload, \
     SavingsNumber
 
@@ -53,117 +52,13 @@ class SalesforceFormsAdmin(admin.ModelAdmin):
 
 
 class PartnerAdmin(admin.ModelAdmin):
-    list_display = ['partner_logo_tag', 'salesforce_id', 'partner_name', 'partner_type', 'visible_on_website', 'lead_sharing']
+    list_display = ['partner_logo_tag', 'partner_name', 'partner_type', 'visible_on_website']
     list_display_links = ('partner_name', )
     list_filter = ('visible_on_website', 'partner_type')
     search_fields = ('partner_name', 'salesforce_id')
-    readonly_fields = (
-        'salesforce_id',
-    'partner_name',
-    'partner_type',
-    'rich_description',
-    'partner_description',
-    'partner_website',
-    'short_partner_description',
-    'books',
-    'lead_sharing',
-    'landing_page',
-    'verified_by_instructor',
-    'integrated',
-    'partner_sf_account_id',
-    'affordability_cost',
-    'affordability_institutional',
-    'app_available',
-    'adaptivity_adaptive_presentation',
-    'adaptivity_affective_state',
-    'adaptivity_breadth_and_depth',
-    'adaptivity_customized_path',
-    'adaptivity_instructor_control',
-    'adaptivity_quantitative_randomization',
-    'adaptivity_varied_level',
-    'admin_calendar_links',
-    'admin_online_submission',
-    'admin_realtime_progress',
-    'admin_shared_students',
-    'admin_syllabus',
-    'assigment_outside_resources',
-    'assignment_editing',
-    'assignment_multimedia',
-    'assignment_multiple_quantitative',
-    'assignment_pretest',
-    'address_Longitude',
-    'assignment_scientific_structures',
-    'assignment_summative_assessments',
-    'autonomy_digital_badges',
-    'autonomy_on_demand_extras',
-    'autonomy_self_reflection',
-    'autonomy_summative_assessments',
-    'collaboration_peer_feedback',
-    'collaboration_peer_interaction',
-    'collaboration_teacher_learner_contact',
-    'collaboration_tutor',
-    'content_batch_uploads',
-    'content_resource_sharing',
-    'content_sharing_among_courses',
-    'customization_assessement_repository',
-    'customization_content_repository',
-    'customization_create_learning_outcomes',
-    'customization_reorder_content',
-    'customization_reorder_learning_outcomes',
-    'feedback_early_warning',
-    'feedback_individual_and_groups',
-    'feedback_knowledge_gaps',
-    'feedback_learner_progress_tasks',
-    'feedback_multipart',
-    'feedback_understanding',
-    'grading_change_scores',
-    'grading_class_and_student_level',
-    'grading_group_work',
-    'grading_learning_portfolio',
-    'grading_rubric_based',
-    'grading_tolerances_sig_fig',
-    'interactivity_annotate',
-    'interactivity_different_representations',
-    'interactivity_gaming',
-    'interactivity_previous_knowledge',
-    'interactivity_simulations',
-    'interactivity_varying_means',
-    'instructional_level_k12',
-    'instructional_level_higher_ed',
-    'LMS_analytics',
-    'LMS_sends_grades',
-    'LMS_SSO',
-    'measure_alternate_assessment',
-    'measure_assessments_in_most',
-    'measure_mapping',
-    'reporting_competency',
-    'reporting_student_workload',
-    'scaffolding_hints',
-    'scaffolding_learner_explanations',
-    'scaffolding_mental_practice',
-    'scaffolding_narrative',
-    'scaffolding_social_intervention',
-    'usability_design_orients_users',
-    'usability_glossary',
-    'usability_partial_progress',
-    'accessibility_language_UI',
-    'accessibility_language_content',
-    'accessibility_VPAT',
-    'accessibility_WCAG',
-    'accessibility_universal_design',
-    'partner_logo_tag',
-    'online_teaching_peer_discussion',
-    'online_teaching_lecture_streaming',
-    'online_teaching_in_lecture',
-    'online_teaching_asynchronous',
-    'online_teaching_audio_video',
-    'online_teaching_academic_integrity',
-    'online_teaching_teaching_labs',
-    'international',
-    'partnership_level',
-    'equity_rating')
+    readonly_fields = ('salesforce_id', 'account_id', 'partner_status', 'partnership_level', 'equity_rating', 'partner_sf_account_id', 'affordability_cost', 'books', 'partner_type')
 
-    actions = ['sync_with_salesforce', 'mark_visible', 'mark_not_visible' ]
+    actions = ['sync_with_salesforce', 'mark_visible', 'mark_not_visible']
 
     def sync_with_salesforce(self, request, queryset):
         management.call_command('update_partners', verbosity=0)
@@ -184,6 +79,7 @@ class PartnerAdmin(admin.ModelAdmin):
         obj.from_admin_site = True
         super().save_model(request, obj, form, change)
 
+
 class PartnerCategoryMappingAdmin(admin.ModelAdmin):
     list_display = ('display_name', 'salesforce_name')
 
@@ -194,44 +90,6 @@ class PartnerFieldNameMappingAdmin(admin.ModelAdmin):
 
 class PartnerTypeMappingAdmin(admin.ModelAdmin):
     list_display = ('display_name',)
-
-
-class PartnerReviewAdmin(admin.ModelAdmin):
-    list_display = ('submitted_by_name',
-                    'partner',
-                    'created',
-                    'updated',
-                    '_synced_with_salesforce',
-                    '_partner_responded',
-                    'status')
-    list_filter = ('rating',
-                   'partner',
-                   'status')
-    search_fields = ['review_salesforce_id', 'submitted_by_name', 'submitted_by_account_uuid', ]
-    actions = ['populate_review_faculty_status']
-    readonly_fields = ('partner',
-                       'review_salesforce_id',
-                       'rating',
-                       'review',
-                       'partner_response',
-                       'partner_response_date',
-                       'submitted_by_name',
-                       'submitted_by_account_id',
-                       'submitted_by_account_uuid',
-                       'user_faculty_status',
-                       'status',
-                       'created',
-                       'updated' )
-
-    def sync_with_salesforce(self, request, queryset):
-        management.call_command('sync_reviews', verbosity=0)
-    sync_with_salesforce.short_description = "Sync Reviews with Salesforce"
-    sync_with_salesforce.allowed_permissions = ('change',)
-
-    def populate_review_faculty_status(self, request, queryset):
-        management.call_command('update_review_faculty_status', verbosity=0)
-    populate_review_faculty_status.short_description = "sync review faculty status with accounts"
-    populate_review_faculty_status.allowed_permissions = ('change',)
 
 
 class ResourceDownloadAdmin(admin.ModelAdmin):
@@ -247,6 +105,5 @@ admin.site.register(Partner, PartnerAdmin)
 admin.site.register(PartnerCategoryMapping, PartnerCategoryMappingAdmin)
 admin.site.register(PartnerFieldNameMapping, PartnerFieldNameMappingAdmin)
 admin.site.register(PartnerTypeMapping, PartnerTypeMappingAdmin)
-admin.site.register(PartnerReview, PartnerReviewAdmin)
 admin.site.register(ResourceDownload, ResourceDownloadAdmin)
 admin.site.register(SavingsNumber)
