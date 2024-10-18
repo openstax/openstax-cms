@@ -53,10 +53,11 @@ class AdoptionOpportunityRecordViewSet(viewsets.ViewSet):
     def list(self, request):
         account_uuid = request.GET.get('account_uuid', False)
         # a user can have many adoption records - one for each book
+        # 10/2024 - added new data that can be used on the form, will need coordination with the FE form
         queryset = AdoptionOpportunityRecord.objects.filter(account_uuid=account_uuid)
         book_list = []
         for record in queryset:
-            book_list.append({"name": record.book_name , "students": str(max(record.students))})
+            book_list.append({"name": record.book_name , "students": str(record.students)})
         data = {"Books": book_list}
 
         return JsonResponse(data)
