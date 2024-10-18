@@ -56,8 +56,7 @@ class AdoptionOpportunityRecordViewSet(viewsets.ViewSet):
         queryset = AdoptionOpportunityRecord.objects.filter(account_uuid=account_uuid)
         book_list = []
         for record in queryset:
-            student_nums = [record.fall_student_number or 0, record.spring_student_number or 0, record.summer_student_number or 0]
-            book_list.append({"name": record.book_name , "students": str(max(student_nums))})
+            book_list.append({"name": record.book_name , "students": str(max(record.students))})
         data = {"Books": book_list}
 
         return JsonResponse(data)

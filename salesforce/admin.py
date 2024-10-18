@@ -22,10 +22,25 @@ class SchoolAdmin(admin.ModelAdmin):
     def has_add_permission(self, request):
         return False
 
+
 class AdoptionOpportunityRecordAdmin(admin.ModelAdmin):
-    list_display = ['account_uuid', 'book_name', 'fall_student_number', 'spring_student_number', 'summer_student_number']
-    list_filter = ('book_name', 'created')
-    search_fields = ['account_uuid', ]
+    list_display = ['account_uuid', 'book_name', 'students', 'savings']
+    list_filter = ('book_name', 'created', 'opportunity_stage')
+    search_fields = ['account_uuid', 'opportunity_id']
+    readonly_fields = [
+        'opportunity_id',
+        'opportunity_stage',
+        'account_uuid',
+        'adoption_type',
+        'base_year',
+        'confirmation_date',
+        'confirmation_type',
+        'how_using',
+        'savings',
+        'students',
+        'book_name',
+        'created'
+    ]
 
     def has_add_permission(self, request):
         return False
