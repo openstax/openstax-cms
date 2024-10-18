@@ -33,7 +33,7 @@ class Command(BaseCommand):
                      "FROM Adoption__c WHERE "
                      "Base_Year__c = {} AND Opportunity__r.Contact__r.Accounts_UUID__c  != null "
                      "AND Confirmation_Type__c = 'OpenStax Confirmed Adoption' "
-                     "AND Opportunity__r.Contact__r.Adoption_Status__c != 'Current Adopter' LIMIT 100").format(base_year)
+                     "AND Opportunity__r.Contact__r.Adoption_Status__c != 'Current Adopter'").format(base_year)
 
             response = sf.query(query)
             records = response['records']
