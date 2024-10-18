@@ -11,10 +11,9 @@ class Command(BaseCommand):
         with Salesforce() as sf:
             now = datetime.datetime.now()
 
-            year = now.year
+            base_year = now.year
             if now.month >= 7:  # Salesforce needs the school base year, this is how they calculate it
-                year = year - 1
-
+                base_year -= 1
 
             # truncate the table
             AdoptionOpportunityRecord.objects.all().delete()
@@ -34,7 +33,7 @@ class Command(BaseCommand):
                      "FROM Adoption__c WHERE "
                      "Base_Year__c = {} AND Opportunity__r.Contact__r.Accounts_UUID__c  != null "
                      "AND Confirmation_Type__c = 'OpenStax Confirmed Adoption' "
-                     "AND Opportunity__r.Contact__r.Adoption_Status != 'Current Adopter'").format(year)
+                     "AND Opportunity__r.Contact__r.Adoption_Status__c != 'Current Adopter' LIMIT 100").format(base_year)
 
             response = sf.query(query)
             records = response['records']
