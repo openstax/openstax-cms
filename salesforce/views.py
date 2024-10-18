@@ -60,15 +60,3 @@ class AdoptionOpportunityRecordViewSet(viewsets.ViewSet):
         data = {"Books": book_list}
 
         return JsonResponse(data)
-
-
-def get_adoption_status(request):
-    account = request.GET.get('id', False)
-
-    if account:
-        with Salesforce() as sf:
-            q = sf.query("SELECT Adoption_Status__c FROM Contact WHERE Accounts_ID__c = '{}'".format(account))
-
-            return JsonResponse(q)
-    else:
-        raise Http404('Must supply account id for adoption.')
