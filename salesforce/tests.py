@@ -112,9 +112,7 @@ class AdoptionOpportunityTest(TestCase):
         self.opportunity = AdoptionOpportunityRecord(opportunity_id='0066f000015SSy5AAG',
                                                      book_name='US History',
                                                      account_uuid='f826f1b1-ead5-4594-82b3-df9a2753cb43',
-                                                     fall_student_number=123,
-                                                     spring_student_number=75,
-                                                     summer_student_number=None)
+                                                     students=123)
         self.opportunity.save()
 
     def test_query_opportunity_by_account_uuid(self):

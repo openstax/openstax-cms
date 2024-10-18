@@ -19,12 +19,17 @@ class Adopter(models.Model):
 
 class AdoptionOpportunityRecord(models.Model):
     opportunity_id = models.CharField(max_length=255, unique=True)
+    opportunity_stage = models.CharField(max_length=255, null=True)
     account_uuid = models.UUIDField(null=True)
+    adoption_type = models.CharField(max_length=255, null=True)
+    base_year = models.IntegerField(null=True)
+    confirmation_date = models.DateField(null=True)
+    confirmation_type = models.CharField(max_length=255, null=True)
+    how_using = models.CharField(max_length=255, null=True)
+    savings = models.DecimalField(null=True, decimal_places=2, max_digits=10)
+    students = models.IntegerField(null=True)
     book_name = models.CharField(max_length=255)
     created = models.DateTimeField(auto_now_add=True)
-    fall_student_number = models.IntegerField(null=True, blank=True,)
-    spring_student_number = models.IntegerField(null=True, blank=True,)
-    summer_student_number = models.IntegerField(null=True, blank=True,)
 
     def __str__(self):
         return self.opportunity_id
