@@ -12,7 +12,7 @@ class Command(BaseCommand):
             now = datetime.datetime.now()
 
             year = now.year
-            if now.month > 7:  # Salesforce needs the school base year, this is how they calculate it
+            if now.month >= 7:  # Salesforce needs the school base year, this is how they calculate it
                 year = year - 1
 
 
@@ -39,7 +39,6 @@ class Command(BaseCommand):
             response = sf.query(query)
             records = response['records']
 
-            num_created = 0
             for record in records:
                 opportunity, created = AdoptionOpportunityRecord.objects.update_or_create(
                     opportunity_id=record['Id'],
