@@ -15,8 +15,10 @@ class Command(BaseCommand):
             if now.month < 7:  # if it's before July, the base year is the previous year (4/1/2024 = base_year 2023)
                 base_year -= 1
 
+            # TODO: I don't think this is needed - updating the records should be fine, and keeps something on the form
+            # TODO: for the user. Eventually, this should update CMS DB with updated data if they fill out the form
             # truncate the table
-            AdoptionOpportunityRecord.objects.all().delete()
+            # AdoptionOpportunityRecord.objects.all().delete()
 
             # then we will get any new records
             query = ("SELECT Id, "
