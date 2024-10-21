@@ -12,7 +12,7 @@ class Command(BaseCommand):
             now = datetime.datetime.now()
 
             base_year = now.year
-            if now.month >= 7:  # Salesforce needs the school base year, this is how they calculate it
+            if now.month < 7:  # if it's before July, the base year is the previous year (4/1/2024 = base_year 2023)
                 base_year -= 1
 
             # truncate the table
