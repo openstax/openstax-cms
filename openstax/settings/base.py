@@ -259,7 +259,7 @@ CRONJOBS = [
     ('0 2 * * *', 'django.core.management.call_command', ['delete_resource_downloads']),
     ('0 6 * * *', 'django.core.management.call_command', ['update_resource_downloads']),
     ('0 0 8 * *', 'django.core.management.call_command', ['update_schools_and_mapbox']),
-    ('0 9 * * *', 'django.core.management.call_command', ['update_opportunities']),
+    # ('0 0 1 * *', 'django.core.management.call_command', ['update_opportunities']),
     ('0 10 * * *', 'django.core.management.call_command', ['update_partners']),
 ]
 

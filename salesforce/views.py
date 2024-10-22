@@ -53,23 +53,12 @@ class AdoptionOpportunityRecordViewSet(viewsets.ViewSet):
     def list(self, request):
         account_uuid = request.GET.get('account_uuid', False)
         # a user can have many adoption records - one for each book
+        # 10/2024 - added new data that can be used on the form, will need coordination with the FE form
+        # see https://github.com/openstax/openstax-cms/pull/1585
         queryset = AdoptionOpportunityRecord.objects.filter(account_uuid=account_uuid)
         book_list = []
         for record in queryset:
-            student_nums = [record.fall_student_number or 0, record.spring_student_number or 0, record.summer_student_number or 0]
-            book_list.append({"name": record.book_name , "students": str(max(student_nums))})
+            book_list.append({"name": record.book_name , "students": str(record.students)})
         data = {"Books": book_list}
 
         return JsonResponse(data)
-
-
-def get_adoption_status(request):
-    account = request.GET.get('id', False)
-
-    if account:
-        with Salesforce() as sf:
-            q = sf.query("SELECT Adoption_Status__c FROM Contact WHERE Accounts_ID__c = '{}'".format(account))
-
-            return JsonResponse(q)
-    else:
-        raise Http404('Must supply account id for adoption.')
