@@ -13,7 +13,7 @@ class Command(BaseCommand):
 
             base_year = now.year
             if now.month < 7:  # if it's before July, the base year is the previous year (4/1/2024 = base_year 2023)
-                base_year -= 1
+                base_year -= 2
 
             # TODO: I don't think this is needed - updating the records should be fine, and keeps something on the form
             # TODO: for the user. Eventually, this should update CMS DB with updated data if they fill out the form
