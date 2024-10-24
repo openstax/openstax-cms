@@ -45,6 +45,7 @@ class Command(BaseCommand):
             response = sf.query_all(query)
             records = response['records']
 
+            # TODO: this doesn't need to be updating on the opp id, the info never changes
             for record in records:
                 opportunity, created = AdoptionOpportunityRecord.objects.update_or_create(
                     opportunity_id=record['Id'],
@@ -61,3 +62,6 @@ class Command(BaseCommand):
                               }
                 )
                 opportunity.save()
+
+                # TODO: need to grab current adoptions and if the info has changed, update it so the user sees most recent adoption info
+                # re-submitting the form will update the current year adoption numbers, which the user might not expect
