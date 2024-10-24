@@ -39,7 +39,9 @@ class Command(BaseCommand):
                      "AND Confirmation_Type__c = 'OpenStax Confirmed Adoption' "
                      "AND Opportunity__r.Contact__r.Adoption_Status__c != 'Current Adopter'").format(base_year)
 
-            response = sf.query(query)
+            # This generally returns more than 2,000 records (the SF limit)
+            # See simplate_salesforce documentation for query_all: https://github.com/simple-salesforce/simple-salesforce?tab=readme-ov-file#queries
+            response = sf.query_all(query)
             records = response['records']
 
             for record in records:
