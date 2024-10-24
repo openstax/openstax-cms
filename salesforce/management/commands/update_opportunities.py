@@ -1,4 +1,5 @@
 import datetime
+import uuid
 from django.core.management.base import BaseCommand
 from salesforce.models import AdoptionOpportunityRecord
 from salesforce.salesforce import Salesforce
@@ -39,13 +40,16 @@ class Command(BaseCommand):
                      "AND Confirmation_Type__c = 'OpenStax Confirmed Adoption' "
                      "AND Opportunity__r.Contact__r.Adoption_Status__c != 'Current Adopter'").format(base_year)
 
-            response = sf.query(query)
+            # This generally returns more than 2,000 records (the SF limit)
+            # See simplate_salesforce documentation for query_all: https://github.com/simple-salesforce/simple-salesforce?tab=readme-ov-file#queries
+            response = sf.query_all(query)
             records = response['records']
 
+            # TODO: this doesn't need to be updating on the opp id, the info never changes
             for record in records:
                 opportunity, created = AdoptionOpportunityRecord.objects.update_or_create(
                     opportunity_id=record['Id'],
-                    defaults={'account_uuid': record['Opportunity__r']['Contact__r']['Accounts_UUID__c'],
+                    defaults={'account_uuid': uuid.UUID(record['Opportunity__r']['Contact__r']['Accounts_UUID__c']),
                               'opportunity_stage': record['Opportunity__r']['StageName'],
                               'adoption_type': record['Adoption_Type__c'],
                               'base_year': record['Base_Year__c'],
@@ -58,3 +62,6 @@ class Command(BaseCommand):
                               }
                 )
                 opportunity.save()
+
+                # TODO: need to grab current adoptions and if the info has changed, update it so the user sees most recent adoption info
+                # re-submitting the form will update the current year adoption numbers, which the user might not expect
