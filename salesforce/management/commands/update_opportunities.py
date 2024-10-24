@@ -1,4 +1,5 @@
 import datetime
+import uuid
 from django.core.management.base import BaseCommand
 from salesforce.models import AdoptionOpportunityRecord
 from salesforce.salesforce import Salesforce
@@ -47,7 +48,7 @@ class Command(BaseCommand):
             for record in records:
                 opportunity, created = AdoptionOpportunityRecord.objects.update_or_create(
                     opportunity_id=record['Id'],
-                    defaults={'account_uuid': record['Opportunity__r']['Contact__r']['Accounts_UUID__c'],
+                    defaults={'account_uuid': uuid.UUID(record['Opportunity__r']['Contact__r']['Accounts_UUID__c']),
                               'opportunity_stage': record['Opportunity__r']['StageName'],
                               'adoption_type': record['Adoption_Type__c'],
                               'base_year': record['Base_Year__c'],
