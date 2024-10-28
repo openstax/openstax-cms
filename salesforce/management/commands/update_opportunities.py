@@ -64,6 +64,8 @@ class Command(BaseCommand):
                     opportunity.save()
                 except ValueError:
                     sentry_sdk.capture_message("Adoption {} has a badly formatted Account UUID: {}".format(record['Id'], record['Opportunity__r']['Contact__r']['Accounts_UUID__c']))
+                except TypeError:
+                    sentry_sdk.capture_message("Adoption {} exists without a book".format(record['Id']))
 
                 # TODO: need to grab current adoptions and if the info has changed, update it so the user sees most recent adoption info
                 # re-submitting the form will update the current year adoption numbers, which the user might not expect
