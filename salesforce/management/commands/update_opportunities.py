@@ -4,6 +4,7 @@ from django.core.management.base import BaseCommand
 from salesforce.models import AdoptionOpportunityRecord
 from salesforce.salesforce import Salesforce
 import sentry_sdk
+from sentry_sdk.crons import monitor
 
 
 class Command(BaseCommand):
@@ -51,6 +52,7 @@ class Command(BaseCommand):
             except TypeError:
                 sentry_sdk.capture_message("Adoption {} exists without a book".format(record['Id']))
 
+    @monitor(monitor_slug='update-opportunities')
     def handle(self, *args, **options):
         with Salesforce() as sf:
             now = datetime.datetime.now()
@@ -64,8 +66,8 @@ class Command(BaseCommand):
             # first, we get last year's records
             # these people need to renew, show them what we know from last base year confirmed adoption
             query = self.query_base_year(base_year, "Past Adopter")
-            results = sf.bulk.Adoption__c.query(query)
 
+            results = sf.bulk.Adoption__c.query(query)
             self.process_results(results)
 
             # now get this year's records - this will ensure accurate data on the renewal form if already filled out
