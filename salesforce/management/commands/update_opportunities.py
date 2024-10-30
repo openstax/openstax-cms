@@ -3,6 +3,7 @@ import uuid
 from django.core.management.base import BaseCommand
 from salesforce.models import AdoptionOpportunityRecord
 from salesforce.salesforce import Salesforce
+from global_settings.functions import invalidate_cloudfront_caches
 import sentry_sdk
 from sentry_sdk.crons import monitor
 
@@ -76,4 +77,6 @@ class Command(BaseCommand):
 
             results = sf.bulk.Adoption__c.query(updated_records)
             self.process_results(results)
+
+            invalidate_cloudfront_caches('salesforce/renewal')
 
