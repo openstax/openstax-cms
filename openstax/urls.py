@@ -25,6 +25,8 @@ urlpatterns = [
     path('django-admin/clear_cache/', clear_entire_cache, name='clear_entire_cache'),
     path('django-admin/', admin.site.urls),
 
+    path('documents/', include(wagtaildocs_urls)),
+
     re_path(r'^accounts', include(accounts_urls)),  # non-CloudFront Accounts redirects
 
     path('apps/cms/api/', include(api_urls)),
