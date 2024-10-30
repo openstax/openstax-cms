@@ -25,10 +25,7 @@ urlpatterns = [
     path('django-admin/clear_cache/', clear_entire_cache, name='clear_entire_cache'),
     path('django-admin/', admin.site.urls),
 
-    path('documents/', include(wagtaildocs_urls)),
-    path('images/', ServeView.as_view(action='redirect'), name='wagtailimages_serve'),
-
-    re_path(r'^accounts', include(accounts_urls)), # non-CloudFront Accounts redirects
+    re_path(r'^accounts', include(accounts_urls)),  # non-CloudFront Accounts redirects
 
     path('apps/cms/api/', include(api_urls)),
     path('apps/cms/api/search/', search, name='search'),
