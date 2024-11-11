@@ -26,9 +26,8 @@ urlpatterns = [
     path('django-admin/', admin.site.urls),
 
     path('documents/', include(wagtaildocs_urls)),
-    path('images/', ServeView.as_view(action='redirect'), name='wagtailimages_serve'),
 
-    re_path(r'^accounts', include(accounts_urls)), # non-CloudFront Accounts redirects
+    re_path(r'^accounts', include(accounts_urls)),  # non-CloudFront Accounts redirects
 
     path('apps/cms/api/', include(api_urls)),
     path('apps/cms/api/search/', search, name='search'),
@@ -60,6 +59,6 @@ if settings.DEBUG:
     urlpatterns += staticfiles_urlpatterns()
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += [
-        path('favicon\.ico', RedirectView.as_view(url=settings.STATIC_URL + 'pages/images/favicon.ico')),
+        path('favicon.ico', RedirectView.as_view(url=settings.STATIC_URL + 'pages/images/favicon.ico')),
         path('__debug__/', include('debug_toolbar.urls'))
     ]
