@@ -23,7 +23,7 @@ jobs:
           POSTGRES_PASSWORD: postgres
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
       with:
         fetch-depth: 1
 
@@ -48,7 +48,7 @@ jobs:
         SOCIAL_AUTH_OPENSTAX_SECRET: ${{ secrets.SOCIAL_AUTH_OPENSTAX_SECRET }}
 
     - name: Upload coverage reports to Codecov
-      uses: codecov/codecov-action@v4.0.1
+      uses: codecov/codecov-action@v4.6.0
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         slug: openstax/openstax-cms
