@@ -258,7 +258,6 @@ def news_article_subject_search(subject):
     return articles_to_return
 
 
-
 class NewsArticle(Page):
     date = models.DateField("Post date")
     heading = models.CharField(max_length=250, help_text="Heading displayed on website")
