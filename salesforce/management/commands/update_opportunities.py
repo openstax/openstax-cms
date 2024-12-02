@@ -21,6 +21,7 @@ class Command(BaseCommand):
                  "Savings__c, "
                  "Students__c, "
                  "Opportunity__r.Book__r.Name, "
+                 "Opportunity__r.Book__r.Active__c, "
                  "Opportunity__r.StageName, "
                  "Opportunity__r.Contact__r.Accounts_UUID__c "
                  "FROM Adoption__c WHERE "
@@ -30,24 +31,33 @@ class Command(BaseCommand):
 
         return query
 
-    def process_results(self, results):
+    def process_results(self, results, delete_stale=False):
         for i, record in enumerate(results):
+            # they have newer records than last year, delete all previous records for this user
+            if delete_stale:
+                adoptions = AdoptionOpportunityRecord.objects.filter(account_uuid=record['Opportunity__r']['Contact__r']['Accounts_UUID__c']).last()
+                if adoptions:
+                    if adoptions.created.date() < datetime.date.today():
+                        AdoptionOpportunityRecord.objects.filter(account_uuid=record['Opportunity__r']['Contact__r']['Accounts_UUID__c']).delete()
+
             try:
-                opportunity, created = AdoptionOpportunityRecord.objects.update_or_create(
-                    account_uuid=uuid.UUID(record['Opportunity__r']['Contact__r']['Accounts_UUID__c']),
-                    book_name=record['Opportunity__r']['Book__r']['Name'],
-                    defaults={'opportunity_id': record['Id'],
-                              'opportunity_stage': record['Opportunity__r']['StageName'],
-                              'adoption_type': record['Adoption_Type__c'],
-                              'base_year': record['Base_Year__c'],
-                              'confirmation_date': record['Confirmation_Date__c'],
-                              'confirmation_type': record['Confirmation_Type__c'],
-                              'how_using': record['How_Using__c'],
-                              'savings': record['Savings__c'],
-                              'students': record['Students__c']
-                              }
-                )
-                opportunity.save()
+                # don't build records for non-active books
+                if record['Opportunity__r']['Book__r']['Active__c']:
+                    opportunity, created = AdoptionOpportunityRecord.objects.update_or_create(
+                        account_uuid=uuid.UUID(record['Opportunity__r']['Contact__r']['Accounts_UUID__c']),
+                        book_name=record['Opportunity__r']['Book__r']['Name'],
+                        defaults={'opportunity_id': record['Id'],
+                                  'opportunity_stage': record['Opportunity__r']['StageName'],
+                                  'adoption_type': record['Adoption_Type__c'],
+                                  'base_year': record['Base_Year__c'],
+                                  'confirmation_date': record['Confirmation_Date__c'],
+                                  'confirmation_type': record['Confirmation_Type__c'],
+                                  'how_using': record['How_Using__c'],
+                                  'savings': record['Savings__c'],
+                                  'students': record['Students__c']
+                                  }
+                    )
+                    opportunity.save()
             except ValueError:
                 sentry_sdk.capture_message("Adoption {} has a badly formatted Account UUID: {}".format(record['Id'], record['Opportunity__r']['Contact__r']['Accounts_UUID__c']))
             except TypeError:
@@ -76,7 +86,7 @@ class Command(BaseCommand):
             updated_records = self.query_base_year(current_base_year, "Current Adopter")
 
             results = sf.bulk.Adoption__c.query(updated_records)
-            self.process_results(results)
+            self.process_results(results, delete_stale=True)
 
             invalidate_cloudfront_caches('salesforce/renewal')
 

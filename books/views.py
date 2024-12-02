@@ -12,8 +12,11 @@ from .serializers import FacultyResourcesSerializer
 
 @csrf_exempt
 def book_index(request):
-    page = BookIndex.objects.all()[0]
-    return redirect('/apps/cms/api/v2/pages/{}/'.format(page.pk))
+    try:
+        page = BookIndex.objects.all()[0]
+        return redirect('/apps/cms/api/v2/pages/{}/'.format(page.pk))
+    except IndexError:
+        raise Http404("Subject page not found")
 
 
 @csrf_exempt
