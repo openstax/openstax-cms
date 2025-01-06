@@ -14,26 +14,17 @@ class Command(BaseCommand):
                       "Website, " \
                       "Type, " \
                       "School_Location__c, " \
-                      "K_I_P__c, " \
-                      "Achieving_the_Dream_School__c, " \
-                      "HBCU__c, " \
-                      "Texas_Higher_Ed__c, " \
                       "Approximate_Enrollment__c, " \
-                      "Pell_Grant_Recipients__c, " \
-                      "Students_Pell_Grant__c, " \
                       "Students_Current_Year__c, " \
-                      "All_Time_Students2__c, " \
                       "Total_School_Enrollment__c, " \
-                      "Savings_Current_Year__c, " \
-                      "All_Time_Savings2__c, " \
                       "BillingStreet, " \
                       "BillingCity, " \
                       "BillingState, " \
                       "BillingPostalCode, " \
                       "BillingCountry, " \
                       "Address_Latitude__c, " \
-                      "Address_Longitude__c " \
-                      "FROM Account WHERE All_Time_Savings2__c > 0"
+                      "Address_Longitude_del__c " \
+                      "FROM Account"
             response = sf.query_all(query)
             sf_schools = response['records']
 
@@ -42,18 +33,9 @@ class Command(BaseCommand):
                       "Website, " \
                       "Type, " \
                       "School_Location__c, " \
-                      "K_I_P__c, " \
-                      "Achieving_the_Dream_School__c, " \
-                      "HBCU__c, " \
-                      "Texas_Higher_Ed__c, " \
                       "Approximate_Enrollment__c, " \
-                      "Pell_Grant_Recipients__c, " \
-                      "Students_Pell_Grant__c, " \
                       "Students_Current_Year__c, " \
-                      "All_Time_Students2__c, " \
                       "Total_School_Enrollment__c, " \
-                      "Savings_Current_Year__c, " \
-                      "All_Time_Savings2__c, " \
                       "Adoptions_in_District__c, " \
                       "BillingStreet, " \
                       "BillingCity, " \
@@ -61,8 +43,8 @@ class Command(BaseCommand):
                       "BillingPostalCode, " \
                       "BillingCountry, " \
                       "Address_Latitude__c, " \
-                      "Address_Longitude__c " \
-                      "FROM Account WHERE RecordTypeId = '012U0000000MdzNIAS' AND K_I_P__c = True"
+                      "Address_Longitude_del__c " \
+                      "FROM Account WHERE RecordTypeId = '012U0000000MdzNIAS'"
             district_response = sf.query_all(district_query)
             sf_districts = district_response['records']
             #remove duplicates
@@ -78,25 +60,16 @@ class Command(BaseCommand):
                                   'website': sf_district['Website'],
                                   'type': sf_district['Type'],
                                   'location': sf_district['School_Location__c'],
-                                  'key_institutional_partner': sf_district['K_I_P__c'],
-                                  'achieving_the_dream_school': sf_district['Achieving_the_Dream_School__c'],
-                                  'hbcu': sf_district['HBCU__c'],
-                                  'texas_higher_ed': sf_district['Texas_Higher_Ed__c'],
                                   'undergraduate_enrollment': sf_district['Approximate_Enrollment__c'],
-                                  'pell_grant_recipients': sf_district['Pell_Grant_Recipients__c'],
-                                  'percent_students_pell_grant': sf_district['Students_Pell_Grant__c'],
                                   'current_year_students': sf_district['Students_Current_Year__c'],
-                                  'all_time_students': sf_district['All_Time_Students2__c'],
                                   'total_school_enrollment': sf_district['Total_School_Enrollment__c'],
-                                  'current_year_savings': sf_district['Savings_Current_Year__c'],
-                                  'all_time_savings': sf_district['All_Time_Savings2__c'],
                                   'physical_country': sf_district['BillingCountry'],
                                   'physical_street': sf_district['BillingStreet'],
                                   'physical_city': sf_district['BillingCity'],
                                   'physical_state_province': sf_district['BillingState'],
                                   'physical_zip_postal_code': sf_district['BillingPostalCode'],
                                   'lat': sf_district['Address_Latitude__c'],
-                                  'long': sf_district['Address_Longitude__c'],
+                                  'long': sf_district['Address_Longitude_del__c'],
                                   },
                     )
                 school.save()
@@ -113,25 +86,16 @@ class Command(BaseCommand):
                               'website': sf_school['Website'],
                               'type': sf_school['Type'],
                               'location': sf_school['School_Location__c'],
-                              'key_institutional_partner': sf_school['K_I_P__c'],
-                              'achieving_the_dream_school': sf_school['Achieving_the_Dream_School__c'],
-                              'hbcu': sf_school['HBCU__c'],
-                              'texas_higher_ed': sf_school['Texas_Higher_Ed__c'],
                               'undergraduate_enrollment': sf_school['Approximate_Enrollment__c'],
-                              'pell_grant_recipients': sf_school['Pell_Grant_Recipients__c'],
-                              'percent_students_pell_grant': sf_school['Students_Pell_Grant__c'],
                               'current_year_students': sf_school['Students_Current_Year__c'],
-                              'all_time_students': sf_school['All_Time_Students2__c'],
                               'total_school_enrollment': sf_school['Total_School_Enrollment__c'],
-                              'current_year_savings': sf_school['Savings_Current_Year__c'],
-                              'all_time_savings': sf_school['All_Time_Savings2__c'],
                               'physical_country': sf_school['BillingCountry'],
                               'physical_street': sf_school['BillingStreet'],
                               'physical_city': sf_school['BillingCity'],
                               'physical_state_province': sf_school['BillingState'],
                               'physical_zip_postal_code': sf_school['BillingPostalCode'],
                               'lat': sf_school['Address_Latitude__c'],
-                              'long': sf_school['Address_Longitude__c'],
+                              'long': sf_school['Address_Longitude_del__c'],
                               },
                 )
 
