@@ -15,8 +15,8 @@ from .models import AdoptionOpportunityRecord, \
 
 
 class SchoolAdmin(admin.ModelAdmin):
-    list_display = ['name', 'phone']
-    list_filter = ('key_institutional_partner', 'achieving_the_dream_school', 'hbcu', 'texas_higher_ed')
+    list_display = ['name', 'salesforce_id', 'type', 'current_year_students', 'total_school_enrollment']
+    list_filter = ('type', 'location')
     search_fields = ['name', ]
 
     def has_add_permission(self, request):
