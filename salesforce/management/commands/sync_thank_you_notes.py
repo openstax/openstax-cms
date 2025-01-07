@@ -10,14 +10,12 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         new_thank_you_notes = ThankYouNote.objects.filter(salesforce_id="")
-        print(new_thank_you_notes)
 
         with Salesforce() as sf:
             # fetch schools to do a fuzzy match on with thank you note manually inputted names
             school_list = {school.name: school.salesforce_id for school in School.objects.all()}
 
             num_created = 0
-
             for note in new_thank_you_notes:
                 if note.institution:
                     best_match, score, _ = process.extractOne(note.institution, school_list.keys(), scorer=fuzz.WRatio, processor=utils.default_process)
