@@ -19,13 +19,15 @@ class Command(BaseCommand):
             for note in new_thank_you_notes:
                 account_id = school_list["Find Me A Home"]
 
+                # If note has a school name, see if we can match it and use that account id when creating
                 if note.institution:
                     school_string = note.institution
                     filtered_choices = [name for name in school_list.keys() if name.lower().startswith(school_string.lower())]
-                    best_match, score, match_key = process.extractOne(school_string, filtered_choices, scorer=fuzz.partial_ratio, processor=utils.default_process)
+                    if filtered_choices:
+                        best_match, score, match_key = process.extractOne(school_string, filtered_choices, scorer=fuzz.partial_ratio, processor=utils.default_process)
 
-                    if score > 99:  # found a good match on school name, use that to populate related school in SF
-                        account_id = school_list[best_match]
+                        if score > 99:  # found a good match on school name, use that to populate related school in SF
+                            account_id = school_list[best_match]
 
                 response = sf.Thank_You_Note__c.create(
                     {'Name': f"{note.first_name} {note.last_name} - {note.created}",
