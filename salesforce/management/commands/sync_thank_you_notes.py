@@ -22,7 +22,7 @@ class Command(BaseCommand):
                 if note.institution:
                     school_string = note.institution
                     filtered_choices = [name for name in school_list.keys() if name.lower().startswith(school_string.lower())]
-                    best_match, score, match_key = process.extractOne(school_string, filtered_choices, scorer=fuzz.partial_ratio, processor=utils.default_process())
+                    best_match, score, match_key = process.extractOne(school_string, filtered_choices, scorer=fuzz.partial_ratio, processor=utils.default_process)
 
                     if score > 99:  # found a good match on school name, use that to populate related school in SF
                         account_id = school_list[best_match]
