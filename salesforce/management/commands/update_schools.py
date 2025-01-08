@@ -14,7 +14,6 @@ class Command(BaseCommand):
                                 "Website, " \
                                 "Type, " \
                                 "School_Location__c, " \
-                                "Approximate_Enrollment__c, " \
                                 "Students_Current_Year__c, " \
                                 "Total_School_Enrollment__c, " \
                                 "BillingStreet, " \
@@ -38,7 +37,6 @@ class Command(BaseCommand):
                               'website': sf_school['Website'],
                               'type': sf_school['Type'],
                               'location': sf_school['School_Location__c'],
-                              'undergraduate_enrollment': sf_school['Approximate_Enrollment__c'],
                               'current_year_students': sf_school['Students_Current_Year__c'],
                               'total_school_enrollment': sf_school['Total_School_Enrollment__c'],
                               'physical_country': sf_school['BillingCountry'],
