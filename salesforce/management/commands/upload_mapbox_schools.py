@@ -1,7 +1,5 @@
-import ast
 from django.core.management.base import BaseCommand
 from salesforce.models import School, MapBoxDataset
-from django.core.files.storage import get_storage_class
 from mapbox import Uploader
 from django.conf import settings
 
@@ -64,8 +62,6 @@ class Command(BaseCommand):
                         }
                     }
                     allfeatures["features"].append(feature)
-
-        file_storage = get_storage_class()()
 
         with tempfile.TemporaryDirectory() as tempdir:
             fname = os.path.join(tempdir, 'schools.geojson')
