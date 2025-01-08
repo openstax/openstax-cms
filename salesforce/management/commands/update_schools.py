@@ -21,8 +21,8 @@ class Command(BaseCommand):
                                 "BillingState, " \
                                 "BillingPostalCode, " \
                                 "BillingCountry, " \
-                                "Address_Latitude__c, " \
-                                "Address_Longitude_del__c " \
+                                "BillingLatitude, " \
+                                "BillingLongitude " \
                                 "FROM Account")
             sf_schools = response['records']
 
@@ -44,8 +44,8 @@ class Command(BaseCommand):
                               'physical_city': sf_school['BillingCity'],
                               'physical_state_province': sf_school['BillingState'],
                               'physical_zip_postal_code': sf_school['BillingPostalCode'],
-                              'lat': sf_school['Address_Latitude__c'],
-                              'long': sf_school['Address_Longitude_del__c'],
+                              'lat': sf_school['BillingLatitude'],
+                              'long': sf_school['BillingLongitude'],
                               },
                 )
 
