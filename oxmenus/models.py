@@ -4,6 +4,7 @@ from wagtail.fields import StreamField
 from wagtail.admin.panels import FieldPanel
 from wagtail.api import APIField
 
+
 class MenuItemBlock(blocks.StructBlock):
     label = blocks.CharBlock(max_length=255)
     partial_url = blocks.CharBlock(max_length=255)

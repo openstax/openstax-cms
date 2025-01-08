@@ -1059,7 +1059,7 @@ class Book(Page):
             return None
 
         site_id, site_root_url, page_url_relative_to_site_root = url_parts
-        return (site_id, site_root_url, '/details/books/{}'.format(self.slug))
+        return site_id, site_root_url, '/details/books/{}'.format(self.slug)
 
     def __str__(self):
         return self.book_title

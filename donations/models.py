@@ -1,4 +1,5 @@
 from django.db import models
+from django.core.exceptions import ValidationError
 
 COLOR_SCHEME_CHOICES = (
     ('red', 'Red'),
@@ -22,6 +23,14 @@ class ThankYouNote(models.Model):
     consent_to_share_or_contact = models.BooleanField(default=False)
     contact_email_address = models.EmailField(blank=True, null=True)
     source = models.CharField(max_length=255, default="", blank=True)
+
+    def __str__(self):
+        return f'{self.first_name} {self.last_name}'
+
+    class Meta:
+        verbose_name = 'Thank You Note'
+        verbose_name_plural = 'Thank You Notes'
+
 
 class DonationPopup(models.Model):
     download_image = models.ImageField(null=True, blank=True)

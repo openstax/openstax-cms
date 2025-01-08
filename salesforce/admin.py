@@ -111,6 +111,7 @@ class ResourceDownloadAdmin(admin.ModelAdmin):
     list_display = ('id', 'created', 'last_access', 'resource_name', 'book', 'book_format', 'account_uuid')
     list_filter = ('created', 'book')
 
+
 admin.site.register(SalesforceSettings, SalesforceSettingsAdmin)
 admin.site.register(SalesforceForms, SalesforceFormsAdmin)
 admin.site.register(School, SchoolAdmin)
