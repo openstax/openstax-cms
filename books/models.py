@@ -1010,9 +1010,6 @@ class Book(Page):
         return book_urls
 
     def save(self, *args, **kwargs):
-        if self.cnx_id:
-            self.webview_link = '{}contents/{}'.format(settings.CNX_URL, self.cnx_id)
-
         if self.partner_list_label:
             Book.objects.filter(locale=self.locale).update(partner_list_label=self.partner_list_label)
 
@@ -1059,7 +1056,7 @@ class Book(Page):
             return None
 
         site_id, site_root_url, page_url_relative_to_site_root = url_parts
-        return (site_id, site_root_url, '/details/books/{}'.format(self.slug))
+        return site_id, site_root_url, '/details/books/{}'.format(self.slug)
 
     def __str__(self):
         return self.book_title
