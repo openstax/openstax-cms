@@ -10,7 +10,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         with Salesforce() as sf:
-            response = sf.query("SELECT Name, Id, Phone, " \
+            fetch_results = sf.bulk.Account.query("SELECT Name, Id, Phone, " \
                                 "Website, " \
                                 "Type, " \
                                 "School_Location__c, " \
@@ -23,8 +23,11 @@ class Command(BaseCommand):
                                 "BillingCountry, " \
                                 "BillingLatitude, " \
                                 "BillingLongitude " \
-                                "FROM Account")
-            sf_schools = response['records']
+                                "FROM Account", lazy_operation=True)
+            sf_schools = []
+            for list_results in fetch_results:
+                sf_schools.extend(list_results)
+            # sf_schools = response['records']
 
             updated_schools = 0
             created_schools = 0

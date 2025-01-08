@@ -62,6 +62,8 @@ class School(models.Model):
     physical_zip_postal_code = models.CharField(max_length=255, null=True, blank=True)
     long = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True)
     lat = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True)
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.name
