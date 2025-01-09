@@ -27,7 +27,6 @@ class Command(BaseCommand):
             sf_schools = []
             for list_results in fetch_results:
                 sf_schools.extend(list_results)
-            # sf_schools = response['records']
 
             updated_schools = 0
             created_schools = 0
