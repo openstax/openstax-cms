@@ -2,7 +2,7 @@ from django.core import serializers
 from django.http import JsonResponse, HttpResponse, Http404
 from django.forms.models import model_to_dict
 from django.db.models import Q
-from rest_framework import viewsets, generics
+from rest_framework import viewsets
 from rest_framework import status
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
@@ -16,6 +16,7 @@ from wagtail.documents.models import Document
 from wagtail.models import Site
 from .models import ProgressTracker, FeatureFlag, WebviewSettings
 from .serializers import AdopterSerializer, ImageSerializer, DocumentSerializer, ProgressSerializer, CustomizationRequestSerializer
+
 
 class AdopterViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Adopter.objects.all()
@@ -50,6 +51,7 @@ class ProgressViewSet(viewsets.ReadOnlyModelViewSet):
             queryset = queryset.filter(account_id=account_id)
         return queryset
 
+
 def sticky_note(request):
     sticky_note = StickyNote.for_site(Site.find_for_request(request))
 
@@ -78,6 +80,7 @@ def footer(request):
         'linkedin_link': footer.linkedin_link,
     })
 
+
 def mapbox(request):
     mapbox = MapBoxDataset.objects.all()
     response = []
@@ -89,6 +92,7 @@ def mapbox(request):
         })
 
     return JsonResponse(response, safe=False)
+
 
 def errata_fields(request):
     '''
@@ -104,6 +108,7 @@ def errata_fields(request):
                 response.append({'field': field, 'verbose': verbose})
 
     return JsonResponse(response, safe=False)
+
 
 def schools(request):
     format = request.GET.get('format', 'json')
@@ -165,6 +170,7 @@ def schools(request):
     else:
         return JsonResponse({'error': 'Invalid format requested.'})
 
+
 def flags(request):
     flag_name_query_string = request.GET.get('flag', False)
 
@@ -177,6 +183,7 @@ def flags(request):
             return JsonResponse(data, safe=False)
         except FeatureFlag.DoesNotExist:
             raise Http404('Flag does not exist')
+
 
 @api_view(['GET', 'POST'])
 @parser_classes([JSONParser])

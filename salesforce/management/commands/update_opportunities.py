@@ -44,6 +44,7 @@ class Command(BaseCommand):
                 # don't build records for non-active books
                 if record['Opportunity__r']['Book__r']['Active__c']:
                     opportunity, created = AdoptionOpportunityRecord.objects.update_or_create(
+                        opportunity_id=[record['Opportunity__r']['Book__r']['Id']],
                         account_uuid=uuid.UUID(record['Opportunity__r']['Contact__r']['Accounts_UUID__c']),
                         book_name=record['Opportunity__r']['Book__r']['Name'],
                         defaults={'opportunity_id': record['Id'],
