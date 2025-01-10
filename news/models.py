@@ -662,7 +662,7 @@ class PressRelease(Page):
             return None
 
         site_id, site_root_url, page_url_relative_to_site_root = url_parts
-        return (site_id, site_root_url, '/press/{}'.format(self.slug))
+        return site_id, site_root_url, '/press/{}'.format(self.slug)
 
     search_fields = Page.search_fields + [
         index.SearchField('body'),

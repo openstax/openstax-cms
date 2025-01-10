@@ -1,5 +1,7 @@
 import datetime
 import json
+import unittest
+from unittest.mock import patch
 
 from django.test import TestCase, Client
 from wagtail.test.utils import WagtailTestUtils, WagtailPageTestCase
@@ -9,6 +11,21 @@ from pages import models as page_models
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash, mock_user_login
 from http import cookies
 
+class TestRootPage(unittest.TestCase):
+
+    @patch('pages.models.RootPage.get_url_parts')
+    def get_url_parts_returns_correct_values(self, mock_get_url_parts):
+        mock_get_url_parts.return_value = (1, 'http://openstax.org', 'some/path')
+        root_page = page_models.RootPage()
+        result = root_page.get_url_parts()
+        self.assertEqual(result, (1, 'http://openstax.org', ''))
+
+    @patch('pages.models.RootPage.get_url_parts')
+    def get_url_parts_returns_none_when_no_url_parts(self, mock_get_url_parts):
+        mock_get_url_parts.return_value = None
+        root_page = page_models.RootPage()
+        result = root_page.get_url_parts()
+        self.assertIsNone(result)
 
 class HomePageTests(WagtailPageTestCase):
 

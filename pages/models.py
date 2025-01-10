@@ -10,7 +10,6 @@ from wagtail.fields import RichTextField, StreamField
 from wagtail.models import Orderable, Page
 from wagtail.api import APIField
 from wagtail.models import Site
-from rest_framework.fields import Field
 
 from api.models import FeatureFlag
 from openstax.functions import build_image_url, build_document_url
@@ -224,7 +223,7 @@ class RootPage(Page):
         # note that we ignore the slug and hardcode this url to / for the root page
         site_id, site_root_url, page_url_relative_to_site_root = url_parts
 
-        return (site_id, site_root_url, '/')
+        return site_id, site_root_url, ''
 
     def serve_preview(self, request, mode_name):
         site_id, site_root, relative_page_url = self.get_url_parts(request)
@@ -250,7 +249,7 @@ class FlexPage(RootPage):
             return None
 
         site_id, site_root_url, page_url_relative_to_site_root = url_parts
-        return (site_id, site_root_url, '/{}'.format(self.slug))
+        return site_id, site_root_url, '/{}'.format(self.slug)
 
 
 #TODO: start removing these pages as we move to the above structure for all pages.
@@ -345,7 +344,6 @@ class AboutUsPage(Page):
     ]
 
     template = 'page.html'
-
     parent_page_types = ['pages.HomePage']
     max_count = 1
 
@@ -716,10 +714,7 @@ class HomePage(Page):
         site_id, root_url, page_path = url_parts
 
         # return '/' in place of the real page path
-        return (site_id, root_url, '/')
-
-    class Meta:
-        verbose_name = "homepage"
+        return site_id, root_url, '/'
 
 
 class K12MainPage(Page):
@@ -863,8 +858,6 @@ class K12MainPage(Page):
         APIField('promote_image')
     ]
 
-    max_count = 1
-
     class Meta:
         verbose_name = "K12 Main Page"
 
@@ -902,14 +895,10 @@ class K12MainPage(Page):
         FieldPanel('promote_image')
     ]
 
+    max_count = 1
     template = 'page.html'
     parent_page_types = ['pages.HomePage']
     subpage_types = ['pages.K12Subject']
-
-    max_count = 1
-
-    class Meta:
-        verbose_name = "K12 Main Page"
 
 
 class ContactUs(Page):
@@ -982,7 +971,7 @@ class GeneralPage(Page):
 
         # note that we ignore the parents, all general pages are /{slug}
         site_id, site_root_url, page_url_relative_to_site_root = url_parts
-        return (site_id, site_root_url, '/{}'.format(self.slug))
+        return site_id, site_root_url, '/{}'.format(self.slug)
 
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
@@ -1557,7 +1546,6 @@ class Technology(Page):
     ]
 
     template = 'page.html'
-
     parent_page_types = ['pages.HomePage']
     max_count = 1
 
@@ -1610,7 +1598,6 @@ class ErrataList(Page):
     ]
 
     template = 'page.html'
-
     parent_page_types = ['pages.HomePage']
     max_count = 1
 
@@ -1852,7 +1839,6 @@ class LearningResearchPage(Page):
     ]
 
     template = 'page.html'
-
     parent_page_types = ['pages.HomePage']
     max_count = 1
 
@@ -1892,7 +1878,6 @@ class Careers(Page):
     ]
 
     template = 'page.html'
-
     parent_page_types = ['pages.HomePage']
     max_count = 1
 
@@ -2821,7 +2806,7 @@ class Subjects(Page):
 
         # note that we ignore the slug and hardcode this url to /subjects
         site_id, site_root_url, page_url_relative_to_site_root = url_parts
-        return (site_id, site_root_url, '/subjects')
+        return site_id, site_root_url, '/subjects'
 
     api_fields = [
         APIField('heading'),
@@ -2943,7 +2928,7 @@ class Subject(Page):
 
         # note that we ignore the slug and hardcode this url to /subjects
         site_id, site_root_url, page_url_relative_to_site_root = url_parts
-        return (site_id, site_root_url, '/subjects/{}'.format(self.slug[0:-6]))
+        return site_id, site_root_url, '/subjects/{}'.format(self.slug[0:-6])
 
     @property
     def selected_subject(self):
@@ -3098,7 +3083,6 @@ class FormHeadings(Page):
     ]
 
     template = 'page.html'
-
     parent_page_types = ['pages.HomePage']
     max_count = 1
 
@@ -3264,7 +3248,7 @@ class K12Subject(Page):
             return None
 
         site_id, site_root_url, page_url_relative_to_site_root = url_parts
-        return (site_id, site_root_url, '/k12/{}'.format(self.slug[4:]))
+        return site_id, site_root_url, '/k12/{}'.format(self.slug[4:])
 
     api_fields = [
         APIField('subheader'),
@@ -3379,7 +3363,6 @@ class AllyLogos(Page):
     ]
 
     template = 'page.html'
-
     parent_page_types = ['pages.HomePage']
 
 
