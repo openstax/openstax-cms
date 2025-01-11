@@ -1,11 +1,12 @@
 import datetime
-
 import vcr
+import json
 
 from django.core.management import call_command
 from django.test import LiveServerTestCase, TestCase, Client
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.conf import settings
 
 from books.models import BookIndex, Book
 from pages.models import HomePage
@@ -24,10 +25,35 @@ from wagtail.documents.models import Document
 from shared.test_utilities import mock_user_login
 
 
+def redact_sensitive_info(request):
+    # Check if the request has a body
+    if request.body:
+        # Decode the body to a string for manipulation
+        body = request.body.decode('utf-8')
+
+        # Replace the specific sensitive value
+        body = body.replace(settings.SALESFORCE['password'], "")
+        body = body.replace(settings.SALESFORCE['security_token'], "")
+        body = body.replace(settings.SALESFORCE['username'], "")
+
+        # Encode the body back to bytes
+        request.body = body.encode('utf-8')
+
+    return request
+
+
+openstax_vcr = vcr.VCR(
+    record_mode='once',
+    filter_headers=['Authorization', 'uri', 'body'],
+    before_record_request=redact_sensitive_info
+
+)
+
+
 class PartnerTest(APITestCase, TestCase):
 
     def setUp(self):
-        with vcr.use_cassette('fixtures/vcr_cassettes/partners.yaml'):
+        with openstax_vcr.use_cassette('fixtures/vcr_cassettes/partners.yaml'):
             call_command('update_partners')
         for partner in Partner.objects.all():
             partner.visible_on_website = True
@@ -77,9 +103,9 @@ class SalesforceTest(LiveServerTestCase, WagtailPageTestCase):
             self.create_salesforce_setting(username="test2", password="test2", security_token="test2", sandbox=False)
 
     def test_database_query(self):
-        with vcr.use_cassette('fixtures/vcr_cassettes/contact.yaml'):
+        with openstax_vcr.use_cassette('fixtures/vcr_cassettes/contact.yaml'):
             sf = SF()
-            contact_info = sf.query("SELECT Id FROM Contact")
+            contact_info = sf.query("SELECT Id FROM Contact LIMIT 1")
             self.assertIsNot(contact_info, None)
 
     def test_salesforce_forms_no_debug(self):

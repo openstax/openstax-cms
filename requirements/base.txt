@@ -29,7 +29,7 @@ simple-salesforce
 six
 ua-parser
 unicodecsv
-vcrpy==6.0.1 # recoding Salesforce interactions in tests
+vcrpy # recoding Salesforce interactions in tests
 wagtail
 wagtail-modeladmin
 whitenoise

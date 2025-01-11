@@ -1,5 +1,3 @@
-import vcr
-
 from wagtail.test.utils import WagtailPageTestCase
 from wagtail.models import Page
 
@@ -7,9 +5,9 @@ import snippets.models
 from pages.models import HomePage
 from books.models import BookIndex, Book, BookFacultyResources
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
+from salesforce.tests import openstax_vcr as vcr
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import Client
-from rest_framework.exceptions import NotFound
 from wagtail.documents.models import Document
 import datetime
 
