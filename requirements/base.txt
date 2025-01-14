@@ -1,7 +1,7 @@
 boto3==1.34.49
 botocore==1.34.49
 bs4==0.0.2
-Django==5.0.9
+Django==5.0.11
 certifi==2024.7.4
 django-admin-rangefilter==0.12.1
 django-crontab==0.7.1
