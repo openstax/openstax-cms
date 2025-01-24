@@ -30,6 +30,9 @@ class Command(BaseCommand):
 
                         if score > 99:  # found a good match on school name, use that to populate related school in SF
                             account_id = school_list[best_match]
+                        else:
+                            capture_exception(Exception(f"Could not find a match for {school_string}"))
+                            account_id = school_list["Find Me A Home"]
 
                 try:
                     response = sf.Thank_You_Note__c.create(
