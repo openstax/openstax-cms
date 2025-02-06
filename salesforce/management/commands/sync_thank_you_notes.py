@@ -19,6 +19,13 @@ class Command(BaseCommand):
         with Salesforce() as sf:
             num_created = 0
             for note in new_thank_you_notes:
+                # junk removal
+                if note.thank_you_note and len(note.thank_you_note) < 5:  # we expect at least a 'thank'
+                    note.delete()
+                if note.institution and note.institution.isdigit():  # we expect at least text
+                    note.institution = None  # Use Find Me A Home
+                    note.save()
+
                 account_id = school_list["Find Me A Home"]
 
                 # If note has a school name, see if we can match it and use that account id when creating
