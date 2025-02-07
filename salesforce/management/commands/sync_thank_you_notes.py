@@ -22,9 +22,11 @@ class Command(BaseCommand):
                 # junk removal
                 if note.thank_you_note and len(note.thank_you_note) < 5:  # we expect at least a 'thank'
                     note.delete()
+                # junk school rename
                 if note.institution and note.institution.isdigit():  # we expect at least text
-                    note.institution = None  # Use Find Me A Home
+                    note.institution = "Find Me A Home"  # Use Find Me A Home
                     note.save()
+
 
                 account_id = school_list["Find Me A Home"]
 
