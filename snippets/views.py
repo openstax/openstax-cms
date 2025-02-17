@@ -19,6 +19,18 @@ class RoleViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Role.objects.all()
     serializer_class = RoleSerializer
 
+    def get_queryset(self):
+        queryset = Role.objects.all().order_by('display_name')
+        name = self.request.query_params.get('name', None)
+        locale = self.request.query_params.get('locale', None)
+        if name is not None:
+            queryset = queryset.filter(display_name=name)
+        if locale is not None:
+            queryset = queryset.filter(locale=convert_locale(locale))
+        else:
+            queryset = queryset.filter(locale=ENGLISH_LOCALE_ID)
+        return queryset
+
 
 class SubjectList(viewsets.ReadOnlyModelViewSet):
     serializer_class = SubjectSerializer
