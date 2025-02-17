@@ -33,11 +33,10 @@ class DocumentViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = DocumentSerializer
 
     def get_queryset(self):
-        queryset = Document.objects.all()
-        search = self.request.query_params.get('search', None)
-        if search is not None:
-            queryset = queryset.filter(title__icontains=search)
-        return queryset
+        search = self.request.query_params.get('search')
+        if search:
+            return Document.objects.filter(title__icontains=search)
+        return Document.objects.all()
 
 
 class ProgressViewSet(viewsets.ReadOnlyModelViewSet):

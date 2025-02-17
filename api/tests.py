@@ -1,20 +1,22 @@
 import json
 from django.test import TestCase
-
+from django.urls import reverse
 from wagtail.test.utils import WagtailTestUtils
 from wagtail.images.tests.utils import Image, get_test_image_file
+from wagtail.documents.tests.utils import get_test_document_file
 from wagtail.documents.models import Document
 
 from api.models import FeatureFlag, WebviewSettings
 
 from shared.test_utilities import mock_user_login
 
+
 class PagesAPI(TestCase, WagtailTestUtils):
     def setUp(self):
         pass
 
     def test_api_v2_pages_urls(self):
-        #make sure we get a 200 with or without a slash, no 3xx
+        # make sure we get a 200 with or without a slash, no 3xx
         response = self.client.get('/apps/cms/api/v2/pages/')
         self.assertEqual(response.status_code, 200)
 
@@ -63,38 +65,50 @@ class DocumentAPI(TestCase, WagtailTestUtils):
         pass
 
     def test_api_v2_single_document(self):
-        response = self.client.get('/apps/cms/api/v2/documents/')
-        self.assertEqual(response.status_code, 200)
-        response_dict = eval(response.content.decode(response.charset))
-        self.assertIsInstance(response_dict, dict)
-        self.assertEqual(response_dict['meta']['total_count'], 0)
-        self.assertEqual(response_dict['items'], [])
+        # Get the URL dynamically
+        url = reverse('document-list')  # Update with the actual view name if different
 
+        # Initial GET: Expect empty list
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 200)
+        response_dict = response.json()
+        self.assertEqual(len(response_dict), 0)
+        self.assertEqual(response_dict, [])
+
+        # Create a document
         expected_title = "Test document"
-        image = Document.objects.create(
+        Document.objects.create(
             title=expected_title,
-            file=get_test_image_file(),
+            file=get_test_document_file(),
         )
 
-        response = self.client.get('/apps/cms/api/v2/documents/')
+        # Second GET: Expect one document
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
-        response_dict = eval(response.content.decode(response.charset))
-        self.assertIsInstance(response_dict, dict)
-        self.assertEqual(response_dict['meta']['total_count'], 1)
-        returned_title = response_dict['items'][0]['title']
-        self.assertEqual(expected_title, returned_title)
+        response_dict = response.json()
+
+        # Assertions
+        self.assertEqual(len(response_dict), 1)
+        self.assertEqual(response_dict[0]['title'], expected_title)
 
     def test_can_search_documents(self):
-        image = Document.objects.create(
-            title="OpenStax",
-            file=get_test_image_file(),
-        )
+        url = reverse('document-list')
 
-        response = self.client.get('/apps/cms/api/v2/documents/?search=OpenStax')
+        document = Document.objects.create(
+            title="OpenStax",
+            file=get_test_document_file(),
+        )
+        self.assertEqual(document.title, 'OpenStax')
+
+        response = self.client.get(url, {'search': 'OpenStax'})
         self.assertEqual(response.status_code, 200)
-        response_dict = eval(response.content.decode(response.charset))
-        self.assertIsInstance(response_dict, dict)
-        self.assertEqual(response_dict['meta']['total_count'], 1)
+
+        # Safer JSON parsing
+        response_dict = response.json()
+
+        # Assertions
+        self.assertEqual(len(response_dict), 1)
+        self.assertEqual(response_dict[0]['title'], 'OpenStax')
 
 
 class APITests(TestCase, WagtailTestUtils):
