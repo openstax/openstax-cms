@@ -1,5 +1,5 @@
-boto3
-botocore
+boto3==1.34.49
+botocore==1.34.49
 bs4
 Django
 certifi
