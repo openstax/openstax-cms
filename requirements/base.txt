@@ -14,7 +14,7 @@ django-openstax-healthcheck
 django-rest-auth
 django-reversion
 django-ses
-django-storages==1.14.4
+django-storages
 django-taggit>=5.0.0
 djangorestframework
 html2text # news feed
