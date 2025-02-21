@@ -72,7 +72,7 @@ class OpenstaxPagesAPIEndpoint(PagesAPIViewSet):
         # Exclude pages that the user doesn't have access to
         restricted_pages = [
             restriction.page
-            for restriction in PageViewRestriction.objects.all().select_related("page")
+            for restriction in PageViewRestriction.objects.select_related("page")
             if not restriction.accept_request(self.request)
         ]
 

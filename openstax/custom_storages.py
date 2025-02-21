@@ -10,11 +10,11 @@ class MediaStorage(S3Boto3Storage):
     file_overwrite = False
 
     def _save(self, name, content):
-        logger.info(f"Saving file {name} to S3")
+        print(f"Saving file {name} to S3")
         try:
             result = super()._save(name, content)
-            logger.info(f"File {name} saved successfully to S3")
+            print(f"File {name} saved successfully to S3")
             return result
         except Exception as e:
-            logger.error(f"Error saving file {name} to S3: {e}")
+            print(f"Error saving file {name} to S3: {e}")
             raise
