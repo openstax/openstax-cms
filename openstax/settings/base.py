@@ -329,7 +329,7 @@ logging.config.dictConfig({
         },
         # Our application code
         'openstax': {
-            'level': LOGLEVEL,
+            'level': 'DEBUG',
             'handlers': ['console'],
             'propagate': False,
         },
@@ -411,6 +411,9 @@ WAGTAILADMIN_EXTERNAL_LINK_CONVERSION = 'exact'
 WAGTAIL_REDIRECTS_FILE_STORAGE = 'cache'
 WAGTAILFORMS_HELP_TEXT_ALLOW_HTML = True
 
+# Disable the workflow, we don't use them
+WAGTAIL_WORKFLOW_ENABLED = False
+
 WAGTAILSEARCH_BACKENDS = {
     'default': {
         'BACKEND': 'wagtail.search.backends.database',
@@ -428,7 +431,7 @@ WAGTAILIMAGES_FORMAT_CONVERSIONS = {
     'jpg': 'webp',
     'png': 'webp',
 }
-WAGTAILIMAGES_MAX_UPLOAD_SIZE = 4 * 1024 * 1024  # 4MB
+WAGTAILIMAGES_MAX_UPLOAD_SIZE = 20 * 1024 * 1024  # 20MB
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
 
 WAGTAILADMIN_RICH_TEXT_EDITORS = {
