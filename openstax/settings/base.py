@@ -290,7 +290,7 @@ REST_FRAMEWORK = {
 ###########
 
 LOGGING_CONFIG = None
-LOGLEVEL = os.environ.get('LOGLEVEL', 'debug').upper()
+LOGLEVEL = os.environ.get('LOGLEVEL', 'warn').upper()
 logging.config.dictConfig({
     'version': 1,
     'disable_existing_loggers': False,
