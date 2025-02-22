@@ -290,7 +290,7 @@ REST_FRAMEWORK = {
 ###########
 
 LOGGING_CONFIG = None
-LOGLEVEL = os.environ.get('LOGLEVEL', 'warn').upper()
+LOGLEVEL = os.environ.get('LOGLEVEL', 'error').upper()
 logging.config.dictConfig({
     'version': 1,
     'disable_existing_loggers': False,
@@ -316,11 +316,6 @@ logging.config.dictConfig({
             'class': 'logging.StreamHandler',
             'formatter': 'default',
         },
-        'file': {
-            'level': LOGLEVEL,
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(BASE_DIR, 'logs', 'django.log'),
-        },
         'django.server': {
             **DEFAULT_LOGGING['handlers']['django.server'],
             'filters': ['healthcheck_filter']
@@ -329,13 +324,13 @@ logging.config.dictConfig({
     'loggers': {
         # default for all undefined Python modules
         '': {
-            'level': 'DEBUG',
+            'level': LOGLEVEL,
             'handlers': ['console'],
         },
         # Our application code
         'openstax': {
-            'level': 'DEBUG',
-            'handlers': ['console', 'file'],
+            'level': LOGLEVEL,
+            'handlers': ['console'],
             'propagate': False,
         },
         'django.security.DisallowedHost': {
