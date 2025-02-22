@@ -1,5 +1,3 @@
-import json
-
 from django.db import models
 from wagtail import blocks
 from wagtail.fields import StreamField
@@ -59,14 +57,14 @@ class Webinar(models.Model):
     @property
     def selected_subjects(self):
         prep_value = self.webinar_subjects.get_prep_value()
-        subjects = []
-        for s in prep_value:
-            for x in s['value']:
-                subject_id = x['value']['subject']
-                subject = Subject.objects.filter(id=subject_id)
-                subjects.append(str(subject[0]))
-        return subjects
+        subject_ids = [x['value']['subject'] for s in prep_value for x in s['value']]
 
+        subjects_map = {
+            subj.id: str(subj) for subj in Subject.objects.filter(id__in=subject_ids)
+        }
+
+        subjects = [subjects_map[x['value']['subject']] for s in prep_value for x in s['value']]
+        return subjects
 
     @property
     def selected_collections(self):

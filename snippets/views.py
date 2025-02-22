@@ -1,5 +1,3 @@
-from rest_framework import viewsets
-
 from .models import Role, Subject, K12Subject, ErrataContent, SubjectCategory, GiveBanner, BlogContentType, \
     BlogCollection, NoWebinarMessage, WebinarCollection, AmazonBookBlurb
 from .serializers import RoleSerializer, SubjectSerializer, K12SubjectSerializer, ErrataContentSerializer, \
@@ -8,7 +6,7 @@ from .serializers import RoleSerializer, SubjectSerializer, K12SubjectSerializer
     WebinarCollectionSerializer, AmazonBookBlurbSerializer
 
 
-from rest_framework import generics, viewsets
+from rest_framework import viewsets
 from django_filters.rest_framework import DjangoFilterBackend
 
 SPANISH_LOCALE_ID = 2
@@ -46,6 +44,7 @@ class SubjectList(viewsets.ReadOnlyModelViewSet):
             queryset = queryset.filter(locale=convert_locale(locale))
         return queryset
 
+
 class K12SubjectList(viewsets.ReadOnlyModelViewSet):
     serializer_class = K12SubjectSerializer
     filter_backends = (DjangoFilterBackend,)
@@ -59,6 +58,7 @@ class K12SubjectList(viewsets.ReadOnlyModelViewSet):
         if locale is not None:
             queryset = queryset.filter(locale=convert_locale(locale))
         return queryset
+
 
 class ErrataContentViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ErrataContentSerializer
