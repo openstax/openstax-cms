@@ -2,7 +2,7 @@ from rest_framework import serializers
 from salesforce.models import Adopter
 from wagtail.images.models import Image
 from wagtail.documents.models import Document
-from api.models import ProgressTracker, CustomizationRequest
+from api.models import CustomizationRequest
 
 
 class AdopterSerializer(serializers.HyperlinkedModelSerializer):
@@ -51,22 +51,6 @@ class DocumentSerializer(serializers.HyperlinkedModelSerializer):
                           'title',
                           'created_at',
                           )
-
-
-class ProgressSerializer(serializers.HyperlinkedModelSerializer):
-
-    def create(self, validated_data):
-        progress, created = ProgressTracker.objects.update_or_create(
-            account_id=validated_data.get('account_id', None),
-            defaults={'progress':validated_data.get('progress', None)})
-
-        return progress
-
-    class Meta:
-        model = ProgressTracker
-        fields = ('account_id',
-                  'progress',
-                  )
 
 
 class ModuleListingField(serializers.StringRelatedField):
