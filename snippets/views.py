@@ -14,11 +14,10 @@ ENGLISH_LOCALE_ID = 1
 
 
 class RoleViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Role.objects.all()
     serializer_class = RoleSerializer
 
     def get_queryset(self):
-        queryset = Role.objects.all().order_by('display_name')
+        queryset = Role.objects.order_by('display_name')
         name = self.request.query_params.get('name', None)
         locale = self.request.query_params.get('locale', None)
         if name is not None:
@@ -35,7 +34,7 @@ class SubjectList(viewsets.ReadOnlyModelViewSet):
     filter_backends = (DjangoFilterBackend,)
 
     def get_queryset(self):
-        queryset = Subject.objects.all().order_by('name')
+        queryset = Subject.objects.order_by('name')
         name = self.request.query_params.get('name', None)
         locale = self.request.query_params.get('locale', None)
         if name is not None:
@@ -129,7 +128,5 @@ def convert_locale(locale):
 
 
 def convert_subject_name(subject):
-    subjects = Subject.objects.all()
-    result = subjects.filter(name=subject)
-    return result[0].id
+    return Subject.objects.filter(name=subject).values_list('id', flat=True).first()
 
