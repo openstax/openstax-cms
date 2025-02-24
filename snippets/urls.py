@@ -2,7 +2,7 @@ from rest_framework import routers
 from . import views
 
 router = routers.SimpleRouter()
-router.register('roles', views.RoleViewSet)
+router.register('roles', views.RoleViewSet, basename="Roles")
 router.register('subjects', views.SubjectList, basename="Subjects")
 router.register('k12subjects', views.K12SubjectList, basename="K12Subjects")
 router.register('erratacontent', views.ErrataContentViewSet, basename="ErrataContent")
