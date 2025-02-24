@@ -14,8 +14,8 @@ from global_settings.models import StickyNote, Footer, GiveToday
 from wagtail.images.models import Image
 from wagtail.documents.models import Document
 from wagtail.models import Site
-from .models import ProgressTracker, FeatureFlag, WebviewSettings
-from .serializers import AdopterSerializer, ImageSerializer, DocumentSerializer, ProgressSerializer, CustomizationRequestSerializer
+from .models import FeatureFlag, WebviewSettings
+from .serializers import AdopterSerializer, ImageSerializer, DocumentSerializer, CustomizationRequestSerializer
 
 
 class AdopterViewSet(viewsets.ReadOnlyModelViewSet):
@@ -37,18 +37,6 @@ class DocumentViewSet(viewsets.ReadOnlyModelViewSet):
         if search:
             return Document.objects.filter(title__icontains=search)
         return Document.objects.all()
-
-
-class ProgressViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = ProgressTracker.objects.all()
-    serializer_class = ProgressSerializer
-
-    def get_queryset(self):
-        queryset = ProgressTracker.objects.all()
-        account_id = self.request.query_params.get('account_id', None)
-        if account_id is not None:
-            queryset = queryset.filter(account_id=account_id)
-        return queryset
 
 
 def sticky_note(request):

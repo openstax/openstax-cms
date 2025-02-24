@@ -486,6 +486,7 @@ class AmazonBookBlurb(TranslatableMixin, models.Model):
 
 register_snippet(AmazonBookBlurb)
 
+
 class ContentWarning(TranslatableMixin, models.Model):
     content_warning = models.TextField()
 

@@ -1,5 +1,3 @@
-from rest_framework import viewsets
-
 from .models import Role, Subject, K12Subject, ErrataContent, SubjectCategory, GiveBanner, BlogContentType, \
     BlogCollection, NoWebinarMessage, WebinarCollection, AmazonBookBlurb
 from .serializers import RoleSerializer, SubjectSerializer, K12SubjectSerializer, ErrataContentSerializer, \
@@ -8,7 +6,7 @@ from .serializers import RoleSerializer, SubjectSerializer, K12SubjectSerializer
     WebinarCollectionSerializer, AmazonBookBlurbSerializer
 
 
-from rest_framework import generics, viewsets
+from rest_framework import viewsets
 from django_filters.rest_framework import DjangoFilterBackend
 
 SPANISH_LOCALE_ID = 2
@@ -16,11 +14,10 @@ ENGLISH_LOCALE_ID = 1
 
 
 class RoleViewSet(viewsets.ReadOnlyModelViewSet):
-    queryset = Role.objects.all()
     serializer_class = RoleSerializer
 
     def get_queryset(self):
-        queryset = Role.objects.all().order_by('display_name')
+        queryset = Role.objects.order_by('display_name')
         name = self.request.query_params.get('name', None)
         locale = self.request.query_params.get('locale', None)
         if name is not None:
@@ -37,7 +34,7 @@ class SubjectList(viewsets.ReadOnlyModelViewSet):
     filter_backends = (DjangoFilterBackend,)
 
     def get_queryset(self):
-        queryset = Subject.objects.all().order_by('name')
+        queryset = Subject.objects.order_by('name')
         name = self.request.query_params.get('name', None)
         locale = self.request.query_params.get('locale', None)
         if name is not None:
@@ -45,6 +42,7 @@ class SubjectList(viewsets.ReadOnlyModelViewSet):
         if locale is not None:
             queryset = queryset.filter(locale=convert_locale(locale))
         return queryset
+
 
 class K12SubjectList(viewsets.ReadOnlyModelViewSet):
     serializer_class = K12SubjectSerializer
@@ -59,6 +57,7 @@ class K12SubjectList(viewsets.ReadOnlyModelViewSet):
         if locale is not None:
             queryset = queryset.filter(locale=convert_locale(locale))
         return queryset
+
 
 class ErrataContentViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = ErrataContentSerializer
@@ -129,7 +128,5 @@ def convert_locale(locale):
 
 
 def convert_subject_name(subject):
-    subjects = Subject.objects.all()
-    result = subjects.filter(name=subject)
-    return result[0].id
+    return Subject.objects.filter(name=subject).values_list('id', flat=True).first()
 
