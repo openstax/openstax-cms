@@ -1923,6 +1923,7 @@ class ImpactStory(Page):
     ]
 
     parent_page_types = ['pages.Impact']
+    template = 'page.html'
 
     def get_url_parts(self, *args, **kwargs):
         return None
