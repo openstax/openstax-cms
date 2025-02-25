@@ -5,7 +5,6 @@ from django.contrib import admin
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
-from wagtail.images.views.serve import ServeView
 from accounts import urls as accounts_urls
 
 from .api import api_router
@@ -13,8 +12,7 @@ from news.search import search
 from news.feeds import RssBlogFeed, AtomBlogFeed
 
 from api import urls as api_urls
-from global_settings.views import throw_error, clear_entire_cache
-from wagtail.contrib.sitemaps.views import sitemap
+from global_settings.views import throw_error, clear_entire_cache, sitemap
 
 admin.site.site_header = 'OpenStax'
 
