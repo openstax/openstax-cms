@@ -1953,7 +1953,13 @@ class Impact(Page):
                 ('heading', blocks.CharBlock()),
                 ('description', blocks.RichTextBlock()),
                 ('button_text', blocks.CharBlock()),
-                ('button_href', blocks.URLBlock())
+                ('button_href', blocks.URLBlock()),
+                ('cards', blocks.ListBlock(blocks.StructBlock([
+                    ('icon', APIImageChooserBlock(required=False)),
+                    ('description', blocks.CharBlock()),
+                    ('link_text', blocks.CharBlock(required=False)),
+                    ('link_href', blocks.URLBlock(required=False))
+                ])))
             ]))], max_num=1), use_json_field=True)
     quote = StreamField(
         blocks.StreamBlock([
