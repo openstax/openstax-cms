@@ -8,7 +8,7 @@ from wagtail.test.utils import WagtailTestUtils, WagtailPageTestCase
 from wagtail.models import Page
 from pages import models as page_models
 
-from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash, mock_user_login
+from shared.test_utilities import mock_user_login
 from http import cookies
 
 class TestRootPage(unittest.TestCase):

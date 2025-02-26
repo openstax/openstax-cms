@@ -1923,6 +1923,7 @@ class ImpactStory(Page):
     ]
 
     parent_page_types = ['pages.Impact']
+    template = 'page.html'
 
     def get_url_parts(self, *args, **kwargs):
         return None
@@ -1932,6 +1933,19 @@ class ImpactStory(Page):
 
 
 class Impact(Page):
+    reach = StreamField(
+        blocks.StreamBlock([
+            ('content', blocks.StructBlock([
+                ('image', ImageBlock()),
+                ('heading', blocks.CharBlock()),
+                ('description', blocks.RichTextBlock()),
+                ('cards', blocks.ListBlock(blocks.StructBlock([
+                    ('icon', APIImageChooserBlock(required=False)),
+                    ('description', blocks.CharBlock()),
+                    ('link_text', blocks.CharBlock(required=False)),
+                    ('link_href', blocks.URLBlock(required=False))
+                ])))
+            ]))], max_num=1), use_json_field=True)
     improving_access = StreamField(
         blocks.StreamBlock([
             ('content', blocks.StructBlock([
@@ -1939,14 +1953,7 @@ class Impact(Page):
                 ('heading', blocks.CharBlock()),
                 ('description', blocks.RichTextBlock()),
                 ('button_text', blocks.CharBlock()),
-                ('button_href', blocks.URLBlock())
-            ]))], max_num=1), use_json_field=True)
-    reach = StreamField(
-        blocks.StreamBlock([
-            ('content', blocks.StructBlock([
-                ('image', ImageBlock()),
-                ('heading', blocks.CharBlock()),
-                ('description', blocks.RichTextBlock()),
+                ('button_href', blocks.URLBlock()),
                 ('cards', blocks.ListBlock(blocks.StructBlock([
                     ('icon', APIImageChooserBlock(required=False)),
                     ('description', blocks.CharBlock()),
@@ -2011,8 +2018,8 @@ class Impact(Page):
 
     api_fields = [
         APIField('title'),
-        APIField('improving_access'),
         APIField('reach'),
+        APIField('improving_access'),
         APIField('quote'),
         APIField('making_a_difference'),
         APIField('disruption'),
