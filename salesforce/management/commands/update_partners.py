@@ -127,7 +127,7 @@ class Command(BaseCommand):
                     "Account__r.Partner_Anniversary_Date__c, " \
                     "Account__r.Partner_Status__c " \
                     "FROM Partner__c " \
-                    "WHERE Account__r.Partner_Status__c = 'Full Partner'"
+                    "WHERE Partner_Status__c = 'Current Partner'"
             response = sf.query(query)
             sf_marketplace_partners = response['records']
 
