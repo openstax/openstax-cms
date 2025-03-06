@@ -14,7 +14,7 @@ class ThankYouNoteViewSet(viewsets.ModelViewSet):
         thank_you_note = request.data['thank_you_note']
         first_name = request.data['first_name']
         last_name = request.data['last_name']
-        institution = request.data['institution']
+        institution = request.data['school']
         consent_to_share_or_contact = request.data.get('consent_to_share_or_contact', False)
         contact_email_address = request.data.get('contact_email_address', '')
         source = request.data.get('source', '')
