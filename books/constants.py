@@ -58,6 +58,7 @@ MEDIUM_BLUE = 'medium-blue'
 ORANGE = 'orange'
 RED = 'red'
 YELLOW = 'yellow'
+RAISE_GREEN = 'raise-green'
 COVER_COLORS = (
     (BLUE, 'Blue'),
     (MIDNIGHT, 'Midnight'),
@@ -71,6 +72,7 @@ COVER_COLORS = (
     (ORANGE, 'Orange'),
     (RED, 'Red'),
     (YELLOW, 'Yellow'),
+    (RAISE_GREEN, 'Raise Green'),
 )
 
 MATH = 'Math'
