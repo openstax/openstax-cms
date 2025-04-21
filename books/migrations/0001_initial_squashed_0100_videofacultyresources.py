@@ -20,7 +20,6 @@ class Migration(migrations.Migration):
         ('wagtailcore', '0023_alter_page_revision_on_delete_behaviour'),
         ('snippets', '0002_communityresource'),
         ('snippets', '0001_initial'),
-        ('allies', '0001_initial'),
         ('wagtailimages', '0020_add-verbose-name'),
         ('wagtaildocs', '0007_merge'),
         ('snippets', '__first__'),
@@ -199,19 +198,6 @@ class Migration(migrations.Migration):
             bases=('books.facultyresources', models.Model),
         ),
         migrations.CreateModel(
-            name='BookAllies',
-            fields=[
-                ('bookally_ptr', models.OneToOneField(auto_created=True, on_delete=django.db.models.deletion.CASCADE, parent_link=True, primary_key=True, serialize=False, to='books.BookAlly')),
-                ('sort_order', models.IntegerField(blank=True, editable=False, null=True)),
-                ('book_ally', modelcluster.fields.ParentalKey(on_delete=django.db.models.deletion.CASCADE, related_name='book_allies', to='books.Book')),
-            ],
-            options={
-                'ordering': ['sort_order'],
-                'abstract': False,
-            },
-            bases=('books.bookally', models.Model),
-        ),
-        migrations.CreateModel(
             name='StudentResources',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
@@ -287,9 +273,6 @@ class Migration(migrations.Migration):
                 'ordering': ['sort_order'],
             },
             bases=('books.subjectbooks', models.Model),
-        ),
-        migrations.DeleteModel(
-            name='BookAllies',
         ),
         migrations.DeleteModel(
             name='BookAlly',
