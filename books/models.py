@@ -1183,7 +1183,7 @@ class BookIndex(Page):
 
     template = 'page.html'
 
-    parent_page_types = ['pages.HomePage']
+    parent_page_types = ['pages.HomePage', 'pages.RootPage']
     subpage_types = ['books.Book']
     max_count = 1
 
