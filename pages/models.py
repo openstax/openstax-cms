@@ -99,6 +99,7 @@ class RootPage(Page):
                 default=[],
                 label='Nav Links'
             )),
+            ('show_give_now_button', blocks.BooleanBlock(required=False, label="Show Give Button in Header", default=True)),
         ], label='Landing Page')),
     ], max_num=1, blank=True, collapsed=True, use_json_field=True, default=[])
 
