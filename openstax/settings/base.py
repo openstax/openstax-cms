@@ -220,7 +220,6 @@ INSTALLED_APPS = [
     'pages',
     'books',
     'news',
-    'allies',
     'snippets',
     'salesforce',
     'mail',

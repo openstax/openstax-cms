@@ -82,10 +82,10 @@ def mapbox(request):
 
 
 def errata_fields(request):
-    '''
+    """
     Return a JSON representation of fields from the errata.model.errata static options.
     For now this only works on resources but has the capability to be expanded in the future.
-    '''
+    """
     response = []
 
     if request.GET.get('field', None) == 'resources':
