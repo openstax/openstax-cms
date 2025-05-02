@@ -210,7 +210,6 @@ class RootPage(Page):
     # TODO: we are allowing this to be built as a child of the homepage. Not ideal.
     # Once the home page is released, use something to migrate homepage children to root page and remove this parent type.
     parent_page_types = ['wagtailcore.Page', 'pages.HomePage']
-    subpage_types = ['pages.FlexPage']  # which might also require allowing all pages to be children.
 
     def __str__(self):
         return self.path
@@ -345,7 +344,7 @@ class AboutUsPage(Page):
     ]
 
     template = 'page.html'
-    parent_page_types = ['pages.HomePage']
+    parent_page_types = ['pages.HomePage', 'pages.RootPage']
     max_count = 1
 
 
@@ -898,7 +897,7 @@ class K12MainPage(Page):
 
     max_count = 1
     template = 'page.html'
-    parent_page_types = ['pages.HomePage']
+    parent_page_types = ['pages.HomePage', 'pages.RootPage']
     subpage_types = ['pages.K12Subject']
 
 
@@ -945,7 +944,7 @@ class ContactUs(Page):
 
     template = 'page.html'
 
-    parent_page_types = ['pages.HomePage']
+    parent_page_types = ['pages.HomePage', 'pages.RootPage']
     max_count = 1
 
 
@@ -1069,7 +1068,7 @@ class Supporters(Page):
 
     template = 'page.html'
 
-    parent_page_types = ['pages.HomePage']
+    parent_page_types = ['pages.HomePage', 'pages.RootPage']
     max_count = 1
 
 
@@ -1195,7 +1194,7 @@ class MapPage(Page):
 
     template = 'page.html'
 
-    parent_page_types = ['pages.HomePage']
+    parent_page_types = ['pages.HomePage', 'pages.RootPage']
     max_count = 1
 
 
@@ -1267,7 +1266,7 @@ class Give(Page):
 
     template = 'page.html'
 
-    parent_page_types = ['pages.HomePage']
+    parent_page_types = ['pages.HomePage', 'pages.RootPage']
     max_count = 1
 
 
@@ -1307,7 +1306,7 @@ class TermsOfService(Page):
 
     template = 'page.html'
 
-    parent_page_types = ['pages.HomePage']
+    parent_page_types = ['pages.HomePage', 'pages.RootPage']
     max_count = 1
 
 
@@ -1351,7 +1350,7 @@ class FAQ(Page):
 
     template = 'page.html'
 
-    parent_page_types = ['pages.HomePage']
+    parent_page_types = ['pages.HomePage', 'pages.RootPage']
 
 
 class GiveForm(Page):
@@ -1387,7 +1386,7 @@ class GiveForm(Page):
 
     template = 'page.html'
 
-    parent_page_types = ['pages.HomePage']
+    parent_page_types = ['pages.HomePage', 'pages.RootPage']
     max_count = 1
 
 
@@ -1427,7 +1426,7 @@ class Accessibility(Page):
 
     template = 'page.html'
 
-    parent_page_types = ['pages.HomePage']
+    parent_page_types = ['pages.HomePage', 'pages.RootPage']
     max_count = 1
 
 
@@ -1467,7 +1466,7 @@ class Licensing(Page):
 
     template = 'page.html'
 
-    parent_page_types = ['pages.HomePage']
+    parent_page_types = ['pages.HomePage', 'pages.RootPage']
     max_count = 1
 
 
@@ -1547,7 +1546,7 @@ class Technology(Page):
     ]
 
     template = 'page.html'
-    parent_page_types = ['pages.HomePage']
+    parent_page_types = ['pages.HomePage', 'pages.RootPage']
     max_count = 1
 
 
@@ -1599,7 +1598,7 @@ class ErrataList(Page):
     ]
 
     template = 'page.html'
-    parent_page_types = ['pages.HomePage']
+    parent_page_types = ['pages.HomePage', 'pages.RootPage']
     max_count = 1
 
     def get_sitemap_urls(self, request=None):
@@ -1642,7 +1641,7 @@ class PrivacyPolicy(Page):
 
     template = 'page.html'
 
-    parent_page_types = ['pages.HomePage']
+    parent_page_types = ['pages.HomePage', 'pages.RootPage']
     max_count = 1
 
 
@@ -1699,7 +1698,7 @@ class PrintOrder(Page):
 
     template = 'page.html'
 
-    parent_page_types = ['pages.HomePage']
+    parent_page_types = ['pages.HomePage', 'pages.RootPage']
     max_count = 1
 
 
@@ -1840,7 +1839,7 @@ class LearningResearchPage(Page):
     ]
 
     template = 'page.html'
-    parent_page_types = ['pages.HomePage']
+    parent_page_types = ['pages.HomePage', 'pages.RootPage']
     max_count = 1
 
 
@@ -1879,7 +1878,7 @@ class Careers(Page):
     ]
 
     template = 'page.html'
-    parent_page_types = ['pages.HomePage']
+    parent_page_types = ['pages.HomePage', 'pages.RootPage']
     max_count = 1
 
 
@@ -2750,7 +2749,7 @@ class TutorMarketing(Page):
 
     template = 'page.html'
 
-    parent_page_types = ['pages.HomePage']
+    parent_page_types = ['pages.HomePage', 'pages.RootPage']
     max_count = 1
 
 
@@ -2851,7 +2850,7 @@ class Subjects(Page):
 
     template = 'page.html'
 
-    parent_page_types = ['pages.HomePage']
+    parent_page_types = ['pages.HomePage', 'pages.RootPage']
     subpage_types = ['pages.Subject']
     max_count = 1
 
@@ -3091,7 +3090,7 @@ class FormHeadings(Page):
     ]
 
     template = 'page.html'
-    parent_page_types = ['pages.HomePage']
+    parent_page_types = ['pages.HomePage', 'pages.RootPage']
     max_count = 1
 
 
@@ -3371,7 +3370,7 @@ class AllyLogos(Page):
     ]
 
     template = 'page.html'
-    parent_page_types = ['pages.HomePage']
+    parent_page_types = ['pages.HomePage', 'pages.RootPage']
 
 
 class Assignable(Page):
