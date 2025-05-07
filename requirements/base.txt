@@ -17,6 +17,8 @@ django-ses
 django-storages
 django-taggit>=6.1.0
 djangorestframework
+django-redis
+hiredis
 html2text # news feed
 mapbox
 Pillow

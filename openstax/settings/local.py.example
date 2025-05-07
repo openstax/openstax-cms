@@ -1,4 +1,13 @@
-from .base import INSTALLED_APPS, MIDDLEWARE
+"""
+Local development settings for OpenStax CMS.
+
+This is an example file for local development settings.
+Copy this file to local.py and modify as needed.
+"""
+
+from .base import *
+
+# Add development tools
 INSTALLED_APPS += (
     'debug_toolbar',
     'django_extensions',
@@ -6,32 +15,29 @@ INSTALLED_APPS += (
 MIDDLEWARE += (
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 )
-# django-debug-toolbar settings
+
+# Debug toolbar settings
 DEBUG_TOOLBAR_CONFIG = {
     'INTERCEPT_REDIRECTS': False,
 }
-# settings for django_extensions when graphing models
+
+# Django extensions settings
 GRAPH_MODELS = {
   'all_applications': True,
   'group_models': True,
 }
 
-# Set something here, we shouldn't check any secret keys into version control
+# Secret key for local development
 SECRET_KEY = 'enter-a-long-unguessable-string-here'
 
-# make sure debug is on and set host to your local dev env url
-DEBUG=True
+# Enable debug mode
+DEBUG = True
 
-#################
-#  Media        #
-#################
-# locally, we want to use local storage for uploaded (media) files
+# Media settings for local development
 DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 
-#################
-#  CORS         #
-#################
+# CORS settings for local development
 CORS_ORIGIN_ALLOW_ALL = False
 CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = (

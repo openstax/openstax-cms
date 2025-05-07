@@ -69,6 +69,7 @@ class PageTests(WagtailPageTestCase):
                                          team_header="Our Team")
         self.homepage.add_child(instance=team_page)
         self.assertCanCreateAt(page_models.HomePage, page_models.TeamPage)
+        self.assertCanCreateAt(page_models.RootPage, page_models.TeamPage)
         revision = team_page.save_revision()
         revision.publish()
         team_page.save()
@@ -88,7 +89,7 @@ class PageTests(WagtailPageTestCase):
                                            )
         self.homepage.add_child(instance=about_us)
         self.assertCanCreateAt(page_models.HomePage, page_models.AboutUsPage)
-
+        self.assertCanCreateAt(page_models.RootPage, page_models.AboutUsPage)
         retrieved_page = Page.objects.get(id=about_us.id)
         self.assertEqual(retrieved_page.title, "About Us")
 
@@ -103,6 +104,7 @@ class PageTests(WagtailPageTestCase):
                                            )
         self.homepage.add_child(instance=k12_page)
         self.assertCanCreateAt(page_models.HomePage, page_models.K12MainPage)
+        self.assertCanCreateAt(page_models.RootPage, page_models.K12MainPage)
 
         retrieved_page = Page.objects.get(id=k12_page.id)
         self.assertEqual(retrieved_page.title, "K12 Main Page")
@@ -116,6 +118,8 @@ class PageTests(WagtailPageTestCase):
                                                 )
         self.homepage.add_child(instance=contact_us_page)
         self.assertCanCreateAt(page_models.HomePage, page_models.ContactUs)
+        self.assertCanCreateAt(page_models.RootPage, page_models.ContactUs)
+
 
         retrieved_page = Page.objects.get(id=contact_us_page.id)
         self.assertEqual(retrieved_page.title, "Contact Us")
@@ -143,6 +147,7 @@ class PageTests(WagtailPageTestCase):
                                                )
         self.homepage.add_child(instance=general_page)
         self.assertCanCreateAt(page_models.HomePage, page_models.GeneralPage)
+        self.assertCanCreateAt(page_models.RootPage, page_models.GeneralPage)
 
         retrieved_page = Page.objects.get(id=general_page.id)
         self.assertEqual(retrieved_page.title, "General Page")
@@ -170,7 +175,7 @@ class PageTests(WagtailPageTestCase):
                                                  )
         self.homepage.add_child(instance=supporters_page)
         self.assertCanCreateAt(page_models.HomePage, page_models.Supporters)
-
+        self.assertCanCreateAt(page_models.RootPage, page_models.Supporters)
         retrieved_page = Page.objects.get(id=supporters_page.id)
         self.assertEqual(retrieved_page.title, "Supporters Page")
 
@@ -181,6 +186,7 @@ class PageTests(WagtailPageTestCase):
                                               )
         self.homepage.add_child(instance=tos_page)
         self.assertCanCreateAt(page_models.HomePage, page_models.TermsOfService)
+        self.assertCanCreateAt(page_models.RootPage, page_models.TermsOfService)
 
         retrieved_page = Page.objects.get(id=tos_page.id)
         self.assertEqual(retrieved_page.title, "Terms of Service Page")
@@ -228,6 +234,7 @@ class PageTests(WagtailPageTestCase):
                                    )
         self.homepage.add_child(instance=faq_page)
         self.assertCanCreateAt(page_models.HomePage, page_models.FAQ)
+        self.assertCanCreateAt(page_models.RootPage, page_models.FAQ)
 
         retrieved_page = Page.objects.get(id=faq_page.id)
         self.assertEqual(retrieved_page.title, "FAQ Page")
@@ -239,7 +246,7 @@ class PageTests(WagtailPageTestCase):
                                                        )
         self.homepage.add_child(instance=accessibility_page)
         self.assertCanCreateAt(page_models.HomePage, page_models.Accessibility)
-
+        self.assertCanCreateAt(page_models.RootPage, page_models.Accessibility)
         retrieved_page = Page.objects.get(id=accessibility_page.id)
         self.assertEqual(retrieved_page.title, "Accessibility Page")
 
@@ -250,6 +257,7 @@ class PageTests(WagtailPageTestCase):
                                                )
         self.homepage.add_child(instance=licensing_page)
         self.assertCanCreateAt(page_models.HomePage, page_models.Licensing)
+        self.assertCanCreateAt(page_models.RootPage, page_models.Licensing)
 
         retrieved_page = Page.objects.get(id=licensing_page.id)
         self.assertEqual(retrieved_page.title, "Licensing Page")
@@ -271,7 +279,7 @@ class PageTests(WagtailPageTestCase):
                                                  )
         self.homepage.add_child(instance=technology_page)
         self.assertCanCreateAt(page_models.HomePage, page_models.Technology)
-
+        self.assertCanCreateAt(page_models.RootPage, page_models.Technology)
         retrieved_page = Page.objects.get(id=technology_page.id)
         self.assertEqual(retrieved_page.title, "Technology Page")
 
@@ -282,6 +290,7 @@ class PageTests(WagtailPageTestCase):
                                            )
         self.homepage.add_child(instance=careers_page)
         self.assertCanCreateAt(page_models.HomePage, page_models.Careers)
+        self.assertCanCreateAt(page_models.RootPage, page_models.Careers)
 
         retrieved_page = Page.objects.get(id=careers_page.id)
         self.assertEqual(retrieved_page.title, "Careers Page")
@@ -430,6 +439,7 @@ class PageTests(WagtailPageTestCase):
                                          )
         self.homepage.add_child(instance=impact_page)
         self.assertCanCreateAt(page_models.HomePage, page_models.Impact)
+        self.assertCanCreateAt(page_models.RootPage, page_models.Impact)
 
         retrieved_page = Page.objects.get(id=impact_page.id)
         self.assertEqual(retrieved_page.title, "Impact Page")
@@ -458,7 +468,7 @@ class PageTests(WagtailPageTestCase):
                                                          )
         self.homepage.add_child(instance=research_page)
         self.assertCanCreateAt(page_models.HomePage, page_models.LearningResearchPage)
-
+        self.assertCanCreateAt(page_models.RootPage, page_models.LearningResearchPage)
         retrieved_page = Page.objects.get(id=research_page.id)
         self.assertEqual(retrieved_page.title, "Learning Research Page")
 
@@ -468,6 +478,7 @@ class PageTests(WagtailPageTestCase):
                                                )
         self.homepage.add_child(instance=webinar_page)
         self.assertCanCreateAt(page_models.HomePage, page_models.WebinarPage)
+        self.assertCanCreateAt(page_models.RootPage, page_models.WebinarPage)
 
         retrieved_page = Page.objects.get(id=webinar_page.id)
         self.assertEqual(retrieved_page.title, "Webinar Page")
@@ -481,7 +492,7 @@ class PageTests(WagtailPageTestCase):
                                              )
         self.homepage.add_child(instance=form_page)
         self.assertCanCreateAt(page_models.HomePage, page_models.FormHeadings)
-
+        self.assertCanCreateAt(page_models.RootPage, page_models.FormHeadings)
         retrieved_page = Page.objects.get(id=form_page.id)
         self.assertEqual(retrieved_page.title, "Form Headings Page")
 
@@ -498,7 +509,7 @@ class PageTests(WagtailPageTestCase):
                                           )
         self.homepage.add_child(instance=ally_page)
         self.assertCanCreateAt(page_models.HomePage, page_models.AllyLogos)
-
+        self.assertCanCreateAt(page_models.RootPage, page_models.AllyLogos)
         retrieved_page = Page.objects.get(id=ally_page.id)
         self.assertEqual(retrieved_page.title, "Ally Logos Page")
 
@@ -514,7 +525,7 @@ class PageTests(WagtailPageTestCase):
                                                  )
         self.homepage.add_child(instance=assignable_page)
         self.assertCanCreateAt(page_models.HomePage, page_models.Assignable)
-
+        self.assertCanCreateAt(page_models.RootPage, page_models.Assignable)
         retrieved_page = Page.objects.get(id=assignable_page.id)
         self.assertEqual(retrieved_page.title, "Assignable Page")
 

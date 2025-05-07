@@ -21,8 +21,10 @@ os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'openstax.settings')
 # file. This includes Django's development server, if the WSGI_APPLICATION
 # setting points here.
 from django.core.wsgi import get_wsgi_application
-application = get_wsgi_application()
+from whitenoise import WhiteNoise
 
-# Apply WSGI middleware here.
-# from helloworld.wsgi import HelloWorldApplication
-# application = HelloWorldApplication(application)
+# Get the Django WSGI application
+django_application = get_wsgi_application()
+
+# Wrap the Django application with WhiteNoise
+application = WhiteNoise(django_application)

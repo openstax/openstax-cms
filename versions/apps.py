@@ -1,16 +1,16 @@
 """
-App configuration for the donations app.
+App configuration for the versions app.
 """
 
 from django.apps import AppConfig
 
 
-class DonationsConfig(AppConfig):
+class VersionsConfig(AppConfig):
     """
-    App configuration for the donations app.
+    App configuration for the versions app.
     """
-    name = 'donations'
-    verbose_name = 'Donations'
+    name = 'versions'
+    verbose_name = 'Versions'
     
     def ready(self):
         """
@@ -18,4 +18,4 @@ class DonationsConfig(AppConfig):
         Import signal handlers here to avoid circular imports.
         """
         # Import signal handlers if they exist
-        # import donations.signals
+        # import versions.signals 
