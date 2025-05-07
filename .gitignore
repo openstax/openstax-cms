@@ -17,3 +17,45 @@ openstax/settings/local.py
 *.bk
 .vscode/settings.json
 .env
+
+# Django
+*.pot
+*.py[cod]
+__pycache__/
+*.so
+.Python
+*.mo
+*.sqlite3
+db.sqlite3
+db.sqlite3-journal
+local_settings.py
+
+# Wagtail
+*.bak
+*.swp
+*.swo
+*~
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Unit test / coverage reports
+.tox/
+.coverage.*
+coverage.xml
+*.cover
