@@ -1,16 +1,16 @@
 """
-App configuration for the donations app.
+App configuration for the oxauth app.
 """
 
 from django.apps import AppConfig
 
 
-class DonationsConfig(AppConfig):
+class OxauthConfig(AppConfig):
     """
-    App configuration for the donations app.
+    App configuration for the oxauth app.
     """
-    name = 'donations'
-    verbose_name = 'Donations'
+    name = 'oxauth'
+    verbose_name = 'OpenStax Auth'
     
     def ready(self):
         """
@@ -18,4 +18,4 @@ class DonationsConfig(AppConfig):
         Import signal handlers here to avoid circular imports.
         """
         # Import signal handlers if they exist
-        # import donations.signals
+        # import oxauth.signals 
