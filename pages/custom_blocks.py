@@ -335,4 +335,4 @@ class BookListBlock(blocks.StreamBlock):
 
     def get_api_representation(self, value, context=None):
         # value is a StreamValue of blocks, each with .value as a Book page
-        return [get_book_data(book.value) for book in value if get_book_data(book.value)]
+        return [book_data for book in value if (book_data := get_book_data(book.value))]
