@@ -32,10 +32,17 @@ def cleanhtml(raw_html):
     return cleantext
 
 
+def prefetch_book_resources(queryset):
+    """Prefetch related faculty and student resources for a queryset of books."""
+    return queryset.prefetch_related(
+        models.Prefetch('bookfacultyresources_set', queryset=BookFacultyResources.objects.all(), to_attr='prefetched_faculty_resources'),
+        models.Prefetch('bookstudentresources_set', queryset=BookStudentResources.objects.all(), to_attr='prefetched_student_resources')
+    )
+
 def get_book_data(book):
     """Return the book data dict for a single Book instance, matching BookIndex.books property."""
-    has_faculty_resources = BookFacultyResources.objects.filter(book_faculty_resource=book).exists()
-    has_student_resources = BookStudentResources.objects.filter(book_student_resource=book).exists()
+    has_faculty_resources = hasattr(book, 'prefetched_faculty_resources') and bool(book.prefetched_faculty_resources)
+    has_student_resources = hasattr(book, 'prefetched_student_resources') and bool(book.prefetched_student_resources)
     try:
         return {
             'id': book.id,
