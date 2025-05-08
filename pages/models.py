@@ -14,6 +14,7 @@ from wagtail.models import Site
 from api.models import FeatureFlag
 from openstax.functions import build_image_url, build_document_url
 from books.models import Book, SubjectBooks, BookFacultyResources, BookStudentResources
+from books.models import get_book_data
 from webinars.models import Webinar
 from news.models import BlogStreamBlock  # for use on the ImpactStories
 
@@ -2953,44 +2954,17 @@ class Subject(Page):
             subject_categories['icon'] = subject.subject_icon
             all_books = [book for book in Book.objects.all().order_by('title') if subject.name in book.subjects()]
             for category in snippets.SubjectCategory.objects.filter(subject_id=subject.id).order_by('subject_category'):
-                books = {}
                 book_list = {}
+                book_data = []
                 for book in all_books:
                     if book.subject_categories is not None \
                             and category.subject_category in book.subject_categories \
                             and book.book_state not in ['retired', 'unlisted']:
-                        book_data = []
-                        book_data.append({
-                            'id': book.id,
-                            'slug': 'books/{}'.format(book.slug),
-                            'book_state': book.book_state,
-                            'title': book.title,
-                            'subjects': book.subjects(),
-                            'subject_categories': book.subject_categories,
-                            'k12subject': book.k12subjects(),
-                            'is_ap': book.is_ap,
-                            'cover_url': book.cover_url,
-                            'cover_color': book.cover_color,
-                            'high_resolution_pdf_url': book.high_resolution_pdf_url,
-                            'low_resolution_pdf_url': book.low_resolution_pdf_url,
-                            'ibook_link': book.ibook_link,
-                            'ibook_link_volume_2': book.ibook_link_volume_2,
-                            'webview_link': book.webview_link,
-                            'webview_rex_link': book.webview_rex_link,
-                            'bookshare_link': book.bookshare_link,
-                            'kindle_link': book.kindle_link,
-                            'amazon_coming_soon': book.amazon_coming_soon,
-                            'amazon_link': book.amazon_link,
-                            'bookstore_coming_soon': book.bookstore_coming_soon,
-                            'comp_copy_available': book.comp_copy_available,
-                            'salesforce_abbreviation': book.salesforce_abbreviation,
-                            'salesforce_name': book.salesforce_name,
-                            'urls': book.book_urls(),
-                            'last_updated_pdf': book.last_updated_pdf,
-                        })
-                        books[book.title] = book_data
+                        data = get_book_data(book)
+                        if data:
+                            book_data.append(data)
                 book_list['category_description'] = category.description
-                book_list['books'] = books
+                book_list['books'] = book_data
                 categories[category.subject_category] = book_list
             subject_categories['categories'] = categories
             subject_list[subject.name] = subject_categories
