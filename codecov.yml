@@ -27,3 +27,7 @@ ignore:
   - '*/settings/*'
   - '*settings.py'
   - '*wsgi.py'
+  - '*/__init__.py'
+  - '*/urls.py'
+  - 'versions/*'  # this is internal only, and not mission critical
+  - 'wagtailimportexport/*'  # this doesn't work, canidate for removal / offloading / rewriting
