@@ -52,6 +52,7 @@ def get_book_data(book):
             'subject_categories': book.subject_categories,
             'k12subject': book.k12subjects(),
             'is_ap': book.is_ap,
+            'is_hs': 'High School' in book.subjects(),
             'cover_url': book.cover_url,
             'cover_color': book.cover_color,
             'high_resolution_pdf_url': book.high_resolution_pdf_url,
