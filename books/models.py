@@ -32,6 +32,55 @@ def cleanhtml(raw_html):
     return cleantext
 
 
+def prefetch_book_resources(queryset):
+    """Prefetch related faculty and student resources for a queryset of books."""
+    return queryset.prefetch_related(
+        models.Prefetch('bookfacultyresources_set', queryset=BookFacultyResources.objects.all(), to_attr='prefetched_faculty_resources'),
+        models.Prefetch('bookstudentresources_set', queryset=BookStudentResources.objects.all(), to_attr='prefetched_student_resources')
+    )
+
+def get_book_data(book):
+    has_faculty_resources = hasattr(book, 'prefetched_faculty_resources') and bool(book.prefetched_faculty_resources)
+    has_student_resources = hasattr(book, 'prefetched_student_resources') and bool(book.prefetched_student_resources)
+    try:
+        return {
+            'id': book.id,
+            'slug': f'books/{book.slug}',
+            'book_state': book.book_state,
+            'title': book.title,
+            'subjects': book.subjects(),
+            'subject_categories': book.subject_categories,
+            'k12subject': book.k12subjects(),
+            'is_ap': book.is_ap,
+            'is_hs': 'High School' in book.subjects(),
+            'cover_url': book.cover_url,
+            'cover_color': book.cover_color,
+            'high_resolution_pdf_url': book.high_resolution_pdf_url,
+            'low_resolution_pdf_url': book.low_resolution_pdf_url,
+            'ibook_link': book.ibook_link,
+            'ibook_link_volume_2': book.ibook_link_volume_2,
+            'webview_link': book.webview_link,
+            'webview_rex_link': book.webview_rex_link,
+            'bookshare_link': book.bookshare_link,
+            'kindle_link': book.kindle_link,
+            'amazon_coming_soon': book.amazon_coming_soon,
+            'amazon_link': book.amazon_link,
+            'bookstore_coming_soon': book.bookstore_coming_soon,
+            'comp_copy_available': book.comp_copy_available,
+            'salesforce_abbreviation': book.salesforce_abbreviation,
+            'salesforce_name': book.salesforce_name,
+            'urls': book.book_urls(),
+            'last_updated_pdf': book.last_updated_pdf,
+            'has_faculty_resources': has_faculty_resources,
+            'has_student_resources': has_student_resources,
+            'assignable_book': book.assignable_book,
+            'promote_tags': [snippet.value.name for snippet in book.promote_snippet],
+        }
+    except Exception as e:
+        capture_exception(e)
+        return None
+
+
 class VideoFacultyResource(models.Model):
     resource_heading = models.CharField(max_length=255)
     resource_description = RichTextField(blank=True, null=True)
@@ -1101,42 +1150,9 @@ class BookIndex(Page):
         books = Book.objects.live().filter(locale=self.locale).exclude(book_state='unlisted').order_by('title')
         book_data = []
         for book in books:
-            has_faculty_resources = BookFacultyResources.objects.filter(book_faculty_resource=book).exists()
-            has_student_resources = BookStudentResources.objects.filter(book_student_resource=book).exists()
-            try:
-                book_data.append({
-                    'id': book.id,
-                    'cnx_id': book.cnx_id,
-                    'slug': 'books/{}'.format(book.slug),
-                    'book_state': book.book_state,
-                    'title': book.title,
-                    'subjects': book.subjects(),
-                    'is_ap': book.is_ap,
-                    'cover_url': book.cover_url,
-                    'cover_color': book.cover_color,
-                    'high_resolution_pdf_url': book.high_resolution_pdf_url,
-                    'low_resolution_pdf_url': book.low_resolution_pdf_url,
-                    'ibook_link': book.ibook_link,
-                    'ibook_link_volume_2': book.ibook_link_volume_2,
-                    'webview_link': book.webview_link,
-                    'webview_rex_link': book.webview_rex_link,
-                    'bookshare_link': book.bookshare_link,
-                    'kindle_link': book.kindle_link,
-                    'amazon_coming_soon': book.amazon_coming_soon,
-                    'amazon_link': book.amazon_link,
-                    'bookstore_coming_soon': book.bookstore_coming_soon,
-                    'comp_copy_available': book.comp_copy_available,
-                    'salesforce_abbreviation': book.salesforce_abbreviation,
-                    'salesforce_name': book.salesforce_name,
-                    'urls': book.book_urls(),
-                    'last_updated_pdf': book.last_updated_pdf,
-                    'has_faculty_resources': has_faculty_resources,
-                    'has_student_resources': has_student_resources,
-                    'assignable_book': book.assignable_book,
-                    'promote_tags': [snippet.value.name for snippet in book.promote_snippet],
-                })
-            except Exception as e:
-                capture_exception(e)
+            data = get_book_data(book)
+            if data:
+                book_data.append(data)
         return book_data
 
     content_panels = Page.content_panels + [
