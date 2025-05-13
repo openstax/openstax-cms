@@ -13,7 +13,7 @@ from wagtail.models import Site
 
 from api.models import FeatureFlag
 from openstax.functions import build_image_url, build_document_url
-from books.models import Book, SubjectBooks, BookFacultyResources, BookStudentResources
+from books.models import Book, SubjectBooks, BookFacultyResources, BookStudentResources, get_book_data
 from webinars.models import Webinar
 from news.models import BlogStreamBlock  # for use on the ImpactStories
 
@@ -2960,34 +2960,7 @@ class Subject(Page):
                             and category.subject_category in book.subject_categories \
                             and book.book_state not in ['retired', 'unlisted']:
                         book_data = []
-                        book_data.append({
-                            'id': book.id,
-                            'slug': 'books/{}'.format(book.slug),
-                            'book_state': book.book_state,
-                            'title': book.title,
-                            'subjects': book.subjects(),
-                            'subject_categories': book.subject_categories,
-                            'k12subject': book.k12subjects(),
-                            'is_ap': book.is_ap,
-                            'cover_url': book.cover_url,
-                            'cover_color': book.cover_color,
-                            'high_resolution_pdf_url': book.high_resolution_pdf_url,
-                            'low_resolution_pdf_url': book.low_resolution_pdf_url,
-                            'ibook_link': book.ibook_link,
-                            'ibook_link_volume_2': book.ibook_link_volume_2,
-                            'webview_link': book.webview_link,
-                            'webview_rex_link': book.webview_rex_link,
-                            'bookshare_link': book.bookshare_link,
-                            'kindle_link': book.kindle_link,
-                            'amazon_coming_soon': book.amazon_coming_soon,
-                            'amazon_link': book.amazon_link,
-                            'bookstore_coming_soon': book.bookstore_coming_soon,
-                            'comp_copy_available': book.comp_copy_available,
-                            'salesforce_abbreviation': book.salesforce_abbreviation,
-                            'salesforce_name': book.salesforce_name,
-                            'urls': book.book_urls(),
-                            'last_updated_pdf': book.last_updated_pdf,
-                        })
+                        book_data.append(get_book_data(book))
                         books[book.title] = book_data
                 book_list['category_description'] = category.description
                 book_list['books'] = books
@@ -3156,35 +3129,7 @@ class K12Subject(Page):
             if book.k12book_subjects is not None \
                     and self.title in k12subjects \
                     and book.book_state not in ['retired', 'draft']:
-                book_data.append({
-                    'id': book.id,
-                    'slug': 'books/{}'.format(book.slug),
-                    'title': book.title,
-                    'description': book.description,
-                    'cover_url': book.cover_url,
-                    'is_ap': book.is_ap,
-                    'is_hs': 'High School' in subjects,
-                    'cover_color': book.cover_color,
-                    'high_resolution_pdf_url': book.high_resolution_pdf_url,
-                    'low_resolution_pdf_url': book.low_resolution_pdf_url,
-                    'ibook_link': book.ibook_link,
-                    'ibook_link_volume_2': book.ibook_link_volume_2,
-                    'webview_link': book.webview_link,
-                    'webview_rex_link': book.webview_rex_link,
-                    'bookshare_link': book.bookshare_link,
-                    'kindle_link': book.kindle_link,
-                    'amazon_coming_soon': book.amazon_coming_soon,
-                    'amazon_link': book.amazon_link,
-                    'bookstore_coming_soon': book.bookstore_coming_soon,
-                    'comp_copy_available': book.comp_copy_available,
-                    'salesforce_abbreviation': book.salesforce_abbreviation,
-                    'salesforce_name': book.salesforce_name,
-                    'urls': book.book_urls(),
-                    'updated': book.updated,
-                    'created': book.created,
-                    'publish_date': book.publish_date,
-                    'last_updated_pdf': book.last_updated_pdf
-                })
+                book_data.append(get_book_data(book))
         return book_data
 
     def student_resource_headers(self):
