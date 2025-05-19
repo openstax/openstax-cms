@@ -654,6 +654,7 @@ class Book(Page):
     print_softcover_isbn_13 = models.CharField(max_length=255, blank=True, null=True,
                                                help_text='ISBN 13 for print version (black and white).')
     digital_isbn_13 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 13 for digital version.')
+    assignable_isbn_13 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 13 for assignable version.')
     ibook_isbn_13 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 13 for iBook version.')
     ibook_volume_2_isbn_13 = models.CharField(max_length=255, blank=True, null=True,
                                               help_text='ISBN 13 for iBook v2 version.')
