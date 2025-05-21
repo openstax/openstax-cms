@@ -88,7 +88,7 @@ SECTION_CONTENT_BLOCKS = [
     ])),
     ('book_list', blocks.StructBlock([
         ('books', BookListBlock()),
-    ], label="Book List"),
+    ], label="Book List")),
 ]
 
 # we have one RootPage, which is the parent of all other pages
