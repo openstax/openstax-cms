@@ -86,7 +86,9 @@ SECTION_CONTENT_BLOCKS = [
     ('faq', blocks.StreamBlock([
         ('faq', FAQBlock()),
     ])),
-    ('book_list', BookListBlock()),
+    ('book_list', blocks.StructBlock([
+        ('books', BookListBlock()),
+    ], label="Book List"),
 ]
 
 # we have one RootPage, which is the parent of all other pages
