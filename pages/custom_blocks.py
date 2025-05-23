@@ -326,13 +326,13 @@ class AssignableBookBlock(blocks.StructBlock):
                 'title': value['title'],
             }
 
-class BookListBlock(blocks.StreamBlock):
+class BookListBlock(blocks.StructBlock):
     books = blocks.PageChooserBlock(page_type=['books.Book'], required=False)
 
     class Meta:
         icon = 'placeholder'
-        label = "Book List"
+        label = "Books"
 
     def get_api_representation(self, value, context=None):
-        # value is a StreamValue of blocks, each with .value as a Book page
-        return [book_data for book in value if (book_data := get_book_data(book.value))]
+        if value:
+            return get_book_data(value['books'])
