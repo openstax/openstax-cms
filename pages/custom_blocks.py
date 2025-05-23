@@ -329,6 +329,7 @@ class AssignableBookBlock(blocks.StructBlock):
 class BookBlock(blocks.PageChooserBlock):
     def __init__(self, *args, **kwargs):
         kwargs['page_type'] = ['books.Book']
+        kwargs['label'] = kwargs.get('label', 'Book')
         super().__init__(*args, **kwargs)
 
     def get_api_representation(self, value, context=None):
