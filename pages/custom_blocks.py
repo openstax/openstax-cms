@@ -327,11 +327,10 @@ class AssignableBookBlock(blocks.StructBlock):
             }
 
 class BookListBlock(blocks.StructBlock):
-    books = blocks.PageChooserBlock(page_type=['books.Book'], required=False)
+    book = blocks.PageChooserBlock(page_type=['books.Book'], required=False)
 
     class Meta:
         icon = 'placeholder'
-        label = "Books"
 
     def get_api_representation(self, value, context=None):
         if value:
