@@ -87,7 +87,7 @@ SECTION_CONTENT_BLOCKS = [
         ('faq', FAQBlock()),
     ])),
     ('book_list', blocks.StructBlock([
-        ('books', BookListBlock()),
+        ('books', blocks.ListBlock(BookListBlock(required=False))),
     ], label="Book List")),
 ]
 
