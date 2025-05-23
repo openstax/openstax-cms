@@ -74,6 +74,7 @@ def get_book_data(book):
             'has_faculty_resources': has_faculty_resources,
             'has_student_resources': has_student_resources,
             'assignable_book': book.assignable_book,
+            'promote_snippet': book.promote_snippet.stream_block.get_api_representation(book.promote_snippet),
             'promote_tags': [snippet.value.name for snippet in book.promote_snippet],
         }
     except Exception as e:
