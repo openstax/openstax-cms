@@ -326,13 +326,12 @@ class AssignableBookBlock(blocks.StructBlock):
                 'title': value['title'],
             }
 
-class BookListBlock(blocks.StructBlock):
-    books = blocks.PageChooserBlock(page_type=['books.Book'], required=False)
-
-    class Meta:
-        icon = 'placeholder'
-        label = "Books"
+class BookBlock(blocks.PageChooserBlock):
+    def __init__(self, *args, **kwargs):
+        kwargs['page_type'] = ['books.Book']
+        kwargs['label'] = kwargs.get('label', 'Book')
+        super().__init__(*args, **kwargs)
 
     def get_api_representation(self, value, context=None):
         if value:
-            return get_book_data(value['books'])
+            return get_book_data(value)
