@@ -1,7 +1,7 @@
 boto3
 botocore
 bs4
-Django==5.1.10
+Django==5.0.14
 certifi
 django-admin-rangefilter
 django-crontab
