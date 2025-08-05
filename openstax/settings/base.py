@@ -104,6 +104,7 @@ AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME', 'openstax-assets'
 AWS_STORAGE_DIR = os.getenv('AWS_STORAGE_DIR', 'oscms-test')
 AWS_S3_CUSTOM_DOMAIN = os.getenv('AWS_S3_CUSTOM_DOMAIN', 'assets.openstax.org')
 AWS_DEFAULT_ACL = 'public-read'
+AWS_HEADERS = {'Access-Control-Allow-Origin': '*'}
 
 ################
 # Static/Media #
@@ -130,6 +131,7 @@ else:
                 "bucket_name": AWS_STORAGE_BUCKET_NAME,
                 "custom_domain": AWS_S3_CUSTOM_DOMAIN,
                 "default_acl": AWS_DEFAULT_ACL,
+                "headers": AWS_HEADERS,
                 "location": MEDIAFILES_LOCATION,
                 "file_overwrite": False,
                 "querystring_auth": False,
