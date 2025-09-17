@@ -38,7 +38,8 @@ from .custom_blocks import ImageBlock, \
     LinksGroupBlock, \
     QuoteBlock, \
     LinkInfoBlock, \
-    CTALinkBlock
+    CTALinkBlock, \
+    BookBlock
 
 from .custom_fields import Group
 import snippets.models as snippets
@@ -84,7 +85,10 @@ SECTION_CONTENT_BLOCKS = [
     ('quote', QuoteBlock()),
     ('faq', blocks.StreamBlock([
         ('faq', FAQBlock()),
-    ]))
+    ])),
+    ('book_list', blocks.StructBlock([
+        ('books', blocks.ListBlock(BookBlock(required=True))),
+    ], label="Books Block")),
 ]
 
 # we have one RootPage, which is the parent of all other pages

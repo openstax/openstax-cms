@@ -8,6 +8,7 @@ from wagtail.documents.blocks import DocumentChooserBlock
 from api.serializers import ImageSerializer
 from openstax.functions import build_image_url, build_document_url
 from wagtail.rich_text import expand_db_html
+from books.models import get_book_data
 
 
 class APIRichTextBlock(blocks.RichTextBlock):
@@ -143,6 +144,7 @@ class QuoteBlock(StructBlock):
     content = blocks.RichTextBlock(help_text="The quote content.")
     name = blocks.CharBlock(help_text="The name of the person or entity to attribute the quote to.")
     title = blocks.CharBlock(requred=False, help_text="Additional title or label about the quotee.")
+
 
 class DividerBlock(StructBlock):
     image = APIImageChooserBlock()
@@ -323,3 +325,13 @@ class AssignableBookBlock(blocks.StructBlock):
                 'cover': build_document_url(value['cover'].url),
                 'title': value['title'],
             }
+
+class BookBlock(blocks.PageChooserBlock):
+    def __init__(self, *args, **kwargs):
+        kwargs['page_type'] = ['books.Book']
+        kwargs['label'] = kwargs.get('label', 'Book')
+        super().__init__(*args, **kwargs)
+
+    def get_api_representation(self, value, context=None):
+        if value:
+            return get_book_data(value)

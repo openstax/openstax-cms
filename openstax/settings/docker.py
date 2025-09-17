@@ -57,8 +57,14 @@ MAPBOX_TOKEN = '' # should be the sk from mapbox
 #  Media        #
 #################
 # locally, we want to use local storage for uploaded (media) files
-DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+    },
+}
 
 #################
 #  CORS         #

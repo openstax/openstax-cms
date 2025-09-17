@@ -104,23 +104,42 @@ AWS_STORAGE_BUCKET_NAME = os.getenv('AWS_STORAGE_BUCKET_NAME', 'openstax-assets'
 AWS_STORAGE_DIR = os.getenv('AWS_STORAGE_DIR', 'oscms-test')
 AWS_S3_CUSTOM_DOMAIN = os.getenv('AWS_S3_CUSTOM_DOMAIN', 'assets.openstax.org')
 AWS_DEFAULT_ACL = 'public-read'
-AWS_HEADERS = {'Access-Control-Allow-Origin': '*'}
 
 ################
 # Static/Media #
 ################
-
-# Use local storage for media and static files in local environment
 if DEBUG or ENVIRONMENT == 'test':
-    DEFAULT_FILE_STORAGE = 'django.core.files.storage.FileSystemStorage'
+    # Local development storage configuration
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
 else:
     # S3 media storage using custom backend
     MEDIAFILES_LOCATION = '{}/media'.format(AWS_STORAGE_DIR)
     MEDIA_URL = "https://%s/%s/media/" % (AWS_S3_CUSTOM_DOMAIN, AWS_STORAGE_DIR)
-    DEFAULT_FILE_STORAGE = 'openstax.custom_storages.MediaStorage'
-
-# Static files are stored on the server and served by nginx
-STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
+    
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.s3boto3.S3Boto3Storage",
+            "OPTIONS": {
+                "bucket_name": AWS_STORAGE_BUCKET_NAME,
+                "custom_domain": AWS_S3_CUSTOM_DOMAIN,
+                "default_acl": AWS_DEFAULT_ACL,
+                "location": MEDIAFILES_LOCATION,
+                "file_overwrite": False,
+                "querystring_auth": False,
+                "use_ssl": True,
+            },
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
