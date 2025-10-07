@@ -61,6 +61,11 @@ If you've made changes to Django models and need to create a new migration:
 python3 manage.py makemigrations
 ```
 
+**Note:** If you encounter import errors when running `makemigrations`, you may need to create a local settings file first:
+```bash
+cp openstax/settings/local.py.example openstax/settings/local.py
+```
+
 Now, create a superuser. Run the following command and then proceed with the instructions:
 
 ```bash
