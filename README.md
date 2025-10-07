@@ -54,6 +54,13 @@ After all the modules in requirements are installed, run the migration script:
 ```bash
 python3 manage.py migrate
 ```
+
+If you've made changes to Django models and need to create a new migration:
+
+```bash
+python3 manage.py makemigrations
+```
+
 Now, create a superuser. Run the following command and then proceed with the instructions:
 
 ```bash
