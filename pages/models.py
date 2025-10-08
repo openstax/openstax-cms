@@ -3403,6 +3403,14 @@ class Assignable(Page):
     add_assignable_cta_description = models.TextField(blank=True, null=True)
     add_assignable_cta_link = models.URLField(blank=True, null=True)
     add_assignable_cta_button_text = models.CharField(max_length=255, blank=True, null=True)
+    instructor_interest_cta_header = models.CharField(max_length=255, blank=True, null=True)
+    instructor_interest_cta_description = models.TextField(blank=True, null=True)
+    instructor_interest_cta_link = models.URLField(blank=True, null=True)
+    instructor_interest_cta_button_text = models.CharField(max_length=255, blank=True, null=True)
+    instructor_help_cta_header = models.CharField(max_length=255, blank=True, null=True)
+    instructor_help_cta_description = models.TextField(blank=True, null=True)
+    instructor_help_cta_link = models.URLField(blank=True, null=True)
+    instructor_help_cta_button_text = models.CharField(max_length=255, blank=True, null=True)
     available_courses_header = models.CharField(max_length=255, blank=True, null=True)
     available_books = StreamField([
         ('course', AssignableBookBlock()),
@@ -3449,6 +3457,14 @@ class Assignable(Page):
         FieldPanel('add_assignable_cta_description'),
         FieldPanel('add_assignable_cta_link'),
         FieldPanel('add_assignable_cta_button_text'),
+        FieldPanel('instructor_interest_cta_header'),
+        FieldPanel('instructor_interest_cta_description'),
+        FieldPanel('instructor_interest_cta_link'),
+        FieldPanel('instructor_interest_cta_button_text'),
+        FieldPanel('instructor_help_cta_header'),
+        FieldPanel('instructor_help_cta_description'),
+        FieldPanel('instructor_help_cta_link'),
+        FieldPanel('instructor_help_cta_button_text'),
         FieldPanel('available_courses_header'),
         FieldPanel('available_books'),
         FieldPanel('courses_coming_soon_header'),
@@ -3478,6 +3494,14 @@ class Assignable(Page):
         APIField('add_assignable_cta_description'),
         APIField('add_assignable_cta_link'),
         APIField('add_assignable_cta_button_text'),
+        APIField('instructor_interest_cta_header'),
+        APIField('instructor_interest_cta_description'),
+        APIField('instructor_interest_cta_link'),
+        APIField('instructor_interest_cta_button_text'),
+        APIField('instructor_help_cta_header'),
+        APIField('instructor_help_cta_description'),
+        APIField('instructor_help_cta_link'),
+        APIField('instructor_help_cta_button_text'),
         APIField('available_courses_header'),
         APIField('available_books'),
         APIField('courses_coming_soon_header'),

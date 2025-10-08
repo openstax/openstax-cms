@@ -54,6 +54,18 @@ After all the modules in requirements are installed, run the migration script:
 ```bash
 python3 manage.py migrate
 ```
+
+If you've made changes to Django models and need to create a new migration:
+
+```bash
+python3 manage.py makemigrations
+```
+
+**Note:** If you encounter import errors when running `makemigrations`, you may need to create a local settings file first:
+```bash
+cp openstax/settings/local.py.example openstax/settings/local.py
+```
+
 Now, create a superuser. Run the following command and then proceed with the instructions:
 
 ```bash
