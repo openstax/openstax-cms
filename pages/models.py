@@ -3411,6 +3411,7 @@ class Assignable(Page):
     instructor_help_cta_description = models.TextField(blank=True, null=True)
     instructor_help_cta_link = models.URLField(blank=True, null=True)
     instructor_help_cta_button_text = models.CharField(max_length=255, blank=True, null=True)
+    cta_section_footer = RichTextField(blank=True, null=True)
     available_courses_header = models.CharField(max_length=255, blank=True, null=True)
     available_books = StreamField([
         ('course', AssignableBookBlock()),
@@ -3465,6 +3466,7 @@ class Assignable(Page):
         FieldPanel('instructor_help_cta_description'),
         FieldPanel('instructor_help_cta_link'),
         FieldPanel('instructor_help_cta_button_text'),
+        FieldPanel('cta_section_footer'),
         FieldPanel('available_courses_header'),
         FieldPanel('available_books'),
         FieldPanel('courses_coming_soon_header'),
@@ -3502,6 +3504,7 @@ class Assignable(Page):
         APIField('instructor_help_cta_description'),
         APIField('instructor_help_cta_link'),
         APIField('instructor_help_cta_button_text'),
+        APIField('cta_section_footer'),
         APIField('available_courses_header'),
         APIField('available_books'),
         APIField('courses_coming_soon_header'),
