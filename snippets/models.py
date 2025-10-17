@@ -502,3 +502,20 @@ class ContentWarning(TranslatableMixin, models.Model):
 
 
 register_snippet(ContentWarning)
+
+
+class RequireLoginMessage(TranslatableMixin, models.Model):
+    require_login_message = models.TextField()
+
+    api_fields = ('require_login_message',)
+
+    panels = [
+        FieldPanel('require_login_message')
+    ]
+
+    def __str__(self):
+        return (self.require_login_message[:100] + '...') if len(self.require_login_message) > 100 else self.require_login_message
+
+
+
+register_snippet(RequireLoginMessage)
