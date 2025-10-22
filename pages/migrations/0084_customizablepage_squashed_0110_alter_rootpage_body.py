@@ -220,7 +220,6 @@ class Migration(migrations.Migration):
                         use_json_field=True,
                     ),
                 ),
-                ("layout", models.ForeignKey(on_delete=django.db.models.deletion.PROTECT, to="snippets.pagelayout")),
                 (
                     "promote_image",
                     models.ForeignKey(
