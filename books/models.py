@@ -611,6 +611,15 @@ class Book(Page):
         related_name='content_warnings_content_warning',
         help_text="Message shown in the content warning modal.")
 
+    require_login_message = models.ForeignKey(
+        snippets.RequireLoginMessage,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='books_require_login_message',
+        help_text="Message shown to logged-out users requiring them to log in. "\
+                  "If set, logged-out users cannot dismiss content warning and must log in.")
+
     cover = models.ForeignKey(
         'wagtaildocs.Document',
         null=True, blank=True,
@@ -835,6 +844,7 @@ class Book(Page):
         FieldPanel('is_ap'),
         FieldPanel('description', classname="full"),
         FieldPanel('content_warning'),
+        FieldPanel('require_login_message'),
         FieldPanel('cover'),
         FieldPanel('title_image'),
         FieldPanel('cover_color'),
@@ -934,6 +944,7 @@ class Book(Page):
         APIField('is_ap'),
         APIField('description'),
         APIField('content_warning_text'),
+        APIField('require_login_message_text'),
         APIField('cover_url'),
         APIField('title_image_url'),
         APIField('cover_color'),
@@ -1046,6 +1057,10 @@ class Book(Page):
     @property
     def content_warning_text(self):
         return self.content_warning.content_warning if self.content_warning else None
+
+    @property
+    def require_login_message_text(self):
+        return self.require_login_message.require_login_message if self.require_login_message else None
 
     def get_slug(self):
         return 'books/{}'.format(self.slug)
