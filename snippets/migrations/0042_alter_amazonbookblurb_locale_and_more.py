@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("snippets", "0041_delete_pagelayout"),
+        ("snippets", "0037_noop_pagelayout_removed"),
         ("wagtailcore", "0094_alter_page_locale"),
     ]
 
