@@ -2,7 +2,6 @@
 django-extensions
 pipdeptree
 pydot
-psycopg2-binary
 black # code formatting
 django-debug-toolbar
 django-cors-headers
