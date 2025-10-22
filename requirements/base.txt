@@ -23,7 +23,7 @@ Pillow==11.3.0
 psycopg2
 python-dotenv==1.1.0
 rapidfuzz==3.13.0
-requests==2.32.3
+requests==2.32.4
 sentry-sdk==2.27.0
 simple-salesforce==1.12.6
 six==1.17.0
