@@ -67,10 +67,6 @@ class Migration(migrations.Migration):
                 use_json_field=True,
             ),
         ),
-        migrations.RemoveField(
-            model_name="rootpage",
-            name="layout",
-        ),
         migrations.AlterField(
             model_name="rootpage",
             name="body",
