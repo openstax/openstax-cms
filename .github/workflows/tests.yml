@@ -37,8 +37,8 @@ jobs:
         cache-dependency-path: requirements/test.txt
     - run: pip install -r requirements/test.txt
 
-    #- name: Check migrations
-    #  run: python manage.py makemigrations --check
+    - name: Check migrations
+      run: python3 manage.py makemigrations --check
 
     - name: Run tests and generate coverage reports
       run: coverage run --source '.' manage.py test --settings=openstax.settings.test
