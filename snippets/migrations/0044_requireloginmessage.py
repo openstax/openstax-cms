@@ -9,6 +9,7 @@ class Migration(migrations.Migration):
 
     dependencies = [
         ("snippets", "0043_alter_k12subject_subject_color_and_more"),
+        ("wagtailcore", "0095_groupsitepermission"),
     ]
 
     operations = [
