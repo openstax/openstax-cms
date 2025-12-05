@@ -5,9 +5,6 @@ from wagtail import hooks
 from wagtail.admin.menu import MenuItem
 from wagtail.search import index
 
-from wagtailautocomplete.edit_handlers import AutocompletePanel
-
-
 from books.models import Book
 
 
