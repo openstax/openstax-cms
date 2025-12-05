@@ -4,6 +4,7 @@ from django.shortcuts import render
 
 from modelcluster.fields import ParentalKey
 from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel, TitleFieldPanel
+from wagtailautocomplete.edit_handlers import AutocompletePanel
 from wagtail.admin.widgets.slug import SlugInput
 from wagtail import blocks
 from wagtail.fields import RichTextField, StreamField
@@ -17,7 +18,7 @@ from books.models import Book, SubjectBooks, BookFacultyResources, BookStudentRe
 from webinars.models import Webinar
 from news.models import BlogStreamBlock  # for use on the ImpactStories
 
-from salesforce.models import PartnerTypeMapping, PartnerFieldNameMapping, PartnerCategoryMapping, Partner
+from salesforce.models import PartnerTypeMapping, PartnerFieldNameMapping, PartnerCategoryMapping, Partner, School
 
 from .custom_blocks import ImageBlock, \
     APIImageChooserBlock, \
@@ -188,9 +189,29 @@ class RootPage(Page):
         related_name='+'
     )
 
+    school = models.ForeignKey(
+        School,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        help_text='Link a school to this landing page. School information will be included in the API response.'
+    )
+
+    def get_school_data(self):
+        """Return serialized school data for API"""
+        if self.school:
+            from salesforce.serializers import SchoolSerializer
+            serializer = SchoolSerializer(self.school)
+            return serializer.data
+        return None
+
+    school_data = property(get_school_data)
+
     api_fields = [
         APIField('layout'),
         APIField('body'),
+        APIField('school_data'),
         APIField('slug'),
         APIField('seo_title'),
         APIField('search_description'),
@@ -199,6 +220,7 @@ class RootPage(Page):
     content_panels = [
         TitleFieldPanel('title', help_text="For CMS use only. Use 'Promote' tab above to edit SEO information."),
         FieldPanel('layout'),
+        AutocompletePanel('school'),
         FieldPanel('body'),
     ]
 
@@ -211,9 +233,7 @@ class RootPage(Page):
 
     template = 'page.html'
     max_count = 1
-    # TODO: we are allowing this to be built as a child of the homepage. Not ideal.
-    # Once the home page is released, use something to migrate homepage children to root page and remove this parent type.
-    parent_page_types = ['wagtailcore.Page', 'pages.HomePage']
+    parent_page_types = ['wagtailcore.Page']
 
     def __str__(self):
         return self.path
