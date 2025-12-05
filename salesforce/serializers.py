@@ -8,9 +8,11 @@ class SchoolSerializer(serializers.ModelSerializer):
     class Meta:
         model = School
         fields = ('id',
+                  'salesforce_id',
                   'name',
                   'phone',
                   'website',
+                  'industry',
                   'type',
                   'location',
                   'adoption_date',
@@ -34,9 +36,11 @@ class SchoolSerializer(serializers.ModelSerializer):
                   'long',
                   'lat')
         read_only_fields = ('id',
+                              'salesforce_id',
                               'name',
                               'phone',
                               'website',
+                              'industry',
                               'type',
                               'location',
                               'adoption_date',
