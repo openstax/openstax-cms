@@ -1,7 +1,7 @@
 from django import forms
 from django.db import models
 from django.shortcuts import render
-
+from django.utils.functional import cached_property
 from modelcluster.fields import ParentalKey
 from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel, TitleFieldPanel
 from wagtailautocomplete.edit_handlers import AutocompletePanel
@@ -206,7 +206,9 @@ class RootPage(Page):
             return serializer.data
         return None
 
-    school_data = property(get_school_data)
+    @cached_property
+    def school_data(self):
+        return self.get_school_data()
 
     api_fields = [
         APIField('layout'),
