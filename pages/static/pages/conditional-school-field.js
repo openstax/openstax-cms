@@ -159,4 +159,3 @@
     // Start initialization
     init();
 })();
-
