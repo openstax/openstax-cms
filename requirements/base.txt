@@ -31,5 +31,6 @@ ua-parser==1.0.1
 unicodecsv==0.14.1
 vcrpy==7.0.0
 wagtail==7.1.1
+wagtail-autocomplete==0.12.0
 wagtail-modeladmin==2.2.0
 whitenoise==6.9.0
