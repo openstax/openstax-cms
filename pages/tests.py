@@ -664,6 +664,9 @@ class PageTemplateMetaTagTests(WagtailPageTestCase):
             search_description="Homepage description"
         )
         root_page.add_child(instance=self.homepage_with_seo)
+        revision = self.homepage_with_seo.save_revision()
+        revision.publish()
+        self.homepage_with_seo.save()
 
         self.homepage_without_seo = page_models.HomePage(
             title="Homepage Without SEO",
@@ -671,6 +674,9 @@ class PageTemplateMetaTagTests(WagtailPageTestCase):
             search_description="Another homepage description"
         )
         root_page.add_child(instance=self.homepage_without_seo)
+        revision = self.homepage_without_seo.save_revision()
+        revision.publish()
+        self.homepage_without_seo.save()
 
     def test_page_template_uses_seo_title_in_og_tags(self):
         """Test that page.html template uses seo_title in og:title when available"""

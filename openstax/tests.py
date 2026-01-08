@@ -216,6 +216,9 @@ class TestOpenGraphMiddleware(TestCase):
             search_description="Test page without SEO title"
         )
         self.homepage.add_child(instance=page_without_seo)
+        revision = page_without_seo.save_revision()
+        revision.publish()
+        page_without_seo.save()
 
         self.client = Client(HTTP_USER_AGENT='facebookbot')
         response = self.client.get('/test-page-no-seo/')
