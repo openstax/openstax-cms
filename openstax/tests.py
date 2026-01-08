@@ -188,3 +188,38 @@ class TestOpenGraphMiddleware(TestCase):
         response = self.client.get('/blog/article-1/')
         self.assertContains(response, 'og:image')
 
+    def test_seo_title_used_in_og_tags(self):
+        """Test that seo_title is used in Open Graph and Twitter Card tags when available"""
+        # Test with middleware (social media bot user agent)
+        self.client = Client(HTTP_USER_AGENT='twitterbot')
+        response = self.client.get('/')
+        # Should use seo_title in og:title meta tag
+        self.assertContains(response, 'og:title')
+        self.assertContains(response, 'OpenStax Home')
+        # Should not contain the page title in OG tags
+        self.assertNotContains(response, '<meta property="og:title" content="Hello World"')
+
+    def test_seo_title_used_in_twitter_tags(self):
+        """Test that seo_title is used in Twitter Card tags when available"""
+        self.client = Client(HTTP_USER_AGENT='Twitterbot/1.0')
+        response = self.client.get('/')
+        # Should use seo_title in twitter:title meta tag
+        self.assertContains(response, 'twitter:title')
+        self.assertContains(response, 'OpenStax Home')
+
+    def test_title_fallback_when_no_seo_title(self):
+        """Test that page.title is used as fallback when seo_title is not set"""
+        # Create a page without seo_title
+        page_without_seo = HomePage(
+            title="Test Page Without SEO Title",
+            slug="test-page-no-seo",
+            search_description="Test page without SEO title"
+        )
+        self.homepage.add_child(instance=page_without_seo)
+
+        self.client = Client(HTTP_USER_AGENT='facebookbot')
+        response = self.client.get('/test-page-no-seo/')
+        # Should fall back to using page.title
+        self.assertContains(response, 'og:title')
+        self.assertContains(response, 'Test Page Without SEO Title')
+
