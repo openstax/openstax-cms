@@ -666,8 +666,8 @@ class PageTemplateMetaTagTests(WagtailPageTestCase):
         )
         root_page.add_child(instance=self.root_homepage)
 
-        # Create test pages as children of the root homepage
-        self.page_with_seo = page_models.GeneralPage(
+        # Create test pages using FlexPage which uses page.html template
+        self.page_with_seo = page_models.FlexPage(
             title="Page Title",
             slug="page-with-seo",
             seo_title="Page SEO Title",
@@ -678,7 +678,7 @@ class PageTemplateMetaTagTests(WagtailPageTestCase):
         revision.publish()
         self.page_with_seo.save()
 
-        self.page_without_seo = page_models.GeneralPage(
+        self.page_without_seo = page_models.FlexPage(
             title="Page Without SEO",
             slug="page-without-seo",
             search_description="Another page description"
