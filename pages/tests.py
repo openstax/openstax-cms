@@ -657,55 +657,65 @@ class PageTemplateMetaTagTests(WagtailPageTestCase):
     def setUp(self):
         mock_user_login()
         root_page = Page.objects.get(title="Root")
-        self.homepage_with_seo = page_models.HomePage(
-            title="Homepage Title",
-            slug="homepage-with-seo",
-            seo_title="Homepage SEO Title",
-            search_description="Homepage description"
+        # Create a root homepage first
+        self.root_homepage = page_models.RootPage(
+            title="Test Root Homepage",
+            slug="test-root",
+            seo_title="Test Root SEO",
+            search_description="Test root description"
         )
-        root_page.add_child(instance=self.homepage_with_seo)
-        revision = self.homepage_with_seo.save_revision()
-        revision.publish()
-        self.homepage_with_seo.save()
+        root_page.add_child(instance=self.root_homepage)
 
-        self.homepage_without_seo = page_models.HomePage(
-            title="Homepage Without SEO",
-            slug="homepage-without-seo",
-            search_description="Another homepage description"
+        # Create test pages as children of the root homepage
+        self.page_with_seo = page_models.GeneralPage(
+            title="Page Title",
+            slug="page-with-seo",
+            seo_title="Page SEO Title",
+            search_description="Page description"
         )
-        root_page.add_child(instance=self.homepage_without_seo)
-        revision = self.homepage_without_seo.save_revision()
+        self.root_homepage.add_child(instance=self.page_with_seo)
+        revision = self.page_with_seo.save_revision()
         revision.publish()
-        self.homepage_without_seo.save()
+        self.page_with_seo.save()
+
+        self.page_without_seo = page_models.GeneralPage(
+            title="Page Without SEO",
+            slug="page-without-seo",
+            search_description="Another page description"
+        )
+        self.root_homepage.add_child(instance=self.page_without_seo)
+        revision = self.page_without_seo.save_revision()
+        revision.publish()
+        self.page_without_seo.save()
 
     def test_page_template_uses_seo_title_in_og_tags(self):
         """Test that page.html template uses seo_title in og:title when available"""
-        response = self.client.get('/homepage-with-seo/')
+        response = self.client.get('/page-with-seo/')
         self.assertEqual(response.status_code, 200)
         # Check that seo_title is used in Open Graph meta tag
-        self.assertContains(response, '<meta property="og:title" content="Homepage SEO Title"')
+        self.assertContains(response, '<meta property="og:title" content="Page SEO Title"')
         # Should not contain the page title in OG tags
-        self.assertNotContains(response, '<meta property="og:title" content="Homepage Title"')
+        self.assertNotContains(response, '<meta property="og:title" content="Page Title"')
 
     def test_page_template_uses_seo_title_in_twitter_tags(self):
         """Test that page.html template uses seo_title in twitter:title when available"""
-        response = self.client.get('/homepage-with-seo/')
+        response = self.client.get('/page-with-seo/')
         self.assertEqual(response.status_code, 200)
         # Check that seo_title is used in Twitter Card meta tag
-        self.assertContains(response, '<meta name="twitter:title" content="Homepage SEO Title">')
+        self.assertContains(response, '<meta name="twitter:title" content="Page SEO Title">')
 
     def test_page_template_uses_seo_title_in_og_image_alt(self):
         """Test that page.html template uses seo_title in og:image:alt when available"""
-        response = self.client.get('/homepage-with-seo/')
+        response = self.client.get('/page-with-seo/')
         self.assertEqual(response.status_code, 200)
         # Check that seo_title is used in og:image:alt
-        self.assertContains(response, '<meta property="og:image:alt" content="OpenStax: Homepage SEO Title"')
+        self.assertContains(response, '<meta property="og:image:alt" content="OpenStax: Page SEO Title"')
 
     def test_page_template_falls_back_to_title_when_no_seo_title(self):
         """Test that page.html template falls back to page.title when seo_title is not set"""
-        response = self.client.get('/homepage-without-seo/')
+        response = self.client.get('/page-without-seo/')
         self.assertEqual(response.status_code, 200)
         # Should fall back to using page.title
-        self.assertContains(response, '<meta property="og:title" content="Homepage Without SEO"')
-        self.assertContains(response, '<meta name="twitter:title" content="Homepage Without SEO">')
-        self.assertContains(response, '<meta property="og:image:alt" content="OpenStax: Homepage Without SEO"')
+        self.assertContains(response, '<meta property="og:title" content="Page Without SEO"')
+        self.assertContains(response, '<meta name="twitter:title" content="Page Without SEO">')
+        self.assertContains(response, '<meta property="og:image:alt" content="OpenStax: Page Without SEO"')
