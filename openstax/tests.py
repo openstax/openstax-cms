@@ -5,7 +5,7 @@ from .functions import remove_locked_links_detail, remove_locked_links_listing, 
 from django.test import TestCase, Client
 from django.core.files.uploadedfile import SimpleUploadedFile
 from wagtail.models import Page
-from pages.models import RootPage, FlexPage
+from pages.models import RootPage
 from books.models import BookIndex, Book
 from news.models import NewsIndex, NewsArticle
 from snippets.models import Subject, BlogContentType, BlogCollection
