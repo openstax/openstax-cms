@@ -186,3 +186,29 @@ class BookTests(WagtailPageTestCase):
             response = self.client.get('/apps/cms/api/books/resources/?slug=college-physics')
             self.assertIn(b'This book is retired', response.content)
 
+    def test_audiobook_link_field(self):
+        """Test that audiobook_link can be set and is included in API responses"""
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            audiobook_url = 'https://example.com/audiobook'
+            book = Book(title="University Physics",
+                        slug="university-physics-audio",
+                        cnx_id='031da8d3-b525-429c-80cf-6c8ed997733a',
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test Book",
+                        cover=self.test_doc,
+                        title_image=self.test_doc,
+                        publish_date=datetime.date.today(),
+                        locale=root_page.locale,
+                        audiobook_link=audiobook_url
+                        )
+            book_index.add_child(instance=book)
+
+            # Verify the audiobook_link was saved
+            self.assertEqual(book.audiobook_link, audiobook_url)
+
+            # Verify it's included in API response
+            response = self.client.get('/apps/cms/api/books/resources/?slug=university-physics-audio')
+            self.assertEqual(response.data['audiobook_link'], audiobook_url)
+
