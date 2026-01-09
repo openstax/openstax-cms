@@ -233,6 +233,7 @@ INSTALLED_APPS = [
     'rangefilter',
     'reversion',
     'wagtail_modeladmin',
+    'wagtailautocomplete',
     # custom
     'accounts',
     'api',

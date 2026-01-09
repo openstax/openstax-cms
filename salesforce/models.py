@@ -3,6 +3,7 @@ from django.core.exceptions import ValidationError
 
 from wagtail import hooks
 from wagtail.admin.menu import MenuItem
+from wagtail.search import index
 
 from books.models import Book
 
@@ -35,12 +36,13 @@ class AdoptionOpportunityRecord(models.Model):
         return self.opportunity_id
 
 
-class School(models.Model):
+class School(index.Indexed, models.Model):
     salesforce_id = models.CharField(max_length=255, blank=True, null=True)
     name = models.CharField(max_length=255)
     phone = models.CharField(max_length=255, null=True, blank=True)
     website = models.CharField(max_length=255, null=True, blank=True)
     type = models.CharField(max_length=255, null=True, blank=True)
+    industry = models.CharField(max_length=255, null=True, blank=True)
     location = models.CharField(max_length=255, null=True, blank=True)
     adoption_date = models.CharField(max_length=255, null=True, blank=True)
     key_institutional_partner = models.BooleanField(default=False)
@@ -62,8 +64,23 @@ class School(models.Model):
     physical_zip_postal_code = models.CharField(max_length=255, null=True, blank=True)
     long = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True)
     lat = models.DecimalField(max_digits=8, decimal_places=3, null=True, blank=True)
+    research_agreement_start_date = models.DateField(null=True, blank=True)
+    research_agreement_end_date = models.DateField(null=True, blank=True)
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
+
+    search_fields = [
+        index.SearchField('name', boost=10),
+        index.AutocompleteField('name'),
+        index.FilterField('name'),
+        index.FilterField('type'),
+        index.FilterField('location'),
+    ]
+
+    autocomplete_search_field = 'name'
+
+    def autocomplete_label(self):
+        return self.name
 
     def __str__(self):
         return self.name
