@@ -56,8 +56,65 @@ class PageTests(WagtailPageTestCase):
         root_page = Page.objects.get(title="Root")
         self.homepage = page_models.HomePage(title="Hello World",
                                              slug="hello-world",
+                                             seo_title="SEO Hello World",
+                                             search_description="Test page description"
                                              )
         root_page.add_child(instance=self.homepage)
+
+    def test_seo_title_used_in_meta_tags(self):
+        """Test that seo_title is used in og:title, twitter:title, and og:image:alt meta tags"""
+        # Create a RootPage with seo_title to test via middleware
+        root_page = Page.objects.get(title="Root")
+        test_homepage = page_models.RootPage(
+            title="Test Root Page",
+            slug="openstax-homepage",
+            seo_title="SEO Test Title",
+            search_description="Test description"
+        )
+        root_page.add_child(instance=test_homepage)
+        
+        # Use a social media bot user agent to trigger the middleware
+        self.client = Client(HTTP_USER_AGENT='twitterbot')
+        response = self.client.get('/')
+        
+        # Verify seo_title is used in og:title
+        self.assertContains(response, 'og:title')
+        self.assertContains(response, 'SEO Test Title')
+        
+        # Verify seo_title is used in twitter:title
+        self.assertContains(response, 'twitter:title')
+        self.assertContains(response, 'SEO Test Title')
+        
+        # Verify seo_title is used in og:image:alt
+        self.assertContains(response, 'og:image:alt')
+        self.assertContains(response, 'OpenStax: SEO Test Title')
+
+    def test_fallback_to_page_title_when_no_seo_title(self):
+        """Test that page.title is used as fallback when seo_title is not set"""
+        # Create a RootPage without seo_title to test via middleware
+        root_page = Page.objects.get(title="Root")
+        test_homepage = page_models.RootPage(
+            title="Fallback Test Title",
+            slug="openstax-homepage",
+            search_description="Test description"
+        )
+        root_page.add_child(instance=test_homepage)
+        
+        # Use a social media bot user agent to trigger the middleware
+        self.client = Client(HTTP_USER_AGENT='facebookexternalhit/1.1')
+        response = self.client.get('/')
+        
+        # Verify page.title is used in og:title when seo_title is not set
+        self.assertContains(response, 'og:title')
+        self.assertContains(response, 'Fallback Test Title')
+        
+        # Verify page.title is used in twitter:title when seo_title is not set
+        self.assertContains(response, 'twitter:title')
+        self.assertContains(response, 'Fallback Test Title')
+        
+        # Verify page.title is used in og:image:alt when seo_title is not set
+        self.assertContains(response, 'og:image:alt')
+        self.assertContains(response, 'OpenStax: Fallback Test Title')
 
     def test_can_create_ipp_page(self):
         self.assertCanCreateAt(page_models.HomePage, page_models.InstitutionalPartnerProgramPage)
