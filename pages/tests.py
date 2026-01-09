@@ -818,11 +818,15 @@ class TemplateTagTests(WagtailPageTestCase):
         from pages.templatetags.pages_tags import get_page_content
         
         # Get content directly using the template tag function
-        content = get_page_content(Context({'page': self.test_page}), self.test_page)
+        context = Context({'page': self.test_page})
+        content = get_page_content(context, self.test_page)
         
         # All returned items should have non-empty values
         for item in content:
-            self.assertTrue(item['value'].strip(), f"Item {item['name']} has empty value")
+            self.assertIn('name', item, "Item missing 'name' key")
+            self.assertIn('value', item, "Item missing 'value' key")
+            self.assertTrue(item.get('value', '').strip(), 
+                          f"Item {item.get('name', 'unknown')} has empty value")
 
     def test_get_page_content_with_none_page(self):
         """Test that get_page_content handles None page gracefully"""
@@ -894,15 +898,18 @@ class TemplateTagTests(WagtailPageTestCase):
     def test_get_page_content_returns_proper_structure(self):
         """Test that get_page_content returns items with correct structure"""
         from django.template import Context, Template
+        from pages.templatetags.pages_tags import get_page_content
         
-        template = Template('{% load pages_tags %}{% get_page_content page as content %}{% for item in content %}{{ item.name }}:{{ item.type }}:{{ item.value|slice:":10" }}|{% endfor %}')
+        # Get content directly to check structure
         context = Context({'page': self.test_page})
-        result = template.render(context)
+        content = get_page_content(context, self.test_page)
         
-        # Each item should have name, type, and value
-        if result.strip():
-            parts = result.split('|')
-            for part in parts:
-                if part.strip():
-                    # Should have format "name:type:value"
-                    self.assertEqual(len(part.split(':')), 3)
+        # Each item should be a dict with required keys
+        for item in content:
+            self.assertIsInstance(item, dict, "Content item should be a dictionary")
+            self.assertIn('name', item, "Item missing 'name' key")
+            self.assertIn('type', item, "Item missing 'type' key")
+            self.assertIn('value', item, "Item missing 'value' key")
+            self.assertIsInstance(item['name'], str, "Item name should be a string")
+            self.assertIsInstance(item['type'], str, "Item type should be a string")
+            self.assertIsInstance(item['value'], str, "Item value should be a string")
