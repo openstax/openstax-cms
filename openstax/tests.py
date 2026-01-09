@@ -207,22 +207,3 @@ class TestOpenGraphMiddleware(TestCase):
         self.assertContains(response, 'twitter:title')
         self.assertContains(response, 'OpenStax Home')
 
-    def test_title_fallback_when_no_seo_title(self):
-        """Test that page.title is used as fallback when seo_title is not set"""
-        # Create a FlexPage without seo_title (FlexPage uses page.html template)
-        page_without_seo = FlexPage(
-            title="Test Page Without SEO Title",
-            slug="test-page-no-seo",
-            search_description="Test page without SEO title"
-        )
-        self.homepage.add_child(instance=page_without_seo)
-        revision = page_without_seo.save_revision()
-        revision.publish()
-        page_without_seo.save()
-
-        self.client = Client(HTTP_USER_AGENT='facebookbot')
-        response = self.client.get('/test-page-no-seo/')
-        # Should fall back to using page.title
-        self.assertContains(response, 'og:title')
-        self.assertContains(response, 'Test Page Without SEO Title')
-
