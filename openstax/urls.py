@@ -3,6 +3,7 @@ from django.urls import include, path, re_path
 from django.conf.urls.static import static
 from django.contrib import admin
 from wagtail.admin import urls as wagtailadmin_urls
+from wagtailautocomplete.urls.admin import urlpatterns as autocomplete_admin_urls
 from wagtail import urls as wagtail_urls
 from wagtail.documents import urls as wagtaildocs_urls
 from accounts import urls as accounts_urls
@@ -17,6 +18,7 @@ from global_settings.views import throw_error, clear_entire_cache, sitemap
 admin.site.site_header = 'OpenStax'
 
 urlpatterns = [
+    path('admin/autocomplete/', include(autocomplete_admin_urls)),
     path('admin/', include(wagtailadmin_urls)),
 
     path('django-admin/error/', throw_error, name='throw_error'),
