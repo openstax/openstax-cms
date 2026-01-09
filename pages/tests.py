@@ -759,7 +759,6 @@ class TemplateTagTests(WagtailPageTestCase):
     def test_get_page_content_extracts_stream_field(self):
         """Test that get_page_content extracts StreamField values"""
         from django.template import Context, Template
-        from wagtail import blocks
         
         # Update the test page with StreamField data
         self.test_page.features_tab1_features = [
