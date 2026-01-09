@@ -56,11 +56,11 @@ def get_page_content(context, page):
 
     for field in fields:
         # Skip internal/relation fields usually not content (simple heuristic)
-        if field.name in ['id', 'path', 'depth', 'numchild', 'live', 'has_unpublished_changes', 
-                          'first_published_at', 'last_published_at', 'go_live_at', 'expire_at', 
-                          'content_type', 'owner', 'seo_title', 'search_description', 'slug',
+        if field.name in ['id', 'path', 'depth', 'numchild', 'live', 'has_unpublished_changes',
+                          'first_published_at', 'last_published_at', 'go_live_at', 'expire_at',
+                          'content_type', 'owner', 'seo_title', 'search_description', 'slug', 'title',
                           'locked', 'locked_at', 'locked_by', 'latest_revision_created_at',
-                          'live_revision', 'url_path', 'content_type_id', 'owner_id', 
+                          'live_revision', 'url_path', 'content_type_id', 'owner_id',
                           'locked_by_id', 'live_revision_id', 'generic_comments', 'wagtail_admin_comments']:
             continue
         
