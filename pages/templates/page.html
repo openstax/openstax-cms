@@ -1,5 +1,4 @@
 {% load wagtailimages_tags wagtailcore_tags static pages_tags %}
-{% get_page_content page as page_content %}
 
 
 {% image page.promote_image original as promote_image %}
@@ -28,17 +27,19 @@
 </head>
 <body>
 {% block content %}
-<div id="app"></div>
-<noscript>
-    <div class="bot-content">
-        <h1>{{ page.title }}</h1>
-        {% for item in page_content %}
-            <div class="field-{{ item.name }}">
+{% get_page_content page as page_content %}
+<div class="bot-content">
+    <h1>{{ page.title }}</h1>
+    {% for item in page_content %}
+        <div class="field-{{ item.name }}">
+            {% if item.type == 'RichTextField' %}
+                {{ item.value|richtext }}
+            {% else %}
                 {{ item.value|linebreaks }}
-            </div>
-        {% endfor %}
-    </div>
-</noscript>
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>
 {% endblock %}
 </body>
 </html>

@@ -71,14 +71,25 @@ def get_page_content(context, page):
             try:
                 value = getattr(specific_page, field.name)
                 if value:
-                    # Extract text content recursively
-                    extracted_text = extract_content(value)
-                    if extracted_text.strip():
-                        content_items.append({
-                            'name': field.name,
-                            'value': extracted_text,
-                            'type': 'Text' # Normalized type
-                        })
+                    try:
+                        # Extract text content recursively
+                        extracted_text = extract_content(value)
+                        
+                        # Determine type for template rendering
+                        # Treat StreamField as RichTextField because extract_content returns raw HTML for RichBlocks
+                        if isinstance(field, (RichTextField, StreamField)):
+                            item_type = 'RichTextField'
+                        else:
+                            item_type = 'Text'
+
+                        if extracted_text.strip():
+                            content_items.append({
+                                'name': field.name,
+                                'value': extracted_text,
+                                'type': item_type
+                            })
+                    except (TypeError, ValueError) as e:
+                        print(f"Error extracting content from field {field.name}: {e}")
             except AttributeError:
                 pass
 
