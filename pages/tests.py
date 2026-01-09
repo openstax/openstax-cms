@@ -894,6 +894,24 @@ class TemplateTagTests(WagtailPageTestCase):
         self.assertIn("value1", result)
         self.assertIn("value2", result)
 
+    def test_extract_content_handles_plain_dict(self):
+        """Test that extract_content handles plain Python dicts explicitly"""
+        from pages.templatetags.pages_tags import extract_content
+        
+        # Test with a plain dict
+        plain_dict = {"key1": "value1", "key2": "value2", "key3": "value3"}
+        result = extract_content(plain_dict)
+        
+        # Should extract all values from the dict
+        self.assertIn("value1", result)
+        self.assertIn("value2", result)
+        self.assertIn("value3", result)
+        
+        # Should not include the keys (we only extract values)
+        self.assertNotIn("key1", result)
+        self.assertNotIn("key2", result)
+        self.assertNotIn("key3", result)
+
     def test_get_page_content_returns_proper_structure(self):
         """Test that get_page_content returns items with correct structure"""
         from django.template import Context, Template

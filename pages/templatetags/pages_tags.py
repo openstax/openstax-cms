@@ -21,8 +21,10 @@ def extract_content(value):
               ``ListValue`` or plain lists/tuples). Items that look like
               StreamField children (having ``value`` and ``block_type`` attributes)
               are unwrapped via their ``.value`` attribute.
-            - Struct-like values (e.g. ``StructValue`` or dict-like objects with
-              a ``.values()`` method), whose child values are processed recursively.
+            - Struct-like values (e.g. Wagtail's ``StructValue``) or plain Python
+              ``dict`` objects, which are processed by extracting their values
+              via the ``.values()`` method and recursively extracting content
+              from each value.
             - ``None``, which is treated as empty content.
 
     Returns:
@@ -52,8 +54,19 @@ def extract_content(value):
     if isinstance(value, RichText):
         return value.source
 
-    # Handle StreamValue / ListValue
-    if hasattr(value, '__iter__') and not isinstance(value, (dict, str, bytes)):
+    # Handle StructValue and plain dicts before checking for general iterables.
+    # This ensures dict-like objects are processed via their values() method
+    # rather than being treated as iterable key sequences.
+    # Note: Both Wagtail's StructValue and Python's dict have a values() method.
+    if isinstance(value, dict) or (hasattr(value, 'values') and callable(getattr(value, 'values', None))):
+        parts = []
+        for v in value.values():
+            parts.append(extract_content(v))
+        return "\n".join(filter(None, parts))
+
+    # Handle StreamValue / ListValue (lists, tuples, and other iterables)
+    # We've already handled dicts above, and we exclude str/bytes here.
+    if hasattr(value, '__iter__') and not isinstance(value, (str, bytes)):
         parts = []
         for item in value:
             # If it's a StreamChild (has 'value' and 'block_type'), use .value
@@ -61,13 +74,6 @@ def extract_content(value):
                 parts.append(extract_content(item.value))
             else:
                 parts.append(extract_content(item))
-        return "\n".join(filter(None, parts))
-
-    # Handle StructValue (dict-like)
-    if hasattr(value, 'values'):
-        parts = []
-        for v in value.values():
-            parts.append(extract_content(v))
         return "\n".join(filter(None, parts))
 
     return str(value)
