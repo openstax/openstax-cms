@@ -990,6 +990,7 @@ class Book(Page):
         APIField('amazon_coming_soon'),
         APIField('amazon_link'),
         APIField('amazon_iframe'),
+        APIField('audiobook_link'),
         APIField('kindle_link'),
         APIField('chegg_link'),
         APIField('chegg_link_text'),
