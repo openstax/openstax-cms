@@ -6,7 +6,7 @@
 <html>
 <head>
 
-    <title>{{ page.title }}</title>
+    <title>{{ page.seo_title|default:page.title }}</title>
     <meta name="description" content="{{ page.search_description }}">
     <link rel="canonical" href="{{page.get_full_url}}" />
     <meta http-equiv="refresh">
@@ -28,8 +28,8 @@
 <body>
 {% block content %}
 {% get_page_content page as page_content %}
-<div class="bot-content">
-    <h1>{{ page.title }}</h1>
+<div>
+    <h1>{{ page.seo_title|default:page.title }}</h1>
     {% for item in page_content %}
         <div class="field-{{ item.name }}">
             {% if item.type == 'RichTextField' %}
