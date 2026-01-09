@@ -1,16 +1,25 @@
+from datetime import date
 from collections import OrderedDict
 from .models import School, AdoptionOpportunityRecord, Partner, SalesforceForms, ResourceDownload, SavingsNumber
 from rest_framework import serializers
 
 
 class SchoolSerializer(serializers.ModelSerializer):
+    research_agreement_active = serializers.SerializerMethodField()
+
+    def get_research_agreement_active(self, obj):
+        if obj.research_agreement_start_date and obj.research_agreement_end_date:
+            return obj.research_agreement_start_date <= date.today() <= obj.research_agreement_end_date
+        return False
 
     class Meta:
         model = School
         fields = ('id',
+                  'salesforce_id',
                   'name',
                   'phone',
                   'website',
+                  'industry',
                   'type',
                   'location',
                   'adoption_date',
@@ -32,11 +41,16 @@ class SchoolSerializer(serializers.ModelSerializer):
                   'physical_state_province',
                   'physical_zip_postal_code',
                   'long',
-                  'lat')
+                  'lat',
+                  'research_agreement_start_date',
+                  'research_agreement_end_date',
+                  'research_agreement_active')
         read_only_fields = ('id',
+                              'salesforce_id',
                               'name',
                               'phone',
                               'website',
+                              'industry',
                               'type',
                               'location',
                               'adoption_date',
@@ -58,7 +72,10 @@ class SchoolSerializer(serializers.ModelSerializer):
                               'physical_state_province',
                               'physical_zip_postal_code',
                               'long',
-                              'lat')
+                              'lat',
+                              'research_agreement_start_date',
+                              'research_agreement_end_date',
+                              'research_agreement_active')
 
 
 class AdoptionOpportunityRecordSerializer(serializers.ModelSerializer):
