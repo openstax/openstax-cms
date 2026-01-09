@@ -33,37 +33,12 @@
                 // Check if there's a block with type "landing" (displayed as "Landing Page")
                 var hasLandingPage = false;
                 
-                // Method 1: Check for the block type label "Landing Page" in the layout field
-                var $landingPageLabel = $layoutField.find('.c-sf-block_type').filter(function() {
-                    return $(this).text().trim() === 'Landing Page';
-                });
-                
-                if ($landingPageLabel.length > 0) {
-                    hasLandingPage = true;
-                } else {
-                    // Method 2: Check hidden inputs for block type value "landing"
-                    $layoutField.find('input[type="hidden"][name*="type"], input[type="hidden"][name*="block_type"]').each(function() {
-                        if ($(this).val() === 'landing') {
-                            hasLandingPage = true;
-                            return false; // break
-                        }
-                    });
-                    
-                    // Method 3: Check StreamField value directly via JSON data
-                    if (!hasLandingPage) {
-                        var $hiddenInput = $layoutField.find('input[type="hidden"][name*="layout"]');
-                        if ($hiddenInput.length > 0) {
-                            try {
-                                var streamValue = JSON.parse($hiddenInput.val() || '[]');
-                                if (Array.isArray(streamValue) && streamValue.length > 0) {
-                                    hasLandingPage = streamValue[0].type === 'landing';
-                                }
-                            } catch (e) {
-                                // JSON parse failed, continue with other methods
-                            }
-                        }
+                $layoutField.find('input[type="hidden"][name*="type"], input[type="hidden"][name*="block_type"]').each(function() {
+                    if ($(this).val() === 'landing') {
+                        hasLandingPage = true;
+                        return false; // break
                     }
-                }
+                });
                 
                 // Find the School field panel
                 // Try multiple selectors based on Wagtail panel structure
@@ -82,31 +57,6 @@
                         $schoolPanel = $found;
                         break;
                     }
-                }
-                
-                // If not found by ID, try finding by label/heading text "School"
-                // Scope search to the form container to avoid false matches
-                if (!$schoolPanel || $schoolPanel.length === 0) {
-                    var $formContainer = $('.w-form-width, .w-form, [class*="wagtail"]').first();
-                    if ($formContainer.length === 0) {
-                        $formContainer = $('form').first();
-                    }
-                    
-                    $formContainer.find('label, .w-panel_heading, h2, [data-panel-heading-text]').each(function() {
-                        var $el = $(this);
-                        var text = $el.text().trim();
-                        if (text.toLowerCase() === 'school') {
-                            $schoolPanel = $el.closest('.w-panel, section.w-panel');
-                            if ($schoolPanel.length > 0) {
-                                return false; // break
-                            }
-                        }
-                    });
-                }
-                
-                // Last resort: try finding by data-contentpath
-                if (!$schoolPanel || $schoolPanel.length === 0) {
-                    $schoolPanel = $('[data-contentpath="school"]').closest('.w-panel, section.w-panel');
                 }
                 
                 // Show or hide the School panel
@@ -146,13 +96,6 @@
                     characterData: true
                 });
             }
-            
-            // Fallback: Also check periodically (with debouncing)
-            var checkTimeout;
-            $(document).on('change click input', '[data-contentpath="layout"]', function() {
-                clearTimeout(checkTimeout);
-                checkTimeout = setTimeout(checkAndToggleSchoolField, 200);
-            });
         });
     };
     
