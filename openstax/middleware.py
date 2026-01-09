@@ -126,7 +126,7 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
                 <meta property="og:title" content="{display_title}">
                 <meta property="og:description" content="{page.search_description}">
                 <meta property="og:image" content="{image_url}">
-                <meta property="og:image:alt" content="{display_title}">
+                <meta property="og:image:alt" content="OpenStax: {display_title}">
                 <meta name="twitter:card" content="summary_large_image">
                 <meta name="twitter:site" content="@OpenStax">
                 <meta name="twitter:title" content="{display_title}">
