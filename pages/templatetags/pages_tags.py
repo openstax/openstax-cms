@@ -1,5 +1,6 @@
 from django import template
 from wagtail.fields import StreamField, RichTextField
+from wagtail.rich_text import RichText
 from django.db.models import CharField, TextField
 
 register = template.Library()
@@ -15,7 +16,7 @@ def extract_content(value):
         value:
             The value to extract text from. This can be:
             - Primitive types such as ``str``, ``int``, or ``float``.
-            - Wagtail RichText-like objects (anything with a ``.source`` attribute).
+            - Wagtail ``RichText`` objects (from ``wagtail.rich_text``).
             - Iterable values representing StreamField data (e.g. ``StreamValue``,
               ``ListValue`` or plain lists/tuples). Items that look like
               StreamField children (having ``value`` and ``block_type`` attributes)
@@ -50,7 +51,7 @@ def extract_content(value):
         return str(value)
 
     # RichText objects
-    if hasattr(value, 'source'):
+    if isinstance(value, RichText):
         return value.source
 
     # Handle StructValue and plain dicts before checking for general iterables.
