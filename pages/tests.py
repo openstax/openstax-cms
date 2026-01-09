@@ -912,7 +912,6 @@ class TemplateTagTests(WagtailPageTestCase):
         self.assertNotIn("key2", result)
         self.assertNotIn("key3", result)
 
-
     def test_get_page_content_returns_proper_structure(self):
         """Test that get_page_content returns items with correct structure"""
         from django.template import Context, Template
