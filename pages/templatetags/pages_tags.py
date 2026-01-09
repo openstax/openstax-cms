@@ -6,7 +6,40 @@ register = template.Library()
 
 def extract_content(value):
     """
-    Recursively extract text content from StreamField values, StructBlocks, lists, etc.
+    Recursively extract text content from various Wagtail/Django field values.
+
+    This helper is used to normalize content from complex structures such as
+    StreamField and StructBlock values into a plain text string.
+
+    Args:
+        value:
+            The value to extract text from. This can be:
+            - Primitive types such as ``str``, ``int``, or ``float``.
+            - Wagtail RichText-like objects (anything with a ``.source`` attribute).
+            - Iterable values representing StreamField data (e.g. ``StreamValue``,
+              ``ListValue`` or plain lists/tuples). Items that look like
+              StreamField children (having ``value`` and ``block_type`` attributes)
+              are unwrapped via their ``.value`` attribute.
+            - Struct-like values (e.g. ``StructValue`` or dict-like objects with
+              a ``.values()`` method), whose child values are processed recursively.
+            - ``None``, which is treated as empty content.
+
+    Returns:
+        str: A string containing the concatenated text content extracted from
+        ``value`` and any nested structures. Returns an empty string if no
+        textual content is found.
+
+    Example:
+        >>> extract_content("Title")
+        'Title'
+        >>> extract_content(None)
+        ''
+        >>> extract_content([{"foo": "bar"}, "baz"])
+        'bar\nbaz'
+
+    Edge cases:
+        - Empty iterables or structures yield an empty string.
+        - Unknown object types are converted to text with ``str(value)``.
     """
     if value is None:
         return ""
