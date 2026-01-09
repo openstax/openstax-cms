@@ -46,6 +46,6 @@ class FacultyResourcesSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Book
-        fields = ('book_video_faculty_resources','book_orientation_faculty_resources','book_faculty_resources')
-        read_only_fields = ('book_video_faculty_resources','book_orientation_faculty_resources','book_faculty_resources')
+        fields = ('book_video_faculty_resources','book_orientation_faculty_resources','book_faculty_resources','audiobook_link')
+        read_only_fields = ('book_video_faculty_resources','book_orientation_faculty_resources','book_faculty_resources','audiobook_link')
         depth=2
