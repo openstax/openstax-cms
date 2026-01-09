@@ -112,6 +112,8 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
     def build_template(self, page, page_url):
         page_url = page_url.rstrip('/')
         image_url = self.image_url(page.promote_image)
+        # Use seo_title if available, otherwise fall back to title
+        display_title = page.seo_title if page.seo_title else page.title
         return f'''<!DOCTYPE html>
             <html>
             <head>
@@ -121,13 +123,13 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
                 <link rel="canonical" href="{page_url}">
                 <meta property="og:url" content="{page_url}">
                 <meta property="og:type" content="article">
-                <meta property="og:title" content="{page.title}">
+                <meta property="og:title" content="{display_title}">
                 <meta property="og:description" content="{page.search_description}">
                 <meta property="og:image" content="{image_url}">
-                <meta property="og:image:alt" content="{page.title}">
+                <meta property="og:image:alt" content="OpenStax: {display_title}">
                 <meta name="twitter:card" content="summary_large_image">
                 <meta name="twitter:site" content="@OpenStax">
-                <meta name="twitter:title" content="{page.title}">
+                <meta name="twitter:title" content="{display_title}">
                 <meta name="twitter:description" content="{page.search_description}">
                 <meta name="twitter:image" content="{image_url}">
                 <meta name="twitter:image:alt" content="OpenStax">
