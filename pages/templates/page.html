@@ -1,4 +1,6 @@
-{% load wagtailimages_tags wagtailcore_tags static %}
+{% load wagtailimages_tags wagtailcore_tags static pages_tags %}
+{% get_page_content page as page_content %}
+
 
 {% image page.promote_image original as promote_image %}
 
@@ -25,6 +27,18 @@
     <meta name="twitter:image:alt" content="OpenStax">
 </head>
 <body>
-{% block content %}{% endblock %}
+{% block content %}
+<div id="app"></div>
+<noscript>
+    <div class="bot-content">
+        <h1>{{ page.title }}</h1>
+        {% for item in page_content %}
+            <div class="field-{{ item.name }}">
+                {{ item.value|linebreaks }}
+            </div>
+        {% endfor %}
+    </div>
+</noscript>
+{% endblock %}
 </body>
 </html>
