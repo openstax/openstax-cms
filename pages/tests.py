@@ -711,10 +711,6 @@ class TemplateTagTests(WagtailPageTestCase):
 
     def setUp(self):
         """Set up test data"""
-        from django.template import Context, Template
-        from wagtail.rich_text import RichText
-        from wagtail import blocks
-        
         mock_user_login()
         
         # Get root page
@@ -729,10 +725,6 @@ class TemplateTagTests(WagtailPageTestCase):
             features_headline="Features Test",
         )
         root_page.add_child(instance=self.test_page)
-        
-        # Store template for rendering
-        self.template = Template
-        self.context = Context
 
     def test_get_page_content_extracts_char_field(self):
         """Test that get_page_content extracts CharField values"""
@@ -823,20 +815,14 @@ class TemplateTagTests(WagtailPageTestCase):
     def test_get_page_content_handles_empty_values(self):
         """Test that get_page_content filters out empty values"""
         from django.template import Context, Template
+        from pages.templatetags.pages_tags import get_page_content
         
-        template = Template('{% load pages_tags %}{% get_page_content page as content %}{% for item in content %}{% if item.value %}has_value{% endif %}{% endfor %}')
-        context = Context({'page': self.test_page})
-        result = template.render(context)
+        # Get content directly using the template tag function
+        content = get_page_content(Context({'page': self.test_page}), self.test_page)
         
-        # All returned items should have values
-        if 'has_value' in result:
-            # Count how many items have values
-            count = result.count('has_value')
-            # Get total items
-            template2 = Template('{% load pages_tags %}{% get_page_content page as content %}{{ content|length }}')
-            total = int(template2.render(context))
-            # All items should have values
-            self.assertEqual(count, total)
+        # All returned items should have non-empty values
+        for item in content:
+            self.assertTrue(item['value'].strip(), f"Item {item['name']} has empty value")
 
     def test_get_page_content_with_none_page(self):
         """Test that get_page_content handles None page gracefully"""
