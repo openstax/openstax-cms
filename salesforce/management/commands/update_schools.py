@@ -23,7 +23,9 @@ class Command(BaseCommand):
                                 "BillingPostalCode, " \
                                 "BillingCountry, " \
                                 "BillingLatitude, " \
-                                "BillingLongitude " \
+                                "BillingLongitude, " \
+                                "Research_Agreement_Start_Date__c, " \
+                                "Research_Agreement_End_Date__c " \
                                 "FROM Account WHERE Industry = 'HE' OR Industry = 'K12'", lazy_operation=True)
             sf_schools = []
             for list_results in fetch_results:
@@ -54,6 +56,8 @@ class Command(BaseCommand):
                               'physical_zip_postal_code': sf_school['BillingPostalCode'],
                               'lat': sf_school['BillingLatitude'],
                               'long': sf_school['BillingLongitude'],
+                              'research_agreement_start_date': sf_school['Research_Agreement_Start_Date__c'],
+                              'research_agreement_end_date': sf_school['Research_Agreement_End_Date__c'],
                               },
                 )
 
