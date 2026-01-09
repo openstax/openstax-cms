@@ -65,6 +65,7 @@ def get_book_data(book):
             'kindle_link': book.kindle_link,
             'amazon_coming_soon': book.amazon_coming_soon,
             'amazon_link': book.amazon_link,
+            'audiobook_link': book.audiobook_link,
             'bookstore_coming_soon': book.bookstore_coming_soon,
             'comp_copy_available': book.comp_copy_available,
             'salesforce_abbreviation': book.salesforce_abbreviation,
@@ -768,6 +769,7 @@ class Book(Page):
     amazon_coming_soon = models.BooleanField(default=False, verbose_name="Individual Print Coming Soon")
     amazon_link = models.URLField(blank=True, verbose_name="Individual Print Link")
     amazon_iframe = models.TextField(blank=True, null=True, help_text='Amazon iframe code block')
+    audiobook_link = models.URLField(blank=True, verbose_name="Audiobook Link")
     kindle_link = models.URLField(blank=True, help_text="Link to Kindle version")
     chegg_link = models.URLField(blank=True, null=True, help_text="Link to Chegg e-reader")
     chegg_link_text = models.CharField(max_length=255, blank=True, null=True, help_text='Text for Chegg link.')
