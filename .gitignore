@@ -7,7 +7,6 @@
 /media
 /Vagrantfile.local
 openstax/settings/local.py
-openstax/settings/test_sqlite.py
 *.log
 /.idea
 /htmlcov
