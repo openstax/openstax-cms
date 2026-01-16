@@ -17,3 +17,4 @@ openstax/settings/local.py
 *.bk
 .vscode/settings.json
 .env
+db.sqlite3
