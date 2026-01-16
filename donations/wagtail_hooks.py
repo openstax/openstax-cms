@@ -39,7 +39,7 @@ class SiteMessagingModalsGroup(ModelAdminGroup):
     menu_label = 'Site Messaging Modals'
     menu_icon = 'doc-full-inverse'
     menu_order = 6000
-    items = (DonationPopupAdmin, FundraiserAdmin, GiveTodayAdmin, StickyNoteAdmin)
+    items = (DonationPopupAdmin, FundraiserAdmin, GiveTodayAdmin, StickyNoteAdmin,)
 
 
 modeladmin_register(SiteMessagingModalsGroup)
