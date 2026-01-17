@@ -2,7 +2,6 @@ from django.db import models
 from wagtail.contrib.settings.models import BaseSiteSetting, register_setting
 
 
-@register_setting(icon='doc-empty')
 class StickyNote(BaseSiteSetting):
     start = models.DateTimeField(null=True, help_text="Set the start date to override the content of the Give Sticky. Set the header and body below to change.")
     expires = models.DateTimeField(null=True, help_text="Set the date to expire overriding the content of the Give Sticky.")
@@ -38,7 +37,6 @@ class CloudfrontDistribution(BaseSiteSetting):
         verbose_name = 'CloudFront Distribution'
 
 
-@register_setting(icon='date')
 class GiveToday(BaseSiteSetting):
     give_link_text = models.CharField(max_length=255)
     give_link = models.URLField("Give link", blank=True, help_text="URL to Rice Give page or something similar")
