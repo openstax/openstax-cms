@@ -36,9 +36,9 @@ class StickyNoteAdmin(ModelAdmin):
 
 
 class SiteMessagingModalsGroup(ModelAdminGroup):
-    menu_label = 'Site Messaging Modals'
+    menu_label = 'Site Messaging'
     menu_icon = 'doc-full-inverse'
-    menu_order = 6000
+    menu_order = 600
     items = (DonationPopupAdmin, FundraiserAdmin, GiveTodayAdmin, StickyNoteAdmin,)
 
 
