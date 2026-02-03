@@ -2394,6 +2394,19 @@ class CreatorFestPage(Page):
 class PartnersPage(Page):
     heading = models.CharField(max_length=255)
     description = RichTextField()
+    header_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+'
+    )
+
+    def get_header_image(self):
+        return build_image_url(self.header_image)
+
+    header_image_url = property(get_header_image)
+
     partner_landing_page_link = models.CharField(max_length=255, null=True, blank=True,
                                                  help_text="Link text to partner landing page.")
     partner_request_info_link = models.CharField(max_length=255, null=True, blank=True,
@@ -2442,6 +2455,7 @@ class PartnersPage(Page):
         TitleFieldPanel('title', classname='full title', help_text="Internal name for page."),
         FieldPanel('heading'),
         FieldPanel('description'),
+        FieldPanel('header_image'),
         FieldPanel('partner_landing_page_link'),
         FieldPanel('partner_request_info_link'),
         FieldPanel('partner_full_partner_heading'),
@@ -2454,6 +2468,7 @@ class PartnersPage(Page):
         APIField('title'),
         APIField('heading'),
         APIField('description'),
+        APIField('header_image_url'),
         APIField('partner_landing_page_link'),
         APIField('partner_request_info_link'),
         APIField('partner_full_partner_heading'),
