@@ -11,6 +11,70 @@ from wagtail.rich_text import expand_db_html
 from books.models import get_book_data
 
 
+# --- Choice constants ---
+GRADIENT_DIRECTION_CHOICES = [
+    ('to_right', 'To Right'),
+    ('to_left', 'To Left'),
+    ('to_top', 'To Top'),
+    ('to_bottom', 'To Bottom'),
+    ('to_top_right', 'To Top Right'),
+    ('to_top_left', 'To Top Left'),
+    ('to_bottom_right', 'To Bottom Right'),
+    ('to_bottom_left', 'To Bottom Left'),
+]
+
+TEXT_ALIGNMENT_CHOICES = [
+    ('left', 'Left'),
+    ('center', 'Center'),
+    ('right', 'Right'),
+]
+
+FLEX_CHOICES = [
+    ('flex', 'Flex'),
+    ('flex_grow', 'Flex Grow'),
+    ('flex_shrink', 'Flex Shrink'),
+]
+
+CARDS_STYLE_CHOICES = [
+    ('rounded', 'Rounded'),
+    ('square', 'Square'),
+]
+
+
+# --- Helper factories ---
+def hex_color_block(help_text):
+    return blocks.RegexBlock(
+        regex=r'#[a-zA-Z0-9]{6}',
+        help_text=help_text,
+        error_mssages={'invalid': 'not a valid hex color.'}
+    )
+
+
+def gradient_config_options():
+    return [
+        ('gradient_color', hex_color_block('Sets the gradient end color. Must be hex eg: #ff0000.')),
+        ('gradient_direction', blocks.ChoiceBlock(
+            choices=GRADIENT_DIRECTION_CHOICES,
+            help_text='Direction of the gradient. Default to_right.',
+        )),
+    ]
+
+
+def gradient_block_counts():
+    return {
+        'gradient_color': {'max_num': 1},
+        'gradient_direction': {'max_num': 1},
+    }
+
+
+def id_config_block():
+    return blocks.RegexBlock(
+        regex=r'[a-zA-Z0-9\-_]',
+        help_text='HTML id of this element. not visible to users, but is visible in urls and is used to link to a certain part of the page with an anchor link. eg: cool_section',
+        error_mssages={'invalid': 'not a valid id.'}
+    )
+
+
 class APIRichTextBlock(blocks.RichTextBlock):
     def get_api_representation(self, value, context=None):
         representation = super().get_api_representation(value, context)
@@ -77,8 +141,10 @@ class CTALinkBlock(LinkInfoBlock):
             ('blue_outline', 'Blue Outline'),
             ('deep_green_outline', 'Deep Green Outline'),
         ], help_text='Specifies the button style. Default unspecified, meaning the first button in the block is orange and the second is white.')),
+        ('custom_color', hex_color_block('Custom color for the button. Must be hex eg: #ff0000.')),
     ], block_counts={
         'style': {'max_num': 1},
+        'custom_color': {'max_num': 1},
     }, required=False)
 
     class Meta:
@@ -97,9 +163,22 @@ class LinksGroupBlock(blocks.StructBlock):
             ('blue', 'Blue'),
             ('deep-green', 'Deep Green'),
         ], help_text="The color of the link buttons. Default white.")),
+        ('custom_color', hex_color_block('Custom color for the links. Must be hex eg: #ff0000.')),
+        ('size', blocks.ChoiceBlock(choices=[
+            ('small', 'Small'),
+            ('medium', 'Medium'),
+            ('large', 'Large'),
+        ], help_text='Size of the links. Default medium.')),
+        ('layout', blocks.ChoiceBlock(choices=[
+            ('horizontal', 'Horizontal'),
+            ('vertical', 'Vertical'),
+        ], help_text='Layout direction of the links. Default horizontal.')),
         ('analytics_label', blocks.CharBlock(required=False, help_text='Sets the "analytics nav" field for links within this group.')),
     ], block_counts={
         'color': {'max_num': 1},
+        'custom_color': {'max_num': 1},
+        'size': {'max_num': 1},
+        'layout': {'max_num': 1},
         'analytics_label': {'max_num': 1},
     }, required=False)
 
@@ -108,14 +187,23 @@ class LinksGroupBlock(blocks.StructBlock):
         label = "Links Group"
 
 class CTAButtonBarBlock(blocks.StructBlock):
+    description = blocks.CharBlock(required=False, help_text='Optional description text displayed alongside the buttons.')
     actions = blocks.ListBlock(
         CTALinkBlock(required=False, label="Button"),
         default=[], max_num=2, label='Actions'
     )
     config = blocks.StreamBlock([
         ('analytics_label', blocks.CharBlock(required=False, help_text='Sets the "analytics nav" field for links within this group.')),
+        ('layout', blocks.ChoiceBlock(choices=[
+            ('horizontal', 'Horizontal'),
+            ('vertical', 'Vertical'),
+            ('stacked', 'Stacked'),
+        ], help_text='Layout of the buttons. Default horizontal.')),
+        ('rendering_condition', blocks.CharBlock(required=False, help_text='Condition that determines if this block should render. eg: defined by the frontend.')),
     ], block_counts={
         'analytics_label': {'max_num': 1},
+        'layout': {'max_num': 1},
+        'rendering_condition': {'max_num': 1},
     }, required=False)
 
     class Meta:
@@ -143,7 +231,12 @@ class QuoteBlock(StructBlock):
     image = APIImageChooserBlock()
     content = blocks.RichTextBlock(help_text="The quote content.")
     name = blocks.CharBlock(help_text="The name of the person or entity to attribute the quote to.")
-    title = blocks.CharBlock(requred=False, help_text="Additional title or label about the quotee.")
+    title = blocks.CharBlock(required=False, help_text="Additional title or label about the quotee.")
+    config = blocks.StreamBlock([
+        ('accent_color', hex_color_block('Accent color for the quote. Must be hex eg: #ff0000.')),
+    ], block_counts={
+        'accent_color': {'max_num': 1},
+    }, required=False)
 
 
 class DividerBlock(StructBlock):
