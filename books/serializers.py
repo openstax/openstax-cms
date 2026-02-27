@@ -7,7 +7,9 @@ class FacultyResourcesSerializer(serializers.ModelSerializer):
         ret = super().to_representation(instance)
         request = self.context['request']
         x_param = request.GET.get('x', False)
-        
+
+        ret['book_faculty_resources'] = [r for r in ret['book_faculty_resources'] if not r.get('hidden')]
+
         book_faculty_resources = ret['book_faculty_resources']
         for resource in book_faculty_resources:
             # remove listing of linked book data
