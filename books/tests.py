@@ -1,9 +1,9 @@
 from wagtail.test.utils import WagtailPageTestCase
-from wagtail.models import Page
+from wagtail.models import Page, Site
 
 import snippets.models
 from pages.models import HomePage
-from books.models import BookIndex, Book, BookFacultyResources
+from books.models import BookIndex, Book, BookFacultyResources, BookStudentResources
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
 from salesforce.tests import openstax_vcr as vcr
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -37,6 +37,11 @@ class BookTests(WagtailPageTestCase):
                                )
         # add book index to homepage
         homepage.add_child(instance=book_index)
+
+        # Point the default site at our homepage so the Wagtail Pages API works
+        site = Site.objects.get(is_default_site=True)
+        site.root_page = homepage
+        site.save()
 
         test_image = SimpleUploadedFile(name='openstax.png', content=open("pages/static/images/openstax.png", 'rb').read())
         cls.test_doc = Document.objects.create(title='Test Doc', file=test_image)
@@ -185,6 +190,165 @@ class BookTests(WagtailPageTestCase):
 
             response = self.client.get('/apps/cms/api/books/resources/?slug=college-physics')
             self.assertIn(b'This book is retired', response.content)
+
+    def test_hidden_faculty_resources_filtered_from_resources_api(self):
+        """Hidden faculty resources should not appear in the resources API response."""
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            book = Book(title="University Physics",
+                        slug="university-physics-hidden",
+                        cnx_id='031da8d3-b525-429c-80cf-6c8ed997733a',
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test Book",
+                        cover=self.test_doc,
+                        title_image=self.test_doc,
+                        publish_date=datetime.date.today(),
+                        locale=root_page.locale
+                        )
+            book_index.add_child(instance=book)
+
+        faculty_resource = snippets.models.FacultyResource(heading="Visible Resource",
+                                                           description="Visible",
+                                                           unlocked_resource=False,
+                                                           creator_fest_resource=False)
+        faculty_resource.save()
+
+        hidden_faculty_resource = snippets.models.FacultyResource(heading="Hidden Resource",
+                                                                   description="Hidden",
+                                                                   unlocked_resource=False,
+                                                                   creator_fest_resource=False)
+        hidden_faculty_resource.save()
+
+        BookFacultyResources.objects.create(link_external="https://openstax.org",
+                                            link_text="Visible", resource=faculty_resource,
+                                            book_faculty_resource=book)
+        BookFacultyResources.objects.create(link_external="https://openstax.org/hidden",
+                                            link_text="Hidden", resource=hidden_faculty_resource,
+                                            book_faculty_resource=book, hidden=True)
+
+        response = self.client.get('/apps/cms/api/books/resources/?slug=university-physics-hidden')
+        self.assertEqual(len(response.data['book_faculty_resources']), 1)
+        self.assertEqual(response.data['book_faculty_resources'][0]['link_text'], 'Visible')
+
+    def test_hidden_faculty_resources_filtered_from_pages_api(self):
+        """HiddenFilterChildRelationField excludes hidden faculty resources from Wagtail Pages API."""
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            book = Book(title="University Physics",
+                        slug="university-physics-hidden-pages",
+                        cnx_id='031da8d3-b525-429c-80cf-6c8ed997733a',
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test Book",
+                        cover=self.test_doc,
+                        title_image=self.test_doc,
+                        publish_date=datetime.date.today(),
+                        locale=root_page.locale
+                        )
+            book_index.add_child(instance=book)
+
+        faculty_resource = snippets.models.FacultyResource(heading="Visible Resource",
+                                                           description="Visible",
+                                                           unlocked_resource=False,
+                                                           creator_fest_resource=False)
+        faculty_resource.save()
+
+        hidden_faculty_resource = snippets.models.FacultyResource(heading="Hidden Resource",
+                                                                   description="Hidden",
+                                                                   unlocked_resource=False,
+                                                                   creator_fest_resource=False)
+        hidden_faculty_resource.save()
+
+        BookFacultyResources.objects.create(link_external="https://openstax.org",
+                                            link_text="Visible", resource=faculty_resource,
+                                            book_faculty_resource=book)
+        BookFacultyResources.objects.create(link_external="https://openstax.org/hidden",
+                                            link_text="Hidden", resource=hidden_faculty_resource,
+                                            book_faculty_resource=book, hidden=True)
+
+        response = self.client.get('/apps/cms/api/v2/pages/{}/?fields=book_faculty_resources'.format(book.pk))
+        faculty_resources = response.data['book_faculty_resources']
+        self.assertEqual(len(faculty_resources), 1)
+        self.assertEqual(faculty_resources[0]['link_text'], 'Visible')
+
+    def test_hidden_student_resources_filtered_from_pages_api(self):
+        """HiddenFilterChildRelationField excludes hidden student resources from Wagtail Pages API."""
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            book = Book(title="University Physics",
+                        slug="university-physics-hidden-student",
+                        cnx_id='031da8d3-b525-429c-80cf-6c8ed997733a',
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test Book",
+                        cover=self.test_doc,
+                        title_image=self.test_doc,
+                        publish_date=datetime.date.today(),
+                        locale=root_page.locale
+                        )
+            book_index.add_child(instance=book)
+
+        student_resource = snippets.models.StudentResource(heading="Visible Student Resource",
+                                                            description="Visible",
+                                                            unlocked_resource=True)
+        student_resource.save()
+
+        hidden_student_resource = snippets.models.StudentResource(heading="Hidden Student Resource",
+                                                                    description="Hidden",
+                                                                    unlocked_resource=True)
+        hidden_student_resource.save()
+
+        BookStudentResources.objects.create(link_external="https://openstax.org",
+                                            link_text="Visible", resource=student_resource,
+                                            book_student_resource=book)
+        BookStudentResources.objects.create(link_external="https://openstax.org/hidden",
+                                            link_text="Hidden", resource=hidden_student_resource,
+                                            book_student_resource=book, hidden=True)
+
+        response = self.client.get('/apps/cms/api/v2/pages/{}/?fields=book_student_resources'.format(book.pk))
+        student_resources = response.data['book_student_resources']
+        self.assertEqual(len(student_resources), 1)
+        self.assertEqual(student_resources[0]['link_text'], 'Visible')
+
+    def test_non_hidden_resources_still_appear(self):
+        """Resources with hidden=False (default) should appear normally."""
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            book = Book(title="University Physics",
+                        slug="university-physics-not-hidden",
+                        cnx_id='031da8d3-b525-429c-80cf-6c8ed997733a',
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test Book",
+                        cover=self.test_doc,
+                        title_image=self.test_doc,
+                        publish_date=datetime.date.today(),
+                        locale=root_page.locale
+                        )
+            book_index.add_child(instance=book)
+
+        faculty_resource = snippets.models.FacultyResource(heading="Resource 1",
+                                                           description="First",
+                                                           unlocked_resource=False,
+                                                           creator_fest_resource=False)
+        faculty_resource.save()
+
+        faculty_resource_2 = snippets.models.FacultyResource(heading="Resource 2",
+                                                              description="Second",
+                                                              unlocked_resource=False,
+                                                              creator_fest_resource=False)
+        faculty_resource_2.save()
+
+        BookFacultyResources.objects.create(link_external="https://openstax.org/1",
+                                            link_text="First", resource=faculty_resource,
+                                            book_faculty_resource=book)
+        BookFacultyResources.objects.create(link_external="https://openstax.org/2",
+                                            link_text="Second", resource=faculty_resource_2,
+                                            book_faculty_resource=book)
+
+        response = self.client.get('/apps/cms/api/books/resources/?slug=university-physics-not-hidden')
+        self.assertEqual(len(response.data['book_faculty_resources']), 2)
 
     def test_audiobook_link_field(self):
         """Test that audiobook_link can be set and is included in API responses"""

@@ -18,10 +18,24 @@ from wagtail.admin.panels import TabbedInterface, ObjectList
 from wagtail.api import APIField
 from wagtail.models import Site
 
+from rest_framework.fields import Field
+
 from openstax.functions import build_document_url
 from books.constants import BOOK_STATES, BOOK_COVER_TEXT_COLOR, COVER_COLORS, CC_NC_SA_LICENSE_NAME, CC_BY_LICENSE_NAME, \
     CC_BY_LICENSE_URL, CC_NC_SA_LICENSE_URL, CC_NC_SA_LICENSE_VERSION, CC_BY_LICENSE_VERSION, K12_CATEGORIES
 import snippets.models as snippets
+
+
+class HiddenFilterChildRelationField(Field):
+    """Serializes child relation resources, excluding those with hidden=True."""
+
+    def to_representation(self, value):
+        serializer_class = self.parent.child_serializer_classes[self.field_name]
+        serializer = serializer_class(context=self.context)
+        return [
+            serializer.to_representation(child_object)
+            for child_object in value.filter(hidden=False)
+        ]
 
 
 def cleanhtml(raw_html):
@@ -249,6 +263,7 @@ class FacultyResources(models.Model):
     k12 = models.BooleanField(default=False, help_text="Add K12 banner to resource")
     display_on_k12 = models.BooleanField(default=False, help_text="Display resource on K12 subject pages")
     print_link = models.URLField(blank=True, null=True, help_text="Link for Buy Print link on resource")
+    hidden = models.BooleanField(default=False, help_text="Hide this resource from the live book page")
 
     def get_resource_category(self):
         return self.resource.resource_category
@@ -273,7 +288,8 @@ class FacultyResources(models.Model):
         APIField('k12'),
         APIField('display_on_k12'),
         APIField('print_link'),
-        APIField('resource_category')
+        APIField('resource_category'),
+        APIField('hidden')
     ]
 
     panels = [
@@ -288,7 +304,8 @@ class FacultyResources(models.Model):
         FieldPanel('featured'),
         FieldPanel('k12'),
         FieldPanel('display_on_k12'),
-        FieldPanel('print_link')
+        FieldPanel('print_link'),
+        FieldPanel('hidden')
     ]
 
 
@@ -356,6 +373,7 @@ class StudentResources(models.Model):
     updated = models.DateTimeField(blank=True, null=True, help_text='Late date resource was updated')
     print_link = models.URLField(blank=True, null=True, help_text="Link for Buy Print link on resource")
     display_on_k12 = models.BooleanField(default=False, help_text="Display resource on K12 subject pages")
+    hidden = models.BooleanField(default=False, help_text="Hide this resource from the live book page")
 
     def get_resource_category(self):
         return self.resource.resource_category
@@ -376,7 +394,8 @@ class StudentResources(models.Model):
         APIField('updated'),
         APIField('print_link'),
         APIField('display_on_k12'),
-        APIField('resource_category')
+        APIField('resource_category'),
+        APIField('hidden')
     ]
 
     panels = [
@@ -388,7 +407,8 @@ class StudentResources(models.Model):
         FieldPanel('coming_soon_text'),
         FieldPanel('updated'),
         FieldPanel('print_link'),
-        FieldPanel('display_on_k12')
+        FieldPanel('display_on_k12'),
+        FieldPanel('hidden')
     ]
 
 
@@ -952,8 +972,8 @@ class Book(Page):
         APIField('cover_color'),
         APIField('book_cover_text_color'),
         APIField('reverse_gradient'),
-        APIField('book_student_resources'),
-        APIField('book_faculty_resources'),
+        APIField('book_student_resources', serializer=HiddenFilterChildRelationField()),
+        APIField('book_faculty_resources', serializer=HiddenFilterChildRelationField()),
         APIField('publish_date'),
         APIField('authors'),
         APIField('print_isbn_13'),
