@@ -1,5 +1,5 @@
 from wagtail.test.utils import WagtailPageTestCase
-from wagtail.models import Page
+from wagtail.models import Page, Site
 
 import snippets.models
 from pages.models import HomePage
@@ -37,6 +37,11 @@ class BookTests(WagtailPageTestCase):
                                )
         # add book index to homepage
         homepage.add_child(instance=book_index)
+
+        # Point the default site at our homepage so the Wagtail Pages API works
+        site = Site.objects.get(is_default_site=True)
+        site.root_page = homepage
+        site.save()
 
         test_image = SimpleUploadedFile(name='openstax.png', content=open("pages/static/images/openstax.png", 'rb').read())
         cls.test_doc = Document.objects.create(title='Test Doc', file=test_image)
@@ -226,13 +231,13 @@ class BookTests(WagtailPageTestCase):
         self.assertEqual(len(response.data['book_faculty_resources']), 1)
         self.assertEqual(response.data['book_faculty_resources'][0]['link_text'], 'Visible')
 
-    def test_hidden_faculty_resources_filtered_by_queryset(self):
-        """The hidden=True filter correctly excludes faculty resources at the queryset level."""
+    def test_hidden_faculty_resources_filtered_from_pages_api(self):
+        """HiddenFilterChildRelationField excludes hidden faculty resources from Wagtail Pages API."""
         with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
             book_index = BookIndex.objects.all()[0]
             root_page = Page.objects.get(title="Root")
             book = Book(title="University Physics",
-                        slug="university-physics-hidden-qs",
+                        slug="university-physics-hidden-pages",
                         cnx_id='031da8d3-b525-429c-80cf-6c8ed997733a',
                         salesforce_book_id='a0ZU0000008pyvQMAQ',
                         description="Test Book",
@@ -262,15 +267,13 @@ class BookTests(WagtailPageTestCase):
                                             link_text="Hidden", resource=hidden_faculty_resource,
                                             book_faculty_resource=book, hidden=True)
 
-        # This is the same filter used by HiddenFilterChildRelationField
-        visible = book.book_faculty_resources.filter(hidden=False)
-        all_resources = book.book_faculty_resources.all()
-        self.assertEqual(all_resources.count(), 2)
-        self.assertEqual(visible.count(), 1)
-        self.assertEqual(visible.first().link_text, 'Visible')
+        response = self.client.get('/apps/cms/api/v2/pages/{}/?fields=book_faculty_resources'.format(book.pk))
+        faculty_resources = response.data['book_faculty_resources']
+        self.assertEqual(len(faculty_resources), 1)
+        self.assertEqual(faculty_resources[0]['link_text'], 'Visible')
 
-    def test_hidden_student_resources_filtered_by_queryset(self):
-        """The hidden=True filter correctly excludes student resources at the queryset level."""
+    def test_hidden_student_resources_filtered_from_pages_api(self):
+        """HiddenFilterChildRelationField excludes hidden student resources from Wagtail Pages API."""
         with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
             book_index = BookIndex.objects.all()[0]
             root_page = Page.objects.get(title="Root")
@@ -303,12 +306,10 @@ class BookTests(WagtailPageTestCase):
                                             link_text="Hidden", resource=hidden_student_resource,
                                             book_student_resource=book, hidden=True)
 
-        # This is the same filter used by HiddenFilterChildRelationField
-        visible = book.book_student_resources.filter(hidden=False)
-        all_resources = book.book_student_resources.all()
-        self.assertEqual(all_resources.count(), 2)
-        self.assertEqual(visible.count(), 1)
-        self.assertEqual(visible.first().link_text, 'Visible')
+        response = self.client.get('/apps/cms/api/v2/pages/{}/?fields=book_student_resources'.format(book.pk))
+        student_resources = response.data['book_student_resources']
+        self.assertEqual(len(student_resources), 1)
+        self.assertEqual(student_resources[0]['link_text'], 'Visible')
 
     def test_non_hidden_resources_still_appear(self):
         """Resources with hidden=False (default) should appear normally."""
