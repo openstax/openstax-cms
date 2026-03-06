@@ -275,6 +275,11 @@ INSTALLED_APPS = [
 ####################
 
 WAGTAILTRANSFER_SECRET_KEY = os.getenv('WAGTAILTRANSFER_SECRET_KEY', 'change-me-in-production')
+if ENVIRONMENT != 'local' and WAGTAILTRANSFER_SECRET_KEY == 'change-me-in-production':
+    raise RuntimeError(
+        "WAGTAILTRANSFER_SECRET_KEY must be set to a secure value in non-local environments. "
+        "Current value is the insecure default placeholder."
+    )
 
 # Configure sources to import content from.
 # Each environment should define the sources it can pull from.
@@ -285,6 +290,21 @@ WAGTAILTRANSFER_SOURCES = {}
 _transfer_source_name = os.getenv('WAGTAILTRANSFER_SOURCE_NAME')
 _transfer_source_url = os.getenv('WAGTAILTRANSFER_SOURCE_URL')
 _transfer_source_key = os.getenv('WAGTAILTRANSFER_SOURCE_KEY')
+_transfer_vars = {
+    'WAGTAILTRANSFER_SOURCE_NAME': _transfer_source_name,
+    'WAGTAILTRANSFER_SOURCE_URL': _transfer_source_url,
+    'WAGTAILTRANSFER_SOURCE_KEY': _transfer_source_key,
+}
+_set_vars = {name for name, value in _transfer_vars.items() if value}
+if _set_vars and len(_set_vars) != len(_transfer_vars):
+    missing = sorted(set(_transfer_vars.keys()) - _set_vars)
+    raise RuntimeError(
+        "Invalid Wagtail Transfer source configuration: "
+        "the environment variables WAGTAILTRANSFER_SOURCE_NAME, "
+        "WAGTAILTRANSFER_SOURCE_URL, and WAGTAILTRANSFER_SOURCE_KEY "
+        "must either all be set or all be unset. "
+        f"Currently missing: {', '.join(missing)}."
+    )
 if _transfer_source_name and _transfer_source_url and _transfer_source_key:
     WAGTAILTRANSFER_SOURCES[_transfer_source_name] = {
         'BASE_URL': _transfer_source_url,
