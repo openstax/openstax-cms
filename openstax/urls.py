@@ -14,6 +14,7 @@ from news.feeds import RssBlogFeed, AtomBlogFeed
 
 from api import urls as api_urls
 from global_settings.views import throw_error, clear_entire_cache, sitemap
+from pages.views import pardot_form_submit
 
 admin.site.site_header = 'OpenStax'
 
@@ -43,6 +44,7 @@ urlpatterns = [
     path('apps/cms/api/webinars/', include('webinars.urls')),
     path('apps/cms/api/donations/', include('donations.urls')),
     path('apps/cms/api/oxmenus/', include('oxmenus.urls')),
+    path('apps/cms/api/pardot-forms/<int:page_id>/submit/', pardot_form_submit, name='pardot_form_submit'),
 
     # route everything to /api/spike also...
     path('apps/cms/api/spike/', include(wagtail_urls)),

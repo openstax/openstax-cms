@@ -11,6 +11,9 @@ from wagtail.fields import RichTextField, StreamField
 from wagtail.models import Orderable, Page
 from wagtail.api import APIField
 from wagtail.models import Site
+from wagtail.contrib.forms.models import AbstractForm, AbstractFormField
+
+from rest_framework.fields import Field
 
 from api.models import FeatureFlag
 from openstax.functions import build_image_url, build_document_url
@@ -112,8 +115,14 @@ BASE_CONTENT_BLOCKS = [
     ], label="Books Block")),
 ]
 
+# Pardot form embed — lets editors pick a PardotFormPage to embed in a section
+PARDOT_FORM_BLOCK = ('pardot_form', blocks.PageChooserBlock(
+    page_type='pages.PardotFormPage',
+    label="Pardot Form",
+))
+
 # Layer 2: Content blocks + well (well references BASE, not itself)
-SECTION_CONTENT_BLOCKS = BASE_CONTENT_BLOCKS + [
+SECTION_CONTENT_BLOCKS = BASE_CONTENT_BLOCKS + [PARDOT_FORM_BLOCK] + [
     ('well', blocks.StructBlock([
         ('content', blocks.StreamBlock(BASE_CONTENT_BLOCKS)),
         ('config', blocks.StreamBlock([
@@ -374,7 +383,7 @@ class RootPage(Page):
 # subclass of RootPage with a few overrides for subpages
 class FlexPage(RootPage):
     parent_page_types = ['pages.RootPage', 'pages.FlexPage']
-    subpage_types = ['pages.FlexPage']
+    subpage_types = ['pages.FlexPage', 'pages.PardotFormPage']
     template = 'page.html'
     max_count = None
 
@@ -3684,3 +3693,70 @@ class Assignable(Page):
     parent_page_type = ['pages.HomePage']
     template = 'page.html'
     max_count = 1
+
+
+# --- Pardot Form Builder ---
+
+class FormFieldsSerializer(Field):
+    """Serializes PardotFormPage form_fields for the API response."""
+    def to_representation(self, value):
+        return [
+            {
+                'label': field.label,
+                'field_type': field.field_type,
+                'required': field.required,
+                'choices': field.choices,
+                'default_value': field.default_value,
+                'help_text': field.help_text,
+                'pardot_field_name': field.pardot_field_name,
+            }
+            for field in value.all()
+        ]
+
+
+class PardotFormField(AbstractFormField):
+    page = ParentalKey(
+        'PardotFormPage',
+        on_delete=models.CASCADE,
+        related_name='form_fields',
+    )
+    pardot_field_name = models.CharField(
+        max_length=255,
+        help_text="The Pardot external field name used as the POST parameter (e.g. email, firstName, company).",
+    )
+
+    panels = AbstractFormField.panels + [
+        FieldPanel('pardot_field_name'),
+    ]
+
+
+class PardotFormPage(AbstractForm):
+    pardot_form_handler_url = models.URLField(
+        help_text="The Pardot form handler endpoint URL.",
+    )
+    intro = RichTextField(blank=True, help_text="Introductory text displayed above the form.")
+    thank_you_text = RichTextField(blank=True, help_text="Text displayed after a successful submission.")
+    submit_button_text = models.CharField(max_length=255, default="Submit")
+
+    content_panels = AbstractForm.content_panels + [
+        FieldPanel('intro'),
+        InlinePanel('form_fields', label="Form Fields"),
+        FieldPanel('submit_button_text'),
+        FieldPanel('thank_you_text'),
+        FieldPanel('pardot_form_handler_url'),
+    ]
+
+    api_fields = [
+        APIField('pardot_form_handler_url'),
+        APIField('intro'),
+        APIField('thank_you_text'),
+        APIField('submit_button_text'),
+        APIField('form_fields', serializer=FormFieldsSerializer()),
+    ]
+
+    parent_page_types = ['pages.FlexPage', 'pages.RootPage']
+    subpage_types = []
+    template = 'page.html'
+
+    class Meta:
+        verbose_name = "Pardot Form Page"
