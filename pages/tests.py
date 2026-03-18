@@ -1126,7 +1126,7 @@ class PardotFormSubmitTests(PardotFormPageTestMixin, TestCase):
     def _submit(self, page_id=None, data=None):
         return self.client.post(
             f'/apps/cms/api/pardot-forms/{page_id or self.form_page.id}/submit/',
-            data=data or {},
+            data=json.dumps(data or {}),
             content_type='application/json',
         )
 
