@@ -10,6 +10,7 @@ from pages import models as page_models
 
 from shared.test_utilities import mock_user_login
 from http import cookies
+from wagtail.contrib.forms.models import FormSubmission
 
 class TestRootPage(unittest.TestCase):
 
@@ -930,3 +931,285 @@ class TemplateTagTests(WagtailPageTestCase):
             self.assertIsInstance(item['name'], str, "Item name should be a string")
             self.assertIsInstance(item['type'], str, "Item type should be a string")
             self.assertIsInstance(item['value'], str, "Item value should be a string")
+
+
+class PardotFormPageTestMixin:
+    """Shared setup for Pardot form tests — creates a page tree under the default Wagtail Site."""
+
+    def _set_up_pardot_tree(self):
+        mock_user_login()
+        # Use the default site's root page so the API can find pages
+        from wagtail.models import Site
+        site = Site.objects.get(is_default_site=True)
+        self.site_root = site.root_page
+
+        self.root = page_models.RootPage(title="Pardot Home", slug="pardot-home")
+        self.site_root.add_child(instance=self.root)
+        self.flex = page_models.FlexPage(title="Marketing", slug="pardot-marketing")
+        self.root.add_child(instance=self.flex)
+
+    def _create_form_page(self, parent=None, **kwargs):
+        defaults = {
+            'title': 'Request a Demo',
+            'slug': 'request-demo',
+            'pardot_form_handler_url': 'https://go.pardot.com/l/123/form-handler',
+            'intro': '<p>Fill out the form below.</p>',
+            'thank_you_text': '<p>Thanks!</p>',
+            'submit_button_text': 'Request Demo',
+        }
+        defaults.update(kwargs)
+        page = page_models.PardotFormPage(**defaults)
+        (parent or self.flex).add_child(instance=page)
+        return page
+
+
+class PardotFormPageTests(PardotFormPageTestMixin, WagtailPageTestCase):
+    """Tests for PardotFormPage model and page hierarchy."""
+
+    def setUp(self):
+        self._set_up_pardot_tree()
+
+    def test_can_create_under_flex_page(self):
+        self.assertCanCreateAt(page_models.FlexPage, page_models.PardotFormPage)
+
+    def test_can_create_under_root_page(self):
+        self.assertCanCreateAt(page_models.RootPage, page_models.PardotFormPage)
+
+    def test_cannot_create_under_homepage(self):
+        self.assertCanNotCreateAt(page_models.HomePage, page_models.PardotFormPage)
+
+    def test_cannot_have_children(self):
+        self.assertAllowedSubpageTypes(page_models.PardotFormPage, {})
+
+    def test_create_and_retrieve(self):
+        page = self._create_form_page()
+        retrieved = Page.objects.get(id=page.id).specific
+        self.assertEqual(retrieved.title, 'Request a Demo')
+        self.assertEqual(retrieved.pardot_form_handler_url, 'https://go.pardot.com/l/123/form-handler')
+        self.assertEqual(retrieved.submit_button_text, 'Request Demo')
+
+    def test_form_fields(self):
+        page = self._create_form_page()
+        page_models.PardotFormField.objects.create(
+            page=page,
+            label='First Name',
+            field_type='singleline',
+            required=True,
+            pardot_field_name='firstName',
+            sort_order=0,
+        )
+        page_models.PardotFormField.objects.create(
+            page=page,
+            label='Email',
+            field_type='email',
+            required=True,
+            pardot_field_name='email',
+            help_text='Your work email',
+            sort_order=1,
+        )
+        fields = page.get_form_fields()
+        self.assertEqual(fields.count(), 2)
+        self.assertEqual(fields.first().pardot_field_name, 'firstName')
+
+    def test_submit_button_text_default(self):
+        fresh = page_models.PardotFormPage(
+            title='Test',
+            slug='test-default',
+            pardot_form_handler_url='https://example.com/handler',
+        )
+        self.assertEqual(fresh.submit_button_text, 'Submit')
+
+
+class PardotFormAPITests(PardotFormPageTestMixin, WagtailPageTestCase):
+    """Tests for PardotFormPage API serialization."""
+
+    def setUp(self):
+        self._set_up_pardot_tree()
+
+        self.form_page = self._create_form_page()
+
+        page_models.PardotFormField.objects.create(
+            page=self.form_page,
+            label='First Name',
+            field_type='singleline',
+            required=True,
+            pardot_field_name='firstName',
+            sort_order=0,
+        )
+        page_models.PardotFormField.objects.create(
+            page=self.form_page,
+            label='Email',
+            field_type='email',
+            required=True,
+            pardot_field_name='email',
+            help_text='Your work email',
+            sort_order=1,
+        )
+        page_models.PardotFormField.objects.create(
+            page=self.form_page,
+            label='Company',
+            field_type='singleline',
+            required=False,
+            pardot_field_name='company',
+            sort_order=2,
+        )
+
+    def test_api_returns_form_page(self):
+        response = self.client.get(f'/apps/cms/api/v2/pages/{self.form_page.id}/')
+        self.assertEqual(response.status_code, 200)
+        data = response.json()
+        self.assertEqual(data['meta']['type'], 'pages.PardotFormPage')
+        self.assertEqual(data['pardot_form_handler_url'], 'https://go.pardot.com/l/123/form-handler')
+        self.assertEqual(data['submit_button_text'], 'Request Demo')
+        self.assertIn('Fill out the form', data['intro'])
+        self.assertIn('Thanks!', data['thank_you_text'])
+
+    def test_api_returns_form_fields(self):
+        response = self.client.get(f'/apps/cms/api/v2/pages/{self.form_page.id}/')
+        data = response.json()
+        fields = data['form_fields']
+        self.assertEqual(len(fields), 3)
+
+        self.assertEqual(fields[0]['label'], 'First Name')
+        self.assertEqual(fields[0]['field_type'], 'singleline')
+        self.assertTrue(fields[0]['required'])
+        self.assertEqual(fields[0]['pardot_field_name'], 'firstName')
+
+        self.assertEqual(fields[1]['label'], 'Email')
+        self.assertEqual(fields[1]['field_type'], 'email')
+        self.assertEqual(fields[1]['help_text'], 'Your work email')
+        self.assertEqual(fields[1]['pardot_field_name'], 'email')
+
+        self.assertFalse(fields[2]['required'])
+        self.assertEqual(fields[2]['pardot_field_name'], 'company')
+
+
+class PardotFormSubmitTests(PardotFormPageTestMixin, TestCase):
+    """Tests for the pardot form submission endpoint."""
+
+    def setUp(self):
+        self._set_up_pardot_tree()
+
+        self.form_page = self._create_form_page(
+            title='Contact Us',
+            slug='contact-us',
+            pardot_form_handler_url='https://go.pardot.com/l/456/form-handler',
+            intro='<p>Contact.</p>',
+            thank_you_text='<p>Thanks!</p>',
+        )
+
+        page_models.PardotFormField.objects.create(
+            page=self.form_page,
+            label='First Name',
+            field_type='singleline',
+            required=True,
+            pardot_field_name='firstName',
+            sort_order=0,
+        )
+        page_models.PardotFormField.objects.create(
+            page=self.form_page,
+            label='Email',
+            field_type='email',
+            required=True,
+            pardot_field_name='email',
+            sort_order=1,
+        )
+        page_models.PardotFormField.objects.create(
+            page=self.form_page,
+            label='Company',
+            field_type='singleline',
+            required=False,
+            pardot_field_name='company',
+            sort_order=2,
+        )
+
+    def _submit(self, page_id=None, data=None):
+        return self.client.post(
+            f'/apps/cms/api/pardot-forms/{page_id or self.form_page.id}/submit/',
+            data=json.dumps(data or {}),
+            content_type='application/json',
+        )
+
+    def test_successful_submission(self):
+        response = self._submit(data={
+            'first_name': 'Jane',
+            'email': 'jane@example.com',
+            'company': 'Acme',
+        })
+        self.assertEqual(response.status_code, 201)
+        self.assertEqual(FormSubmission.objects.filter(page=self.form_page).count(), 1)
+
+        submission = FormSubmission.objects.get(page=self.form_page)
+        saved = json.loads(submission.form_data)
+        self.assertEqual(saved['first_name'], 'Jane')
+        self.assertEqual(saved['email'], 'jane@example.com')
+        self.assertEqual(saved['company'], 'Acme')
+
+    def test_submission_filters_unknown_fields(self):
+        response = self._submit(data={
+            'first_name': 'Jane',
+            'email': 'jane@example.com',
+            'hacker_field': 'malicious',
+        })
+        self.assertEqual(response.status_code, 201)
+        submission = FormSubmission.objects.get(page=self.form_page)
+        saved = json.loads(submission.form_data)
+        self.assertNotIn('hacker_field', saved)
+
+    def test_missing_required_field(self):
+        response = self._submit(data={
+            'first_name': 'Jane',
+            # missing email
+        })
+        self.assertEqual(response.status_code, 400)
+        self.assertIn('error', response.json())
+        self.assertEqual(FormSubmission.objects.filter(page=self.form_page).count(), 0)
+
+    def test_empty_submission(self):
+        response = self._submit(data={})
+        self.assertEqual(response.status_code, 400)
+
+    def test_invalid_page_id(self):
+        response = self._submit(page_id=99999)
+        self.assertEqual(response.status_code, 404)
+
+    def test_optional_fields_can_be_omitted(self):
+        response = self._submit(data={
+            'first_name': 'Jane',
+            'email': 'jane@example.com',
+        })
+        self.assertEqual(response.status_code, 201)
+
+
+class FormFieldsSerializerTests(PardotFormPageTestMixin, TestCase):
+    """Tests for the FormFieldsSerializer."""
+
+    def setUp(self):
+        self._set_up_pardot_tree()
+
+    def test_serializes_all_field_attributes(self):
+        form_page = self._create_form_page(slug='test-ser')
+
+        page_models.PardotFormField.objects.create(
+            page=form_page,
+            label='Country',
+            field_type='dropdown',
+            required=True,
+            choices='US,UK,CA',
+            default_value='US',
+            help_text='Select your country',
+            pardot_field_name='country',
+            sort_order=0,
+        )
+
+        serializer = page_models.FormFieldsSerializer()
+        result = serializer.to_representation(form_page.form_fields)
+        self.assertEqual(len(result), 1)
+        field = result[0]
+        self.assertEqual(field['label'], 'Country')
+        self.assertEqual(field['field_type'], 'dropdown')
+        self.assertTrue(field['required'])
+        self.assertEqual(field['choices'], 'US,UK,CA')
+        self.assertEqual(field['default_value'], 'US')
+        self.assertEqual(field['help_text'], 'Select your country')
+        self.assertEqual(field['pardot_field_name'], 'country')
