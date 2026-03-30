@@ -485,6 +485,13 @@ WAGTAILEMBEDS_FINDERS = [
     }
 ]
 
+###########
+# PostHog #
+###########
+
+POSTHOG_API_KEY = os.getenv('POSTHOG_API_KEY', '')
+POSTHOG_HOST = os.getenv('POSTHOG_HOST', 'https://us.i.posthog.com')
+
 ##########
 # Sentry #
 ##########

@@ -152,6 +152,16 @@ def schools(request):
         if q:
             schools = schools.filter((Q(name__icontains=q) | Q(physical_city__icontains=q)| Q(physical_state_province__icontains=q)| Q(physical_country__icontains=q)))
 
+        from openstax.analytics import capture as track
+        track('school_searched', {
+            'query': q or '',
+            'name_filter': name or '',
+            'type_filter': type or '',
+            'country_filter': physical_country or '',
+            'state_filter': physical_state_province or '',
+            'result_count': schools.count(),
+        }, request=request)
+
         response = serializers.serialize("json", schools)
         return HttpResponse(response, content_type='application/json')
     else:
@@ -181,7 +191,12 @@ def customize_request(request):
     if request.method == 'POST':
         serializer = CustomizationRequestSerializer(data=request.data)
         if serializer.is_valid():
-            serializer.save()
+            instance = serializer.save()
+            from openstax.analytics import capture as track
+            track('customization_requested', {
+                'book': str(instance.book) if instance.book else '',
+                'num_students': instance.num_students,
+            }, request=request)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

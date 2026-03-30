@@ -5,6 +5,8 @@ from rest_framework.decorators import action
 from django.utils import timezone
 from django.http import JsonResponse
 
+from openstax.analytics import capture as track
+
 
 class ThankYouNoteViewSet(viewsets.ModelViewSet):
     serializer_class = ThankYouNoteSerializer
@@ -26,6 +28,12 @@ class ThankYouNoteViewSet(viewsets.ModelViewSet):
                                               consent_to_share_or_contact=consent_to_share_or_contact,
                                               contact_email_address=contact_email_address,
                                               source=source)
+
+        track('thank_you_note_submitted', {
+            'institution': institution,
+            'source': source,
+            'consent_to_share_or_contact': consent_to_share_or_contact,
+        }, request=request)
 
         serializer = ThankYouNoteSerializer(data=request.data)
         if serializer.is_valid():

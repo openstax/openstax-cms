@@ -33,7 +33,13 @@ class ResourceDownloadViewSet(viewsets.ModelViewSet):
     serializer_class = ResourceDownloadSerializer
 
     def perform_create(self, serializer):
-        serializer.save(last_access=timezone.now())
+        from openstax.analytics import capture as track
+        instance = serializer.save(last_access=timezone.now())
+        track('resource_downloaded', {
+            'book': str(instance.book) if instance.book else '',
+            'book_format': instance.book_format,
+            'resource_name': instance.resource_name,
+        }, request=self.request)
 
 
 class SavingsNumberViewSet(viewsets.ReadOnlyModelViewSet):
@@ -51,6 +57,7 @@ class SavingsNumberViewSet(viewsets.ReadOnlyModelViewSet):
 class AdoptionOpportunityRecordViewSet(viewsets.ViewSet):
     @action(methods=['get'], detail=True)
     def list(self, request):
+        from openstax.analytics import capture as track
         account_uuid = request.GET.get('account_uuid', False)
         # a user can have many adoption records - one for each book
         # 10/2024 - added new data that can be used on the form, will need coordination with the FE form
@@ -60,5 +67,10 @@ class AdoptionOpportunityRecordViewSet(viewsets.ViewSet):
         for record in queryset:
             book_list.append({"name": record.book_name , "students": str(record.students)})
         data = {"Books": book_list}
+
+        track('adoption_records_viewed', {
+            'book_count': len(book_list),
+            'books': [b['name'] for b in book_list],
+        }, request=request)
 
         return JsonResponse(data)

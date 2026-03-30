@@ -37,6 +37,12 @@ class ResourcesViewSet(viewsets.ViewSet):
             if queryset[0].book_state == 'retired':
                 raise NotFound('This book is retired. The latest version can be found at https://openstax.org')
 
+            from openstax.analytics import capture as track
+            track('book_resources_viewed', {
+                'book_slug': slug,
+                'book_title': str(queryset[0].title),
+            }, request=request)
+
             serializer = FacultyResourcesSerializer(queryset[0], context={'request': request})
             return Response(serializer.data)
         else:

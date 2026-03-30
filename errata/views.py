@@ -39,6 +39,15 @@ class ErrataView(ModelViewSet):
     filterset_class = ErrataFilter
     ordering_fields = ('id', 'resolution_date', 'created', 'modified', )
 
+    def perform_create(self, serializer):
+        from openstax.analytics import capture as track
+        instance = serializer.save()
+        track('errata_submitted', {
+            'book_title': str(instance.book) if instance.book else '',
+            'error_type': instance.error_type,
+            'resource': instance.resource,
+        }, request=self.request)
+
 class ErrataModelViewSet(WagtailModelViewSet):
     queryset = Errata.objects.prefetch_related("book")
     model = Errata
