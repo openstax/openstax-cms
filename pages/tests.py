@@ -541,7 +541,7 @@ class PageTests(WagtailPageTestCase):
         self.homepage.add_child(instance=form_page)
         self.assertCanCreateAt(page_models.HomePage, page_models.FormHeadings)
 
-        retrieved_page = Page.objects.get(id=form_page.id)
+        retrieved_page = Page.objects.get(id=form_page.id).specific
         self.assertEqual(retrieved_page.title, "Form Headings Page")
         self.assertEqual(retrieved_page.adoption_logged_in_intro_heading, 'Hi {{first_name}}')
         self.assertEqual(retrieved_page.adoption_logged_in_intro_description, 'Thanks {{first_name}}')
