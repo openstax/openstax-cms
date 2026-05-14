@@ -544,6 +544,7 @@ class PageTests(WagtailPageTestCase):
         retrieved_page = Page.objects.get(id=form_page.id)
         self.assertEqual(retrieved_page.title, "Form Headings Page")
         self.assertEqual(retrieved_page.adoption_logged_in_intro_heading, 'Hi {{first_name}}')
+        self.assertEqual(retrieved_page.adoption_logged_in_intro_description, 'Thanks {{first_name}}')
 
     def test_can_create_ally_logos_page(self):
         ally_page = page_models.AllyLogos(title='Ally Logos Page',
