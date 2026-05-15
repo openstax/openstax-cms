@@ -3203,8 +3203,19 @@ class Subject(Page):
 
 
 class FormHeadings(Page):
+    LOGGED_IN_HELP = (
+        'Optional. Shown to logged-in users instead of the default. '
+        'Supports tags: {{first_name}}, {{last_name}}, {{school}}.'
+    )
+
     adoption_intro_heading = models.CharField(max_length=255)
     adoption_intro_description = RichTextField()
+    adoption_logged_in_intro_heading = models.CharField(
+        max_length=255, blank=True, default='', help_text=LOGGED_IN_HELP
+    )
+    adoption_logged_in_intro_description = RichTextField(
+        blank=True, default='', help_text=LOGGED_IN_HELP
+    )
     interest_intro_heading = models.CharField(max_length=255)
     interest_intro_description = RichTextField()
     promote_image = models.ForeignKey(
@@ -3218,6 +3229,8 @@ class FormHeadings(Page):
     api_fields = [
         APIField('adoption_intro_heading'),
         APIField('adoption_intro_description'),
+        APIField('adoption_logged_in_intro_heading'),
+        APIField('adoption_logged_in_intro_description'),
         APIField('interest_intro_heading'),
         APIField('interest_intro_description'),
         APIField('seo_title'),
@@ -3229,6 +3242,8 @@ class FormHeadings(Page):
         TitleFieldPanel('title'),
         FieldPanel('adoption_intro_heading'),
         FieldPanel('adoption_intro_description'),
+        FieldPanel('adoption_logged_in_intro_heading'),
+        FieldPanel('adoption_logged_in_intro_description'),
         FieldPanel('interest_intro_heading'),
         FieldPanel('interest_intro_description')
     ]
