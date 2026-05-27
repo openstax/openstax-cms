@@ -195,10 +195,8 @@ class CTAButtonBarBlock(blocks.StructBlock):
     config = blocks.StreamBlock([
         ('analytics_label', blocks.CharBlock(required=False, help_text='Sets the "analytics nav" field for links within this group.')),
         ('layout', blocks.ChoiceBlock(choices=[
-            ('horizontal', 'Horizontal'),
-            ('vertical', 'Vertical'),
-            ('stacked', 'Stacked'),
-        ], help_text='Layout of the buttons. Default horizontal.')),
+            ('inline', 'Inline'),
+        ], help_text='Layout of the buttons. Inline places description and buttons side-by-side.')),
         ('rendering_condition', blocks.CharBlock(required=False, help_text='Condition that determines if this block should render. eg: defined by the frontend.')),
     ], block_counts={
         'analytics_label': {'max_num': 1},

@@ -902,6 +902,7 @@ class Book(Page):
         FieldPanel('bookshare_link'),
         FieldPanel('amazon_coming_soon'),
         FieldPanel('amazon_link'),
+        FieldPanel('audiobook_link'),
         FieldPanel('amazon_iframe'),
         FieldPanel('kindle_link'),
         FieldPanel('chegg_link'),

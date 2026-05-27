@@ -533,14 +533,18 @@ class PageTests(WagtailPageTestCase):
         form_page = page_models.FormHeadings(title='Form Headings Page',
                                              adoption_intro_heading='Adoption intro heading',
                                              adoption_intro_description='Adoption intro description',
+                                             adoption_logged_in_intro_heading='Hi {{first_name}}',
+                                             adoption_logged_in_intro_description='Thanks {{first_name}}',
                                              interest_intro_heading='Interest intro heading',
                                              interest_intro_description='Interest intro description'
                                              )
         self.homepage.add_child(instance=form_page)
         self.assertCanCreateAt(page_models.HomePage, page_models.FormHeadings)
 
-        retrieved_page = Page.objects.get(id=form_page.id)
+        retrieved_page = Page.objects.get(id=form_page.id).specific
         self.assertEqual(retrieved_page.title, "Form Headings Page")
+        self.assertEqual(retrieved_page.adoption_logged_in_intro_heading, 'Hi {{first_name}}')
+        self.assertEqual(retrieved_page.adoption_logged_in_intro_description, 'Thanks {{first_name}}')
 
     def test_can_create_ally_logos_page(self):
         ally_page = page_models.AllyLogos(title='Ally Logos Page',
