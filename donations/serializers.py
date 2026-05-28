@@ -1,4 +1,4 @@
-from .models import ThankYouNote, DonationPopup, Fundraiser
+from .models import ThankYouNote, DonationPopup, Fundraiser, SiteBanner
 from rest_framework import serializers
 
 
@@ -50,6 +50,23 @@ class DonationPopupSerializer(serializers.ModelSerializer):
                           'giving_optional',
                           'go_to_pdf_link_text',
                           'hide_donation_popup')
+
+
+class SiteBannerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SiteBanner
+        fields = ('id',
+                  'name',
+                  'html_message',
+                  'link_text',
+                  'link_url',
+                  'banner_thumbnail',
+                  'is_active',
+                  'start_date',
+                  'end_date',
+                  'context_filter',
+                  'url_pattern')
+        read_only_fields = fields
 
 
 class FundraiserSerializer(serializers.ModelSerializer):
