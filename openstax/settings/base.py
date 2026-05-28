@@ -1,3 +1,4 @@
+import json
 import os
 import sys
 
@@ -281,35 +282,72 @@ if ENVIRONMENT != 'local' and WAGTAILTRANSFER_SECRET_KEY == 'change-me-in-produc
         "Current value is the insecure default placeholder."
     )
 
-# Configure sources to import content from.
-# Each environment should define the sources it can pull from.
-# Example: on prod, you might pull from staging; on local, from staging or prod.
-# Override in environment-specific settings or via env vars.
+# Sources this environment can pull content FROM.
+#
+# Preferred: set WAGTAILTRANSFER_SOURCES_JSON with a JSON object, e.g.
+#   {"staging": {"BASE_URL": "https://staging.openstax.org/wagtail-transfer/",
+#                "SECRET_KEY": "<staging-secret>"},
+#    "prod":    {"BASE_URL": "https://openstax.org/wagtail-transfer/",
+#                "SECRET_KEY": "<prod-secret>"}}
+# The SECRET_KEY for a source here must equal the WAGTAILTRANSFER_SECRET_KEY
+# configured on that source's own environment.
+#
+# Fallback for a single source: WAGTAILTRANSFER_SOURCE_NAME/_URL/_KEY.
 WAGTAILTRANSFER_SOURCES = {}
 
-_transfer_source_name = os.getenv('WAGTAILTRANSFER_SOURCE_NAME')
-_transfer_source_url = os.getenv('WAGTAILTRANSFER_SOURCE_URL')
-_transfer_source_key = os.getenv('WAGTAILTRANSFER_SOURCE_KEY')
-_transfer_vars = {
-    'WAGTAILTRANSFER_SOURCE_NAME': _transfer_source_name,
-    'WAGTAILTRANSFER_SOURCE_URL': _transfer_source_url,
-    'WAGTAILTRANSFER_SOURCE_KEY': _transfer_source_key,
-}
-_set_vars = {name for name, value in _transfer_vars.items() if value}
-if _set_vars and len(_set_vars) != len(_transfer_vars):
-    missing = sorted(set(_transfer_vars.keys()) - _set_vars)
-    raise RuntimeError(
-        "Invalid Wagtail Transfer source configuration: "
-        "the environment variables WAGTAILTRANSFER_SOURCE_NAME, "
-        "WAGTAILTRANSFER_SOURCE_URL, and WAGTAILTRANSFER_SOURCE_KEY "
-        "must either all be set or all be unset. "
-        f"Currently missing: {', '.join(missing)}."
-    )
-if _transfer_source_name and _transfer_source_url and _transfer_source_key:
-    WAGTAILTRANSFER_SOURCES[_transfer_source_name] = {
-        'BASE_URL': _transfer_source_url,
-        'SECRET_KEY': _transfer_source_key,
+_transfer_sources_json = os.getenv('WAGTAILTRANSFER_SOURCES_JSON')
+if _transfer_sources_json:
+    try:
+        WAGTAILTRANSFER_SOURCES = json.loads(_transfer_sources_json)
+    except json.JSONDecodeError as e:
+        raise RuntimeError(f"WAGTAILTRANSFER_SOURCES_JSON is not valid JSON: {e}")
+    for _name, _cfg in WAGTAILTRANSFER_SOURCES.items():
+        if not isinstance(_cfg, dict) or not _cfg.get('BASE_URL') or not _cfg.get('SECRET_KEY'):
+            raise RuntimeError(
+                f"WAGTAILTRANSFER_SOURCES_JSON source '{_name}' must have BASE_URL and SECRET_KEY."
+            )
+else:
+    _transfer_source_name = os.getenv('WAGTAILTRANSFER_SOURCE_NAME')
+    _transfer_source_url = os.getenv('WAGTAILTRANSFER_SOURCE_URL')
+    _transfer_source_key = os.getenv('WAGTAILTRANSFER_SOURCE_KEY')
+    _transfer_vars = {
+        'WAGTAILTRANSFER_SOURCE_NAME': _transfer_source_name,
+        'WAGTAILTRANSFER_SOURCE_URL': _transfer_source_url,
+        'WAGTAILTRANSFER_SOURCE_KEY': _transfer_source_key,
     }
+    _set_vars = {name for name, value in _transfer_vars.items() if value}
+    if _set_vars and len(_set_vars) != len(_transfer_vars):
+        missing = sorted(set(_transfer_vars.keys()) - _set_vars)
+        raise RuntimeError(
+            "Invalid Wagtail Transfer source configuration: "
+            "the environment variables WAGTAILTRANSFER_SOURCE_NAME, "
+            "WAGTAILTRANSFER_SOURCE_URL, and WAGTAILTRANSFER_SOURCE_KEY "
+            "must either all be set or all be unset. "
+            f"Currently missing: {', '.join(missing)}."
+        )
+    if _transfer_source_name and _transfer_source_url and _transfer_source_key:
+        WAGTAILTRANSFER_SOURCES[_transfer_source_name] = {
+            'BASE_URL': _transfer_source_url,
+            'SECRET_KEY': _transfer_source_key,
+        }
+
+# Match snippets across environments by their natural identifier instead of
+# wagtail-transfer's auto UUID. Without this, an import would create duplicates
+# of any snippet that was authored independently on each environment.
+WAGTAILTRANSFER_LOOKUP_FIELDS = {
+    'snippets.subject':           ['name'],
+    'snippets.k12subject':        ['name'],
+    'snippets.role':              ['salesforce_name'],
+    'snippets.facultyresource':   ['heading'],
+    'snippets.studentresource':   ['heading'],
+    'snippets.newssource':        ['name'],
+    'snippets.sharedcontent':     ['title'],
+    'snippets.erratacontent':     ['heading', 'book_state'],
+    'snippets.blogcontenttype':   ['content_type'],
+    'snippets.blogcollection':    ['name'],
+    'snippets.webinarcollection': ['name'],
+    'snippets.promotesnippet':    ['name'],
+}
 
 ########
 # Cron #
