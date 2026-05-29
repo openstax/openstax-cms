@@ -20,6 +20,8 @@ admin.site.site_header = 'OpenStax'
 
 urlpatterns = [
     path('admin/autocomplete/', include(autocomplete_admin_urls)),
+    # Must come before the broader 'admin/' include below — Django matches in order.
+    path('admin/wagtail-transfer/', include(wagtailtransfer_urls)),
     path('admin/', include(wagtailadmin_urls)),
 
     path('django-admin/error/', throw_error, name='throw_error'),
@@ -48,8 +50,6 @@ urlpatterns = [
     # route everything to /api/spike also...
     path('apps/cms/api/spike/', include(wagtail_urls)),
     path('sitemap.xml', sitemap),
-
-    path('wagtail-transfer/', include(wagtailtransfer_urls)),
 
     # For anything not caught by a more specific rule above, hand over to Wagtail's serving mechanism
     path('', include(wagtail_urls)),

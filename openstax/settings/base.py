@@ -301,9 +301,9 @@ def _check_wagtail_transfer_secret_key(app_configs, **kwargs):
 # Sources this environment can pull content FROM.
 #
 # Preferred: set WAGTAILTRANSFER_SOURCES_JSON with a JSON object, e.g.
-#   {"staging": {"BASE_URL": "https://staging.openstax.org/wagtail-transfer/",
+#   {"staging": {"BASE_URL": "https://staging.openstax.org/admin/wagtail-transfer/",
 #                "SECRET_KEY": "<staging-secret>"},
-#    "prod":    {"BASE_URL": "https://openstax.org/wagtail-transfer/",
+#    "prod":    {"BASE_URL": "https://openstax.org/admin/wagtail-transfer/",
 #                "SECRET_KEY": "<prod-secret>"}}
 # The SECRET_KEY for a source here must equal the WAGTAILTRANSFER_SECRET_KEY
 # configured on that source's own environment.
