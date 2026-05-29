@@ -276,11 +276,27 @@ INSTALLED_APPS = [
 ####################
 
 WAGTAILTRANSFER_SECRET_KEY = os.getenv('WAGTAILTRANSFER_SECRET_KEY', 'change-me-in-production')
-if ENVIRONMENT != 'local' and WAGTAILTRANSFER_SECRET_KEY == 'change-me-in-production':
-    raise RuntimeError(
-        "WAGTAILTRANSFER_SECRET_KEY must be set to a secure value in non-local environments. "
-        "Current value is the insecure default placeholder."
-    )
+
+# Validate the secret key via Django's system check framework rather than at
+# import time. This still flags misconfiguration on `manage.py check`,
+# `runserver`, `migrate`, etc., but does NOT fire during `collectstatic` (which
+# sets `requires_system_checks = []`). That matters because the AMI bake runs
+# `collectstatic` before runtime secrets have been loaded from SSM.
+from django.core import checks as _django_checks  # noqa: E402
+
+@_django_checks.register(_django_checks.Tags.security)
+def _check_wagtail_transfer_secret_key(app_configs, **kwargs):
+    from django.conf import settings as _settings
+    if (
+        getattr(_settings, 'ENVIRONMENT', 'local') != 'local'
+        and _settings.WAGTAILTRANSFER_SECRET_KEY == 'change-me-in-production'
+    ):
+        return [_django_checks.Error(
+            "WAGTAILTRANSFER_SECRET_KEY is set to the insecure default placeholder.",
+            hint="Set the WAGTAILTRANSFER_SECRET_KEY environment variable to a unique secure value.",
+            id='openstax.E001',
+        )]
+    return []
 
 # Sources this environment can pull content FROM.
 #
