@@ -288,7 +288,7 @@ from django.core import checks as _django_checks  # noqa: E402
 def _check_wagtail_transfer_secret_key(app_configs, **kwargs):
     from django.conf import settings as _settings
     if (
-        getattr(_settings, 'ENVIRONMENT', 'local') != 'local'
+        getattr(_settings, 'ENVIRONMENT', 'local') not in ('local', 'test')
         and _settings.WAGTAILTRANSFER_SECRET_KEY == 'change-me-in-production'
     ):
         return [_django_checks.Error(
