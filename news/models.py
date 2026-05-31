@@ -204,60 +204,6 @@ class NewsArticleTag(TaggedItemBase):
     content_object = ParentalKey('news.NewsArticle', related_name='tagged_items')
 
 
-def news_article_collection_search(collection, content_types=None, subjects=None):
-    if subjects is None:
-        subjects = []
-    if content_types is None:
-        content_types = []
-    news_articles = NewsArticle.objects.filter(live=True).order_by('-date').prefetch_related("subjects")
-    collection_articles = []
-    articles_to_return = []
-
-    for na in news_articles:
-        if collection is not None and na.blog_collections and collection in na.blog_collections[0]['name']:
-            collection_articles.append(na)
-
-    if len(collection_articles) > 0:
-        if len(content_types) > 0 and len(subjects) > 0:
-            for article in collection_articles:
-                blog_types = article.blog_content_types
-                blog_subjects = article.blog_subjects
-                added = False
-                for item in content_types:
-                    if item in blog_types:
-                        articles_to_return.append(article)
-                        added = True
-                for item in subjects:
-                    if blog_subjects and item in blog_subjects[0]['name'] and not added:
-                        articles_to_return.append(article)
-        elif len(content_types) > 0 and len(subjects) == 0:
-            for article in collection_articles:
-                blog_types = article.blog_content_types
-                for item in content_types:
-                    if item in blog_types:
-                        articles_to_return.append(article)
-        elif len(content_types) == 0 and len(subjects) > 0:
-            for article in collection_articles:
-                blog_subjects = article.blog_subjects
-                for item in subjects:
-                    if blog_subjects and item in blog_subjects[0]['name']:
-                        articles_to_return.append(article)
-        else:
-            articles_to_return = collection_articles
-
-    return articles_to_return
-
-
-def news_article_subject_search(subject):
-    news_articles = NewsArticle.objects.filter(live=True).order_by('-date').prefetch_related("subjects")
-    articles_to_return = []
-    for article in news_articles:
-        blog_subjects = article.blog_subjects
-        if blog_subjects and subject in blog_subjects[0]['name']:
-            articles_to_return.append(article)
-    return articles_to_return
-
-
 class NewsArticle(Page):
     date = models.DateField("Post date")
     heading = models.CharField(max_length=250, help_text="Heading displayed on website")
