@@ -257,6 +257,66 @@ class NewsTests(WagtailPageTestCase, TestCase):
         self.assertContains(response, 'Economics')
         self.assertContains(response, 'Math')
 
+    def test_keyword_search_orders_by_relevance_not_date(self):
+        """Title match (older date) should rank above body-only match (newer date)."""
+        news_index = NewsIndex.objects.all()[0]
+
+        # Article A: term in TITLE, older date — should rank highest
+        article_a = NewsArticle(
+            title="Thermodynamics Explained",
+            slug="thermo-title-match",
+            date=timezone.now() - datetime.timedelta(days=30),
+            heading="Thermodynamics heading",
+            subheading="All about thermodynamics",
+            author="OpenStax",
+            body=json.dumps(
+                [
+                    {"type": "paragraph",
+                     "value": "<p>This article covers thermodynamics in depth.</p>"}
+                ]
+            ),
+            article_subjects=json.dumps([]),
+            content_types=json.dumps([]),
+            collections=json.dumps([]),
+        )
+        news_index.add_child(instance=article_a)
+
+        # Article B: term only in BODY (3 times to clear 0.3 threshold), newer date
+        article_b = NewsArticle(
+            title="Physics Topics",
+            slug="thermo-body-only",
+            date=timezone.now(),
+            heading="Physics heading",
+            subheading="Various physics topics",
+            author="OpenStax",
+            body=json.dumps(
+                [
+                    {"type": "paragraph",
+                     "value": "<p>Thermodynamics is a branch of physics. "
+                              "Thermodynamics deals with heat and energy. "
+                              "Thermodynamics has many practical applications.</p>"}
+                ]
+            ),
+            article_subjects=json.dumps([]),
+            content_types=json.dumps([]),
+            collections=json.dumps([]),
+        )
+        news_index.add_child(instance=article_b)
+
+        response = self.client.get('/apps/cms/api/search/', {'q': 'thermodynamics'})
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.content)
+        slugs = [item['slug'] for item in data]
+
+        self.assertIn('thermo-title-match', slugs, "Title-match article not found in results (may not clear 0.3 threshold)")
+        self.assertIn('thermo-body-only', slugs, "Body-only article not found in results (may not clear 0.3 threshold)")
+
+        self.assertLess(
+            slugs.index('thermo-title-match'),
+            slugs.index('thermo-body-only'),
+            "Title-match (older) article should appear before body-only (newer) article when ordered by relevance"
+        )
+
 
 class PressTests(WagtailPageTestCase):
     def setUp(self):
