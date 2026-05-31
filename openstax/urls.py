@@ -60,5 +60,11 @@ if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += [
         path('favicon.ico', RedirectView.as_view(url=settings.STATIC_URL + 'pages/images/favicon.ico')),
+    ]
+
+# debug_toolbar is a dev-only dependency; only wire it up when it's actually installed
+# (DEBUG is also True under test settings, where debug_toolbar is not in INSTALLED_APPS)
+if settings.DEBUG and 'debug_toolbar' in settings.INSTALLED_APPS:
+    urlpatterns += [
         path('__debug__/', include('debug_toolbar.urls'))
     ]
