@@ -193,6 +193,15 @@ class NewsTests(WagtailPageTestCase, TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_slashless_apis_are_good(self):
+        original_news_index_all = NewsIndex.objects.all
+        original_press_index_all = PressIndex.objects.all
+        original_news_article_get = NewsArticle.objects.get
+        original_press_release_get = PressRelease.objects.get
+        self.addCleanup(setattr, NewsIndex.objects, 'all', original_news_index_all)
+        self.addCleanup(setattr, PressIndex.objects, 'all', original_press_index_all)
+        self.addCleanup(setattr, NewsArticle.objects, 'get', original_news_article_get)
+        self.addCleanup(setattr, PressRelease.objects, 'get', original_press_release_get)
+
         NewsIndex.objects.all = MagicMock(return_value=MagicMock(pk=3))
         assertPathDoesNotRedirectToTrailingSlash(self, '/apps/cms/api/news')
 
@@ -256,6 +265,18 @@ class NewsTests(WagtailPageTestCase, TestCase):
         response = self.client.get('/apps/cms/api/search/', {'collection': 'OpenStax Updates', 'subjects': 'Economics,Math'})
         self.assertContains(response, 'Economics')
         self.assertContains(response, 'Math')
+
+    def test_subject_name_is_searchable(self):
+        """Subject name (e.g. 'Math') should be findable via Wagtail .search() once indexed."""
+        from wagtail.search.backends import get_search_backend
+        backend = get_search_backend()
+        for a in NewsArticle.objects.live():
+            backend.add(a)
+        results = NewsArticle.objects.live().search('Math')
+        result_list = list(results)
+        self.assertTrue(len(result_list) > 0, "No results for 'Math' — subject names are not indexed")
+        names = [s['name'] for s in result_list[0].blog_subjects]
+        self.assertIn('Math', names)
 
     def test_keyword_search_orders_by_relevance_not_date(self):
         """Title match (older date) should rank above body-only match (newer date)."""
