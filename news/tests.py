@@ -409,7 +409,7 @@ class NewsTests(WagtailPageTestCase, TestCase):
         )
         news_index.add_child(instance=article_a)
 
-        # Article B: term only in BODY (3 times to clear 0.3 threshold), newer date
+        # Article B: term only in BODY (repeated), newer date
         article_b = NewsArticle(
             title="Physics Topics",
             slug="thermo-body-only",
@@ -438,8 +438,8 @@ class NewsTests(WagtailPageTestCase, TestCase):
         data = json.loads(response.content)
         slugs = [item['slug'] for item in data]
 
-        self.assertIn('thermo-title-match', slugs, "Title-match article not found in results (may not clear 0.3 threshold)")
-        self.assertIn('thermo-body-only', slugs, "Body-only article not found in results (may not clear 0.3 threshold)")
+        self.assertIn('thermo-title-match', slugs, "Title-match article not found in results")
+        self.assertIn('thermo-body-only', slugs, "Body-only article not found in results")
 
         self.assertLess(
             slugs.index('thermo-title-match'),

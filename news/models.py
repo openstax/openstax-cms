@@ -304,13 +304,43 @@ class NewsArticle(Page):
         return cols
 
     def search_subject_names(self):
-        return ' '.join(s['name'] for s in self.blog_subjects)
+        prep_value = self.article_subjects.get_prep_value() or []
+        subject_ids = [
+            item.get('value', {}).get('subject')
+            for block in prep_value
+            for item in (block.get('value') or [])
+            if item.get('value', {}).get('subject') is not None
+        ]
+        if not subject_ids:
+            return ''
+        subjects = Subject.objects.in_bulk(subject_ids)
+        return ' '.join(str(subjects[sid]) for sid in subject_ids if sid in subjects)
 
     def search_collection_names(self):
-        return ' '.join(c['name'] for c in self.blog_collections)
+        prep_value = self.collections.get_prep_value() or []
+        collection_ids = [
+            item.get('value', {}).get('collection')
+            for block in prep_value
+            for item in (block.get('value') or [])
+            if item.get('value', {}).get('collection') is not None
+        ]
+        if not collection_ids:
+            return ''
+        collections = BlogCollection.objects.in_bulk(collection_ids)
+        return ' '.join(str(collections[cid]) for cid in collection_ids if cid in collections)
 
     def search_content_type_names(self):
-        return ' '.join(self.blog_content_types)
+        prep_value = self.content_types.get_prep_value() or []
+        content_type_ids = [
+            item.get('value', {}).get('content_type')
+            for block in prep_value
+            for item in (block.get('value') or [])
+            if item.get('value', {}).get('content_type') is not None
+        ]
+        if not content_type_ids:
+            return ''
+        types = BlogContentType.objects.in_bulk(content_type_ids)
+        return ' '.join(str(types[tid]) for tid in content_type_ids if tid in types)
 
     search_fields = Page.search_fields + [
         index.SearchField('title', boost=10),
