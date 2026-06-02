@@ -343,13 +343,12 @@ class NewsArticle(Page):
         return ' '.join(str(types[tid]) for tid in content_type_ids if tid in types)
 
     search_fields = Page.search_fields + [
-        index.SearchField('title', boost=10),
         index.SearchField('search_subject_names', boost=5),
         index.SearchField('search_collection_names', boost=2),
         index.SearchField('author', boost=2),
         index.SearchField('body'),
         index.SearchField('search_content_type_names'),
-        index.SearchField('tags'),
+        index.RelatedFields('tags', [index.SearchField('name')]),
     ]
 
     content_panels = Page.content_panels + [
