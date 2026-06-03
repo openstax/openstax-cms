@@ -235,6 +235,7 @@ INSTALLED_APPS = [
     'wagtail_modeladmin',
     'wagtailautocomplete',
     # custom
+    'ai_assist',
     'accounts',
     'api',
     'pages',
@@ -269,6 +270,55 @@ INSTALLED_APPS = [
     'wagtail.api.v2',
     'wagtail.contrib.settings',
 ]
+
+# --- Wagtail AI integration -------------------------------------------------
+WAGTAIL_AI_ENABLED = os.getenv("WAGTAIL_AI_ENABLED", "false").lower() == "true"
+
+WAGTAIL_AI = {
+    "BACKENDS": {
+        "default": {  # cheap, high-volume: alt text, grammar
+            "CLASS": "wagtail_ai.ai.llm.LLMBackend",
+            "CONFIG": {
+                "MODEL_ID": os.getenv(
+                    "WAGTAIL_AI_DEFAULT_MODEL", "anthropic/claude-haiku-4-5-20251001"
+                ),
+                "TOKEN_LIMIT": 8192,
+            },
+        },
+        "quality": {  # stronger: content feedback, rewrites
+            "CLASS": "wagtail_ai.ai.llm.LLMBackend",
+            "CONFIG": {
+                "MODEL_ID": os.getenv(
+                    "WAGTAIL_AI_QUALITY_MODEL", "anthropic/claude-sonnet-4-6"
+                ),
+                "TOKEN_LIMIT": 8192,
+            },
+        },
+        "openai": {  # alternate provider, selectable per prompt/feature
+            "CLASS": "wagtail_ai.ai.llm.LLMBackend",
+            "CONFIG": {
+                "MODEL_ID": os.getenv("WAGTAIL_AI_OPENAI_MODEL", "gpt-4o-mini"),
+                "TOKEN_LIMIT": 8192,
+            },
+        },
+    },
+    "IMAGE_DESCRIPTION_BACKEND": "default",
+}
+
+
+def build_installed_apps(ai_enabled):
+    """Return INSTALLED_APPS, appending wagtail_ai only when AI is enabled.
+
+    Keeps the AI editor integration out of every environment where the master
+    toggle is off (also the emergency cost kill-switch).
+    """
+    apps = list(INSTALLED_APPS)
+    if ai_enabled and "wagtail_ai" not in apps:
+        apps.append("wagtail_ai")
+    return apps
+
+
+INSTALLED_APPS = build_installed_apps(WAGTAIL_AI_ENABLED)
 
 ########
 # Cron #

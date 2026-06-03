@@ -33,3 +33,18 @@ DATABASES = {
 # silence whitenoise warnings for CI
 import warnings
 warnings.filterwarnings("ignore", message="No directory at", module="whitenoise.base")
+
+# Wagtail AI: never call a real provider in tests; always echo.
+WAGTAIL_AI = {
+    "BACKENDS": {
+        "default": {"CLASS": "wagtail_ai.ai.echo.EchoBackend", "CONFIG": {"MODEL_ID": "echo"}},
+        "quality": {"CLASS": "wagtail_ai.ai.echo.EchoBackend", "CONFIG": {"MODEL_ID": "echo"}},
+        "openai": {"CLASS": "wagtail_ai.ai.echo.EchoBackend", "CONFIG": {"MODEL_ID": "echo"}},
+    },
+    "IMAGE_DESCRIPTION_BACKEND": "default",
+}
+
+# Exercise the AI feature code paths in CI.
+WAGTAIL_AI_ENABLED = True
+if "wagtail_ai" not in INSTALLED_APPS:
+    INSTALLED_APPS = list(INSTALLED_APPS) + ["wagtail_ai"]

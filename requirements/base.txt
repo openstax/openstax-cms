@@ -18,6 +18,8 @@ django-storages==1.14.6
 django-taggit==6.1.0
 djangorestframework==3.16.0
 html2text==2025.4.15
+llm==0.31
+llm-anthropic==0.25.1
 mapbox==0.18.1
 Pillow==12.2.0
 psycopg2
@@ -31,6 +33,7 @@ ua-parser==1.0.1
 unicodecsv==0.14.1
 vcrpy==7.0.0
 wagtail==7.3.2
+wagtail-ai==2.1.0
 wagtail-autocomplete==0.12.0
 wagtail-modeladmin==2.2.0
 whitenoise==6.9.0
