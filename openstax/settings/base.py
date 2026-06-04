@@ -518,7 +518,8 @@ WAGTAILADMIN_RICH_TEXT_EDITORS = {
                          'blockquote',
                          'superscript',
                          'subscript',
-                         'strikethrough']
+                         'strikethrough',
+                         'ai']  # wagtail-ai magic-wand control (see ai_assist)
         }
     },
 }
