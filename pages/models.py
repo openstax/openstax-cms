@@ -362,13 +362,21 @@ class RootPage(Page):
         return site_id, site_root_url, ''
 
     def serve_preview(self, request, mode_name):
+        from pages.preview_text import extract_page_text
+
         site_id, site_root, relative_page_url = self.get_url_parts(request)
         preview_url = '{}{}/?preview={}'.format(site_root, relative_page_url, mode_name)
 
         return render(
             request,
             "preview.html",
-            {"preview_url": preview_url},
+            {
+                "preview_url": preview_url,
+                # Plain text for Wagtail's content-metrics panel (Words / Reading
+                # time / Readability), which reads `main` innerText. The visible
+                # preview is the iframe below; this text is rendered hidden.
+                "preview_text": extract_page_text(self),
+            },
         )
 
 # subclass of RootPage with a few overrides for subpages

@@ -12,6 +12,6 @@ class CISafetyTests(TestCase):
                 msg=f"backend '{name}' must use EchoBackend in tests",
             )
 
-    def test_wagtail_ai_enabled_in_tests(self):
-        # Feature code paths must be exercised, so the integration is on in CI.
+    def test_wagtail_ai_installed(self):
+        # wagtail-ai is always installed (no toggle); feature code paths run in CI.
         self.assertIn("wagtail_ai", settings.INSTALLED_APPS)

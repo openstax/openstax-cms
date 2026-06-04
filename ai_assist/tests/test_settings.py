@@ -19,9 +19,6 @@ class WagtailAIConfigTests(TestCase):
             )
             self.assertIn("MODEL_ID", backends[name]["CONFIG"])
 
-    def test_toggle_off_excludes_wagtail_ai_from_installed_apps(self):
-        # When WAGTAIL_AI_ENABLED is false, the editor integration must not load.
-        apps_when_off = base.build_installed_apps(ai_enabled=False)
-        apps_when_on = base.build_installed_apps(ai_enabled=True)
-        self.assertNotIn("wagtail_ai", apps_when_off)
-        self.assertIn("wagtail_ai", apps_when_on)
+    def test_wagtail_ai_is_always_installed(self):
+        # wagtail-ai is unconditionally enabled (no toggle) — see ai_assist/README.
+        self.assertIn("wagtail_ai", base.INSTALLED_APPS)

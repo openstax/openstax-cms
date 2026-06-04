@@ -43,8 +43,3 @@ WAGTAIL_AI = {
     },
     "IMAGE_DESCRIPTION_BACKEND": "default",
 }
-
-# Exercise the AI feature code paths in CI.
-WAGTAIL_AI_ENABLED = True
-if "wagtail_ai" not in INSTALLED_APPS:
-    INSTALLED_APPS = list(INSTALLED_APPS) + ["wagtail_ai"]

@@ -269,11 +269,10 @@ INSTALLED_APPS = [
     'wagtail.sites',
     'wagtail.api.v2',
     'wagtail.contrib.settings',
+    'wagtail_ai',
 ]
 
 # --- Wagtail AI integration -------------------------------------------------
-WAGTAIL_AI_ENABLED = os.getenv("WAGTAIL_AI_ENABLED", "false").lower() == "true"
-
 WAGTAIL_AI = {
     "BACKENDS": {
         "default": {  # cheap, high-volume: alt text, grammar
@@ -304,21 +303,6 @@ WAGTAIL_AI = {
     },
     "IMAGE_DESCRIPTION_BACKEND": "default",
 }
-
-
-def build_installed_apps(ai_enabled):
-    """Return INSTALLED_APPS, appending wagtail_ai only when AI is enabled.
-
-    Keeps the AI editor integration out of every environment where the master
-    toggle is off (also the emergency cost kill-switch).
-    """
-    apps = list(INSTALLED_APPS)
-    if ai_enabled and "wagtail_ai" not in apps:
-        apps.append("wagtail_ai")
-    return apps
-
-
-INSTALLED_APPS = build_installed_apps(WAGTAIL_AI_ENABLED)
 
 ########
 # Cron #

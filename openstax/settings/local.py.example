@@ -38,7 +38,6 @@ CORS_ORIGIN_WHITELIST = (
     'http://localhost:3000' # http://localhost:3000, not http://localhost:3000/
 )
 
-# Wagtail AI (off by default in local dev to avoid API spend).
-# To try it locally: set WAGTAIL_AI_ENABLED=true and ANTHROPIC_API_KEY in your env,
-# then run `python manage.py seed_ai_prompts`.
-# WAGTAIL_AI_ENABLED defaults to false via base.py — no action needed to keep it off.
+# Wagtail AI is always enabled. To use it locally, set ANTHROPIC_API_KEY in your
+# env and run `python manage.py seed_ai_prompts`. Without a key the AI tools
+# appear in the editor but calls will fail.
