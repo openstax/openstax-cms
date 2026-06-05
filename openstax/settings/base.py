@@ -308,6 +308,10 @@ WAGTAIL_AI = {
             "provider": "anthropic",
             "model": os.getenv("WAGTAIL_AI_AGENT_MODEL", "claude-3-5-sonnet-latest"),
         },
+        "embedding": {
+            "provider": "openai",
+            "model": os.getenv("WAGTAIL_AI_EMBEDDING_MODEL", "text-embedding-3-small"),
+        },
     },
 }
 

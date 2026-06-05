@@ -6,6 +6,7 @@ from django import forms
 from wagtail.models import Page, Orderable
 from wagtail.fields import RichTextField, StreamField
 from wagtail.admin.panels import FieldPanel, InlinePanel
+from wagtail_ai.panels import AIMultipleChooserPanel
 from wagtail.admin.widgets.slug import SlugInput
 from wagtail.embeds.blocks import EmbedBlock
 from wagtail.search import index
@@ -14,6 +15,7 @@ from wagtail.blocks import TextBlock, StructBlock, StreamBlock, FieldBlock, Char
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.documents.blocks import DocumentChooserBlock
 from wagtail.snippets.blocks import SnippetChooserBlock
+from wagtail_ai.blocks import ai_image_block
 from wagtail.api import APIField
 from wagtail.images.api.fields import ImageRenditionField
 from wagtail.models import Site
@@ -66,6 +68,7 @@ class CTAAlignmentChoiceBlock(FieldBlock):
     ))
 
 
+@ai_image_block()
 class ImageBlock(StructBlock):
     image = ImageChooserBlock()
     caption = RichTextBlock()
@@ -202,6 +205,11 @@ class NewsIndex(Page):
 
 class NewsArticleTag(TaggedItemBase):
     content_object = ParentalKey('news.NewsArticle', related_name='tagged_items')
+
+
+class NewsArticleRelatedPage(Orderable):
+    page = ParentalKey('news.NewsArticle', related_name='related_pages', on_delete=models.CASCADE)
+    related_page = models.ForeignKey('wagtailcore.Page', on_delete=models.CASCADE, related_name='+')
 
 
 class NewsArticle(Page):
@@ -367,6 +375,12 @@ class NewsArticle(Page):
         FieldPanel('collections'),
         FieldPanel('article_subjects'),
         FieldPanel('content_types'),
+        AIMultipleChooserPanel(
+            'related_pages',
+            chooser_field_name='related_page',
+            vector_index='PageVectorIndex',
+            label='Related pages',
+        ),
     ]
 
     promote_panels = [

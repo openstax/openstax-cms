@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.utils.functional import cached_property
 from modelcluster.fields import ParentalKey
 from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel, TitleFieldPanel
+from wagtail_ai.panels import AIMultipleChooserPanel
 from wagtailautocomplete.edit_handlers import AutocompletePanel
 from wagtail.admin.widgets.slug import SlugInput
 from wagtail import blocks
@@ -377,11 +378,25 @@ class RootPage(Page):
         )
 
 # subclass of RootPage with a few overrides for subpages
+class FlexPageRelatedPage(Orderable):
+    page = ParentalKey('pages.FlexPage', related_name='related_pages', on_delete=models.CASCADE)
+    related_page = models.ForeignKey('wagtailcore.Page', on_delete=models.CASCADE, related_name='+')
+
+
 class FlexPage(RootPage):
     parent_page_types = ['pages.RootPage', 'pages.FlexPage']
     subpage_types = ['pages.FlexPage']
     template = 'page.html'
     max_count = None
+
+    content_panels = RootPage.content_panels + [
+        AIMultipleChooserPanel(
+            'related_pages',
+            chooser_field_name='related_page',
+            vector_index='PageVectorIndex',
+            label='Related pages',
+        ),
+    ]
 
     def get_url_parts(self, *args, **kwargs):
         url_parts = super().get_url_parts(*args, **kwargs)

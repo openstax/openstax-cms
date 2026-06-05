@@ -15,6 +15,7 @@ from wagtail.fields import RichTextField, StreamField
 from wagtail.models import Orderable, Page
 from wagtail.snippets.blocks import SnippetChooserBlock
 from wagtail.admin.panels import TabbedInterface, ObjectList
+from wagtail_ai.panels import AIMultipleChooserPanel
 from wagtail.api import APIField
 from wagtail.models import Site
 
@@ -574,6 +575,11 @@ class VideoFacultyResources(Orderable, VideoFacultyResource):
     book_video_faculty_resource = ParentalKey('books.Book', related_name='book_video_faculty_resources')
 
 
+class BookRelatedPage(Orderable):
+    page = ParentalKey('books.Book', related_name='related_pages', on_delete=models.CASCADE)
+    related_page = models.ForeignKey('wagtailcore.Page', on_delete=models.CASCADE, related_name='+')
+
+
 class OrientationFacultyResources(Orderable, OrientationFacultyResource):
     book_orientation_faculty_resource = ParentalKey('books.Book', related_name='book_orientation_faculty_resources')
 
@@ -945,6 +951,14 @@ class Book(Page):
         ObjectList(instructor_resources_panel, heading='Instructor Resources'),
         ObjectList(student_resources_panel, heading='Student Resources'),
         ObjectList(author_panel, heading='Authors'),
+        ObjectList([
+            AIMultipleChooserPanel(
+                'related_pages',
+                chooser_field_name='related_page',
+                vector_index='PageVectorIndex',
+                label='Related pages',
+            ),
+        ], heading='Related Pages'),
         ObjectList(promote_panels, heading='Promote'),
         ObjectList(Page.settings_panels, heading='Settings', classname="settings"),
     ])

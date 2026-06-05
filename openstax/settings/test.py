@@ -42,4 +42,8 @@ WAGTAIL_AI = {
         "openai": {"CLASS": "wagtail_ai.ai.echo.EchoBackend", "CONFIG": {"MODEL_ID": "echo"}},
     },
     "IMAGE_DESCRIPTION_BACKEND": "default",
+    "PROVIDERS": {
+        "default": {"provider": "anthropic", "model": "claude-3-5-sonnet-latest"},
+        "embedding": {"provider": "openai", "model": "text-embedding-3-small"},
+    },
 }

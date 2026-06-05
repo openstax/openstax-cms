@@ -4,6 +4,7 @@ from wagtail import blocks
 from wagtail.blocks import FieldBlock, StructBlock
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.documents.blocks import DocumentChooserBlock
+from wagtail_ai.blocks import ai_image_block
 
 from api.serializers import ImageSerializer
 from openstax.functions import build_image_url, build_document_url
@@ -272,6 +273,7 @@ class DividerBlock(StructBlock):
     }, required=False)
 
 
+@ai_image_block()
 class ImageBlock(StructBlock):
     image = ImageChooserBlock(required=False)
     alt_text = blocks.CharBlock(required=False)

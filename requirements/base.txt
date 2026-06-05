@@ -23,6 +23,7 @@ html2text==2025.4.15
 llm==0.31
 llm-anthropic==0.25.1
 mapbox==0.18.1
+pgvector==0.4.2
 Pillow==12.2.0
 psycopg2
 python-dotenv==1.2.2

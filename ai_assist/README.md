@@ -1,47 +1,55 @@
 # ai_assist — Wagtail AI integration
 
-AI-assisted authoring for the OpenStax CMS via [wagtail-ai]: image alt text,
-in-editor writing help, and content feedback. It is **always enabled** — there
-is no on/off toggle and no per-user gating. The AI tools only appear inside the
-page/image editor, so anyone with Wagtail edit access can use them.
+AI-assisted authoring for the OpenStax CMS via [wagtail-ai] 3.x (built on
+django-ai-core + any-llm). Always enabled; the tools only appear in the editor,
+so anyone with Wagtail edit access can use them. Features:
+
+- **Rich-text wand** — rewrite/grammar/completion in rich-text fields.
+- **Title & meta-description suggestions** — on every page type (`AITitleFieldPanel` / `AIDescriptionFieldPanel`, applied in `panel_patches.py`).
+- **Image alt text** — in the image editor (`WAGTAILIMAGES_IMAGE_FORM_BASE`) and contextually in StreamField image blocks (`AIImageBlock`).
+- **Content feedback** — quality suggestions in the Checks side panel.
+- **Related pages** — semantic suggestions on NewsArticle, Book, and FlexPage.
+
+## Architecture
+- Rich-text editor uses the legacy `WAGTAIL_AI["BACKENDS"]` (the `llm` library + `llm-anthropic`).
+- Agent features (title/description, content feedback, image description) use `WAGTAIL_AI["PROVIDERS"]` (any-llm).
+- Related pages use a `django_ai_core` `VectorIndex` (`PageVectorIndex`) with pgvector storage; embeddings via OpenAI.
 
 ## Environment variables
 | Var | Purpose | Default |
 |---|---|---|
-| `ANTHROPIC_API_KEY` | Claude API key (read by the `llm-anthropic` plugin). **Required.** | — |
-| `OPENAI_API_KEY` | OpenAI API key (only needed if the `openai` backend is used). | — |
-| `WAGTAIL_AI_DEFAULT_MODEL` | Override the cheap/high-volume model ID. | `anthropic/claude-haiku-4-5-20251001` |
-| `WAGTAIL_AI_QUALITY_MODEL` | Override the stronger model ID. | `anthropic/claude-sonnet-4-6` |
-| `WAGTAIL_AI_OPENAI_MODEL` | Override the OpenAI backend model ID. | `gpt-4o-mini` |
+| `ANTHROPIC_API_KEY` | Claude — rich-text backends and the default agent provider. **Required.** | — |
+| `OPENAI_API_KEY` | OpenAI — required for related-pages **embeddings**, and the optional `openai` backend. | — |
+| `WAGTAIL_AI_AGENT_MODEL` | Claude model for agent features. | `claude-3-5-sonnet-latest` |
+| `WAGTAIL_AI_EMBEDDING_MODEL` | OpenAI embedding model. | `text-embedding-3-small` |
+| `WAGTAIL_AI_DEFAULT_MODEL` / `WAGTAIL_AI_QUALITY_MODEL` / `WAGTAIL_AI_OPENAI_MODEL` | Rich-text backend model IDs. | haiku-4-5 / sonnet-4-6 / gpt-4o-mini |
 
 ## Deploy steps
-1. Set `ANTHROPIC_API_KEY` in the target environment.
-2. Run `collectstatic` so `wagtail_ai/draftail.js` is served (part of the normal
-   deploy). The magic-wand control will not load without it.
-3. Run `python manage.py seed_ai_prompts` (idempotent — safe to re-run every deploy).
+1. Set `ANTHROPIC_API_KEY` (and `OPENAI_API_KEY` for related pages).
+2. `python manage.py migrate` — creates the django_ai_core index tables, the `vector` extension, and the related-page relations. **Production Postgres must allow `CREATE EXTENSION vector`.**
+3. `collectstatic` so the wagtail-ai admin JS is served.
+4. `python manage.py seed_ai_prompts` (idempotent).
+5. `python manage.py rebuild_indexes` — builds the embeddings for related-pages suggestions (re-run after large content changes).
 
-## The magic-wand control requires the `ai` rich-text feature
-The AI wand only appears on rich-text editors whose feature list includes `"ai"`.
-wagtail-ai auto-adds `"ai"` to Wagtail's `default_features`, **but this project
-pins an explicit features list** in `WAGTAILADMIN_RICH_TEXT_EDITORS` (settings),
-which overrides the defaults. `"ai"` is included there — if you ever edit that
-list, keep `"ai"` in it or the wand silently disappears.
-(`ai_assist/tests/test_rich_text_features.py` guards this.)
+## The `ai` rich-text feature
+The wand only renders on editors whose feature list includes `"ai"`. wagtail-ai
+adds it to `default_features`, but this project pins an explicit list in
+`WAGTAILADMIN_RICH_TEXT_EDITORS`, so `"ai"` must stay in that list
+(`tests/test_rich_text_features.py` guards it).
 
-## Backends
-- `default` → `anthropic/claude-haiku-4-5-20251001` — cheap, high-volume (alt text, grammar).
-- `quality` → `anthropic/claude-sonnet-4-6` — stronger (content feedback, rewrites).
-- `openai` → `gpt-4o-mini` — alternate provider (set `OPENAI_API_KEY` to use). Selectable per prompt/feature.
-- Image alt text is routed to `default` via `WAGTAIL_AI["IMAGE_DESCRIPTION_BACKEND"]`.
-  (This key has no built-in default in wagtail-ai 2.1.0 — it must be set or the
-  feature raises BackendNotFound.)
+## Related pages
+`PageVectorIndex` (in `vector_index.py`) indexes NewsArticle, Book, and FlexPage
+(title + search_description). Each exposes a "Related pages" chooser
+(`AIMultipleChooserPanel`) that suggests semantically-similar pages. RootPage (the
+home singleton, and FlexPage's MTI base) is intentionally excluded. Embeddings are
+created lazily, so the app boots without `OPENAI_API_KEY`; suggestions only work
+once the key is set and `rebuild_indexes` has run.
 
-## Manual QA checklist (run on staging)
-- [ ] The rich-text toolbar shows the AI (magic-wand) action and the seeded
-      "Improve writing (OpenStax voice)" prompt.
-- [ ] Running an AI rewrite returns on-voice text and does not corrupt the field.
-- [ ] Image edit view offers AI alt-text generation; output is ≤125 chars and factual.
-- [ ] Content feedback returns suggestions without modifying the page.
-- [ ] Provider dashboard (Anthropic) shows the expected token usage and no surprises.
+## Manual QA (staging)
+- [ ] Rich-text toolbar shows the AI wand + the seeded "Improve writing (OpenStax voice)" prompt.
+- [ ] Title and meta-description fields show the AI suggestion button.
+- [ ] Image editor offers alt-text generation; StreamField image blocks too.
+- [ ] Content feedback appears in the Checks panel.
+- [ ] After `rebuild_indexes`, the Related pages chooser suggests relevant pages.
 
 [wagtail-ai]: https://github.com/wagtail/wagtail-ai

@@ -1,4 +1,5 @@
 from wagtail.blocks import TextBlock, StructBlock, StreamBlock, FieldBlock, CharBlock, RichTextBlock, RawHTMLBlock
+from wagtail_ai.blocks import ai_image_block
 
 class PullQuoteBlock(StructBlock):
     quote = TextBlock("quote title")
@@ -20,6 +21,7 @@ class HTMLAlignmentChoiceBlock(FieldBlock):
     ))
 
 
+@ai_image_block()
 class ImageBlock(StructBlock):
     image = ImageChooserBlock()
     caption = RichTextBlock()
