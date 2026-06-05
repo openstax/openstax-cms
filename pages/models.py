@@ -1,6 +1,6 @@
 from django import forms
 from django.db import models
-from django.shortcuts import render
+from django.http import HttpResponseRedirect
 from django.utils.functional import cached_property
 from modelcluster.fields import ParentalKey
 from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel, TitleFieldPanel
@@ -363,19 +363,12 @@ class RootPage(Page):
         return site_id, site_root_url, ''
 
     def serve_preview(self, request, mode_name):
-        from pages.preview_text import extract_page_text
-
+        # Redirect the preview panel straight to the headless frontend (same
+        # origin) so Wagtail's content checks read the rendered page directly,
+        # per the Wagtail 7.1+ recommendation against nested preview iframes.
         site_id, site_root, relative_page_url = self.get_url_parts(request)
         preview_url = '{}{}/?preview={}'.format(site_root, relative_page_url, mode_name)
-
-        return render(
-            request,
-            "preview.html",
-            {
-                "preview_url": preview_url,
-                "preview_text": extract_page_text(self),
-            },
-        )
+        return HttpResponseRedirect(preview_url)
 
 # subclass of RootPage with a few overrides for subpages
 class FlexPageRelatedPage(Orderable):
