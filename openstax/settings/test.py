@@ -43,7 +43,7 @@ WAGTAIL_AI = {
     },
     "IMAGE_DESCRIPTION_BACKEND": "default",
     "PROVIDERS": {
-        "default": {"provider": "anthropic", "model": "claude-3-5-sonnet-latest"},
+        "default": {"provider": "anthropic", "model": "claude-sonnet-4-6"},
         "embedding": {"provider": "openai", "model": "text-embedding-3-small"},
     },
 }

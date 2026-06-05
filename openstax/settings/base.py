@@ -306,7 +306,7 @@ WAGTAIL_AI = {
     "PROVIDERS": {
         "default": {
             "provider": "anthropic",
-            "model": os.getenv("WAGTAIL_AI_AGENT_MODEL", "claude-3-5-sonnet-latest"),
+            "model": os.getenv("WAGTAIL_AI_AGENT_MODEL", "claude-sonnet-4-6"),
         },
         "embedding": {
             "provider": "openai",
