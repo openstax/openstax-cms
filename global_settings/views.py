@@ -1,4 +1,3 @@
-import inspect
 from django.contrib.sitemaps import views as sitemap_views
 from django.http import HttpResponseServerError, HttpResponse
 from wagtail.contrib.sitemaps.sitemap_generator import Sitemap
@@ -17,26 +16,28 @@ def clear_entire_cache(request):
         return HttpResponse(response)
 
 
-def index(request, sitemaps, **kwargs):
-    sitemaps = prepare_sitemaps(request, sitemaps)
-    return sitemap_views.index(request, sitemaps, **kwargs)
+class SlashlessSitemap(Sitemap):
+    """ Wagtail sitemap that emits canonical, slash-less <loc> URLs.
+
+        WAGTAIL_APPEND_SLASH=True makes ordinary pages render with a trailing
+        slash, while several models (blog, press, general pages) hard-code
+        slash-less paths in get_url_parts(). That produced a sitemap mixing
+        /foo/ and /foo entries. Stripping the trailing slash here keeps every
+        <loc> consistent and matches the slash-less canonical URLs the frontend
+        serves.
+
+        Wagtail's Sitemap._urls() builds each <loc> from the page's
+        get_sitemap_urls()/get_full_url() and never calls location(), so the
+        trailing slash is stripped from the generated url_info entries here.
+    """
+    def _urls(self, page, protocol, domain):
+        urls = super()._urls(page, protocol, domain)
+        for url_info in urls:
+            url_info['location'] = url_info['location'].rstrip('/')
+        return urls
 
 
 def sitemap(request, sitemaps=None, **kwargs):
-    if sitemaps:
-        sitemaps = prepare_sitemaps(request, sitemaps)
-    else:
-        sitemaps = {"wagtail": Sitemap(request)}
+    if not sitemaps:
+        sitemaps = {"wagtail": SlashlessSitemap(request)}
     return sitemap_views.sitemap(request, sitemaps, **kwargs)
-
-
-def prepare_sitemaps(request, sitemaps):
-    initialised_sitemaps = {}
-    for name, sitemap_cls in sitemaps.items():
-        if inspect.isclass(sitemap_cls) and issubclass(sitemap_cls, Sitemap):
-            sitemap_instance = sitemap_cls(request)
-            sitemap_instance.sitemap_urls = [url.rstrip('/') for url in sitemap_instance.sitemap_urls]
-            initialised_sitemaps[name] = sitemap_instance
-        else:
-            initialised_sitemaps[name] = sitemap_cls
-    return initialised_sitemaps
