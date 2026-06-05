@@ -2,9 +2,7 @@
     body, html {
         margin: 0; padding: 0; height: 100%; overflow: hidden;
     }
-    /* Visually hidden, but still rendered so Wagtail's content-metrics panel
-       (which reads `main` innerText) can count it. Must NOT use display:none
-       or visibility:hidden — those are excluded from innerText. */
+    /* Hidden via clip, not display:none/visibility — those are excluded from innerText. */
     .content-metrics-source {
         position: absolute;
         width: 1px; height: 1px;

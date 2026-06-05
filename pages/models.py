@@ -372,9 +372,6 @@ class RootPage(Page):
             "preview.html",
             {
                 "preview_url": preview_url,
-                # Plain text for Wagtail's content-metrics panel (Words / Reading
-                # time / Readability), which reads `main` innerText. The visible
-                # preview is the iframe below; this text is rendered hidden.
                 "preview_text": extract_page_text(self),
             },
         )

@@ -254,6 +254,8 @@ INSTALLED_APPS = [
     'versions',
     'oxmenus',
     # wagtail
+    'wagtail_ai',
+    'django_ai_core.contrib.index',
     'wagtail',
     'wagtail.admin',
     'wagtail.documents',
@@ -269,7 +271,6 @@ INSTALLED_APPS = [
     'wagtail.sites',
     'wagtail.api.v2',
     'wagtail.contrib.settings',
-    'wagtail_ai',
 ]
 
 # --- Wagtail AI integration -------------------------------------------------
@@ -302,7 +303,15 @@ WAGTAIL_AI = {
         },
     },
     "IMAGE_DESCRIPTION_BACKEND": "default",
+    "PROVIDERS": {
+        "default": {
+            "provider": "anthropic",
+            "model": os.getenv("WAGTAIL_AI_AGENT_MODEL", "claude-3-5-sonnet-latest"),
+        },
+    },
 }
+
+WAGTAILIMAGES_IMAGE_FORM_BASE = "wagtail_ai.forms.DescribeImageForm"
 
 ########
 # Cron #
@@ -503,7 +512,7 @@ WAGTAILADMIN_RICH_TEXT_EDITORS = {
                          'superscript',
                          'subscript',
                          'strikethrough',
-                         'ai']  # wagtail-ai magic-wand control (see ai_assist)
+                         'ai']
         }
     },
 }

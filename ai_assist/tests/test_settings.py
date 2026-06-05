@@ -4,10 +4,7 @@ from openstax.settings import base
 
 
 class WagtailAIConfigTests(TestCase):
-    # Assert the BASE module config directly, not settings.WAGTAIL_AI. Test
-    # settings (a later task) override the active config to EchoBackend, so
-    # reading `settings` here would contradict that. The base module is the
-    # source of truth for the production backend wiring.
+    # Read base, not settings: test settings override the backends to EchoBackend.
     def test_base_config_defines_default_and_quality_llm_backends(self):
         backends = base.WAGTAIL_AI["BACKENDS"]
         self.assertIn("default", backends)
