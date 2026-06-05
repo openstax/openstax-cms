@@ -10,7 +10,7 @@ from rest_framework.decorators import parser_classes
 from rest_framework.parsers import JSONParser
 from salesforce.models import Adopter, School, MapBoxDataset
 from errata.models import ERRATA_RESOURCES
-from global_settings.models import StickyNote, Footer, GiveToday
+from global_settings.models import EmergencyMessaging, Footer, GiveToday
 from wagtail.images.models import Image
 from wagtail.documents.models import Document
 from wagtail.models import Site
@@ -39,19 +39,12 @@ class DocumentViewSet(viewsets.ReadOnlyModelViewSet):
         return Document.objects.all()
 
 
-def sticky_note(request):
-    sticky_note = StickyNote.for_site(Site.find_for_request(request))
+def emergency_messaging(request):
+    emergency = EmergencyMessaging.for_site(Site.find_for_request(request))
 
     return JsonResponse({
-        'start': sticky_note.start,
-        'expires': sticky_note.expires,
-        'show_popup': sticky_note.show_popup,
-        'header': sticky_note.header,
-        'body': sticky_note.body,
-        'link_text': sticky_note.link_text,
-        'link': sticky_note.link,
-        'emergency_expires': sticky_note.emergency_expires,
-        'emergency_content': sticky_note.emergency_content,
+        'emergency_expires': emergency.emergency_expires,
+        'emergency_content': emergency.emergency_content,
     })
 
 

@@ -1,20 +1,30 @@
 from django.db import models
+from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.contrib.settings.models import BaseSiteSetting, register_setting
 
 
-class StickyNote(BaseSiteSetting):
-    start = models.DateTimeField(null=True, help_text="Set the start date to override the content of the Give Sticky. Set the header and body below to change.")
-    expires = models.DateTimeField(null=True, help_text="Set the date to expire overriding the content of the Give Sticky.")
-    show_popup = models.BooleanField(default=False, help_text="Replaces the top banner with a popup, start and expire dates still control timing.")
-    header = models.TextField(max_length=255)
-    body = models.TextField()
-    link_text = models.CharField(max_length=255)
-    link = models.URLField()
-    emergency_expires = models.DateTimeField(null=True, blank=True, help_text="When active, the Sticky Note will not be displayed until the emergency expires.")
-    emergency_content = models.CharField(max_length=255)
+@register_setting(icon='warning')
+class EmergencyMessaging(BaseSiteSetting):
+    emergency_expires = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="When active, displays emergency banner instead of regular banners"
+    )
+    emergency_content = models.CharField(
+        max_length=500,
+        blank=True,
+        help_text="Emergency message to display"
+    )
+
+    panels = [
+        MultiFieldPanel([
+            FieldPanel('emergency_expires'),
+            FieldPanel('emergency_content'),
+        ], heading='Emergency Override'),
+    ]
 
     class Meta:
-        verbose_name = 'Sticky Note'
+        verbose_name = 'Emergency Messaging'
 
 
 @register_setting(icon='collapse-down')

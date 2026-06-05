@@ -1,4 +1,4 @@
-from .models import Role, Subject, K12Subject, ErrataContent, SubjectCategory, GiveBanner, BlogContentType, \
+from .models import Role, Subject, K12Subject, ErrataContent, SubjectCategory, BlogContentType, \
     BlogCollection, NoWebinarMessage, WebinarCollection, AmazonBookBlurb
 
 
@@ -76,19 +76,6 @@ class SubjectCategorySerializer(serializers.ModelSerializer):
         read_only_fields = ('subject_name',
                               'subject_category',
                               'description')
-
-
-class GiveBannerSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = GiveBanner
-        fields = ('html_message',
-                  'link_text',
-                  'link_url',
-                  'banner_thumbnail')
-        read_only_fields = ('html_message',
-                              'link_text',
-                              'link_url',
-                              'banner_thumbnail')
 
 
 class BlogContentTypeSerializer(serializers.ModelSerializer):

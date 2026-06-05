@@ -1,7 +1,7 @@
 from django.urls import include, path
 from rest_framework import routers
 
-from .views import AdopterViewSet, ImageViewSet, DocumentViewSet, customize_request, sticky_note, footer, schools, mapbox, flags, errata_fields, give_today, webview_settings
+from .views import AdopterViewSet, ImageViewSet, DocumentViewSet, customize_request, emergency_messaging, footer, schools, mapbox, flags, errata_fields, give_today, webview_settings
 
 router = routers.DefaultRouter()
 router.register(r'images', ImageViewSet)
@@ -10,7 +10,7 @@ router.register(r'adopters', AdopterViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
-    path('sticky/', sticky_note, name='sticky_note'),
+    path('emergency/', emergency_messaging, name='emergency_messaging'),
     path('footer/', footer, name='footer'),
     path('schools/', schools, name='schools'),
     path('mapbox/', mapbox, name='mapbox'),

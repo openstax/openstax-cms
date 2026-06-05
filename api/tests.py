@@ -169,8 +169,8 @@ class APITests(TestCase, WagtailTestUtils):
         response = self.client.get('/apps/cms/api/give-today/')
         self.assertEqual(response.status_code, 200)
 
-    def test_sticky_api(self):
-        response = self.client.get('/apps/cms/api/sticky/')
+    def test_emergency_api(self):
+        response = self.client.get('/apps/cms/api/emergency/')
         self.assertEqual(response.status_code, 200)
 
     def test_errata_resource_api(self):

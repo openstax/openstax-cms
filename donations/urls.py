@@ -5,6 +5,7 @@ from rest_framework import routers
 router = routers.SimpleRouter()
 router.register(r'donation-popup', views.DonationPopupViewSet, basename='DonationPopup')
 router.register(r'fundraiser', views.FundraiserViewSet, basename='Fundraiser')
+router.register(r'sitebanner', views.SiteBannerViewSet, basename='SiteBanner')
 
 urlpatterns = [
     path('', include(router.urls)),

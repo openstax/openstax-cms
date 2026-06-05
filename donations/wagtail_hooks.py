@@ -1,6 +1,6 @@
 from wagtail_modeladmin.options import ModelAdmin, ModelAdminGroup, modeladmin_register
-from .models import DonationPopup, Fundraiser
-from global_settings.models import GiveToday, StickyNote
+from .models import DonationPopup, Fundraiser, SiteBanner
+from global_settings.models import GiveToday
 
 
 class DonationPopupAdmin(ModelAdmin):
@@ -27,19 +27,20 @@ class GiveTodayAdmin(ModelAdmin):
     search_fields = ('give_link_text',)
 
 
-class StickyNoteAdmin(ModelAdmin):
-    model = StickyNote
-    menu_icon = 'doc-empty'
-    menu_label = 'Sticky Note'
-    list_display = ('header', 'start', 'expires', 'show_popup')
-    search_fields = ('header', 'body',)
+class SiteBannerAdmin(ModelAdmin):
+    model = SiteBanner
+    menu_icon = 'doc-full-inverse'
+    menu_label = 'Site Banners'
+    list_display = ('name', 'is_active', 'start_date', 'end_date', 'context_filter')
+    search_fields = ('name', 'html_message',)
+    list_filter = ('is_active', 'context_filter',)
 
 
 class SiteMessagingModalsGroup(ModelAdminGroup):
     menu_label = 'Site Messaging'
     menu_icon = 'doc-full-inverse'
     menu_order = 600
-    items = (DonationPopupAdmin, FundraiserAdmin, GiveTodayAdmin, StickyNoteAdmin,)
+    items = (DonationPopupAdmin, FundraiserAdmin, GiveTodayAdmin, SiteBannerAdmin,)
 
 
 modeladmin_register(SiteMessagingModalsGroup)
