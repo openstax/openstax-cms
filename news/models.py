@@ -204,60 +204,6 @@ class NewsArticleTag(TaggedItemBase):
     content_object = ParentalKey('news.NewsArticle', related_name='tagged_items')
 
 
-def news_article_collection_search(collection, content_types=None, subjects=None):
-    if subjects is None:
-        subjects = []
-    if content_types is None:
-        content_types = []
-    news_articles = NewsArticle.objects.filter(live=True).order_by('-date').prefetch_related("subjects")
-    collection_articles = []
-    articles_to_return = []
-
-    for na in news_articles:
-        if collection is not None and na.blog_collections and collection in na.blog_collections[0]['name']:
-            collection_articles.append(na)
-
-    if len(collection_articles) > 0:
-        if len(content_types) > 0 and len(subjects) > 0:
-            for article in collection_articles:
-                blog_types = article.blog_content_types
-                blog_subjects = article.blog_subjects
-                added = False
-                for item in content_types:
-                    if item in blog_types:
-                        articles_to_return.append(article)
-                        added = True
-                for item in subjects:
-                    if blog_subjects and item in blog_subjects[0]['name'] and not added:
-                        articles_to_return.append(article)
-        elif len(content_types) > 0 and len(subjects) == 0:
-            for article in collection_articles:
-                blog_types = article.blog_content_types
-                for item in content_types:
-                    if item in blog_types:
-                        articles_to_return.append(article)
-        elif len(content_types) == 0 and len(subjects) > 0:
-            for article in collection_articles:
-                blog_subjects = article.blog_subjects
-                for item in subjects:
-                    if blog_subjects and item in blog_subjects[0]['name']:
-                        articles_to_return.append(article)
-        else:
-            articles_to_return = collection_articles
-
-    return articles_to_return
-
-
-def news_article_subject_search(subject):
-    news_articles = NewsArticle.objects.filter(live=True).order_by('-date').prefetch_related("subjects")
-    articles_to_return = []
-    for article in news_articles:
-        blog_subjects = article.blog_subjects
-        if blog_subjects and subject in blog_subjects[0]['name']:
-            articles_to_return.append(article)
-    return articles_to_return
-
-
 class NewsArticle(Page):
     date = models.DateField("Post date")
     heading = models.CharField(max_length=250, help_text="Heading displayed on website")
@@ -357,9 +303,52 @@ class NewsArticle(Page):
                     cols.append(data)
         return cols
 
+    def search_subject_names(self):
+        prep_value = self.article_subjects.get_prep_value() or []
+        subject_ids = [
+            item.get('value', {}).get('subject')
+            for block in prep_value
+            for item in (block.get('value') or [])
+            if item.get('value', {}).get('subject') is not None
+        ]
+        if not subject_ids:
+            return ''
+        subjects = Subject.objects.in_bulk(subject_ids)
+        return ' '.join(str(subjects[sid]) for sid in subject_ids if sid in subjects)
+
+    def search_collection_names(self):
+        prep_value = self.collections.get_prep_value() or []
+        collection_ids = [
+            item.get('value', {}).get('collection')
+            for block in prep_value
+            for item in (block.get('value') or [])
+            if item.get('value', {}).get('collection') is not None
+        ]
+        if not collection_ids:
+            return ''
+        collections = BlogCollection.objects.in_bulk(collection_ids)
+        return ' '.join(str(collections[cid]) for cid in collection_ids if cid in collections)
+
+    def search_content_type_names(self):
+        prep_value = self.content_types.get_prep_value() or []
+        content_type_ids = [
+            item.get('value', {}).get('content_type')
+            for block in prep_value
+            for item in (block.get('value') or [])
+            if item.get('value', {}).get('content_type') is not None
+        ]
+        if not content_type_ids:
+            return ''
+        types = BlogContentType.objects.in_bulk(content_type_ids)
+        return ' '.join(str(types[tid]) for tid in content_type_ids if tid in types)
+
     search_fields = Page.search_fields + [
+        index.SearchField('search_subject_names', boost=5),
+        index.SearchField('search_collection_names', boost=2),
+        index.SearchField('author', boost=2),
         index.SearchField('body'),
-        index.SearchField('tags'),
+        index.SearchField('search_content_type_names'),
+        index.RelatedFields('tags', [index.SearchField('name')]),
     ]
 
     content_panels = Page.content_panels + [

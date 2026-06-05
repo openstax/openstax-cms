@@ -1,92 +1,51 @@
 
-import re
-
-from django.contrib.postgres.search import SearchQuery, SearchRank, SearchVector
 from django.http import JsonResponse
 
-from news.models import NewsArticle, news_article_collection_search, news_article_subject_search
+from news.models import NewsArticle
 
 
-def normalize_query(query_string, findterms=re.compile(r'"([^"]+)"|(\S+)').findall, normspace=re.compile(r'\s{2,}').sub):
-    """
-    Splits the query string in individual keywords, getting rid of unnecessary spaces
-    and grouping quoted words together.
-    
-    Example Input:
-    normalize_query('  some random  words "with   quotes  " and   spaces')
-    
-    Response:
-    ['some', 'random', 'words', 'with quotes', 'and', 'spaces']
-    """
-
-    # Remove common stopwords from the search query
-    stopwords = ['of', 'is', 'a', 'at', 'is', 'the']
-    querywords = query_string.split()
-    resultwords = [word for word in querywords if word.lower() not in stopwords]
-    result = ' '.join(resultwords)
-
-    return [normspace(' ', (t[0] or t[1]).strip()) for t in findterms(result)]
-
-
-def get_query(query_string):
-    """
-    Returns a query, that is a combination of Q objects. That combination
-    aims to search keywords within a model by testing the given search fields.
-    """
-
-    query_items = normalize_query(query_string)
-
-    query = SearchQuery(query_items.pop())
-
-    for term in query_items:
-        query &= SearchQuery(term, search_type='websearch')
-       
-    return query
+def _csv_param(request, name):
+    raw = request.GET.get(name, '').strip()
+    return [v.strip() for v in raw.split(',') if v.strip()]
 
 
 def search(request):
-    query_string = ''
-    found_entries = []
-    #filter by tags
-    if ('tag' in request.GET) and request.GET['tag'].strip():
-        query_string = request.GET['tag']
+    q = request.GET.get('q', '').strip()
+    tag = request.GET.get('tag', '').strip()
+    subjects = _csv_param(request, 'subjects')
+    collection = request.GET.get('collection', '').strip()
+    content_types = _csv_param(request, 'types')
+    sort = request.GET.get('sort', 'relevance').strip()
 
-        found_entries = NewsArticle.objects.filter(tags__name__in=[query_string]).order_by('-date').distinct()
+    if q:
+        results = NewsArticle.objects.live().search(q)
+    elif tag:
+        results = NewsArticle.objects.filter(
+            tags__name__in=[tag], live=True
+        ).order_by('-date').distinct()
+    else:
+        results = NewsArticle.objects.filter(live=True).order_by('-date')
 
-    #search by keyword
-    if ('q' in request.GET) and request.GET['q'].strip():
-        query_string = request.GET['q']
+    articles = list(results)
+    if subjects:
+        articles = [a for a in articles
+                    if set(subjects) & {s['name'] for s in a.blog_subjects}]
+    if collection:
+        articles = [a for a in articles
+                    if collection in {c['name'] for c in a.blog_collections}]
+    if content_types:
+        articles = [a for a in articles
+                    if set(content_types) & set(a.blog_content_types)]
 
-        vector = SearchVector('title', weight='A') + SearchVector('article_subjects__name', weight='C') + SearchVector('body', weight='B') + SearchVector('author', weight='B') + SearchVector('tags__name', weight='C')  + SearchVector('collections__name', weight='C')  + SearchVector('content_types__content_type', weight='C')
-        query = get_query(query_string)
-
-        found_entries = NewsArticle.objects.annotate(
-            rank=SearchRank(vector, query),
-            search=vector,
-        ).filter(rank__gte=0.3,live=True).order_by('-date', 'rank')
-
-    if ('collection' in request.GET) and request.GET['collection'].strip():
-        collection_name = request.GET['collection']
-        types = []
-        subjects = []
-        if ('types' in request.GET) and request.GET['types'].strip():
-            types = request.GET['types'].split(',')
-
-        if ('subjects' in request.GET) and request.GET['subjects'].strip():
-            subjects = request.GET['subjects'].split(',')
-
-        found_entries = news_article_collection_search(collection_name, types, subjects)
-
-    elif ('subjects' in request.GET) and request.GET['subjects'].strip():
-        subject = request.GET['subjects']
-        found_entries = news_article_subject_search(subject)
+    if q and sort == 'newest':
+        articles.sort(key=lambda a: a.date, reverse=True)
 
     search_results_json = []
     search_results_shown = set()
-    for result in found_entries:
+    for result in articles:
         if result.slug in search_results_shown:
             continue
-        
+
         search_results_shown.add(result.slug)
 
         search_results_json.append({
@@ -108,4 +67,3 @@ def search(request):
             'search_description': result.search_description,
         })
     return JsonResponse(search_results_json, safe=False)
-
