@@ -2,15 +2,13 @@
     body, html {
         margin: 0; padding: 0; height: 100%; overflow: hidden;
     }
-    /* Hidden via clip, not display:none/visibility — those are excluded from innerText. */
+    /* Off-screen at natural size so innerText (used by the content extractor)
+       still returns the text. Zero-size/clip yields empty innerText. */
     .content-metrics-source {
         position: absolute;
-        width: 1px; height: 1px;
-        margin: -1px; padding: 0; border: 0;
-        overflow: hidden;
-        clip: rect(0 0 0 0);
-        clip-path: inset(50%);
-        white-space: nowrap;
+        top: 0;
+        left: -100000px;
+        width: 1000px;
     }
 </style>
 <main class="content-metrics-source">{{ preview_text }}</main>
