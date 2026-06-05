@@ -1,6 +1,9 @@
-from django.test import TestCase
+from datetime import timedelta
 
-from donations.models import DonationPopup, ThankYouNote, Fundraiser
+from django.test import TestCase
+from django.utils import timezone
+
+from donations.models import DonationPopup, ThankYouNote, Fundraiser, SiteBanner
 from donations.serializers import DonationPopupSerializer, FundraiserSerializer
 
 from rest_framework import status
@@ -70,3 +73,79 @@ class FundraiserTest(APITestCase, TestCase):
         serializer = FundraiserSerializer(fundraiser, many=True)
         self.assertEqual(response.data[0]['headline'], serializer.data[0]['headline'])
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class SiteBannerTest(APITestCase, TestCase):
+
+    def setUp(self):
+        now = timezone.now()
+        self.now = now
+
+        self.active_in_window = SiteBanner.objects.create(
+            name='active-in-window',
+            html_message='active in window',
+            start_date=now - timedelta(days=1),
+            end_date=now + timedelta(days=1),
+            is_active=True,
+        )
+        self.active_open_ended = SiteBanner.objects.create(
+            name='active-open-ended',
+            html_message='active no dates',
+            is_active=True,
+        )
+        self.inactive = SiteBanner.objects.create(
+            name='inactive',
+            html_message='inactive',
+            start_date=now - timedelta(days=1),
+            end_date=now + timedelta(days=1),
+            is_active=False,
+        )
+        self.not_yet_started = SiteBanner.objects.create(
+            name='future',
+            html_message='future',
+            start_date=now + timedelta(days=1),
+            end_date=now + timedelta(days=7),
+            is_active=True,
+        )
+        self.expired = SiteBanner.objects.create(
+            name='expired',
+            html_message='expired',
+            start_date=now - timedelta(days=7),
+            end_date=now - timedelta(days=1),
+            is_active=True,
+        )
+
+    def test_returns_only_active_in_window_banners(self):
+        response = self.client.get('/apps/cms/api/donations/sitebanner/', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        returned_names = {banner['name'] for banner in response.data}
+        self.assertEqual(
+            returned_names,
+            {'active-in-window', 'active-open-ended'},
+        )
+
+    def test_inactive_banner_excluded(self):
+        response = self.client.get('/apps/cms/api/donations/sitebanner/', format='json')
+        returned_names = {banner['name'] for banner in response.data}
+        self.assertNotIn('inactive', returned_names)
+
+    def test_future_banner_excluded(self):
+        response = self.client.get('/apps/cms/api/donations/sitebanner/', format='json')
+        returned_names = {banner['name'] for banner in response.data}
+        self.assertNotIn('future', returned_names)
+
+    def test_expired_banner_excluded(self):
+        response = self.client.get('/apps/cms/api/donations/sitebanner/', format='json')
+        returned_names = {banner['name'] for banner in response.data}
+        self.assertNotIn('expired', returned_names)
+
+    def test_response_shape(self):
+        response = self.client.get('/apps/cms/api/donations/sitebanner/', format='json')
+        banner = next(b for b in response.data if b['name'] == 'active-in-window')
+        expected_fields = {
+            'id', 'name', 'html_message', 'link_text', 'link_url',
+            'banner_thumbnail', 'is_active', 'start_date', 'end_date',
+            'context_filter', 'url_pattern',
+        }
+        self.assertEqual(set(banner.keys()), expected_fields)

@@ -1,8 +1,8 @@
-from .models import Role, Subject, K12Subject, ErrataContent, SubjectCategory, GiveBanner, BlogContentType, \
+from .models import Role, Subject, K12Subject, ErrataContent, SubjectCategory, BlogContentType, \
     BlogCollection, NoWebinarMessage, WebinarCollection, AmazonBookBlurb
 from .serializers import RoleSerializer, SubjectSerializer, K12SubjectSerializer, ErrataContentSerializer, \
     SubjectCategorySerializer, \
-    GiveBannerSerializer, BlogContentTypeSerializer, BlogCollectionSerializer, NoWebinarMessageSerializer, \
+    BlogContentTypeSerializer, BlogCollectionSerializer, NoWebinarMessageSerializer, \
     WebinarCollectionSerializer, AmazonBookBlurbSerializer
 
 
@@ -88,12 +88,6 @@ class SubjectCategoryViewSet(viewsets.ReadOnlyModelViewSet):
         if locale is not None:
             queryset = queryset.filter(locale=convert_locale(locale))
         return queryset
-
-
-class GiveBannerViewSet(viewsets.ReadOnlyModelViewSet):
-    # validation prevents multiple Give Banners, so this is safe
-    queryset = GiveBanner.objects.all()
-    serializer_class = GiveBannerSerializer
 
 
 class BlogContentTypeViewSet(viewsets.ReadOnlyModelViewSet):

@@ -2,7 +2,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 from global_settings.functions import invalidate_cloudfront_caches
-from snippets.models import ContentWarning, Subject, Role, ErrataContent, SubjectCategory, GiveBanner, BlogContentType, BlogCollection, \
+from snippets.models import ContentWarning, Subject, Role, ErrataContent, SubjectCategory, BlogContentType, BlogCollection, \
     WebinarCollection, AmazonBookBlurb, PromoteSnippet
 
 
@@ -24,11 +24,6 @@ def clear_cloudfront_on_errata_content_save(sender, **kwargs):
 @receiver(post_save, sender=SubjectCategory)
 def clear_cloudfront_on_subject_category_save(sender, **kwargs):
     invalidate_cloudfront_caches('snippets/subjectcategory')
-
-
-@receiver(post_save, sender=GiveBanner)
-def clear_cloudfront_on_give_banner_save(sender, **kwargs):
-    invalidate_cloudfront_caches('snippets/givebanner')
 
 
 @receiver(post_save, sender=BlogContentType)

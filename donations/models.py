@@ -1,5 +1,8 @@
 from django.db import models
 from django.core.exceptions import ValidationError
+from wagtail.admin.panels import FieldPanel, MultiFieldPanel
+from wagtail.models import TranslatableMixin
+from openstax.functions import build_image_url
 
 COLOR_SCHEME_CHOICES = (
     ('red', 'Red'),
@@ -77,3 +80,101 @@ class Fundraiser(models.Model):
     goal_time = models.DateTimeField(blank=True, null=True)
 
 
+CONTEXT_FILTER_CHOICES = (
+    ('all', 'All Pages'),
+    ('subjects', 'Subjects Pages'),
+    ('book_details', 'Book Details Pages'),
+    ('blog', 'Blog Pages'),
+    ('url_pattern', 'Specific URL Pattern'),
+)
+
+
+class SiteBanner(TranslatableMixin, models.Model):
+    name = models.CharField(
+        max_length=255,
+        help_text="Admin-friendly name (e.g., 'Spring 2026 Campaign A')"
+    )
+
+    html_message = models.TextField(
+        default='',
+        help_text="HTML message to display in banner"
+    )
+    link_text = models.CharField(
+        max_length=255,
+        null=True,
+        blank=True,
+        help_text="Text for the call-to-action link"
+    )
+    link_url = models.URLField(
+        null=True,
+        blank=True,
+        help_text="URL for the call-to-action link"
+    )
+    thumbnail = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        help_text="Optional thumbnail image for banner"
+    )
+
+    is_active = models.BooleanField(
+        default=True,
+        help_text="Enable/disable banner without deleting it"
+    )
+    start_date = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="When to start showing this banner (optional)"
+    )
+    end_date = models.DateTimeField(
+        null=True,
+        blank=True,
+        help_text="When to stop showing this banner (optional)"
+    )
+
+    context_filter = models.CharField(
+        max_length=100,
+        default='all',
+        choices=CONTEXT_FILTER_CHOICES,
+        help_text="Where to display this banner"
+    )
+    url_pattern = models.CharField(
+        max_length=500,
+        blank=True,
+        null=True,
+        help_text="URL pattern for 'Specific URL Pattern' context (e.g., '/details/books/anatomy')"
+    )
+
+    def get_banner_thumbnail(self):
+        return build_image_url(self.thumbnail)
+
+    banner_thumbnail = property(get_banner_thumbnail)
+
+    panels = [
+        FieldPanel('name'),
+        FieldPanel('is_active'),
+        MultiFieldPanel([
+            FieldPanel('start_date'),
+            FieldPanel('end_date'),
+        ], heading='Campaign Schedule'),
+        MultiFieldPanel([
+            FieldPanel('context_filter'),
+            FieldPanel('url_pattern'),
+        ], heading='Targeting'),
+        MultiFieldPanel([
+            FieldPanel('html_message'),
+            FieldPanel('link_text'),
+            FieldPanel('link_url'),
+            FieldPanel('thumbnail'),
+        ], heading='Content'),
+    ]
+
+    def __str__(self):
+        return self.name
+
+    class Meta(TranslatableMixin.Meta):
+        verbose_name = 'Site Banner'
+        verbose_name_plural = 'Site Banners'
+        ordering = ['-start_date']

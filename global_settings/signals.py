@@ -4,7 +4,7 @@ from django.dispatch import receiver
 from wagtail.signals import page_published
 
 from .functions import invalidate_cloudfront_caches
-from .models import StickyNote, Footer, GiveToday
+from .models import EmergencyMessaging, Footer, GiveToday
 
 
 def clear_cloudfront_on_page_publish(sender, **kwargs):
@@ -20,11 +20,10 @@ page_published.connect(clear_cloudfront_on_page_publish)
 
 
 # These functions clear caches on non-page models that drive content on the website
-@receiver(post_save, sender=StickyNote)
-def clear_cloudfront_on_sticky_save(sender, **kwargs):
-    invalidate_cloudfront_caches('sticky')
-    # this should not be needed, but we had an issue with it not clearing
-    invalidate_cloudfront_caches('sticky/')
+@receiver(post_save, sender=EmergencyMessaging)
+def clear_cloudfront_on_emergency_save(sender, **kwargs):
+    invalidate_cloudfront_caches('emergency')
+    invalidate_cloudfront_caches('emergency/')
 
 
 @receiver(post_save, sender=Footer)
