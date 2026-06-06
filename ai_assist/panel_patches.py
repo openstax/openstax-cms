@@ -1,14 +1,6 @@
 from django.apps import apps as django_apps
 
 
-# (target_field_name, base_panel_class_attr, ai_panel_class_attr) tuples.
-# Resolved lazily inside apply_ai_panels() so this module imports without wagtail.
-_TARGETS = (
-    ("title", "TitleFieldPanel", "AITitleFieldPanel"),
-    ("search_description", "FieldPanel", "AIDescriptionFieldPanel"),
-)
-
-
 def _build_converters(FieldPanel, TitleFieldPanel, AITitleFieldPanel, AIDescriptionFieldPanel):
     """Return (leaf_converter, string_converter) closures bound to the panel classes.
 
