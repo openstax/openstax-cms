@@ -101,3 +101,27 @@ class BodyValidationTests(TestCase):
         with self.assertRaises(FlexValidationError) as ctx:
             validate_body([{"type": "not_a_block", "value": {}}])
         self.assertIn("not_a_block", str(ctx.exception))
+
+
+from pages.flex_drafts import create_flex_draft
+
+
+class CreateDraftTests(TestCase):
+    def setUp(self):
+        root = Page.objects.get(depth=1)
+        self.home = page_models.RootPage(title="Home", slug="site-root")
+        root.add_child(instance=self.home)
+
+    def test_create_makes_unpublished_draft(self):
+        page, warnings = create_flex_draft(
+            parent=self.home,
+            title="Why OpenStax",
+            slug="why-openstax",
+            layout_data=[{"type": "default", "value": {}}],
+            body_data=[{"type": "html", "value": "<p>Great for students</p>"}],
+        )
+        page.refresh_from_db()
+        self.assertFalse(page.live)                       # never auto-published
+        self.assertTrue(page.has_unpublished_changes)
+        self.assertIsNotNone(page.get_latest_revision())  # draft revision exists
+        self.assertEqual(page.slug, "why-openstax")

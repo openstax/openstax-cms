@@ -64,3 +64,25 @@ def validate_layout(data):
 
 def validate_body(data):
     return _clean("body", data)
+
+
+def create_flex_draft(*, parent, title, slug, layout_data, body_data, user=None):
+    """Create a FlexPage under `parent` as an UNPUBLISHED draft revision.
+
+    Never publishes. Returns (page, warnings). Caller is responsible for routing
+    validation (slug already adjusted) before calling this.
+    """
+    validate_layout(layout_data)
+    validate_body(body_data)
+
+    page = FlexPage(
+        title=title,
+        slug=slug,
+        layout=layout_data,
+        body=body_data,
+        live=False,
+        has_unpublished_changes=True,
+    )
+    parent.add_child(instance=page)      # saves the page row (live=False)
+    page.save_revision(user=user)        # creates the draft revision; does NOT publish
+    return page, []
