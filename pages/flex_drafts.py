@@ -63,6 +63,10 @@ def validate_layout(data):
 
 
 def validate_body(data):
+    # An empty body is allowed for drafts (content can be filled in
+    # incrementally); only validate block shapes when blocks are present.
+    if not data:
+        return _stream_block("body").to_python([])
     return _clean("body", data)
 
 

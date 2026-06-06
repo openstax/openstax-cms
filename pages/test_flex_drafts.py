@@ -159,3 +159,67 @@ class UpdateDraftTests(TestCase):
         latest = live.get_latest_revision_as_object()
         self.assertEqual(latest.title, "Draft Title")            # draft has the change
         self.assertIn("changed", str(latest.body))
+
+
+from rest_framework.test import APIClient
+from rest_framework.authtoken.models import Token
+
+
+class FlexDraftEndpointTests(TestCase):
+    def setUp(self):
+        root = Page.objects.get(depth=1)
+        self.home = page_models.RootPage(title="Home", slug="site-root")
+        root.add_child(instance=self.home)
+        self.User = get_user_model()
+        self.staff = self.User.objects.create_user("staff", password="x", is_staff=True, is_superuser=True)
+        self.token = Token.objects.create(user=self.staff)
+        self.client = APIClient()
+
+    def _auth(self):
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.token.key}")
+
+    def test_requires_auth(self):
+        resp = self.client.post("/apps/cms/api/v2/pages/flex/", {}, format="json")
+        self.assertIn(resp.status_code, (401, 403))
+
+    def test_create_returns_201_and_review_urls(self):
+        self._auth()
+        resp = self.client.post("/apps/cms/api/v2/pages/flex/", {
+            "parent_id": self.home.id,
+            "title": "Why OpenStax",
+            "slug": "why-openstax",
+            "layout": [{"type": "default", "value": {}}],
+            "body": [{"type": "html", "value": "<p>Great for students</p>"}],
+        }, format="json")
+        self.assertEqual(resp.status_code, 201, resp.content)
+        data = resp.json()
+        self.assertFalse(data["live"])
+        self.assertIn("/admin/pages/", data["edit_url"])
+        self.assertTrue(data["preview_url"])
+        self.assertEqual(data["warnings"], [])
+
+    def test_invalid_body_returns_400_with_correctable_errors(self):
+        self._auth()
+        resp = self.client.post("/apps/cms/api/v2/pages/flex/", {
+            "parent_id": self.home.id,
+            "title": "Bad",
+            "slug": "bad",
+            "layout": [{"type": "default", "value": {}}],
+            "body": [{"type": "not_a_block", "value": {}}],
+        }, format="json")
+        self.assertEqual(resp.status_code, 400)
+        self.assertIn("body", resp.json()["errors"])
+
+    def test_slug_collision_creates_with_suffix_and_warns(self):
+        self._auth()
+        existing = page_models.FlexPage(title="Dup", slug="dup",
+                                        layout=[{"type": "default", "value": {}}], body=[])
+        self.home.add_child(instance=existing)
+        resp = self.client.post("/apps/cms/api/v2/pages/flex/", {
+            "parent_id": self.home.id, "title": "Dup2", "slug": "dup",
+            "layout": [{"type": "default", "value": {}}], "body": [],
+        }, format="json")
+        self.assertEqual(resp.status_code, 201, resp.content)
+        data = resp.json()
+        self.assertEqual(data["slug"], "dup-1")
+        self.assertEqual(data["warnings"][0]["code"], "slug_collision")
