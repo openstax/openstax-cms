@@ -13,7 +13,6 @@ django-import-export==4.3.7
 django-modelcluster>=6.5,<7.0
 django-openstax-accounts==1.0
 django-openstax-healthcheck==1.0
-django-rest-auth==0.9.5
 django-reversion==5.1.0
 django-ses==4.4.0
 django-storages==1.14.6

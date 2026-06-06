@@ -224,7 +224,6 @@ INSTALLED_APPS = [
     'modelcluster',
     'rest_framework',
     'rest_framework.authtoken',
-    'rest_auth',
     'django_crontab',
     'django_filters',
     'storages',
