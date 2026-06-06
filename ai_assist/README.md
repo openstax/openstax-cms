@@ -24,7 +24,8 @@ front-end. Without it, content extraction returns `null`
 Two pieces make it work; both share an origin, so no CORS is involved:
 - **CMS** — `RootPage.serve_preview` redirects previews to the front-end URL
   (no nested iframe), and `HeadlessUserbarView` (`pages/views.py`, routed at
-  `/apps/cms/userbar/`) serves the userbar markup, gated to admins.
+  `/apps/cms/api/userbar/` — the only `/apps/cms/` path production nginx routes
+  to this backend) serves the userbar markup, gated to admins.
 - **os-webview** — the `HeadlessUserbar` component fetches that endpoint while
   `?preview` is in the URL, injects the markup, and loads Wagtail's
   `vendor.js`/`userbar.js`.
