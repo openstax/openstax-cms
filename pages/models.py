@@ -373,7 +373,12 @@ class RootPage(Page):
         if url_parts is None:
             return super().serve_preview(request, mode_name)
         site_id, site_root, relative_page_url = url_parts
-        preview_url = '{}{}/?preview={}'.format(site_root, relative_page_url, mode_name)
+        # Use a root-relative URL (drop site_root) so the preview inherits the
+        # admin's scheme/origin. site_root carries the scheme baked into the
+        # Site record's port (http:// for the conventional port-80 config),
+        # which the browser blocks as mixed content under the HTTPS admin. This
+        # matches the path-relative URL convention in openstax/functions.py.
+        preview_url = '{}/?preview={}'.format(relative_page_url, mode_name)
         return HttpResponseRedirect(preview_url)
 
 # subclass of RootPage with a few overrides for subpages
