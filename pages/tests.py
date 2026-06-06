@@ -4,6 +4,7 @@ import unittest
 from unittest.mock import patch
 
 from django.test import TestCase, Client
+from django.urls import reverse
 from wagtail.test.utils import WagtailTestUtils, WagtailPageTestCase
 from wagtail.models import Page
 from pages import models as page_models
@@ -934,3 +935,21 @@ class TemplateTagTests(WagtailPageTestCase):
             self.assertIsInstance(item['name'], str, "Item name should be a string")
             self.assertIsInstance(item['type'], str, "Item type should be a string")
             self.assertIsInstance(item['value'], str, "Item value should be a string")
+
+
+class HeadlessUserbarTests(TestCase, WagtailTestUtils):
+    """The headless front-end fetches the Wagtail userbar from this endpoint so
+    that live-preview scroll restoration, the accessibility/content checker,
+    content metrics, and wagtail-ai's content checks work on the decoupled
+    front-end (Wagtail headless docs; see ai_assist/README.md)."""
+
+    def test_userbar_renders_for_admin_user(self):
+        self.login()  # WagtailTestUtils: create + log in a superuser
+        response = self.client.get(reverse('wagtail_userbar'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'wagtail-userbar')
+
+    def test_userbar_not_exposed_to_anonymous(self):
+        response = self.client.get(reverse('wagtail_userbar'))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'wagtail-userbar')

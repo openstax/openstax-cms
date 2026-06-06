@@ -16,6 +16,7 @@ from api import urls as api_urls
 from global_settings.views import throw_error, clear_entire_cache, sitemap
 
 from pages.flex_api import FlexPageDraftView
+from pages.views import HeadlessUserbarView
 
 admin.site.site_header = 'OpenStax'
 
@@ -30,6 +31,13 @@ urlpatterns = [
     path('documents/', include(wagtaildocs_urls)),
 
     re_path(r'^accounts', include(accounts_urls)),  # non-CloudFront Accounts redirects
+
+    # Headless userbar endpoint: the decoupled front-end fetches this while
+    # previewing a draft so the accessibility/content checker, content metrics,
+    # and wagtail-ai's content checks work on the front-end. Mounted under the
+    # already-routed /apps/cms/ prefix so it reaches Django the same way the API
+    # does.
+    path('apps/cms/userbar/', HeadlessUserbarView.as_view(), name='wagtail_userbar'),
 
     path('apps/cms/api/', include(api_urls)),
     path('apps/cms/api/search/', search, name='search'),
