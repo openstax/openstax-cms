@@ -302,10 +302,21 @@ WAGTAIL_AI = {
         },
     },
     "IMAGE_DESCRIPTION_BACKEND": "default",
+    # Image description uses the django-ai-core agent path, which sends images
+    # as OpenAI `image_url` content blocks. any-llm 0.20.3's Anthropic provider
+    # doesn't translate that block (Anthropic expects `image`/`source`), so route
+    # image requests to OpenAI, whose native format is `image_url`. Text prompts
+    # stay on the Anthropic "default" provider. Revert to "default" once any-llm
+    # is upgraded to >=1.x (its Anthropic provider converts the block).
+    "IMAGE_DESCRIPTION_PROVIDER": "image_description",
     "PROVIDERS": {
         "default": {
             "provider": "anthropic",
             "model": os.getenv("WAGTAIL_AI_AGENT_MODEL", "claude-sonnet-4-6"),
+        },
+        "image_description": {  # OpenAI vision: any-llm passes image_url natively
+            "provider": "openai",
+            "model": os.getenv("WAGTAIL_AI_IMAGE_DESCRIPTION_MODEL", "gpt-4o-mini"),
         },
         "embedding": {
             "provider": "openai",

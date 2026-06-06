@@ -47,8 +47,10 @@ WAGTAIL_AI = {
         "openai": {"CLASS": "wagtail_ai.ai.echo.EchoBackend", "CONFIG": {"MODEL_ID": "echo"}},
     },
     "IMAGE_DESCRIPTION_BACKEND": "default",
+    "IMAGE_DESCRIPTION_PROVIDER": "image_description",
     "PROVIDERS": {
         "default": {"provider": AI_TEST_STUB_PROVIDER, "model": "stub"},
+        "image_description": {"provider": AI_TEST_STUB_PROVIDER, "model": "stub"},
         "embedding": {"provider": AI_TEST_STUB_PROVIDER, "model": "stub"},
     },
 }
