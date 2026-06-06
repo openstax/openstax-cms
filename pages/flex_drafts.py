@@ -86,3 +86,24 @@ def create_flex_draft(*, parent, title, slug, layout_data, body_data, user=None)
     parent.add_child(instance=page)      # saves the page row (live=False)
     page.save_revision(user=user)        # creates the draft revision; does NOT publish
     return page, []
+
+
+def update_flex_draft(*, page, title=None, layout_data=None, body_data=None, user=None):
+    """Apply changes to an existing FlexPage as a NEW draft revision.
+
+    Mutates only the in-memory instance + saves a revision; the live DB row's
+    published fields are left intact until a human publishes. Returns (page, warnings).
+    """
+    if title is not None:
+        page.title = title
+    if layout_data is not None:
+        validate_layout(layout_data)
+        page.layout = layout_data
+    if body_data is not None:
+        validate_body(body_data)
+        page.body = body_data
+
+    page.save_revision(user=user)          # draft only; not published
+    # Reflect unpublished changes without touching published fields.
+    type(page).objects.filter(pk=page.pk).update(has_unpublished_changes=True)
+    return page, []

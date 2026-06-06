@@ -125,3 +125,37 @@ class CreateDraftTests(TestCase):
         self.assertTrue(page.has_unpublished_changes)
         self.assertIsNotNone(page.get_latest_revision())  # draft revision exists
         self.assertEqual(page.slug, "why-openstax")
+
+
+from pages.flex_drafts import update_flex_draft
+
+
+class UpdateDraftTests(TestCase):
+    def setUp(self):
+        root = Page.objects.get(depth=1)
+        self.home = page_models.RootPage(title="Home", slug="site-root")
+        root.add_child(instance=self.home)
+        self.page = page_models.FlexPage(
+            title="Live Title", slug="live-page",
+            layout=[{"type": "default", "value": {}}],
+            body=[{"type": "html", "value": "<p>original</p>"}],
+        )
+        self.home.add_child(instance=self.page)
+        self.page.save_revision().publish()   # make a real live version
+        self.page.refresh_from_db()
+        self.assertTrue(self.page.live)
+
+    def test_update_creates_draft_without_changing_live(self):
+        update_flex_draft(
+            page=self.page,
+            title="Draft Title",
+            layout_data=[{"type": "landing", "value": {"nav_links": [], "show_give_now_button": True}}],
+            body_data=[{"type": "html", "value": "<p>changed</p>"}],
+        )
+        live = page_models.FlexPage.objects.get(id=self.page.id)
+        self.assertEqual(live.title, "Live Title")               # live untouched
+        self.assertIn("original", str(live.body))                # live body untouched
+        self.assertTrue(live.has_unpublished_changes)
+        latest = live.get_latest_revision_as_object()
+        self.assertEqual(latest.title, "Draft Title")            # draft has the change
+        self.assertIn("changed", str(latest.body))
