@@ -259,7 +259,7 @@ class FlexDraftEndpointTests(TestCase):
         self.assertEqual(resp.status_code, 403)
 
 
-from pages.flex_drafts import validate_rich_text_references, PageLockedError
+from pages.flex_drafts import validate_rich_text_references
 from wagtail.images import get_image_model
 
 
