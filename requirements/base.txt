@@ -35,7 +35,7 @@ six==1.17.0
 ua-parser==1.0.1
 unicodecsv==0.14.1
 vcrpy==7.0.0
-wagtail==7.3.2
+wagtail>=7.4,<7.5
 wagtail-ai==3.1.0
 wagtail-autocomplete==0.12.0
 wagtail-modeladmin==2.2.0
