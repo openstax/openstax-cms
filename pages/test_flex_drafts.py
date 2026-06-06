@@ -223,3 +223,21 @@ class FlexDraftEndpointTests(TestCase):
         data = resp.json()
         self.assertEqual(data["slug"], "dup-1")
         self.assertEqual(data["warnings"][0]["code"], "slug_collision")
+
+
+from wagtail.images.tests.utils import Image, get_test_image_file
+
+
+class ImageSearchTests(TestCase):
+    def test_search_filters_by_title_and_returns_id(self):
+        Image.objects.create(title="Calculus diagram", file=get_test_image_file())
+        Image.objects.create(title="History map", file=get_test_image_file())
+        resp = self.client.get("/apps/cms/api/v2/images/?search=Calculus")
+        self.assertEqual(resp.status_code, 200)
+        items = resp.json()["items"]
+        self.assertEqual(len(items), 1)
+        self.assertEqual(items[0]["title"], "Calculus diagram")
+        self.assertIn("id", items[0])
+        # download_url is exposed under "meta" by OpenStaxImagesAPIViewSet
+        # (existing public API shape — the agent reads it from there).
+        self.assertIn("download_url", items[0]["meta"])
