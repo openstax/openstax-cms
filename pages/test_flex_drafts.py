@@ -3,6 +3,8 @@ from django.test import TestCase
 from wagtail.models import Page
 from pages import models as page_models
 from pages.routing_rules import validate_page_location, RoutingError
+from django.contrib.auth import get_user_model
+from pages.flex_permissions import CanDraftFlexPages
 
 DEFAULT_LAYOUT = [{"type": "default", "value": {}}]
 LANDING_LAYOUT = [{"type": "landing", "value": {"nav_links": [], "show_give_now_button": True}}]
@@ -41,3 +43,28 @@ class RoutingRulesTests(TestCase):
         self.home.add_child(instance=portal)
         with self.assertRaises(RoutingError):
             validate_page_location(portal, "child")
+
+
+class PermissionTests(TestCase):
+    def setUp(self):
+        self.User = get_user_model()
+        self.perm = CanDraftFlexPages()
+
+    def _req(self, user):
+        class R:  # minimal stand-in for a DRF request
+            pass
+        r = R()
+        r.user = user
+        return r
+
+    def test_anonymous_denied(self):
+        from django.contrib.auth.models import AnonymousUser
+        self.assertFalse(self.perm.has_permission(self._req(AnonymousUser()), None))
+
+    def test_non_staff_denied(self):
+        u = self.User.objects.create_user("editor", password="x", is_staff=False)
+        self.assertFalse(self.perm.has_permission(self._req(u), None))
+
+    def test_staff_allowed(self):
+        u = self.User.objects.create_user("staff", password="x", is_staff=True)
+        self.assertTrue(self.perm.has_permission(self._req(u), None))
