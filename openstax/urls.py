@@ -40,6 +40,14 @@ urlpatterns = [
     # Declared before the apps/cms/api/ include so the include doesn't swallow it.
     path('apps/cms/api/userbar/', HeadlessUserbarView.as_view(), name='wagtail_userbar'),
 
+    # TEMPORARY: the dedicated apps/cms/api/userbar/* CloudFront behavior (cookies
+    # forwarded, no cache) isn't deployed yet, so apps/cms/api/* still strips the
+    # session cookie and the userbar comes back blank. The existing (now-unused)
+    # apps/cms/api/salesforce/reviews/* behavior already forwards cookies + skips
+    # caching, so we ride it to test end-to-end. Declared before the salesforce
+    # include so it isn't swallowed. REMOVE once the CloudFront change ships.
+    path('apps/cms/api/salesforce/reviews/userbar/', HeadlessUserbarView.as_view(), name='wagtail_userbar_temp'),
+
     path('apps/cms/api/', include(api_urls)),
     path('apps/cms/api/search/', search, name='search'),
     path('apps/cms/api/v2/pages/flex/', FlexPageDraftView.as_view(), name='flex-draft-create'),
