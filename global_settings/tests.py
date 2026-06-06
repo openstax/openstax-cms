@@ -39,6 +39,11 @@ class SlashlessSitemapTest(TestCase):
         locations = [u['location'] for u in sitemap._urls(1, 'https', 'openstax.org')]
         self.assertEqual(locations, ['https://openstax.org/blog/some-post'])
 
+    def test_urls_leave_missing_locations_unchanged(self):
+        sitemap = self._sitemap_with_locations(None, 'https://openstax.org/blog/some-post/')
+        locations = [u['location'] for u in sitemap._urls(1, 'https', 'openstax.org')]
+        self.assertEqual(locations, [None, 'https://openstax.org/blog/some-post'])
+
 
 class SitemapViewTest(TestCase):
     def test_sitemap_locs_are_slashless(self):

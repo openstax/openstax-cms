@@ -33,7 +33,9 @@ class SlashlessSitemap(Sitemap):
     def _urls(self, page, protocol, domain):
         urls = super()._urls(page, protocol, domain)
         for url_info in urls:
-            url_info['location'] = url_info['location'].rstrip('/')
+            location = url_info.get('location')
+            if location is not None:
+                url_info['location'] = location.rstrip('/')
         return urls
 
 
