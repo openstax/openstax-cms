@@ -7,8 +7,27 @@ so anyone with Wagtail edit access can use them. Features:
 - **Rich-text wand** — rewrite/grammar/completion in rich-text fields.
 - **Title & meta-description suggestions** — on every page type (`AITitleFieldPanel` / `AIDescriptionFieldPanel`, applied in `panel_patches.py`).
 - **Image alt text** — in the image editor (`WAGTAILIMAGES_IMAGE_FORM_BASE`) and contextually in StreamField image blocks (`AIImageBlock`).
-- **Content feedback** — quality suggestions in the Checks side panel.
+- **Content feedback** — quality suggestions in the Checks side panel. Reads
+  the previewed page through Wagtail's userbar, so it needs the headless userbar
+  wired up (see below); the other features work without it.
 - **Related pages** — semantic suggestions on NewsArticle, Book, and FlexPage.
+
+## Headless preview & the userbar
+We render the front-end out of process (os-webview), so the field-level AI tools
+above run entirely in the Wagtail admin and need nothing on the front-end. The
+**Checks panel** (content checker, content metrics, accessibility checker, and
+wagtail-ai's content checks) is different: it reads the previewed page via the
+userbar's preview controller, which only exists if the userbar is loaded on the
+front-end. Without it, content extraction returns `null`
+([wagtail-ai#161](https://github.com/wagtail/wagtail-ai/issues/161)).
+
+Two pieces make it work; both share an origin, so no CORS is involved:
+- **CMS** — `RootPage.serve_preview` redirects previews to the front-end URL
+  (no nested iframe), and `HeadlessUserbarView` (`pages/views.py`, routed at
+  `/apps/cms/userbar/`) serves the userbar markup, gated to admins.
+- **os-webview** — the `HeadlessUserbar` component fetches that endpoint while
+  `?preview` is in the URL, injects the markup, and loads Wagtail's
+  `vendor.js`/`userbar.js`.
 
 ## Architecture
 - Rich-text editor uses the legacy `WAGTAIL_AI["BACKENDS"]` (the `llm` library + `llm-anthropic`).
