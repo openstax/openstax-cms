@@ -51,6 +51,7 @@ WAGTAIL_AI = {
     "PROVIDERS": {
         "default": {"provider": AI_TEST_STUB_PROVIDER, "model": "stub"},
         "image_description": {"provider": AI_TEST_STUB_PROVIDER, "model": "stub"},
+        "content_feedback": {"provider": AI_TEST_STUB_PROVIDER, "model": "stub"},
         "embedding": {"provider": AI_TEST_STUB_PROVIDER, "model": "stub"},
     },
 }

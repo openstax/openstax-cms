@@ -318,6 +318,17 @@ WAGTAIL_AI = {
             "provider": "openai",
             "model": os.getenv("WAGTAIL_AI_IMAGE_DESCRIPTION_MODEL", "gpt-4o-mini"),
         },
+        # Content feedback is the only agent that requests structured output
+        # (response_format). any-llm 0.20.3's Anthropic provider raises
+        # UnsupportedParameterError on it (Anthropic has no OpenAI-style JSON
+        # mode), so route it to OpenAI, whose provider supports response_format.
+        # ContentFeedbackAgent hardcodes provider_alias="default" with no setting
+        # to override it, so ai_assist.agent_patches points it at this alias.
+        # Revert to "default" once any-llm is upgraded to >=1.x.
+        "content_feedback": {
+            "provider": "openai",
+            "model": os.getenv("WAGTAIL_AI_CONTENT_FEEDBACK_MODEL", "gpt-4o-mini"),
+        },
         "embedding": {
             "provider": "openai",
             "model": os.getenv("WAGTAIL_AI_EMBEDDING_MODEL", "text-embedding-3-small"),
