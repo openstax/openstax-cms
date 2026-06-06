@@ -20,8 +20,8 @@ so anyone with Wagtail edit access can use them. Features:
 |---|---|---|
 | `ANTHROPIC_API_KEY` | Claude — rich-text backends and the default agent provider. **Required.** | — |
 | `OPENAI_API_KEY` | OpenAI — required for related-pages **embeddings**, and the optional `openai` backend. | — |
-| `WAGTAIL_AI_AGENT_MODEL` | Claude model for agent features. | `claude-3-5-sonnet-latest` |
-| `WAGTAIL_AI_EMBEDDING_MODEL` | OpenAI embedding model. | `text-embedding-3-small` |
+| `WAGTAIL_AI_AGENT_MODEL` | Claude model for agent features. | `claude-sonnet-4-6` |
+| `WAGTAIL_AI_EMBEDDING_MODEL` | OpenAI embedding model. **Must stay 1536-dim** (e.g. `text-embedding-3-small`/`-ada-002`); the `vector` column is fixed at 1536. Switching to a different-dimension model (e.g. `text-embedding-3-large`, 3072) also requires editing `VectorField(dimensions=...)` in `ai_assist/models.py` and adding a migration, or inserts will fail. | `text-embedding-3-small` |
 | `WAGTAIL_AI_DEFAULT_MODEL` / `WAGTAIL_AI_QUALITY_MODEL` / `WAGTAIL_AI_OPENAI_MODEL` | Rich-text backend model IDs. | haiku-4-5 / sonnet-4-6 / gpt-4o-mini |
 
 ## Deploy steps

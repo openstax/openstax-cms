@@ -366,7 +366,13 @@ class RootPage(Page):
         # Redirect the preview panel straight to the headless frontend (same
         # origin) so Wagtail's content checks read the rendered page directly,
         # per the Wagtail 7.1+ recommendation against nested preview iframes.
-        site_id, site_root, relative_page_url = self.get_url_parts(request)
+        url_parts = self.get_url_parts(request)
+        # get_url_parts returns None when no Site resolves to this page (e.g. a
+        # freshly-created page tree before the Site is wired up); fall back to
+        # Wagtail's default preview rather than crashing on the unpack.
+        if url_parts is None:
+            return super().serve_preview(request, mode_name)
+        site_id, site_root, relative_page_url = url_parts
         preview_url = '{}{}/?preview={}'.format(site_root, relative_page_url, mode_name)
         return HttpResponseRedirect(preview_url)
 

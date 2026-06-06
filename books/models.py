@@ -1107,7 +1107,7 @@ class Book(Page):
         book_urls = []
         for field in self.api_fields:
             try:
-                url = re.findall(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+',
+                url = re.findall(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$\-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+',
                                  getattr(self, field))
                 if url:
                     book_urls.append(url)
