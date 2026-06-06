@@ -68,3 +68,36 @@ class PermissionTests(TestCase):
     def test_staff_allowed(self):
         u = self.User.objects.create_user("staff", password="x", is_staff=True)
         self.assertTrue(self.perm.has_permission(self._req(u), None))
+
+
+from pages.flex_drafts import (
+    validate_layout, validate_body, FlexValidationError,
+)
+
+
+class LayoutValidationTests(TestCase):
+    def test_missing_layout_is_error(self):
+        with self.assertRaises(FlexValidationError):
+            validate_layout([])
+
+    def test_unknown_layout_type_is_error(self):
+        with self.assertRaises(FlexValidationError):
+            validate_layout([{"type": "fancy", "value": {}}])
+
+    def test_default_layout_ok(self):
+        cleaned = validate_layout([{"type": "default", "value": {}}])
+        self.assertEqual(len(cleaned), 1)
+        self.assertEqual(cleaned[0].block_type, "default")
+
+
+class BodyValidationTests(TestCase):
+    def test_valid_html_block_passes(self):
+        cleaned = validate_body([
+            {"type": "html", "value": "<p>Hello students</p>"},
+        ])
+        self.assertEqual(cleaned[0].block_type, "html")
+
+    def test_unknown_block_type_is_error(self):
+        with self.assertRaises(FlexValidationError) as ctx:
+            validate_body([{"type": "not_a_block", "value": {}}])
+        self.assertIn("not_a_block", str(ctx.exception))
