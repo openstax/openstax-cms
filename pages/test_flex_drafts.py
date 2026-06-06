@@ -259,6 +259,87 @@ class FlexDraftEndpointTests(TestCase):
         self.assertEqual(resp.status_code, 403)
 
 
+from pages.flex_drafts import validate_rich_text_references, PageLockedError
+from wagtail.images import get_image_model
+
+
+class RichTextReferenceTests(TestCase):
+    def setUp(self):
+        root = Page.objects.get(depth=1)
+        self.home = page_models.RootPage(title="Home", slug="site-root")
+        root.add_child(instance=self.home)
+
+    def _section_with_html(self, html):
+        return [{"type": "section", "value": {
+            "content": [{"type": "text", "value": html}], "config": []}}]
+
+    def test_valid_page_link_passes(self):
+        body = self._section_with_html(f'<p><a linktype="page" id="{self.home.id}">home</a></p>')
+        validate_rich_text_references(body)  # should not raise
+
+    def test_unknown_page_link_raises(self):
+        body = self._section_with_html('<p><a linktype="page" id="999999">ghost</a></p>')
+        with self.assertRaises(FlexValidationError) as ctx:
+            validate_rich_text_references(body)
+        self.assertIn("references", ctx.exception.errors)
+        self.assertEqual(ctx.exception.errors["references"]["missing"]["page"], [999999])
+
+    def test_unknown_image_embed_raises(self):
+        body = self._section_with_html('<p><embed embedtype="image" id="888888" alt="x" format="left"/></p>')
+        with self.assertRaises(FlexValidationError):
+            validate_rich_text_references(body)
+
+    def test_valid_image_embed_passes(self):
+        ImageModel = get_image_model()
+        from wagtail.images.tests.utils import get_test_image_file
+        img = ImageModel.objects.create(title="Test img", file=get_test_image_file())
+        body = self._section_with_html(f'<p><embed embedtype="image" id="{img.id}" alt="x" format="left"/></p>')
+        validate_rich_text_references(body)  # should not raise
+
+    def test_no_refs_passes(self):
+        body = self._section_with_html('<p>Just plain text, no refs.</p>')
+        validate_rich_text_references(body)  # should not raise
+
+
+class PageLockEndpointTests(TestCase):
+    def setUp(self):
+        root = Page.objects.get(depth=1)
+        self.home = page_models.RootPage(title="Home", slug="site-root")
+        root.add_child(instance=self.home)
+        self.User = get_user_model()
+        self.staff = self.User.objects.create_user("staff_lock", password="x", is_staff=True, is_superuser=True)
+        self.token = Token.objects.create(user=self.staff)
+        self.client = APIClient()
+
+    def _auth(self):
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {self.token.key}")
+
+    def test_create_with_stale_page_ref_returns_400(self):
+        self._auth()
+        resp = self.client.post("/apps/cms/api/v2/pages/flex/", {
+            "parent_id": self.home.id, "title": "Ref", "slug": "ref-test",
+            "layout": [{"type": "default", "value": {}}],
+            "body": [{"type": "section", "value": {
+                "content": [{"type": "text", "value": '<p><a linktype="page" id="999999">x</a></p>'}],
+                "config": []}}],
+        }, format="json")
+        self.assertEqual(resp.status_code, 400)
+        self.assertIn("references", resp.json()["errors"])
+
+    def test_patch_locked_page_returns_409(self):
+        self._auth()
+        page, _ = create_flex_draft(
+            parent=self.home, title="Lockme", slug="lock-me",
+            layout_data=[{"type": "default", "value": {}}], body_data=[],
+        )
+        page.locked = True
+        page.save()
+        resp = self.client.patch(f"/apps/cms/api/v2/pages/flex/{page.id}/", {
+            "title": "Nope",
+        }, format="json")
+        self.assertEqual(resp.status_code, 409)
+
+
 from wagtail.images.tests.utils import Image, get_test_image_file
 
 

@@ -9,7 +9,7 @@ from wagtail.models import Page
 
 from pages.models import FlexPage
 from pages.flex_permissions import CanDraftFlexPages
-from pages.flex_drafts import create_flex_draft, update_flex_draft, FlexValidationError
+from pages.flex_drafts import create_flex_draft, update_flex_draft, FlexValidationError, PageLockedError
 from pages.routing_rules import validate_page_location, RoutingError
 
 
@@ -81,4 +81,6 @@ class FlexPageDraftView(APIView):
             )
         except FlexValidationError as exc:
             return Response({"errors": exc.errors}, status=status.HTTP_400_BAD_REQUEST)
+        except PageLockedError as exc:
+            return Response({"errors": {"page_id": str(exc)}}, status=status.HTTP_409_CONFLICT)
         return Response(_review_payload(page, []), status=status.HTTP_200_OK)

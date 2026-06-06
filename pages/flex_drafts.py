@@ -5,7 +5,11 @@ Validation runs incoming JSON through the *actual* FlexPage StreamField block
 definitions, so error messages match what a Wagtail editor would see. This makes
 the CMS block definitions the single source of truth.
 """
+import re
+
 from wagtail.blocks import StreamBlockValidationError
+from wagtail.models import Page
+from wagtail.images import get_image_model
 
 from pages.models import FlexPage
 
@@ -18,6 +22,73 @@ class FlexValidationError(Exception):
     def __init__(self, errors):
         self.errors = errors
         super().__init__(str(errors))
+
+
+class PageLockedError(Exception):
+    """Raised when attempting to write a page locked by another user."""
+    def __init__(self, message):
+        self.message = message
+        super().__init__(message)
+
+
+_A_TAG_RE = re.compile(r'<a\b[^>]*>', re.IGNORECASE)
+_EMBED_TAG_RE = re.compile(r'<embed\b[^>]*>', re.IGNORECASE)
+_ID_RE = re.compile(r'\bid="(\d+)"')
+
+
+def _iter_strings(obj):
+    if isinstance(obj, str):
+        yield obj
+    elif isinstance(obj, dict):
+        for v in obj.values():
+            yield from _iter_strings(v)
+    elif isinstance(obj, (list, tuple)):
+        for v in obj:
+            yield from _iter_strings(v)
+
+
+def _collect_reference_ids(data):
+    """Walk raw string values (avoids JSON-escaping issues) and pull page/image ids
+    from Wagtail rich-text link/embed tags."""
+    page_ids, image_ids = set(), set()
+    for s in _iter_strings(data):
+        if 'linktype="page"' in s:
+            for tag in _A_TAG_RE.findall(s):
+                if 'linktype="page"' in tag:
+                    m = _ID_RE.search(tag)
+                    if m:
+                        page_ids.add(int(m.group(1)))
+        if 'embedtype="image"' in s:
+            for tag in _EMBED_TAG_RE.findall(s):
+                if 'embedtype="image"' in tag:
+                    m = _ID_RE.search(tag)
+                    if m:
+                        image_ids.add(int(m.group(1)))
+    return page_ids, image_ids
+
+
+def validate_rich_text_references(data):
+    """Reject rich-text page-links / image-embeds whose target id doesn't exist."""
+    page_ids, image_ids = _collect_reference_ids(data)
+    missing = {}
+    if page_ids:
+        existing = set(Page.objects.filter(id__in=page_ids).values_list("id", flat=True))
+        bad = sorted(page_ids - existing)
+        if bad:
+            missing["page"] = bad
+    if image_ids:
+        existing = set(get_image_model().objects.filter(id__in=image_ids).values_list("id", flat=True))
+        bad = sorted(image_ids - existing)
+        if bad:
+            missing["image"] = bad
+    if missing:
+        raise FlexValidationError({
+            "references": {
+                "message": "Rich-text references point to objects that don't exist. "
+                           "Look up valid IDs via image/page search before writing.",
+                "missing": missing,
+            }
+        })
 
 
 def _stream_block(field_name):
@@ -78,6 +149,7 @@ def create_flex_draft(*, parent, title, slug, layout_data, body_data, user=None)
     """
     validate_layout(layout_data)
     validate_body(body_data)
+    validate_rich_text_references(body_data)
 
     page = FlexPage(
         title=title,
@@ -98,13 +170,20 @@ def update_flex_draft(*, page, title=None, layout_data=None, body_data=None, use
     Mutates only the in-memory instance + saves a revision; the live DB row's
     published fields are left intact until a human publishes. Returns (page, warnings).
     """
+    if page.locked:
+        raise PageLockedError(f"Page {page.id} is locked by another user and cannot be edited.")
+    # validate everything before mutating anything
+    if layout_data is not None:
+        validate_layout(layout_data)
+    if body_data is not None:
+        validate_body(body_data)
+        validate_rich_text_references(body_data)
+    # apply
     if title is not None:
         page.title = title
     if layout_data is not None:
-        validate_layout(layout_data)
         page.layout = layout_data
     if body_data is not None:
-        validate_body(body_data)
         page.body = body_data
 
     page.save_revision(user=user)          # draft only; not published
