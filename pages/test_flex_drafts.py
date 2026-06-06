@@ -224,6 +224,40 @@ class FlexDraftEndpointTests(TestCase):
         self.assertEqual(data["slug"], "dup-1")
         self.assertEqual(data["warnings"][0]["code"], "slug_collision")
 
+    def test_patch_updates_existing_draft(self):
+        self._auth()
+        page, _ = create_flex_draft(
+            parent=self.home, title="Orig", slug="patch-me",
+            layout_data=[{"type": "default", "value": {}}],
+            body_data=[{"type": "html", "value": "<p>orig</p>"}],
+        )
+        resp = self.client.patch(f"/apps/cms/api/v2/pages/flex/{page.id}/", {
+            "title": "Patched",
+            "body": [{"type": "html", "value": "<p>new</p>"}],
+        }, format="json")
+        self.assertEqual(resp.status_code, 200, resp.content)
+        self.assertEqual(resp.json()["id"], page.id)
+        self.assertFalse(resp.json()["live"])  # update never publishes
+
+    def test_reserved_slug_rejected_at_endpoint(self):
+        self._auth()
+        resp = self.client.post("/apps/cms/api/v2/pages/flex/", {
+            "parent_id": self.home.id, "title": "Books", "slug": "books",
+            "layout": [{"type": "default", "value": {}}], "body": [],
+        }, format="json")
+        self.assertEqual(resp.status_code, 400)
+        self.assertIn("slug", resp.json()["errors"])
+
+    def test_authenticated_non_staff_denied(self):
+        nonstaff = self.User.objects.create_user("editor2", password="x", is_staff=False)
+        token = Token.objects.create(user=nonstaff)
+        self.client.credentials(HTTP_AUTHORIZATION=f"Token {token.key}")
+        resp = self.client.post("/apps/cms/api/v2/pages/flex/", {
+            "parent_id": self.home.id, "title": "X", "slug": "x",
+            "layout": [{"type": "default", "value": {}}], "body": [],
+        }, format="json")
+        self.assertEqual(resp.status_code, 403)
+
 
 from wagtail.images.tests.utils import Image, get_test_image_file
 
