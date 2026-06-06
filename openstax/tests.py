@@ -2,8 +2,10 @@ import datetime
 import json
 from .functions import remove_locked_links_detail, remove_locked_links_listing, build_document_url, build_image_url
 
-from django.test import TestCase, Client
+from django.test import TestCase, SimpleTestCase, Client, RequestFactory, override_settings
+from django.http import HttpResponse, HttpResponseNotFound
 from django.core.files.uploadedfile import SimpleUploadedFile
+from openstax.middleware import CommonMiddlewareAppendSlashWithoutRedirect
 from wagtail.models import Page
 from pages.models import RootPage
 from books.models import BookIndex, Book
@@ -14,6 +16,48 @@ from wagtail.documents.models import Document
 
 class TestClass(object):
     pass
+
+
+@override_settings(ALLOWED_HOSTS=['*'], APPEND_SLASH=True)
+class AppendSlashWithoutRedirectTest(SimpleTestCase):
+    """Regression for the slash-less 404 bug.
+
+    A URL whose slashed form resolves (e.g. ``/admin/pages``) must be served via
+    the middleware's internal re-dispatch, not 404. Django's URL resolver matches
+    on ``request.path_info``, so the middleware has to append the trailing slash
+    there too -- updating only ``request.path`` left the re-dispatch resolving the
+    original slash-less path, which 404'd.
+    """
+
+    def setUp(self):
+        self.factory = RequestFactory()
+
+    def _redispatch_capture(self, path):
+        # View layer 404s for the slash-less path, as the real resolver would,
+        # which triggers Django's append-slash redirect that the middleware
+        # converts into an internal re-dispatch.
+        mw = CommonMiddlewareAppendSlashWithoutRedirect(
+            lambda req: HttpResponseNotFound("nope")
+        )
+        captured = {}
+
+        def fake_redispatch(request):
+            captured["path"] = request.path
+            captured["path_info"] = request.path_info
+            return HttpResponse("ok")
+
+        mw.handler.get_response = fake_redispatch
+        request = self.factory.get(path)
+        response = mw.process_response(request, HttpResponseNotFound("nope"))
+        return response, captured
+
+    def test_no_slash_url_redispatched_with_slash_on_path_info(self):
+        response, captured = self._redispatch_capture("/admin/pages")
+        # Re-dispatch happened instead of staying a 404 ...
+        self.assertEqual(response.status_code, 200)
+        # ... and the slash is on path_info (what the resolver matches), not just path.
+        self.assertEqual(captured["path"], "/admin/pages/")
+        self.assertEqual(captured["path_info"], "/admin/pages/")
 
 class FunctionsTest(TestCase):
     def setUp(self):
