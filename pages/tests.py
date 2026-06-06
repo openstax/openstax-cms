@@ -991,3 +991,12 @@ class HeadlessUserbarTests(TestCase, WagtailTestUtils):
         response = self.client.get(reverse('wagtail_userbar'))
         self.assertEqual(response.status_code, 200)
         self.assertNotContains(response, 'wagtail-userbar')
+
+    def test_userbar_response_is_never_cached(self):
+        # The body varies by user (admin bar vs empty), so a CDN must never
+        # cache it: a cached blank would be served to editors, and a cached
+        # admin bar (with edit links) would leak to the anonymous public.
+        self.login()
+        response = self.client.get(reverse('wagtail_userbar'))
+        self.assertIn('no-store', response.headers.get('Cache-Control', ''))
+        self.assertIn('Cookie', response.headers.get('Vary', ''))
