@@ -10,14 +10,14 @@ django-compressor==4.5.1
 django-crontab==0.7.1
 django-filter==25.1
 django-import-export==4.3.7
-django-modelcluster==6.4.1
+django-modelcluster>=6.5,<7.0
 django-openstax-accounts==1.0
 django-openstax-healthcheck==1.0
 django-rest-auth==0.9.5
 django-reversion==5.1.0
 django-ses==4.4.0
 django-storages==1.14.6
-django-taggit==6.1.0
+django-taggit>=6.1,<7.0
 djangorestframework==3.16.0
 html2text==2025.4.15
 llm==0.31
@@ -38,5 +38,5 @@ vcrpy==7.0.0
 wagtail>=7.4,<7.5
 wagtail-ai==3.1.0
 wagtail-autocomplete==0.12.0
-wagtail-modeladmin==2.2.0
+wagtail-modeladmin==2.3.0
 whitenoise==6.9.0
