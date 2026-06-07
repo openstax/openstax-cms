@@ -254,6 +254,7 @@ INSTALLED_APPS = [
     'oxmenus',
     # wagtail
     'wagtail_ai',
+    'wagtail_color_panel',
     'django_ai_core.contrib.index',
     'wagtail',
     'wagtail.admin',

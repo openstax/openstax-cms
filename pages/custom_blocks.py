@@ -5,6 +5,7 @@ from wagtail.blocks import FieldBlock, StructBlock
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.documents.blocks import DocumentChooserBlock
 from wagtail_ai.blocks import ai_image_block
+from wagtail_color_panel.blocks import NativeColorBlock
 
 from api.serializers import ImageSerializer
 from openstax.functions import build_image_url, build_document_url
@@ -44,11 +45,7 @@ CARDS_STYLE_CHOICES = [
 
 # --- Helper factories ---
 def hex_color_block(help_text):
-    return blocks.RegexBlock(
-        regex=r'#[a-zA-Z0-9]{6}',
-        help_text=help_text,
-        error_mssages={'invalid': 'not a valid hex color.'}
-    )
+    return NativeColorBlock(help_text=help_text)
 
 
 def gradient_config_options():
