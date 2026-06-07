@@ -1,4 +1,6 @@
 from django import forms
+import json
+from django.utils.functional import cached_property
 
 from wagtail import blocks
 from wagtail.blocks import FieldBlock, StructBlock
@@ -6,6 +8,8 @@ from wagtail.images.blocks import ImageChooserBlock
 from wagtail.documents.blocks import DocumentChooserBlock
 from wagtail_ai.blocks import ai_image_block
 from wagtail_color_panel.blocks import NativeColorBlock
+from wagtail_color_panel.widgets import ColorInputWidget, ColorInputWidgetAdapter
+from wagtail.admin.telepath import register
 
 from api.serializers import ImageSerializer
 from openstax.functions import build_image_url, build_document_url
@@ -42,10 +46,121 @@ CARDS_STYLE_CHOICES = [
     ('square', 'Square'),
 ]
 
+OPENSTAX_BRAND_COLORS = [
+    {'label': 'Green Dark', 'value': '#204B00'},
+    {'label': 'Green Warm', 'value': '#538E1D'},
+    {'label': 'Green Bright', 'value': '#76AE43'},
+    {'label': 'Green Light', 'value': '#F5FFEC'},
+    {'label': 'Teal Dark', 'value': '#0A5B50'},
+    {'label': 'Teal Warm', 'value': '#0C9372'},
+    {'label': 'Teal Bright', 'value': '#00CCA0'},
+    {'label': 'Teal Light', 'value': '#F0FEFE'},
+    {'label': 'Blue Dark', 'value': '#002E6D'},
+    {'label': 'Blue Warm', 'value': '#026AA1'},
+    {'label': 'Blue Bright', 'value': '#00C1DE'},
+    {'label': 'Blue Light', 'value': '#F7FCFF'},
+    {'label': 'Pink Dark', 'value': '#461347'},
+    {'label': 'Pink Warm', 'value': '#9A2959'},
+    {'label': 'Pink Bright', 'value': '#B72567'},
+    {'label': 'Pink Light', 'value': '#FFF0F7'},
+    {'label': 'Orange Dark', 'value': '#D4450C'},
+    {'label': 'Orange Warm', 'value': '#EF6428'},
+    {'label': 'Orange Bright', 'value': '#FF8753'},
+    {'label': 'Orange Light', 'value': '#FFF5F0'},
+    {'label': 'Yellow Dark', 'value': '#FDBD3E'},
+    {'label': 'Yellow Warm', 'value': '#F4D019'},
+    {'label': 'Yellow Bright', 'value': '#FFE665'},
+    {'label': 'Yellow Light', 'value': '#FFFCEF'},
+    {'label': 'Gray Dark', 'value': '#424242'},
+    {'label': 'Gray Warm', 'value': '#6A6A6A'},
+    {'label': 'Gray Bright', 'value': '#9A9A9B'},
+    {'label': 'Gray Light', 'value': '#F5F5F5'},
+]
+
+
+class OpenStaxColorInputWidget(ColorInputWidget):
+    """ColorInputWidget extended with the OpenStax brand-swatch picker.
+
+    - ``format_value`` renders empty / invalid values as blank rather than the
+      literal string "None" (the native <input type="color"> rejects non-#rrggbb
+      values with a browser console warning; blank harmlessly becomes #000000).
+    - ``build_attrs`` attaches the ``openstax-color-swatches`` Stimulus controller
+      alongside the package's own ``color-input`` controller, so the swatch panel
+      auto-initialises whenever the field enters the DOM — including
+      dynamically-added StreamField blocks — with no MutationObserver.
+    - ``media`` ships the swatch CSS/JS, loaded only when a colour field is on the
+      page (the idiomatic Wagtail mechanism; ``insert_editor_css`` is not rendered
+      in Wagtail 7.4)."""
+
+    def format_value(self, value):
+        # Return an empty STRING (not None) for blank values: the package's
+        # color-input template renders the native chip as value="{{ widget.value }}"
+        # with no None-guard, and Django renders Python None as the string "None"
+        # — which the <input type="color"> rejects. value="" harmlessly becomes
+        # #000000 instead.
+        if value is None:
+            return ''
+        text = str(value).strip()
+        if text == '' or text.lower() == 'none':
+            return ''
+        return super().format_value(value)
+
+    def build_attrs(self, *args, **kwargs):
+        attrs = super().build_attrs(*args, **kwargs)
+        controllers = (attrs.get('data-controller') or '').split()
+        if 'openstax-color-swatches' not in controllers:
+            controllers.append('openstax-color-swatches')
+        attrs['data-controller'] = ' '.join(controllers)
+        return attrs
+
+    @property
+    def media(self):
+        return super().media + forms.Media(
+            css={'all': ['pages/openstax-color-swatches.css']},
+            js=['pages/openstax-color-swatches.js'],
+        )
+
+
+class OpenStaxColorInputWidgetAdapter(ColorInputWidgetAdapter):
+    # Reuses the package's JS constructor + Media; telepath needs an adapter
+    # registered against this exact widget subclass.
+    pass
+
+
+register(OpenStaxColorInputWidgetAdapter(), OpenStaxColorInputWidget)
+
+
+class OpenStaxColorBlock(NativeColorBlock):
+    """Native color picker with OpenStax brand swatches for quick selection."""
+
+    def __init__(self, required=True, help_text=None, validators=(), brand_colors=None, **kwargs):
+        self.brand_colors = brand_colors or OPENSTAX_BRAND_COLORS
+        super().__init__(required=required, help_text=help_text, validators=validators, **kwargs)
+
+    @cached_property
+    def field(self):
+        field = super().field
+        field.widget = OpenStaxColorInputWidget()
+        # Stimulus value: the controller reads this as `this.paletteValue`.
+        field.widget.attrs['data-openstax-color-swatches-palette-value'] = json.dumps(self.brand_colors)
+        return field
+
+    def value_for_form(self, value):
+        # An empty color is sometimes stored as the literal string "None", which
+        # the native <input type="color"> rejects. Coerce it (and any non-hex
+        # junk) to blank before it reaches the widget; valid hex passes through.
+        # Also cleans a stored "None" back to blank on the next save.
+        if value is None:
+            return value
+        text = str(value).strip()
+        if text == '' or text.lower() == 'none':
+            return ''
+        return super().value_for_form(value)
+
 
 # --- Helper factories ---
 def hex_color_block(help_text):
-    return NativeColorBlock(help_text=help_text)
+    return OpenStaxColorBlock(help_text=help_text)
 
 
 def gradient_config_options():
