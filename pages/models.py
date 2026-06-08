@@ -1,6 +1,5 @@
 from django import forms
 from django.db import models
-from django.http import HttpResponseRedirect
 from django.utils.functional import cached_property
 from modelcluster.fields import ParentalKey
 from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel, TitleFieldPanel
@@ -15,6 +14,7 @@ from wagtail.models import Site
 
 from api.models import FeatureFlag
 from openstax.functions import build_image_url, build_document_url
+from openstax.preview import FrontendPreviewMixin
 from books.models import Book, SubjectBooks, BookFacultyResources, BookStudentResources
 from webinars.models import Webinar
 from news.models import BlogStreamBlock  # for use on the ImpactStories
@@ -251,7 +251,7 @@ BODY_BLOCKS = [
 # we have one RootPage, which is the parent of all other pages
 # this is the only page that should be created at the top level of the page tree
 # this should be the homepage
-class RootPage(Page):
+class RootPage(FrontendPreviewMixin, Page):
     layout = StreamField([
         ('default', blocks.StructBlock([
         ])),
@@ -362,24 +362,7 @@ class RootPage(Page):
 
         return site_id, site_root_url, ''
 
-    def serve_preview(self, request, mode_name):
-        # Redirect the preview panel straight to the headless frontend (same
-        # origin) so Wagtail's content checks read the rendered page directly,
-        # per the Wagtail 7.1+ recommendation against nested preview iframes.
-        url_parts = self.get_url_parts(request)
-        # get_url_parts returns None when no Site resolves to this page (e.g. a
-        # freshly-created page tree before the Site is wired up); fall back to
-        # Wagtail's default preview rather than crashing on the unpack.
-        if url_parts is None:
-            return super().serve_preview(request, mode_name)
-        site_id, site_root, relative_page_url = url_parts
-        # Use a root-relative URL (drop site_root) so the preview inherits the
-        # admin's scheme/origin. site_root carries the scheme baked into the
-        # Site record's port (http:// for the conventional port-80 config),
-        # which the browser blocks as mixed content under the HTTPS admin. This
-        # matches the path-relative URL convention in openstax/functions.py.
-        preview_url = '{}/?preview={}'.format(relative_page_url, mode_name)
-        return HttpResponseRedirect(preview_url)
+    # serve_preview is provided by FrontendPreviewMixin.
 
 # subclass of RootPage with a few overrides for subpages
 class FlexPageRelatedPage(Orderable):
@@ -414,7 +397,7 @@ class FlexPage(RootPage):
 
 #TODO: start removing these pages as we move to the above structure for all pages.
 
-class AboutUsPage(Page):
+class AboutUsPage(FrontendPreviewMixin, Page):
     who_heading = models.CharField(max_length=255)
     who_paragraph = models.TextField()
     who_image = models.ForeignKey(
@@ -512,7 +495,7 @@ class OpenStaxPeople(Orderable, Group):
     marketing_video = ParentalKey('pages.TeamPage', related_name='openstax_people')
 
 
-class TeamPage(Page):
+class TeamPage(FrontendPreviewMixin, Page):
     header = models.TextField(max_length=255)
     subheader = models.TextField(max_length=255)
     header_image = models.ForeignKey(
@@ -571,7 +554,7 @@ class TeamPage(Page):
     max_count = 1
 
 
-class HomePage(Page):
+class HomePage(FrontendPreviewMixin, Page):
     banner_headline = models.CharField(default='', blank=True, max_length=255)
     banner_description = models.TextField(default='', blank=True)
     banner_get_started_text = models.CharField(default='', blank=True, max_length=255)
@@ -877,7 +860,7 @@ class HomePage(Page):
         return site_id, root_url, '/'
 
 
-class K12MainPage(Page):
+class K12MainPage(FrontendPreviewMixin, Page):
     banner_headline = models.CharField(default='', blank=True, max_length=255)
     banner_description = models.TextField(default='', blank=True)
     banner_right_image = models.ForeignKey(
@@ -1061,7 +1044,7 @@ class K12MainPage(Page):
     subpage_types = ['pages.K12Subject']
 
 
-class ContactUs(Page):
+class ContactUs(FrontendPreviewMixin, Page):
     tagline = models.CharField(max_length=255)
     mailing_header = models.CharField(max_length=255)
     mailing_address = RichTextField()
@@ -1108,7 +1091,7 @@ class ContactUs(Page):
     max_count = 1
 
 
-class GeneralPage(Page):
+class GeneralPage(FrontendPreviewMixin, Page):
     body = StreamField([
         ('heading', blocks.CharBlock(classname="full title")),
         ('tagline', blocks.CharBlock(classname="full title")),
@@ -1163,7 +1146,7 @@ class GeneralPage(Page):
     ]
 
 
-class Supporters(Page):
+class Supporters(FrontendPreviewMixin, Page):
     banner_heading = models.CharField(default='', max_length=255)
     banner_description = models.TextField(default='')
     banner_image = models.ForeignKey(
@@ -1232,7 +1215,7 @@ class Supporters(Page):
     max_count = 1
 
 
-class MapPage(Page):
+class MapPage(FrontendPreviewMixin, Page):
     header_text = models.CharField(max_length=255)
     map_image = models.ForeignKey(
         'wagtailimages.Image',
@@ -1358,7 +1341,7 @@ class MapPage(Page):
     max_count = 1
 
 
-class Give(Page):
+class Give(FrontendPreviewMixin, Page):
     intro_heading = models.CharField(max_length=255)
     intro_description = models.TextField()
     other_payment_methods_heading = models.CharField(max_length=255)
@@ -1430,7 +1413,7 @@ class Give(Page):
     max_count = 1
 
 
-class TermsOfService(Page):
+class TermsOfService(FrontendPreviewMixin, Page):
     intro_heading = models.CharField(max_length=255)
     terms_of_service_content = RichTextField()
     promote_image = models.ForeignKey(
@@ -1470,7 +1453,7 @@ class TermsOfService(Page):
     max_count = 1
 
 
-class FAQ(Page):
+class FAQ(FrontendPreviewMixin, Page):
     intro_heading = models.CharField(max_length=255)
     intro_description = RichTextField()
     promote_image = models.ForeignKey(
@@ -1513,7 +1496,7 @@ class FAQ(Page):
     parent_page_types = ['pages.HomePage', 'pages.RootPage']
 
 
-class GiveForm(Page):
+class GiveForm(FrontendPreviewMixin, Page):
     page_description = models.TextField()
     promote_image = models.ForeignKey(
         'wagtailimages.Image',
@@ -1550,7 +1533,7 @@ class GiveForm(Page):
     max_count = 1
 
 
-class Accessibility(Page):
+class Accessibility(FrontendPreviewMixin, Page):
     intro_heading = models.CharField(max_length=255)
     accessibility_content = RichTextField()
     promote_image = models.ForeignKey(
@@ -1590,7 +1573,7 @@ class Accessibility(Page):
     max_count = 1
 
 
-class Licensing(Page):
+class Licensing(FrontendPreviewMixin, Page):
     intro_heading = models.CharField(max_length=255)
     licensing_content = RichTextField()
     promote_image = models.ForeignKey(
@@ -1630,7 +1613,7 @@ class Licensing(Page):
     max_count = 1
 
 
-class Technology(Page):
+class Technology(FrontendPreviewMixin, Page):
     intro_heading = models.CharField(max_length=255)
     intro_description = RichTextField()
 
@@ -1710,7 +1693,7 @@ class Technology(Page):
     max_count = 1
 
 
-class ErrataList(Page):
+class ErrataList(FrontendPreviewMixin, Page):
     correction_schedule = RichTextField()
     deprecated_errata_message = RichTextField(
         help_text="Errata message for deprecated books, controlled via the book state field.")
@@ -1765,7 +1748,7 @@ class ErrataList(Page):
         return []
 
 
-class PrivacyPolicy(Page):
+class PrivacyPolicy(FrontendPreviewMixin, Page):
     intro_heading = models.CharField(max_length=255)
     privacy_content = RichTextField()
     promote_image = models.ForeignKey(
@@ -1805,7 +1788,7 @@ class PrivacyPolicy(Page):
     max_count = 1
 
 
-class PrintOrder(Page):
+class PrintOrder(FrontendPreviewMixin, Page):
     intro_heading = models.CharField(max_length=255)
     intro_description = models.TextField()
     featured_provider_intro_blurb = models.TextField()
@@ -1862,7 +1845,7 @@ class PrintOrder(Page):
     max_count = 1
 
 
-class LearningResearchPage(Page):
+class LearningResearchPage(FrontendPreviewMixin, Page):
     mission_body = models.TextField()
     banner_header = models.TextField(default='', blank=True)
     banner_body = models.TextField(default='', blank=True)
@@ -2003,7 +1986,7 @@ class LearningResearchPage(Page):
     max_count = 1
 
 
-class Careers(Page):
+class Careers(FrontendPreviewMixin, Page):
     intro_heading = models.CharField(max_length=255)
     careers_content = RichTextField()
     promote_image = models.ForeignKey(
@@ -2042,7 +2025,7 @@ class Careers(Page):
     max_count = 1
 
 
-class ImpactStory(Page):
+class ImpactStory(FrontendPreviewMixin, Page):
     date = models.DateField("Post date")
     heading = models.CharField(max_length=250, help_text="Heading displayed on website")
     subheading = models.CharField(max_length=250, blank=True, null=True)
@@ -2092,7 +2075,7 @@ class ImpactStory(Page):
         return []
 
 
-class Impact(Page):
+class Impact(FrontendPreviewMixin, Page):
     reach = StreamField(
         blocks.StreamBlock([
             ('content', blocks.StructBlock([
@@ -2196,7 +2179,7 @@ class Impact(Page):
     template = 'page.html'
 
 
-class InstitutionalPartnership(Page):
+class InstitutionalPartnership(FrontendPreviewMixin, Page):
     heading_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -2264,7 +2247,7 @@ class InstitutionalPartnership(Page):
     max_count = 1
 
 
-class InstitutionalPartnerProgramPage(Page):
+class InstitutionalPartnerProgramPage(FrontendPreviewMixin, Page):
     section_1_heading = models.CharField(max_length=255)
     section_1_description = RichTextField()
     section_1_link_text = models.CharField(max_length=255)
@@ -2457,7 +2440,7 @@ class InstitutionalPartnerProgramPage(Page):
     template = 'page.html'
 
 
-class CreatorFestPage(Page):
+class CreatorFestPage(FrontendPreviewMixin, Page):
     banner_headline = models.CharField(max_length=255)
     banner_content = RichTextField()
     banner_image = models.ForeignKey(
@@ -2525,7 +2508,7 @@ class CreatorFestPage(Page):
     template = 'page.html'
 
 
-class PartnersPage(Page):
+class PartnersPage(FrontendPreviewMixin, Page):
     heading = models.CharField(max_length=255)
     description = RichTextField()
     header_image = models.ForeignKey(
@@ -2621,7 +2604,7 @@ class PartnersPage(Page):
     template = 'page.html'
 
 
-class WebinarPage(Page):
+class WebinarPage(FrontendPreviewMixin, Page):
     heading = models.CharField(max_length=255)
 
     content_panels = [
@@ -2667,7 +2650,7 @@ class PartnerChooserBlock(blocks.ChooserBlock):
             }
 
 
-class MathQuizPage(Page):
+class MathQuizPage(FrontendPreviewMixin, Page):
     heading = models.CharField(max_length=255)
     description = models.TextField()
     results = StreamField([
@@ -2701,7 +2684,7 @@ class MathQuizPage(Page):
     parent_page_type = ['pages.HomePage']
 
 
-class LLPHPage(Page):
+class LLPHPage(FrontendPreviewMixin, Page):
     heading = models.CharField(max_length=255)
     subheading = models.TextField()
     hero_background = models.ForeignKey(
@@ -2769,7 +2752,7 @@ class LLPHPage(Page):
         verbose_name = "LLPH Page"
 
 
-class TutorMarketing(Page):
+class TutorMarketing(FrontendPreviewMixin, Page):
     # header section
     header = models.CharField(max_length=255)
     description = models.TextField()
@@ -2928,7 +2911,7 @@ class TutorMarketing(Page):
     max_count = 1
 
 
-class Subjects(Page):
+class Subjects(FrontendPreviewMixin, Page):
     heading = models.CharField(max_length=255)
     description = models.TextField(blank=True, null=True)
     heading_image = models.ForeignKey(
@@ -3041,7 +3024,7 @@ class SubjectOrderable(Orderable, SubjectBooks):
     ]
 
 
-class Subject(Page):
+class Subject(FrontendPreviewMixin, Page):
     page_description = models.TextField(default='')
     tutor_ad = StreamField([
         ('content', TutorAdBlock()),
@@ -3226,7 +3209,7 @@ class Subject(Page):
         verbose_name = "Subject Page"
 
 
-class FormHeadings(Page):
+class FormHeadings(FrontendPreviewMixin, Page):
     LOGGED_IN_HELP = (
         'Optional. Shown to logged-in users instead of the default. '
         'Supports tags: {{first_name}}, {{last_name}}, {{school}}.'
@@ -3284,7 +3267,7 @@ class FormHeadings(Page):
     max_count = 1
 
 
-class K12Subject(Page):
+class K12Subject(FrontendPreviewMixin, Page):
     subheader = models.TextField(default='HIGH SCHOOL')
     books_heading = models.TextField(default='')
     books_short_desc = RichTextField(default='')
@@ -3507,7 +3490,7 @@ class K12Subject(Page):
         verbose_name = "K12 Subject"
 
 
-class AllyLogos(Page):
+class AllyLogos(FrontendPreviewMixin, Page):
     heading = models.CharField(max_length=255)
     description = RichTextField()
     ally_logos_heading = models.CharField(max_length=255)
@@ -3563,7 +3546,7 @@ class AllyLogos(Page):
     parent_page_types = ['pages.HomePage', 'pages.RootPage']
 
 
-class Assignable(Page):
+class Assignable(FrontendPreviewMixin, Page):
     heading_image = models.ForeignKey(
         'wagtailimages.Image',
         null=True,

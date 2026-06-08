@@ -24,6 +24,7 @@ from modelcluster.fields import ParentalKey
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from taggit.models import TaggedItemBase
 from openstax.functions import build_image_url
+from openstax.preview import FrontendPreviewMixin
 from snippets.models import NewsSource, BlogContentType, BlogCollection, Subject
 from pages.custom_blocks import APIImageChooserBlock, FAQBlock
 
@@ -141,7 +142,7 @@ class BlogContentTypeBlock(StructBlock):
     content_type = ContentTypeChooserBlock(required=True, label='Blog Content Type', target_model='snippets.BlogContentType')
 
 
-class NewsIndex(Page):
+class NewsIndex(FrontendPreviewMixin, Page):
     interest_block = StreamField([
             ('heading', blocks.CharBlock()),
             ('description', blocks.TextBlock()),
@@ -212,7 +213,7 @@ class NewsArticleRelatedPage(Orderable):
     related_page = models.ForeignKey('wagtailcore.Page', on_delete=models.CASCADE, related_name='+')
 
 
-class NewsArticle(Page):
+class NewsArticle(FrontendPreviewMixin, Page):
     date = models.DateField("Post date")
     heading = models.CharField(max_length=250, help_text="Heading displayed on website")
     subheading = models.CharField(max_length=250, blank=True, null=True)
@@ -505,7 +506,7 @@ class MissionStatements(Orderable, MissionStatement):
     mission_statements = ParentalKey('news.PressIndex', related_name='mission_statements')
 
 
-class PressIndex(Page):
+class PressIndex(FrontendPreviewMixin, Page):
     press_kit = models.ForeignKey(
         'wagtaildocs.Document',
         null=True,
@@ -628,7 +629,7 @@ class PressIndex(Page):
     max_count = 1
 
 
-class PressRelease(Page):
+class PressRelease(FrontendPreviewMixin, Page):
     date = models.DateField("PR date")
     heading = models.CharField(max_length=250, help_text="Heading displayed on website")
     subheading = models.CharField(max_length=250, blank=True, null=True)

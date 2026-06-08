@@ -7,7 +7,8 @@ from books.models import BookIndex, Book, BookFacultyResources, BookStudentResou
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
 from salesforce.tests import openstax_vcr as vcr
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import Client
+from django.test import Client, TestCase
+from unittest.mock import patch
 from wagtail.documents.models import Document
 import datetime
 
@@ -403,3 +404,27 @@ class BookTests(WagtailPageTestCase):
             response = self.client.get('/apps/cms/api/books/resources/?slug=university-physics-audio')
             self.assertEqual(response.data['audiobook_link'], audiobook_url)
 
+
+
+class BookPreviewTests(TestCase):
+    """Book preview must redirect to the headless frontend (/details/books/<slug>),
+    not render the raw page.html fallback. See openstax.preview.FrontendPreviewMixin.
+    """
+
+    @patch('books.models.Book.get_url_parts')
+    def test_book_preview_redirects_to_frontend(self, mock_get_url_parts):
+        mock_get_url_parts.return_value = (1, 'http://dev.openstax.org', '/details/books/my-book')
+        book = Book()
+        response = book.serve_preview(None, 'some-mode')
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(response.url.startswith('http://'))
+        self.assertEqual(response.url, '/details/books/my-book/?preview=some-mode')
+
+    @patch('books.models.Book.get_url_parts')
+    def test_book_preview_falls_back_when_no_site(self, mock_get_url_parts):
+        mock_get_url_parts.return_value = None
+        book = Book()
+        with patch('wagtail.models.Page.serve_preview') as mock_super:
+            mock_super.return_value = 'fallback'
+            result = book.serve_preview(None, 'some-mode')
+        self.assertEqual(result, 'fallback')

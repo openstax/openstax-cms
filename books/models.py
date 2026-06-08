@@ -22,6 +22,7 @@ from wagtail.models import Site
 from rest_framework.fields import Field
 
 from openstax.functions import build_document_url
+from openstax.preview import FrontendPreviewMixin
 from books.constants import BOOK_STATES, BOOK_COVER_TEXT_COLOR, COVER_COLORS, CC_NC_SA_LICENSE_NAME, CC_BY_LICENSE_NAME, \
     CC_BY_LICENSE_URL, CC_NC_SA_LICENSE_URL, CC_NC_SA_LICENSE_VERSION, CC_BY_LICENSE_VERSION, K12_CATEGORIES
 import snippets.models as snippets
@@ -600,7 +601,7 @@ class BookCategories(Orderable, BookCategory):
     book_category = ParentalKey('books.Book', related_name='book_categories')
 
 
-class Book(Page):
+class Book(FrontendPreviewMixin, Page):
     licenses = (
         (CC_BY_LICENSE_NAME, CC_BY_LICENSE_NAME),
         (CC_NC_SA_LICENSE_NAME, CC_NC_SA_LICENSE_NAME)
@@ -1172,7 +1173,7 @@ class Book(Page):
 
 
 # old subjects interface, deprecated
-class BookIndex(Page):
+class BookIndex(FrontendPreviewMixin, Page):
     page_description = models.TextField()
     dev_standards_heading = models.CharField(
         max_length=255, blank=True, null=True)
