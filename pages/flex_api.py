@@ -49,8 +49,11 @@ class FlexPageDraftView(APIView):
         # tree-global slug uniqueness (suffixing + warning on collision).
         try:
             slug, routing_warnings = validate_page_location(parent, data.get("slug", ""))
-        except RoutingError as exc:
-            return Response({"errors": {"slug": str(exc)}}, status=status.HTTP_400_BAD_REQUEST)
+        except RoutingError:
+            return Response(
+                {"errors": {"slug": "Invalid page location or slug."}},
+                status=status.HTTP_400_BAD_REQUEST,
+            )
 
         try:
             page, _ = create_flex_draft(
