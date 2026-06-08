@@ -81,6 +81,9 @@ class FlexPageDraftView(APIView):
             )
         except FlexValidationError as exc:
             return Response({"errors": exc.errors}, status=status.HTTP_400_BAD_REQUEST)
-        except PageLockedError as exc:
-            return Response({"errors": {"page_id": str(exc)}}, status=status.HTTP_409_CONFLICT)
+        except PageLockedError:
+            return Response(
+                {"errors": {"page_id": "This page is locked and cannot be edited right now."}},
+                status=status.HTTP_409_CONFLICT,
+            )
         return Response(_review_payload(page, []), status=status.HTTP_200_OK)

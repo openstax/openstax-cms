@@ -19,8 +19,9 @@ def _versioned(path):
         abs_path = finders.find(path)
         if abs_path and os.path.exists(abs_path):
             url = '{}?v={}'.format(url, int(os.path.getmtime(abs_path)))
-    except Exception:
-        pass
+    except (OSError, TypeError, ValueError):
+        # Any static lookup/mtime issue should not break the editor; use plain URL.
+        return url
     return url
 
 
