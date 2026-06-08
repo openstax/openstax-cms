@@ -65,6 +65,33 @@ class BookTests(WagtailPageTestCase):
             book_index.add_child(instance=book)
             self.assertEqual(book.salesforce_abbreviation, 'University Physics (Calc)')
 
+    def test_book_urls_collects_link_fields(self):
+        # Regression: api_fields holds APIField instances, not strings, so the
+        # old getattr(self, field) raised TypeError on every iteration and
+        # book_urls() silently returned [] for every book. See PR #1684.
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            book = Book(title="University Physics",
+                        slug="university-physics",
+                        cnx_id='031da8d3-b525-429c-80cf-6c8ed997733a',
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test Book",
+                        cover=self.test_doc,
+                        title_image=self.test_doc,
+                        webview_link="https://openstax.org/books/university-physics",
+                        amazon_link="https://amazon.com/dp/university-physics",
+                        publish_date=datetime.date.today(),
+                        locale=root_page.locale
+                        )
+            book_index.add_child(instance=book)
+            found = [url for group in book.book_urls() for url in group]
+            self.assertTrue(found, "book_urls() should not be empty when link fields are set")
+            # The pre-existing regex captures the host (it stops at the first
+            # path '/'), so assert on the host portion of each link field.
+            self.assertIn("https://openstax.org", found)
+            self.assertIn("https://amazon.com", found)
+
     def test_can_create_ap_book(self):
         with vcr.use_cassette('fixtures/vcr_cassettes/books_prealgebra.yaml'):
             book_index = BookIndex.objects.all()[0]

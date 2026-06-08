@@ -1106,9 +1106,12 @@ class Book(Page):
     def book_urls(self):
         book_urls = []
         for field in self.api_fields:
+            # api_fields holds APIField instances, not bare strings; getattr needs
+            # the field name. Non-string attribute values fall through the except.
+            field_name = getattr(field, 'name', field)
             try:
                 url = re.findall(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$\-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+',
-                                 getattr(self, field))
+                                 getattr(self, field_name))
                 if url:
                     book_urls.append(url)
             except(TypeError, AttributeError):
