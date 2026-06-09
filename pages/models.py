@@ -13,6 +13,7 @@ from wagtail.api import APIField
 from wagtail.models import Site
 
 from api.models import FeatureFlag
+from openstax.api_fields import ExpandedRichTextField
 from openstax.functions import build_image_url, build_document_url
 from openstax.preview import FrontendPreviewMixin
 from books.models import Book, SubjectBooks, BookFacultyResources, BookStudentResources
@@ -975,7 +976,7 @@ class K12MainPage(FrontendPreviewMixin, Page):
         APIField('banner_right_image'),
         APIField('subject_list_default'),
         APIField('features_cards'),
-        APIField('highlights_header'),
+        APIField('highlights_header', serializer=ExpandedRichTextField()),
         APIField('highlights'),
         APIField('highlights_icon'),
         APIField('stats_grid'),
@@ -1077,8 +1078,8 @@ class ContactUs(FrontendPreviewMixin, Page):
         APIField('title'),
         APIField('tagline'),
         APIField('mailing_header'),
-        APIField('mailing_address'),
-        APIField('customer_service'),
+        APIField('mailing_address', serializer=ExpandedRichTextField()),
+        APIField('customer_service', serializer=ExpandedRichTextField()),
         APIField('slug'),
         APIField('seo_title'),
         APIField('search_description'),
@@ -1368,13 +1369,13 @@ class Give(FrontendPreviewMixin, Page):
         APIField('intro_description'),
         APIField('other_payment_methods_heading'),
         APIField('payment_method_1_heading'),
-        APIField('payment_method_1_content'),
+        APIField('payment_method_1_content', serializer=ExpandedRichTextField()),
         APIField('payment_method_2_heading'),
-        APIField('payment_method_2_content'),
+        APIField('payment_method_2_content', serializer=ExpandedRichTextField()),
         APIField('payment_method_3_heading'),
-        APIField('payment_method_3_content'),
+        APIField('payment_method_3_content', serializer=ExpandedRichTextField()),
         APIField('payment_method_4_heading'),
-        APIField('payment_method_4_content'),
+        APIField('payment_method_4_content', serializer=ExpandedRichTextField()),
         APIField('give_cta'),
         APIField('give_cta_link'),
         APIField('slug'),
@@ -1427,7 +1428,7 @@ class TermsOfService(FrontendPreviewMixin, Page):
     api_fields = [
         APIField('title'),
         APIField('intro_heading'),
-        APIField('terms_of_service_content'),
+        APIField('terms_of_service_content', serializer=ExpandedRichTextField()),
         APIField('slug'),
         APIField('seo_title'),
         APIField('search_description'),
@@ -1470,7 +1471,7 @@ class FAQ(FrontendPreviewMixin, Page):
 
     api_fields = [
         APIField('intro_heading'),
-        APIField('intro_description'),
+        APIField('intro_description', serializer=ExpandedRichTextField()),
         APIField('questions'),
         APIField('seo_title'),
         APIField('search_description'),
@@ -1547,7 +1548,7 @@ class Accessibility(FrontendPreviewMixin, Page):
     api_fields = [
         APIField('title'),
         APIField('intro_heading'),
-        APIField('accessibility_content'),
+        APIField('accessibility_content', serializer=ExpandedRichTextField()),
         APIField('slug'),
         APIField('seo_title'),
         APIField('search_description'),
@@ -1587,7 +1588,7 @@ class Licensing(FrontendPreviewMixin, Page):
     api_fields = [
         APIField('title'),
         APIField('intro_heading'),
-        APIField('licensing_content'),
+        APIField('licensing_content', serializer=ExpandedRichTextField()),
         APIField('slug'),
         APIField('seo_title'),
         APIField('search_description'),
@@ -1642,7 +1643,7 @@ class Technology(FrontendPreviewMixin, Page):
 
     api_fields = [
         APIField('intro_heading'),
-        APIField('intro_description'),
+        APIField('intro_description', serializer=ExpandedRichTextField()),
         APIField('banner_cta'),
         APIField('banner_cta_link'),
         APIField('select_tech_heading'),
@@ -1651,7 +1652,7 @@ class Technology(FrontendPreviewMixin, Page):
         APIField('select_tech_step_3'),
         APIField('new_frontier_heading'),
         APIField('new_frontier_subheading'),
-        APIField('new_frontier_description'),
+        APIField('new_frontier_description', serializer=ExpandedRichTextField()),
         APIField('new_frontier_cta_1'),
         APIField('new_frontier_cta_link_1'),
         APIField('new_frontier_cta_2'),
@@ -1712,15 +1713,15 @@ class ErrataList(FrontendPreviewMixin, Page):
     )
 
     api_fields = [
-        APIField('correction_schedule'),
-        APIField('deprecated_errata_message'),
-        APIField('new_edition_errata_message'),
+        APIField('correction_schedule', serializer=ExpandedRichTextField()),
+        APIField('deprecated_errata_message', serializer=ExpandedRichTextField()),
+        APIField('new_edition_errata_message', serializer=ExpandedRichTextField()),
         APIField('seo_title'),
         APIField('search_description'),
         APIField('promote_image'),
         APIField('about_header'),
-        APIField('about_text'),
-        APIField('about_popup')
+        APIField('about_text', serializer=ExpandedRichTextField()),
+        APIField('about_popup', serializer=ExpandedRichTextField())
     ]
 
     content_panels = [
@@ -1762,7 +1763,7 @@ class PrivacyPolicy(FrontendPreviewMixin, Page):
     api_fields = [
         APIField('title'),
         APIField('intro_heading'),
-        APIField('privacy_content'),
+        APIField('privacy_content', serializer=ExpandedRichTextField()),
         APIField('slug'),
         APIField('seo_title'),
         APIField('search_description'),
@@ -1967,7 +1968,7 @@ class LearningResearchPage(FrontendPreviewMixin, Page):
         APIField('bannerCTA'),
         APIField('bannerURL'),
         APIField('research_area_header'),
-        APIField('research_area_description_mobile'),
+        APIField('research_area_description_mobile', serializer=ExpandedRichTextField()),
         APIField('research_areas_list'),
         APIField('people_header'),
         APIField('current_members'),
@@ -2000,7 +2001,7 @@ class Careers(FrontendPreviewMixin, Page):
     api_fields = [
         APIField('title'),
         APIField('intro_heading'),
-        APIField('careers_content'),
+        APIField('careers_content', serializer=ExpandedRichTextField()),
         APIField('slug'),
         APIField('seo_title'),
         APIField('search_description'),
@@ -2391,7 +2392,7 @@ class InstitutionalPartnerProgramPage(FrontendPreviewMixin, Page):
     api_fields = [
         APIField('title'),
         APIField('section_1_heading'),
-        APIField('section_1_description'),
+        APIField('section_1_description', serializer=ExpandedRichTextField()),
         APIField('section_1_link_text'),
         APIField('section_1_link'),
         APIField('section_1_background_image'),
@@ -2400,7 +2401,7 @@ class InstitutionalPartnerProgramPage(FrontendPreviewMixin, Page):
         APIField('quote_title'),
         APIField('quote_school'),
         APIField('section_2_heading'),
-        APIField('section_2_description'),
+        APIField('section_2_description', serializer=ExpandedRichTextField()),
         APIField('section_2_image'),
         APIField('section_2_image_alt'),
         APIField('section_3_heading'),
@@ -2413,7 +2414,7 @@ class InstitutionalPartnerProgramPage(FrontendPreviewMixin, Page):
         APIField('section_4_quote_school'),
         APIField('section_4_background_image'),
         APIField('section_5_heading'),
-        APIField('section_5_description'),
+        APIField('section_5_description', serializer=ExpandedRichTextField()),
         APIField('section_5_image'),
         APIField('section_5_image_alt'),
         APIField('section_5_image_caption'),
@@ -2433,7 +2434,7 @@ class InstitutionalPartnerProgramPage(FrontendPreviewMixin, Page):
         APIField('section_9_submit_url'),
         APIField('section_9_form_prompt'),
         APIField('section_9_button_text'),
-        APIField('section_9_contact_html'),
+        APIField('section_9_contact_html', serializer=ExpandedRichTextField()),
     ]
 
     parent_page_type = ['pages.HomePage']
@@ -2494,7 +2495,7 @@ class CreatorFestPage(FrontendPreviewMixin, Page):
     api_fields = [
         APIField('title'),
         APIField('banner_headline'),
-        APIField('banner_content'),
+        APIField('banner_content', serializer=ExpandedRichTextField()),
         APIField('banner_image'),
         APIField('register'),
         APIField('navigator'),
@@ -2584,7 +2585,7 @@ class PartnersPage(FrontendPreviewMixin, Page):
     api_fields = [
         APIField('title'),
         APIField('heading'),
-        APIField('description'),
+        APIField('description', serializer=ExpandedRichTextField()),
         APIField('header_image_url'),
         APIField('partner_landing_page_link'),
         APIField('partner_request_info_link'),
@@ -2739,7 +2740,7 @@ class LLPHPage(FrontendPreviewMixin, Page):
         APIField('info_link_slug'),
         APIField('info_link_text'),
         APIField('book_heading'),
-        APIField('book_description'),
+        APIField('book_description', serializer=ExpandedRichTextField()),
         APIField('slug'),
         APIField('seo_title'),
         APIField('search_description'),
@@ -2842,7 +2843,7 @@ class TutorMarketing(FrontendPreviewMixin, Page):
         APIField('description'),
         APIField('header_cta_button_text'),
         APIField('header_cta_button_link'),
-        APIField('quote'),
+        APIField('quote', serializer=ExpandedRichTextField()),
         APIField('features_header'),
         APIField('features_cards'),
         APIField('available_books_header'),
@@ -3235,11 +3236,11 @@ class FormHeadings(FrontendPreviewMixin, Page):
 
     api_fields = [
         APIField('adoption_intro_heading'),
-        APIField('adoption_intro_description'),
+        APIField('adoption_intro_description', serializer=ExpandedRichTextField()),
         APIField('adoption_logged_in_intro_heading'),
-        APIField('adoption_logged_in_intro_description'),
+        APIField('adoption_logged_in_intro_description', serializer=ExpandedRichTextField()),
         APIField('interest_intro_heading'),
-        APIField('interest_intro_description'),
+        APIField('interest_intro_description', serializer=ExpandedRichTextField()),
         APIField('seo_title'),
         APIField('search_description'),
         APIField('promote_image')
@@ -3436,14 +3437,14 @@ class K12Subject(FrontendPreviewMixin, Page):
         APIField('subject_image'),
         APIField('subject_category'),
         APIField('books_heading'),
-        APIField('books_short_desc'),
+        APIField('books_short_desc', serializer=ExpandedRichTextField()),
         APIField('about_books_heading'),
         APIField('about_books_text'),
         APIField('books'),
         APIField('student_resource_headers'),
         APIField('faculty_resource_headers'),
         APIField('adoption_heading'),
-        APIField('adoption_text'),
+        APIField('adoption_text', serializer=ExpandedRichTextField()),
         APIField('adoption_link_text'),
         APIField('adoption_link'),
         APIField('quote_heading'),
@@ -3526,12 +3527,12 @@ class AllyLogos(FrontendPreviewMixin, Page):
 
     api_fields = [
         APIField('heading'),
-        APIField('description'),
+        APIField('description', serializer=ExpandedRichTextField()),
         APIField('ally_logos_heading'),
-        APIField('ally_logos_description'),
+        APIField('ally_logos_description', serializer=ExpandedRichTextField()),
         APIField('ally_logos'),
         APIField('book_ally_logos_heading'),
-        APIField('book_ally_logos_description'),
+        APIField('book_ally_logos_description', serializer=ExpandedRichTextField()),
         APIField('book_ally_logos'),
     ]
 
@@ -3660,7 +3661,7 @@ class Assignable(FrontendPreviewMixin, Page):
         APIField('heading_image'),
         APIField('heading_title_image_url'),
         APIField('subheading'),
-        APIField('heading_description'),
+        APIField('heading_description', serializer=ExpandedRichTextField()),
         APIField('add_assignable_cta_header'),
         APIField('add_assignable_cta_description'),
         APIField('add_assignable_cta_link'),
@@ -3673,7 +3674,7 @@ class Assignable(FrontendPreviewMixin, Page):
         APIField('instructor_help_cta_description'),
         APIField('instructor_help_cta_link'),
         APIField('instructor_help_cta_button_text'),
-        APIField('cta_section_footer'),
+        APIField('cta_section_footer', serializer=ExpandedRichTextField()),
         APIField('available_courses_header'),
         APIField('available_books'),
         APIField('courses_coming_soon_header'),

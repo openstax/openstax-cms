@@ -18,6 +18,7 @@ from wagtail.snippets.blocks import SnippetChooserBlock
 from wagtail_ai.blocks import ai_image_block
 from wagtail.api import APIField
 from wagtail.images.api.fields import ImageRenditionField
+from openstax.api_fields import ExpandedRichTextField
 from wagtail.models import Site
 
 from modelcluster.fields import ParentalKey
@@ -604,7 +605,7 @@ class PressIndex(FrontendPreviewMixin, Page):
     api_fields = [
         APIField('press_kit'),
         APIField('press_kit_url'),
-        APIField('about'),
+        APIField('about', serializer=ExpandedRichTextField()),
         APIField('releases'),
         APIField('slug'),
         APIField('seo_title'),

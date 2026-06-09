@@ -1,7 +1,10 @@
 import datetime
 
+from django.apps import apps
 from django.test import TestCase
 from wagtail.models import Page, Site
+from wagtail.fields import RichTextField
+from wagtail.api import APIField
 from books.models import Book
 from openstax.api_fields import ExpandedRichTextField
 
@@ -50,3 +53,24 @@ class ExpandedRichTextFieldTests(TestCase):
         field = ExpandedRichTextField()
         self.assertEqual(field.to_representation(None), "")
         self.assertEqual(field.to_representation(""), "")
+
+
+class ModelRichTextWiringTests(TestCase):
+    def test_every_api_exposed_richtextfield_uses_expanded_serializer(self):
+        offenders = []
+        for model in apps.get_models():
+            rtf_names = {
+                f.name for f in model._meta.get_fields()
+                if isinstance(f, RichTextField)
+            }
+            for entry in getattr(model, "api_fields", []) or []:
+                name = entry.name if isinstance(entry, APIField) else entry
+                if name not in rtf_names:
+                    continue
+                ok = (
+                    isinstance(entry, APIField)
+                    and isinstance(entry.serializer, ExpandedRichTextField)
+                )
+                if not ok:
+                    offenders.append(f"{model._meta.app_label}.{model.__name__}.{name}")
+        self.assertEqual(offenders, [], f"Unwired RichTextFields: {offenders}")

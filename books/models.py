@@ -21,6 +21,7 @@ from wagtail.models import Site
 
 from rest_framework.fields import Field
 
+from openstax.api_fields import ExpandedRichTextField
 from openstax.functions import build_document_url
 from openstax.preview import FrontendPreviewMixin
 from books.constants import BOOK_STATES, BOOK_COVER_TEXT_COLOR, COVER_COLORS, CC_NC_SA_LICENSE_NAME, CC_BY_LICENSE_NAME, \
@@ -108,7 +109,7 @@ class VideoFacultyResource(models.Model):
 
     api_fields = [
         APIField('resource_heading'),
-        APIField('resource_description'),
+        APIField('resource_description', serializer=ExpandedRichTextField()),
         APIField('video_title'),
         APIField('video_url'),
         APIField('video_file'),
@@ -165,7 +166,7 @@ class OrientationFacultyResource(models.Model):
 
     api_fields = [
         APIField('resource_heading'),
-        APIField('resource_description'),
+        APIField('resource_description', serializer=ExpandedRichTextField()),
         APIField('resource_unlocked'),
         APIField('creator_fest_resource'),
         APIField('link_external'),
@@ -980,7 +981,7 @@ class Book(FrontendPreviewMixin, Page):
         APIField('book_categories'),
         APIField('k12book_subjects'),
         APIField('is_ap'),
-        APIField('description'),
+        APIField('description', serializer=ExpandedRichTextField()),
         APIField('content_warning_text'),
         APIField('require_login_message_text'),
         APIField('cover_url'),
@@ -1041,8 +1042,8 @@ class Book(FrontendPreviewMixin, Page):
         APIField('partner_page_link_text'),
         APIField('customization_form_heading'),
         APIField('customization_form_subheading'),
-        APIField('customization_form_disclaimer'),
-        APIField('customization_form_next_steps'),
+        APIField('customization_form_disclaimer', serializer=ExpandedRichTextField()),
+        APIField('customization_form_next_steps', serializer=ExpandedRichTextField()),
         APIField('videos'),
         APIField('translations'),
         APIField('seo_title'),
@@ -1243,11 +1244,11 @@ class BookIndex(FrontendPreviewMixin, Page):
         APIField('page_description'),
         APIField('dev_standards_heading'),
         APIField('dev_standard_1_heading'),
-        APIField('dev_standard_1_description'),
+        APIField('dev_standard_1_description', serializer=ExpandedRichTextField()),
         APIField('dev_standard_2_heading'),
-        APIField('dev_standard_2_description'),
+        APIField('dev_standard_2_description', serializer=ExpandedRichTextField()),
         APIField('dev_standard_3_heading'),
-        APIField('dev_standard_3_description'),
+        APIField('dev_standard_3_description', serializer=ExpandedRichTextField()),
         APIField('dev_standard_4_heading'),
         APIField('dev_standard_4_description'),
         APIField('subject_list_heading'),

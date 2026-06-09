@@ -2,9 +2,11 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from wagtail.search import index
 from wagtail.admin.panels import FieldPanel
+from wagtail.api import APIField
 from wagtail.fields import RichTextField
 from wagtail.models import TranslatableMixin
 from wagtail.snippets.models import register_snippet
+from openstax.api_fields import ExpandedRichTextField
 from openstax.functions import build_image_url
 from books.constants import BOOK_STATES, COVER_COLORS, K12_CATEGORIES
 
@@ -67,7 +69,7 @@ class K12Subject(TranslatableMixin, models.Model):
 
     subject_image = property(get_subject_image)
 
-    api_fields = ('name', 'intro_text', 'subject_image', 'subject_category' , 'subject_color', 'subject_link')
+    api_fields = ('name', APIField('intro_text', serializer=ExpandedRichTextField()), 'subject_image', 'subject_category' , 'subject_color', 'subject_link')
 
     panels = [
         FieldPanel('name'),
@@ -103,7 +105,7 @@ class FacultyResource(TranslatableMixin, index.Indexed, models.Model):
 
     resource_icon = property(get_resource_icon)
 
-    api_fields = ('heading', 'description', 'unlocked_resource', 'creator_fest_resource',  'resource_icon', 'resource_category')
+    api_fields = ('heading', APIField('description', serializer=ExpandedRichTextField()), 'unlocked_resource', 'creator_fest_resource',  'resource_icon', 'resource_category')
 
     panels = [
         FieldPanel('heading'),
@@ -146,7 +148,7 @@ class StudentResource(TranslatableMixin, index.Indexed, models.Model):
 
     resource_icon = property(get_resource_icon)
 
-    api_fields = ('heading', 'description', 'unlocked_resource', 'resource_icon', 'resource_category')
+    api_fields = ('heading', APIField('description', serializer=ExpandedRichTextField()), 'unlocked_resource', 'resource_icon', 'resource_category')
 
     panels = [
         FieldPanel('heading'),
