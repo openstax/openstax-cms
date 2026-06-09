@@ -4,6 +4,7 @@ import unittest
 from unittest.mock import patch
 
 from django.test import TestCase, Client
+from django.urls import reverse
 from wagtail.test.utils import WagtailTestUtils, WagtailPageTestCase
 from wagtail.models import Page
 from pages import models as page_models
@@ -26,6 +27,44 @@ class TestRootPage(unittest.TestCase):
         root_page = page_models.RootPage()
         result = root_page.get_url_parts()
         self.assertIsNone(result)
+
+class RootPageServePreviewTests(TestCase):
+    """serve_preview must not bake the Site record's scheme into the redirect.
+
+    The conventional Site config uses port 80, so get_url_parts() returns an
+    http:// site_root. Behind the TLS-terminating proxy the admin is served over
+    HTTPS, so an absolute http:// preview URL is blocked as mixed content. The
+    redirect must stay root-relative so it inherits the admin's https origin
+    (matching the path-relative URL convention in openstax/functions.py).
+    """
+
+    @patch('pages.models.RootPage.get_url_parts')
+    def test_root_preview_redirect_is_scheme_relative(self, mock_get_url_parts):
+        mock_get_url_parts.return_value = (1, 'http://dev.openstax.org', '')
+        root_page = page_models.RootPage()
+        response = root_page.serve_preview(None, 'some-mode')
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(response.url.startswith('http://'))
+        self.assertEqual(response.url, '/?preview=some-mode')
+
+    @patch('pages.models.RootPage.get_url_parts')
+    def test_subpage_preview_redirect_is_scheme_relative(self, mock_get_url_parts):
+        mock_get_url_parts.return_value = (1, 'http://dev.openstax.org', '/about-us')
+        root_page = page_models.RootPage()
+        response = root_page.serve_preview(None, 'some-mode')
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(response.url.startswith('http://'))
+        self.assertEqual(response.url, '/about-us/?preview=some-mode')
+
+    @patch('pages.models.RootPage.get_url_parts')
+    def test_preview_falls_back_when_no_site(self, mock_get_url_parts):
+        mock_get_url_parts.return_value = None
+        root_page = page_models.RootPage()
+        with patch('wagtail.models.Page.serve_preview') as mock_super:
+            mock_super.return_value = 'fallback'
+            result = root_page.serve_preview(None, 'some-mode')
+        self.assertEqual(result, 'fallback')
+
 
 class HomePageTests(WagtailPageTestCase):
 
@@ -934,3 +973,30 @@ class TemplateTagTests(WagtailPageTestCase):
             self.assertIsInstance(item['name'], str, "Item name should be a string")
             self.assertIsInstance(item['type'], str, "Item type should be a string")
             self.assertIsInstance(item['value'], str, "Item value should be a string")
+
+
+class HeadlessUserbarTests(TestCase, WagtailTestUtils):
+    """The headless front-end fetches the Wagtail userbar from this endpoint so
+    that live-preview scroll restoration, the accessibility/content checker,
+    content metrics, and wagtail-ai's content checks work on the decoupled
+    front-end (Wagtail headless docs; see ai_assist/README.md)."""
+
+    def test_userbar_renders_for_admin_user(self):
+        self.login()  # WagtailTestUtils: create + log in a superuser
+        response = self.client.get(reverse('wagtail_userbar'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'wagtail-userbar')
+
+    def test_userbar_not_exposed_to_anonymous(self):
+        response = self.client.get(reverse('wagtail_userbar'))
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'wagtail-userbar')
+
+    def test_userbar_response_is_never_cached(self):
+        # The body varies by user (admin bar vs empty), so a CDN must never
+        # cache it: a cached blank would be served to editors, and a cached
+        # admin bar (with edit links) would leak to the anonymous public.
+        self.login()
+        response = self.client.get(reverse('wagtail_userbar'))
+        self.assertIn('no-store', response.headers.get('Cache-Control', ''))
+        self.assertIn('Cookie', response.headers.get('Vary', ''))

@@ -15,12 +15,14 @@ from wagtail.fields import RichTextField, StreamField
 from wagtail.models import Orderable, Page
 from wagtail.snippets.blocks import SnippetChooserBlock
 from wagtail.admin.panels import TabbedInterface, ObjectList
+from wagtail_ai.panels import AIMultipleChooserPanel
 from wagtail.api import APIField
 from wagtail.models import Site
 
 from rest_framework.fields import Field
 
 from openstax.functions import build_document_url
+from openstax.preview import FrontendPreviewMixin
 from books.constants import BOOK_STATES, BOOK_COVER_TEXT_COLOR, COVER_COLORS, CC_NC_SA_LICENSE_NAME, CC_BY_LICENSE_NAME, \
     CC_BY_LICENSE_URL, CC_NC_SA_LICENSE_URL, CC_NC_SA_LICENSE_VERSION, CC_BY_LICENSE_VERSION, K12_CATEGORIES
 import snippets.models as snippets
@@ -574,6 +576,11 @@ class VideoFacultyResources(Orderable, VideoFacultyResource):
     book_video_faculty_resource = ParentalKey('books.Book', related_name='book_video_faculty_resources')
 
 
+class BookRelatedPage(Orderable):
+    page = ParentalKey('books.Book', related_name='related_pages', on_delete=models.CASCADE)
+    related_page = models.ForeignKey('wagtailcore.Page', on_delete=models.CASCADE, related_name='+')
+
+
 class OrientationFacultyResources(Orderable, OrientationFacultyResource):
     book_orientation_faculty_resource = ParentalKey('books.Book', related_name='book_orientation_faculty_resources')
 
@@ -594,7 +601,7 @@ class BookCategories(Orderable, BookCategory):
     book_category = ParentalKey('books.Book', related_name='book_categories')
 
 
-class Book(Page):
+class Book(FrontendPreviewMixin, Page):
     licenses = (
         (CC_BY_LICENSE_NAME, CC_BY_LICENSE_NAME),
         (CC_NC_SA_LICENSE_NAME, CC_NC_SA_LICENSE_NAME)
@@ -945,6 +952,14 @@ class Book(Page):
         ObjectList(instructor_resources_panel, heading='Instructor Resources'),
         ObjectList(student_resources_panel, heading='Student Resources'),
         ObjectList(author_panel, heading='Authors'),
+        ObjectList([
+            AIMultipleChooserPanel(
+                'related_pages',
+                chooser_field_name='related_page',
+                vector_index='PageVectorIndex',
+                label='Related pages',
+            ),
+        ], heading='Related Pages'),
         ObjectList(promote_panels, heading='Promote'),
         ObjectList(Page.settings_panels, heading='Settings', classname="settings"),
     ])
@@ -1092,9 +1107,12 @@ class Book(Page):
     def book_urls(self):
         book_urls = []
         for field in self.api_fields:
+            # api_fields holds APIField instances, not bare strings; getattr needs
+            # the field name. Non-string attribute values fall through the except.
+            field_name = getattr(field, 'name', field)
             try:
-                url = re.findall('http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+',
-                                 getattr(self, field))
+                url = re.findall(r'http[s]?://(?:[a-zA-Z]|[0-9]|[$\-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+',
+                                 getattr(self, field_name))
                 if url:
                     book_urls.append(url)
             except(TypeError, AttributeError):
@@ -1155,7 +1173,7 @@ class Book(Page):
 
 
 # old subjects interface, deprecated
-class BookIndex(Page):
+class BookIndex(FrontendPreviewMixin, Page):
     page_description = models.TextField()
     dev_standards_heading = models.CharField(
         max_length=255, blank=True, null=True)

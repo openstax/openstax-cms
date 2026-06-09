@@ -6,10 +6,34 @@ OpenStax CMS is a content management system built with **Wagtail CMS** on top of
 
 ## Technology Stack
 
-- **Framework**: Django (Python ≥ 3.11)
-- **CMS**: Wagtail CMS
+- **Framework**: Django 5.2
+- **CMS**: Wagtail 7.4 (LTS)
 - **Database**: PostgreSQL (≥ 13) or SQLite
-- **Language**: Python ≥ 3.11
+- **Language**: Python ≥ 3.11 (project virtualenv runs 3.14)
+
+## Local Environment (IMPORTANT)
+
+This project uses a **virtualenv** — always work inside it. Do **not** use the
+system/Homebrew Python (it is externally managed; `pip install` is blocked there).
+
+```bash
+workon openstax-cms          # virtualenvwrapper; venv lives at ~/.virtualenvs/openstax-cms
+```
+
+Run every `python manage.py …`, `pip install`, and test command inside that venv.
+If `workon` isn't available, activate directly:
+`source ~/.virtualenvs/openstax-cms/bin/activate`.
+
+### Running tests
+
+```bash
+python manage.py test --settings=openstax.settings.test            # full suite
+python manage.py test pages.test_flex_drafts --settings=openstax.settings.test
+```
+
+Add `--noinput` if a leftover `test_oscms_test` DB blocks a run, or `--keepdb` to
+reuse the test DB between runs. CI installs `requirements/test.txt` and runs
+`manage.py test --settings=openstax.settings.test`.
 
 ## Project Structure
 
@@ -49,8 +73,9 @@ openstax-cms/
 ### Installation Steps
 
 1. **Clone the repository**
-2. **Install Python dependencies from requirements/dev.txt**
-3. **Create local settings file** (REQUIRED before migrations) (cp openstax/settings/local.py.example openstax/settings.local.py)
+2. **Activate the virtualenv** (`workon openstax-cms`)
+3. **Install Python dependencies from requirements/dev.txt**
+4. **Create local settings file** (REQUIRED before migrations): `cp openstax/settings/local.py.example openstax/settings/local.py`
 
 ## Creating Django Migrations
 
@@ -87,6 +112,33 @@ When you modify model fields in `pages/models.py` or other model files:
 API endpoints documented at: https://github.com/openstax/openstax-cms/wiki/API-Endpoints
 
 Postman collection: https://www.postman.com/openstax/workspace/cms/overview
+
+## Headless Authoring & Draft-Save API
+
+This branch adds an authenticated path for an AI agent (and, soon, an in-CMS MCP
+server) to create/update `FlexPage`s as **unpublished drafts** — it **never
+publishes** (a human reviews and publishes in the Wagtail admin).
+
+- **Endpoint:** `POST /apps/cms/api/v2/pages/flex/` (create) and
+  `PATCH /apps/cms/api/v2/pages/flex/<id>/` (update). Token-auth fast-path
+  (`rest_framework.authtoken`); the global API stays public-read (`AllowAny`) — the
+  write view sets its own auth/permission classes.
+- **Service layer (surface-agnostic; the MCP tools will reuse it):**
+  - `pages/flex_drafts.py` — validate `layout`/`body` against the real block defs,
+    `create_flex_draft` / `update_flex_draft` (draft revisions only), rich-text
+    reference validation, page-lock check.
+  - `pages/routing_rules.py` — reserved slugs, `RootPage`-only parents, **tree-global**
+    slug uniqueness (FlexPage URLs flatten to `/<slug>`).
+  - `pages/flex_permissions.py` — `CanDraftFlexPages` (staff + Wagtail page perms).
+  - `pages/flex_api.py` — the DRF view.
+  - Tests: `pages/test_flex_drafts.py`.
+- **Contract for clients:** `docs/api/flex-draft-save.md`.
+- **Design & plans (not committed; local `docs/superpowers/`):** the headless +
+  AI-authoring spec and the in-CMS MCP server plan (`django-mcp-server` +
+  `django-oauth-toolkit` + DCR) live there.
+
+Wagtail 7.4 note: prefer **deferred validation** for draft saves (required-field
+checks happen at publish time) and `ImageRenditionField` for headless images.
 
 ## Additional Documentation
 

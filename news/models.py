@@ -6,6 +6,7 @@ from django import forms
 from wagtail.models import Page, Orderable
 from wagtail.fields import RichTextField, StreamField
 from wagtail.admin.panels import FieldPanel, InlinePanel
+from wagtail_ai.panels import AIMultipleChooserPanel
 from wagtail.admin.widgets.slug import SlugInput
 from wagtail.embeds.blocks import EmbedBlock
 from wagtail.search import index
@@ -14,6 +15,7 @@ from wagtail.blocks import TextBlock, StructBlock, StreamBlock, FieldBlock, Char
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.documents.blocks import DocumentChooserBlock
 from wagtail.snippets.blocks import SnippetChooserBlock
+from wagtail_ai.blocks import ai_image_block
 from wagtail.api import APIField
 from wagtail.images.api.fields import ImageRenditionField
 from wagtail.models import Site
@@ -22,6 +24,7 @@ from modelcluster.fields import ParentalKey
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from taggit.models import TaggedItemBase
 from openstax.functions import build_image_url
+from openstax.preview import FrontendPreviewMixin
 from snippets.models import NewsSource, BlogContentType, BlogCollection, Subject
 from pages.custom_blocks import APIImageChooserBlock, FAQBlock
 
@@ -66,6 +69,7 @@ class CTAAlignmentChoiceBlock(FieldBlock):
     ))
 
 
+@ai_image_block()
 class ImageBlock(StructBlock):
     image = ImageChooserBlock()
     caption = RichTextBlock()
@@ -138,7 +142,7 @@ class BlogContentTypeBlock(StructBlock):
     content_type = ContentTypeChooserBlock(required=True, label='Blog Content Type', target_model='snippets.BlogContentType')
 
 
-class NewsIndex(Page):
+class NewsIndex(FrontendPreviewMixin, Page):
     interest_block = StreamField([
             ('heading', blocks.CharBlock()),
             ('description', blocks.TextBlock()),
@@ -204,7 +208,12 @@ class NewsArticleTag(TaggedItemBase):
     content_object = ParentalKey('news.NewsArticle', related_name='tagged_items')
 
 
-class NewsArticle(Page):
+class NewsArticleRelatedPage(Orderable):
+    page = ParentalKey('news.NewsArticle', related_name='related_pages', on_delete=models.CASCADE)
+    related_page = models.ForeignKey('wagtailcore.Page', on_delete=models.CASCADE, related_name='+')
+
+
+class NewsArticle(FrontendPreviewMixin, Page):
     date = models.DateField("Post date")
     heading = models.CharField(max_length=250, help_text="Heading displayed on website")
     subheading = models.CharField(max_length=250, blank=True, null=True)
@@ -367,6 +376,12 @@ class NewsArticle(Page):
         FieldPanel('collections'),
         FieldPanel('article_subjects'),
         FieldPanel('content_types'),
+        AIMultipleChooserPanel(
+            'related_pages',
+            chooser_field_name='related_page',
+            vector_index='PageVectorIndex',
+            label='Related pages',
+        ),
     ]
 
     promote_panels = [
@@ -491,7 +506,7 @@ class MissionStatements(Orderable, MissionStatement):
     mission_statements = ParentalKey('news.PressIndex', related_name='mission_statements')
 
 
-class PressIndex(Page):
+class PressIndex(FrontendPreviewMixin, Page):
     press_kit = models.ForeignKey(
         'wagtaildocs.Document',
         null=True,
@@ -614,7 +629,7 @@ class PressIndex(Page):
     max_count = 1
 
 
-class PressRelease(Page):
+class PressRelease(FrontendPreviewMixin, Page):
     date = models.DateField("PR date")
     heading = models.CharField(max_length=250, help_text="Heading displayed on website")
     subheading = models.CharField(max_length=250, blank=True, null=True)

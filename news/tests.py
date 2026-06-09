@@ -7,7 +7,7 @@ from wagtail.test.utils import WagtailPageTestCase
 from wagtail.models import Page
 from pages.models import HomePage
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 from news.models import NewsIndex, NewsArticle, PressIndex, PressRelease
 from snippets.models import Subject, BlogContentType, BlogCollection
 
@@ -498,3 +498,26 @@ class PressTests(WagtailPageTestCase):
 
 
 
+
+class NewsArticlePreviewTests(TestCase):
+    """NewsArticle preview must redirect to the headless frontend (/blog/<slug>),
+    not render the raw page.html fallback. See openstax.preview.FrontendPreviewMixin.
+    """
+
+    @patch('news.models.NewsArticle.get_url_parts')
+    def test_article_preview_redirects_to_frontend(self, mock_get_url_parts):
+        mock_get_url_parts.return_value = (1, 'http://dev.openstax.org', '/blog/my-article')
+        article = NewsArticle()
+        response = article.serve_preview(None, 'some-mode')
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(response.url.startswith('http://'))
+        self.assertEqual(response.url, '/blog/my-article/?preview=some-mode')
+
+    @patch('news.models.NewsArticle.get_url_parts')
+    def test_article_preview_falls_back_when_no_site(self, mock_get_url_parts):
+        mock_get_url_parts.return_value = None
+        article = NewsArticle()
+        with patch('wagtail.models.Page.serve_preview') as mock_super:
+            mock_super.return_value = 'fallback'
+            result = article.serve_preview(None, 'some-mode')
+        self.assertEqual(result, 'fallback')

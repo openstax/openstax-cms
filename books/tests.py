@@ -7,7 +7,8 @@ from books.models import BookIndex, Book, BookFacultyResources, BookStudentResou
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
 from salesforce.tests import openstax_vcr as vcr
 from django.core.files.uploadedfile import SimpleUploadedFile
-from django.test import Client
+from django.test import Client, TestCase
+from unittest.mock import patch
 from wagtail.documents.models import Document
 import datetime
 
@@ -64,6 +65,33 @@ class BookTests(WagtailPageTestCase):
                         )
             book_index.add_child(instance=book)
             self.assertEqual(book.salesforce_abbreviation, 'University Physics (Calc)')
+
+    def test_book_urls_collects_link_fields(self):
+        # Regression: api_fields holds APIField instances, not strings, so the
+        # old getattr(self, field) raised TypeError on every iteration and
+        # book_urls() silently returned [] for every book. See PR #1684.
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            book = Book(title="University Physics",
+                        slug="university-physics",
+                        cnx_id='031da8d3-b525-429c-80cf-6c8ed997733a',
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test Book",
+                        cover=self.test_doc,
+                        title_image=self.test_doc,
+                        webview_link="https://openstax.org/books/university-physics",
+                        amazon_link="https://amazon.com/dp/university-physics",
+                        publish_date=datetime.date.today(),
+                        locale=root_page.locale
+                        )
+            book_index.add_child(instance=book)
+            found = [url for group in book.book_urls() for url in group]
+            self.assertTrue(found, "book_urls() should not be empty when link fields are set")
+            # The pre-existing regex captures the host (it stops at the first
+            # path '/'), so assert on the host portion of each link field.
+            self.assertIn("https://openstax.org", found)
+            self.assertIn("https://amazon.com", found)
 
     def test_can_create_ap_book(self):
         with vcr.use_cassette('fixtures/vcr_cassettes/books_prealgebra.yaml'):
@@ -376,3 +404,27 @@ class BookTests(WagtailPageTestCase):
             response = self.client.get('/apps/cms/api/books/resources/?slug=university-physics-audio')
             self.assertEqual(response.data['audiobook_link'], audiobook_url)
 
+
+
+class BookPreviewTests(TestCase):
+    """Book preview must redirect to the headless frontend (/details/books/<slug>),
+    not render the raw page.html fallback. See openstax.preview.FrontendPreviewMixin.
+    """
+
+    @patch('books.models.Book.get_url_parts')
+    def test_book_preview_redirects_to_frontend(self, mock_get_url_parts):
+        mock_get_url_parts.return_value = (1, 'http://dev.openstax.org', '/details/books/my-book')
+        book = Book()
+        response = book.serve_preview(None, 'some-mode')
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(response.url.startswith('http://'))
+        self.assertEqual(response.url, '/details/books/my-book/?preview=some-mode')
+
+    @patch('books.models.Book.get_url_parts')
+    def test_book_preview_falls_back_when_no_site(self, mock_get_url_parts):
+        mock_get_url_parts.return_value = None
+        book = Book()
+        with patch('wagtail.models.Page.serve_preview') as mock_super:
+            mock_super.return_value = 'fallback'
+            result = book.serve_preview(None, 'some-mode')
+        self.assertEqual(result, 'fallback')
