@@ -106,3 +106,33 @@ class ModelRichTextWiringTests(TestCase):
                 if not ok:
                     offenders.append(f"{model._meta.app_label}.{model.__name__}.{name}")
         self.assertEqual(offenders, [], f"Unwired RichTextFields: {offenders}")
+
+
+from pages.custom_blocks import LinkBlock
+
+
+class LinkBlockTargetTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        root = Page.objects.get(id=1)
+        site, _ = Site.objects.get_or_create(
+            hostname="localhost", defaults={"root_page": root, "is_default_site": True}
+        )
+        # Make sure the default site points at the tree root so page.url resolves.
+        site.root_page = root
+        site.save()
+        Site.clear_site_root_paths_cache()
+        cls.book = Book(
+            title="LB Book", slug="lb-book",
+            salesforce_abbreviation="lb", salesforce_name="LB Book",
+            publish_date=datetime.date.today(), locale=root.locale,
+        )
+        root.add_child(instance=cls.book)
+
+    def test_internal_link_returns_frontend_url_not_tree_path(self):
+        block = LinkBlock()
+        value = block.to_python([{"type": "internal", "value": self.book.id}])
+        rep = block.get_api_representation(value)
+        self.assertEqual(rep["type"], "internal")
+        # page.url honors Book.get_url_parts → /details/books/<slug> (no trailing slash)
+        self.assertEqual(rep["value"], "/details/books/lb-book")
