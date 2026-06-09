@@ -46,6 +46,18 @@ Now we can install the repository. Run the following commands line by line:
 ```bash
 git clone https://github.com/openstax/openstax-cms
 cd openstax-cms/
+```
+
+Work inside a virtualenv (recommended — keeps deps off your system Python). With
+[virtualenvwrapper](https://virtualenvwrapper.readthedocs.io):
+
+```bash
+mkvirtualenv openstax-cms   # first time; thereafter: workon openstax-cms
+```
+
+Then install dependencies:
+
+```bash
 pip3 install -r requirements/dev.txt
 ```
 

@@ -7,7 +7,7 @@ from wagtail.test.utils import WagtailPageTestCase
 from wagtail.models import Page
 from pages.models import HomePage
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 from news.models import NewsIndex, NewsArticle, PressIndex, PressRelease
 from snippets.models import Subject, BlogContentType, BlogCollection
 
@@ -193,6 +193,15 @@ class NewsTests(WagtailPageTestCase, TestCase):
         self.assertEqual(response.status_code, 404)
 
     def test_slashless_apis_are_good(self):
+        original_news_index_all = NewsIndex.objects.all
+        original_press_index_all = PressIndex.objects.all
+        original_news_article_get = NewsArticle.objects.get
+        original_press_release_get = PressRelease.objects.get
+        self.addCleanup(setattr, NewsIndex.objects, 'all', original_news_index_all)
+        self.addCleanup(setattr, PressIndex.objects, 'all', original_press_index_all)
+        self.addCleanup(setattr, NewsArticle.objects, 'get', original_news_article_get)
+        self.addCleanup(setattr, PressRelease.objects, 'get', original_press_release_get)
+
         NewsIndex.objects.all = MagicMock(return_value=MagicMock(pk=3))
         assertPathDoesNotRedirectToTrailingSlash(self, '/apps/cms/api/news')
 
@@ -236,10 +245,12 @@ class NewsTests(WagtailPageTestCase, TestCase):
         self.assertContains(response, 'Economics')
 
     def test_search_blog_content_type_and_subject(self):
+        # AND semantics: collection=OpenStax Updates AND type=Case Study AND subject=Economics.
+        # No fixture article satisfies all three (Article 2 is Updates/Video/Economics,
+        # Article 3 is Updates/Case Study/Math), so the correct result is empty.
         response = self.client.get('/apps/cms/api/search/', {'collection': 'OpenStax Updates', 'types': 'Case Study', 'subjects': 'Economics'})
-        self.assertContains(response, 'OpenStax Updates')
-        self.assertContains(response, 'Case Study')
-        self.assertContains(response, 'Economics')
+        data = json.loads(response.content)
+        self.assertEqual(data, [])
 
     def test_search_blog_multiple_content_type_and_subject(self):
         response = self.client.get('/apps/cms/api/search/', {'collection': 'OpenStax Updates', 'types': 'Case Study,Video', 'subjects': 'Economics,Math'})
@@ -256,6 +267,185 @@ class NewsTests(WagtailPageTestCase, TestCase):
         response = self.client.get('/apps/cms/api/search/', {'collection': 'OpenStax Updates', 'subjects': 'Economics,Math'})
         self.assertContains(response, 'Economics')
         self.assertContains(response, 'Math')
+
+    def test_subject_name_is_searchable(self):
+        """Subject name (e.g. 'Math') should be findable via Wagtail .search() once indexed."""
+        from wagtail.search.backends import get_search_backend
+        backend = get_search_backend()
+        for a in NewsArticle.objects.live():
+            backend.add(a)
+        results = NewsArticle.objects.live().search('Math')
+        result_list = list(results)
+        self.assertTrue(len(result_list) > 0, "No results for 'Math' — subject names are not indexed")
+        names = [s['name'] for s in result_list[0].blog_subjects]
+        self.assertIn('Math', names)
+
+    def _populate_search_index(self):
+        """Add all live NewsArticles to the Wagtail search backend so .search() returns them in-test."""
+        from wagtail.search.backends import get_search_backend
+        backend = get_search_backend()
+        for a in NewsArticle.objects.live():
+            backend.add(a)
+
+    def test_keyword_and_subject_compose(self):
+        """q + subjects must AND-compose: only keyword matches that also carry the subject are returned."""
+        news_index = NewsIndex.objects.all()[0]
+        math_id = self.math.id
+        economics_id = self.economics.id
+
+        # Math article containing the unique keyword
+        math_kw = NewsArticle(
+            title="Quasar Math Study",
+            slug="quasar-math",
+            date=timezone.now(),
+            heading="Quasar heading",
+            subheading="Quasar sub",
+            author="OpenStax",
+            body=json.dumps([{"type": "paragraph", "value": "<p>This study about quasarterm covers math.</p>"}]),
+            article_subjects=json.dumps(
+                [{'type': 'subject', 'value': [{'type': 'item', 'value': {'subject': math_id, 'featured': False}}]}]
+            ),
+            content_types=json.dumps([]),
+            collections=json.dumps([]),
+        )
+        news_index.add_child(instance=math_kw)
+
+        # Economics article containing the SAME unique keyword (must be excluded by subjects=Math)
+        econ_kw = NewsArticle(
+            title="Quasar Economics Study",
+            slug="quasar-econ",
+            date=timezone.now(),
+            heading="Quasar heading",
+            subheading="Quasar sub",
+            author="OpenStax",
+            body=json.dumps([{"type": "paragraph", "value": "<p>This study about quasarterm covers economics.</p>"}]),
+            article_subjects=json.dumps(
+                [{'type': 'subject', 'value': [{'type': 'item', 'value': {'subject': economics_id, 'featured': False}}]}]
+            ),
+            content_types=json.dumps([]),
+            collections=json.dumps([]),
+        )
+        news_index.add_child(instance=econ_kw)
+
+        self._populate_search_index()
+
+        response = self.client.get('/apps/cms/api/search/', {'q': 'quasarterm', 'subjects': 'Math'})
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.content)
+        slugs = [item['slug'] for item in data]
+
+        self.assertIn('quasar-math', slugs, "Math keyword match should be present")
+        self.assertNotIn('quasar-econ', slugs, "Economics keyword match must be excluded by subjects=Math")
+        # Article 1 has subject Math but does NOT contain the keyword: must be excluded
+        # (proves we compose with the keyword result, not just filter all Math articles).
+        self.assertNotIn('article', slugs, "Math article without the keyword must not appear")
+
+    def test_sort_newest_overrides_relevance(self):
+        """q + sort=newest returns results in non-increasing date order."""
+        news_index = NewsIndex.objects.all()[0]
+
+        older = NewsArticle(
+            title="Photosynthesis Explained",
+            slug="photo-older",
+            date=timezone.now() - datetime.timedelta(days=30),
+            heading="Photosynthesis heading",
+            subheading="About photosynthesis",
+            author="OpenStax",
+            body=json.dumps([{"type": "paragraph", "value": "<p>Photosynthesis in depth.</p>"}]),
+            article_subjects=json.dumps([]),
+            content_types=json.dumps([]),
+            collections=json.dumps([]),
+        )
+        news_index.add_child(instance=older)
+
+        newer = NewsArticle(
+            title="Topics in Biology",
+            slug="photo-newer",
+            date=timezone.now(),
+            heading="Biology heading",
+            subheading="Various biology topics",
+            author="OpenStax",
+            body=json.dumps(
+                [{"type": "paragraph",
+                  "value": "<p>Photosynthesis is a process. Photosynthesis uses light. "
+                           "Photosynthesis makes sugar.</p>"}]
+            ),
+            article_subjects=json.dumps([]),
+            content_types=json.dumps([]),
+            collections=json.dumps([]),
+        )
+        news_index.add_child(instance=newer)
+
+        self._populate_search_index()
+
+        response = self.client.get('/apps/cms/api/search/', {'q': 'photosynthesis', 'sort': 'newest'})
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.content)
+        dates = [item['date'] for item in data]
+        self.assertEqual(dates, sorted(dates, reverse=True),
+                         "sort=newest must return results in non-increasing date order")
+
+    def test_keyword_search_orders_by_relevance_not_date(self):
+        """Title match (older date) should rank above body-only match (newer date)."""
+        news_index = NewsIndex.objects.all()[0]
+
+        # Article A: term in TITLE, older date — should rank highest
+        article_a = NewsArticle(
+            title="Thermodynamics Explained",
+            slug="thermo-title-match",
+            date=timezone.now() - datetime.timedelta(days=30),
+            heading="Thermodynamics heading",
+            subheading="All about thermodynamics",
+            author="OpenStax",
+            body=json.dumps(
+                [
+                    {"type": "paragraph",
+                     "value": "<p>This article covers thermodynamics in depth.</p>"}
+                ]
+            ),
+            article_subjects=json.dumps([]),
+            content_types=json.dumps([]),
+            collections=json.dumps([]),
+        )
+        news_index.add_child(instance=article_a)
+
+        # Article B: term only in BODY (repeated), newer date
+        article_b = NewsArticle(
+            title="Physics Topics",
+            slug="thermo-body-only",
+            date=timezone.now(),
+            heading="Physics heading",
+            subheading="Various physics topics",
+            author="OpenStax",
+            body=json.dumps(
+                [
+                    {"type": "paragraph",
+                     "value": "<p>Thermodynamics is a branch of physics. "
+                              "Thermodynamics deals with heat and energy. "
+                              "Thermodynamics has many practical applications.</p>"}
+                ]
+            ),
+            article_subjects=json.dumps([]),
+            content_types=json.dumps([]),
+            collections=json.dumps([]),
+        )
+        news_index.add_child(instance=article_b)
+
+        self._populate_search_index()
+
+        response = self.client.get('/apps/cms/api/search/', {'q': 'thermodynamics'})
+        self.assertEqual(response.status_code, 200)
+        data = json.loads(response.content)
+        slugs = [item['slug'] for item in data]
+
+        self.assertIn('thermo-title-match', slugs, "Title-match article not found in results")
+        self.assertIn('thermo-body-only', slugs, "Body-only article not found in results")
+
+        self.assertLess(
+            slugs.index('thermo-title-match'),
+            slugs.index('thermo-body-only'),
+            "Title-match (older) article should appear before body-only (newer) article when ordered by relevance"
+        )
 
 
 class PressTests(WagtailPageTestCase):
@@ -308,3 +498,26 @@ class PressTests(WagtailPageTestCase):
 
 
 
+
+class NewsArticlePreviewTests(TestCase):
+    """NewsArticle preview must redirect to the headless frontend (/blog/<slug>),
+    not render the raw page.html fallback. See openstax.preview.FrontendPreviewMixin.
+    """
+
+    @patch('news.models.NewsArticle.get_url_parts')
+    def test_article_preview_redirects_to_frontend(self, mock_get_url_parts):
+        mock_get_url_parts.return_value = (1, 'http://dev.openstax.org', '/blog/my-article')
+        article = NewsArticle()
+        response = article.serve_preview(None, 'some-mode')
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(response.url.startswith('http://'))
+        self.assertEqual(response.url, '/blog/my-article/?preview=some-mode')
+
+    @patch('news.models.NewsArticle.get_url_parts')
+    def test_article_preview_falls_back_when_no_site(self, mock_get_url_parts):
+        mock_get_url_parts.return_value = None
+        article = NewsArticle()
+        with patch('wagtail.models.Page.serve_preview') as mock_super:
+            mock_super.return_value = 'fallback'
+            result = article.serve_preview(None, 'some-mode')
+        self.assertEqual(result, 'fallback')

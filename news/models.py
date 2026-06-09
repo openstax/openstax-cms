@@ -6,6 +6,7 @@ from django import forms
 from wagtail.models import Page, Orderable
 from wagtail.fields import RichTextField, StreamField
 from wagtail.admin.panels import FieldPanel, InlinePanel
+from wagtail_ai.panels import AIMultipleChooserPanel
 from wagtail.admin.widgets.slug import SlugInput
 from wagtail.embeds.blocks import EmbedBlock
 from wagtail.search import index
@@ -14,6 +15,7 @@ from wagtail.blocks import TextBlock, StructBlock, StreamBlock, FieldBlock, Char
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.documents.blocks import DocumentChooserBlock
 from wagtail.snippets.blocks import SnippetChooserBlock
+from wagtail_ai.blocks import ai_image_block
 from wagtail.api import APIField
 from wagtail.images.api.fields import ImageRenditionField
 from wagtail.models import Site
@@ -22,6 +24,7 @@ from modelcluster.fields import ParentalKey
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from taggit.models import TaggedItemBase
 from openstax.functions import build_image_url
+from openstax.preview import FrontendPreviewMixin
 from snippets.models import NewsSource, BlogContentType, BlogCollection, Subject
 from pages.custom_blocks import APIImageChooserBlock, FAQBlock
 
@@ -66,6 +69,7 @@ class CTAAlignmentChoiceBlock(FieldBlock):
     ))
 
 
+@ai_image_block()
 class ImageBlock(StructBlock):
     image = ImageChooserBlock()
     caption = RichTextBlock()
@@ -138,7 +142,7 @@ class BlogContentTypeBlock(StructBlock):
     content_type = ContentTypeChooserBlock(required=True, label='Blog Content Type', target_model='snippets.BlogContentType')
 
 
-class NewsIndex(Page):
+class NewsIndex(FrontendPreviewMixin, Page):
     interest_block = StreamField([
             ('heading', blocks.CharBlock()),
             ('description', blocks.TextBlock()),
@@ -204,61 +208,12 @@ class NewsArticleTag(TaggedItemBase):
     content_object = ParentalKey('news.NewsArticle', related_name='tagged_items')
 
 
-def news_article_collection_search(collection, content_types=None, subjects=None):
-    if subjects is None:
-        subjects = []
-    if content_types is None:
-        content_types = []
-    news_articles = NewsArticle.objects.filter(live=True).order_by('-date').prefetch_related("subjects")
-    collection_articles = []
-    articles_to_return = []
-
-    for na in news_articles:
-        if collection is not None and na.blog_collections and collection in na.blog_collections[0]['name']:
-            collection_articles.append(na)
-
-    if len(collection_articles) > 0:
-        if len(content_types) > 0 and len(subjects) > 0:
-            for article in collection_articles:
-                blog_types = article.blog_content_types
-                blog_subjects = article.blog_subjects
-                added = False
-                for item in content_types:
-                    if item in blog_types:
-                        articles_to_return.append(article)
-                        added = True
-                for item in subjects:
-                    if blog_subjects and item in blog_subjects[0]['name'] and not added:
-                        articles_to_return.append(article)
-        elif len(content_types) > 0 and len(subjects) == 0:
-            for article in collection_articles:
-                blog_types = article.blog_content_types
-                for item in content_types:
-                    if item in blog_types:
-                        articles_to_return.append(article)
-        elif len(content_types) == 0 and len(subjects) > 0:
-            for article in collection_articles:
-                blog_subjects = article.blog_subjects
-                for item in subjects:
-                    if blog_subjects and item in blog_subjects[0]['name']:
-                        articles_to_return.append(article)
-        else:
-            articles_to_return = collection_articles
-
-    return articles_to_return
+class NewsArticleRelatedPage(Orderable):
+    page = ParentalKey('news.NewsArticle', related_name='related_pages', on_delete=models.CASCADE)
+    related_page = models.ForeignKey('wagtailcore.Page', on_delete=models.CASCADE, related_name='+')
 
 
-def news_article_subject_search(subject):
-    news_articles = NewsArticle.objects.filter(live=True).order_by('-date').prefetch_related("subjects")
-    articles_to_return = []
-    for article in news_articles:
-        blog_subjects = article.blog_subjects
-        if blog_subjects and subject in blog_subjects[0]['name']:
-            articles_to_return.append(article)
-    return articles_to_return
-
-
-class NewsArticle(Page):
+class NewsArticle(FrontendPreviewMixin, Page):
     date = models.DateField("Post date")
     heading = models.CharField(max_length=250, help_text="Heading displayed on website")
     subheading = models.CharField(max_length=250, blank=True, null=True)
@@ -357,9 +312,52 @@ class NewsArticle(Page):
                     cols.append(data)
         return cols
 
+    def search_subject_names(self):
+        prep_value = self.article_subjects.get_prep_value() or []
+        subject_ids = [
+            item.get('value', {}).get('subject')
+            for block in prep_value
+            for item in (block.get('value') or [])
+            if item.get('value', {}).get('subject') is not None
+        ]
+        if not subject_ids:
+            return ''
+        subjects = Subject.objects.in_bulk(subject_ids)
+        return ' '.join(str(subjects[sid]) for sid in subject_ids if sid in subjects)
+
+    def search_collection_names(self):
+        prep_value = self.collections.get_prep_value() or []
+        collection_ids = [
+            item.get('value', {}).get('collection')
+            for block in prep_value
+            for item in (block.get('value') or [])
+            if item.get('value', {}).get('collection') is not None
+        ]
+        if not collection_ids:
+            return ''
+        collections = BlogCollection.objects.in_bulk(collection_ids)
+        return ' '.join(str(collections[cid]) for cid in collection_ids if cid in collections)
+
+    def search_content_type_names(self):
+        prep_value = self.content_types.get_prep_value() or []
+        content_type_ids = [
+            item.get('value', {}).get('content_type')
+            for block in prep_value
+            for item in (block.get('value') or [])
+            if item.get('value', {}).get('content_type') is not None
+        ]
+        if not content_type_ids:
+            return ''
+        types = BlogContentType.objects.in_bulk(content_type_ids)
+        return ' '.join(str(types[tid]) for tid in content_type_ids if tid in types)
+
     search_fields = Page.search_fields + [
+        index.SearchField('search_subject_names', boost=5),
+        index.SearchField('search_collection_names', boost=2),
+        index.SearchField('author', boost=2),
         index.SearchField('body'),
-        index.SearchField('tags'),
+        index.SearchField('search_content_type_names'),
+        index.RelatedFields('tags', [index.SearchField('name')]),
     ]
 
     content_panels = Page.content_panels + [
@@ -378,6 +376,12 @@ class NewsArticle(Page):
         FieldPanel('collections'),
         FieldPanel('article_subjects'),
         FieldPanel('content_types'),
+        AIMultipleChooserPanel(
+            'related_pages',
+            chooser_field_name='related_page',
+            vector_index='PageVectorIndex',
+            label='Related pages',
+        ),
     ]
 
     promote_panels = [
@@ -502,7 +506,7 @@ class MissionStatements(Orderable, MissionStatement):
     mission_statements = ParentalKey('news.PressIndex', related_name='mission_statements')
 
 
-class PressIndex(Page):
+class PressIndex(FrontendPreviewMixin, Page):
     press_kit = models.ForeignKey(
         'wagtaildocs.Document',
         null=True,
@@ -625,7 +629,7 @@ class PressIndex(Page):
     max_count = 1
 
 
-class PressRelease(Page):
+class PressRelease(FrontendPreviewMixin, Page):
     date = models.DateField("PR date")
     heading = models.CharField(max_length=250, help_text="Heading displayed on website")
     subheading = models.CharField(max_length=250, blank=True, null=True)

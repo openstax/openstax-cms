@@ -33,3 +33,25 @@ DATABASES = {
 # silence whitenoise warnings for CI
 import warnings
 warnings.filterwarnings("ignore", message="No directory at", module="whitenoise.base")
+
+# Wagtail AI: never call a real provider in tests. Both config trees are stubbed:
+# BACKENDS (legacy llm rich-text path) use EchoBackend; PROVIDERS (any-llm agent +
+# embedding path) point at a non-routable sentinel so a future test that resolves
+# an agent/embedding client fails loudly instead of making a billable API call.
+# CISafetyTests asserts both stay stubbed.
+AI_TEST_STUB_PROVIDER = "openstax-test-stub"
+WAGTAIL_AI = {
+    "BACKENDS": {
+        "default": {"CLASS": "wagtail_ai.ai.echo.EchoBackend", "CONFIG": {"MODEL_ID": "echo"}},
+        "quality": {"CLASS": "wagtail_ai.ai.echo.EchoBackend", "CONFIG": {"MODEL_ID": "echo"}},
+        "openai": {"CLASS": "wagtail_ai.ai.echo.EchoBackend", "CONFIG": {"MODEL_ID": "echo"}},
+    },
+    "IMAGE_DESCRIPTION_BACKEND": "default",
+    "IMAGE_DESCRIPTION_PROVIDER": "image_description",
+    "PROVIDERS": {
+        "default": {"provider": AI_TEST_STUB_PROVIDER, "model": "stub"},
+        "image_description": {"provider": AI_TEST_STUB_PROVIDER, "model": "stub"},
+        "content_feedback": {"provider": AI_TEST_STUB_PROVIDER, "model": "stub"},
+        "embedding": {"provider": AI_TEST_STUB_PROVIDER, "model": "stub"},
+    },
+}

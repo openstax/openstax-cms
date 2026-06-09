@@ -17,6 +17,9 @@ from news.feeds import RssBlogFeed, AtomBlogFeed
 from api import urls as api_urls
 from global_settings.views import throw_error, clear_entire_cache, sitemap
 
+from pages.flex_api import FlexPageDraftView
+from pages.views import HeadlessUserbarView
+
 admin.site.site_header = 'OpenStax'
 
 urlpatterns = [
@@ -33,8 +36,26 @@ urlpatterns = [
 
     re_path(r'^accounts', include(accounts_urls)),  # non-CloudFront Accounts redirects
 
+    # Headless userbar endpoint: the decoupled front-end fetches this while
+    # previewing a draft so the accessibility/content checker, content metrics,
+    # and wagtail-ai's content checks work on the front-end. Must live under
+    # /apps/cms/api/ — that's the only /apps/cms/ path the production nginx
+    # routes to this backend (everything else is proxied to the front-end).
+    # Declared before the apps/cms/api/ include so the include doesn't swallow it.
+    path('apps/cms/api/userbar/', HeadlessUserbarView.as_view(), name='wagtail_userbar'),
+
+    # TEMPORARY: the dedicated apps/cms/api/userbar/* CloudFront behavior (cookies
+    # forwarded, no cache) isn't deployed yet, so apps/cms/api/* still strips the
+    # session cookie and the userbar comes back blank. The existing (now-unused)
+    # apps/cms/api/salesforce/reviews/* behavior already forwards cookies + skips
+    # caching, so we ride it to test end-to-end. Declared before the salesforce
+    # include so it isn't swallowed. REMOVE once the CloudFront change ships.
+    path('apps/cms/api/salesforce/reviews/userbar/', HeadlessUserbarView.as_view(), name='wagtail_userbar_temp'),
+
     path('apps/cms/api/', include(api_urls)),
     path('apps/cms/api/search/', search, name='search'),
+    path('apps/cms/api/v2/pages/flex/', FlexPageDraftView.as_view(), name='flex-draft-create'),
+    path('apps/cms/api/v2/pages/flex/<int:page_id>/', FlexPageDraftView.as_view(), name='flex-draft-update'),
     path('apps/cms/api/v2/', api_router.urls),
     path('apps/cms/api/salesforce/', include('salesforce.urls')),
     path('apps/cms/api/snippets/', include('snippets.urls')),
@@ -64,5 +85,11 @@ if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     urlpatterns += [
         path('favicon.ico', RedirectView.as_view(url=settings.STATIC_URL + 'pages/images/favicon.ico')),
+    ]
+
+# debug_toolbar is a dev-only dependency; only wire it up when it's actually installed
+# (DEBUG is also True under test settings, where debug_toolbar is not in INSTALLED_APPS)
+if settings.DEBUG and 'debug_toolbar' in settings.INSTALLED_APPS:
+    urlpatterns += [
         path('__debug__/', include('debug_toolbar.urls'))
     ]

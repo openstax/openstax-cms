@@ -37,3 +37,7 @@ CORS_ALLOW_CREDENTIALS = True
 CORS_ORIGIN_WHITELIST = (
     'http://localhost:3000' # http://localhost:3000, not http://localhost:3000/
 )
+
+# Wagtail AI is always enabled. To use it locally, set ANTHROPIC_API_KEY in your
+# env and run `python manage.py seed_ai_prompts`. Without a key the AI tools
+# appear in the editor but calls will fail.

@@ -49,9 +49,15 @@ class CommonMiddlewareAppendSlashWithoutRedirect(CommonMiddleware):
         response = super().process_response(request, response)
 
         if isinstance(response, HttpResponsePermanentRedirect):
+            # Append the trailing slash and re-dispatch internally instead of
+            # redirecting. Django's URL resolver matches on request.path_info,
+            # so it must get the slash too: updating only request.path leaves the
+            # re-dispatch resolving the original slash-less path, which 404s.
+            # (The query string stays in request.GET, so path_info needs none.)
             if not request.path.endswith('/'):
                 request.path = request.path + '/'
-            # we don't need query string in path_info because it's in request.GET already
+            if not request.path_info.endswith('/'):
+                request.path_info = request.path_info + '/'
             response = self.handler.get_response(request)
 
         return response

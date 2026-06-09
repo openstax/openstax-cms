@@ -225,7 +225,6 @@ INSTALLED_APPS = [
     'modelcluster',
     'rest_framework',
     'rest_framework.authtoken',
-    'rest_auth',
     'django_crontab',
     'django_filters',
     'storages',
@@ -236,6 +235,7 @@ INSTALLED_APPS = [
     'wagtail_modeladmin',
     'wagtailautocomplete',
     # custom
+    'ai_assist',
     'accounts',
     'api',
     'pages',
@@ -254,6 +254,9 @@ INSTALLED_APPS = [
     'versions',
     'oxmenus',
     # wagtail
+    'wagtail_ai',
+    'wagtail_color_panel',
+    'django_ai_core.contrib.index',
     'wagtail',
     'wagtail.admin',
     'wagtail.documents',
@@ -364,6 +367,72 @@ WAGTAILTRANSFER_LOOKUP_FIELDS = {
     'snippets.webinarcollection': ['name'],
     'snippets.promotesnippet':    ['name'],
 }
+
+# --- Wagtail AI integration -------------------------------------------------
+WAGTAIL_AI = {
+    "BACKENDS": {
+        "default": {  # cheap, high-volume: alt text, grammar
+            "CLASS": "wagtail_ai.ai.llm.LLMBackend",
+            "CONFIG": {
+                "MODEL_ID": os.getenv(
+                    "WAGTAIL_AI_DEFAULT_MODEL", "anthropic/claude-haiku-4-5-20251001"
+                ),
+                "TOKEN_LIMIT": 8192,
+            },
+        },
+        "quality": {  # stronger: content feedback, rewrites
+            "CLASS": "wagtail_ai.ai.llm.LLMBackend",
+            "CONFIG": {
+                "MODEL_ID": os.getenv(
+                    "WAGTAIL_AI_QUALITY_MODEL", "anthropic/claude-sonnet-4-6"
+                ),
+                "TOKEN_LIMIT": 8192,
+            },
+        },
+        "openai": {  # alternate provider, selectable per prompt/feature
+            "CLASS": "wagtail_ai.ai.llm.LLMBackend",
+            "CONFIG": {
+                "MODEL_ID": os.getenv("WAGTAIL_AI_OPENAI_MODEL", "gpt-4o-mini"),
+                "TOKEN_LIMIT": 8192,
+            },
+        },
+    },
+    "IMAGE_DESCRIPTION_BACKEND": "default",
+    # Image description uses the django-ai-core agent path, which sends images
+    # as OpenAI `image_url` content blocks. any-llm 0.20.3's Anthropic provider
+    # doesn't translate that block (Anthropic expects `image`/`source`), so route
+    # image requests to OpenAI, whose native format is `image_url`. Text prompts
+    # stay on the Anthropic "default" provider. Revert to "default" once any-llm
+    # is upgraded to >=1.x (its Anthropic provider converts the block).
+    "IMAGE_DESCRIPTION_PROVIDER": "image_description",
+    "PROVIDERS": {
+        "default": {
+            "provider": "anthropic",
+            "model": os.getenv("WAGTAIL_AI_AGENT_MODEL", "claude-sonnet-4-6"),
+        },
+        "image_description": {  # OpenAI vision: any-llm passes image_url natively
+            "provider": "openai",
+            "model": os.getenv("WAGTAIL_AI_IMAGE_DESCRIPTION_MODEL", "gpt-4o-mini"),
+        },
+        # Content feedback is the only agent that requests structured output
+        # (response_format). any-llm 0.20.3's Anthropic provider raises
+        # UnsupportedParameterError on it (Anthropic has no OpenAI-style JSON
+        # mode), so route it to OpenAI, whose provider supports response_format.
+        # ContentFeedbackAgent hardcodes provider_alias="default" with no setting
+        # to override it, so ai_assist.agent_patches points it at this alias.
+        # Revert to "default" once any-llm is upgraded to >=1.x.
+        "content_feedback": {
+            "provider": "openai",
+            "model": os.getenv("WAGTAIL_AI_CONTENT_FEEDBACK_MODEL", "gpt-4o-mini"),
+        },
+        "embedding": {
+            "provider": "openai",
+            "model": os.getenv("WAGTAIL_AI_EMBEDDING_MODEL", "text-embedding-3-small"),
+        },
+    },
+}
+
+WAGTAILIMAGES_IMAGE_FORM_BASE = "wagtail_ai.forms.DescribeImageForm"
 
 ########
 # Cron #
@@ -563,7 +632,8 @@ WAGTAILADMIN_RICH_TEXT_EDITORS = {
                          'blockquote',
                          'superscript',
                          'subscript',
-                         'strikethrough']
+                         'strikethrough',
+                         'ai']
         }
     },
 }
