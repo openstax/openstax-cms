@@ -12,6 +12,7 @@ from wagtail.admin.panels import (FieldPanel,
 from wagtail.admin.widgets.slug import SlugInput
 from wagtail import blocks
 from wagtail.fields import RichTextField, StreamField
+from wagtail.rich_text import expand_db_html
 from wagtail.models import Orderable, Page
 from wagtail.snippets.blocks import SnippetChooserBlock
 from wagtail.admin.panels import TabbedInterface, ObjectList
@@ -27,6 +28,7 @@ from openstax.preview import FrontendPreviewMixin
 from books.constants import BOOK_STATES, BOOK_COVER_TEXT_COLOR, COVER_COLORS, CC_NC_SA_LICENSE_NAME, CC_BY_LICENSE_NAME, \
     CC_BY_LICENSE_URL, CC_NC_SA_LICENSE_URL, CC_NC_SA_LICENSE_VERSION, CC_BY_LICENSE_VERSION, K12_CATEGORIES
 import snippets.models as snippets
+from openstax.api_fields import APIRichTextBlock
 
 
 class HiddenFilterChildRelationField(Field):
@@ -837,7 +839,7 @@ class Book(FrontendPreviewMixin, Page):
     videos = StreamField([
         ('video', blocks.ListBlock(blocks.StructBlock([
             ('title', blocks.CharBlock()),
-            ('description', blocks.RichTextBlock()),
+            ('description', APIRichTextBlock()),
             ('embed', blocks.RawHTMLBlock()),
         ])))
     ], null=True, blank=True, use_json_field=True)

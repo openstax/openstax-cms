@@ -55,6 +55,38 @@ class ExpandedRichTextFieldTests(TestCase):
         self.assertEqual(field.to_representation(""), "")
 
 
+from wagtail import blocks as wagtail_blocks
+from wagtail.fields import StreamField
+from pages.custom_blocks import APIRichTextBlock
+
+
+def _leaf_blocks(block):
+    """Recursively yield every leaf block in a block tree."""
+    child_blocks = getattr(block, "child_blocks", None)
+    single_child = getattr(block, "child_block", None)
+    if child_blocks:
+        for child in child_blocks.values():
+            yield from _leaf_blocks(child)
+    elif single_child is not None:
+        yield from _leaf_blocks(single_child)
+    else:
+        yield block
+
+
+class StreamFieldRichTextTests(TestCase):
+    def test_no_streamfield_uses_plain_richtextblock(self):
+        offenders = []
+        for model in apps.get_models():
+            for f in model._meta.get_fields():
+                if not isinstance(f, StreamField):
+                    continue
+                for leaf in _leaf_blocks(f.stream_block):
+                    # APIRichTextBlock (subclass) is allowed; plain is not.
+                    if type(leaf) is wagtail_blocks.RichTextBlock:
+                        offenders.append(f"{model._meta.label}.{f.name}")
+        self.assertEqual(sorted(set(offenders)), [], f"Plain RichTextBlock in: {set(offenders)}")
+
+
 class ModelRichTextWiringTests(TestCase):
     def test_every_api_exposed_richtextfield_uses_expanded_serializer(self):
         offenders = []

@@ -11,7 +11,7 @@ from wagtail.admin.widgets.slug import SlugInput
 from wagtail.embeds.blocks import EmbedBlock
 from wagtail.search import index
 from wagtail import blocks
-from wagtail.blocks import TextBlock, StructBlock, StreamBlock, FieldBlock, CharBlock, RichTextBlock, RawHTMLBlock, BooleanBlock
+from wagtail.blocks import TextBlock, StructBlock, StreamBlock, FieldBlock, CharBlock, RawHTMLBlock, BooleanBlock
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.documents.blocks import DocumentChooserBlock
 from wagtail.snippets.blocks import SnippetChooserBlock
@@ -27,7 +27,7 @@ from taggit.models import TaggedItemBase
 from openstax.functions import build_image_url
 from openstax.preview import FrontendPreviewMixin
 from snippets.models import NewsSource, BlogContentType, BlogCollection, Subject
-from pages.custom_blocks import APIImageChooserBlock, FAQBlock
+from pages.custom_blocks import APIImageChooserBlock, FAQBlock, APIRichTextBlock
 
 
 class ImageChooserBlock(ImageChooserBlock):
@@ -73,7 +73,7 @@ class CTAAlignmentChoiceBlock(FieldBlock):
 @ai_image_block()
 class ImageBlock(StructBlock):
     image = ImageChooserBlock()
-    caption = RichTextBlock()
+    caption = APIRichTextBlock()
     alignment = ImageFormatChoiceBlock()
     alt_text = blocks.CharBlock(required=False)
 
@@ -95,7 +95,7 @@ class BlogDocumentChooserBlock(DocumentChooserBlock):
 
 
 class BlogStreamBlock(StreamBlock):
-    paragraph = RichTextBlock(icon="pilcrow")
+    paragraph = APIRichTextBlock(icon="pilcrow")
     aligned_image = ImageBlock(label="Aligned image", icon="image")
     pullquote = PullQuoteBlock()
     aligned_html = RawHTMLBlock(icon="code", label='Raw HTML')

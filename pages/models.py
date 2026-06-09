@@ -1096,7 +1096,7 @@ class GeneralPage(FrontendPreviewMixin, Page):
     body = StreamField([
         ('heading', blocks.CharBlock(classname="full title")),
         ('tagline', blocks.CharBlock(classname="full title")),
-        ('paragraph', blocks.RichTextBlock()),
+        ('paragraph', APIRichTextBlock()),
         ('image', APIImageChooserBlock()),
         ('html', blocks.RawHTMLBlock()),
     ], use_json_field=True)
@@ -1861,8 +1861,8 @@ class LearningResearchPage(FrontendPreviewMixin, Page):
         blocks.StreamBlock([
             ('research_area_section', blocks.StructBlock([
                 ('research_area_title', blocks.CharBlock()),
-                ('research_area_blurb', blocks.RichTextBlock()),
-                ('research_area_blurb_mobile', blocks.RichTextBlock()),
+                ('research_area_blurb', APIRichTextBlock()),
+                ('research_area_blurb_mobile', APIRichTextBlock()),
                 ('research_areas', blocks.ListBlock(blocks.StructBlock([
                     ('header', blocks.CharBlock()),
                     ('description', blocks.CharBlock()),
@@ -2082,7 +2082,7 @@ class Impact(FrontendPreviewMixin, Page):
             ('content', blocks.StructBlock([
                 ('image', ImageBlock()),
                 ('heading', blocks.CharBlock()),
-                ('description', blocks.RichTextBlock()),
+                ('description', APIRichTextBlock()),
                 ('cards', blocks.ListBlock(blocks.StructBlock([
                     ('icon', APIImageChooserBlock(required=False)),
                     ('description', blocks.CharBlock()),
@@ -2095,7 +2095,7 @@ class Impact(FrontendPreviewMixin, Page):
             ('content', blocks.StructBlock([
                 ('image', ImageBlock()),
                 ('heading', blocks.CharBlock()),
-                ('description', blocks.RichTextBlock()),
+                ('description', APIRichTextBlock()),
                 ('button_text', blocks.CharBlock()),
                 ('button_href', blocks.URLBlock()),
                 ('cards', blocks.ListBlock(blocks.StructBlock([
@@ -2109,13 +2109,13 @@ class Impact(FrontendPreviewMixin, Page):
         blocks.StreamBlock([
             ('content', blocks.StructBlock([
                 ('image', ImageBlock()),
-                ('quote', blocks.RichTextBlock())
+                ('quote', APIRichTextBlock())
             ]))], max_num=1), use_json_field=True)
     making_a_difference = StreamField(
         blocks.StreamBlock([
             ('content', blocks.StructBlock([
                 ('heading', blocks.CharBlock()),
-                ('description', blocks.RichTextBlock()),
+                ('description', APIRichTextBlock()),
                 ('stories', blocks.ListBlock(StoryBlock()))
             ]))], max_num=1), use_json_field=True)
     disruption = StreamField(
@@ -2133,7 +2133,7 @@ class Impact(FrontendPreviewMixin, Page):
             ('content', blocks.StructBlock([
                 ('heading', blocks.CharBlock()),
                 ('image', ImageBlock()),
-                ('quote', blocks.RichTextBlock()),
+                ('quote', APIRichTextBlock()),
                 ('link_text', blocks.CharBlock()),
                 ('link_href', blocks.URLBlock())
             ]))], max_num=1), use_json_field=True)
@@ -2193,7 +2193,7 @@ class InstitutionalPartnership(FrontendPreviewMixin, Page):
     program_tab_content = StreamField([
         ('tab', blocks.ListBlock(blocks.StructBlock([
             ('heading', blocks.CharBlock()),
-            ('description', blocks.RichTextBlock())
+            ('description', APIRichTextBlock())
         ])))
     ], null=True, use_json_field=True)
     quote = models.TextField()
@@ -2279,12 +2279,12 @@ class InstitutionalPartnerProgramPage(FrontendPreviewMixin, Page):
     section_3_wide_cards = StreamField([
         ('card', blocks.ListBlock(blocks.StructBlock([
             ('icon', ImageBlock()),
-            ('html', blocks.RichTextBlock()),
+            ('html', APIRichTextBlock()),
         ])))
     ], use_json_field=True)
     section_3_tall_cards = StreamField([
         ('card', blocks.ListBlock(blocks.StructBlock([
-            ('html', blocks.RichTextBlock()),
+            ('html', APIRichTextBlock()),
             ('link', blocks.URLBlock()),
             ('link_text', blocks.CharBlock())
         ])))
@@ -2454,7 +2454,7 @@ class CreatorFestPage(FrontendPreviewMixin, Page):
     register = StreamField([
         ('box', blocks.ListBlock(blocks.StructBlock([
             ('headline', blocks.CharBlock()),
-            ('address', blocks.RichTextBlock()),
+            ('address', APIRichTextBlock()),
             ('button_url', blocks.URLBlock()),
             ('button_text', blocks.CharBlock()),
         ])))
@@ -2472,11 +2472,11 @@ class CreatorFestPage(FrontendPreviewMixin, Page):
             ('heading', blocks.CharBlock()),
             ('background_image', ImageBlock(required=False)),
             ('embed', blocks.RawHTMLBlock(required=False)),
-            ('paragraph', blocks.RichTextBlock(required=False)),
+            ('paragraph', APIRichTextBlock(required=False)),
             ('cards', blocks.ListBlock(blocks.StructBlock([
                 ('icon', ImageBlock()),
                 ('headline', blocks.CharBlock()),
-                ('description', blocks.RichTextBlock())
+                ('description', APIRichTextBlock())
             ], null=True)
             ))
         ]))

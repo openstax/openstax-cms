@@ -13,8 +13,7 @@ from wagtail.admin.telepath import register
 
 from api.serializers import ImageSerializer
 from openstax.functions import build_image_url, build_document_url
-from wagtail.rich_text import expand_db_html
-from books.models import get_book_data
+from openstax.api_fields import APIRichTextBlock
 
 
 # --- Choice constants ---
@@ -188,15 +187,6 @@ def id_config_block():
     )
 
 
-class APIRichTextBlock(blocks.RichTextBlock):
-    def get_api_representation(self, value, context=None):
-        representation = super().get_api_representation(value, context)
-        return expand_db_html(representation)
-
-    class Meta:
-        icon = 'doc-full'
-
-
 class LinkBlock(blocks.StreamBlock):
     external = blocks.URLBlock(required=False, help_text='External links are full urls that can go anywhere')
     internal = blocks.PageChooserBlock(required=False)
@@ -340,7 +330,7 @@ class APIImageChooserBlock(ImageChooserBlock):
 
 class QuoteBlock(StructBlock):
     image = APIImageChooserBlock()
-    content = blocks.RichTextBlock(help_text="The quote content.")
+    content = APIRichTextBlock(help_text="The quote content.")
     name = blocks.CharBlock(help_text="The name of the person or entity to attribute the quote to.")
     title = blocks.CharBlock(required=False, help_text="Additional title or label about the quotee.")
     config = blocks.StreamBlock([
@@ -396,7 +386,7 @@ class ImageBlock(StructBlock):
 
 class ColumnBlock(blocks.StructBlock):
     heading = blocks.CharBlock(required=False)
-    content = blocks.RichTextBlock(required=False)
+    content = APIRichTextBlock(required=False)
     image = ImageBlock(required=False, help_text='Callout boxes 940x400, Home page boxes 1464x640')
     document = DocumentChooserBlock(required=False)
     cta = blocks.CharBlock(required=False)
@@ -407,9 +397,9 @@ class ColumnBlock(blocks.StructBlock):
 
 
 class FAQBlock(blocks.StructBlock):
-    question = blocks.RichTextBlock(required=True, help_text='The visible text of the question (does not collapse).')
+    question = APIRichTextBlock(required=True, help_text='The visible text of the question (does not collapse).')
     slug = blocks.CharBlock(required=True, help_text='Not visible to user, must be unique in this FAQ.')
-    answer = blocks.RichTextBlock(required=True, help_text='The answer to the question, is hidden until the question is expanded.')
+    answer = APIRichTextBlock(required=True, help_text='The answer to the question, is hidden until the question is expanded.')
     document = DocumentChooserBlock(required=False, help_text='Not sure this does anything.')
 
     class Meta:
@@ -441,7 +431,7 @@ class BookProviderBlock(blocks.StructBlock):
 
 class CardBlock(blocks.StructBlock):
     title = blocks.CharBlock(required=True)
-    description = blocks.RichTextBlock(required=True)
+    description = APIRichTextBlock(required=True)
 
     class Meta:
         icon = 'form'
@@ -450,7 +440,7 @@ class CardBlock(blocks.StructBlock):
 class CardImageBlock(blocks.StructBlock):
     icon = APIImageChooserBlock(required=False)
     title = blocks.CharBlock(required=True)
-    description = blocks.RichTextBlock(required=True)
+    description = APIRichTextBlock(required=True)
 
     class Meta:
         icon = 'image'
@@ -503,7 +493,7 @@ class TestimonialBlock(blocks.StructBlock):
     author_icon = APIImageChooserBlock(required=False)
     author_name = blocks.CharBlock(required=True)
     author_title = blocks.CharBlock(required=True)
-    testimonial = blocks.RichTextBlock(required=True)
+    testimonial = APIRichTextBlock(required=True)
 
     class Meta:
         author_icon = 'image'
@@ -538,5 +528,6 @@ class BookBlock(blocks.PageChooserBlock):
         super().__init__(*args, **kwargs)
 
     def get_api_representation(self, value, context=None):
+        from books.models import get_book_data
         if value:
             return get_book_data(value)
