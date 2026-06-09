@@ -21,13 +21,12 @@ from wagtail.models import Site
 
 from rest_framework.fields import Field
 
-from openstax.api_fields import ExpandedRichTextField
+from openstax.api_fields import APIRichTextBlock, ExpandedRichTextField
 from openstax.functions import build_document_url
 from openstax.preview import FrontendPreviewMixin
 from books.constants import BOOK_STATES, BOOK_COVER_TEXT_COLOR, COVER_COLORS, CC_NC_SA_LICENSE_NAME, CC_BY_LICENSE_NAME, \
     CC_BY_LICENSE_URL, CC_NC_SA_LICENSE_URL, CC_NC_SA_LICENSE_VERSION, CC_BY_LICENSE_VERSION, K12_CATEGORIES
 import snippets.models as snippets
-from openstax.api_fields import APIRichTextBlock
 
 
 class HiddenFilterChildRelationField(Field):
@@ -276,7 +275,7 @@ class FacultyResources(models.Model):
 
     api_fields = [
         APIField('resource_heading'),
-        APIField('resource_description'),
+        APIField('resource_description', serializer=ExpandedRichTextField()),
         APIField('resource_unlocked'),
         APIField('resource_icon'),
         APIField('creator_fest_resource'),
@@ -386,7 +385,7 @@ class StudentResources(models.Model):
 
     api_fields = [
         APIField('resource_heading'),
-        APIField('resource_description'),
+        APIField('resource_description', serializer=ExpandedRichTextField()),
         APIField('resource_unlocked'),
         APIField('resource_icon'),
         APIField('link_external'),

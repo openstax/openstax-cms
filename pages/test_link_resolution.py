@@ -88,6 +88,13 @@ class StreamFieldRichTextTests(TestCase):
 
 class ModelRichTextWiringTests(TestCase):
     def test_every_api_exposed_richtextfield_uses_expanded_serializer(self):
+        # NOTE: This test introspects Django model fields via _meta.get_fields().
+        # It cannot detect Python *property*-based proxy fields (e.g.
+        # books.FacultyResources.resource_description and
+        # books.StudentResources.resource_description) because those are not
+        # Django fields and are invisible to _meta.  Those known cases are
+        # explicitly asserted in test_known_proxy_property_richtext_fields_are_wired
+        # below and must be wired manually whenever new proxy properties are added.
         offenders = []
         for model in apps.get_models():
             rtf_names = {
@@ -105,6 +112,17 @@ class ModelRichTextWiringTests(TestCase):
                 if not ok:
                     offenders.append(f"{model._meta.app_label}.{model.__name__}.{name}")
         self.assertEqual(offenders, [], f"Unwired RichTextFields: {offenders}")
+
+    def test_known_proxy_property_richtext_fields_are_wired(self):
+        # Properties proxying to a RichTextField are invisible to _meta.get_fields(),
+        # so the structural guard above can't see them — assert the known ones explicitly.
+        from books.models import FacultyResources, StudentResources
+        for model in (FacultyResources, StudentResources):
+            entry = next(
+                e for e in model.api_fields
+                if isinstance(e, APIField) and e.name == 'resource_description'
+            )
+            self.assertIsInstance(entry.serializer, ExpandedRichTextField)
 
 
 from pages.custom_blocks import LinkBlock
@@ -135,3 +153,12 @@ class LinkBlockTargetTests(TestCase):
         self.assertEqual(rep["type"], "internal")
         # page.url honors Book.get_url_parts → /details/books/<slug> (no trailing slash)
         self.assertEqual(rep["value"], "/details/books/lb-book")
+
+    def test_internal_link_with_no_page_returns_none(self):
+        # PageChooserBlock(required=False) allows an internal sub-block with no
+        # page chosen; child.value is None in that case.  Confirm get_api_representation
+        # returns None instead of raising AttributeError on child.value.specific.
+        block = LinkBlock()
+        # to_python with value=None produces a StreamValue child where child.value is None.
+        value = block.to_python([{"type": "internal", "value": None}])
+        self.assertIsNone(block.get_api_representation(value))

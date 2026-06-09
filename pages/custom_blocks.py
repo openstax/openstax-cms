@@ -211,6 +211,8 @@ class LinkBlock(blocks.StreamBlock):
                     'type': child.block_type,
                 }
             elif child.block_type == 'internal':
+                if child.value is None:
+                    return None
                 return {
                     'value': child.value.specific.url,
                     'type': child.block_type,
