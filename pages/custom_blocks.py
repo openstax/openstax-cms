@@ -213,8 +213,9 @@ class LinkBlock(blocks.StreamBlock):
             elif child.block_type == 'internal':
                 if child.value is None:
                     return None
+                page = child.value.specific
                 return {
-                    'value': child.value.specific.url,
+                    'value': page.url or page.url_path,
                     'type': child.block_type,
                 }
             elif child.block_type == 'anchor':
