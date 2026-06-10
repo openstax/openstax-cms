@@ -12,7 +12,6 @@ from wagtail.admin.panels import (FieldPanel,
 from wagtail.admin.widgets.slug import SlugInput
 from wagtail import blocks
 from wagtail.fields import RichTextField, StreamField
-from wagtail.rich_text import expand_db_html
 from wagtail.models import Orderable, Page
 from wagtail.snippets.blocks import SnippetChooserBlock
 from wagtail.admin.panels import TabbedInterface, ObjectList

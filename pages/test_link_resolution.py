@@ -57,7 +57,6 @@ class ExpandedRichTextFieldTests(TestCase):
 
 from wagtail import blocks as wagtail_blocks
 from wagtail.fields import StreamField
-from pages.custom_blocks import APIRichTextBlock
 
 
 def _leaf_blocks(block):
