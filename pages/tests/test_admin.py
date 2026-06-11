@@ -3,8 +3,6 @@ from http import cookies
 from django.test import TestCase, Client
 from wagtail.test.utils import WagtailTestUtils
 
-from shared.test_utilities import mock_user_login
-
 
 class AdminPages(TestCase, WagtailTestUtils):
 
