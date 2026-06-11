@@ -1,10 +1,16 @@
+import json
 import re
 
 from django.test import TestCase, Client
+from django.utils import timezone
 
 from wagtail.contrib.sitemaps.sitemap_generator import Sitemap
 
+from wagtail.models import Page, Site
+
 from global_settings.views import SlashlessSitemap
+from news.models import NewsIndex, NewsArticle
+from pages.models import HomePage
 
 
 class SlashlessSitemapTest(TestCase):
@@ -57,3 +63,69 @@ class SitemapViewTest(TestCase):
                 path.endswith('/'),
                 f'sitemap <loc> should be slash-less: {loc}',
             )
+
+
+class RobotsViewTest(TestCase):
+    """ /robots.txt serves the static baseline rules plus a Disallow entry for
+        every page that was published and later unpublished (CORE-2256), so
+        crawlers stop indexing pages editors have pulled down. Never-published
+        drafts are deliberately left out — listing them would leak their slugs.
+    """
+
+    @classmethod
+    def setUpTestData(cls):
+        root_page = Page.objects.get(title="Root")
+        homepage = HomePage(title="Hello World", slug="hello-world")
+        root_page.add_child(instance=homepage)
+        # Point the default site at the homepage so get_url_parts() can
+        # resolve site-relative paths for the article pages.
+        Site.objects.update_or_create(
+            is_default_site=True,
+            defaults={'hostname': 'testserver', 'port': 80, 'root_page': homepage},
+        )
+        Site.clear_site_root_paths_cache()
+        cls.news_index = NewsIndex(title="News Index")
+        homepage.add_child(instance=cls.news_index)
+
+    def _robots(self):
+        response = Client().get('/robots.txt')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'text/plain')
+        return response.content.decode()
+
+    def _add_article(self, slug):
+        article = NewsArticle(
+            title=slug,
+            slug=slug,
+            date=timezone.now(),
+            heading='Heading',
+            subheading='Subheading',
+            author='OpenStax',
+            body=json.dumps([{'type': 'paragraph', 'value': '<p>Body</p>'}]),
+            live=False,
+        )
+        self.news_index.add_child(instance=article)
+        return article
+
+    def test_serves_baseline_rules(self):
+        content = self._robots()
+        self.assertIn('User-agent: *', content)
+        self.assertIn('Disallow: /errata', content)
+        self.assertIn('User-agent: GPTBot', content)
+        self.assertIn('Sitemap: http://testserver/sitemap.xml', content)
+
+    def test_unpublished_blog_post_is_disallowed(self):
+        article = self._add_article('robots-unpublished-post')
+        article.save_revision().publish()
+        article.refresh_from_db()
+        article.unpublish()
+        self.assertIn('Disallow: /blog/robots-unpublished-post', self._robots())
+
+    def test_live_blog_post_is_not_disallowed(self):
+        article = self._add_article('robots-live-post')
+        article.save_revision().publish()
+        self.assertNotIn('robots-live-post', self._robots())
+
+    def test_never_published_draft_is_not_disallowed(self):
+        self._add_article('robots-draft-post')
+        self.assertNotIn('robots-draft-post', self._robots())

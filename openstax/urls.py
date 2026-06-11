@@ -13,7 +13,7 @@ from news.search import search
 from news.feeds import RssBlogFeed, AtomBlogFeed
 
 from api import urls as api_urls
-from global_settings.views import throw_error, clear_entire_cache, sitemap
+from global_settings.views import throw_error, clear_entire_cache, sitemap, robots
 
 from pages.views import HeadlessUserbarView
 
@@ -66,6 +66,7 @@ urlpatterns = [
     # route everything to /api/spike also...
     path('apps/cms/api/spike/', include(wagtail_urls)),
     path('sitemap.xml', sitemap),
+    path('robots.txt', robots),
 
     # For anything not caught by a more specific rule above, hand over to Wagtail's serving mechanism
     path('', include(wagtail_urls)),
