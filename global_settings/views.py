@@ -82,6 +82,7 @@ def _unpublished_page_paths(request):
     if site is not None:
         unpublished = unpublished.descendant_of(site.root_page, inclusive=True)
     unpublished = unpublished.specific()
+    for page in unpublished:
         url_parts = page.get_url_parts(request=request)
         if url_parts is None:  # page isn't under any Site root
             continue
