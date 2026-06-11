@@ -3,9 +3,11 @@ from django.db import models
 from wagtail import blocks
 from wagtail.fields import RichTextField, StreamField
 from wagtail.admin.panels import FieldPanel
+from wagtail.api import APIField
 
 from .custom_blocks import APIImageChooserBlock
 from openstax.functions import build_image_url
+from openstax.api_fields import ExpandedRichTextField
 
 class Quote(models.Model):
     IMAGE_ALIGNMENT_CHOICES = (
@@ -35,7 +37,7 @@ class Quote(models.Model):
     quote_link_text = models.CharField(max_length=255, blank=True, default='')
 
     api_fields = (
-        'quote_text',
+        APIField('quote_text', serializer=ExpandedRichTextField()),
         'quote_image_url',
         'get_quote_image_alignment_display',
         'quote_link',
