@@ -5,7 +5,7 @@ from wagtail.fields import RichTextField, StreamField
 from wagtail.admin.panels import FieldPanel
 from wagtail.api import APIField
 
-from .custom_blocks import APIImageChooserBlock
+from pages.custom_blocks import APIImageChooserBlock
 from openstax.functions import build_image_url
 from openstax.api_fields import ExpandedRichTextField
 

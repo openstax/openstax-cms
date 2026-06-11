@@ -1,4 +1,4 @@
-# pages/flex_api.py
+# authoring/views.py
 from django.urls import reverse
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -8,9 +8,9 @@ from rest_framework import status
 from wagtail.models import Page
 
 from pages.models import FlexPage
-from pages.flex_permissions import CanDraftFlexPages
-from pages.flex_drafts import create_flex_draft, update_flex_draft, FlexValidationError, PageLockedError
-from pages.routing_rules import validate_page_location, RoutingError
+from authoring.permissions import CanDraftFlexPages
+from authoring.drafts import create_flex_draft, update_flex_draft, FlexValidationError, PageLockedError
+from authoring.routing_rules import validate_page_location, RoutingError
 
 
 def _review_payload(page, warnings):

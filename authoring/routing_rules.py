@@ -1,4 +1,4 @@
-# pages/routing_rules.py
+# authoring/routing_rules.py
 """Routing-compliance rules for agent-created FlexPages.
 
 Derived from the audit in docs/superpowers/notes/2026-06-05-routing-slug-audit.md.
