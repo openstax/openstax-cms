@@ -1,6 +1,7 @@
 from django.contrib.sitemaps import views as sitemap_views
 from django.http import HttpResponseServerError, HttpResponse
 from wagtail.contrib.sitemaps.sitemap_generator import Sitemap
+from wagtail.models import Page
 from global_settings.functions import invalidate_cloudfront_caches
 
 
@@ -43,3 +44,73 @@ def sitemap(request, sitemaps=None, **kwargs):
     if not sitemaps:
         sitemaps = {"wagtail": SlashlessSitemap(request)}
     return sitemap_views.sitemap(request, sitemaps, **kwargs)
+
+
+# Baseline crawl rules, formerly a static robots.txt served by the frontend.
+ROBOTS_STATIC_DISALLOWS = [
+    '/accounts',
+    '/admin',
+    '/l/',
+    '/r/',
+    '/confirmation/',
+    '/adoption-confirmation',
+    '/general',
+    '/contents',
+    '/extras',
+    '/errata',
+    '/resources',
+    '/apps/archive',
+    '/apps/archive-preview',
+    '/apps/cms/api/spike',
+]
+
+
+def _unpublished_page_paths(request):
+    """ Site-relative paths of pages that were published and later unpublished.
+
+        first_published_at filters out never-published drafts: their URLs were
+        never live (nothing for a crawler to forget), and listing them in a
+        public robots.txt would leak their slugs before launch.
+    """
+    paths = set()
+    unpublished = Page.objects.filter(live=False, first_published_at__isnull=False).specific()
+    for page in unpublished:
+        url_parts = page.get_url_parts(request=request)
+        if url_parts is None:  # page isn't under any Site root
+            continue
+        page_path = url_parts[2]
+        if not page_path:
+            continue
+        # Match the slash-less canonical URLs the frontend serves (and the
+        # sitemap emits); robots.txt rules are prefix matches, so the slash-less
+        # form also covers the trailing-slash variant.
+        page_path = '/' + page_path.strip('/')
+        if page_path == '/':
+            continue
+        paths.add(page_path)
+    return sorted(paths)
+
+
+def robots(request):
+    """ Dynamic robots.txt: static baseline rules plus a Disallow entry for
+        every unpublished (previously live) page, so crawlers drop pages that
+        editors pull down in the CMS (CORE-2256).
+    """
+    lines = ['User-agent: *']
+    lines += ['Disallow: {}'.format(path) for path in ROBOTS_STATIC_DISALLOWS]
+    static_rules = set(ROBOTS_STATIC_DISALLOWS)
+    lines += [
+        'Disallow: {}'.format(path)
+        for path in _unpublished_page_paths(request)
+        if path not in static_rules
+    ]
+
+    lines += ['', 'User-agent: GPTBot', 'Disallow: /books/']
+
+    root_url = request.build_absolute_uri('/').rstrip('/')
+    lines += [
+        '',
+        'Sitemap: {}/sitemap.xml'.format(root_url),
+        'Sitemap: {}/rex/sitemaps/index.xml'.format(root_url),
+    ]
+    return HttpResponse('\n'.join(lines) + '\n', content_type='text/plain')
