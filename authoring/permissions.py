@@ -1,4 +1,4 @@
-# pages/flex_permissions.py
+# authoring/permissions.py
 from rest_framework.permissions import BasePermission
 
 

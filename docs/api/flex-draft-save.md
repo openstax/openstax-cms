@@ -6,7 +6,7 @@ Endpoints that let an authenticated agent create and update `FlexPage`s as
 
 > **Direction (2026-06-05):** the MCP server is moving **into the CMS** itself
 > (`django-mcp-server` at `/mcp`, OAuth 2.1 + Dynamic Client Registration). The MCP
-> tools will call the same service layer (`pages/flex_drafts.py`) that backs this
+> tools will call the same service layer (`authoring/drafts.py`) that backs this
 > REST endpoint, so this endpoint is a **transitional/secondary interface** —
 > useful now for local testing while the in-CMS MCP is built.
 >
@@ -136,7 +136,7 @@ are under `meta`. Embed the `id` in the block value.
 - **Reserved slugs** (owned by nginx, redirects, or the frontend router) are
   rejected with `400` — a page there would be silently shadowed. Examples:
   `books`, `give`, `blog`, `accounts`, `subjects`, `k12`, `license`, `privacy`,
-  `careers`, `api`, `admin`, … (see `pages/routing_rules.py` for the full set;
+  `careers`, `api`, `admin`, … (see `authoring/routing_rules.py` for the full set;
   the deploy `uri-map` may add more — known follow-up).
 
 ## Reference & lock safety

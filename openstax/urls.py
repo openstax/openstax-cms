@@ -15,7 +15,6 @@ from news.feeds import RssBlogFeed, AtomBlogFeed
 from api import urls as api_urls
 from global_settings.views import throw_error, clear_entire_cache, sitemap
 
-from pages.flex_api import FlexPageDraftView
 from pages.views import HeadlessUserbarView
 
 admin.site.site_header = 'OpenStax'
@@ -50,8 +49,7 @@ urlpatterns = [
 
     path('apps/cms/api/', include(api_urls)),
     path('apps/cms/api/search/', search, name='search'),
-    path('apps/cms/api/v2/pages/flex/', FlexPageDraftView.as_view(), name='flex-draft-create'),
-    path('apps/cms/api/v2/pages/flex/<int:page_id>/', FlexPageDraftView.as_view(), name='flex-draft-update'),
+    path('apps/cms/api/v2/pages/flex/', include('authoring.urls')),
     path('apps/cms/api/v2/', api_router.urls),
     path('apps/cms/api/salesforce/', include('salesforce.urls')),
     path('apps/cms/api/snippets/', include('snippets.urls')),

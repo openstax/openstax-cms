@@ -237,6 +237,7 @@ INSTALLED_APPS = [
     'ai_assist',
     'accounts',
     'api',
+    'authoring',
     'pages',
     'books',
     'news',

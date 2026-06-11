@@ -1,4 +1,4 @@
-# pages/flex_drafts.py
+# authoring/drafts.py
 """Pure (no-HTTP) helpers to validate and assemble FlexPage drafts.
 
 Validation runs incoming JSON through the *actual* FlexPage StreamField block
