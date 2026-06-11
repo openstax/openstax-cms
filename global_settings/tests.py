@@ -83,6 +83,7 @@ class RobotsViewTest(TestCase):
             is_default_site=True,
             defaults={'hostname': 'testserver', 'port': 80, 'root_page': homepage},
         )
+        Site.clear_site_root_paths_cache()
         cls.news_index = NewsIndex(title="News Index")
         homepage.add_child(instance=cls.news_index)
 

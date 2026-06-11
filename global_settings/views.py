@@ -73,8 +73,15 @@ def _unpublished_page_paths(request):
         public robots.txt would leak their slugs before launch.
     """
     paths = set()
-    unpublished = Page.objects.filter(live=False, first_published_at__isnull=False).specific()
-    for page in unpublished:
+
+    # Limit work to the current Site's tree when possible.
+    from wagtail.models import Site
+    site = Site.find_for_request(request)
+
+    unpublished = Page.objects.filter(live=False, first_published_at__isnull=False)
+    if site is not None:
+        unpublished = unpublished.descendant_of(site.root_page, inclusive=True)
+    unpublished = unpublished.specific()
         url_parts = page.get_url_parts(request=request)
         if url_parts is None:  # page isn't under any Site root
             continue
