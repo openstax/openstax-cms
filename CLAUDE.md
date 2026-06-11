@@ -40,7 +40,12 @@ reuse the test DB between runs. CI installs `requirements/test.txt` and runs
 ```
 openstax-cms/
 ├── pages/              # Core page models (Assignable, Book pages, etc.)
-│   ├── models.py       # All Wagtail page type definitions
+│   ├── models/         # Wagtail page types, split into themed modules
+│   │   ├── __init__.py # Re-exports everything: import from pages.models, not submodules
+│   │   ├── constants.py # Shared StreamField block-list constants
+│   │   ├── bases.py    # Concrete MTI base models (Quote, Institutions, Group)
+│   │   ├── core.py     # RootPage, FlexPage, HomePage, GeneralPage
+│   │   └── …           # about, giving, legal, support, partners, marketing, subjects, k12
 │   ├── migrations/     # Django migrations
 │   └── custom_blocks.py # StreamField blocks
 ├── books/              # Book-specific models and logic
@@ -79,7 +84,7 @@ openstax-cms/
 
 ## Creating Django Migrations
 
-When you modify model fields in `pages/models.py` or other model files:
+When you modify model fields in `pages/models/` or other model files:
 
 1. **Ensure openstax/settings/local.py exists**
 2. **Install dev requirements**
