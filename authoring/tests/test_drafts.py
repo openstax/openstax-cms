@@ -1,10 +1,10 @@
-# pages/test_flex_drafts.py
+# authoring/tests/test_drafts.py
 from django.test import TestCase
 from wagtail.models import Page
 from pages import models as page_models
-from pages.routing_rules import validate_page_location, RoutingError
+from authoring.routing_rules import validate_page_location, RoutingError
 from django.contrib.auth import get_user_model
-from pages.flex_permissions import CanDraftFlexPages
+from authoring.permissions import CanDraftFlexPages
 
 DEFAULT_LAYOUT = [{"type": "default", "value": {}}]
 LANDING_LAYOUT = [{"type": "landing", "value": {"nav_links": [], "show_give_now_button": True}}]
@@ -70,7 +70,7 @@ class PermissionTests(TestCase):
         self.assertTrue(self.perm.has_permission(self._req(u), None))
 
 
-from pages.flex_drafts import (
+from authoring.drafts import (
     validate_layout, validate_body, FlexValidationError,
 )
 
@@ -103,7 +103,7 @@ class BodyValidationTests(TestCase):
         self.assertIn("not_a_block", str(ctx.exception))
 
 
-from pages.flex_drafts import create_flex_draft
+from authoring.drafts import create_flex_draft
 
 
 class CreateDraftTests(TestCase):
@@ -127,7 +127,7 @@ class CreateDraftTests(TestCase):
         self.assertEqual(page.slug, "why-openstax")
 
 
-from pages.flex_drafts import update_flex_draft
+from authoring.drafts import update_flex_draft
 
 
 class UpdateDraftTests(TestCase):
@@ -259,7 +259,7 @@ class FlexDraftEndpointTests(TestCase):
         self.assertEqual(resp.status_code, 403)
 
 
-from pages.flex_drafts import validate_rich_text_references
+from authoring.drafts import validate_rich_text_references
 from wagtail.images import get_image_model
 
 
