@@ -1,6 +1,7 @@
 import datetime
 import vcr
 import json
+from unittest.mock import patch
 
 from django.core.management import call_command
 from django.test import LiveServerTestCase, TestCase, Client
@@ -10,7 +11,7 @@ from django.conf import settings
 
 from books.models import BookIndex, Book
 from pages.models import HomePage
-from salesforce.models import SalesforceSettings, MapBoxDataset, Partner, AdoptionOpportunityRecord, SalesforceForms
+from salesforce.models import SalesforceSettings, MapBoxDataset, Partner, AdoptionOpportunityRecord, SalesforceForms, School
 from salesforce.salesforce import Salesforce as SF
 from salesforce.serializers import PartnerSerializer
 
@@ -130,6 +131,49 @@ class MapboxTest(TestCase):
         setting = self.create_mapbox_setting()
         self.assertTrue(isinstance(setting, MapBoxDataset))
         self.assertEqual(setting.__str__(), setting.name)
+
+
+class UpdateSchoolsCommandTest(TestCase):
+    def sf_school(self, **overrides):
+        school = {
+            'Id': '001duplicate',
+            'Name': 'Salesforce School',
+            'Phone': '555-1212',
+            'Website': 'https://example.edu',
+            'Type': 'College',
+            'Industry': 'HE',
+            'School_Location__c': 'Urban',
+            'Students_Current_Year__c': '123',
+            'Total_School_Enrollment__c': '4567',
+            'BillingCountry': 'United States',
+            'BillingStreet': '123 Main St',
+            'BillingCity': 'Houston',
+            'BillingState': 'TX',
+            'BillingPostalCode': '77030',
+            'BillingLatitude': '29.720',
+            'BillingLongitude': '-95.397',
+            'Research_Agreement_Start_Date__c': datetime.date(2026, 1, 1),
+            'Research_Agreement_End_Date__c': datetime.date(2026, 12, 31),
+        }
+        school.update(overrides)
+        return school
+
+    @patch('salesforce.management.commands.update_schools.invalidate_cloudfront_caches')
+    @patch('salesforce.management.commands.update_schools.Salesforce')
+    def test_update_schools_updates_first_duplicate_salesforce_id(self, salesforce, _invalidate):
+        first_school = School.objects.create(salesforce_id='001duplicate', name='First duplicate')
+        second_school = School.objects.create(salesforce_id='001duplicate', name='Second duplicate')
+
+        sf = salesforce.return_value.__enter__.return_value
+        sf.bulk.Account.query.return_value = [[self.sf_school()]]
+
+        call_command('update_schools')
+
+        first_school.refresh_from_db()
+        second_school.refresh_from_db()
+        self.assertEqual(first_school.name, 'Salesforce School')
+        self.assertEqual(second_school.name, 'Second duplicate')
+        self.assertEqual(School.objects.filter(salesforce_id='001duplicate').count(), 2)
 
 
 class AdoptionOpportunityTest(TestCase):

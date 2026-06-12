@@ -5,6 +5,17 @@ from salesforce.models import School
 from salesforce.salesforce import Salesforce
 
 
+def update_or_create_school(salesforce_id, defaults):
+    school = School.objects.filter(salesforce_id=salesforce_id).order_by('pk').first()
+    if school is None:
+        return School.objects.create(salesforce_id=salesforce_id, **defaults), True
+
+    for field, value in defaults.items():
+        setattr(school, field, value)
+    school.save()
+    return school, False
+
+
 class Command(BaseCommand):
     help = "update schools from salesforce.com"
 
@@ -38,27 +49,28 @@ class Command(BaseCommand):
             for sf_school in sf_schools:
                 salesforce_id = sf_school['Id']
                 seen_salesforce_ids.add(salesforce_id)
-                
-                school, created = School.objects.update_or_create(
+
+                _, created = update_or_create_school(
                     salesforce_id=salesforce_id,
-                    defaults={'name': sf_school['Name'],
-                              'phone': sf_school['Phone'],
-                              'website': sf_school['Website'],
-                              'type': sf_school['Type'],
-                              'industry': sf_school['Industry'],
-                              'location': sf_school['School_Location__c'],
-                              'current_year_students': sf_school['Students_Current_Year__c'],
-                              'total_school_enrollment': sf_school['Total_School_Enrollment__c'],
-                              'physical_country': sf_school['BillingCountry'],
-                              'physical_street': sf_school['BillingStreet'],
-                              'physical_city': sf_school['BillingCity'],
-                              'physical_state_province': sf_school['BillingState'],
-                              'physical_zip_postal_code': sf_school['BillingPostalCode'],
-                              'lat': sf_school['BillingLatitude'],
-                              'long': sf_school['BillingLongitude'],
-                              'research_agreement_start_date': sf_school['Research_Agreement_Start_Date__c'],
-                              'research_agreement_end_date': sf_school['Research_Agreement_End_Date__c'],
-                              },
+                    defaults={
+                        'name': sf_school['Name'],
+                        'phone': sf_school['Phone'],
+                        'website': sf_school['Website'],
+                        'type': sf_school['Type'],
+                        'industry': sf_school['Industry'],
+                        'location': sf_school['School_Location__c'],
+                        'current_year_students': sf_school['Students_Current_Year__c'],
+                        'total_school_enrollment': sf_school['Total_School_Enrollment__c'],
+                        'physical_country': sf_school['BillingCountry'],
+                        'physical_street': sf_school['BillingStreet'],
+                        'physical_city': sf_school['BillingCity'],
+                        'physical_state_province': sf_school['BillingState'],
+                        'physical_zip_postal_code': sf_school['BillingPostalCode'],
+                        'lat': sf_school['BillingLatitude'],
+                        'long': sf_school['BillingLongitude'],
+                        'research_agreement_start_date': sf_school['Research_Agreement_Start_Date__c'],
+                        'research_agreement_end_date': sf_school['Research_Agreement_End_Date__c'],
+                    },
                 )
 
                 if created:
