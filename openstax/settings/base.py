@@ -310,6 +310,10 @@ if _transfer_sources_json:
         WAGTAILTRANSFER_SOURCES = json.loads(_transfer_sources_json)
     except json.JSONDecodeError as e:
         raise RuntimeError(f"WAGTAILTRANSFER_SOURCES_JSON is not valid JSON: {e}")
+    if not isinstance(WAGTAILTRANSFER_SOURCES, dict):
+        raise RuntimeError(
+            "WAGTAILTRANSFER_SOURCES_JSON must be a JSON object mapping source names to config objects."
+        )
     for _name, _cfg in WAGTAILTRANSFER_SOURCES.items():
         if not isinstance(_cfg, dict) or not _cfg.get('BASE_URL') or not _cfg.get('SECRET_KEY'):
             raise RuntimeError(
