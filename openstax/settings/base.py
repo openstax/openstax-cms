@@ -280,27 +280,16 @@ INSTALLED_APPS = [
 ####################
 
 WAGTAILTRANSFER_SECRET_KEY = os.getenv('WAGTAILTRANSFER_SECRET_KEY', 'change-me-in-production')
+WAGTAILTRANSFER_INSECURE_SECRET_KEY = 'change-me-in-production'
 
-# Validate the secret key via Django's system check framework rather than at
-# import time. This still flags misconfiguration on `manage.py check`,
-# `runserver`, `migrate`, etc., but does NOT fire during `collectstatic` (which
-# sets `requires_system_checks = []`). That matters because the AMI bake runs
-# `collectstatic` before runtime secrets have been loaded from SSM.
-from django.core import checks as _django_checks  # noqa: E402
-
-@_django_checks.register(_django_checks.Tags.security)
-def _check_wagtail_transfer_secret_key(app_configs, **kwargs):
-    from django.conf import settings as _settings
-    if (
-        getattr(_settings, 'ENVIRONMENT', 'local') not in ('local', 'test')
-        and _settings.WAGTAILTRANSFER_SECRET_KEY == 'change-me-in-production'
-    ):
-        return [_django_checks.Error(
-            "WAGTAILTRANSFER_SECRET_KEY is set to the insecure default placeholder.",
-            hint="Set the WAGTAILTRANSFER_SECRET_KEY environment variable to a unique secure value.",
-            id='openstax.E001',
-        )]
-    return []
+# The secret key is validated two ways, both living outside this (declarative)
+# settings module:
+#   1. global_settings.checks._check_wagtail_transfer_secret_key — a Django
+#      system check (runs on `manage.py check`/`migrate`/`runserver`).
+#   2. openstax.wagtail_transfer_security.block_if_insecure_key — a request-time
+#      guard on the transfer endpoints, because system checks do NOT run when a
+#      WSGI/ASGI worker boots the app, and the AMI bake runs collectstatic
+#      before runtime secrets are loaded from SSM.
 
 # Sources this environment can pull content FROM.
 #
@@ -354,19 +343,39 @@ else:
 # Match snippets across environments by their natural identifier instead of
 # wagtail-transfer's auto UUID. Without this, an import would create duplicates
 # of any snippet that was authored independently on each environment.
+#
+# Every tuple ends with `locale__language_code` because all of these snippets
+# use Wagtail's TranslatableMixin: the same name/heading legitimately exists
+# once per locale, so the natural key is (field, locale). We use the language
+# code (e.g. 'en', 'es') rather than the locale's primary key because PKs are
+# not stable across environments — wagtail-transfer matches locales themselves
+# by language_code (see locators.LOOKUP_FIELDS), and FieldLocator passes these
+# names straight to .get()/.values_list(), both of which accept `__` lookups.
+#
+# Matching on these fields requires them to be unique per locale; the
+# corresponding UniqueConstraints live on the snippet models in
+# snippets/models.py (added in a snippets migration). The four singleton snippets
+# (NoWebinarMessage, AmazonBookBlurb, ContentWarning, RequireLoginMessage)
+# have no natural name field, so they are matched by locale alone — one row
+# per locale, enforced by a unique constraint on `locale`.
 WAGTAILTRANSFER_LOOKUP_FIELDS = {
-    'snippets.subject':           ['name'],
-    'snippets.k12subject':        ['name'],
-    'snippets.role':              ['salesforce_name'],
-    'snippets.facultyresource':   ['heading'],
-    'snippets.studentresource':   ['heading'],
-    'snippets.newssource':        ['name'],
-    'snippets.sharedcontent':     ['title'],
-    'snippets.erratacontent':     ['heading', 'book_state'],
-    'snippets.blogcontenttype':   ['content_type'],
-    'snippets.blogcollection':    ['name'],
-    'snippets.webinarcollection': ['name'],
-    'snippets.promotesnippet':    ['name'],
+    'snippets.subject':            ['name', 'locale__language_code'],
+    'snippets.k12subject':         ['name', 'locale__language_code'],
+    'snippets.role':               ['salesforce_name', 'locale__language_code'],
+    'snippets.facultyresource':    ['heading', 'locale__language_code'],
+    'snippets.studentresource':    ['heading', 'locale__language_code'],
+    'snippets.newssource':         ['name', 'locale__language_code'],
+    'snippets.sharedcontent':      ['title', 'locale__language_code'],
+    'snippets.erratacontent':      ['heading', 'book_state', 'locale__language_code'],
+    'snippets.blogcontenttype':    ['content_type', 'locale__language_code'],
+    'snippets.blogcollection':     ['name', 'locale__language_code'],
+    'snippets.webinarcollection':  ['name', 'locale__language_code'],
+    'snippets.promotesnippet':     ['name', 'locale__language_code'],
+    'snippets.subjectcategory':    ['subject__name', 'subject_category', 'locale__language_code'],
+    'snippets.nowebinarmessage':   ['locale__language_code'],
+    'snippets.amazonbookblurb':    ['locale__language_code'],
+    'snippets.contentwarning':     ['locale__language_code'],
+    'snippets.requireloginmessage': ['locale__language_code'],
 }
 
 # --- Wagtail AI integration -------------------------------------------------

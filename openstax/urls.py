@@ -5,8 +5,9 @@ from django.contrib import admin
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtailautocomplete.urls.admin import urlpatterns as autocomplete_admin_urls
 from wagtail import urls as wagtail_urls
-from wagtail_transfer import urls as wagtailtransfer_urls
-from . import wagtail_transfer_patches  # noqa: F401 — applied on import
+# Hardened mount of wagtail-transfer's export API (see openstax.wagtail_transfer_urls).
+# The Objective monkeypatch is applied in global_settings.apps.ready(), not here.
+from . import wagtail_transfer_urls as wagtailtransfer_urls
 from wagtail.documents import urls as wagtaildocs_urls
 from accounts import urls as accounts_urls
 

@@ -41,3 +41,20 @@ CORS_ORIGIN_WHITELIST = (
 # Wagtail AI is always enabled. To use it locally, set ANTHROPIC_API_KEY in your
 # env and run `python manage.py seed_ai_prompts`. Without a key the AI tools
 # appear in the editor but calls will fail.
+
+####################
+# Wagtail Transfer #
+####################
+# The "Import" menu item shows for any staff member with the import permission
+# (see global_settings/wagtail_hooks.py), but the page can only pull content
+# once you configure at least one source environment to pull FROM. To test
+# imports locally, point at an environment whose WAGTAILTRANSFER_SECRET_KEY you
+# know and set it as that source's SECRET_KEY:
+#
+# WAGTAILTRANSFER_SECRET_KEY = 'any-local-value'  # this env's own key
+# WAGTAILTRANSFER_SOURCES = {
+#     'staging': {
+#         'BASE_URL': 'https://staging.openstax.org/admin/wagtail-transfer/',
+#         'SECRET_KEY': '<staging-secret>',
+#     },
+# }

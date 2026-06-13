@@ -50,6 +50,15 @@ Before you start, confirm:
 - [ ] **The PR with `wagtail-transfer` is deployed to all three envs.**
       Specifically: the `wagtail_transfer_idmapping` table must exist on
       both prod (source of preseed) and the target env (where we restore).
+- [ ] **Snippet uniqueness migration applied cleanly.** That PR adds
+      per-locale `UniqueConstraint`s to the snippets used as transfer lookup
+      keys (so imports match instead of duplicating). `AddConstraint` *fails*
+      if existing data already violates a constraint — e.g. two same-name
+      `Subject`s in one locale, or more than one of a singleton snippet
+      (`NoWebinarMessage`, `AmazonBookBlurb`, `ContentWarning`,
+      `RequireLoginMessage`) per locale. If the migration errored on deploy,
+      dedupe the offending rows on that env, then re-run `migrate` before
+      proceeding.
 
 ## Step 1 — Preseed prod's IDMapping table
 
@@ -157,6 +166,15 @@ This is the part you don't want to forget. After step 3, the target env's
 DB believes it *is* prod — Wagtail Site is `openstax.org`, all the URLs in
 StreamField/RichText content reference `openstax.org`, and `auth_user`
 contains real prod users.
+
+The command writes exclusively with set-based `UPDATE`s (`queryset.update()`),
+never `model.save()`. That is deliberate: it means the rewrite never fires
+`post_save` signals or model `save()` overrides, so running it against a
+freshly restored prod dataset will **not** email real errata submitters,
+issue CloudFront invalidations against prod's distribution, or call out to
+Salesforce — all of which would otherwise happen once per touched row. The
+trade-off is that it also does not re-index search; rebuild the index
+afterward if you use a non-database backend (see Common pitfalls #4).
 
 ```bash
 # on the target env

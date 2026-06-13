@@ -14,3 +14,11 @@ class GlobalSettingsConfig(AppConfig):
         import snippets.signals
         import salesforce.signals
         import oxmenus.signals
+
+        # Register cross-cutting system checks (keeps settings/base.py declarative).
+        import global_settings.checks  # noqa: F401
+
+        # Apply the wagtail-transfer Objective base-model patch in every process
+        # that runs django.setup(), not just when the URLconf is imported.
+        from openstax.wagtail_transfer_patches import apply_patches
+        apply_patches()
