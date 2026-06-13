@@ -24,3 +24,66 @@ class OXMenuTests(WagtailPageTestCase, TestCase):
         response = self.client.get('/apps/cms/api/oxmenus/')
         self.assertContains(response, 'About Us')
         self.assertContains(response, 'Research')
+
+
+class OXMenusFlagAwareTest(TestCase):
+    def _menu(self):
+        m = Menus(
+            name="Products",
+            key="products-dropdown",
+            feature_flag="",
+            flag_value="",
+            menu=json.dumps([
+                {
+                    "id": "aaa00000-0000-0000-0000-000000000001",
+                    "type": "menu_block",
+                    "value": {
+                        "menu_items": [
+                            {
+                                "id": "bbb00000-0000-0000-0000-000000000001",
+                                "type": "item",
+                                "value": {
+                                    "label": "For K12 Teachers",
+                                    "partial_url": "/k12",
+                                    "key": "k12-teachers",
+                                    "feature_flag": "nav-k12-item",
+                                    "flag_value": "",
+                                },
+                            },
+                            {
+                                "id": "bbb00000-0000-0000-0000-000000000002",
+                                "type": "item",
+                                "value": {
+                                    "label": "Assignable",
+                                    "partial_url": "/assignable",
+                                },
+                            },
+                        ]
+                    },
+                }
+            ]),
+        )
+        m.save()
+        return m
+
+    def test_menu_block_json_includes_new_fields_and_keeps_old(self):
+        items = self._menu().menu_block_json()
+        first = items[0]
+        # backward-compatible keys still present
+        self.assertEqual(first["label"], "For K12 Teachers")
+        self.assertEqual(first["partial_url"], "/k12")
+        # new additive keys
+        self.assertEqual(first["key"], "k12-teachers")
+        self.assertEqual(first["feature_flag"], "nav-k12-item")
+        self.assertEqual(first["flag_value"], "")
+        # an item with no flag metadata still serializes with empty strings
+        self.assertEqual(items[1]["feature_flag"], "")
+
+    def test_serializer_exposes_dropdown_level_flag_fields(self):
+        from oxmenus.serializers import OXMenusSerializer
+        data = OXMenusSerializer(self._menu()).data
+        self.assertEqual(data["name"], "Products")
+        self.assertEqual(data["key"], "products-dropdown")
+        self.assertIn("feature_flag", data)
+        self.assertIn("flag_value", data)
+        self.assertEqual(data["menu"][0]["key"], "k12-teachers")

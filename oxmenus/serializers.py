@@ -11,7 +11,5 @@ class OXMenusSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Menus
-        fields = ('name',
-                  'menu')
-        read_only_fields = ('name',
-                            'menu')
+        fields = ('name', 'key', 'feature_flag', 'flag_value', 'menu')
+        read_only_fields = ('name', 'key', 'feature_flag', 'flag_value', 'menu')
