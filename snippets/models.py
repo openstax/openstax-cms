@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 from django.core.exceptions import ValidationError
 from wagtail.search import index
 from wagtail.admin.panels import FieldPanel
@@ -301,7 +302,11 @@ class ErrataContent(TranslatableMixin, index.Indexed, models.Model):
 
     class Meta(TranslatableMixin.Meta):
         constraints = [
-            models.UniqueConstraint(fields=['heading', 'book_state', 'locale'], name='unique_erratacontent_per_locale'),
+            models.UniqueConstraint(
+                fields=['heading', 'book_state', 'locale'],
+                name='unique_erratacontent_per_locale',
+                condition=Q(heading__isnull=False),
+            ),
         ]
 
     panels = [
@@ -329,6 +334,7 @@ class SubjectCategory(TranslatableMixin, models.Model):
             models.UniqueConstraint(
                 fields=['subject', 'subject_category', 'locale'],
                 name='unique_subjectcategory_per_locale',
+                condition=Q(subject__isnull=False, subject_category__isnull=False),
             ),
         ]
 
@@ -356,7 +362,11 @@ class BlogContentType(TranslatableMixin, models.Model):
 
     class Meta(TranslatableMixin.Meta):
         constraints = [
-            models.UniqueConstraint(fields=['content_type', 'locale'], name='unique_blogcontenttype_per_locale'),
+            models.UniqueConstraint(
+                fields=['content_type', 'locale'],
+                name='unique_blogcontenttype_per_locale',
+                condition=Q(content_type__isnull=False),
+            ),
         ]
 
     api_fields = ('content_type')
@@ -400,7 +410,11 @@ class BlogCollection(TranslatableMixin, models.Model):
 
     class Meta(TranslatableMixin.Meta):
         constraints = [
-            models.UniqueConstraint(fields=['name', 'locale'], name='unique_blogcollection_name_per_locale'),
+            models.UniqueConstraint(
+                fields=['name', 'locale'],
+                name='unique_blogcollection_name_per_locale',
+                condition=Q(name__isnull=False),
+            ),
         ]
 
     def __str__(self):
@@ -460,7 +474,11 @@ class WebinarCollection(TranslatableMixin, models.Model):
 
     class Meta(TranslatableMixin.Meta):
         constraints = [
-            models.UniqueConstraint(fields=['name', 'locale'], name='unique_webinarcollection_name_per_locale'),
+            models.UniqueConstraint(
+                fields=['name', 'locale'],
+                name='unique_webinarcollection_name_per_locale',
+                condition=Q(name__isnull=False),
+            ),
         ]
 
     def __str__(self):
@@ -496,7 +514,11 @@ class PromoteSnippet(TranslatableMixin, models.Model):
 
     class Meta(TranslatableMixin.Meta):
         constraints = [
-            models.UniqueConstraint(fields=['name', 'locale'], name='unique_promotesnippet_name_per_locale'),
+            models.UniqueConstraint(
+                fields=['name', 'locale'],
+                name='unique_promotesnippet_name_per_locale',
+                condition=Q(name__isnull=False),
+            ),
         ]
 
     def __str__(self):
