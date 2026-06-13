@@ -100,7 +100,11 @@ def restrict_exportable_models(view):
                 payload = json.loads(request.body.decode('utf-8'))
             except (ValueError, TypeError, UnicodeDecodeError):
                 raise PermissionDenied("Malformed wagtail-transfer object request.")
-            for label in payload:
+            if not isinstance(payload, dict):
+                raise PermissionDenied("Malformed wagtail-transfer object request.")
+            for label in payload.keys():
+                if not isinstance(label, str):
+                    raise PermissionDenied("Malformed wagtail-transfer object request.")
                 _ensure_exportable(label)
         return view(request, *args, **kwargs)
     return wrapped

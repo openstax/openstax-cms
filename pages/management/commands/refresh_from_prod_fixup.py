@@ -20,8 +20,8 @@ the CMS auth_user table holds only internal staff, so engineers can log into
 the refreshed env with their prod credentials.
 
 Persistence is deliberately done with queryset `.update()` (and set-based
-`Replace()` for text columns), never `instance.save()`. That is what keeps the
-command safe to run against a freshly restored prod dataset: it never fires
+`Replace()` for text columns) for content rewrites; the only intentional
+`save()` is the Wagtail Site hostname update. That is what keeps the
 `post_save` signals (which would issue CloudFront invalidations against prod's
 distribution and send errata status emails to real submitters), never triggers
 model `save()` overrides (Errata date re-stamping, Book → Salesforce lookups,
@@ -248,11 +248,10 @@ class Command(BaseCommand):
         One query selects the latest revisions across all pages; the jsonb
         content is pre-filtered to those actually containing the source host.
         """
-        latest_ids = list(
-            Page.objects.exclude(latest_revision__isnull=True)
-            .values_list('latest_revision_id', flat=True)
+        latest_ids = Page.objects.exclude(latest_revision__isnull=True).values_list(
+            'latest_revision_id', flat=True
         )
-        if not latest_ids:
+        if not latest_ids.exists():
             return
         candidates = (
             Revision.objects.filter(id__in=latest_ids)
