@@ -1,8 +1,10 @@
 import wagtail.admin.rich_text.editors.draftail.features as draftail_features
 from wagtail.admin.rich_text.converters.html_to_contentstate import InlineStyleElementHandler
 from wagtail import hooks
-from django.urls import reverse
+from django.urls import path, reverse
 from wagtail.admin.menu import MenuItem
+
+from global_settings import views
 
 
 @hooks.register('register_rich_text_features')
@@ -41,3 +43,18 @@ def register_500_menu_item():
 @hooks.register('register_settings_menu_item')
 def register_clear_cache_menu_item():
     return MenuItem('Clear Cloudfront Cache', reverse('clear_entire_cache'), classname='icon icon-bin', order=11000)
+
+
+@hooks.register('register_admin_urls')
+def register_experiments_guide_url():
+    return [path('experiments/', views.experiments_guide, name='experiments_guide')]
+
+
+@hooks.register('register_settings_menu_item')
+def register_experiments_menu_item():
+    return MenuItem(
+        'Experiments & Measurement',
+        reverse('experiments_guide'),
+        icon_name='bulb',
+        order=9000,
+    )

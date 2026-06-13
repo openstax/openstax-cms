@@ -1,8 +1,10 @@
 import re
 
 from django.test import TestCase, Client
+from django.urls import reverse
 
 from wagtail.contrib.sitemaps.sitemap_generator import Sitemap
+from wagtail.test.utils import WagtailTestUtils
 
 from global_settings.views import SlashlessSitemap
 
@@ -57,3 +59,20 @@ class SitemapViewTest(TestCase):
                 path.endswith('/'),
                 f'sitemap <loc> should be slash-less: {loc}',
             )
+
+
+class ExperimentsGuideTest(WagtailTestUtils, TestCase):
+    def setUp(self):
+        self.login()  # creates and logs in a superuser
+
+    def test_guide_page_renders_with_links(self):
+        response = self.client.get(reverse('experiments_guide'))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Experiments &amp; Measurement')
+        self.assertContains(response, 'us.posthog.com')
+
+    def test_guide_page_requires_admin_access(self):
+        self.client.logout()
+        response = self.client.get(reverse('experiments_guide'))
+        # require_admin_access redirects anonymous users to the admin login.
+        self.assertIn(response.status_code, (302, 403))
