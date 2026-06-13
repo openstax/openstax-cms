@@ -489,7 +489,7 @@ register_snippet(WebinarCollection)
 
 
 class PromoteSnippet(TranslatableMixin, models.Model):
-    name = models.CharField(max_length=255, null=True, blank=True)
+    name = models.CharField(max_length=255, blank=True, default='')
     description = models.TextField(default='')
     image = models.ForeignKey(
         'wagtailimages.Image',
@@ -517,7 +517,6 @@ class PromoteSnippet(TranslatableMixin, models.Model):
             models.UniqueConstraint(
                 fields=['name', 'locale'],
                 name='unique_promotesnippet_name_per_locale',
-                condition=Q(name__isnull=False),
             ),
         ]
 
