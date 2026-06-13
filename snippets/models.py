@@ -1,4 +1,5 @@
 from django.db import models
+from django.db.models import Q
 from django.core.exceptions import ValidationError
 from wagtail.search import index
 from wagtail.admin.panels import FieldPanel
@@ -25,6 +26,11 @@ class Subject(TranslatableMixin, models.Model):
     )
     subject_color = models.CharField(max_length=255, choices=COVER_COLORS, default='blue',
                                    help_text='The color of the vertical stripe on Subject page.')
+
+    class Meta(TranslatableMixin.Meta):
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'locale'], name='unique_subject_name_per_locale'),
+        ]
 
     def get_subject_icon(self):
         return build_image_url(self.icon)
@@ -63,6 +69,11 @@ class K12Subject(TranslatableMixin, models.Model):
     subject_color = models.CharField(max_length=255, choices=COVER_COLORS, default='blue',
                                    help_text='The color of the vertical stripe on Subject page.')
     subject_link = models.CharField(max_length=255, null=True, blank=True)
+
+    class Meta(TranslatableMixin.Meta):
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'locale'], name='unique_k12subject_name_per_locale'),
+        ]
 
     def get_subject_image(self):
         return build_image_url(self.image)
@@ -107,6 +118,11 @@ class FacultyResource(TranslatableMixin, index.Indexed, models.Model):
 
     api_fields = ('heading', APIField('description', serializer=ExpandedRichTextField()), 'unlocked_resource', 'creator_fest_resource',  'resource_icon', 'resource_category')
 
+    class Meta(TranslatableMixin.Meta):
+        constraints = [
+            models.UniqueConstraint(fields=['heading', 'locale'], name='unique_facultyresource_heading_per_locale'),
+        ]
+
     panels = [
         FieldPanel('heading'),
         FieldPanel('description'),
@@ -150,6 +166,11 @@ class StudentResource(TranslatableMixin, index.Indexed, models.Model):
 
     api_fields = ('heading', APIField('description', serializer=ExpandedRichTextField()), 'unlocked_resource', 'resource_icon', 'resource_category')
 
+    class Meta(TranslatableMixin.Meta):
+        constraints = [
+            models.UniqueConstraint(fields=['heading', 'locale'], name='unique_studentresource_heading_per_locale'),
+        ]
+
     panels = [
         FieldPanel('heading'),
         FieldPanel('description'),
@@ -176,6 +197,11 @@ class Role(TranslatableMixin, models.Model):
     display_name = models.CharField(max_length=255)
     salesforce_name = models.CharField(max_length=255)
 
+    class Meta(TranslatableMixin.Meta):
+        constraints = [
+            models.UniqueConstraint(fields=['salesforce_name', 'locale'], name='unique_role_salesforce_name_per_locale'),
+        ]
+
     api_fields = ('display_name',
                   'salesforce_name')
 
@@ -198,6 +224,11 @@ class SharedContent(TranslatableMixin, index.Indexed, models.Model):
     content_logged_in = models.TextField(null=True, blank=True)
     button_text = models.CharField(max_length=255, null=True, blank=True)
     button_url = models.URLField(null=True, blank=True)
+
+    class Meta(TranslatableMixin.Meta):
+        constraints = [
+            models.UniqueConstraint(fields=['title', 'locale'], name='unique_sharedcontent_title_per_locale'),
+        ]
 
     api_fields = ('heading', 'content', 'content_logged_in', 'button_text', 'button_url' )
 
@@ -233,6 +264,11 @@ class NewsSource(TranslatableMixin, index.Indexed, models.Model):
         related_name='+',
     )
 
+    class Meta(TranslatableMixin.Meta):
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'locale'], name='unique_newssource_name_per_locale'),
+        ]
+
     def get_news_logo(self):
         return build_image_url(self.logo)
 
@@ -260,9 +296,17 @@ register_snippet(NewsSource)
 
 
 class ErrataContent(TranslatableMixin, index.Indexed, models.Model):
-    heading = models.CharField(max_length=255, blank=True, null=True)
+    heading = models.CharField(max_length=255, blank=True, default='')
     book_state = models.CharField(max_length=255, choices=BOOK_STATES, default='live', help_text='The state of the book.')
     content = models.TextField()
+
+    class Meta(TranslatableMixin.Meta):
+        constraints = [
+            models.UniqueConstraint(
+                fields=['heading', 'book_state', 'locale'],
+                name='unique_erratacontent_per_locale',
+            ),
+        ]
 
     panels = [
         FieldPanel('heading'),
@@ -283,6 +327,15 @@ class SubjectCategory(TranslatableMixin, models.Model):
     subject = models.ForeignKey(Subject, on_delete=models.SET_NULL, null=True, related_name='+')
     subject_category = models.CharField(max_length=255, null=True, blank=True, help_text="category for selected subject.")
     description = models.TextField(default='')
+
+    class Meta(TranslatableMixin.Meta):
+        constraints = [
+            models.UniqueConstraint(
+                fields=['subject', 'subject_category', 'locale'],
+                name='unique_subjectcategory_per_locale',
+                condition=Q(subject__isnull=False, subject_category__isnull=False),
+            ),
+        ]
 
     @property
     def subject_name(self):
@@ -305,6 +358,15 @@ register_snippet(SubjectCategory)
 
 class BlogContentType(TranslatableMixin, models.Model):
     content_type = models.CharField(max_length=255, null=True, blank=True,help_text="content type for blog posts")
+
+    class Meta(TranslatableMixin.Meta):
+        constraints = [
+            models.UniqueConstraint(
+                fields=['content_type', 'locale'],
+                name='unique_blogcontenttype_per_locale',
+                condition=Q(content_type__isnull=False),
+            ),
+        ]
 
     api_fields = ('content_type')
 
@@ -345,6 +407,15 @@ class BlogCollection(TranslatableMixin, models.Model):
         FieldPanel('image'),
     ]
 
+    class Meta(TranslatableMixin.Meta):
+        constraints = [
+            models.UniqueConstraint(
+                fields=['name', 'locale'],
+                name='unique_blogcollection_name_per_locale',
+                condition=Q(name__isnull=False),
+            ),
+        ]
+
     def __str__(self):
         return self.name
 
@@ -354,6 +425,12 @@ register_snippet(BlogCollection)
 
 class NoWebinarMessage(TranslatableMixin, models.Model):
     no_webinar_message = models.TextField()
+
+    class Meta(TranslatableMixin.Meta):
+        # Singleton per locale: matched across environments by locale alone.
+        constraints = [
+            models.UniqueConstraint(fields=['locale'], name='unique_nowebinarmessage_per_locale'),
+        ]
 
     api_fields = ('no_webinar_message')
 
@@ -394,6 +471,15 @@ class WebinarCollection(TranslatableMixin, models.Model):
         FieldPanel('image'),
     ]
 
+    class Meta(TranslatableMixin.Meta):
+        constraints = [
+            models.UniqueConstraint(
+                fields=['name', 'locale'],
+                name='unique_webinarcollection_name_per_locale',
+                condition=Q(name__isnull=False),
+            ),
+        ]
+
     def __str__(self):
         return self.name
 
@@ -402,7 +488,7 @@ register_snippet(WebinarCollection)
 
 
 class PromoteSnippet(TranslatableMixin, models.Model):
-    name = models.CharField(max_length=255, null=True, blank=True)
+    name = models.CharField(max_length=255, blank=True, default='')
     description = models.TextField(default='')
     image = models.ForeignKey(
         'wagtailimages.Image',
@@ -425,6 +511,14 @@ class PromoteSnippet(TranslatableMixin, models.Model):
         FieldPanel('image'),
     ]
 
+    class Meta(TranslatableMixin.Meta):
+        constraints = [
+            models.UniqueConstraint(
+                fields=['name', 'locale'],
+                name='unique_promotesnippet_name_per_locale',
+            ),
+        ]
+
     def __str__(self):
         return self.name
 
@@ -434,6 +528,12 @@ register_snippet(PromoteSnippet)
 
 class AmazonBookBlurb(TranslatableMixin, models.Model):
     amazon_book_blurb = models.TextField()
+
+    class Meta(TranslatableMixin.Meta):
+        # Singleton per locale: matched across environments by locale alone.
+        constraints = [
+            models.UniqueConstraint(fields=['locale'], name='unique_amazonbookblurb_per_locale'),
+        ]
 
     api_fields = ('amazon_book_blurb')
 
@@ -451,6 +551,12 @@ register_snippet(AmazonBookBlurb)
 class ContentWarning(TranslatableMixin, models.Model):
     content_warning = models.TextField()
 
+    class Meta(TranslatableMixin.Meta):
+        # Singleton per locale: matched across environments by locale alone.
+        constraints = [
+            models.UniqueConstraint(fields=['locale'], name='unique_contentwarning_per_locale'),
+        ]
+
     api_fields = ('content_warning')
 
     panels = [
@@ -467,6 +573,12 @@ register_snippet(ContentWarning)
 
 class RequireLoginMessage(TranslatableMixin, models.Model):
     require_login_message = models.TextField()
+
+    class Meta(TranslatableMixin.Meta):
+        # Singleton per locale: matched across environments by locale alone.
+        constraints = [
+            models.UniqueConstraint(fields=['locale'], name='unique_requireloginmessage_per_locale'),
+        ]
 
     api_fields = ('require_login_message',)
 

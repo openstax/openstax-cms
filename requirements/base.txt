@@ -40,4 +40,5 @@ wagtail-ai==3.1.0
 wagtail-autocomplete==0.12.0
 wagtail-color-panel>=1.8.0,<1.9.0
 wagtail-modeladmin==2.3.0
+wagtail-transfer==0.11
 whitenoise==6.9.0

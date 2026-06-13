@@ -1,3 +1,4 @@
+import json
 import os
 import sys
 
@@ -250,7 +251,7 @@ INSTALLED_APPS = [
     'oxauth',
     'webinars',
     'donations',
-    'wagtailimportexport',
+    'wagtail_transfer',
     'versions',
     'oxmenus',
     # wagtail
@@ -273,6 +274,113 @@ INSTALLED_APPS = [
     'wagtail.api.v2',
     'wagtail.contrib.settings',
 ]
+
+####################
+# Wagtail Transfer #
+####################
+
+WAGTAILTRANSFER_SECRET_KEY = os.getenv('WAGTAILTRANSFER_SECRET_KEY', 'change-me-in-production')
+WAGTAILTRANSFER_INSECURE_SECRET_KEY = 'change-me-in-production'
+
+# The secret key is validated two ways, both living outside this (declarative)
+# settings module:
+#   1. global_settings.checks._check_wagtail_transfer_secret_key — a Django
+#      system check (runs on `manage.py check`/`migrate`/`runserver`).
+#   2. openstax.wagtail_transfer_security.block_if_insecure_key — a request-time
+#      guard on the transfer endpoints, because system checks do NOT run when a
+#      WSGI/ASGI worker boots the app, and the AMI bake runs collectstatic
+#      before runtime secrets are loaded from SSM.
+
+# Sources this environment can pull content FROM.
+#
+# Preferred: set WAGTAILTRANSFER_SOURCES_JSON with a JSON object, e.g.
+#   {"staging": {"BASE_URL": "https://staging.openstax.org/admin/wagtail-transfer/",
+#                "SECRET_KEY": "<staging-secret>"},
+#    "prod":    {"BASE_URL": "https://openstax.org/admin/wagtail-transfer/",
+#                "SECRET_KEY": "<prod-secret>"}}
+# The SECRET_KEY for a source here must equal the WAGTAILTRANSFER_SECRET_KEY
+# configured on that source's own environment.
+#
+# Fallback for a single source: WAGTAILTRANSFER_SOURCE_NAME/_URL/_KEY.
+WAGTAILTRANSFER_SOURCES = {}
+
+_transfer_sources_json = os.getenv('WAGTAILTRANSFER_SOURCES_JSON')
+if _transfer_sources_json:
+    try:
+        WAGTAILTRANSFER_SOURCES = json.loads(_transfer_sources_json)
+    except json.JSONDecodeError as e:
+        raise RuntimeError(f"WAGTAILTRANSFER_SOURCES_JSON is not valid JSON: {e}")
+    if not isinstance(WAGTAILTRANSFER_SOURCES, dict):
+        raise RuntimeError(
+            "WAGTAILTRANSFER_SOURCES_JSON must be a JSON object mapping source names to config objects."
+        )
+    for _name, _cfg in WAGTAILTRANSFER_SOURCES.items():
+        if not isinstance(_cfg, dict) or not _cfg.get('BASE_URL') or not _cfg.get('SECRET_KEY'):
+            raise RuntimeError(
+                f"WAGTAILTRANSFER_SOURCES_JSON source '{_name}' must have BASE_URL and SECRET_KEY."
+            )
+else:
+    _transfer_source_name = os.getenv('WAGTAILTRANSFER_SOURCE_NAME')
+    _transfer_source_url = os.getenv('WAGTAILTRANSFER_SOURCE_URL')
+    _transfer_source_key = os.getenv('WAGTAILTRANSFER_SOURCE_KEY')
+    _transfer_vars = {
+        'WAGTAILTRANSFER_SOURCE_NAME': _transfer_source_name,
+        'WAGTAILTRANSFER_SOURCE_URL': _transfer_source_url,
+        'WAGTAILTRANSFER_SOURCE_KEY': _transfer_source_key,
+    }
+    _set_vars = {name for name, value in _transfer_vars.items() if value}
+    if _set_vars and len(_set_vars) != len(_transfer_vars):
+        missing = sorted(set(_transfer_vars.keys()) - _set_vars)
+        raise RuntimeError(
+            "Invalid Wagtail Transfer source configuration: "
+            "the environment variables WAGTAILTRANSFER_SOURCE_NAME, "
+            "WAGTAILTRANSFER_SOURCE_URL, and WAGTAILTRANSFER_SOURCE_KEY "
+            "must either all be set or all be unset. "
+            f"Currently missing: {', '.join(missing)}."
+        )
+    if _transfer_source_name and _transfer_source_url and _transfer_source_key:
+        WAGTAILTRANSFER_SOURCES[_transfer_source_name] = {
+            'BASE_URL': _transfer_source_url,
+            'SECRET_KEY': _transfer_source_key,
+        }
+
+# Match snippets across environments by their natural identifier instead of
+# wagtail-transfer's auto UUID. Without this, an import would create duplicates
+# of any snippet that was authored independently on each environment.
+#
+# Every tuple ends with `locale__language_code` because all of these snippets
+# use Wagtail's TranslatableMixin: the same name/heading legitimately exists
+# once per locale, so the natural key is (field, locale). We use the language
+# code (e.g. 'en', 'es') rather than the locale's primary key because PKs are
+# not stable across environments — wagtail-transfer matches locales themselves
+# by language_code (see locators.LOOKUP_FIELDS), and FieldLocator passes these
+# names straight to .get()/.values_list(), both of which accept `__` lookups.
+#
+# Matching on these fields requires them to be unique per locale; the
+# corresponding UniqueConstraints live on the snippet models in
+# snippets/models.py (added in a snippets migration). The four singleton snippets
+# (NoWebinarMessage, AmazonBookBlurb, ContentWarning, RequireLoginMessage)
+# have no natural name field, so they are matched by locale alone — one row
+# per locale, enforced by a unique constraint on `locale`.
+WAGTAILTRANSFER_LOOKUP_FIELDS = {
+    'snippets.subject':            ['name', 'locale__language_code'],
+    'snippets.k12subject':         ['name', 'locale__language_code'],
+    'snippets.role':               ['salesforce_name', 'locale__language_code'],
+    'snippets.facultyresource':    ['heading', 'locale__language_code'],
+    'snippets.studentresource':    ['heading', 'locale__language_code'],
+    'snippets.newssource':         ['name', 'locale__language_code'],
+    'snippets.sharedcontent':      ['title', 'locale__language_code'],
+    'snippets.erratacontent':      ['heading', 'book_state', 'locale__language_code'],
+    'snippets.blogcontenttype':    ['content_type', 'locale__language_code'],
+    'snippets.blogcollection':     ['name', 'locale__language_code'],
+    'snippets.webinarcollection':  ['name', 'locale__language_code'],
+    'snippets.promotesnippet':     ['name', 'locale__language_code'],
+    'snippets.subjectcategory':    ['subject__name', 'subject_category', 'locale__language_code'],
+    'snippets.nowebinarmessage':   ['locale__language_code'],
+    'snippets.amazonbookblurb':    ['locale__language_code'],
+    'snippets.contentwarning':     ['locale__language_code'],
+    'snippets.requireloginmessage': ['locale__language_code'],
+}
 
 # --- Wagtail AI integration -------------------------------------------------
 WAGTAIL_AI = {
