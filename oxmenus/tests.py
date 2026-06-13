@@ -87,3 +87,52 @@ class OXMenusFlagAwareTest(TestCase):
         self.assertIn("feature_flag", data)
         self.assertIn("flag_value", data)
         self.assertEqual(data["menu"][0]["key"], "k12-teachers")
+
+
+class OXMenusLinkModeTest(TestCase):
+    def test_link_mode_record_serializes_as_link_node(self):
+        from oxmenus.serializers import OXMenusSerializer
+        m = Menus.objects.create(
+            name="For K12 Teachers",
+            partial_url="/k12",
+            key="k12-teachers",
+            feature_flag="nav-k12-item",
+        )
+        data = OXMenusSerializer(m).data
+        self.assertEqual(data["label"], "For K12 Teachers")
+        self.assertEqual(data["partial_url"], "/k12")
+        self.assertEqual(data["key"], "k12-teachers")
+        self.assertEqual(data["feature_flag"], "nav-k12-item")
+        # a link node is NOT a dropdown
+        self.assertNotIn("menu", data)
+        self.assertNotIn("name", data)
+
+    def test_dropdown_record_unchanged_when_no_partial_url(self):
+        from oxmenus.serializers import OXMenusSerializer
+        m = Menus.objects.create(
+            name="Products",
+            key="products-dropdown",
+            menu=json.dumps([
+                {
+                    "id": "ccc00000-0000-0000-0000-000000000001",
+                    "type": "menu_block",
+                    "value": {
+                        "menu_items": [
+                            {
+                                "id": "ddd00000-0000-0000-0000-000000000001",
+                                "type": "item",
+                                "value": {
+                                    "label": "Assignable",
+                                    "partial_url": "/assignable",
+                                },
+                            },
+                        ]
+                    },
+                }
+            ]),
+        )
+        data = OXMenusSerializer(m).data
+        self.assertEqual(data["name"], "Products")
+        self.assertIn("menu", data)
+        self.assertNotIn("label", data)
+        self.assertNotIn("partial_url", data)

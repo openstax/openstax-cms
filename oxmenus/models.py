@@ -29,6 +29,8 @@ class Menus(models.Model):
         help_text="PostHog flag key that gates this whole dropdown. Blank = always show.")
     flag_value = models.CharField(max_length=255, blank=True, default='',
         help_text="Show only when the flag equals this value. Blank = show when the flag is on.")
+    partial_url = models.CharField(max_length=255, blank=True, default='',
+        help_text="If set, this menu renders as a single top-level link (not a dropdown).")
     menu = StreamField(
         blocks.StreamBlock([
             ('menu_block', MenuBlock(required=True))
@@ -61,6 +63,7 @@ class Menus(models.Model):
         FieldPanel('key'),
         FieldPanel('feature_flag'),
         FieldPanel('flag_value'),
+        FieldPanel('partial_url'),
         FieldPanel('menu'),
     ]
 
@@ -69,5 +72,6 @@ class Menus(models.Model):
         APIField('key'),
         APIField('feature_flag'),
         APIField('flag_value'),
+        APIField('partial_url'),
         APIField('menu'),
     ]
