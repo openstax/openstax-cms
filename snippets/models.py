@@ -296,7 +296,7 @@ register_snippet(NewsSource)
 
 
 class ErrataContent(TranslatableMixin, index.Indexed, models.Model):
-    heading = models.CharField(max_length=255, blank=True, null=True)
+    heading = models.CharField(max_length=255, blank=True, default='')
     book_state = models.CharField(max_length=255, choices=BOOK_STATES, default='live', help_text='The state of the book.')
     content = models.TextField()
 
@@ -305,7 +305,6 @@ class ErrataContent(TranslatableMixin, index.Indexed, models.Model):
             models.UniqueConstraint(
                 fields=['heading', 'book_state', 'locale'],
                 name='unique_erratacontent_per_locale',
-                condition=Q(heading__isnull=False),
             ),
         ]
 
