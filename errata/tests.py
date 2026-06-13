@@ -8,7 +8,6 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from wagtail.documents.models import Document
 import datetime
 
-DjangoTestCase = TestCase
 
 
 class ErrataTest(TestCase):
@@ -67,7 +66,7 @@ class ErrataTest(TestCase):
         self.assertEqual("New", errata.status)
 
 
-class ErrataPostHogCaptureTest(DjangoTestCase):
+class ErrataPostHogCaptureTest(TestCase):
     def _instance(self, account_id=None):
         return mock.Mock(
             submitted_by_account_id=account_id,

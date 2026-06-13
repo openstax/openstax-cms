@@ -38,7 +38,7 @@ class AnalyticsCaptureTest(TestCase):
         client = mock_posthog.return_value
         analytics.capture('thank_you_note_submitted')
         kwargs = client.capture.call_args.kwargs
-        self.assertTrue(kwargs['properties']['$process_person_profile'] is False)
+        self.assertIs(kwargs['properties']['$process_person_profile'], False)
         self.assertTrue(kwargs['distinct_id'])  # a generated id, not empty
 
     @override_settings(POSTHOG_API_KEY='phc_test')

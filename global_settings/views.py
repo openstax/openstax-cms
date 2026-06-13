@@ -10,8 +10,8 @@ from global_settings.functions import invalidate_cloudfront_caches
 def experiments_guide(request):
     return render(request, 'experiments_guide.html', {
         'posthog_project_url': 'https://us.posthog.com/project/105101',
-        'framework_doc': '/docs/posthog-experiments-measurement.md',
-        'runbook_doc': '/docs/posthog-experiments-runbook.md',
+        'framework_doc': 'https://github.com/openstax/openstax-cms/blob/main/docs/posthog-experiments-measurement.md',
+        'runbook_doc': 'https://github.com/openstax/openstax-cms/blob/main/docs/posthog-experiments-runbook.md',
     })
 
 
