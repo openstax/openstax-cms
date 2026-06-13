@@ -1,0 +1,91 @@
+{% extends "wagtailadmin/base.html" %}
+{% comment %}
+Overrides wagtail_transfer/templates/wagtail_transfer/choose_page.html
+(the 'pages' app precedes 'wagtail_transfer' in INSTALLED_APPS, so the
+app-directories loader picks this copy). Keep the form component markup in
+sync with the package template when upgrading wagtail-transfer; our only
+addition is the how-to panel above the form.
+{% endcomment %}
+{% load wagtailimages_tags wagtailadmin_tags i18n l10n %}
+{% block titletag %}{% trans "Choose a page or snippet" %}{% endblock %}
+{% block extra_css %}
+    {{ block.super }}
+
+    <link rel="stylesheet" href="{% versioned_static 'wagtail_transfer/css/transfer-styles.css' %}">
+{% endblock %}
+
+{% block extra_js %}
+    {{ block.super }}
+
+    <script src="{% versioned_static 'wagtail_transfer/js/wagtail_transfer.js' %}"></script>
+{% endblock %}
+
+{% block content %}
+    {% trans "Choose a page or snippet" as title_str %}
+    {% include "wagtailadmin/shared/header.html" with title=title_str icon="doc-empty-inverse" %}
+
+    <div class="nice-padding">
+        <div class="help-block help-info">
+            {% icon name="help" %}
+            <h3>Importing content from another environment</h3>
+            <p>
+                This page pulls content <strong>into this site</strong> from the
+                environment you select below. Nothing is changed on the source
+                environment.
+            </p>
+            <ol>
+                <li>
+                    <strong>Get the content ready on the source.</strong> Pages come
+                    across in their current state on the source environment, so finish
+                    and publish your changes there first.
+                </li>
+                <li>
+                    <strong>Select the source environment</strong> from the dropdown
+                    (for example, staging when you are promoting content to production).
+                </li>
+                <li>
+                    <strong>Find the page or snippet</strong> you want to import by
+                    browsing the source's page tree or snippet list.
+                </li>
+                <li>
+                    <strong>For a new page, choose where it should live</strong> on
+                    this site by picking the destination parent page.
+                </li>
+                <li>
+                    <strong>Review and import.</strong> Images, documents, and snippets
+                    that the content references are brought across automatically.
+                </li>
+                <li>
+                    <strong>Check the result.</strong> Open the imported page or snippet
+                    on this site and confirm it looks right before sharing links to it.
+                </li>
+            </ol>
+            <p><strong>Good to know before you import:</strong></p>
+            <ul>
+                <li>
+                    If the item was imported before (or a snippet here shares its
+                    name/title with the source's), the import <strong>updates the
+                    existing item in place</strong> — any edits made on this site since
+                    the last import are replaced by the source version.
+                </li>
+                <li>
+                    A page that was created separately on both environments is
+                    <em>not</em> recognized as the same page — importing it creates a
+                    duplicate. See <code>docs/wagtail-transfer-page-sync.md</code> in the
+                    CMS repository before importing a page that already exists here.
+                </li>
+                <li>
+                    To rebuild an entire environment (for example, refreshing dev or
+                    staging from production), don't import page by page — follow
+                    <code>docs/refresh-from-prod-runbook.md</code> instead.
+                </li>
+                <li>
+                    Stuck or unsure? Ask in the CMS support channel before importing —
+                    imports overwrite content and can't be undone from this screen.
+                </li>
+            </ul>
+        </div>
+
+        <div data-wagtail-component="content-import-form" data-local-api-base-url="{% url 'wagtail_transfer_admin:page_chooser_api:pages:listing' %}" data-local-check-uid-url="{% url 'wagtail_transfer_admin:check_uid' %}" data-sources="{{ sources_data }}" data-action="{% url 'wagtail_transfer_admin:import' %}" data-csrf-token="{{ csrf_token }}"></div>
+    </div>
+{% endblock %}

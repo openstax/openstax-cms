@@ -41,3 +41,38 @@ def register_500_menu_item():
 @hooks.register('register_settings_menu_item')
 def register_clear_cache_menu_item():
     return MenuItem('Clear Cloudfront Cache', reverse('clear_entire_cache'), classname='icon icon-bin', order=11000)
+
+
+# --- Wagtail Transfer "Import" menu ----------------------------------------
+# The package only shows its Import menu item once WAGTAILTRANSFER_SOURCES is
+# configured, so it is invisible on a fresh/local environment with no sources.
+# We show it for any staff member who holds the import permission (the page
+# itself lists whatever sources are configured, or none), and drop the
+# package's own item to avoid a duplicate when sources ARE set.
+class WagtailTransferImportMenuItem(MenuItem):
+    def is_shown(self, request):
+        return request.user.has_perm('wagtail_transfer.wagtailtransfer_can_import')
+
+
+@hooks.register('register_admin_menu_item')
+def register_wagtail_transfer_import_menu_item():
+    return WagtailTransferImportMenuItem(
+        'Import',
+        reverse('wagtail_transfer_admin:choose_page'),
+        name='wagtail-transfer-import',
+        icon_name='doc-empty-inverse',
+        order=10000,
+    )
+
+
+@hooks.register('construct_main_menu')
+def remove_duplicate_wagtail_transfer_import_item(request, menu_items):
+    # The package registers its item with name 'import' pointing at the same
+    # choose_page URL as ours ('wagtail-transfer-import'). When sources ARE
+    # configured both pass is_shown, so drop the package's to avoid a duplicate.
+    # Match on name AND url so we never remove an unrelated 'import' item.
+    transfer_url = reverse('wagtail_transfer_admin:choose_page')
+    menu_items[:] = [
+        item for item in menu_items
+        if not (item.name == 'import' and getattr(item, 'url', None) == transfer_url)
+    ]
