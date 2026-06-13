@@ -1,0 +1,24 @@
+{% extends "wagtailadmin/base.html" %}
+{% block titletag %}Experiments &amp; Measurement{% endblock %}
+{% block content %}
+  {% include "wagtailadmin/shared/header.html" with title="Experiments & Measurement" icon="bulb" %}
+  <div class="nice-padding">
+    <h1 class="w-sr-only">Experiments &amp; Measurement</h1>
+    <p>Run measurable website changes with PostHog feature flags &amp; experiments.
+       A/B test a change, ramp it with a percentage rollout, and read the result.</p>
+    <h2>Where to go</h2>
+    <ul>
+      <li><a href="{{ posthog_project_url }}" target="_blank" rel="noopener">PostHog project (create flags &amp; experiments)</a></li>
+      <li><a href="{{ framework_doc }}" target="_blank" rel="noopener">Framework overview</a></li>
+      <li><a href="{{ runbook_doc }}" target="_blank" rel="noopener">Change-and-measure runbook (step by step)</a></li>
+    </ul>
+    <h2>The short version</h2>
+    <ol>
+      <li>Create a feature flag in PostHog (boolean for a rollout, multivariate for an A/B).</li>
+      <li>Name it surface-first, kebab-case &mdash; e.g. <code>nav-products-label</code>, <code>nav-k12-item</code>.</li>
+      <li>Pick a goal metric &mdash; an event already flowing (a nav click, <code>book_engagement_clicked</code>, a form submit).</li>
+      <li>Ramp a rollout 10% &rarr; 25% &rarr; 100% in PostHog. No code change.</li>
+      <li>Read lift &amp; significance in PostHog&#x27;s Experiments tab.</li>
+    </ol>
+  </div>
+{% endblock %}

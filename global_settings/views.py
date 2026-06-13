@@ -1,7 +1,18 @@
 from django.contrib.sitemaps import views as sitemap_views
 from django.http import HttpResponseServerError, HttpResponse
+from django.shortcuts import render
+from wagtail.admin.auth import require_admin_access
 from wagtail.contrib.sitemaps.sitemap_generator import Sitemap
 from global_settings.functions import invalidate_cloudfront_caches
+
+
+@require_admin_access
+def experiments_guide(request):
+    return render(request, 'experiments_guide.html', {
+        'posthog_project_url': 'https://us.posthog.com/project/105101',
+        'framework_doc': 'https://github.com/openstax/openstax-cms/blob/main/docs/posthog-experiments-measurement.md',
+        'runbook_doc': 'https://github.com/openstax/openstax-cms/blob/main/docs/posthog-experiments-runbook.md',
+    })
 
 
 def throw_error(request):
