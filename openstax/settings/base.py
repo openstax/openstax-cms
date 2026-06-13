@@ -564,6 +564,11 @@ sentry_sdk.init(
     environment=ENVIRONMENT
 )
 
+# --- PostHog (server-side capture) -----------------------------------------
+# Disabled (no-op) whenever POSTHOG_API_KEY is unset — e.g. local dev and CI.
+POSTHOG_API_KEY = os.getenv('POSTHOG_API_KEY')
+POSTHOG_HOST = os.getenv('POSTHOG_HOST', 'https://z.openstax.org')
+
 ###################
 # Local Overrides #
 ###################
