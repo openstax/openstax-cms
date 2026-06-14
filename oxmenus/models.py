@@ -1,7 +1,7 @@
 from django.db import models
 from wagtail import blocks
 from wagtail.fields import StreamField
-from wagtail.admin.panels import FieldPanel
+from wagtail.admin.panels import FieldPanel, MultiFieldPanel, HelpPanel
 from wagtail.api import APIField
 
 
@@ -104,13 +104,26 @@ class Menus(models.Model):
         ordering = ['sort_order', 'id']
 
     panels = [
-        FieldPanel('name'),
-        FieldPanel('sort_order'),
-        FieldPanel('key'),
-        FieldPanel('feature_flag'),
-        FieldPanel('flag_value'),
-        FieldPanel('partial_url'),
-        FieldPanel('menu'),
+        HelpPanel(content=(
+            "<p>A menu is one of three things — a <b>dropdown</b> (add items in "
+            "the Menu field), a single <b>link</b> (set a URL), or a "
+            "<b>dynamic component</b> (pick one). Fill in the section that matches.</p>"
+        )),
+        MultiFieldPanel([
+            FieldPanel("region"),
+            FieldPanel("sort_order"),
+        ], heading="Placement"),
+        MultiFieldPanel([
+            FieldPanel("name"),
+            FieldPanel("partial_url"),
+            FieldPanel("component_key"),
+            FieldPanel("menu"),
+        ], heading="What this menu is"),
+        MultiFieldPanel([
+            FieldPanel("key"),
+            FieldPanel("feature_flag"),
+            FieldPanel("flag_value"),
+        ], heading="Targeting & experiments", classname="collapsed"),
     ]
 
     api_fields = [

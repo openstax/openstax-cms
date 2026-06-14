@@ -1,7 +1,8 @@
 import json
 
 from django.test import TestCase
-from wagtail.test.utils import WagtailPageTestCase
+from django.urls import reverse
+from wagtail.test.utils import WagtailPageTestCase, WagtailTestUtils
 from oxmenus.models import Menus
 
 
@@ -196,3 +197,57 @@ class OXMenusSerializerShapeTest(TestCase):
         self.assertEqual(data["type"], "dropdown")
         self.assertEqual(data["region"], "main")
         self.assertIn("menu", data)
+
+
+class OXMenusAdminScopingTest(WagtailTestUtils, TestCase):
+    def setUp(self):
+        self.login()  # creates + logs in a superuser
+        Menus.objects.create(name="Footer Help", region="footer",
+                             partial_url="/help")
+        Menus.objects.create(name="Main About", region="main")
+
+    def test_footer_index_lists_only_footer_menus(self):
+        resp = self.client.get(reverse("footer_menu:index"))
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, "Footer Help")
+        self.assertNotContains(resp, "Main About")
+
+    def test_footer_add_defaults_region(self):
+        resp = self.client.get(reverse("footer_menu:add"))
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, '<option value="footer" selected')
+
+    # C1 regression: reorder view must be scoped to the region so dragging
+    # within footer does not touch sort_order values for main (or other) items.
+    def test_reorder_queryset_is_region_scoped(self):
+        from oxmenus.admin_views import RegionReorderView
+        from unittest.mock import patch
+
+        # Create two footer items and one main item with known sort_order values.
+        footer1 = Menus.objects.create(name="Footer 1", region="footer", sort_order=1)
+        footer2 = Menus.objects.create(name="Footer 2", region="footer", sort_order=2)
+        main1 = Menus.objects.create(name="Main 1", region="main", sort_order=10)
+
+        view = RegionReorderView()
+        view.region = "footer"
+        view.model = Menus
+        view.sort_order_field = "sort_order"
+
+        qs = view.get_queryset()
+        pks = list(qs.values_list("pk", flat=True))
+
+        self.assertIn(footer1.pk, pks)
+        self.assertIn(footer2.pk, pks)
+        self.assertNotIn(main1.pk, pks,
+                         "Main item should be excluded from footer reorder queryset")
+
+    # I1: utility index must not show footer items; main add must pre-select "main".
+    def test_utility_index_excludes_footer_item(self):
+        resp = self.client.get(reverse("utility_menu:index"))
+        self.assertEqual(resp.status_code, 200)
+        self.assertNotContains(resp, "Footer Help")
+
+    def test_main_add_defaults_region_to_main(self):
+        resp = self.client.get(reverse("main_menu:add"))
+        self.assertEqual(resp.status_code, 200)
+        self.assertContains(resp, '<option value="main" selected')
