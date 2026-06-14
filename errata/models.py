@@ -17,6 +17,7 @@ from books.models import Book
 from django.conf import settings
 from openstax_accounts.functions import get_user_info
 from global_settings.functions import invalidate_cloudfront_caches
+from shared.analytics import capture as posthog_capture
 
 
 YES = 'Yes'
@@ -407,6 +408,28 @@ def send_status_update_email(sender, instance, created, **kwargs):
             [to],
             html_message=msg_html,
         )
+
+
+@receiver(post_save, sender=Errata, dispatch_uid="errata_posthog_capture")
+def capture_errata_submitted(sender, instance, created, **kwargs):
+    if not created:
+        return
+    distinct_id = None
+    if instance.submitted_by_account_id:
+        try:
+            user = get_user_info(instance.submitted_by_account_id)
+            distinct_id = user.get('uuid') if isinstance(user, dict) else None
+        except Exception:  # noqa: BLE001 — never block a submission on lookup
+            distinct_id = None
+    posthog_capture(
+        'errata_submitted',
+        distinct_id=distinct_id,
+        properties={
+            'form_type': 'errata',
+            'book': instance.book.title if instance.book_id else None,
+            'error_type': instance.error_type,
+        },
+    )
 
 
 class InternalDocumentation(models.Model):

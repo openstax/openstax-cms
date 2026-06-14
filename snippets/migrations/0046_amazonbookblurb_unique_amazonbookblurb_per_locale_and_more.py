@@ -4,15 +4,103 @@
 # keys (see WAGTAILTRANSFER_LOOKUP_FIELDS in settings/base.py), so an import
 # matches an existing row instead of raising MultipleObjectsReturned.
 #
-# NOTE: AddConstraint fails if existing rows already violate a constraint
-# (two same-name snippets in one locale, or >1 of a singleton snippet per
-# locale). If this migration errors on deploy, dedupe the offending rows
-# first, then re-run. The refresh-from-prod runbook calls this out.
+# AddConstraint fails if existing rows already violate a constraint (two
+# same-name snippets in one locale, or >1 of a singleton snippet per locale).
+# To keep deploys self-healing, the RunPython step below deterministically
+# resolves any pre-existing duplicates BEFORE the constraints are added, and
+# logs every change. See _resolve_unique_conflicts for the policy.
 
 from django.db import migrations, models
 
 
+# Models (and the constraint fields) that get a per-locale unique constraint
+# below. Kept in lock-step with the AddConstraint operations.
+_UNIQUE_TARGETS = [
+    ("amazonbookblurb", ("locale",)),
+    ("blogcollection", ("name", "locale")),
+    ("blogcontenttype", ("content_type", "locale")),
+    ("contentwarning", ("locale",)),
+    ("erratacontent", ("heading", "book_state", "locale")),
+    ("facultyresource", ("heading", "locale")),
+    ("k12subject", ("name", "locale")),
+    ("newssource", ("name", "locale")),
+    ("nowebinarmessage", ("locale",)),
+    ("promotesnippet", ("name", "locale")),
+    ("requireloginmessage", ("locale",)),
+    ("role", ("salesforce_name", "locale")),
+    ("sharedcontent", ("title", "locale")),
+    ("studentresource", ("heading", "locale")),
+    ("subject", ("name", "locale")),
+    ("subjectcategory", ("subject", "subject_category", "locale")),
+    ("webinarcollection", ("name", "locale")),
+]
+
+
+def _resolve_unique_conflicts(apps, schema_editor):
+    """Make existing rows satisfy the per-locale unique constraints added below,
+    so a deploy doesn't fail on pre-existing duplicates (e.g. from content
+    imports / refresh-from-prod).
+
+    Deterministic and fully logged:
+      * keep the lowest-pk row in each duplicate group;
+      * for the rest, if the constraint includes a free-text field, RENAME that
+        field with a " (dup <pk>)" suffix — non-destructive; the row survives for
+        an editor (or an offline AI-assisted tool) to merge/delete later;
+      * if the constraint is locale-only (a per-locale singleton, no field to
+        disambiguate), DELETE the extra rows.
+    Every action prints to the deploy log.
+    """
+    from django.db.models import Count, CharField, TextField
+
+    for model_name, fields in _UNIQUE_TARGETS:
+        Model = apps.get_model("snippets", model_name)
+
+        # find a non-relational free-text field within the constraint to rename
+        text_field, text_max = None, None
+        for field_name in fields:
+            try:
+                field = Model._meta.get_field(field_name)
+            except Exception:  # field absent in this historical state
+                continue
+            if isinstance(field, (CharField, TextField)) and not field.is_relation:
+                text_field = field_name
+                text_max = getattr(field, "max_length", None)
+                break
+
+        dup_groups = (
+            Model.objects.values(*fields)
+            .annotate(n=Count("pk"))
+            .filter(n__gt=1)
+        )
+        for group in dup_groups:
+            lookup = {field_name: group[field_name] for field_name in fields}
+            extras = list(Model.objects.filter(**lookup).order_by("pk"))[1:]
+            for obj in extras:
+                if text_field:
+                    suffix = " (dup %d)" % obj.pk
+                    current = getattr(obj, text_field) or ""
+                    if text_max:
+                        current = current[: max(0, text_max - len(suffix))]
+                    setattr(obj, text_field, current + suffix)
+                    obj.save(update_fields=[text_field])
+                    print(
+                        "[0046 dedupe] renamed snippets.%s pk=%s %s=%r (was dup of %s)"
+                        % (model_name, obj.pk, text_field, getattr(obj, text_field), lookup)
+                    )
+                else:
+                    print(
+                        "[0046 dedupe] deleted snippets.%s pk=%s (singleton dup of %s)"
+                        % (model_name, obj.pk, lookup)
+                    )
+                    obj.delete()
+
+
 class Migration(migrations.Migration):
+    # Must be non-atomic: RunPython may fire deferred FK triggers (from
+    # TranslatableMixin's DEFERRABLE INITIALLY DEFERRED locale FK constraint),
+    # which PostgreSQL won't allow to remain pending when a subsequent
+    # AddConstraint DDL operation runs in the same transaction.
+    atomic = False
 
     dependencies = [
         ("snippets", "0045_delete_givebanner"),
@@ -21,6 +109,8 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
+        # Self-heal pre-existing duplicates before adding the constraints below.
+        migrations.RunPython(_resolve_unique_conflicts, migrations.RunPython.noop),
         migrations.AddConstraint(
             model_name="amazonbookblurb",
             constraint=models.UniqueConstraint(fields=("locale",), name="unique_amazonbookblurb_per_locale"),

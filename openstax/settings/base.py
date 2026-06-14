@@ -664,13 +664,26 @@ WAGTAILEMBEDS_FINDERS = [
 # Sentry #
 ##########
 
-sentry_sdk.init(
-    dsn=os.getenv('SENTRY_DSN'),
-    integrations=[DjangoIntegration()],
-    traces_sample_rate=0.4,  # limit the number of errors sent from production - 40%
-    send_default_pii=True,  # this will send the user id of admin users only to sentry to help with debugging
-    environment=ENVIRONMENT
-)
+# Only initialize Sentry when a DSN is configured (i.e. real environments).
+# Without a DSN, init() sends nothing but still runs Sentry's auto-enabling
+# integration probe, which eagerly imports every instrumentable package that
+# happens to be installed — including the heavy `anthropic` and `openai` SDKs
+# (transitive deps of wagtail-ai). That added ~0.7s to *every* manage.py command
+# locally and in CI. Guarding on the DSN keeps prod behavior identical.
+SENTRY_DSN = os.getenv('SENTRY_DSN')
+if SENTRY_DSN:
+    sentry_sdk.init(
+        dsn=SENTRY_DSN,
+        integrations=[DjangoIntegration()],
+        traces_sample_rate=0.4,  # limit the number of errors sent from production - 40%
+        send_default_pii=True,  # this will send the user id of admin users only to sentry to help with debugging
+        environment=ENVIRONMENT
+    )
+
+# --- PostHog (server-side capture) -----------------------------------------
+# Disabled (no-op) whenever POSTHOG_API_KEY is unset — e.g. local dev and CI.
+POSTHOG_API_KEY = os.getenv('POSTHOG_API_KEY')
+POSTHOG_HOST = os.getenv('POSTHOG_HOST', 'https://z.openstax.org')
 
 ###################
 # Local Overrides #

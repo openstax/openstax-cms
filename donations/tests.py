@@ -1,4 +1,5 @@
 from datetime import timedelta
+from unittest import mock
 
 from django.test import TestCase
 from django.utils import timezone
@@ -149,3 +150,27 @@ class SiteBannerTest(APITestCase, TestCase):
             'context_filter', 'url_pattern',
         }
         self.assertEqual(set(banner.keys()), expected_fields)
+
+
+class ThankYouNotePostHogTest(APITestCase, TestCase):
+    @mock.patch('donations.signals.posthog_capture')
+    def test_thank_you_note_post_fires_posthog_event(self, mock_capture):
+        data = {
+            "thank_you_note": "Thanks OpenStax!",
+            "last_name": "Drew",
+            "first_name": "Jessica",
+            "school": "Rice University",
+            "consent_to_share_or_contact": "True",
+            "contact_email_address": "jess@example.com",
+            "source": "PDF download",
+        }
+        response = self.client.post(
+            '/apps/cms/api/donations/thankyounote/', data, format='json'
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        mock_capture.assert_called_once()
+        self.assertEqual(mock_capture.call_args.args[0], 'thank_you_note_submitted')
+        self.assertEqual(
+            mock_capture.call_args.kwargs['properties']['form_type'],
+            'donation_thank_you',
+        )
