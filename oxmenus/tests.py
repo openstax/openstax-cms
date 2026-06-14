@@ -26,6 +26,18 @@ class OXMenuTests(WagtailPageTestCase, TestCase):
         self.assertContains(response, 'Research')
 
 
+class OXMenusOrderingTest(TestCase):
+    def test_api_returns_menus_in_sort_order(self):
+        # Create out of order; lowest sort_order should come first.
+        Menus.objects.create(name="Third", partial_url="/third", sort_order=30)
+        Menus.objects.create(name="First", partial_url="/first", sort_order=10)
+        Menus.objects.create(name="Second", partial_url="/second", sort_order=20)
+
+        response = self.client.get('/apps/cms/api/oxmenus/')
+        labels = [item["label"] for item in response.json()]
+        self.assertEqual(labels, ["First", "Second", "Third"])
+
+
 class OXMenusFlagAwareTest(TestCase):
     def _menu(self):
         m = Menus(
