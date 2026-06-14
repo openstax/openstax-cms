@@ -1,9 +1,27 @@
 import json
 
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.urls import reverse
 from wagtail.test.utils import WagtailPageTestCase, WagtailTestUtils
 from oxmenus.models import Menus
+
+
+class OXMenusNodeValidationTest(TestCase):
+    def test_dropdown_requires_a_menu_block(self):
+        # No component_key, no partial_url, empty menu -> invalid dropdown.
+        m = Menus(name="About", region="main")
+        with self.assertRaises(ValidationError) as cm:
+            m.full_clean()
+        self.assertIn("menu", cm.exception.error_dict)
+
+    def test_dynamic_node_does_not_require_menu(self):
+        m = Menus(name="User menu", region="utility", component_key="user-menu")
+        m.full_clean()  # should not raise
+
+    def test_link_node_does_not_require_menu(self):
+        m = Menus(name="K12", region="utility", partial_url="/k12")
+        m.full_clean()  # should not raise
 
 
 class OXMenuTests(WagtailPageTestCase, TestCase):

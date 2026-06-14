@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 from wagtail import blocks
 from wagtail.fields import StreamField
@@ -67,7 +68,10 @@ class Menus(models.Model):
     menu = StreamField(
         blocks.StreamBlock([
             ('menu_block', MenuBlock(required=True))
-            ]), use_json_field=True)
+            ]), use_json_field=True, blank=True,
+        help_text='Only for dropdowns — the items shown when this dropdown opens. '
+                  'Leave empty for a single link (set Partial URL) or a dynamic '
+                  'component (set Component key).')
 
     def menu_block_json(self):
         prep_value = self.menu.get_prep_value()
@@ -94,6 +98,17 @@ class Menus(models.Model):
     def node_type_label(self):
         return self.node_type().title()
     node_type_label.short_description = "Type"
+
+    def clean(self):
+        super().clean()
+        # A dropdown (no component_key, no partial_url) needs at least one
+        # menu block. Links and dynamic components don't use the Menu field.
+        if self.node_type() == "dropdown" and not self.menu:
+            raise ValidationError({
+                "menu": "Add at least one menu block for a dropdown — or set a "
+                        "Partial URL (for a single link) or a Component key "
+                        "(for a dynamic component) instead."
+            })
 
     def __str__(self):
         return self.name
