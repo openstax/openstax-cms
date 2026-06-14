@@ -101,6 +101,23 @@ class OXMenusFlagAwareTest(TestCase):
         self.assertEqual(data["menu"][0]["key"], "k12-teachers")
 
 
+class OXMenusNodeModelTest(TestCase):
+    def test_region_defaults_to_main(self):
+        m = Menus.objects.create(name="Products")
+        self.assertEqual(m.region, "main")
+
+    def test_node_type_precedence(self):
+        # dynamic wins over everything
+        dynamic = Menus(name="User", component_key="user-menu", partial_url="/x")
+        self.assertEqual(dynamic.node_type(), "dynamic")
+        # link when partial_url set and no component
+        link = Menus(name="K12", partial_url="/k12")
+        self.assertEqual(link.node_type(), "link")
+        # dropdown otherwise
+        dropdown = Menus(name="About")
+        self.assertEqual(dropdown.node_type(), "dropdown")
+
+
 class OXMenusLinkModeTest(TestCase):
     def test_link_mode_record_serializes_as_link_node(self):
         from oxmenus.serializers import OXMenusSerializer

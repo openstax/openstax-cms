@@ -30,8 +30,21 @@ class MenuBlock(blocks.StructBlock):
 
 
 class Menus(models.Model):
+    REGION_CHOICES = [
+        ("utility", "Utility bar"),
+        ("main", "Main nav"),
+        ("footer", "Footer"),
+    ]
+    COMPONENT_CHOICES = [
+        ("user-menu", 'User menu ("Hi, First Name")'),
+        ("give-button", "Give button"),
+        ("rice-logo", "RICE logo"),
+    ]
+
     name = models.CharField(max_length=255,
         help_text='Top-level nav label, e.g. "What we do" or "Subjects".')
+    region = models.CharField(max_length=20, choices=REGION_CHOICES, default="main",
+        help_text="Which part of the site this menu appears in.")
     sort_order = models.IntegerField(default=0,
         help_text='Controls the order menus appear in the nav (lowest first), e.g. 10, 20, 30. '
                   'Leaving gaps makes it easy to insert a menu later without renumbering.')
@@ -47,6 +60,10 @@ class Menus(models.Model):
     partial_url = models.CharField(max_length=255, blank=True, default='',
         help_text='If set, this menu renders as a single top-level link (not a dropdown), '
                   'e.g. "/k12". Leave blank for a dropdown with items below.')
+    component_key = models.CharField(max_length=50, choices=COMPONENT_CHOICES,
+        blank=True, default="",
+        help_text="For dynamic items the site renders live (user menu, Give button, "
+                  "logo). Leave blank for normal links and dropdowns.")
     menu = StreamField(
         blocks.StreamBlock([
             ('menu_block', MenuBlock(required=True))
@@ -66,6 +83,17 @@ class Menus(models.Model):
                     "flag_value": str(v.get('flag_value', '')),
                 })
         return menu_json
+
+    def node_type(self):
+        if self.component_key:
+            return "dynamic"
+        if self.partial_url:
+            return "link"
+        return "dropdown"
+
+    def node_type_label(self):
+        return self.node_type().title()
+    node_type_label.short_description = "Type"
 
     def __str__(self):
         return self.name
