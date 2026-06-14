@@ -89,6 +89,7 @@ class Command(BaseCommand):
                 },
             )
 
+    def current_adopter_uuids(self, results):
         uuids = set()
         for record in results:
             try:
