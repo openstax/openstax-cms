@@ -2,9 +2,23 @@ import wagtail.admin.rich_text.editors.draftail.features as draftail_features
 from wagtail.admin.rich_text.converters.html_to_contentstate import InlineStyleElementHandler
 from wagtail import hooks
 from django.urls import path, reverse
-from wagtail.admin.menu import MenuItem
+from wagtail.admin.menu import Menu, MenuItem, SubmenuMenuItem
 
 from global_settings import views
+
+
+# A nested "Tools" menu for developer/operations utilities (Import, Versions, …)
+# so they stop cluttering the top level. Other apps add items by registering for
+# the ``register_tools_menu_item`` hook (see versions/wagtail_hooks.py).
+tools_menu = Menu(
+    register_hook_name="register_tools_menu_item",
+    construct_hook_name="construct_tools_menu",
+)
+
+
+@hooks.register("register_admin_menu_item")
+def register_tools_menu():
+    return SubmenuMenuItem("Tools", tools_menu, icon_name="cogs", order=9000)
 
 
 @hooks.register('register_rich_text_features')
@@ -69,14 +83,14 @@ class WagtailTransferImportMenuItem(MenuItem):
         return request.user.has_perm('wagtail_transfer.wagtailtransfer_can_import')
 
 
-@hooks.register('register_admin_menu_item')
+@hooks.register('register_tools_menu_item')
 def register_wagtail_transfer_import_menu_item():
     return WagtailTransferImportMenuItem(
         'Import',
         reverse('wagtail_transfer_admin:choose_page'),
         name='wagtail-transfer-import',
         icon_name='doc-empty-inverse',
-        order=10000,
+        order=100,
     )
 
 

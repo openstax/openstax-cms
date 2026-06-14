@@ -6,7 +6,6 @@ from wagtail.admin.panels import FieldPanel
 from wagtail.api import APIField
 from wagtail.fields import RichTextField
 from wagtail.models import TranslatableMixin
-from wagtail.snippets.models import register_snippet
 from openstax.api_fields import ExpandedRichTextField
 from openstax.functions import build_image_url
 from books.constants import BOOK_STATES, COVER_COLORS, K12_CATEGORIES
@@ -52,8 +51,6 @@ class Subject(TranslatableMixin, models.Model):
         return self.name
 
 
-register_snippet(Subject)
-
 class K12Subject(TranslatableMixin, models.Model):
     name = models.CharField(max_length=255)
     intro_text = RichTextField(blank=True, null=True)
@@ -94,7 +91,6 @@ class K12Subject(TranslatableMixin, models.Model):
     def __str__(self):
         return self.name
 
-register_snippet(K12Subject)
 
 class FacultyResource(TranslatableMixin, index.Indexed, models.Model):
     heading = models.CharField(max_length=255)
@@ -143,9 +139,6 @@ class FacultyResource(TranslatableMixin, index.Indexed, models.Model):
         return self.heading
 
 
-register_snippet(FacultyResource)
-
-
 class StudentResource(TranslatableMixin, index.Indexed, models.Model):
     heading = models.CharField(max_length=255)
     description = RichTextField(blank=True, null=True)
@@ -190,9 +183,6 @@ class StudentResource(TranslatableMixin, index.Indexed, models.Model):
         return self.heading
 
 
-register_snippet(StudentResource)
-
-
 class Role(TranslatableMixin, models.Model):
     display_name = models.CharField(max_length=255)
     salesforce_name = models.CharField(max_length=255)
@@ -212,9 +202,6 @@ class Role(TranslatableMixin, models.Model):
 
     def __str__(self):
         return self.display_name
-
-
-register_snippet(Role)
 
 
 class SharedContent(TranslatableMixin, index.Indexed, models.Model):
@@ -249,9 +236,6 @@ class SharedContent(TranslatableMixin, index.Indexed, models.Model):
 
     def __str__(self):
         return self.title
-
-
-register_snippet(SharedContent)
 
 
 class NewsSource(TranslatableMixin, index.Indexed, models.Model):
@@ -292,9 +276,6 @@ class NewsSource(TranslatableMixin, index.Indexed, models.Model):
         return self.name
 
 
-register_snippet(NewsSource)
-
-
 class ErrataContent(TranslatableMixin, index.Indexed, models.Model):
     heading = models.CharField(max_length=255, blank=True, default='')
     book_state = models.CharField(max_length=255, choices=BOOK_STATES, default='live', help_text='The state of the book.')
@@ -318,9 +299,6 @@ class ErrataContent(TranslatableMixin, index.Indexed, models.Model):
 
     def __str__(self):
         return self.heading
-
-
-register_snippet(ErrataContent)
 
 
 class SubjectCategory(TranslatableMixin, models.Model):
@@ -353,9 +331,6 @@ class SubjectCategory(TranslatableMixin, models.Model):
         return self.subject_category + ' - ' + self.subject_name
 
 
-register_snippet(SubjectCategory)
-
-
 class BlogContentType(TranslatableMixin, models.Model):
     content_type = models.CharField(max_length=255, null=True, blank=True,help_text="content type for blog posts")
 
@@ -376,9 +351,6 @@ class BlogContentType(TranslatableMixin, models.Model):
 
     def __str__(self):
         return self.content_type
-
-
-register_snippet(BlogContentType)
 
 
 class BlogCollection(TranslatableMixin, models.Model):
@@ -420,9 +392,6 @@ class BlogCollection(TranslatableMixin, models.Model):
         return self.name
 
 
-register_snippet(BlogCollection)
-
-
 class NoWebinarMessage(TranslatableMixin, models.Model):
     no_webinar_message = models.TextField()
 
@@ -440,9 +409,6 @@ class NoWebinarMessage(TranslatableMixin, models.Model):
 
     def __str__(self):
         return 'No Webinar Message'
-
-
-register_snippet(NoWebinarMessage)
 
 
 class WebinarCollection(TranslatableMixin, models.Model):
@@ -484,9 +450,6 @@ class WebinarCollection(TranslatableMixin, models.Model):
         return self.name
 
 
-register_snippet(WebinarCollection)
-
-
 class PromoteSnippet(TranslatableMixin, models.Model):
     name = models.CharField(max_length=255, blank=True, default='')
     description = models.TextField(default='')
@@ -523,9 +486,6 @@ class PromoteSnippet(TranslatableMixin, models.Model):
         return self.name
 
 
-register_snippet(PromoteSnippet)
-
-
 class AmazonBookBlurb(TranslatableMixin, models.Model):
     amazon_book_blurb = models.TextField()
 
@@ -543,9 +503,6 @@ class AmazonBookBlurb(TranslatableMixin, models.Model):
 
     def __str__(self):
         return 'Amazon Book Blurb'
-
-
-register_snippet(AmazonBookBlurb)
 
 
 class ContentWarning(TranslatableMixin, models.Model):
@@ -567,10 +524,6 @@ class ContentWarning(TranslatableMixin, models.Model):
         return (self.content_warning[:100] + '...') if len(self.content_warning) > 100 else self.content_warning
 
 
-
-register_snippet(ContentWarning)
-
-
 class RequireLoginMessage(TranslatableMixin, models.Model):
     require_login_message = models.TextField()
 
@@ -590,5 +543,3 @@ class RequireLoginMessage(TranslatableMixin, models.Model):
         return (self.require_login_message[:100] + '...') if len(self.require_login_message) > 100 else self.require_login_message
 
 
-
-register_snippet(RequireLoginMessage)

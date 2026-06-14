@@ -1,14 +1,20 @@
-from wagtail_modeladmin.options import ModelAdmin, modeladmin_register
+from wagtail import hooks
+from wagtail.admin.viewsets.model import ModelViewSet
+
 from .models import Menus
 
 
-class OXMenusAdmin(ModelAdmin):
+class OXMenusViewSet(ModelViewSet):
     model = Menus
-    menu_icon = 'grip'
-    menu_label = 'OX Menu'
-    menu_order = 5000
-    list_display = ('name',)
-    search_fields = ('name',) # trailing comma needed to make search work
+    icon = "grip"
+    menu_label = "OX Menu"
+    menu_order = 520
+    add_to_admin_menu = True
+    list_display = ("name", "key", "feature_flag")
+    search_fields = ("name",)
+    exclude_form_fields = []
 
 
-modeladmin_register(OXMenusAdmin)
+@hooks.register("register_admin_viewset")
+def register_oxmenus_viewset():
+    return OXMenusViewSet("oxmenus")

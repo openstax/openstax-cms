@@ -1,8 +1,6 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 
-from wagtail import hooks
-from wagtail.admin.menu import MenuItem
 from wagtail.search import index
 
 from books.models import Book
@@ -289,10 +287,6 @@ class Partner(models.Model):
     @property
     def rating_count(self):
         return 0
-
-    @hooks.register('register_admin_menu_item')
-    def register_partner_menu_item():
-        return MenuItem('Partners', '/django-admin/salesforce/partner/', classname='icon icon-group', order=3000)
 
 
 class PartnerFieldNameMapping(models.Model):

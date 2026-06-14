@@ -1,0 +1,15 @@
+{% extends "wagtailadmin/base.html" %}
+{% load i18n %}
+{% block titletag %}{% trans "Sync Partners with Salesforce" %}{% endblock %}
+{% block content %}
+    {% include "wagtailadmin/shared/header.html" with title="Sync Partners with Salesforce" icon="rotate" %}
+
+    <div class="nice-padding">
+        <p>{% trans "This pulls the latest partner records from Salesforce by running the update_partners command. It may take a moment." %}</p>
+        <form action="{% url 'partners:sync' %}" method="post">
+            {% csrf_token %}
+            <button type="submit" class="button">{% trans "Sync now" %}</button>
+            <a href="{{ index_url }}" class="button button-secondary no">{% trans "Cancel" %}</a>
+        </form>
+    </div>
+{% endblock %}

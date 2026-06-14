@@ -47,6 +47,7 @@ class CloudfrontDistribution(BaseSiteSetting):
         verbose_name = 'CloudFront Distribution'
 
 
+@register_setting(icon='date')
 class GiveToday(BaseSiteSetting):
     give_link_text = models.CharField(max_length=255)
     give_link = models.URLField("Give link", blank=True, help_text="URL to Rice Give page or something similar")

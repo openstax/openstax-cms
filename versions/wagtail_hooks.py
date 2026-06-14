@@ -11,6 +11,6 @@ from versions import views
 def register_versions_admin_url():
     return [path('versions/', views.versions, name='versions')]
 
-@hooks.register('register_admin_menu_item')
+@hooks.register('register_tools_menu_item')
 def register_versions_menu_item():
-  return MenuItem('Versions', reverse('versions'), icon_name='view', order=10000)
+  return MenuItem('Versions', reverse('versions'), icon_name='history', order=200)

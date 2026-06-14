@@ -1,46 +1,44 @@
-from wagtail_modeladmin.options import ModelAdmin, ModelAdminGroup, modeladmin_register
+from wagtail import hooks
+from wagtail.admin.viewsets.model import ModelViewSet, ModelViewSetGroup
+
 from .models import DonationPopup, Fundraiser, SiteBanner
-from global_settings.models import GiveToday
 
 
-class DonationPopupAdmin(ModelAdmin):
+class DonationPopupViewSet(ModelViewSet):
     model = DonationPopup
-    menu_icon = 'form'
-    menu_label = 'Donation Popup'
-    list_display = ('download_ready', 'header_title', 'hide_donation_popup')
-    search_fields = ('header_title', 'header_subtitle', 'download_ready',)
+    icon = "form"
+    menu_label = "Donation Popup"
+    list_display = ("download_ready", "header_title", "hide_donation_popup")
+    search_fields = ("header_title", "header_subtitle", "download_ready")
+    exclude_form_fields = []
 
 
-class FundraiserAdmin(ModelAdmin):
+class FundraiserViewSet(ModelViewSet):
     model = Fundraiser
-    menu_icon = 'site'
-    menu_label = 'Fundraisers'
-    list_display = ('headline', 'color_scheme', 'message_type', 'goal_amount', 'goal_time')
-    search_fields = ('headline', 'message',)
+    icon = "site"
+    menu_label = "Fundraisers"
+    list_display = ("headline", "color_scheme", "message_type", "goal_amount", "goal_time")
+    search_fields = ("headline", "message")
+    exclude_form_fields = []
 
 
-class GiveTodayAdmin(ModelAdmin):
-    model = GiveToday
-    menu_icon = 'date'
-    menu_label = 'Give Today'
-    list_display = ('give_link_text', 'start', 'expires')
-    search_fields = ('give_link_text',)
-
-
-class SiteBannerAdmin(ModelAdmin):
+class SiteBannerViewSet(ModelViewSet):
     model = SiteBanner
-    menu_icon = 'doc-full-inverse'
-    menu_label = 'Site Banners'
-    list_display = ('name', 'is_active', 'start_date', 'end_date', 'context_filter')
-    search_fields = ('name', 'html_message',)
-    list_filter = ('is_active', 'context_filter',)
+    icon = "doc-full-inverse"
+    menu_label = "Site Banners"
+    list_display = ("name", "is_active", "start_date", "end_date", "context_filter")
+    list_filter = ("is_active", "context_filter")
+    search_fields = ("name", "html_message")
+    exclude_form_fields = []
 
 
-class SiteMessagingModalsGroup(ModelAdminGroup):
-    menu_label = 'Site Messaging'
-    menu_icon = 'doc-full-inverse'
-    menu_order = 600
-    items = (DonationPopupAdmin, FundraiserAdmin, GiveTodayAdmin, SiteBannerAdmin,)
+class SiteMessagingGroup(ModelViewSetGroup):
+    menu_label = "Site Messaging"
+    menu_icon = "doc-full-inverse"
+    menu_order = 300
+    items = (DonationPopupViewSet, FundraiserViewSet, SiteBannerViewSet)
 
 
-modeladmin_register(SiteMessagingModalsGroup)
+@hooks.register("register_admin_viewset")
+def register_site_messaging_group():
+    return SiteMessagingGroup()
