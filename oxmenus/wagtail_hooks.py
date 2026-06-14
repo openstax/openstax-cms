@@ -11,7 +11,7 @@ class OXMenusViewSet(ModelViewSet):
     menu_order = 520
     add_to_admin_menu = True
     list_display = ("name", "sort_order", "key", "feature_flag")
-    ordering = ("sort_order",)
+    ordering = ("sort_order", "id")
     search_fields = ("name",)
     exclude_form_fields = []
 

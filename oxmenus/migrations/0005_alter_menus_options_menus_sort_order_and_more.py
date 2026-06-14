@@ -13,7 +13,7 @@ class Migration(migrations.Migration):
     operations = [
         migrations.AlterModelOptions(
             name="menus",
-            options={"ordering": ["sort_order"], "verbose_name": "Menu", "verbose_name_plural": "Menus"},
+            options={"ordering": ["sort_order", "id"], "verbose_name": "Menu", "verbose_name_plural": "Menus"},
         ),
         migrations.AddField(
             model_name="menus",

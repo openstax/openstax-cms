@@ -73,7 +73,7 @@ class Menus(models.Model):
     class Meta:
         verbose_name = "Menu"
         verbose_name_plural = "Menus"
-        ordering = ['sort_order']
+        ordering = ['sort_order', 'id']
 
     panels = [
         FieldPanel('name'),
