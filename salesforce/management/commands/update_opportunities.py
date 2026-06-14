@@ -38,12 +38,21 @@ class Command(BaseCommand):
         Returns None (and reports to Sentry) when the UUID is missing or
         malformed so the caller can skip the record instead of crashing.
         """
-        raw = record['Opportunity__r']['Contact__r']['Accounts_UUID__c']
+        raw = (
+            record.get('Opportunity__r', {})
+            .get('Contact__r', {})
+            .get('Accounts_UUID__c')
+        )
+        if not raw:
+            sentry_sdk.capture_message(
+                "Adoption {} is missing an Account UUID".format(record.get('Id'))
+            )
+            return None
         try:
             return uuid.UUID(raw)
         except (ValueError, TypeError):
             sentry_sdk.capture_message(
-                "Adoption {} has a badly formatted Account UUID: {}".format(record['Id'], raw)
+                "Adoption {} has a badly formatted Account UUID: {}".format(record.get('Id'), raw)
             )
             return None
 
@@ -80,10 +89,14 @@ class Command(BaseCommand):
                 },
             )
 
-    def current_adopter_uuids(self, results):
-        """Collect the set of valid Account UUIDs present in this year's results."""
         uuids = set()
         for record in results:
+            try:
+                if not record['Opportunity__r']['Book__r']['Active__c']:
+                    continue
+            except (TypeError, KeyError):
+                continue
+
             account_uuid = self.account_uuid(record)
             if account_uuid is not None:
                 uuids.add(account_uuid)
