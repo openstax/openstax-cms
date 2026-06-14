@@ -115,9 +115,11 @@ class Menus(models.Model):
 
     api_fields = [
         APIField('name'),
+        APIField('region'),
         APIField('key'),
         APIField('feature_flag'),
         APIField('flag_value'),
         APIField('partial_url'),
+        APIField('component_key'),
         APIField('menu'),
     ]

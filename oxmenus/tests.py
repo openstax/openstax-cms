@@ -165,3 +165,34 @@ class OXMenusLinkModeTest(TestCase):
         self.assertIn("menu", data)
         self.assertNotIn("label", data)
         self.assertNotIn("partial_url", data)
+
+
+class OXMenusSerializerShapeTest(TestCase):
+    def _serialize(self, m):
+        from oxmenus.serializers import OXMenusSerializer
+        return OXMenusSerializer(m).data
+
+    def test_dynamic_node_shape(self):
+        m = Menus.objects.create(name="Hi", region="utility",
+                                 component_key="user-menu")
+        data = self._serialize(m)
+        self.assertEqual(data["type"], "dynamic")
+        self.assertEqual(data["component"], "user-menu")
+        self.assertEqual(data["region"], "utility")
+        self.assertEqual(data["label"], "Hi")
+
+    def test_link_node_shape(self):
+        m = Menus.objects.create(name="K12", region="utility",
+                                 partial_url="/k12")
+        data = self._serialize(m)
+        self.assertEqual(data["type"], "link")
+        self.assertEqual(data["partial_url"], "/k12")
+        self.assertEqual(data["region"], "utility")
+        self.assertNotIn("component", data)
+
+    def test_dropdown_node_includes_region(self):
+        m = Menus.objects.create(name="About", region="main")
+        data = self._serialize(m)
+        self.assertEqual(data["type"], "dropdown")
+        self.assertEqual(data["region"], "main")
+        self.assertIn("menu", data)
