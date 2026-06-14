@@ -15,7 +15,7 @@ class BaseMenuViewSet(ModelViewSet):
     # Default list ordering comes from Menus.Meta.ordering (no explicit
     # ordering attr is set on the viewset itself).
     sort_order_field = "sort_order"
-    list_display = ("name", "node_type_label", "feature_flag")
+    list_display = ("name", "node_type_label", "sort_order", "feature_flag")
     search_fields = ("name",)
     region = None
 
