@@ -1,6 +1,6 @@
 """Tests for the reorganised Wagtail admin menu: snippet grouping, retired
 modeladmins now served by ModelViewSets, and GiveToday moved to Settings."""
-from django.test import TestCase
+from django.test import SimpleTestCase, TestCase
 from django.urls import NoReverseMatch, reverse
 
 from wagtail.snippets.models import get_snippet_models
@@ -30,13 +30,15 @@ class SnippetRegistrationTests(TestCase):
         self.assertNotIn("register_snippet(", source)
 
 
-class ModelViewSetMenuTests(TestCase):
+class ModelViewSetMenuTests(SimpleTestCase):
     def test_retired_modeladmins_now_have_viewset_urls(self):
-        # Webinars, OX Menu, and the Site Messaging models moved off
+        # Webinars, OX Menu regions, and the Site Messaging models moved off
         # wagtail_modeladmin onto ModelViewSets.
         for url_name in (
             "webinars:index",
-            "oxmenus:index",
+            "utility_menu:index",
+            "main_menu:index",
+            "footer_menu:index",
             "donationpopup:index",
             "fundraiser:index",
             "sitebanner:index",
