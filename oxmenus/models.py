@@ -38,7 +38,6 @@ class Menus(models.Model):
     ]
     COMPONENT_CHOICES = [
         ("user-menu", 'User menu ("Hi, First Name")'),
-        ("rice-logo", "RICE logo"),
     ]
 
     name = models.CharField(max_length=255,
@@ -62,8 +61,8 @@ class Menus(models.Model):
                   'e.g. "/k12". Leave blank for a dropdown with items below.')
     component_key = models.CharField(max_length=50, choices=COMPONENT_CHOICES,
         blank=True, default="",
-        help_text="For dynamic items the site renders live (user menu, logo). "
-                  "Leave blank for normal links and dropdowns.")
+        help_text="For dynamic items the site renders live (currently the user "
+                  "menu). Leave blank for normal links and dropdowns.")
     menu = StreamField(
         blocks.StreamBlock([
             ('menu_block', MenuBlock(required=True))
