@@ -101,14 +101,31 @@ class Menus(models.Model):
 
     def clean(self):
         super().clean()
-        # A dropdown (no component_key, no partial_url) needs at least one
-        # menu block. Links and dynamic components don't use the Menu field.
-        if self.node_type() == "dropdown" and not self.menu:
-            raise ValidationError({
-                "menu": "Add at least one menu block for a dropdown — or set a "
-                        "Partial URL (for a single link) or a Component key "
-                        "(for a dynamic component) instead."
-            })
+
+        errors = {}
+
+        if self.component_key and self.partial_url:
+            errors["component_key"] = "Choose either a Component key or a Partial URL, not both."
+            errors["partial_url"] = "Choose either a Partial URL or a Component key, not both."
+
+        has_menu_blocks = len(self.menu) > 0
+        node_type = self.node_type()
+
+        # A dropdown (no component_key, no partial_url) needs at least one menu block.
+        if node_type == "dropdown" and not has_menu_blocks:
+            errors["menu"] = (
+                "Add at least one menu block for a dropdown — or set a Partial URL "
+                "(for a single link) or a Component key (for a dynamic component) instead."
+            )
+
+        # Links and dynamic components don't use the Menu field.
+        if node_type in {"link", "dynamic"} and has_menu_blocks:
+            errors["menu"] = (
+                "Clear Menu blocks for link or dynamic items; only dropdowns may define Menu items."
+            )
+
+        if errors:
+            raise ValidationError(errors)
 
     def __str__(self):
         return self.name

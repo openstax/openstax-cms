@@ -239,8 +239,6 @@ class OXMenusAdminScopingTest(WagtailTestUtils, TestCase):
     # within footer does not touch sort_order values for main (or other) items.
     def test_reorder_queryset_is_region_scoped(self):
         from oxmenus.admin_views import RegionReorderView
-        from unittest.mock import patch
-
         # Create two footer items and one main item with known sort_order values.
         footer1 = Menus.objects.create(name="Footer 1", region="footer", sort_order=1)
         footer2 = Menus.objects.create(name="Footer 2", region="footer", sort_order=2)
