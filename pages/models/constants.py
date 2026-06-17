@@ -57,7 +57,7 @@ BASE_CONTENT_BLOCKS = [
                 default=[], label='Divider Colors',
             )),
             ('background_color', hex_color_block('Background color for the cards block. Must be hex eg: #ff0000.')),
-            ('border_size', blocks.IntegerBlock(min_value=0, help_text='Outer border width in px (all sides). Leave blank for the style default; 0 = no border.')),
+            ('border_size', blocks.IntegerBlock(min_value=0, help_text='Outer border width in px (all sides). Omit to use the style default; 0 = no border.')),
             ('accent_size', blocks.IntegerBlock(min_value=0, help_text='Top accent bar height in px, independent of the border. Color comes from Accent Colors.')),
             ('padding', blocks.IntegerBlock(min_value=0, help_text='Top and bottom spacing around the block, in 10px increments.')),
             ('padding_top', blocks.IntegerBlock(min_value=0, help_text='Top spacing around the block, in 10px increments.')),
