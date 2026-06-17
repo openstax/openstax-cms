@@ -43,6 +43,7 @@ FLEX_CHOICES = [
 CARDS_STYLE_CHOICES = [
     ('rounded', 'Rounded'),
     ('square', 'Square'),
+    ('impact', 'Impact'),
 ]
 
 OPENSTAX_BRAND_COLORS = [
