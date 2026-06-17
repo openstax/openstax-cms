@@ -265,6 +265,10 @@ class LinksGroupBlock(blocks.StructBlock):
         default=[], label='Links'
     )
     config = blocks.StreamBlock([
+        ('style', blocks.ChoiceBlock(choices=[
+            ('button', 'Button'),
+            ('text', 'Text'),
+        ], help_text="Button renders the links as buttons (default); Text renders them as plain links.")),
         ('color', blocks.ChoiceBlock(choices=[
             ('white', 'White'),
             ('blue', 'Blue'),
@@ -282,6 +286,7 @@ class LinksGroupBlock(blocks.StructBlock):
         ], help_text='Layout direction of the links. Default horizontal.')),
         ('analytics_label', blocks.CharBlock(required=False, help_text='Sets the "analytics nav" field for links within this group.')),
     ], block_counts={
+        'style': {'max_num': 1},
         'color': {'max_num': 1},
         'custom_color': {'max_num': 1},
         'size': {'max_num': 1},
