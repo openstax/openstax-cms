@@ -7,6 +7,7 @@ from wagtail.fields import RichTextField
 from wagtail.api import APIField
 from books.models import Book
 from openstax.api_fields import ExpandedRichTextField
+from pages.custom_blocks import LinkBlock, LinksGroupBlock
 
 
 class ExpandedRichTextFieldTests(TestCase):
@@ -125,9 +126,6 @@ class ModelRichTextWiringTests(TestCase):
             self.assertIsInstance(entry.serializer, ExpandedRichTextField)
 
 
-from pages.custom_blocks import LinkBlock
-
-
 class LinkBlockTargetTests(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -162,9 +160,6 @@ class LinkBlockTargetTests(TestCase):
         # to_python with value=None produces a StreamValue child where child.value is None.
         value = block.to_python([{"type": "internal", "value": None}])
         self.assertIsNone(block.get_api_representation(value))
-
-
-from pages.custom_blocks import LinksGroupBlock
 
 
 class LinksGroupBlockTests(TestCase):
