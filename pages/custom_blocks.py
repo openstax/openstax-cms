@@ -338,8 +338,15 @@ class QuoteBlock(StructBlock):
     name = blocks.CharBlock(help_text="The name of the person or entity to attribute the quote to.")
     title = blocks.CharBlock(required=False, help_text="Additional title or label about the quotee.")
     config = blocks.StreamBlock([
+        ('layout', blocks.ChoiceBlock(choices=[
+            ('image-left', 'Image Left'),
+            ('image-right', 'Image Right'),
+            ('image-top', 'Image Top'),
+            ('compact', 'Compact'),
+        ], help_text='How the image and text are arranged. Compact is a small image + short text ("did you know") treatment. Default Image Left.')),
         ('accent_color', hex_color_block('Accent color for the quote. Must be hex eg: #ff0000.')),
     ], block_counts={
+        'layout': {'max_num': 1},
         'accent_color': {'max_num': 1},
     }, required=False)
 
