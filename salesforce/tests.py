@@ -190,6 +190,87 @@ class AdoptionOpportunityTest(TestCase):
         self.assertIn(b'"students": "123"', response.content)
 
 
+class UpdateOpportunitiesCommandTest(TestCase):
+    ACCOUNT_A = 'f826f1b1-ead5-4594-82b3-df9a2753cb43'
+    ACCOUNT_B = '310bb96b-0df8-4d10-a759-c7d366c1f524'
+
+    def sf_adoption(self, **overrides):
+        record = {
+            'Id': 'a00Pc00000mPq01AL',
+            'Adoption_Type__c': 'Confirmed',
+            'Base_Year__c': 2024,
+            'Confirmation_Date__c': None,
+            'Confirmation_Type__c': 'OpenStax Confirmed Adoption',
+            'How_Using__c': 'As the primary textbook',
+            'Savings__c': None,
+            'Students__c': 50,
+            'Opportunity__r': {
+                'StageName': 'Confirmed Adoption Won',
+                'Book__r': {'Name': 'US History', 'Active__c': True},
+                'Contact__r': {'Accounts_UUID__c': self.ACCOUNT_A},
+            },
+        }
+        record.update(overrides)
+        return record
+
+    def run_command(self, past_results, current_results):
+        with patch('salesforce.management.commands.update_opportunities.invalidate_cloudfront_caches'), \
+                patch('salesforce.management.commands.update_opportunities.Salesforce') as salesforce:
+            sf = salesforce.return_value.__enter__.return_value
+            sf.bulk.Adoption__c.query.side_effect = [past_results, current_results]
+            call_command('update_opportunities')
+
+    def test_existing_opportunity_is_updated_not_duplicated(self):
+        # A row already exists for this Salesforce Adoption Id, but with a stale
+        # book name. Previously the multi-field lookup missed and the insert
+        # collided on the unique opportunity_id, raising IntegrityError.
+        AdoptionOpportunityRecord.objects.create(
+            opportunity_id='a00Pc00000mPq01AL',
+            book_name='Old Book Name',
+            account_uuid=self.ACCOUNT_A,
+            students=10,
+        )
+
+        self.run_command([self.sf_adoption(Students__c=99)], [])
+
+        records = AdoptionOpportunityRecord.objects.filter(opportunity_id='a00Pc00000mPq01AL')
+        self.assertEqual(records.count(), 1)
+        self.assertEqual(records.first().book_name, 'US History')
+        self.assertEqual(records.first().students, 99)
+
+    def test_opportunity_id_stored_as_plain_string(self):
+        self.run_command([self.sf_adoption()], [])
+        self.assertTrue(
+            AdoptionOpportunityRecord.objects.filter(opportunity_id='a00Pc00000mPq01AL').exists()
+        )
+
+    def test_inactive_book_is_skipped(self):
+        record = self.sf_adoption()
+        record['Opportunity__r']['Book__r']['Active__c'] = False
+        self.run_command([record], [])
+        self.assertEqual(AdoptionOpportunityRecord.objects.count(), 0)
+
+    def test_current_adopter_replaces_stale_rows(self):
+        # Past pass seeds last year's nudge data for account A.
+        past = self.sf_adoption(Id='a00past', Base_Year__c=2024)
+        # Current pass: account A confirmed this year with a different adoption.
+        current = self.sf_adoption(Id='a00current', Base_Year__c=2025, Students__c=75)
+
+        self.run_command([past], [current])
+
+        records = AdoptionOpportunityRecord.objects.filter(account_uuid=self.ACCOUNT_A)
+        # The stale last-year row was cleared and replaced by the current one.
+        self.assertEqual(records.count(), 1)
+        self.assertEqual(records.first().opportunity_id, 'a00current')
+        self.assertEqual(records.first().students, 75)
+
+    def test_badly_formatted_uuid_is_skipped(self):
+        record = self.sf_adoption()
+        record['Opportunity__r']['Contact__r']['Accounts_UUID__c'] = 'not-a-uuid'
+        self.run_command([record], [])
+        self.assertEqual(AdoptionOpportunityRecord.objects.count(), 0)
+
+
 class ResourceDownloadTest(TestCase):
     def setUp(self):
         self.client = Client()
