@@ -115,11 +115,11 @@ def remove_duplicate_wagtail_transfer_import_item(request, menu_items):
 # above, using block features for the structural treatments and inline styles
 # for the colors.
 
-# (feature_name, draftail block type, editor label, css class, description)
+# (feature_name, draftail block type, editor label, css class, icon, description)
 FLEX_TEXT_BLOCKS = [
-    ('eyebrow', 'eyebrow', 'Eyebrow', 'eyebrow', 'Small label above a heading'),
-    ('big-number', 'big-number', 'Big number', 'big-number', 'Large statistic callout'),
-    ('caption', 'caption', 'Caption', 'caption', 'Small caption text'),
+    ('eyebrow', 'eyebrow', 'Eyebrow', 'eyebrow', 'tag', 'Small label above a heading'),
+    ('big-number', 'big-number', 'Big number', 'big-number', 'decimal', 'Large statistic display'),
+    ('caption', 'caption', 'Caption', 'caption', 'pilcrow', 'Small caption text'),
 ]
 
 # (feature_name, draftail inline style type, editor label, css class, preview hex)
@@ -134,11 +134,12 @@ FLEX_TEXT_COLORS = [
 
 @hooks.register('register_rich_text_features')
 def register_flex_text_block_features(features):
-    for feature_name, type_, label, css_class, description in FLEX_TEXT_BLOCKS:
+    for feature_name, type_, label, css_class, icon, description in FLEX_TEXT_BLOCKS:
         features.register_editor_plugin(
             'draftail', feature_name,
             draftail_features.BlockFeature({
                 'type': type_,
+                'icon': icon,
                 'label': label,
                 'description': description,
             }),
