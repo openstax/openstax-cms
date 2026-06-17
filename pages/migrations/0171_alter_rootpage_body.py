@@ -132,7 +132,7 @@ class Migration(migrations.Migration):
                         "wagtail.blocks.IntegerBlock",
                         (),
                         {
-                            "help_text": "Outer border width in px (all sides). Leave blank for the style default; 0 = no border.",
+                            "help_text": "Outer border width in px (all sides). Omit to use the style default; 0 = no border.",
                             "min_value": 0,
                         },
                     ),
