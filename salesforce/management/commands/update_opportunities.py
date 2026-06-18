@@ -32,6 +32,11 @@ class Command(BaseCommand):
 
         return query
 
+    def school_year_base_year(self, date):
+        if date.month < 7:
+            return date.year - 1
+        return date.year
+
     def account_uuid(self, record):
         """Return the parsed Accounts UUID for a Salesforce adoption record.
 
@@ -106,19 +111,14 @@ class Command(BaseCommand):
     @monitor(monitor_slug='update-opportunities')
     def handle(self, *args, **options):
         with Salesforce() as sf:
-            now = datetime.datetime.now()
-
-            base_year = now.year
-            if now.month < 7:  # before july, current year minus 2 (4/1/2024, base year = 2023)
-                base_year -= 2
-            else:  # otherwise, current year minus 1 (10/1/2024, base year = 2023)
-                base_year -= 1
+            current_base_year = self.school_year_base_year(datetime.datetime.now().date())
+            previous_base_year = current_base_year - 1
 
             # First, last year's confirmed adoptions for past adopters: these people
             # need to renew, so we surface what we know from last base year so the
             # frontend can show them the renewal nudge.
             past_adopters = sf.bulk.Adoption__c.query(
-                self.query_base_year(base_year, "Past Adopter")
+                self.query_base_year(previous_base_year, "Past Adopter")
             )
             with transaction.atomic():
                 self.process_results(past_adopters)
@@ -127,7 +127,6 @@ class Command(BaseCommand):
             # already confirmed for the current base year, so replace last year's
             # nudge data with the accurate current-year records. We clear every
             # current adopter's existing rows once, in bulk, then upsert.
-            current_base_year = base_year + 1
             current_adopters = sf.bulk.Adoption__c.query(
                 self.query_base_year(current_base_year, "Current Adopter")
             )
