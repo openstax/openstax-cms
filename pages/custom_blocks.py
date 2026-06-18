@@ -182,9 +182,9 @@ def gradient_block_counts():
 
 def id_config_block():
     return blocks.RegexBlock(
-        regex=r'[a-zA-Z0-9\-_]',
+        regex=r'^[a-zA-Z0-9_-]+$',
         help_text='HTML id of this element. not visible to users, but is visible in urls and is used to link to a certain part of the page with an anchor link. eg: cool_section',
-        error_mssages={'invalid': 'not a valid id.'}
+        error_messages={'invalid': 'not a valid id.'}
     )
 
 
@@ -356,19 +356,19 @@ class DividerBlock(StructBlock):
         ], default='center', help_text='Sets the horizontal alignment of the image. can be further customized with the "Offset..." configurations. Default is Left side of window.')),
         ('width', blocks.RegexBlock(regex=r'^[0-9]+(px|%|rem)$', required=False,
             help_text="Specifies the width of the image. Percentages are relative to the container (body or content, depending on alignment option). Must be valid css measurement. eg: 30px, 50%, 10rem. Default is the size of the image.",
-            error_mssages={'invalid': 'not a valid size.'}
+            error_messages={'invalid': 'not a valid size.'}
         )),
         ('height', blocks.RegexBlock(regex=r'^[0-9]+(px|%|rem)$', required=False,
             help_text="Specifies the height of the image. Percentages are relative to the container (body or content, depending on alignment option). Must be valid css measurement. eg: 30px, 50%, 10rem. Default is the size of the image.",
-            error_mssages={'invalid': 'not a valid size.'}
+            error_messages={'invalid': 'not a valid size.'}
         )),
         ('offset_vertical', blocks.RegexBlock(regex=r'^\-?[0-9]+(px|%|rem)$', required=False,
             help_text="Moves the image up or down. Percentages are relative to the image size. Must be valid css measurement. eg: 30px, 50%, 10rem. Default is -50%, which moves the image up by half its width (centering it vertically on the divider).",
-            error_mssages={'invalid': 'not a valid size.'}
+            error_messages={'invalid': 'not a valid size.'}
         )),
         ('offset_horizontal', blocks.RegexBlock(regex=r'^\-?[0-9]+(px|%|rem)$', required=False,
             help_text="Moves the image left or right. Percentages are relative to the image size. Must be valid css measurement. eg: 30px, 50%, 10rem. Default is no offset, which means the image's outer edge will align with the container's edge for left and right alignment. or it'll be perfectly centered for centered alignment.",
-            error_mssages={'invalid': 'not a valid size.'}
+            error_messages={'invalid': 'not a valid size.'}
         ))
     ], block_counts={
         'alignment': {'max_num': 1},
