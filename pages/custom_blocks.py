@@ -18,14 +18,14 @@ from openstax.api_fields import APIRichTextBlock
 
 # --- Choice constants ---
 GRADIENT_DIRECTION_CHOICES = [
-    ('to_right', 'To Right'),
-    ('to_left', 'To Left'),
-    ('to_top', 'To Top'),
-    ('to_bottom', 'To Bottom'),
-    ('to_top_right', 'To Top Right'),
-    ('to_top_left', 'To Top Left'),
-    ('to_bottom_right', 'To Bottom Right'),
-    ('to_bottom_left', 'To Bottom Left'),
+    ('to right', 'To Right'),
+    ('to left', 'To Left'),
+    ('to top', 'To Top'),
+    ('to bottom', 'To Bottom'),
+    ('to top right', 'To Top Right'),
+    ('to top left', 'To Top Left'),
+    ('to bottom right', 'To Bottom Right'),
+    ('to bottom left', 'To Bottom Left'),
 ]
 
 TEXT_ALIGNMENT_CHOICES = [
@@ -168,7 +168,7 @@ def gradient_config_options():
         ('gradient_color', hex_color_block('Sets the gradient end color. Must be hex eg: #ff0000.')),
         ('gradient_direction', blocks.ChoiceBlock(
             choices=GRADIENT_DIRECTION_CHOICES,
-            help_text='Direction of the gradient. Default to_right.',
+            help_text='Direction of the gradient. Default to right.',
         )),
     ]
 

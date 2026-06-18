@@ -146,7 +146,11 @@ BODY_BLOCKS = [
             ('image_border_radius', blocks.IntegerBlock(min_value=0, help_text='Border radius for the hero image in pixels. default 0.')),
             ('image_border_color', hex_color_block('Border color for the hero image. Must be hex eg: #ff0000.')),
             ('image_border_size', blocks.IntegerBlock(min_value=0, help_text='Border size for the hero image in pixels. default 0.')),
-            ('image_overhang', blocks.IntegerBlock(help_text='How much the image overhangs the section boundary in pixels. default 0.')),
+            ('image_overhang', blocks.RegexBlock(
+                regex=r'^[0-9]+(px|%|rem)$', required=False,
+                help_text='How much the image overhangs the section boundary. Must be a valid css measurement. eg: 30px, 50%, 10rem.',
+                error_mssages={'invalid': 'not a valid size.'},
+            )),
             ('rendering_condition', blocks.CharBlock(required=False, help_text='Condition that determines if this block should render. eg: defined by the frontend.')),
         ], block_counts={
             'image_alignment': {'max_num': 1},
