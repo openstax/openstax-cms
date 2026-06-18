@@ -7,6 +7,7 @@ from wagtail.fields import RichTextField
 from wagtail.api import APIField
 from books.models import Book
 from openstax.api_fields import ExpandedRichTextField
+from pages.custom_blocks import LinkBlock, LinksGroupBlock
 
 
 class ExpandedRichTextFieldTests(TestCase):
@@ -125,9 +126,6 @@ class ModelRichTextWiringTests(TestCase):
             self.assertIsInstance(entry.serializer, ExpandedRichTextField)
 
 
-from pages.custom_blocks import LinkBlock
-
-
 class LinkBlockTargetTests(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -162,3 +160,27 @@ class LinkBlockTargetTests(TestCase):
         # to_python with value=None produces a StreamValue child where child.value is None.
         value = block.to_python([{"type": "internal", "value": None}])
         self.assertIsNone(block.get_api_representation(value))
+
+
+class LinksGroupBlockTests(TestCase):
+    def test_links_group_block_style_option_serializes(self):
+        # LinksGroupBlock's new "style" config option should round-trip through
+        # block parsing and API representation.
+        block = LinksGroupBlock()
+        value = block.to_python({
+            "links": [
+                {
+                    "text": "Example",
+                    "aria_label": "",
+                    "target": [{"type": "external", "value": "https://example.com"}]
+                }
+            ],
+            "config": [{"type": "style", "value": "text"}]
+        })
+        # Confirm the block can parse and store the style config without errors.
+        self.assertIsNotNone(value)
+        # Verify the style config is preserved in the structured value.
+        config_items = list(value.get("config"))
+        self.assertEqual(len(config_items), 1)
+        self.assertEqual(config_items[0].block_type, "style")
+        self.assertEqual(config_items[0].value, "text")
