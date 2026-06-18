@@ -247,7 +247,7 @@ class CTALinkBlock(LinkInfoBlock):
             ('white', 'White'),
             ('blue_outline', 'Blue Outline'),
             ('deep_green_outline', 'Deep Green Outline'),
-        ], help_text='Specifies the button style. Default unspecified, meaning the first button is orange, the second is white, and the third is blue outline.')),
+        ], help_text='Specifies the button style. Default unspecified, meaning the first button in the block is orange and the second is white.')),
         ('custom_color', hex_color_block('Custom color for the button. Must be hex eg: #ff0000.')),
     ], block_counts={
         'style': {'max_num': 1},
