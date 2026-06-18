@@ -149,7 +149,7 @@ BODY_BLOCKS = [
             ('image_overhang', blocks.RegexBlock(
                 regex=r'^[0-9]+(px|%|rem)$', required=False,
                 help_text='How much the image overhangs the section boundary. Must be a valid css measurement. eg: 30px, 50%, 10rem.',
-                error_mssages={'invalid': 'not a valid size.'},
+                error_messages={'invalid': 'not a valid size.'},
             )),
             ('rendering_condition', blocks.CharBlock(required=False, help_text='Condition that determines if this block should render. eg: defined by the frontend.')),
         ], block_counts={
