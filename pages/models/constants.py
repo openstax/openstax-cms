@@ -105,7 +105,7 @@ SECTION_CONTENT_BLOCKS = BASE_CONTENT_BLOCKS + [
             ('width', blocks.RegexBlock(
                 regex=r'^[0-9]+(px|%|rem)$', required=False,
                 help_text='Width of the well. Must be valid css measurement. eg: 30px, 50%, 10rem.',
-                error_mssages={'invalid': 'not a valid size.'}
+                error_messages={'invalid': 'not a valid size.'}
             )),
             ('text_alignment', blocks.ChoiceBlock(choices=TEXT_ALIGNMENT_CHOICES, help_text='Text alignment inside the well. Default left.')),
             ('analytics_label', blocks.CharBlock(required=False, help_text='Sets the "analytics nav" field for links within this well.')),
