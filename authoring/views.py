@@ -107,7 +107,7 @@ class FlexPageImportView(APIView):
         data = request.data
         try:
             parent = Page.objects.get(id=data["parent_id"]).specific
-        except (KeyError, Page.DoesNotExist):
+        except (KeyError, ValueError, Page.DoesNotExist):
             return Response({"errors": {"parent_id": "Unknown or missing parent_id."}},
                             status=status.HTTP_400_BAD_REQUEST)
 

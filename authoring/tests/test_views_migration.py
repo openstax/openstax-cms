@@ -84,3 +84,16 @@ class ImportEndpointTests(TestCase):
             self._body(body=[{"type": "not_a_block", "value": "x"}]), format="json",
         )
         self.assertEqual(resp.status_code, 400)
+
+    def test_unauthenticated_rejected(self):
+        from rest_framework.test import APIClient
+        anon = APIClient()
+        resp = anon.post("/apps/cms/api/v2/pages/flex/import/", self._body(), format="json")
+        self.assertIn(resp.status_code, (401, 403))
+
+    def test_non_integer_parent_400(self):
+        resp = self.client.post(
+            "/apps/cms/api/v2/pages/flex/import/",
+            self._body(parent_id="abc"), format="json",
+        )
+        self.assertEqual(resp.status_code, 400)
