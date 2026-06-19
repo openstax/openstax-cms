@@ -72,7 +72,7 @@ def _response_snippet(json_data, limit=300):
 def _patched_add_json(self, json_data):
     try:
         return _patched_add_json._original(self, json_data)
-    except json.JSONDecodeError as exc:
+    except (json.JSONDecodeError, UnicodeDecodeError) as exc:
         raise WagtailTransferImportError(
             "wagtail-transfer received a non-JSON response from the source site, "
             "so the import could not be read. The source almost certainly returned "
@@ -86,8 +86,7 @@ def _patched_add_json(self, json_data):
 
 
 def apply_patches():
-    """Install the Objective base-model normalization patch. Idempotent."""
-    try:
+    """Install the wagtail-transfer runtime patches. Idempotent."""
         import importlib.metadata as _md
         installed = _md.version('wagtail-transfer')
     except Exception:  # pragma: no cover - metadata always present in practice

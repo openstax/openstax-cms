@@ -47,27 +47,33 @@ class AddJsonGuardTests(TestCase):
         return ImportPlanner.for_page(source=1, destination=None, source_site='test')
 
     def test_non_json_response_does_not_raise_opaque_jsondecodeerror(self):
+        from openstax.wagtail_transfer_patches import WagtailTransferImportError
+
         apply_patches()
 
-        with self.assertRaises(Exception) as ctx:
+        with self.assertRaises(WagtailTransferImportError) as ctx:
             self._importer().add_json(HTML_403)
 
         # The whole point: the caller must not see a bare JSONDecodeError.
         self.assertNotIsInstance(ctx.exception, json.JSONDecodeError)
 
     def test_error_message_includes_the_source_response_body(self):
+        from openstax.wagtail_transfer_patches import WagtailTransferImportError
+
         apply_patches()
 
-        with self.assertRaises(Exception) as ctx:
+        with self.assertRaises(WagtailTransferImportError) as ctx:
             self._importer().add_json(HTML_403)
 
         # The source's actual response is the diagnostic — surface it.
         self.assertIn('403 Forbidden', str(ctx.exception))
 
     def test_spa_shell_response_is_identified_in_the_message(self):
+        from openstax.wagtail_transfer_patches import WagtailTransferImportError
+
         apply_patches()
 
-        with self.assertRaises(Exception) as ctx:
+        with self.assertRaises(WagtailTransferImportError) as ctx:
             self._importer().add_json(SPA_SHELL_404)
 
         self.assertIn('OpenStax', str(ctx.exception))
