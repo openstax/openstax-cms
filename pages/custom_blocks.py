@@ -18,14 +18,14 @@ from openstax.api_fields import APIRichTextBlock
 
 # --- Choice constants ---
 GRADIENT_DIRECTION_CHOICES = [
-    ('to_right', 'To Right'),
-    ('to_left', 'To Left'),
-    ('to_top', 'To Top'),
-    ('to_bottom', 'To Bottom'),
-    ('to_top_right', 'To Top Right'),
-    ('to_top_left', 'To Top Left'),
-    ('to_bottom_right', 'To Bottom Right'),
-    ('to_bottom_left', 'To Bottom Left'),
+    ('to right', 'To Right'),
+    ('to left', 'To Left'),
+    ('to top', 'To Top'),
+    ('to bottom', 'To Bottom'),
+    ('to top right', 'To Top Right'),
+    ('to top left', 'To Top Left'),
+    ('to bottom right', 'To Bottom Right'),
+    ('to bottom left', 'To Bottom Left'),
 ]
 
 TEXT_ALIGNMENT_CHOICES = [
@@ -43,6 +43,7 @@ FLEX_CHOICES = [
 CARDS_STYLE_CHOICES = [
     ('rounded', 'Rounded'),
     ('square', 'Square'),
+    ('impact', 'Impact'),
 ]
 
 OPENSTAX_BRAND_COLORS = [
@@ -167,7 +168,7 @@ def gradient_config_options():
         ('gradient_color', hex_color_block('Sets the gradient end color. Must be hex eg: #ff0000.')),
         ('gradient_direction', blocks.ChoiceBlock(
             choices=GRADIENT_DIRECTION_CHOICES,
-            help_text='Direction of the gradient. Default to_right.',
+            help_text='Direction of the gradient. Default to right.',
         )),
     ]
 
@@ -181,9 +182,9 @@ def gradient_block_counts():
 
 def id_config_block():
     return blocks.RegexBlock(
-        regex=r'[a-zA-Z0-9\-_]',
+        regex=r'^[a-zA-Z0-9_-]+$',
         help_text='HTML id of this element. not visible to users, but is visible in urls and is used to link to a certain part of the page with an anchor link. eg: cool_section',
-        error_mssages={'invalid': 'not a valid id.'}
+        error_messages={'invalid': 'not a valid id.'}
     )
 
 
@@ -264,6 +265,10 @@ class LinksGroupBlock(blocks.StructBlock):
         default=[], label='Links'
     )
     config = blocks.StreamBlock([
+        ('style', blocks.ChoiceBlock(choices=[
+            ('button', 'Button'),
+            ('text', 'Text'),
+        ], help_text="Button renders the links as buttons (default); Text renders them as plain links.")),
         ('color', blocks.ChoiceBlock(choices=[
             ('white', 'White'),
             ('blue', 'Blue'),
@@ -281,6 +286,7 @@ class LinksGroupBlock(blocks.StructBlock):
         ], help_text='Layout direction of the links. Default horizontal.')),
         ('analytics_label', blocks.CharBlock(required=False, help_text='Sets the "analytics nav" field for links within this group.')),
     ], block_counts={
+        'style': {'max_num': 1},
         'color': {'max_num': 1},
         'custom_color': {'max_num': 1},
         'size': {'max_num': 1},
@@ -337,8 +343,15 @@ class QuoteBlock(StructBlock):
     name = blocks.CharBlock(help_text="The name of the person or entity to attribute the quote to.")
     title = blocks.CharBlock(required=False, help_text="Additional title or label about the quotee.")
     config = blocks.StreamBlock([
+        ('layout', blocks.ChoiceBlock(choices=[
+            ('image-left', 'Image Left'),
+            ('image-right', 'Image Right'),
+            ('image-top', 'Image Top'),
+            ('compact', 'Compact'),
+        ], help_text='How the image and text are arranged. Compact is a small image + short text ("did you know") treatment. Default Image Left.')),
         ('accent_color', hex_color_block('Accent color for the quote. Must be hex eg: #ff0000.')),
     ], block_counts={
+        'layout': {'max_num': 1},
         'accent_color': {'max_num': 1},
     }, required=False)
 
@@ -355,19 +368,19 @@ class DividerBlock(StructBlock):
         ], default='center', help_text='Sets the horizontal alignment of the image. can be further customized with the "Offset..." configurations. Default is Left side of window.')),
         ('width', blocks.RegexBlock(regex=r'^[0-9]+(px|%|rem)$', required=False,
             help_text="Specifies the width of the image. Percentages are relative to the container (body or content, depending on alignment option). Must be valid css measurement. eg: 30px, 50%, 10rem. Default is the size of the image.",
-            error_mssages={'invalid': 'not a valid size.'}
+            error_messages={'invalid': 'not a valid size.'}
         )),
         ('height', blocks.RegexBlock(regex=r'^[0-9]+(px|%|rem)$', required=False,
             help_text="Specifies the height of the image. Percentages are relative to the container (body or content, depending on alignment option). Must be valid css measurement. eg: 30px, 50%, 10rem. Default is the size of the image.",
-            error_mssages={'invalid': 'not a valid size.'}
+            error_messages={'invalid': 'not a valid size.'}
         )),
         ('offset_vertical', blocks.RegexBlock(regex=r'^\-?[0-9]+(px|%|rem)$', required=False,
             help_text="Moves the image up or down. Percentages are relative to the image size. Must be valid css measurement. eg: 30px, 50%, 10rem. Default is -50%, which moves the image up by half its width (centering it vertically on the divider).",
-            error_mssages={'invalid': 'not a valid size.'}
+            error_messages={'invalid': 'not a valid size.'}
         )),
         ('offset_horizontal', blocks.RegexBlock(regex=r'^\-?[0-9]+(px|%|rem)$', required=False,
             help_text="Moves the image left or right. Percentages are relative to the image size. Must be valid css measurement. eg: 30px, 50%, 10rem. Default is no offset, which means the image's outer edge will align with the container's edge for left and right alignment. or it'll be perfectly centered for centered alignment.",
-            error_mssages={'invalid': 'not a valid size.'}
+            error_messages={'invalid': 'not a valid size.'}
         ))
     ], block_counts={
         'alignment': {'max_num': 1},

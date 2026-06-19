@@ -57,7 +57,11 @@ BASE_CONTENT_BLOCKS = [
                 default=[], label='Divider Colors',
             )),
             ('background_color', hex_color_block('Background color for the cards block. Must be hex eg: #ff0000.')),
-            ('border_size', blocks.IntegerBlock(min_value=0, help_text='Border size in pixels for the cards. default 0.')),
+            ('border_size', blocks.IntegerBlock(min_value=0, help_text='Outer border width in px (all sides). Omit to use the style default; 0 = no border.')),
+            ('accent_size', blocks.IntegerBlock(min_value=0, help_text='Top accent bar height in px, independent of the border. Color comes from Accent Colors.')),
+            ('padding', blocks.IntegerBlock(min_value=0, help_text='Top and bottom spacing around the block, in 10px increments.')),
+            ('padding_top', blocks.IntegerBlock(min_value=0, help_text='Top spacing around the block, in 10px increments.')),
+            ('padding_bottom', blocks.IntegerBlock(min_value=0, help_text='Bottom spacing around the block, in 10px increments.')),
         ], block_counts={
             'card_size': {'max_num': 1},
             'card_style': {'max_num': 1},
@@ -66,6 +70,10 @@ BASE_CONTENT_BLOCKS = [
             'divider_colors': {'max_num': 1},
             'background_color': {'max_num': 1},
             'border_size': {'max_num': 1},
+            'accent_size': {'max_num': 1},
+            'padding': {'max_num': 1},
+            'padding_top': {'max_num': 1},
+            'padding_bottom': {'max_num': 1},
         }, required=False)),
     ], label="Cards Block")),
     ('text', APIRichTextBlock()),
@@ -97,7 +105,7 @@ SECTION_CONTENT_BLOCKS = BASE_CONTENT_BLOCKS + [
             ('width', blocks.RegexBlock(
                 regex=r'^[0-9]+(px|%|rem)$', required=False,
                 help_text='Width of the well. Must be valid css measurement. eg: 30px, 50%, 10rem.',
-                error_mssages={'invalid': 'not a valid size.'}
+                error_messages={'invalid': 'not a valid size.'}
             )),
             ('text_alignment', blocks.ChoiceBlock(choices=TEXT_ALIGNMENT_CHOICES, help_text='Text alignment inside the well. Default left.')),
             ('analytics_label', blocks.CharBlock(required=False, help_text='Sets the "analytics nav" field for links within this well.')),
@@ -138,7 +146,11 @@ BODY_BLOCKS = [
             ('image_border_radius', blocks.IntegerBlock(min_value=0, help_text='Border radius for the hero image in pixels. default 0.')),
             ('image_border_color', hex_color_block('Border color for the hero image. Must be hex eg: #ff0000.')),
             ('image_border_size', blocks.IntegerBlock(min_value=0, help_text='Border size for the hero image in pixels. default 0.')),
-            ('image_overhang', blocks.IntegerBlock(help_text='How much the image overhangs the section boundary in pixels. default 0.')),
+            ('image_overhang', blocks.RegexBlock(
+                regex=r'^[0-9]+(px|%|rem)$', required=False,
+                help_text='How much the image overhangs the section boundary. Must be a valid css measurement. eg: 30px, 50%, 10rem.',
+                error_messages={'invalid': 'not a valid size.'},
+            )),
             ('rendering_condition', blocks.CharBlock(required=False, help_text='Condition that determines if this block should render. eg: defined by the frontend.')),
         ], block_counts={
             'image_alignment': {'max_num': 1},
