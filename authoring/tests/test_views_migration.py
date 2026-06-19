@@ -18,7 +18,7 @@ class ExportEndpointTests(TestCase):
         )
         self.home.add_child(instance=self.page)
         self.staff = get_user_model().objects.create_user(
-            username="ed", password="x", is_staff=True,
+            username="exporter", password="x", is_staff=True, is_superuser=True,
         )
         self.client = APIClient()
 
@@ -33,6 +33,15 @@ class ExportEndpointTests(TestCase):
         data = resp.json()
         self.assertEqual(set(data), {"title", "slug", "layout", "body"})
         self.assertEqual(data["slug"], "sample")
+
+    def test_staff_without_edit_permission_forbidden(self):
+        plain_staff = get_user_model().objects.create_user(
+            username="plain-staff", password="x", is_staff=True,
+        )
+        client = APIClient()
+        client.force_authenticate(user=plain_staff)
+        resp = client.get(f"/apps/cms/api/v2/pages/flex/{self.page.id}/export/")
+        self.assertEqual(resp.status_code, 403)
 
     def test_unknown_page_404(self):
         self.client.force_authenticate(user=self.staff)
