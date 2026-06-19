@@ -30,10 +30,12 @@ class ExportEndpointTests(TestCase):
         self.client.force_authenticate(user=self.staff)
         resp = self.client.get(f"/apps/cms/api/v2/pages/flex/{self.page.id}/export/")
         self.assertEqual(resp.status_code, 200)
-        self.assertEqual(set(resp.json()), {"title", "slug", "layout", "body"})
-        self.assertEqual(resp.json()["slug"], "sample")
+        data = resp.json()
+        self.assertEqual(set(data), {"title", "slug", "layout", "body"})
+        self.assertEqual(data["slug"], "sample")
 
     def test_unknown_page_404(self):
         self.client.force_authenticate(user=self.staff)
         resp = self.client.get("/apps/cms/api/v2/pages/flex/999999/export/")
         self.assertEqual(resp.status_code, 404)
+        self.assertIn("errors", resp.json())
