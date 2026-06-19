@@ -52,9 +52,12 @@ def main(argv=None):
         )
     except requests.HTTPError as exc:
         resp = exc.response
-        print(f"HTTP {resp.status_code} from {resp.url}\n{resp.text}", file=sys.stderr)
+        if resp is None:
+            print(f"HTTP error (no response): {exc}", file=sys.stderr)
+        else:
+            print(f"HTTP {resp.status_code} from {resp.url}\n{resp.text}", file=sys.stderr)
         return 1
-    print(f"Imported as draft id={result['id']} (live={result['live']}).")
+    print(f"Imported as draft id={result.get('id')} (live={result.get('live', '?')}).")
     print(f"Open and publish: {result.get('edit_url', '(see admin)')}")
     return 0
 
