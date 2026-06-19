@@ -1,10 +1,22 @@
 import wagtail.admin.rich_text.editors.draftail.features as draftail_features
 from wagtail.admin.rich_text.converters.html_to_contentstate import InlineStyleElementHandler
 from wagtail import hooks
+from django.templatetags.static import static
 from django.urls import path, reverse
+from django.utils.html import format_html
 from wagtail.admin.menu import Menu, MenuItem, SubmenuMenuItem
 
 from global_settings import views
+
+
+@hooks.register('insert_global_admin_css')
+def wagtail_transfer_chooser_css():
+    """Size the wagtail-transfer chooser's pagination arrows, which 7.4 no
+    longer styles (see the stylesheet's comment for the full why)."""
+    return format_html(
+        '<link rel="stylesheet" href="{}">',
+        static('global_settings/css/wagtail_transfer_chooser.css'),
+    )
 
 
 # A nested "Tools" menu for developer/operations utilities (Import, Versions, …)
