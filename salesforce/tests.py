@@ -12,6 +12,7 @@ from django.conf import settings
 from books.models import BookIndex, Book
 from pages.models import HomePage
 from salesforce.models import SalesforceSettings, MapBoxDataset, Partner, AdoptionOpportunityRecord, SalesforceForms, School
+from salesforce.management.commands.update_opportunities import Command as UpdateOpportunitiesCommand
 from salesforce.salesforce import Salesforce as SF
 from salesforce.serializers import PartnerSerializer
 
@@ -219,6 +220,32 @@ class UpdateOpportunitiesCommandTest(TestCase):
             sf = salesforce.return_value.__enter__.return_value
             sf.bulk.Adoption__c.query.side_effect = [past_results, current_results]
             call_command('update_opportunities')
+
+    def test_school_year_base_year_rolls_over_in_july(self):
+        command = UpdateOpportunitiesCommand()
+
+        self.assertEqual(command.school_year_base_year(datetime.date(2024, 6, 30)), 2023)
+        self.assertEqual(command.school_year_base_year(datetime.date(2024, 7, 1)), 2024)
+        self.assertEqual(command.school_year_base_year(datetime.date(2024, 10, 1)), 2024)
+
+    def test_october_sync_queries_previous_then_current_school_year_base_year(self):
+        real_datetime = datetime.datetime
+
+        with patch('salesforce.management.commands.update_opportunities.datetime.datetime') as dt, \
+                patch('salesforce.management.commands.update_opportunities.invalidate_cloudfront_caches'), \
+                patch('salesforce.management.commands.update_opportunities.Salesforce') as salesforce:
+            dt.now.return_value = real_datetime(2024, 10, 1)
+            sf = salesforce.return_value.__enter__.return_value
+            sf.bulk.Adoption__c.query.side_effect = [[], []]
+
+            call_command('update_opportunities')
+
+        past_query = sf.bulk.Adoption__c.query.call_args_list[0].args[0]
+        current_query = sf.bulk.Adoption__c.query.call_args_list[1].args[0]
+        self.assertIn("Base_Year__c = 2023", past_query)
+        self.assertIn("Adoption_Status__c = 'Past Adopter'", past_query)
+        self.assertIn("Base_Year__c = 2024", current_query)
+        self.assertIn("Adoption_Status__c = 'Current Adopter'", current_query)
 
     def test_existing_opportunity_is_updated_not_duplicated(self):
         # A row already exists for this Salesforce Adoption Id, but with a stale

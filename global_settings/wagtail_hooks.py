@@ -1,5 +1,5 @@
 import wagtail.admin.rich_text.editors.draftail.features as draftail_features
-from wagtail.admin.rich_text.converters.html_to_contentstate import InlineStyleElementHandler
+from wagtail.admin.rich_text.converters.html_to_contentstate import InlineStyleElementHandler, BlockElementHandler
 from wagtail import hooks
 from django.templatetags.static import static
 from django.urls import path, reverse
@@ -117,3 +117,74 @@ def remove_duplicate_wagtail_transfer_import_item(request, menu_items):
         item for item in menu_items
         if not (item.name == 'import' and getattr(item, 'url', None) == transfer_url)
     ]
+
+
+# --- Flex page rich text features (CORE-2302) -------------------------------
+# Structural block treatments (eyebrow / big number / caption) plus a small,
+# fixed brand text-color palette. Each maps to a CSS class; the actual styling
+# lives in the flex-page renderer (RichTextBlock.scss) so it stays consistent
+# everywhere the rich text renders. Same registration shape as `superscript`
+# above, using block features for the structural treatments and inline styles
+# for the colors.
+
+# (feature_name, draftail block type, editor label, css class, icon, description)
+FLEX_TEXT_BLOCKS = [
+    ('eyebrow', 'eyebrow', 'Eyebrow', 'eyebrow', 'tag', 'Small label above a heading'),
+    ('big-number', 'big-number', 'Big number', 'big-number', 'decimal', 'Large statistic display'),
+    ('caption', 'caption', 'Caption', 'caption', 'pilcrow', 'Small caption text'),
+]
+
+# (feature_name, draftail inline style type, editor label, css class, preview hex)
+FLEX_TEXT_COLORS = [
+    ('text-blue', 'TEXT_BLUE', 'Blue', 'text-blue', '#002E6D'),
+    ('text-green', 'TEXT_GREEN', 'Green', 'text-green', '#204B00'),
+    ('text-orange', 'TEXT_ORANGE', 'Orange', 'text-orange', '#D4450C'),
+    ('text-gray', 'TEXT_GRAY', 'Gray', 'text-gray', '#6A6A6A'),
+    ('text-white', 'TEXT_WHITE', 'White', 'text-white', '#FFFFFF'),
+]
+
+
+@hooks.register('register_rich_text_features')
+def register_flex_text_block_features(features):
+    for feature_name, type_, label, css_class, icon, description in FLEX_TEXT_BLOCKS:
+        features.register_editor_plugin(
+            'draftail', feature_name,
+            draftail_features.BlockFeature({
+                'type': type_,
+                'icon': icon,
+                'label': label,
+                'description': description,
+            }),
+        )
+        features.register_converter_rule('contentstate', feature_name, {
+            'from_database_format': {
+                'p[class={}]'.format(css_class): BlockElementHandler(type_),
+            },
+            'to_database_format': {
+                'block_map': {type_: {'element': 'p', 'props': {'class': css_class}}},
+            },
+        })
+        features.default_features.append(feature_name)
+
+
+@hooks.register('register_rich_text_features')
+def register_flex_text_color_features(features):
+    for feature_name, type_, label, css_class, preview_hex in FLEX_TEXT_COLORS:
+        features.register_editor_plugin(
+            'draftail', feature_name,
+            draftail_features.InlineStyleFeature({
+                'type': type_,
+                'label': label,
+                'description': '{} text'.format(label),
+                'style': {'color': preview_hex},
+            }),
+        )
+        features.register_converter_rule('contentstate', feature_name, {
+            'from_database_format': {
+                'span[class={}]'.format(css_class): InlineStyleElementHandler(type_),
+            },
+            'to_database_format': {
+                'style_map': {type_: {'element': 'span', 'props': {'class': css_class}}},
+            },
+        })
+        features.default_features.append(feature_name)

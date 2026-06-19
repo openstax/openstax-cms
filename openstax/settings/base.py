@@ -660,7 +660,15 @@ WAGTAILADMIN_RICH_TEXT_EDITORS = {
                          'superscript',
                          'subscript',
                          'strikethrough',
-                         'ai']
+                         'ai',
+                         'eyebrow',
+                         'big-number',
+                         'caption',
+                         'text-blue',
+                         'text-green',
+                         'text-orange',
+                         'text-gray',
+                         'text-white']
         }
     },
 }
