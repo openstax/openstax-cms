@@ -87,6 +87,7 @@ def _patched_add_json(self, json_data):
 
 def apply_patches():
     """Install the wagtail-transfer runtime patches. Idempotent."""
+    try:
         import importlib.metadata as _md
         installed = _md.version('wagtail-transfer')
     except Exception:  # pragma: no cover - metadata always present in practice
