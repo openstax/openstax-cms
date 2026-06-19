@@ -8,26 +8,40 @@ from pages import models as page_models
 DEFAULT_LAYOUT = [{"type": "default", "value": {}}]
 
 
-class ExportEndpointTests(TestCase):
+class MigrationViewTestBase(TestCase):
+    """Shared fixtures for migration endpoint tests.
+
+    Provides:
+      self.home   — RootPage added to the Wagtail tree root
+      self.staff  — superuser staff user (username "migrator")
+      self.client — APIClient force-authenticated as self.staff
+    """
+
     def setUp(self):
         root = Page.objects.get(depth=1)
         self.home = page_models.RootPage(title="Home", slug="site-root")
         root.add_child(instance=self.home)
+        self.staff = get_user_model().objects.create_user(
+            username="migrator", password="x", is_staff=True, is_superuser=True,
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.staff)
+
+
+class ExportEndpointTests(MigrationViewTestBase):
+    def setUp(self):
+        super().setUp()
         self.page = page_models.FlexPage(
             title="Sample", slug="sample", layout=DEFAULT_LAYOUT, body=[],
         )
         self.home.add_child(instance=self.page)
-        self.staff = get_user_model().objects.create_user(
-            username="exporter", password="x", is_staff=True, is_superuser=True,
-        )
-        self.client = APIClient()
 
     def test_requires_auth(self):
-        resp = self.client.get(f"/apps/cms/api/v2/pages/flex/{self.page.id}/export/")
+        anon = APIClient()
+        resp = anon.get(f"/apps/cms/api/v2/pages/flex/{self.page.id}/export/")
         self.assertIn(resp.status_code, (401, 403))
 
     def test_exports_import_shaped_payload(self):
-        self.client.force_authenticate(user=self.staff)
         resp = self.client.get(f"/apps/cms/api/v2/pages/flex/{self.page.id}/export/")
         self.assertEqual(resp.status_code, 200)
         data = resp.json()
@@ -44,23 +58,12 @@ class ExportEndpointTests(TestCase):
         self.assertEqual(resp.status_code, 403)
 
     def test_unknown_page_404(self):
-        self.client.force_authenticate(user=self.staff)
         resp = self.client.get("/apps/cms/api/v2/pages/flex/999999/export/")
         self.assertEqual(resp.status_code, 404)
         self.assertIn("errors", resp.json())
 
 
-class ImportEndpointTests(TestCase):
-    def setUp(self):
-        root = Page.objects.get(depth=1)
-        self.home = page_models.RootPage(title="Home", slug="site-root")
-        root.add_child(instance=self.home)
-        self.staff = get_user_model().objects.create_user(
-            username="ed", password="x", is_staff=True, is_superuser=True,
-        )
-        self.client = APIClient()
-        self.client.force_authenticate(user=self.staff)
-
+class ImportEndpointTests(MigrationViewTestBase):
     def _body(self, **over):
         payload = {
             "parent_id": self.home.id,
@@ -95,7 +98,6 @@ class ImportEndpointTests(TestCase):
         self.assertEqual(resp.status_code, 400)
 
     def test_unauthenticated_rejected(self):
-        from rest_framework.test import APIClient
         anon = APIClient()
         resp = anon.post("/apps/cms/api/v2/pages/flex/import/", self._body(), format="json")
         self.assertIn(resp.status_code, (401, 403))
@@ -108,18 +110,8 @@ class ImportEndpointTests(TestCase):
         self.assertEqual(resp.status_code, 400)
 
 
-class CreateEndpointParentIdTests(TestCase):
+class CreateEndpointParentIdTests(MigrationViewTestBase):
     """Strict create endpoint (POST /apps/cms/api/v2/pages/flex/) parent_id edge cases."""
-
-    def setUp(self):
-        root = Page.objects.get(depth=1)
-        self.home = page_models.RootPage(title="Home", slug="site-root")
-        root.add_child(instance=self.home)
-        self.staff = get_user_model().objects.create_user(
-            username="ed_create", password="x", is_staff=True, is_superuser=True,
-        )
-        self.client = APIClient()
-        self.client.force_authenticate(user=self.staff)
 
     def _body(self, **over):
         payload = {
