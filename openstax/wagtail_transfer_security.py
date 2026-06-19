@@ -28,8 +28,15 @@ from django.http import Http404
 
 # Models always allowed through the object/model export endpoints, on top of
 # whatever snippets are configured for transfer via WAGTAILTRANSFER_LOOKUP_FIELDS.
+#
+# wagtailcore.revision is required: importing a page fetches its latest revision
+# (the content snapshot) via api/objects/, so without it the import 404s. The
+# revision's `user` FK is not a leak risk here because auth.user is in
+# WAGTAILTRANSFER_NO_FOLLOW_MODELS (settings/base.py) — the importer leaves it
+# null rather than pulling the user across.
 _ALWAYS_EXPORTABLE = {
     'wagtailcore.page',
+    'wagtailcore.revision',
     'wagtailimages.image',
     'wagtaildocs.document',
     'wagtailcore.locale',

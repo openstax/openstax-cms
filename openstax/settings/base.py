@@ -282,6 +282,19 @@ INSTALLED_APPS = [
 WAGTAILTRANSFER_SECRET_KEY = os.getenv('WAGTAILTRANSFER_SECRET_KEY', 'change-me-in-production')
 WAGTAILTRANSFER_INSECURE_SECRET_KEY = 'change-me-in-production'
 
+# Models the importer must NOT follow into when it encounters a reference.
+# This is the package default (wagtailcore.page, contenttypes.contenttype) plus
+# auth.user: transferred objects such as wagtailcore.revision carry a `user` FK,
+# and following it would 404 on the export allowlist (auth.user is intentionally
+# not exportable) and try to pull user PII across. Leaving it unfollowed nulls
+# the FK instead — fine, since these user FKs are nullable. Keep the two package
+# defaults here; this setting REPLACES the default rather than extending it.
+WAGTAILTRANSFER_NO_FOLLOW_MODELS = [
+    'wagtailcore.page',
+    'contenttypes.contenttype',
+    'auth.user',
+]
+
 # The secret key is validated two ways, both living outside this (declarative)
 # settings module:
 #   1. global_settings.checks._check_wagtail_transfer_secret_key — a Django
