@@ -6,6 +6,11 @@ links) cannot survive a move between environments, so we blank them while keepin
 the surrounding block/text/structure. The walk is driven by the real block
 definitions (same source-of-truth principle as authoring/drafts.py), so we never
 hardcode a fragile field-name list.
+
+Assumption: source and target environments share the same FlexPage block schema.
+Unknown block types are passed through unsanitized (their references would NOT be
+blanked), so this tool is intended for environments running the same deployed code —
+which is the case for dev/staging/prod of the same release.
 """
 import re
 from collections.abc import Sequence
