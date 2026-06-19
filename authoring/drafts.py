@@ -97,8 +97,15 @@ def _stream_block(field_name):
 
 def _reject_unknown_block_types(field_name, block, data):
     """Raise FlexValidationError if any entry in `data` has an unrecognised type."""
+    if not isinstance(data, (list, tuple)):
+        raise FlexValidationError({field_name: "Invalid StreamField data: expected a list of blocks."})
     known = set(block.child_blocks.keys())
-    unknown = [n.get("type") for n in data if n.get("type") not in known]
+    unknown = []
+    for n in data:
+        if not isinstance(n, dict) or "type" not in n:
+            raise FlexValidationError({field_name: "Invalid StreamField block: expected objects with a 'type' key."})
+        if n["type"] not in known:
+            unknown.append(n["type"])
     if unknown:
         raise FlexValidationError({
             field_name: f"Unknown block type(s): {unknown}. Allowed: {sorted(known)}."

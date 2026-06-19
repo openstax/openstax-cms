@@ -145,4 +145,7 @@ class FlexPageExportView(APIView):
         except FlexPage.DoesNotExist:
             return Response({"errors": {"page_id": "Unknown FlexPage."}},
                             status=status.HTTP_404_NOT_FOUND)
+        if not page.permissions_for_user(request.user).can_edit():
+            return Response({"errors": {"page_id": "You cannot export this page."}},
+                            status=status.HTTP_403_FORBIDDEN)
         return Response(build_export_payload(page), status=status.HTTP_200_OK)
