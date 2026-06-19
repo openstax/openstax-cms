@@ -81,6 +81,10 @@ BASE_CONTENT_BLOCKS = [
     ('cta_block', CTAButtonBarBlock()),
     ('links_group', LinksGroupBlock()),
     ('quote', QuoteBlock()),
+    ('big_number', blocks.StructBlock([
+        ('number', blocks.CharBlock(help_text='The statistic to display large, e.g. 8M+.')),
+        ('caption', blocks.CharBlock(required=False, help_text='Optional supporting text shown below the number.')),
+    ], label="Big Number")),
     ('faq', blocks.StreamBlock([
         ('faq', FAQBlock()),
     ])),

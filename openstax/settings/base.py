@@ -649,7 +649,6 @@ WAGTAILADMIN_RICH_TEXT_EDITORS = {
                          'strikethrough',
                          'ai',
                          'eyebrow',
-                         'big-number',
                          'caption',
                          'text-blue',
                          'text-green',

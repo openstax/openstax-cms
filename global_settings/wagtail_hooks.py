@@ -108,7 +108,7 @@ def remove_duplicate_wagtail_transfer_import_item(request, menu_items):
 
 
 # --- Flex page rich text features (CORE-2302) -------------------------------
-# Structural block treatments (eyebrow / big number / caption) plus a small,
+# Structural block treatments (eyebrow / caption) plus a small,
 # fixed brand text-color palette. Each maps to a CSS class; the actual styling
 # lives in the flex-page renderer (RichTextBlock.scss) so it stays consistent
 # everywhere the rich text renders. Same registration shape as `superscript`
@@ -118,7 +118,6 @@ def remove_duplicate_wagtail_transfer_import_item(request, menu_items):
 # (feature_name, draftail block type, editor label, css class, icon, description)
 FLEX_TEXT_BLOCKS = [
     ('eyebrow', 'eyebrow', 'Eyebrow', 'eyebrow', 'tag', 'Small label above a heading'),
-    ('big-number', 'big-number', 'Big number', 'big-number', 'decimal', 'Large statistic display'),
     ('caption', 'caption', 'Caption', 'caption', 'pilcrow', 'Small caption text'),
 ]
 
