@@ -340,6 +340,35 @@ class PageLockEndpointTests(TestCase):
         self.assertEqual(resp.status_code, 409)
 
 
+from authoring.drafts import create_flex_draft_lenient
+
+
+class LenientDraftTests(TestCase):
+    def setUp(self):
+        root = Page.objects.get(depth=1)
+        self.home = page_models.RootPage(title="Home", slug="site-root")
+        root.add_child(instance=self.home)
+
+    def test_accepts_blanked_required_reference(self):
+        # body block whose value omits a normally-required nested field stands in
+        # for a blanked reference; lenient create must not raise on required checks.
+        page, warnings = create_flex_draft_lenient(
+            parent=self.home, title="L", slug="lenient",
+            layout_data=DEFAULT_LAYOUT, body_data=[],
+        )
+        self.assertFalse(page.live)
+        self.assertTrue(page.has_unpublished_changes)
+        self.assertEqual(page.title, "L")
+
+    def test_unknown_block_type_still_rejected(self):
+        with self.assertRaises(FlexValidationError):
+            create_flex_draft_lenient(
+                parent=self.home, title="Bad", slug="bad",
+                layout_data=DEFAULT_LAYOUT,
+                body_data=[{"type": "not_a_real_block", "value": "x"}],
+            )
+
+
 from wagtail.images.tests.utils import Image, get_test_image_file
 
 

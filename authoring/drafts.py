@@ -95,16 +95,21 @@ def _stream_block(field_name):
     return FlexPage._meta.get_field(field_name).stream_block
 
 
-def _clean(field_name, data):
-    """Build a StreamValue from stored-shape data and clean it. Returns the
-    cleaned StreamValue or raises FlexValidationError with per-block messages."""
-    block = _stream_block(field_name)
+def _reject_unknown_block_types(field_name, block, data):
+    """Raise FlexValidationError if any entry in `data` has an unrecognised type."""
     known = set(block.child_blocks.keys())
     unknown = [n.get("type") for n in data if n.get("type") not in known]
     if unknown:
         raise FlexValidationError({
             field_name: f"Unknown block type(s): {unknown}. Allowed: {sorted(known)}."
         })
+
+
+def _clean(field_name, data):
+    """Build a StreamValue from stored-shape data and clean it. Returns the
+    cleaned StreamValue or raises FlexValidationError with per-block messages."""
+    block = _stream_block(field_name)
+    _reject_unknown_block_types(field_name, block, data)
     value = block.to_python(data)
     try:
         return block.clean(value)
@@ -189,4 +194,36 @@ def update_flex_draft(*, page, title=None, layout_data=None, body_data=None, use
     page.save_revision(user=user)          # draft only; not published
     # Reflect unpublished changes without touching published fields.
     type(page).objects.filter(pk=page.pk).update(has_unpublished_changes=True)
+    return page, []
+
+
+def _to_value_shape_only(field_name, data):
+    """Validate block TYPES (reject unknown), build a StreamValue, but do NOT run
+    block.clean() — required-field enforcement is deferred to publish time."""
+    block = _stream_block(field_name)
+    _reject_unknown_block_types(field_name, block, data)
+    return block.to_python(data)
+
+
+def create_flex_draft_lenient(*, parent, title, slug, layout_data, body_data, user=None):
+    """Create a FlexPage draft from migrated content.
+
+    Unlike create_flex_draft: skips rich-text reference validation (references were
+    already blanked by the migration sanitizer) and defers required-field checks
+    (a blanked required chooser saves fine as a draft). Block SHAPE is still
+    validated. Never publishes.
+    """
+    layout_value = _to_value_shape_only("layout", layout_data or [])
+    body_value = _to_value_shape_only("body", body_data or [])
+
+    page = FlexPage(
+        title=title,
+        slug=slug,
+        layout=layout_value,
+        body=body_value,
+        live=False,
+        has_unpublished_changes=True,
+    )
+    parent.add_child(instance=page)
+    page.save_revision(user=user)
     return page, []
