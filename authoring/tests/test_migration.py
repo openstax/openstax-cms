@@ -46,6 +46,15 @@ class SanitizeNestedTests(TestCase):
         result = sanitize_block(block, raw)
         self.assertEqual(result[0]["value"], {"book": None, "label": "Bio"})
 
+    def test_struct_passes_through_unknown_keys(self):
+        block = blocks.StructBlock([
+            ("image", ImageChooserBlock(required=False)),
+        ])
+        raw = {"image": 88, "legacy_field": "stale"}
+        result = sanitize_block(block, raw)
+        self.assertIsNone(result["image"])           # known ref blanked
+        self.assertEqual(result["legacy_field"], "stale")  # unknown key kept
+
     def test_stream_blanks_top_level_image_block(self):
         stream = blocks.StreamBlock([
             ("image", ImageChooserBlock(required=False)),

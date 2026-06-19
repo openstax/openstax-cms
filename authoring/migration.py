@@ -37,11 +37,12 @@ def sanitize_block(block, raw_value):
     if isinstance(block, blocks.StructBlock):
         if not isinstance(raw_value, dict):
             return raw_value
-        return {
+        sanitized = {
             name: sanitize_block(child, raw_value[name])
             for name, child in block.child_blocks.items()
             if name in raw_value
         }
+        return {**raw_value, **sanitized}  # unknown keys pass through; known keys sanitized
     if isinstance(block, blocks.StreamBlock):
         return sanitize_raw_stream(block, raw_value)
     if isinstance(block, blocks.ListBlock):
