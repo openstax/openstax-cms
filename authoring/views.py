@@ -11,6 +11,7 @@ from pages.models import FlexPage
 from authoring.permissions import CanDraftFlexPages
 from authoring.drafts import create_flex_draft, update_flex_draft, FlexValidationError, PageLockedError
 from authoring.routing_rules import validate_page_location, RoutingError
+from authoring.migration import build_export_payload
 
 
 def _review_payload(page, warnings):
@@ -90,3 +91,17 @@ class FlexPageDraftView(APIView):
                 status=status.HTTP_409_CONFLICT,
             )
         return Response(_review_payload(page, []), status=status.HTTP_200_OK)
+
+
+class FlexPageExportView(APIView):
+    """GET a FlexPage's LIVE content as sanitized, import-ready JSON."""
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [CanDraftFlexPages]
+
+    def get(self, request, page_id):
+        try:
+            page = FlexPage.objects.get(id=page_id)
+        except FlexPage.DoesNotExist:
+            return Response({"errors": {"page_id": "Unknown FlexPage."}},
+                            status=status.HTTP_404_NOT_FOUND)
+        return Response(build_export_payload(page), status=status.HTTP_200_OK)
