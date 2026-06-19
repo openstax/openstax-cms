@@ -68,10 +68,10 @@ Returned when the `id` does not exist or does not belong to a FlexPage.
 ## Import — `POST /apps/cms/api/v2/pages/flex/import/`
 
 Creates an **unpublished draft** from migrated FlexPage JSON. Uses lenient
-validation: block structure is checked (unknown block types → `400`), but
-required-field checks and rich-text reference checks are **deferred to publish
-time** (because the sanitizer blanks references, and a blanked chooser saves fine
-as a draft).
+validation: block **types** are checked (unknown block types → `400`), but layout
+cardinality (exactly one `default`/`landing` block), required-field checks, and
+rich-text reference checks are **deferred to publish time** (because the sanitizer
+blanks references, and a blanked chooser saves fine as a draft).
 
 Routing rules are the same as the regular create endpoint: reserved slugs are
 rejected, only `RootPage` parents are allowed, and slug collisions are suffixed with
@@ -144,8 +144,9 @@ The import **never publishes**. Before the page is ready to go live, an editor m
 // 400 — reserved slug
 { "errors": { "slug": "Invalid page location or slug." } }
 
-// 400 — unknown block type in body or layout
+// 400 — unknown block type (the key is the field that carried it: "body" or "layout")
 { "errors": { "body": "Unknown block type(s): ['not_a_block']. Allowed: [...]." } }
+{ "errors": { "layout": "Unknown block type(s): ['not_a_block']. Allowed: [...]." } }
 
 // 401 / 403 — missing or insufficient credentials
 // 404 — id does not exist or is not a FlexPage (export endpoint)
