@@ -97,3 +97,35 @@ class ImportEndpointTests(TestCase):
             self._body(parent_id="abc"), format="json",
         )
         self.assertEqual(resp.status_code, 400)
+
+
+class CreateEndpointParentIdTests(TestCase):
+    """Strict create endpoint (POST /apps/cms/api/v2/pages/flex/) parent_id edge cases."""
+
+    def setUp(self):
+        root = Page.objects.get(depth=1)
+        self.home = page_models.RootPage(title="Home", slug="site-root")
+        root.add_child(instance=self.home)
+        self.staff = get_user_model().objects.create_user(
+            username="ed_create", password="x", is_staff=True, is_superuser=True,
+        )
+        self.client = APIClient()
+        self.client.force_authenticate(user=self.staff)
+
+    def _body(self, **over):
+        payload = {
+            "parent_id": self.home.id,
+            "title": "X",
+            "slug": "x",
+            "layout": DEFAULT_LAYOUT,
+            "body": [],
+        }
+        payload.update(over)
+        return payload
+
+    def test_non_integer_parent_400(self):
+        resp = self.client.post(
+            "/apps/cms/api/v2/pages/flex/",
+            self._body(parent_id="abc"), format="json",
+        )
+        self.assertEqual(resp.status_code, 400)
