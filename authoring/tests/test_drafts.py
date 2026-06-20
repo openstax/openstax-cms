@@ -5,6 +5,16 @@ from pages import models as page_models
 from authoring.routing_rules import validate_page_location, RoutingError
 from django.contrib.auth import get_user_model
 from authoring.permissions import CanDraftFlexPages
+from authoring.drafts import (
+    validate_layout, validate_body, FlexValidationError,
+    create_flex_draft, update_flex_draft,
+    validate_rich_text_references, create_flex_draft_lenient,
+)
+from django.contrib.auth.models import AnonymousUser
+from rest_framework.test import APIClient
+from rest_framework.authtoken.models import Token
+from wagtail.images import get_image_model
+from wagtail.images.tests.utils import Image, get_test_image_file
 
 DEFAULT_LAYOUT = [{"type": "default", "value": {}}]
 LANDING_LAYOUT = [{"type": "landing", "value": {"nav_links": [], "show_give_now_button": True}}]
@@ -58,7 +68,6 @@ class PermissionTests(TestCase):
         return r
 
     def test_anonymous_denied(self):
-        from django.contrib.auth.models import AnonymousUser
         self.assertFalse(self.perm.has_permission(self._req(AnonymousUser()), None))
 
     def test_non_staff_denied(self):
@@ -68,11 +77,6 @@ class PermissionTests(TestCase):
     def test_staff_allowed(self):
         u = self.User.objects.create_user("staff", password="x", is_staff=True)
         self.assertTrue(self.perm.has_permission(self._req(u), None))
-
-
-from authoring.drafts import (
-    validate_layout, validate_body, FlexValidationError,
-)
 
 
 class LayoutValidationTests(TestCase):
@@ -103,9 +107,6 @@ class BodyValidationTests(TestCase):
         self.assertIn("not_a_block", str(ctx.exception))
 
 
-from authoring.drafts import create_flex_draft
-
-
 class CreateDraftTests(TestCase):
     def setUp(self):
         root = Page.objects.get(depth=1)
@@ -125,9 +126,6 @@ class CreateDraftTests(TestCase):
         self.assertTrue(page.has_unpublished_changes)
         self.assertIsNotNone(page.get_latest_revision())  # draft revision exists
         self.assertEqual(page.slug, "why-openstax")
-
-
-from authoring.drafts import update_flex_draft
 
 
 class UpdateDraftTests(TestCase):
@@ -159,10 +157,6 @@ class UpdateDraftTests(TestCase):
         latest = live.get_latest_revision_as_object()
         self.assertEqual(latest.title, "Draft Title")            # draft has the change
         self.assertIn("changed", str(latest.body))
-
-
-from rest_framework.test import APIClient
-from rest_framework.authtoken.models import Token
 
 
 class FlexDraftEndpointTests(TestCase):
@@ -259,10 +253,6 @@ class FlexDraftEndpointTests(TestCase):
         self.assertEqual(resp.status_code, 403)
 
 
-from authoring.drafts import validate_rich_text_references
-from wagtail.images import get_image_model
-
-
 class RichTextReferenceTests(TestCase):
     def setUp(self):
         root = Page.objects.get(depth=1)
@@ -291,7 +281,6 @@ class RichTextReferenceTests(TestCase):
 
     def test_valid_image_embed_passes(self):
         ImageModel = get_image_model()
-        from wagtail.images.tests.utils import get_test_image_file
         img = ImageModel.objects.create(title="Test img", file=get_test_image_file())
         body = self._section_with_html(f'<p><embed embedtype="image" id="{img.id}" alt="x" format="left"/></p>')
         validate_rich_text_references(body)  # should not raise
@@ -340,7 +329,41 @@ class PageLockEndpointTests(TestCase):
         self.assertEqual(resp.status_code, 409)
 
 
-from wagtail.images.tests.utils import Image, get_test_image_file
+class LenientDraftTests(TestCase):
+    def setUp(self):
+        root = Page.objects.get(depth=1)
+        self.home = page_models.RootPage(title="Home", slug="site-root")
+        root.add_child(instance=self.home)
+
+    def test_accepts_blanked_required_reference(self):
+        # Approach: use a 'divider' block whose required 'image' sub-field is
+        # omitted. Strict create_flex_draft runs block.clean() and rejects it;
+        # lenient create_flex_draft_lenient skips clean() and accepts it.
+        DIVIDER_MISSING_IMAGE = [{"type": "divider", "value": {}}]
+
+        # Strict path must REJECT the missing-required-field block.
+        with self.assertRaises(FlexValidationError):
+            create_flex_draft(
+                parent=self.home, title="Strict", slug="lenient-strict",
+                layout_data=DEFAULT_LAYOUT, body_data=DIVIDER_MISSING_IMAGE,
+            )
+
+        # Lenient path must ACCEPT the same block and return a live=False draft.
+        page, warnings = create_flex_draft_lenient(
+            parent=self.home, title="Lenient", slug="lenient-ok",
+            layout_data=DEFAULT_LAYOUT, body_data=DIVIDER_MISSING_IMAGE,
+        )
+        self.assertFalse(page.live)
+        self.assertTrue(page.has_unpublished_changes)
+        self.assertEqual(page.title, "Lenient")
+
+    def test_unknown_block_type_still_rejected(self):
+        with self.assertRaises(FlexValidationError):
+            create_flex_draft_lenient(
+                parent=self.home, title="Bad", slug="bad",
+                layout_data=DEFAULT_LAYOUT,
+                body_data=[{"type": "not_a_real_block", "value": "x"}],
+            )
 
 
 class ImageSearchTests(TestCase):
