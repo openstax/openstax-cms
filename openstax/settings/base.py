@@ -257,6 +257,7 @@ INSTALLED_APPS = [
     # wagtail
     'wagtail_ai',
     'wagtail_color_panel',
+    'wagtail_html_editor',
     'django_ai_core.contrib.index',
     'wagtail',
     'wagtail.admin',
@@ -635,6 +636,15 @@ WAGTAILIMAGES_FORMAT_CONVERSIONS = {
 }
 WAGTAILIMAGES_MAX_UPLOAD_SIZE = 20 * 1024 * 1024  # 20MB
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
+
+# CodeMirror-based HTML editor (wagtail-html-editor) for raw-HTML StreamField
+# blocks. Values below are the package defaults, spelled out for discoverability.
+WAGTAIL_HTML_EDITOR = {
+    'emmet': True,            # expand abbreviations, e.g. div.row>div.col*3
+    'indent_size': 2,         # 2 or 4
+    'indent_with_tabs': False,
+    'theme': 'auto',          # 'auto' follows Wagtail's light/dark; or 'light'/'dark'
+}
 
 WAGTAILADMIN_RICH_TEXT_EDITORS = {
     'default': {
