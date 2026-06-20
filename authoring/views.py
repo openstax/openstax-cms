@@ -9,8 +9,9 @@ from wagtail.models import Page
 
 from pages.models import FlexPage
 from authoring.permissions import CanDraftFlexPages
-from authoring.drafts import create_flex_draft, update_flex_draft, FlexValidationError, PageLockedError
+from authoring.drafts import create_flex_draft, update_flex_draft, create_flex_draft_lenient, FlexValidationError, PageLockedError
 from authoring.routing_rules import validate_page_location, RoutingError
+from authoring.migration import build_export_payload
 
 
 def _review_payload(page, warnings):
@@ -36,7 +37,7 @@ class FlexPageDraftView(APIView):
         data = request.data
         try:
             parent = Page.objects.get(id=data["parent_id"]).specific
-        except (KeyError, Page.DoesNotExist):
+        except (KeyError, ValueError, Page.DoesNotExist):
             return Response({"errors": {"parent_id": "Unknown or missing parent_id."}},
                             status=status.HTTP_400_BAD_REQUEST)
 
@@ -90,3 +91,61 @@ class FlexPageDraftView(APIView):
                 status=status.HTTP_409_CONFLICT,
             )
         return Response(_review_payload(page, []), status=status.HTTP_200_OK)
+
+
+class FlexPageImportView(APIView):
+    """POST migrated FlexPage JSON as an unpublished draft (lenient validation).
+
+    Mirrors the create flow's parent/routing/permission checks, but uses
+    create_flex_draft_lenient: references are assumed pre-blanked and required
+    fields are deferred to publish time.
+    """
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [CanDraftFlexPages]
+
+    def post(self, request):
+        data = request.data
+        try:
+            parent = Page.objects.get(id=data["parent_id"]).specific
+        except (KeyError, ValueError, Page.DoesNotExist):
+            return Response({"errors": {"parent_id": "Unknown or missing parent_id."}},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        if not parent.permissions_for_user(request.user).can_add_subpage():
+            return Response({"errors": {"parent_id": "You cannot add pages here."}},
+                            status=status.HTTP_403_FORBIDDEN)
+
+        try:
+            slug, routing_warnings = validate_page_location(parent, data.get("slug", ""))
+        except RoutingError:
+            return Response({"errors": {"slug": "Invalid page location or slug."}},
+                            status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            page, _ = create_flex_draft_lenient(
+                parent=parent, title=data.get("title", ""), slug=slug,
+                layout_data=data.get("layout"), body_data=data.get("body", []),
+                user=request.user,
+            )
+        except FlexValidationError as exc:
+            return Response({"errors": exc.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+        return Response(_review_payload(page, routing_warnings),
+                        status=status.HTTP_201_CREATED)
+
+
+class FlexPageExportView(APIView):
+    """GET a FlexPage's LIVE content as sanitized, import-ready JSON."""
+    authentication_classes = [TokenAuthentication]
+    permission_classes = [CanDraftFlexPages]
+
+    def get(self, request, page_id):
+        try:
+            page = FlexPage.objects.get(id=page_id)
+        except FlexPage.DoesNotExist:
+            return Response({"errors": {"page_id": "Unknown FlexPage."}},
+                            status=status.HTTP_404_NOT_FOUND)
+        if not page.permissions_for_user(request.user).can_edit():
+            return Response({"errors": {"page_id": "You cannot export this page."}},
+                            status=status.HTTP_403_FORBIDDEN)
+        return Response(build_export_payload(page), status=status.HTTP_200_OK)
