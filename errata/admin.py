@@ -5,6 +5,7 @@ from import_export.formats import base_formats
 from import_export.fields import Field
 
 from django.contrib import admin
+from django.contrib.admin.filters import RelatedFieldListFilter
 from django.db import models
 from django.forms import CheckboxSelectMultiple
 from django.utils.decorators import method_decorator
@@ -14,6 +15,8 @@ from django.utils.html import mark_safe
 
 from rangefilter.filters import DateRangeFilter
 
+from books.constants import RETIRED
+from books.models import Book
 from reversion.admin import VersionAdmin
 
 from .models import Errata, BlockedUser, EmailText, InternalDocumentation
@@ -52,6 +55,15 @@ class InlineInternalImage(admin.TabularInline):
 
 class BlockedUserAdmin(admin.ModelAdmin):
     list_display = ('account_id', 'fullname', 'reason',)
+
+
+class ActiveBookListFilter(RelatedFieldListFilter):
+    def field_choices(self, field, request, model_admin):
+        return [
+            (book.pk, str(book))
+            for book in Book.objects.exclude(book_state=RETIRED).order_by("title")
+        ]
+
 
 class ErrataAdmin(ImportExportActionModelAdmin, VersionAdmin):
     def get_queryset(self, request):
@@ -167,13 +179,13 @@ class ErrataAdmin(ImportExportActionModelAdmin, VersionAdmin):
         if request.user.is_superuser or request.user.groups.filter(name__in=['Content Managers']).exists():
             self.list_display = ['id', 'book_title', 'created', 'modified', 'short_detail', 'number_of_errors', 'status', 'error_type', 'resource', 'location', 'additional_location_information', 'resolution', 'archived', 'junk'] # list of fields to show if user is in Content Manager group or is a superuser
             self.list_display_links = ['book_title']
-            self.list_filter = (('created', DateRangeFilter), ('modified', DateRangeFilter), 'book', 'status', 'created', 'modified', 'is_assessment_errata', 'modified', 'error_type', 'resolution', 'archived', 'junk', 'resource')
+            self.list_filter = (('created', DateRangeFilter), ('modified', DateRangeFilter), ('book', ActiveBookListFilter), 'status', 'created', 'modified', 'is_assessment_errata', 'modified', 'error_type', 'resolution', 'archived', 'junk', 'resource')
             self.editable = ['resolution']
 
         else:
             self.list_display = ['id', 'book_title', 'created', 'short_detail', 'status', 'error_type', 'resource', 'location', 'created', 'archived'] # list of fields to show otherwise
             self.list_display_links = ['book_title']
-            self.list_filter = (('created', DateRangeFilter), ('modified', DateRangeFilter), 'book', 'status', 'created', 'modified', 'is_assessment_errata', 'error_type', 'resolution', 'archived', 'resource')
+            self.list_filter = (('created', DateRangeFilter), ('modified', DateRangeFilter), ('book', ActiveBookListFilter), 'status', 'created', 'modified', 'is_assessment_errata', 'error_type', 'resolution', 'archived', 'resource')
         return super(ErrataAdmin, self).changelist_view(request, extra_context)
 
     @method_decorator(csrf_protect)

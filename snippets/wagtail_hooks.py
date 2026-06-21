@@ -8,9 +8,11 @@ the sidebar reads by topic (Subjects, Resources, Blog, Webinar Content, Reusable
 Content). Models are unchanged — this is purely admin/menu wiring, no migrations.
 """
 from wagtail import hooks
+from wagtail.admin.viewsets.pages import PageListingViewSet
 from wagtail.snippets.models import register_snippet
 from wagtail.snippets.views.snippets import SnippetViewSet, SnippetViewSetGroup
 
+from news.models import NewsArticle
 from snippets.models import (
     Subject,
     K12Subject,
@@ -87,6 +89,14 @@ class ResourcesGroup(SnippetViewSetGroup):
 
 
 # --- Blog ------------------------------------------------------------------
+class BlogPostViewSet(PageListingViewSet):
+    name = "blog_posts"
+    model = NewsArticle
+    icon = "edit"
+    menu_label = "Blog Posts"
+    menu_name = "blog-posts"
+
+
 class BlogCollectionViewSet(SnippetViewSet):
     model = BlogCollection
     icon = "edit"
@@ -112,7 +122,12 @@ class BlogGroup(SnippetViewSetGroup):
     menu_label = "Blog"
     menu_icon = "edit"
     menu_order = 220
-    items = (BlogCollectionViewSet, BlogContentTypeViewSet, NewsSourceViewSet)
+    items = (
+        BlogPostViewSet,
+        BlogCollectionViewSet,
+        BlogContentTypeViewSet,
+        NewsSourceViewSet,
+    )
 
 
 # --- Webinar content -------------------------------------------------------

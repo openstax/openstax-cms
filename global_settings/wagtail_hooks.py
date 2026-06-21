@@ -5,6 +5,7 @@ from django.templatetags.static import static
 from django.urls import path, reverse
 from django.utils.html import format_html
 from wagtail.admin.menu import Menu, MenuItem, SubmenuMenuItem
+from wagtail.contrib.redirects.permissions import permission_policy as redirects_permission_policy
 
 from global_settings import views
 
@@ -27,10 +28,43 @@ tools_menu = Menu(
     construct_hook_name="construct_tools_menu",
 )
 
+content_menu = Menu(
+    register_hook_name="register_content_menu_item",
+    construct_hook_name="construct_content_menu",
+)
+
+
+class RedirectsMenuItem(MenuItem):
+    def is_shown(self, request):
+        return redirects_permission_policy.user_has_any_permission(
+            request.user, ["add", "change", "delete"]
+        )
+
 
 @hooks.register("register_admin_menu_item")
 def register_tools_menu():
     return SubmenuMenuItem("Tools", tools_menu, icon_name="cogs", order=9000)
+
+
+@hooks.register("register_admin_menu_item")
+def register_content_menu():
+    return SubmenuMenuItem("Content", content_menu, icon_name="doc-full", order=205)
+
+
+@hooks.register("register_content_menu_item")
+def register_redirects_content_menu_item():
+    return RedirectsMenuItem(
+        "Redirects",
+        reverse("wagtailredirects:index"),
+        name="redirects",
+        icon_name="redirect",
+        order=300,
+    )
+
+
+@hooks.register("construct_settings_menu")
+def remove_redirects_from_settings_menu(request, menu_items):
+    menu_items[:] = [item for item in menu_items if item.name != "redirects"]
 
 
 @hooks.register('register_rich_text_features')
