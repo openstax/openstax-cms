@@ -72,8 +72,9 @@ class MainMenuStructureTests(TestCase):
         items = admin_menu.menu_items_for_request(request)
         names = [item.name for item in items]
         self.assertNotIn("snippets", names)  # flat catch-all hidden
-        for group in ("subjects", "resources", "blog", "webinar-content", "reusable-content"):
+        for group in ("subjects", "resources", "blog", "webinars", "reusable-content"):
             self.assertIn(group, names)
+        self.assertNotIn("webinar-content", names)
 
     def test_content_quick_links_are_grouped_without_dead_sidebar_items(self):
         from django.contrib.auth.models import User
@@ -124,6 +125,34 @@ class MainMenuStructureTests(TestCase):
         self.assertEqual(
             ["blog-posts", "blog-collections", "blog-content-types", "news-sources"],
             blog_names,
+        )
+
+    def test_webinars_menu_combines_events_and_content(self):
+        from django.contrib.auth.models import User
+        from django.test import RequestFactory
+        from wagtail.admin.menu import admin_menu
+
+        user = User.objects.create_superuser("webinaradmin", "w@openstax.org", "pw")
+        request = RequestFactory().get("/admin/")
+        request.user = user
+
+        items = admin_menu.menu_items_for_request(request)
+        names = [item.name for item in items]
+        self.assertIn("webinars", names)
+        self.assertNotIn("webinar-content", names)
+
+        webinars_item = next(item for item in items if item.name == "webinars")
+        webinar_names = [
+            item.name
+            for item in sorted(
+                webinars_item.menu.menu_items_for_request(request),
+                key=lambda item: item.order,
+            )
+        ]
+
+        self.assertEqual(
+            ["webinars", "webinar-collections", "no-webinar-message"],
+            webinar_names,
         )
 
     def test_books_listing_renders(self):
