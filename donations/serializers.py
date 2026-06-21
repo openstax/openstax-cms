@@ -12,7 +12,8 @@ class ThankYouNoteSerializer(serializers.ModelSerializer):
                   'created',
                   'consent_to_share_or_contact',
                   'contact_email_address',
-                  'source')
+                  'source',
+                  'account_uuid')
         read_only_fields = ('thank_you_note',
                             'first_name',
                             'last_name',
@@ -20,7 +21,8 @@ class ThankYouNoteSerializer(serializers.ModelSerializer):
                             'created',
                             'consent_to_share_or_contact',
                             'contact_email_address',
-                            'source')
+                            'source',
+                            'account_uuid')
 
 
 class DonationPopupSerializer(serializers.ModelSerializer):
