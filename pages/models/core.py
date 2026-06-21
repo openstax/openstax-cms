@@ -6,6 +6,7 @@ from wagtail_ai.panels import AIMultipleChooserPanel
 from wagtailautocomplete.edit_handlers import AutocompletePanel
 from wagtail.admin.widgets.slug import SlugInput
 from wagtail import blocks
+from wagtail_html_editor.blocks import EnhancedHTMLBlock
 from wagtail.fields import StreamField
 from wagtail.models import Orderable, Page
 from wagtail.api import APIField
@@ -485,7 +486,7 @@ class GeneralPage(FrontendPreviewMixin, Page):
         ('tagline', blocks.CharBlock(classname="full title")),
         ('paragraph', APIRichTextBlock()),
         ('image', APIImageChooserBlock()),
-        ('html', blocks.RawHTMLBlock()),
+        ('html', EnhancedHTMLBlock()),
     ], use_json_field=True)
 
     def get_sitemap_urls(self, *args, **kwargs):

@@ -1,4 +1,5 @@
 from wagtail import blocks
+from wagtail_html_editor.blocks import EnhancedHTMLBlock
 
 
 
@@ -77,7 +78,7 @@ BASE_CONTENT_BLOCKS = [
         }, required=False)),
     ], label="Cards Block")),
     ('text', APIRichTextBlock()),
-    ('html', blocks.RawHTMLBlock()),
+    ('html', EnhancedHTMLBlock()),
     ('cta_block', CTAButtonBarBlock()),
     ('links_group', LinksGroupBlock()),
     ('quote', QuoteBlock()),
@@ -225,7 +226,7 @@ BODY_BLOCKS = [
         }, required=False)),
     ], label="Columns")),
     ('divider', DividerBlock()),
-    ('html', blocks.RawHTMLBlock()),
+    ('html', EnhancedHTMLBlock()),
 ]
 
 # we have one RootPage, which is the parent of all other pages
