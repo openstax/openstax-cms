@@ -46,9 +46,13 @@ class Command(BaseCommand):
                             capture_exception(Exception(f"Could not find a match for {school_string}"))
                             account_id = school_list["Find Me A Home"]
 
+                message = (note.thank_you_note or "").strip()
+                if not message and note.account_uuid:
+                    message = "(no message provided)"
+
                 note_fields = {
                     'Name': f"{note.first_name} {note.last_name} - {note.created}",
-                    'Message__c': note.thank_you_note,
+                    'Message__c': message,
                     'First_Name__c': note.first_name,
                     'Last_Name__c': note.last_name,
                     'Email_Address__c': note.contact_email_address,

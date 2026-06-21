@@ -50,7 +50,7 @@ class ThankYouNoteTest(APITestCase, TestCase):
         self.assertEqual(tyn[0]['contact_email_address'], 'jess@example.com')
         self.assertIsNone(tyn[0]['account_uuid'])
 
-    def test_thank_you_note_api_post_stores_account_uuid_for_logged_in_user(self):
+    def test_thank_you_note_api_post_stores_account_uuid_when_provided(self):
         account_uuid = "11111111-1111-1111-1111-111111111111"
         data = {"thank_you_note": "Thanks OpenStax!", "last_name": "Reed", "first_name": "Robin", "school": "Rice University", "source": "PDF download", "account_uuid": account_uuid}
         response = self.client.post('/apps/cms/api/donations/thankyounote/', data, format='json')
