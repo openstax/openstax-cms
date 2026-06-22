@@ -40,7 +40,7 @@ BASE_CONTENT_BLOCKS = [
                 ('text', APIRichTextBlock()),
                 ('cta_block', blocks.ListBlock(CTALinkBlock(required=False, label="Link"),
                     default=[],
-                    max_num=1,
+                    max_num=3,
                     label='Call To Action'
                 )),
             ]),
