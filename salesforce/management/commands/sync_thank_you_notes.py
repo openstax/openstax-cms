@@ -19,9 +19,12 @@ class Command(BaseCommand):
         with Salesforce() as sf:
             num_created = 0
             for note in new_thank_you_notes:
-                # junk removal
-                if note.thank_you_note and len(note.thank_you_note) < 5:  # we expect at least a 'thank'
-                    note.delete()
+                # junk removal — drop unusable messages, but keep notes tied to a
+                # known user as an adoption/usage signal even when the message is small
+                if len((note.thank_you_note or "").strip()) < 5:  # we expect at least a 'thank'
+                    if not note.account_uuid:
+                        note.delete()
+                        continue
                 # junk school rename
                 if note.institution and note.institution.isdigit():  # we expect at least text
                     note.institution = "Find Me A Home"  # Use Find Me A Home
@@ -43,20 +46,27 @@ class Command(BaseCommand):
                             capture_exception(Exception(f"Could not find a match for {school_string}"))
                             account_id = school_list["Find Me A Home"]
 
+                message = (note.thank_you_note or "").strip()
+                if not message and note.account_uuid:
+                    message = "(no message provided)"
+
+                note_fields = {
+                    'Name': f"{note.first_name} {note.last_name} - {note.created}",
+                    'Message__c': message,
+                    'First_Name__c': note.first_name,
+                    'Last_Name__c': note.last_name,
+                    'Email_Address__c': note.contact_email_address,
+                    'Institution__c': note.institution,
+                    'Source__c': note.source,
+                    'Consent_to_Share__c': note.consent_to_share_or_contact,
+                    'Submitted_Date__c': note.created.strftime('%Y-%m-%d'),
+                    'Related_Account__c': account_id,
+                }
+                if note.account_uuid:
+                    note_fields['Accounts_UUID__c'] = str(note.account_uuid)
+
                 try:
-                    response = sf.Thank_You_Note__c.create(
-                        {'Name': f"{note.first_name} {note.last_name} - {note.created}",
-                         'Message__c': note.thank_you_note,
-                         'First_Name__c': note.first_name,
-                         'Last_Name__c': note.last_name,
-                         'Email_Address__c': note.contact_email_address,
-                         'Institution__c': note.institution,
-                         'Source__c': note.source,
-                         'Consent_to_Share__c': note.consent_to_share_or_contact,
-                         'Submitted_Date__c': note.created.strftime('%Y-%m-%d'),
-                         'Related_Account__c': account_id
-                         }
-                    )
+                    response = sf.Thank_You_Note__c.create(note_fields)
 
                     note.salesforce_id = response['id']
                     note.save()
