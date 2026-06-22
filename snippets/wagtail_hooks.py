@@ -8,9 +8,12 @@ the sidebar reads by topic (Subjects, Resources, Blog, Webinar Content, Reusable
 Content). Models are unchanged — this is purely admin/menu wiring, no migrations.
 """
 from wagtail import hooks
+from wagtail.admin.viewsets.pages import PageListingViewSet
 from wagtail.snippets.models import register_snippet
 from wagtail.snippets.views.snippets import SnippetViewSet, SnippetViewSetGroup
 
+from news.models import NewsArticle
+from webinars.wagtail_hooks import WebinarViewSet
 from snippets.models import (
     Subject,
     K12Subject,
@@ -87,6 +90,14 @@ class ResourcesGroup(SnippetViewSetGroup):
 
 
 # --- Blog ------------------------------------------------------------------
+class BlogPostViewSet(PageListingViewSet):
+    name = "blog_posts"
+    model = NewsArticle
+    icon = "edit"
+    menu_label = "Blog Posts"
+    menu_name = "blog-posts"
+
+
 class BlogCollectionViewSet(SnippetViewSet):
     model = BlogCollection
     icon = "edit"
@@ -112,12 +123,15 @@ class BlogGroup(SnippetViewSetGroup):
     menu_label = "Blog"
     menu_icon = "edit"
     menu_order = 220
-    items = (BlogCollectionViewSet, BlogContentTypeViewSet, NewsSourceViewSet)
+    items = (
+        BlogPostViewSet,
+        BlogCollectionViewSet,
+        BlogContentTypeViewSet,
+        NewsSourceViewSet,
+    )
 
 
-# --- Webinar content -------------------------------------------------------
-# The Webinar *events* list lives in the webinars app (a ModelViewSet). These
-# are the supporting snippets only.
+# --- Webinars ---------------------------------------------------------------
 class WebinarCollectionViewSet(SnippetViewSet):
     model = WebinarCollection
     icon = "media"
@@ -131,11 +145,11 @@ class NoWebinarMessageViewSet(SnippetViewSet):
     menu_label = "\"No Webinar\" Message"
 
 
-class WebinarContentGroup(SnippetViewSetGroup):
-    menu_label = "Webinar Content"
+class WebinarGroup(SnippetViewSetGroup):
+    menu_label = "Webinars"
     menu_icon = "media"
     menu_order = 235
-    items = (WebinarCollectionViewSet, NoWebinarMessageViewSet)
+    items = (WebinarViewSet, WebinarCollectionViewSet, NoWebinarMessageViewSet)
 
 
 # --- Reusable site content -------------------------------------------------
@@ -204,7 +218,7 @@ class ReusableContentGroup(SnippetViewSetGroup):
 register_snippet(SubjectsGroup)
 register_snippet(ResourcesGroup)
 register_snippet(BlogGroup)
-register_snippet(WebinarContentGroup)
+register_snippet(WebinarGroup)
 register_snippet(ReusableContentGroup)
 
 

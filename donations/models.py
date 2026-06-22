@@ -26,6 +26,7 @@ class ThankYouNote(models.Model):
     consent_to_share_or_contact = models.BooleanField(default=False)
     contact_email_address = models.EmailField(blank=True, null=True)
     source = models.CharField(max_length=255, default="", blank=True)
+    account_uuid = models.UUIDField(null=True, blank=True, help_text="OpenStax Accounts UUID, set when the note is submitted by a logged-in user")
     salesforce_id = models.CharField(max_length=255, default="", blank=True, help_text="Not null if uploaded to Salesforce")
 
 

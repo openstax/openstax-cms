@@ -1,6 +1,9 @@
 from django.test import TestCase
 from unittest import mock
 
+from django.contrib import admin
+
+from books.constants import RETIRED
 from errata.models import Errata, EmailText
 from books.models import Book, BookIndex
 from pages.models import Page, HomePage
@@ -64,6 +67,67 @@ class ErrataTest(TestCase):
             detail="This is a test.",
         )
         self.assertEqual("New", errata.status)
+
+
+class ActiveBookListFilterTests(TestCase):
+    class FakeBookQuerySet(list):
+        def order_by(self, *fields):
+            self.ordering = fields
+            return self
+
+    class FakeBook:
+        def __init__(self, pk, title):
+            self.pk = pk
+            self.title = title
+
+        def __str__(self):
+            return self.title
+
+    def test_filter_choices_hide_retired_books(self):
+        from errata.admin import ActiveBookListFilter, ErrataAdmin
+
+        request = mock.Mock()
+        errata_admin = ErrataAdmin(Errata, admin.site)
+        book_field = Errata._meta.get_field("book")
+        active_book = self.FakeBook(1, "Active Book")
+
+        fake_queryset = self.FakeBookQuerySet([active_book])
+        with mock.patch.object(Book.objects, "exclude", return_value=fake_queryset) as mock_exclude:
+            book_filter = ActiveBookListFilter(
+                book_field,
+                request,
+                {},
+                Errata,
+                errata_admin,
+                "book",
+            )
+
+        mock_exclude.assert_called_once_with(book_state=RETIRED)
+        self.assertEqual(fake_queryset.ordering, ("title",))
+        self.assertEqual(book_filter.lookup_choices, [(1, "Active Book")])
+
+    def test_filter_still_accepts_url_parameter_for_retired_books(self):
+        from errata.admin import ActiveBookListFilter, ErrataAdmin
+
+        request = mock.Mock()
+        errata_admin = ErrataAdmin(Errata, admin.site)
+        book_field = Errata._meta.get_field("book")
+
+        with mock.patch.object(Book.objects, "exclude", return_value=self.FakeBookQuerySet()):
+            book_filter = ActiveBookListFilter(
+                book_field,
+                request,
+                {"book__page_ptr__exact": "2"},
+                Errata,
+                errata_admin,
+                "book",
+            )
+
+        self.assertEqual(
+            book_filter.expected_parameters(),
+            ["book__page_ptr__exact", "book__isnull"],
+        )
+        self.assertEqual(book_filter.lookup_val, "2")
 
 
 class ErrataPostHogCaptureTest(TestCase):

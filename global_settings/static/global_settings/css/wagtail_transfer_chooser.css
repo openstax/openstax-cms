@@ -1,0 +1,21 @@
+/*
+ * wagtail-transfer 0.11 chooser pagination fix for Wagtail 7.4.
+ *
+ * The chooser ("Choose a page or snippet" import screen) renders its
+ * Previous/Next pagination arrows as
+ *     <svg class="icon icon-arrow-left navigate-pages">
+ *     <svg class="icon icon-arrow-right navigate-pages">
+ * relying on a global `.icon { width; height }` rule that older Wagtail
+ * shipped. Wagtail 7.4's core.css only sizes `.icon` *inside* specific
+ * component containers (e.g. `.c-page-explorer__item__link .icon`); there is
+ * no unscoped `.icon` size rule anymore, so these chevrons fall back to their
+ * intrinsic SVG size and render enormous.
+ *
+ * `.navigate-pages` is used only by the wagtail-transfer chooser, so this is
+ * safe to load globally via insert_global_admin_css.
+ */
+svg.icon.navigate-pages {
+    width: 1.5rem;
+    height: 1.5rem;
+    vertical-align: middle;
+}

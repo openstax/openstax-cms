@@ -257,6 +257,7 @@ INSTALLED_APPS = [
     # wagtail
     'wagtail_ai',
     'wagtail_color_panel',
+    'wagtail_html_editor',
     'django_ai_core.contrib.index',
     'wagtail',
     'wagtail.admin',
@@ -281,6 +282,19 @@ INSTALLED_APPS = [
 
 WAGTAILTRANSFER_SECRET_KEY = os.getenv('WAGTAILTRANSFER_SECRET_KEY', 'change-me-in-production')
 WAGTAILTRANSFER_INSECURE_SECRET_KEY = 'change-me-in-production'
+
+# Models the importer must NOT follow into when it encounters a reference.
+# This is the package default (wagtailcore.page, contenttypes.contenttype) plus
+# auth.user: transferred objects such as wagtailcore.revision carry a `user` FK,
+# and following it would 404 on the export allowlist (auth.user is intentionally
+# not exportable) and try to pull user PII across. Leaving it unfollowed nulls
+# the FK instead — fine, since these user FKs are nullable. Keep the two package
+# defaults here; this setting REPLACES the default rather than extending it.
+WAGTAILTRANSFER_NO_FOLLOW_MODELS = [
+    'wagtailcore.page',
+    'contenttypes.contenttype',
+    'auth.user',
+]
 
 # The secret key is validated two ways, both living outside this (declarative)
 # settings module:
@@ -622,6 +636,15 @@ WAGTAILIMAGES_FORMAT_CONVERSIONS = {
 }
 WAGTAILIMAGES_MAX_UPLOAD_SIZE = 20 * 1024 * 1024  # 20MB
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
+
+# CodeMirror-based HTML editor (wagtail-html-editor) for raw-HTML StreamField
+# blocks. Values below are the package defaults, spelled out for discoverability.
+WAGTAIL_HTML_EDITOR = {
+    'emmet': True,            # expand abbreviations, e.g. div.row>div.col*3
+    'indent_size': 2,         # 2 or 4
+    'indent_with_tabs': False,
+    'theme': 'auto',          # 'auto' follows Wagtail's light/dark; or 'light'/'dark'
+}
 
 WAGTAILADMIN_RICH_TEXT_EDITORS = {
     'default': {

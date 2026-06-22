@@ -10,11 +10,13 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from django.conf import settings
 
 from books.models import BookIndex, Book
+from donations.models import ThankYouNote
 from pages.models import HomePage
 from salesforce.models import SalesforceSettings, MapBoxDataset, Partner, AdoptionOpportunityRecord, SalesforceForms, School
 from salesforce.management.commands.update_opportunities import Command as UpdateOpportunitiesCommand
 from salesforce.salesforce import Salesforce as SF
 from salesforce.serializers import PartnerSerializer
+from simple_salesforce.exceptions import SalesforceMalformedRequest
 
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -175,6 +177,95 @@ class UpdateSchoolsCommandTest(TestCase):
         self.assertEqual(first_school.name, 'Salesforce School')
         self.assertEqual(second_school.name, 'Second duplicate')
         self.assertEqual(School.objects.filter(salesforce_id='001duplicate').count(), 2)
+
+
+class SyncThankYouNotesCommandTest(TestCase):
+    def setUp(self):
+        School.objects.create(name='Find Me A Home', salesforce_id='001findme')
+
+    @patch('salesforce.management.commands.sync_thank_you_notes.capture_exception')
+    @patch('salesforce.management.commands.sync_thank_you_notes.Salesforce')
+    def test_unusable_note_messages_are_deleted_without_salesforce_create(self, salesforce, capture_exception):
+        short_note = ThankYouNote.objects.create(
+            thank_you_note='ty',
+            first_name='Jess',
+            last_name='Drew',
+            institution='Rice University',
+            contact_email_address='jess@example.com',
+            source='PDF download',
+        )
+        whitespace_note = ThankYouNote.objects.create(
+            thank_you_note='     ',
+            first_name='Taylor',
+            last_name='Reader',
+            institution='Rice University',
+            contact_email_address='taylor@example.com',
+            source='PDF download',
+        )
+
+        sf = salesforce.return_value.__enter__.return_value
+        sf.Thank_You_Note__c.create.side_effect = SalesforceMalformedRequest(
+            'https://example.my.salesforce.com/services/data/v59.0/sobjects/Thank_You_Note__c/',
+            400,
+            'Thank_You_Note__c',
+            b'[{"message":"Message is required","errorCode":"REQUIRED_FIELD_MISSING","fields":["Message__c"]}]',
+        )
+
+        call_command('sync_thank_you_notes')
+
+        sf.Thank_You_Note__c.create.assert_not_called()
+        capture_exception.assert_not_called()
+        self.assertFalse(ThankYouNote.objects.filter(pk=short_note.pk).exists())
+        self.assertFalse(ThankYouNote.objects.filter(pk=whitespace_note.pk).exists())
+
+    @patch('salesforce.management.commands.sync_thank_you_notes.capture_exception')
+    @patch('salesforce.management.commands.sync_thank_you_notes.Salesforce')
+    def test_short_note_from_known_user_is_kept_and_synced_with_account_uuid(self, salesforce, capture_exception):
+        account_uuid = '11111111-1111-1111-1111-111111111111'
+        signal_note = ThankYouNote.objects.create(
+            thank_you_note='ty',
+            first_name='Jess',
+            last_name='Drew',
+            institution='Rice University',
+            contact_email_address='jess@example.com',
+            source='PDF download',
+            account_uuid=account_uuid,
+        )
+
+        sf = salesforce.return_value.__enter__.return_value
+        sf.Thank_You_Note__c.create.return_value = {'id': 'a01signal'}
+
+        call_command('sync_thank_you_notes')
+
+        sf.Thank_You_Note__c.create.assert_called_once()
+        payload = sf.Thank_You_Note__c.create.call_args.args[0]
+        self.assertEqual(payload['Accounts_UUID__c'], account_uuid)
+        capture_exception.assert_not_called()
+
+        signal_note.refresh_from_db()
+        self.assertEqual(signal_note.salesforce_id, 'a01signal')
+
+    @patch('salesforce.management.commands.sync_thank_you_notes.capture_exception')
+    @patch('salesforce.management.commands.sync_thank_you_notes.Salesforce')
+    def test_anonymous_note_omits_account_uuid(self, salesforce, capture_exception):
+        ThankYouNote.objects.create(
+            thank_you_note='OpenStax saved me a fortune, thank you!',
+            first_name='Sam',
+            last_name='Lee',
+            institution='Rice University',
+            contact_email_address='sam@example.com',
+            source='PDF download',
+        )
+
+        sf = salesforce.return_value.__enter__.return_value
+        sf.Thank_You_Note__c.create.return_value = {'id': 'a01anon'}
+
+        call_command('sync_thank_you_notes')
+
+        sf.Thank_You_Note__c.create.assert_called_once()
+        payload = sf.Thank_You_Note__c.create.call_args.args[0]
+        self.assertNotIn('Accounts_UUID__c', payload)
+        capture_exception.assert_not_called()
 
 
 class AdoptionOpportunityTest(TestCase):

@@ -405,6 +405,12 @@ class BookTests(WagtailPageTestCase):
             self.assertEqual(response.data['audiobook_link'], audiobook_url)
 
 
+class BookAdminListingTests(TestCase):
+    def test_book_listing_defaults_to_title_order(self):
+        from books.wagtail_hooks import BookListingIndexView
+
+        self.assertEqual(BookListingIndexView.default_ordering, "title")
+
 
 class BookPreviewTests(TestCase):
     """Book preview must redirect to the headless frontend (/details/books/<slug>),
