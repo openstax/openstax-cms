@@ -6,7 +6,7 @@ from wagtail.models import Page, Site
 from wagtail.fields import RichTextField
 from wagtail.api import APIField
 from books.models import Book
-from openstax.api_fields import ExpandedRichTextField
+from openstax.api_fields import APIRichTextBlock, ExpandedRichTextField, strip_empty_paragraphs
 from pages.custom_blocks import LinkBlock, LinksGroupBlock
 
 
@@ -184,3 +184,34 @@ class LinksGroupBlockTests(TestCase):
         self.assertEqual(len(config_items), 1)
         self.assertEqual(config_items[0].block_type, "style")
         self.assertEqual(config_items[0].value, "text")
+
+
+class StripEmptyParagraphsTests(TestCase):
+    def test_removes_blank_paragraphs(self):
+        html = (
+            "<p>Keep me</p>"
+            "<p></p>"
+            "<p><br></p>"
+            "<p> </p>"
+            "<p>   </p>"
+        )
+        self.assertEqual(strip_empty_paragraphs(html), "<p>Keep me</p>")
+
+    def test_keeps_paragraphs_with_media(self):
+        result = strip_empty_paragraphs('<p><img src="/cat.png"></p><p></p>')
+        self.assertIn("<img", result)
+        self.assertEqual(result.count("<p"), 1)
+
+    def test_handles_empty_input(self):
+        self.assertEqual(strip_empty_paragraphs(""), "")
+        self.assertIsNone(strip_empty_paragraphs(None))
+
+    def test_block_strips_on_save(self):
+        # APIRichTextBlock cleans the source HTML in get_prep_value (save path),
+        # so the stored value is already free of blank paragraphs.
+        from wagtail.rich_text import RichText
+        block = APIRichTextBlock()
+        self.assertEqual(
+            block.get_prep_value(RichText("<p>Keep</p><p></p><p><br></p>")),
+            "<p>Keep</p>",
+        )
