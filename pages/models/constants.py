@@ -1,4 +1,5 @@
 from wagtail import blocks
+from wagtail_html_editor.blocks import EnhancedHTMLBlock
 
 
 
@@ -77,10 +78,14 @@ BASE_CONTENT_BLOCKS = [
         }, required=False)),
     ], label="Cards Block")),
     ('text', APIRichTextBlock()),
-    ('html', blocks.RawHTMLBlock()),
+    ('html', EnhancedHTMLBlock()),
     ('cta_block', CTAButtonBarBlock()),
     ('links_group', LinksGroupBlock()),
     ('quote', QuoteBlock()),
+    ('big_number', blocks.StructBlock([
+        ('number', blocks.CharBlock(help_text='The statistic to display large, e.g. 8M+.')),
+        ('caption', blocks.CharBlock(required=False, help_text='Optional supporting text shown below the number.')),
+    ], label="Big Number")),
     ('faq', blocks.StreamBlock([
         ('faq', FAQBlock()),
     ])),
@@ -225,7 +230,7 @@ BODY_BLOCKS = [
         }, required=False)),
     ], label="Columns")),
     ('divider', DividerBlock()),
-    ('html', blocks.RawHTMLBlock()),
+    ('html', EnhancedHTMLBlock()),
 ]
 
 # we have one RootPage, which is the parent of all other pages

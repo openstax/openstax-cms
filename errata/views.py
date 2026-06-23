@@ -49,7 +49,7 @@ class ErrataModelViewSet(WagtailModelViewSet):
     search_fields = ("book__title",)
     menu_label = "Errata (Beta)"
     menu_order = 9000
-    add_to_admin_menu = True
+    add_to_admin_menu = False
     exclude_form_fields = []
 
 errata_viewset = ErrataModelViewSet("errata")

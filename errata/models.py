@@ -275,9 +275,15 @@ class Errata(models.Model):
 
         super(Errata, self).save(*args, **kwargs)
 
-    @hooks.register('register_admin_menu_item')
+    @hooks.register('register_content_menu_item')
     def register_errata_menu_item():
-        return MenuItem('Errata', '/django-admin/errata/errata', classname='icon icon-form', order=10000)
+        return MenuItem(
+            'Errata',
+            '/django-admin/errata/errata',
+            name='errata',
+            icon_name='form',
+            order=200,
+        )
 
     def __str__(self):
         return self.book.book_title

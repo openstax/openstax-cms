@@ -76,3 +76,19 @@ class ExperimentsGuideTest(WagtailTestUtils, TestCase):
         response = self.client.get(reverse('experiments_guide'))
         # require_admin_access redirects anonymous users to the admin login.
         self.assertIn(response.status_code, (302, 403))
+
+
+class WagtailTransferChooserCssHookTest(TestCase):
+    """The wagtail-transfer chooser renders its pagination arrows as
+    <svg class="icon ... navigate-pages">, relying on a global `.icon` size
+    that Wagtail 7.4 dropped. We inject a scoped stylesheet via the
+    insert_global_admin_css hook (loaded on every admin page, including the
+    chooser) to size them back down."""
+
+    def test_global_admin_css_links_the_transfer_chooser_stylesheet(self):
+        from wagtail import hooks
+
+        outputs = ''.join(str(fn()) for fn in hooks.get_hooks('insert_global_admin_css'))
+
+        self.assertIn('<link', outputs)
+        self.assertIn('wagtail_transfer_chooser', outputs)
