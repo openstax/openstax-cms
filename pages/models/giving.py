@@ -362,7 +362,7 @@ class Impact(FrontendPreviewMixin, Page):
         APIField('search_description'),
     ]
 
-    parent_page_type = ['pages.RootPage']
+    parent_page_types = ['pages.RootPage']
     subpage_types = ['pages.ImpactStory']
     max_count = 1
     template = 'page.html'

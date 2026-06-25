@@ -34,7 +34,7 @@ class WebinarPage(FrontendPreviewMixin, Page):
         APIField('search_description'),
     ]
 
-    parent_page_type = ['pages.RootPage']
+    parent_page_types = ['pages.RootPage']
     template = 'page.html'
 
 
@@ -251,6 +251,6 @@ class Assignable(FrontendPreviewMixin, Page):
         FieldPanel('promote_image')
     ]
 
-    parent_page_type = ['pages.RootPage']
+    parent_page_types = ['pages.RootPage']
     template = 'page.html'
     max_count = 1
