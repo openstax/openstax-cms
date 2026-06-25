@@ -4,7 +4,7 @@ from django.test import TestCase
 from wagtail.models import Page, Site
 
 from books.models import Book
-from pages.custom_blocks import ContentChooserBlock
+from pages.custom_blocks import ContentCardBlock, ContentChooserBlock
 
 
 class ContentChooserBlockTests(TestCase):
@@ -45,3 +45,42 @@ class ContentChooserBlockTests(TestCase):
         block = ContentChooserBlock()
         # page_type defaults to CONTENT_REFERENCE_TYPES; Book is resolvable.
         self.assertIn(Book, block.target_models)
+
+
+class ContentCardBlockTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        root = Page.objects.get(id=1)
+        site, _ = Site.objects.get_or_create(
+            hostname="localhost",
+            defaults={"root_page": root, "is_default_site": True},
+        )
+        site.root_page = root
+        site.save()
+        Site.clear_site_root_paths_cache()
+        cls.book = Book(
+            title="Card Book", slug="card-book",
+            salesforce_abbreviation="cb", salesforce_name="Card Book",
+            publish_date=datetime.date.today(), locale=root.locale,
+        )
+        root.add_child(instance=cls.book)
+
+    def test_card_emits_reference_and_set_overrides(self):
+        block = ContentCardBlock()
+        value = block.to_python({"reference": self.book.id, "excerpt": "Custom blurb"})
+        rep = block.get_api_representation(value)
+        self.assertEqual(rep["reference"]["type"], "books.book")
+        self.assertEqual(rep["reference"]["url"], "/details/books/card-book")
+        self.assertEqual(rep["excerpt"], "Custom blurb")
+
+    def test_unset_overrides_serialize_as_null(self):
+        # The CMS does NOT auto-fill overrides from the page; that merge is
+        # frontend-side via `override ?? hydrated`. Unset overrides must serialize
+        # as null (not "" or {}), or the JS nullish-coalesce would wrongly treat
+        # an empty override as a real value and blank the field.
+        block = ContentCardBlock()
+        value = block.to_python({"reference": self.book.id})
+        rep = block.get_api_representation(value)
+        self.assertIsNone(rep["title"])
+        self.assertIsNone(rep["image"])
+        self.assertIsNone(rep["excerpt"])

@@ -577,3 +577,30 @@ class ContentChooserBlock(blocks.PageChooserBlock):
             'url': page.url or page.url_path,
             'title': value.title,
         }
+
+
+class _NullableAPIImageChooserBlock(APIImageChooserBlock):
+    """APIImageChooserBlock that returns None (not {}) when no image is set."""
+    def get_api_representation(self, value, context=None):
+        if value is None:
+            return None
+        return super().get_api_representation(value, context=context)
+
+
+class ContentCardBlock(blocks.StructBlock):
+    """A card linked to another page. Display data is auto-pulled from the
+    referenced page frontend-side; the optional fields override per card."""
+    reference = ContentChooserBlock(required=True)
+    title = blocks.CharBlock(
+        required=False,
+        help_text="Overrides the referenced page's title for this card.")
+    image = _NullableAPIImageChooserBlock(
+        required=False,
+        help_text="Overrides the referenced page's image for this card.")
+    excerpt = blocks.TextBlock(
+        required=False,
+        help_text="Overrides the referenced page's excerpt for this card.")
+
+    class Meta:
+        icon = 'doc-empty'
+        label = 'Content Card'
