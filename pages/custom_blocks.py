@@ -601,6 +601,15 @@ class ContentCardBlock(blocks.StructBlock):
         required=False,
         help_text="Overrides the referenced page's excerpt for this card.")
 
+    def get_api_representation(self, value, context=None):
+        rep = super().get_api_representation(value, context=context)
+        for key in ("title", "excerpt"):
+            if isinstance(rep.get(key), str) and rep[key].strip() == "":
+                rep[key] = None
+        if rep.get("image") == {}:
+            rep["image"] = None
+        return rep
+
     class Meta:
         icon = 'doc-empty'
         label = 'Content Card'

@@ -85,6 +85,12 @@ class ContentCardBlockTests(TestCase):
         self.assertIsNone(rep["image"])
         self.assertIsNone(rep["excerpt"])
 
+    def test_blank_string_overrides_serialize_as_null(self):
+        block = ContentCardBlock()
+        value = block.to_python({"reference": self.book.id, "title": "", "excerpt": ""})
+        rep = block.get_api_representation(value)
+        self.assertIsNone(rep["title"])
+        self.assertIsNone(rep["excerpt"])
 
 class ContentCardRegistrationTests(TestCase):
     def test_content_card_registered_in_base_blocks(self):
