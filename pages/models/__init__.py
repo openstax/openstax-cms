@@ -29,7 +29,6 @@ from .partners import (
 )
 from .marketing import (
     WebinarPage,
-    PartnerChooserBlock,
     AllyLogos,
     Assignable,
 )

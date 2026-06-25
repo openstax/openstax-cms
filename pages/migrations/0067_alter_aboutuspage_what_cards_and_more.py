@@ -161,7 +161,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='mathquizpage',
             name='results',
-            field=wagtail.fields.StreamField([('result', wagtail.blocks.ListBlock(wagtail.blocks.StructBlock([('image', wagtail.blocks.StructBlock([('image', wagtail.images.blocks.ImageChooserBlock(required=False)), ('alt_text', wagtail.blocks.CharBlock(required=False)), ('link', wagtail.blocks.URLBlock(required=False)), ('alignment', pages.custom_blocks.ImageFormatChoiceBlock()), ('identifier', wagtail.blocks.CharBlock(help_text='Used by the frontend for Google Analytics.', required=False))])), ('headline', wagtail.blocks.CharBlock()), ('description', wagtail.blocks.TextBlock()), ('partners', wagtail.blocks.ListBlock(wagtail.blocks.StructBlock([('partner', pages.models.PartnerChooserBlock())])))])))], use_json_field=True),
+            field=wagtail.fields.StreamField([('result', wagtail.blocks.ListBlock(wagtail.blocks.StructBlock([('image', wagtail.blocks.StructBlock([('image', wagtail.images.blocks.ImageChooserBlock(required=False)), ('alt_text', wagtail.blocks.CharBlock(required=False)), ('link', wagtail.blocks.URLBlock(required=False)), ('alignment', pages.custom_blocks.ImageFormatChoiceBlock()), ('identifier', wagtail.blocks.CharBlock(help_text='Used by the frontend for Google Analytics.', required=False))])), ('headline', wagtail.blocks.CharBlock()), ('description', wagtail.blocks.TextBlock()), ('partners', wagtail.blocks.ListBlock(wagtail.blocks.StructBlock([('partner', wagtail.blocks.CharBlock())])))])))], use_json_field=True),
         ),
         migrations.AlterField(
             model_name='printorder',
