@@ -37,7 +37,7 @@ class WebinarPage(FrontendPreviewMixin, Page):
         APIField('search_description'),
     ]
 
-    parent_page_type = ['pages.HomePage']
+    parent_page_type = ['pages.RootPage']
     template = 'page.html'
 
 
@@ -120,7 +120,7 @@ class AllyLogos(FrontendPreviewMixin, Page):
     ]
 
     template = 'page.html'
-    parent_page_types = ['pages.HomePage', 'pages.RootPage']
+    parent_page_types = ['pages.RootPage']
 
 
 class Assignable(FrontendPreviewMixin, Page):
@@ -280,6 +280,6 @@ class Assignable(FrontendPreviewMixin, Page):
         FieldPanel('promote_image')
     ]
 
-    parent_page_type = ['pages.HomePage']
+    parent_page_type = ['pages.RootPage']
     template = 'page.html'
     max_count = 1

@@ -6,7 +6,7 @@ from django.contrib import admin
 from books.constants import RETIRED
 from errata.models import Errata, EmailText
 from books.models import Book, BookIndex
-from pages.models import Page, HomePage
+from pages.models import Page, RootPage
 from django.core.files.uploadedfile import SimpleUploadedFile
 from wagtail.documents.models import Document
 import datetime
@@ -19,7 +19,7 @@ class ErrataTest(TestCase):
         # create root page
         root_page = Page.objects.get(title="Root")
         # create homepage
-        homepage = HomePage(title="Hello World",
+        homepage = RootPage(title="Hello World",
                             slug="hello-world",
                             )
         # add homepage to root page

@@ -27,13 +27,13 @@ class TestRootPage(unittest.TestCase):
         result = root_page.get_url_parts()
         self.assertIsNone(result)
 
-class HomePageTests(WagtailPageTestCase):
+class RootPageTests(WagtailPageTestCase):
 
     def setUp(self):
         mock_user_login()
 
     def test_cant_create_homepage_under_homepage(self):
-        self.assertCanNotCreateAt(page_models.HomePage, page_models.HomePage)
+        self.assertCanNotCreateAt(page_models.RootPage, page_models.RootPage)
 
     def test_homepage_return_correct_page(self):
         response = self.client.get('/')
@@ -41,7 +41,7 @@ class HomePageTests(WagtailPageTestCase):
 
     def test_can_create_homepage(self):
         root_page = Page.objects.get(title="Root")
-        homepage = page_models.HomePage(title="Hello World",
+        homepage = page_models.RootPage(title="Hello World",
                                         slug="hello-world",
                                         )
         root_page.add_child(instance=homepage)
@@ -54,7 +54,7 @@ class PageTests(WagtailPageTestCase):
     def setUp(self):
         mock_user_login()
         root_page = Page.objects.get(title="Root")
-        self.homepage = page_models.HomePage(title="Hello World",
+        self.homepage = page_models.RootPage(title="Hello World",
                                              slug="hello-world",
                                              seo_title="SEO Hello World",
                                              search_description="Test page description"
@@ -63,6 +63,9 @@ class PageTests(WagtailPageTestCase):
 
     def test_seo_title_used_in_meta_tags(self):
         """Test that seo_title is used in og:title, twitter:title, and og:image:alt meta tags"""
+        # Remove the setUp home so this test's RootPage is the one the middleware
+        # 'home' lookup (RootPage.objects.filter(locale=1)) returns.
+        self.homepage.delete()
         # Create a RootPage with seo_title to test via middleware
         root_page = Page.objects.get(title="Root")
         test_homepage = page_models.RootPage(
@@ -91,6 +94,9 @@ class PageTests(WagtailPageTestCase):
 
     def test_fallback_to_page_title_when_no_seo_title(self):
         """Test that page.title is used as fallback when seo_title is not set"""
+        # Remove the setUp home so this test's RootPage is the one the middleware
+        # 'home' lookup (RootPage.objects.filter(locale=1)) returns.
+        self.homepage.delete()
         # Create a RootPage without seo_title to test via middleware
         root_page = Page.objects.get(title="Root")
         test_homepage = page_models.RootPage(
@@ -117,7 +123,7 @@ class PageTests(WagtailPageTestCase):
         self.assertContains(response, 'OpenStax: Fallback Test Title')
 
     def test_can_create_ipp_page(self):
-        self.assertCanCreateAt(page_models.HomePage, page_models.InstitutionalPartnerProgramPage)
+        self.assertCanCreateAt(page_models.RootPage, page_models.InstitutionalPartnerProgramPage)
 
     def test_can_create_team_page(self):
         team_page = page_models.TeamPage(title="Team Page",
@@ -125,7 +131,7 @@ class PageTests(WagtailPageTestCase):
                                          subheader="Subheading",
                                          team_header="Our Team")
         self.homepage.add_child(instance=team_page)
-        self.assertCanCreateAt(page_models.HomePage, page_models.TeamPage)
+        self.assertCanCreateAt(page_models.RootPage, page_models.TeamPage)
         revision = team_page.save_revision()
         revision.publish()
         team_page.save()
@@ -144,7 +150,7 @@ class PageTests(WagtailPageTestCase):
                                            where_paragraph='where paragraph',
                                            )
         self.homepage.add_child(instance=about_us)
-        self.assertCanCreateAt(page_models.HomePage, page_models.AboutUsPage)
+        self.assertCanCreateAt(page_models.RootPage, page_models.AboutUsPage)
 
         retrieved_page = Page.objects.get(id=about_us.id)
         self.assertEqual(retrieved_page.title, "About Us")
@@ -159,7 +165,7 @@ class PageTests(WagtailPageTestCase):
                                            subject_library_description='subjects library description',
                                            )
         self.homepage.add_child(instance=k12_page)
-        self.assertCanCreateAt(page_models.HomePage, page_models.K12MainPage)
+        self.assertCanCreateAt(page_models.RootPage, page_models.K12MainPage)
 
         retrieved_page = Page.objects.get(id=k12_page.id)
         self.assertEqual(retrieved_page.title, "K12 Main Page")
@@ -172,7 +178,7 @@ class PageTests(WagtailPageTestCase):
                                                 customer_service='How can I help you?',
                                                 )
         self.homepage.add_child(instance=contact_us_page)
-        self.assertCanCreateAt(page_models.HomePage, page_models.ContactUs)
+        self.assertCanCreateAt(page_models.RootPage, page_models.ContactUs)
 
         retrieved_page = Page.objects.get(id=contact_us_page.id)
         self.assertEqual(retrieved_page.title, "Contact Us")
@@ -199,7 +205,7 @@ class PageTests(WagtailPageTestCase):
                                                ),
                                                )
         self.homepage.add_child(instance=general_page)
-        self.assertCanCreateAt(page_models.HomePage, page_models.GeneralPage)
+        self.assertCanCreateAt(page_models.RootPage, page_models.GeneralPage)
 
         retrieved_page = Page.objects.get(id=general_page.id)
         self.assertEqual(retrieved_page.title, "General Page")
@@ -226,7 +232,7 @@ class PageTests(WagtailPageTestCase):
                                                  disclaimer='This field cannot be left blank',
                                                  )
         self.homepage.add_child(instance=supporters_page)
-        self.assertCanCreateAt(page_models.HomePage, page_models.Supporters)
+        self.assertCanCreateAt(page_models.RootPage, page_models.Supporters)
 
         retrieved_page = Page.objects.get(id=supporters_page.id)
         self.assertEqual(retrieved_page.title, "Supporters Page")
@@ -237,7 +243,7 @@ class PageTests(WagtailPageTestCase):
                                               terms_of_service_content='This is the terms of service',
                                               )
         self.homepage.add_child(instance=tos_page)
-        self.assertCanCreateAt(page_models.HomePage, page_models.TermsOfService)
+        self.assertCanCreateAt(page_models.RootPage, page_models.TermsOfService)
 
         retrieved_page = Page.objects.get(id=tos_page.id)
         self.assertEqual(retrieved_page.title, "Terms of Service Page")
@@ -284,7 +290,7 @@ class PageTests(WagtailPageTestCase):
                                    )
                                    )
         self.homepage.add_child(instance=faq_page)
-        self.assertCanCreateAt(page_models.HomePage, page_models.FAQ)
+        self.assertCanCreateAt(page_models.RootPage, page_models.FAQ)
 
         retrieved_page = Page.objects.get(id=faq_page.id)
         self.assertEqual(retrieved_page.title, "FAQ Page")
@@ -295,7 +301,7 @@ class PageTests(WagtailPageTestCase):
                                                        accessibility_content='This is about accessibility',
                                                        )
         self.homepage.add_child(instance=accessibility_page)
-        self.assertCanCreateAt(page_models.HomePage, page_models.Accessibility)
+        self.assertCanCreateAt(page_models.RootPage, page_models.Accessibility)
 
         retrieved_page = Page.objects.get(id=accessibility_page.id)
         self.assertEqual(retrieved_page.title, "Accessibility Page")
@@ -306,7 +312,7 @@ class PageTests(WagtailPageTestCase):
                                                licensing_content='This is about licensing',
                                                )
         self.homepage.add_child(instance=licensing_page)
-        self.assertCanCreateAt(page_models.HomePage, page_models.Licensing)
+        self.assertCanCreateAt(page_models.RootPage, page_models.Licensing)
 
         retrieved_page = Page.objects.get(id=licensing_page.id)
         self.assertEqual(retrieved_page.title, "Licensing Page")
@@ -327,7 +333,7 @@ class PageTests(WagtailPageTestCase):
                                                  new_frontier_cta_2='CTA 2',
                                                  )
         self.homepage.add_child(instance=technology_page)
-        self.assertCanCreateAt(page_models.HomePage, page_models.Technology)
+        self.assertCanCreateAt(page_models.RootPage, page_models.Technology)
 
         retrieved_page = Page.objects.get(id=technology_page.id)
         self.assertEqual(retrieved_page.title, "Technology Page")
@@ -338,7 +344,7 @@ class PageTests(WagtailPageTestCase):
                                            careers_content='This is about careers',
                                            )
         self.homepage.add_child(instance=careers_page)
-        self.assertCanCreateAt(page_models.HomePage, page_models.Careers)
+        self.assertCanCreateAt(page_models.RootPage, page_models.Careers)
 
         retrieved_page = Page.objects.get(id=careers_page.id)
         self.assertEqual(retrieved_page.title, "Careers Page")
@@ -349,7 +355,7 @@ class PageTests(WagtailPageTestCase):
                                                  privacy_content='This is about privacy',
                                                  )
         self.homepage.add_child(instance=privacy_page)
-        self.assertCanCreateAt(page_models.HomePage, page_models.PrivacyPolicy)
+        self.assertCanCreateAt(page_models.RootPage, page_models.PrivacyPolicy)
 
         retrieved_page = Page.objects.get(id=privacy_page.id)
         self.assertEqual(retrieved_page.title, "Privacy Policy Page")
@@ -486,7 +492,7 @@ class PageTests(WagtailPageTestCase):
 
                                          )
         self.homepage.add_child(instance=impact_page)
-        self.assertCanCreateAt(page_models.HomePage, page_models.Impact)
+        self.assertCanCreateAt(page_models.RootPage, page_models.Impact)
 
         retrieved_page = Page.objects.get(id=impact_page.id)
         self.assertEqual(retrieved_page.title, "Impact Page")
@@ -514,7 +520,7 @@ class PageTests(WagtailPageTestCase):
                                                          publication_header='Publication header'
                                                          )
         self.homepage.add_child(instance=research_page)
-        self.assertCanCreateAt(page_models.HomePage, page_models.LearningResearchPage)
+        self.assertCanCreateAt(page_models.RootPage, page_models.LearningResearchPage)
 
         retrieved_page = Page.objects.get(id=research_page.id)
         self.assertEqual(retrieved_page.title, "Learning Research Page")
@@ -524,7 +530,7 @@ class PageTests(WagtailPageTestCase):
                                                heading='Heading',
                                                )
         self.homepage.add_child(instance=webinar_page)
-        self.assertCanCreateAt(page_models.HomePage, page_models.WebinarPage)
+        self.assertCanCreateAt(page_models.RootPage, page_models.WebinarPage)
 
         retrieved_page = Page.objects.get(id=webinar_page.id)
         self.assertEqual(retrieved_page.title, "Webinar Page")
@@ -539,7 +545,7 @@ class PageTests(WagtailPageTestCase):
                                              interest_intro_description='Interest intro description'
                                              )
         self.homepage.add_child(instance=form_page)
-        self.assertCanCreateAt(page_models.HomePage, page_models.FormHeadings)
+        self.assertCanCreateAt(page_models.RootPage, page_models.FormHeadings)
 
         retrieved_page = Page.objects.get(id=form_page.id).specific
         self.assertEqual(retrieved_page.title, "Form Headings Page")
@@ -558,7 +564,7 @@ class PageTests(WagtailPageTestCase):
                                           book_ally_logos='',
                                           )
         self.homepage.add_child(instance=ally_page)
-        self.assertCanCreateAt(page_models.HomePage, page_models.AllyLogos)
+        self.assertCanCreateAt(page_models.RootPage, page_models.AllyLogos)
 
         retrieved_page = Page.objects.get(id=ally_page.id)
         self.assertEqual(retrieved_page.title, "Ally Logos Page")
@@ -574,7 +580,7 @@ class PageTests(WagtailPageTestCase):
                                                  courses_coming_soon_header='Courses coming soon header',
                                                  )
         self.homepage.add_child(instance=assignable_page)
-        self.assertCanCreateAt(page_models.HomePage, page_models.Assignable)
+        self.assertCanCreateAt(page_models.RootPage, page_models.Assignable)
 
         retrieved_page = Page.objects.get(id=assignable_page.id)
         self.assertEqual(retrieved_page.title, "Assignable Page")
@@ -587,7 +593,7 @@ class ErrataListTest(WagtailPageTestCase):
 
     def test_can_create_errata_list_page(self):
         root_page = Page.objects.get(title="Root")
-        homepage = page_models.HomePage(title="Hello World",
+        homepage = page_models.RootPage(title="Hello World",
                                         slug="hello-world",
                                         )
         root_page.add_child(instance=homepage)
@@ -612,7 +618,7 @@ class SubjectsPageTest(WagtailPageTestCase):
 
     def test_can_create_subjects_page(self):
         root_page = Page.objects.get(title="Root")
-        homepage = page_models.HomePage(title="Hello World",
+        homepage = page_models.RootPage(title="Hello World",
                                         slug="hello-world",
                                         )
         root_page.add_child(instance=homepage)
@@ -634,7 +640,7 @@ class SubjectPageTest(WagtailPageTestCase):
 
     def test_can_create_subject_page(self):
         root_page = Page.objects.get(title="Root")
-        homepage = page_models.HomePage(title="Hello World",
+        homepage = page_models.RootPage(title="Hello World",
                                         slug="hello-world",
                                         )
         root_page.add_child(instance=homepage)

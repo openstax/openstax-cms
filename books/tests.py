@@ -2,7 +2,7 @@ from wagtail.test.utils import WagtailPageTestCase
 from wagtail.models import Page, Site
 
 import snippets.models
-from pages.models import HomePage
+from pages.models import RootPage
 from books.models import BookIndex, Book, BookFacultyResources, BookStudentResources
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
 from salesforce.tests import openstax_vcr as vcr
@@ -23,7 +23,7 @@ class BookTests(WagtailPageTestCase):
         # create root page
         root_page = Page.objects.get(title="Root")
         # create homepage
-        homepage = HomePage(title="Hello World",
+        homepage = RootPage(title="Hello World",
                             slug="hello-world",
                             )
         # add homepage to root page
@@ -133,7 +133,7 @@ class BookTests(WagtailPageTestCase):
         })
 
     def test_cannot_create_book_under_homepage(self):
-        self.assertCanNotCreateAt(HomePage, Book)
+        self.assertCanNotCreateAt(RootPage, Book)
 
     def test_slashless_apis_are_good(self):
         assertPathDoesNotRedirectToTrailingSlash(self, '/apps/cms/api/books')

@@ -84,7 +84,7 @@ class Supporters(FrontendPreviewMixin, Page):
 
     template = 'page.html'
 
-    parent_page_types = ['pages.HomePage', 'pages.RootPage']
+    parent_page_types = ['pages.RootPage']
     max_count = 1
 
 
@@ -210,7 +210,7 @@ class MapPage(FrontendPreviewMixin, Page):
 
     template = 'page.html'
 
-    parent_page_types = ['pages.HomePage', 'pages.RootPage']
+    parent_page_types = ['pages.RootPage']
     max_count = 1
 
 
@@ -362,7 +362,7 @@ class Impact(FrontendPreviewMixin, Page):
         APIField('search_description'),
     ]
 
-    parent_page_type = ['pages.HomePage']
+    parent_page_type = ['pages.RootPage']
     subpage_types = ['pages.ImpactStory']
     max_count = 1
     template = 'page.html'
