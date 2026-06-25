@@ -199,7 +199,7 @@ class K12MainPage(FrontendPreviewMixin, Page):
 
     max_count = 1
     template = 'page.html'
-    parent_page_types = ['pages.HomePage', 'pages.RootPage']
+    parent_page_types = ['pages.RootPage']
     subpage_types = ['pages.K12Subject']
 
 

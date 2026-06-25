@@ -11,7 +11,7 @@ from django.conf import settings
 
 from books.models import BookIndex, Book
 from donations.models import ThankYouNote
-from pages.models import HomePage
+from pages.models import RootPage
 from salesforce.models import SalesforceSettings, MapBoxDataset, Partner, AdoptionOpportunityRecord, SalesforceForms, School
 from salesforce.management.commands.update_opportunities import Command as UpdateOpportunitiesCommand
 from salesforce.salesforce import Salesforce as SF
@@ -398,7 +398,7 @@ class ResourceDownloadTest(TestCase):
         # create root page
         root_page = Page.objects.get(title="Root")
         # create homepage
-        homepage = HomePage(title="Hello World",
+        homepage = RootPage(title="Hello World",
                             slug="hello-world",
                             )
         # add homepage to root page

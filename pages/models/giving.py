@@ -2,11 +2,10 @@ from django.db import models
 from wagtail.admin.panels import FieldPanel, TitleFieldPanel
 from wagtail.admin.widgets.slug import SlugInput
 from wagtail import blocks
-from wagtail.fields import RichTextField, StreamField
+from wagtail.fields import StreamField
 from wagtail.models import Page
 from wagtail.api import APIField
 
-from openstax.api_fields import ExpandedRichTextField
 from openstax.functions import build_image_url
 from openstax.preview import FrontendPreviewMixin
 from news.models import BlogStreamBlock  # for use on the ImpactStories
@@ -85,7 +84,7 @@ class Supporters(FrontendPreviewMixin, Page):
 
     template = 'page.html'
 
-    parent_page_types = ['pages.HomePage', 'pages.RootPage']
+    parent_page_types = ['pages.RootPage']
     max_count = 1
 
 
@@ -211,116 +210,7 @@ class MapPage(FrontendPreviewMixin, Page):
 
     template = 'page.html'
 
-    parent_page_types = ['pages.HomePage', 'pages.RootPage']
-    max_count = 1
-
-
-class Give(FrontendPreviewMixin, Page):
-    intro_heading = models.CharField(max_length=255)
-    intro_description = models.TextField()
-    other_payment_methods_heading = models.CharField(max_length=255)
-    payment_method_1_heading = models.CharField(max_length=255)
-    payment_method_1_content = RichTextField()
-    payment_method_2_heading = models.CharField(max_length=255)
-    payment_method_2_content = RichTextField()
-    payment_method_3_heading = models.CharField(max_length=255)
-    payment_method_3_content = RichTextField()
-    payment_method_4_heading = models.CharField(max_length=255, blank=True, null=True)
-    payment_method_4_content = RichTextField(blank=True, null=True)
-    give_cta = models.CharField(max_length=255)
-    give_cta_link = models.URLField()
-    promote_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-
-    api_fields = [
-        APIField('intro_heading'),
-        APIField('intro_description'),
-        APIField('other_payment_methods_heading'),
-        APIField('payment_method_1_heading'),
-        APIField('payment_method_1_content', serializer=ExpandedRichTextField()),
-        APIField('payment_method_2_heading'),
-        APIField('payment_method_2_content', serializer=ExpandedRichTextField()),
-        APIField('payment_method_3_heading'),
-        APIField('payment_method_3_content', serializer=ExpandedRichTextField()),
-        APIField('payment_method_4_heading'),
-        APIField('payment_method_4_content', serializer=ExpandedRichTextField()),
-        APIField('give_cta'),
-        APIField('give_cta_link'),
-        APIField('slug'),
-        APIField('seo_title'),
-        APIField('search_description'),
-        APIField('promote_image')
-    ]
-
-    content_panels = [
-        TitleFieldPanel('title', classname='full title'),
-        FieldPanel('intro_heading'),
-        FieldPanel('intro_description'),
-        FieldPanel('other_payment_methods_heading'),
-        FieldPanel('payment_method_1_heading'),
-        FieldPanel('payment_method_1_content'),
-        FieldPanel('payment_method_2_heading'),
-        FieldPanel('payment_method_2_content'),
-        FieldPanel('payment_method_3_heading'),
-        FieldPanel('payment_method_3_content'),
-        FieldPanel('payment_method_4_heading'),
-        FieldPanel('payment_method_4_content'),
-        FieldPanel('give_cta'),
-        FieldPanel('give_cta_link'),
-    ]
-
-    promote_panels = [
-        FieldPanel('slug', widget=SlugInput),
-        FieldPanel('seo_title'),
-        FieldPanel('search_description'),
-        FieldPanel('promote_image')
-    ]
-
-    template = 'page.html'
-
-    parent_page_types = ['pages.HomePage', 'pages.RootPage']
-    max_count = 1
-
-
-class GiveForm(FrontendPreviewMixin, Page):
-    page_description = models.TextField()
-    promote_image = models.ForeignKey(
-        'wagtailimages.Image',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+'
-    )
-
-    api_fields = [
-        APIField('title'),
-        APIField('page_description'),
-        APIField('slug'),
-        APIField('seo_title'),
-        APIField('search_description'),
-        APIField('promote_image')
-    ]
-
-    content_panels = [
-        TitleFieldPanel('title', classname="full title"),
-        FieldPanel('page_description'),
-    ]
-
-    promote_panels = [
-        FieldPanel('slug', widget=SlugInput),
-        FieldPanel('seo_title'),
-        FieldPanel('search_description'),
-        FieldPanel('promote_image')
-    ]
-
-    template = 'page.html'
-
-    parent_page_types = ['pages.HomePage', 'pages.RootPage']
+    parent_page_types = ['pages.RootPage']
     max_count = 1
 
 
@@ -472,7 +362,7 @@ class Impact(FrontendPreviewMixin, Page):
         APIField('search_description'),
     ]
 
-    parent_page_type = ['pages.HomePage']
+    parent_page_types = ['pages.RootPage']
     subpage_types = ['pages.ImpactStory']
     max_count = 1
     template = 'page.html'

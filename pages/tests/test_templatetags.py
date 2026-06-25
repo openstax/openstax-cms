@@ -15,13 +15,14 @@ class TemplateTagTests(WagtailPageTestCase):
         # Get root page
         root_page = Page.objects.get(title="Root")
         
-        # Create a test page with various field types
-        self.test_page = page_models.HomePage(
-            title="Test HomePage",
+        # Create a test page with various field types (Supporters has Char,
+        # Text and StreamField content fields, exercising the tag generically)
+        self.test_page = page_models.Supporters(
+            title="Test Supporters",
             slug="test-home",
-            banner_headline="Test Headline",
+            banner_heading="Test Headline",
             banner_description="Test description text",
-            features_headline="Features Test",
+            disclaimer="Disclaimer text",
         )
         root_page.add_child(instance=self.test_page)
 
@@ -42,7 +43,7 @@ class TemplateTagTests(WagtailPageTestCase):
         result = template.render(context)
         
         # Should contain our test data
-        self.assertIn('banner_headline:Test Headline', result)
+        self.assertIn('banner_heading:Test Headline', result)
         self.assertIn('banner_description:Test description text', result)
 
     def test_get_page_content_extracts_text_field(self):
@@ -60,13 +61,12 @@ class TemplateTagTests(WagtailPageTestCase):
         from django.template import Context, Template
         
         # Update the test page with StreamField data
-        self.test_page.features_tab1_features = [
-            ('feature_text', 'Feature One'),
-            ('feature_text', 'Feature Two'),
+        self.test_page.funder_groups = [
+            ('content', {'group_title': 'Feature One', 'description': 'Feature Two', 'funders': []}),
         ]
         self.test_page.save()
-        
-        template = Template('{% load pages_tags %}{% get_page_content page as content %}{% for item in content %}{% if item.name == "features_tab1_features" %}{{ item.value }}{% endif %}{% endfor %}')
+
+        template = Template('{% load pages_tags %}{% get_page_content page as content %}{% for item in content %}{% if item.name == "funder_groups" %}{{ item.value }}{% endif %}{% endfor %}')
         context = Context({'page': self.test_page})
         result = template.render(context)
         
@@ -96,7 +96,7 @@ class TemplateTagTests(WagtailPageTestCase):
         
         # Create a page with minimal data
         root_page = Page.objects.get(title="Root")
-        minimal_page = page_models.HomePage(
+        minimal_page = page_models.RootPage(
             title="Minimal Page",
             slug="minimal",
         )

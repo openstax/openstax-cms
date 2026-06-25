@@ -190,7 +190,7 @@ class NewsIndex(FrontendPreviewMixin, Page):
     ]
 
     subpage_types = ['news.NewsArticle']
-    parent_page_types = ['pages.HomePage', 'pages.RootPage']
+    parent_page_types = ['pages.RootPage']
     max_count = 1
 
     def get_url_parts(self, *args, **kwargs):
@@ -626,7 +626,7 @@ class PressIndex(FrontendPreviewMixin, Page):
     ]
 
     subpage_types = ['news.PressRelease']
-    parent_page_types = ['pages.HomePage', 'pages.RootPage']
+    parent_page_types = ['pages.RootPage']
     max_count = 1
 
 

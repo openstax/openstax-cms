@@ -110,7 +110,7 @@ class AboutUsPage(FrontendPreviewMixin, Page):
     ]
 
     template = 'page.html'
-    parent_page_types = ['pages.HomePage', 'pages.RootPage']
+    parent_page_types = ['pages.RootPage']
     max_count = 1
 
 
@@ -314,7 +314,7 @@ class LearningResearchPage(FrontendPreviewMixin, Page):
     ]
 
     template = 'page.html'
-    parent_page_types = ['pages.HomePage', 'pages.RootPage']
+    parent_page_types = ['pages.RootPage']
     max_count = 1
 
 
@@ -353,7 +353,7 @@ class Careers(FrontendPreviewMixin, Page):
     ]
 
     template = 'page.html'
-    parent_page_types = ['pages.HomePage', 'pages.RootPage']
+    parent_page_types = ['pages.RootPage']
     max_count = 1
 
 

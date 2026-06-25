@@ -58,7 +58,7 @@ class ContactUs(FrontendPreviewMixin, Page):
 
     template = 'page.html'
 
-    parent_page_types = ['pages.HomePage', 'pages.RootPage']
+    parent_page_types = ['pages.RootPage']
     max_count = 1
 
 
@@ -102,7 +102,7 @@ class FAQ(FrontendPreviewMixin, Page):
 
     template = 'page.html'
 
-    parent_page_types = ['pages.HomePage', 'pages.RootPage']
+    parent_page_types = ['pages.RootPage']
 
 
 class ErrataList(FrontendPreviewMixin, Page):
@@ -153,7 +153,7 @@ class ErrataList(FrontendPreviewMixin, Page):
     ]
 
     template = 'page.html'
-    parent_page_types = ['pages.HomePage', 'pages.RootPage']
+    parent_page_types = ['pages.RootPage']
     max_count = 1
 
     def get_sitemap_urls(self, request=None):
@@ -213,7 +213,7 @@ class PrintOrder(FrontendPreviewMixin, Page):
 
     template = 'page.html'
 
-    parent_page_types = ['pages.HomePage', 'pages.RootPage']
+    parent_page_types = ['pages.RootPage']
     max_count = 1
 
 
@@ -271,7 +271,7 @@ class FormHeadings(FrontendPreviewMixin, Page):
     ]
 
     template = 'page.html'
-    parent_page_types = ['pages.HomePage', 'pages.RootPage']
+    parent_page_types = ['pages.RootPage']
     max_count = 1
 
 

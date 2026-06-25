@@ -5,7 +5,7 @@ from django.utils import timezone
 from django.test import TestCase
 from wagtail.test.utils import WagtailPageTestCase
 from wagtail.models import Page
-from pages.models import HomePage
+from pages.models import RootPage
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
 from unittest.mock import MagicMock, patch
 from news.models import NewsIndex, NewsArticle, PressIndex, PressRelease
@@ -176,7 +176,7 @@ class NewsTests(WagtailPageTestCase, TestCase):
         # create root page
         root_page = Page.objects.get(title="Root")
         # create homepage
-        homepage = HomePage(title="Hello World",
+        homepage = RootPage(title="Hello World",
                             slug="hello-world",
                             )
         # add homepage to root page
@@ -473,7 +473,7 @@ class PressTests(WagtailPageTestCase):
     @classmethod
     def setUpTestData(cls):
         root_page = Page.objects.get(title="Root")
-        homepage = HomePage(title="Hello World", slug="hello-world")
+        homepage = RootPage(title="Hello World", slug="hello-world")
         root_page.add_child(instance=homepage)
 
         press_index = PressIndex(about='About press index',

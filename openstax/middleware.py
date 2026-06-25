@@ -11,7 +11,7 @@ from api.models import FeatureFlag
 from books.models import Book, BookIndex
 from openstax.functions import build_image_url
 from news.models import NewsArticle
-from pages.models import HomePage, Supporters, PrivacyPolicy, K12Subject, Subject, Subjects, RootPage
+from pages.models import Supporters, PrivacyPolicy, K12Subject, Subject, Subjects, RootPage
 
 
 class CommonMiddlewareAppendSlashWithoutRedirect(CommonMiddleware):
@@ -152,7 +152,5 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
     def page_by_slug(self, page_slug):
         if page_slug == 'supporters':
             return Supporters.objects.all()
-        if page_slug == 'openstax-homepage':
-            return HomePage.objects.filter(locale=1)
         if page_slug == 'home':
             return RootPage.objects.filter(locale=1)
