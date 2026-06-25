@@ -1,13 +1,13 @@
 import json
 from django.core.management.base import BaseCommand
-from pages.models import HomePage, Subjects
+from pages.models import RootPage, Subjects
 
 
 class Command(BaseCommand):
     help="Populate subjects page after a deployment"
 
     def handle(self, *args, **options):
-        homepage = HomePage.objects.first() # there's only one home page, so this should be okay
+        homepage = RootPage.objects.first() # there's only one home page, so this should be okay
         subjects_page = Subjects(
             title="New Subjects",
             heading="Browse Our Subjects",

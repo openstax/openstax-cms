@@ -1,4 +1,3 @@
-from django import forms
 from django.db import models
 from wagtail.admin.panels import FieldPanel, TitleFieldPanel
 from wagtail.admin.widgets.slug import SlugInput
@@ -10,8 +9,6 @@ from wagtail.api import APIField
 from openstax.api_fields import ExpandedRichTextField
 from openstax.functions import build_document_url
 from openstax.preview import FrontendPreviewMixin
-
-from salesforce.models import Partner
 
 from pages.custom_blocks import APIImageChooserBlock, \
     FAQBlock, \
@@ -37,34 +34,8 @@ class WebinarPage(FrontendPreviewMixin, Page):
         APIField('search_description'),
     ]
 
-    parent_page_type = ['pages.HomePage']
+    parent_page_types = ['pages.RootPage']
     template = 'page.html'
-
-
-class PartnerChooserBlock(blocks.ChooserBlock):
-    target_model = Partner
-    widget = forms.Select
-
-    # Return the key value for the select field
-    def value_for_form(self, value):
-        if isinstance(value, self.target_model):
-            return value.pk
-        else:
-            return value
-
-    def get_api_representation(self, value, context=None):
-        if value.partner_logo:
-            return {
-                'id': value.id,
-                'name': value.partner_name,
-                'logo': value.partner_logo.url
-            }
-        else:
-            return {
-                'id': value.id,
-                'name': value.partner_name,
-                'logo': None
-            }
 
 
 class AllyLogos(FrontendPreviewMixin, Page):
@@ -120,7 +91,7 @@ class AllyLogos(FrontendPreviewMixin, Page):
     ]
 
     template = 'page.html'
-    parent_page_types = ['pages.HomePage', 'pages.RootPage']
+    parent_page_types = ['pages.RootPage']
 
 
 class Assignable(FrontendPreviewMixin, Page):
@@ -280,6 +251,6 @@ class Assignable(FrontendPreviewMixin, Page):
         FieldPanel('promote_image')
     ]
 
-    parent_page_type = ['pages.HomePage']
+    parent_page_types = ['pages.RootPage']
     template = 'page.html'
     max_count = 1

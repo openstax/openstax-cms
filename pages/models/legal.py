@@ -49,7 +49,7 @@ class TermsOfService(FrontendPreviewMixin, Page):
 
     template = 'page.html'
 
-    parent_page_types = ['pages.HomePage', 'pages.RootPage']
+    parent_page_types = ['pages.RootPage']
     max_count = 1
 
 
@@ -89,7 +89,7 @@ class Accessibility(FrontendPreviewMixin, Page):
 
     template = 'page.html'
 
-    parent_page_types = ['pages.HomePage', 'pages.RootPage']
+    parent_page_types = ['pages.RootPage']
     max_count = 1
 
 
@@ -129,7 +129,7 @@ class Licensing(FrontendPreviewMixin, Page):
 
     template = 'page.html'
 
-    parent_page_types = ['pages.HomePage', 'pages.RootPage']
+    parent_page_types = ['pages.RootPage']
     max_count = 1
 
 
@@ -169,7 +169,7 @@ class PrivacyPolicy(FrontendPreviewMixin, Page):
 
     template = 'page.html'
 
-    parent_page_types = ['pages.HomePage', 'pages.RootPage']
+    parent_page_types = ['pages.RootPage']
     max_count = 1
 
 

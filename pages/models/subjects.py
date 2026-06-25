@@ -116,7 +116,7 @@ class Subjects(FrontendPreviewMixin, Page):
 
     template = 'page.html'
 
-    parent_page_types = ['pages.HomePage', 'pages.RootPage']
+    parent_page_types = ['pages.RootPage']
     subpage_types = ['pages.Subject']
     max_count = 1
 

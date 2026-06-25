@@ -16,7 +16,7 @@ from .constants import (
     BODY_BLOCKS,
 )
 from .bases import Quote, Institutions, Group
-from .core import RootPage, FlexPageRelatedPage, FlexPage, HomePage, GeneralPage
+from .core import RootPage, FlexPageRelatedPage, FlexPage, GeneralPage
 from .about import AboutUsPage, OpenStaxPeople, TeamPage, LearningResearchPage, Careers
 from .giving import Supporters, MapPage, ImpactStory, Impact
 from .legal import TermsOfService, Accessibility, Licensing, PrivacyPolicy
@@ -29,7 +29,6 @@ from .partners import (
 )
 from .marketing import (
     WebinarPage,
-    PartnerChooserBlock,
     AllyLogos,
     Assignable,
 )

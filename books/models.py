@@ -1261,7 +1261,7 @@ class BookIndex(FrontendPreviewMixin, Page):
 
     template = 'page.html'
 
-    parent_page_types = ['pages.HomePage', 'pages.RootPage']
+    parent_page_types = ['pages.RootPage']
     subpage_types = ['books.Book']
     max_count = 1
 

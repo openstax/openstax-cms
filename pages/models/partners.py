@@ -94,7 +94,7 @@ class Technology(FrontendPreviewMixin, Page):
     ]
 
     template = 'page.html'
-    parent_page_types = ['pages.HomePage', 'pages.RootPage']
+    parent_page_types = ['pages.RootPage']
     max_count = 1
 
 
@@ -161,7 +161,7 @@ class InstitutionalPartnership(FrontendPreviewMixin, Page):
         APIField('search_description'),
     ]
 
-    parent_page_type = ['pages.HomePage']
+    parent_page_types = ['pages.RootPage']
     template = 'page.html'
     max_count = 1
 
@@ -355,7 +355,7 @@ class InstitutionalPartnerProgramPage(FrontendPreviewMixin, Page):
         APIField('section_9_contact_html', serializer=ExpandedRichTextField()),
     ]
 
-    parent_page_type = ['pages.HomePage']
+    parent_page_types = ['pages.RootPage']
     template = 'page.html'
 
 
@@ -451,7 +451,7 @@ class PartnersPage(FrontendPreviewMixin, Page):
         APIField('search_description'),
     ]
 
-    parent_page_type = ['pages.HomePage']
+    parent_page_types = ['pages.RootPage']
     template = 'page.html'
 
 
