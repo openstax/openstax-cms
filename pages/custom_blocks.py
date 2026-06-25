@@ -547,3 +547,33 @@ class BookBlock(blocks.PageChooserBlock):
         from books.models import get_book_data
         if value:
             return get_book_data(value)
+
+
+CONTENT_REFERENCE_TYPES = [
+    'books.Book',
+    'news.NewsArticle',
+]
+
+
+class ContentChooserBlock(blocks.PageChooserBlock):
+    """References another page on the site, restricted to CONTENT_REFERENCE_TYPES.
+
+    Emits a lean canonical reference; display data (image/excerpt) is hydrated
+    frontend-side from the pages API, not embedded here.
+    """
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault('page_type', CONTENT_REFERENCE_TYPES)
+        kwargs.setdefault('label', 'Content')
+        super().__init__(*args, **kwargs)
+
+    def get_api_representation(self, value, context=None):
+        if value is None:
+            return None
+        page = value.specific  # resolve overridden get_url_parts, like LinkBlock
+        return {
+            'id': value.pk,
+            'type': page._meta.label_lower,
+            'slug': value.slug,
+            'url': page.url or page.url_path,
+            'title': value.title,
+        }
