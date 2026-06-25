@@ -84,3 +84,10 @@ class ContentCardBlockTests(TestCase):
         self.assertIsNone(rep["title"])
         self.assertIsNone(rep["image"])
         self.assertIsNone(rep["excerpt"])
+
+
+class ContentCardRegistrationTests(TestCase):
+    def test_content_card_registered_in_base_blocks(self):
+        from pages.models.constants import BASE_CONTENT_BLOCKS
+        names = [name for name, _ in BASE_CONTENT_BLOCKS]
+        self.assertIn("content_card", names)
