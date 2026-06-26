@@ -86,6 +86,11 @@ BASE_CONTENT_BLOCKS = [
     ('big_number', blocks.StructBlock([
         ('number', blocks.CharBlock(help_text='The statistic to display large, e.g. 8M+.')),
         ('caption', blocks.CharBlock(required=False, help_text='Optional supporting text shown below the number.')),
+        ('color', blocks.ChoiceBlock(required=False, choices=[
+            ('blue', 'Blue'),
+            ('green', 'Green'),
+            ('orange', 'Orange'),
+        ], help_text='Brand color for the number. Defaults to the inherited text color.')),
     ], label="Big Number")),
     ('faq', blocks.StreamBlock([
         ('faq', FAQBlock()),
