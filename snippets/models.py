@@ -317,7 +317,7 @@ class SubjectCategory(TranslatableMixin, models.Model):
 
     @property
     def subject_name(self):
-        return self.subject.name
+        return self.subject.name if self.subject else ''
 
     panels = [
         FieldPanel('subject'),
@@ -541,5 +541,4 @@ class RequireLoginMessage(TranslatableMixin, models.Model):
 
     def __str__(self):
         return (self.require_login_message[:100] + '...') if len(self.require_login_message) > 100 else self.require_login_message
-
 

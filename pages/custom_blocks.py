@@ -201,6 +201,8 @@ class LinkBlock(blocks.StreamBlock):
     def get_api_representation(self, value, context=None):
         for child in value:
             if child.block_type == 'document':
+                if child.value is None:
+                    return None
                 return {
                     'value': child.value.url,
                     'type': child.block_type,
@@ -533,7 +535,7 @@ class AssignableBookBlock(blocks.StructBlock):
     def get_api_representation(self, value, context=None):
         if value:
             return {
-                'cover': build_document_url(value['cover'].url),
+                'cover': build_document_url(value['cover'].url) if value['cover'] else None,
                 'title': value['title'],
             }
 

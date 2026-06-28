@@ -7,7 +7,7 @@ from wagtail.fields import RichTextField
 from wagtail.api import APIField
 from books.models import Book
 from openstax.api_fields import APIRichTextBlock, ExpandedRichTextField, strip_empty_paragraphs
-from pages.custom_blocks import LinkBlock, LinksGroupBlock
+from pages.custom_blocks import AssignableBookBlock, LinkBlock, LinksGroupBlock
 
 
 class ExpandedRichTextFieldTests(TestCase):
@@ -160,6 +160,24 @@ class LinkBlockTargetTests(TestCase):
         # to_python with value=None produces a StreamValue child where child.value is None.
         value = block.to_python([{"type": "internal", "value": None}])
         self.assertIsNone(block.get_api_representation(value))
+
+    def test_document_link_with_no_document_returns_none(self):
+        block = LinkBlock()
+        value = block.to_python([{"type": "document", "value": None}])
+        self.assertIsNone(block.get_api_representation(value))
+
+
+class AssignableBookBlockTests(TestCase):
+    def test_assignable_book_with_no_cover_serializes_null_cover(self):
+        block = AssignableBookBlock()
+        value = block.to_python({"cover": None, "title": "Assignable"})
+        self.assertEqual(
+            block.get_api_representation(value),
+            {
+                "cover": None,
+                "title": "Assignable",
+            },
+        )
 
 
 class LinksGroupBlockTests(TestCase):
