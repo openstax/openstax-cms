@@ -231,6 +231,29 @@ class BookTests(WagtailPageTestCase):
             book.refresh_from_db()
             self.assertEqual(book.cover_image_id, first_cover_id)
 
+    def test_salesforce_name_is_synced_dropdown(self):
+        from django import forms as dj_forms
+        from books.models import Book
+        from salesforce.models import SalesforceBookName
+        SalesforceBookName.objects.create(
+            salesforce_id='a1', name='UP', official_name='University Physics (Calculus)')
+        SalesforceBookName.objects.create(
+            salesforce_id='a2', name='CA', official_name='College Algebra')
+
+        form_class = Book.get_edit_handler().get_form_class()
+
+        form = form_class(instance=Book(salesforce_name=''))
+        field = form.fields['salesforce_name']
+        self.assertIsInstance(field, dj_forms.ChoiceField)
+        values = [c[0] for c in field.choices]
+        self.assertIn('University Physics (Calculus)', values)
+        self.assertIn('College Algebra', values)
+
+        # An existing value not in the synced list is preserved as an option
+        form2 = form_class(instance=Book(salesforce_name='Legacy Drifted Name'))
+        values2 = [c[0] for c in form2.fields['salesforce_name'].choices]
+        self.assertIn('Legacy Drifted Name', values2)
+
     def test_book_uuid_is_canonical_and_syncs_cnx_id(self):
         with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
             book_index = BookIndex.objects.all()[0]
