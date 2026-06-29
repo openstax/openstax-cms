@@ -578,6 +578,15 @@ class BookCallout(TranslatableMixin, models.Model):
         return f'Book callout ({self.locale})'
 
 
+class SharedStreamFieldSerializer(Field):
+    """Serialize a StreamField value exposed via a property the same way Wagtail
+    serializes a native StreamField api_field (so output is byte-identical)."""
+    def to_representation(self, value):
+        if not value:
+            return []
+        return value.stream_block.get_api_representation(value)
+
+
 class PromoteSnippetContentChooserBlock(SnippetChooserBlock):
     def get_api_representation(self, value, context=None):
         if value:
@@ -793,13 +802,8 @@ class Book(FrontendPreviewMixin, Page):
     community_resource_feature_link_url = property(get_community_resource_feature_link_url)
     community_resource_feature_text = models.TextField(blank=True, help_text='Text of the community resource feature.')
 
-    webinar_content = StreamField(SharedContentBlock(), null=True, blank=True, use_json_field=True)
     webview_link = models.URLField(blank=True, help_text="Link to CNX Webview book")
     webview_rex_link = models.URLField(blank=True, help_text="Link to REX Webview book")
-    rex_callout_title = models.CharField(max_length=255, blank=True, null=True, help_text='Title of the REX callout',
-                                         default="Recommended")
-    rex_callout_blurb = models.CharField(max_length=255, blank=True, null=True,
-                                         help_text='Additional text for the REX callout.')
     bookshare_link = models.URLField(blank=True, help_text="Link to Bookshare resources")
     amazon_coming_soon = models.BooleanField(default=False, verbose_name="Individual Print Coming Soon")
     amazon_link = models.URLField(blank=True, verbose_name="Individual Print Link")
@@ -886,8 +890,6 @@ class Book(FrontendPreviewMixin, Page):
         FieldPanel('license_text'),
         FieldPanel('license_name'),
         FieldPanel('webview_rex_link'),
-        FieldPanel('rex_callout_title'),
-        FieldPanel('rex_callout_blurb'),
         FieldPanel('pdf'),
         FieldPanel('last_updated_pdf'),
         FieldPanel('free_stuff_instructor'),
@@ -899,7 +901,6 @@ class Book(FrontendPreviewMixin, Page):
         FieldPanel('community_resource_blurb'),
         FieldPanel('community_resource_feature_link'),
         FieldPanel('community_resource_feature_text'),
-        FieldPanel('webinar_content'),
         FieldPanel('bookshare_link'),
         FieldPanel('amazon_coming_soon'),
         FieldPanel('amazon_link'),
@@ -998,7 +999,7 @@ class Book(FrontendPreviewMixin, Page):
         APIField('community_resource_blurb'),
         APIField('community_resource_feature_link_url'),
         APIField('community_resource_feature_text'),
-        APIField('webinar_content'),
+        APIField('webinar_content', serializer=SharedStreamFieldSerializer()),
         APIField('promote_snippet'),
         APIField('webview_link'),
         APIField('webview_rex_link'),
@@ -1077,6 +1078,25 @@ class Book(FrontendPreviewMixin, Page):
     @property
     def require_login_message_text(self):
         return self.require_login_message.require_login_message if self.require_login_message else None
+
+    @property
+    def _book_callout(self):
+        return BookCallout.objects.filter(locale=self.locale).first()
+
+    @property
+    def rex_callout_title(self):
+        callout = self._book_callout
+        return callout.rex_callout_title if callout else None
+
+    @property
+    def rex_callout_blurb(self):
+        callout = self._book_callout
+        return callout.rex_callout_blurb if callout else None
+
+    @property
+    def webinar_content(self):
+        callout = self._book_callout
+        return callout.webinar_content if callout else None
 
     def get_slug(self):
         return 'books/{}'.format(self.slug)
