@@ -25,9 +25,10 @@ def _image_from_document(document, default_title):
     image.file.save(os.path.basename(document.file.name), ContentFile(content), save=False)
     # Set dimensions AFTER file.save: Wagtail's image field runs
     # update_dimension_fields during save and would otherwise null them out
-    # (it reads the already-consumed ContentFile).
-    image.width = width
-    image.height = height
+    # (it reads the already-consumed ContentFile). int() because Willow returns
+    # floats for SVG dimensions, while Image.width/height are integer fields.
+    image.width = int(width)
+    image.height = int(height)
     image.save()
     return image
 
