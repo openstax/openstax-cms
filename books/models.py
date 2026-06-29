@@ -1067,9 +1067,11 @@ class Book(FrontendPreviewMixin, Page):
     def save(self, *args, **kwargs):
         # book_uuid is canonical; keep the legacy cnx_id column mirrored for
         # API back-compat (cnx_id must stay a real column to remain filterable).
-        if self.book_uuid:
+        update_fields = kwargs.get("update_fields")
+        if update_fields is None or "book_uuid" in update_fields:
             self.cnx_id = self.book_uuid
-
+            if update_fields is not None:
+                kwargs["update_fields"] = sorted(set(update_fields) | {"cnx_id"})
         if self.partner_list_label:
             Book.objects.filter(locale=self.locale).update(partner_list_label=self.partner_list_label)
 
