@@ -119,6 +119,28 @@ class BookTests(WagtailPageTestCase):
             self.assertEqual(book.salesforce_abbreviation, 'Prealgebra')
 
 
+    def test_book_uuid_is_canonical_and_syncs_cnx_id(self):
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            book = Book(title="UUID Sync Book",
+                        slug="uuid-sync-book",
+                        book_uuid='aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test",
+                        cover=self.test_doc,
+                        title_image=self.test_doc,
+                        publish_date=datetime.date.today(),
+                        locale=root_page.locale)
+            book_index.add_child(instance=book)
+            book.refresh_from_db()
+            # cnx_id mirrors the canonical book_uuid
+            self.assertEqual(book.cnx_id, 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee')
+            # cnx_id stays a real, filterable column
+            self.assertTrue(
+                Book.objects.filter(cnx_id='aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee').exists()
+            )
+
     def test_can_create_book_without_cnx_id(self):
         with vcr.use_cassette('fixtures/vcr_cassettes/books_no_cnx_id.yaml'):
             book_index = BookIndex.objects.all()[0]

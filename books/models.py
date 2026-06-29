@@ -611,11 +611,12 @@ class Book(FrontendPreviewMixin, Page):
     created = models.DateTimeField(auto_now_add=True)
     book_state = models.CharField(max_length=255, choices=BOOK_STATES, default='live',
                                   help_text='The state of the book.')
-    cnx_id = models.CharField(
-        max_length=255, help_text="collection.xml UUID. Should be same as book UUID",
-        blank=True, null=True)
     book_uuid = models.CharField(
-        max_length=255, help_text="collection.xml UUID. Should be same as cnx id.",
+        max_length=255, help_text="collection.xml UUID for the book. Canonical book identifier.",
+        blank=True, null=True)
+    cnx_id = models.CharField(
+        max_length=255,
+        help_text="Legacy alias of book_uuid, kept for API back-compat. Auto-synced from book_uuid; do not edit.",
         blank=True, null=True)
 
     polish_site_link = models.URLField(blank=True, null=True,
@@ -861,8 +862,8 @@ class Book(FrontendPreviewMixin, Page):
 
     book_detail_panel = Page.content_panels + [
         FieldPanel('book_state'),
-        FieldPanel('cnx_id'),
         FieldPanel('book_uuid'),
+        FieldPanel('cnx_id', read_only=True),
         FieldPanel('polish_site_link'),
         FieldPanel('salesforce_abbreviation'),
         FieldPanel('salesforce_name'),
@@ -1123,6 +1124,11 @@ class Book(FrontendPreviewMixin, Page):
         return book_urls
 
     def save(self, *args, **kwargs):
+        # book_uuid is canonical; keep the legacy cnx_id column mirrored for
+        # API back-compat (cnx_id must stay a real column to remain filterable).
+        if self.book_uuid:
+            self.cnx_id = self.book_uuid
+
         if self.partner_list_label:
             Book.objects.filter(locale=self.locale).update(partner_list_label=self.partner_list_label)
 
