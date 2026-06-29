@@ -77,7 +77,6 @@ def get_book_data(book):
             'webview_link': book.webview_link,
             'webview_rex_link': book.webview_rex_link,
             'bookshare_link': book.bookshare_link,
-            'kindle_link': book.kindle_link,
             'amazon_coming_soon': book.amazon_coming_soon,
             'amazon_link': book.amazon_link,
             'audiobook_link': book.audiobook_link,
@@ -773,9 +772,6 @@ class Book(FrontendPreviewMixin, Page):
     amazon_coming_soon = models.BooleanField(default=False, verbose_name="Individual Print Coming Soon")
     amazon_link = models.URLField(blank=True, verbose_name="Individual Print Link")
     audiobook_link = models.URLField(blank=True, verbose_name="Audiobook Link")
-    kindle_link = models.URLField(blank=True, help_text="Link to Kindle version")
-    chegg_link = models.URLField(blank=True, null=True, help_text="Link to Chegg e-reader")
-    chegg_link_text = models.CharField(max_length=255, blank=True, null=True, help_text='Text for Chegg link.')
     bookstore_coming_soon = models.BooleanField(default=False,
                                                 help_text='Whether this book is coming to bookstore soon.')
     bookstore_content = StreamField(SharedContentBlock(), null=True, blank=True, help_text='Bookstore content.',
@@ -876,9 +872,6 @@ class Book(FrontendPreviewMixin, Page):
         FieldPanel('amazon_coming_soon'),
         FieldPanel('amazon_link'),
         FieldPanel('audiobook_link'),
-        FieldPanel('kindle_link'),
-        FieldPanel('chegg_link'),
-        FieldPanel('chegg_link_text'),
         FieldPanel('bookstore_coming_soon'),
         FieldPanel('bookstore_content'),
         FieldPanel('assignable_book'),
@@ -983,9 +976,6 @@ class Book(FrontendPreviewMixin, Page):
         APIField('amazon_coming_soon'),
         APIField('amazon_link'),
         APIField('audiobook_link'),
-        APIField('kindle_link'),
-        APIField('chegg_link'),
-        APIField('chegg_link_text'),
         APIField('bookstore_coming_soon'),
         APIField('bookstore_content'),
         APIField('errata_content'),
