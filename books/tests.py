@@ -119,6 +119,17 @@ class BookTests(WagtailPageTestCase):
             self.assertEqual(book.salesforce_abbreviation, 'Prealgebra')
 
 
+    def test_book_callout_snippet_exists_and_is_editable(self):
+        from books.models import BookCallout
+        callout = BookCallout.objects.create(
+            rex_callout_title='Recommended',
+            rex_callout_blurb='Highlight and add notes — 100% free!',
+        )
+        self.assertEqual(BookCallout.objects.count(), 1)
+        self.assertEqual(callout.rex_callout_title, 'Recommended')
+        # webinar_content is a StreamField (empty is fine)
+        self.assertEqual(list(callout.webinar_content), [])
+
     def test_book_uuid_is_canonical_and_syncs_cnx_id(self):
         with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
             book_index = BookIndex.objects.all()[0]

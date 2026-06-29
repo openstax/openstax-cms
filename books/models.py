@@ -12,7 +12,7 @@ from wagtail.admin.panels import (FieldPanel,
 from wagtail.admin.widgets.slug import SlugInput
 from wagtail import blocks
 from wagtail.fields import RichTextField, StreamField
-from wagtail.models import Orderable, Page
+from wagtail.models import Orderable, Page, TranslatableMixin
 from wagtail.snippets.blocks import SnippetChooserBlock
 from wagtail.admin.panels import TabbedInterface, ObjectList
 from wagtail_ai.panels import AIMultipleChooserPanel
@@ -544,6 +544,38 @@ class SharedContentBlock(blocks.StreamBlock):
     class Meta:
         icon = 'document'
         required = False
+
+
+class BookCallout(TranslatableMixin, models.Model):
+    """Shared, per-locale REX callout + webinar content for all Book pages.
+
+    These were per-book fields that editors kept identical across every book;
+    now they're edited once here and read by every Book via properties."""
+    rex_callout_title = models.CharField(
+        max_length=255, blank=True, null=True, default="Recommended",
+        help_text='Title of the REX callout (shared across all books).')
+    rex_callout_blurb = models.CharField(
+        max_length=255, blank=True, null=True,
+        help_text='Additional text for the REX callout (shared across all books).')
+    webinar_content = StreamField(SharedContentBlock(), null=True, blank=True, use_json_field=True)
+
+    panels = [
+        FieldPanel('rex_callout_title'),
+        FieldPanel('rex_callout_blurb'),
+        FieldPanel('webinar_content'),
+    ]
+
+    api_fields = (
+        APIField('rex_callout_title'),
+        APIField('rex_callout_blurb'),
+        APIField('webinar_content'),
+    )
+
+    class Meta(TranslatableMixin.Meta):
+        verbose_name = 'Book callout'
+
+    def __str__(self):
+        return f'Book callout ({self.locale})'
 
 
 class PromoteSnippetContentChooserBlock(SnippetChooserBlock):
