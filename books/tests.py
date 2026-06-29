@@ -201,6 +201,32 @@ class BookTests(WagtailPageTestCase):
             self.assertTrue(book.cover_url)
             self.assertIsNone(book.cover_alt)   # no Image -> no alt
 
+    def test_convert_book_images_command(self):
+        from django.core.management import call_command
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            book = Book(title="Convert Book", slug="convert-book",
+                        book_uuid='031da8d3-b525-429c-80cf-6c8ed997733a',
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test",
+                        cover=self.test_doc, title_image=self.test_doc,
+                        publish_date=datetime.date.today(), locale=root_page.locale)
+            book_index.add_child(instance=book)
+            self.assertIsNone(book.cover_image)
+
+            call_command('convert_book_images')
+
+            book.refresh_from_db()
+            self.assertIsNotNone(book.cover_image)        # Image created + linked
+            self.assertIsNotNone(book.banner_image)
+            self.assertTrue(book.cover_url)
+            # Idempotent: a second run does not create duplicates / change links
+            first_cover_id = book.cover_image_id
+            call_command('convert_book_images')
+            book.refresh_from_db()
+            self.assertEqual(book.cover_image_id, first_cover_id)
+
     def test_book_uuid_is_canonical_and_syncs_cnx_id(self):
         with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
             book_index = BookIndex.objects.all()[0]
