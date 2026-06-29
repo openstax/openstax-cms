@@ -141,6 +141,26 @@ class BookTests(WagtailPageTestCase):
                 Book.objects.filter(cnx_id='aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee').exists()
             )
 
+    def test_pdf_api_keys(self):
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            book = Book(title="PDF Book", slug="pdf-book",
+                        book_uuid='031da8d3-b525-429c-80cf-6c8ed997733a',
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test", cover=self.test_doc, title_image=self.test_doc,
+                        pdf=self.test_doc,
+                        publish_date=datetime.date.today(),
+                        locale=root_page.locale)
+            book_index.add_child(instance=book)
+            resp = self.client.get(
+                '/apps/cms/api/v2/pages/{}/?fields=pdf_url,high_resolution_pdf_url'.format(book.id))
+            data = resp.json()
+            self.assertIn('pdf_url', data)
+            self.assertIn('high_resolution_pdf_url', data)            # deprecated alias retained
+            self.assertEqual(data['pdf_url'], data['high_resolution_pdf_url'])
+            self.assertNotIn('low_resolution_pdf_url', data)
+
     def test_can_create_book_without_cnx_id(self):
         with vcr.use_cassette('fixtures/vcr_cassettes/books_no_cnx_id.yaml'):
             book_index = BookIndex.objects.all()[0]

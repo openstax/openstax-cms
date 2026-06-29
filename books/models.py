@@ -72,8 +72,8 @@ def get_book_data(book):
             'is_hs': 'High School' in book.subjects(),
             'cover_url': book.cover_url,
             'cover_color': book.cover_color,
-            'high_resolution_pdf_url': book.high_resolution_pdf_url,
-            'low_resolution_pdf_url': book.low_resolution_pdf_url,
+            'pdf_url': book.pdf_url,
+            'high_resolution_pdf_url': book.pdf_url,  # deprecated alias
             'ibook_link': book.ibook_link,
             'ibook_link_volume_2': book.ibook_link_volume_2,
             'webview_link': book.webview_link,
@@ -708,39 +708,24 @@ class Book(FrontendPreviewMixin, Page):
     license_url = models.CharField(
         max_length=255, blank=True, null=True, editable=False, help_text="External URL of the license.")
 
-    high_resolution_pdf = models.ForeignKey(
+    pdf = models.ForeignKey(
         'wagtaildocs.Document',
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
         related_name='+',
-        help_text="High quality PDF document of the book."
+        verbose_name='PDF',
+        help_text="PDF document of the book."
     )
 
-    def get_high_res_pdf_url(self):
-        if self.high_resolution_pdf:
-            return build_document_url(self.high_resolution_pdf.url)
-        else:
-            return None
+    def get_pdf_url(self):
+        if self.pdf:
+            return build_document_url(self.pdf.url)
+        return None
 
-    high_resolution_pdf_url = property(get_high_res_pdf_url)
-
-    low_resolution_pdf = models.ForeignKey(
-        'wagtaildocs.Document',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+',
-        help_text="Low quality PDF document of the book."
-    )
-
-    def get_low_res_pdf_url(self):
-        if self.low_resolution_pdf:
-            return build_document_url(self.low_resolution_pdf.url)
-        else:
-            return None
-
-    low_resolution_pdf_url = property(get_low_res_pdf_url)
+    pdf_url = property(get_pdf_url)
+    # Deprecated alias kept for API back-compat (unknown consumers / REX).
+    high_resolution_pdf_url = property(get_pdf_url)
 
     free_stuff_instructor = StreamField(SharedContentBlock(), null=True, blank=True,
                                         help_text="Snippet to show texts for free instructor resources.",
@@ -893,9 +878,8 @@ class Book(FrontendPreviewMixin, Page):
         FieldPanel('rex_callout_title'),
         FieldPanel('rex_callout_blurb'),
         FieldPanel('enable_study_edge'),
-        FieldPanel('high_resolution_pdf'),
+        FieldPanel('pdf'),
         FieldPanel('last_updated_pdf'),
-        FieldPanel('low_resolution_pdf'),
         FieldPanel('free_stuff_instructor'),
         FieldPanel('free_stuff_student'),
         FieldPanel('community_resource_heading'),
@@ -1004,8 +988,8 @@ class Book(FrontendPreviewMixin, Page):
         APIField('license_name'),
         APIField('license_version'),
         APIField('license_url'),
+        APIField('pdf_url'),
         APIField('high_resolution_pdf_url'),
-        APIField('low_resolution_pdf_url'),
         APIField('free_stuff_instructor'),
         APIField('free_stuff_student'),
         APIField('community_resource_heading'),

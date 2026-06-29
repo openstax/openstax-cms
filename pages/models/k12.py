@@ -272,8 +272,8 @@ class K12Subject(FrontendPreviewMixin, Page):
                     'is_ap': book.is_ap,
                     'is_hs': 'High School' in subjects,
                     'cover_color': book.cover_color,
-                    'high_resolution_pdf_url': book.high_resolution_pdf_url,
-                    'low_resolution_pdf_url': book.low_resolution_pdf_url,
+                    'pdf_url': book.pdf_url,
+                    'high_resolution_pdf_url': book.pdf_url,  # deprecated alias
                     'ibook_link': book.ibook_link,
                     'ibook_link_volume_2': book.ibook_link_volume_2,
                     'webview_link': book.webview_link,
