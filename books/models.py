@@ -93,7 +93,7 @@ def get_book_data(book):
             'has_student_resources': has_student_resources,
             'assignable_book': book.assignable_book,
             'promote_snippet': book.promote_snippet.stream_block.get_api_representation(book.promote_snippet),
-            'promote_tags': [snippet.value.name for snippet in book.promote_snippet],
+            'promote_tags': [snippet.value.name for snippet in book.promote_snippet if snippet.value],
         }
     except Exception as e:
         capture_exception(e)
@@ -461,22 +461,22 @@ class SubjectBooks(models.Model):
     subject = models.ForeignKey(snippets.Subject, on_delete=models.SET_NULL, null=True, related_name='subjects_subject')
 
     def get_subject_name(self):
-        return self.subject.name
+        return self.subject.name if self.subject else ''
 
     subject_name = property(get_subject_name)
 
     def get_subject_page_content(self):
-        return self.subject.page_content
+        return self.subject.page_content if self.subject else ''
 
     subject_page_content = property(get_subject_page_content)
 
     def get_subject_page_title(self):
-        return self.subject.seo_title
+        return self.subject.seo_title if self.subject else ''
 
     subject_seo_title = property(get_subject_page_title)
 
     def get_subject_meta(self):
-        return self.subject.search_description
+        return self.subject.search_description if self.subject else ''
 
     subject_search_description = property(get_subject_meta)
 
@@ -492,12 +492,12 @@ class K12SubjectBooks(models.Model):
                                 related_name='k12subjects_subject')
 
     def get_subject_name(self):
-        return self.subject.name
+        return self.subject.name if self.subject else ''
 
     subject_name = property(get_subject_name)
 
     def get_subject_category(self):
-        return self.subject.subject_category
+        return self.subject.subject_category if self.subject else ''
 
     subject_category = property(get_subject_category)
 
@@ -512,7 +512,7 @@ class BookCategory(models.Model):
                                  related_name='subjects_subjectcategory')
 
     def get_subject_name(self):
-        return self.category.subject_name
+        return self.category.subject_name if self.category else ''
 
     subject_name = property(get_subject_name)
 
@@ -1070,13 +1070,15 @@ class Book(FrontendPreviewMixin, Page):
     def subjects(self):
         subject_list = []
         for subject in self.book_subjects.all():
-            subject_list.append(subject.subject_name)
+            if subject.subject_name:
+                subject_list.append(subject.subject_name)
         return subject_list
 
     def k12subjects(self):
         k12subject_list = []
         for k12subject in self.k12book_subjects.all():
-            k12subject_list.append(k12subject.subject_name)
+            if k12subject.subject_name:
+                k12subject_list.append(k12subject.subject_name)
         return k12subject_list
 
     @property
@@ -1084,7 +1086,7 @@ class Book(FrontendPreviewMixin, Page):
         category_list = []
         if self.book_categories is not None:
             for category in self.book_categories.all():
-                if category is not None:
+                if category is not None and category.subject_category:
                     category_list.append(category.subject_category)
         return category_list
 

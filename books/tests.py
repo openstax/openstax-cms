@@ -3,7 +3,15 @@ from wagtail.models import Page, Site
 
 import snippets.models
 from pages.models import RootPage
-from books.models import BookIndex, Book, BookFacultyResources, BookStudentResources
+from books.models import (
+    BookIndex,
+    Book,
+    BookCategories,
+    BookFacultyResources,
+    BookStudentResources,
+    BookSubjects,
+    K12BookSubjects,
+)
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
 from salesforce.tests import openstax_vcr as vcr
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -338,6 +346,99 @@ class BookTests(WagtailPageTestCase):
         student_resources = response.data['book_student_resources']
         self.assertEqual(len(student_resources), 1)
         self.assertEqual(student_resources[0]['link_text'], 'Visible')
+
+    @patch('books.models.capture_exception')
+    def test_page_api_book_list_skips_missing_book_promote_snippet(self, capture_exception):
+        book_index = BookIndex.objects.all()[0]
+        root_page = Page.objects.get(title="Root")
+        promote_snippet = snippets.models.PromoteSnippet.objects.create(name="Assignable")
+        book = Book(
+            title="Promoted Book",
+            slug="promoted-book",
+            description="Test Book",
+            cover=self.test_doc,
+            title_image=self.test_doc,
+            publish_date=datetime.date.today(),
+            locale=root_page.locale,
+            promote_snippet=[
+                {"type": "content", "value": promote_snippet.id},
+                {"type": "content", "value": None},
+            ],
+        )
+        book_index.add_child(instance=book)
+
+        page = RootPage.objects.get(slug="hello-world")
+        page.body = [
+            {
+                "type": "section",
+                "value": {
+                    "content": [
+                        {
+                            "type": "book_list",
+                            "value": {"books": [book.id]},
+                        }
+                    ],
+                    "config": [],
+                },
+            },
+        ]
+        page.save_revision().publish()
+
+        response = self.client.get('/apps/cms/api/v2/pages/{}/?fields=body'.format(page.pk))
+
+        self.assertEqual(response.status_code, 200)
+        capture_exception.assert_not_called()
+        book_data = response.data['body'][0]['value']['content'][0]['value']['books'][0]
+        self.assertEqual(book_data['id'], book.id)
+        self.assertEqual(book_data['promote_snippet'][0]['value']['name'], 'Assignable')
+        self.assertEqual(book_data['promote_snippet'][1]['type'], 'content')
+        self.assertIsNone(book_data['promote_snippet'][1]['value'])
+        self.assertEqual(book_data['promote_tags'], ['Assignable'])
+
+    @patch('books.models.capture_exception')
+    def test_page_api_book_list_skips_missing_book_subject_relations(self, capture_exception):
+        book_index = BookIndex.objects.all()[0]
+        root_page = Page.objects.get(title="Root")
+        book = Book(
+            title="Book With Missing Subjects",
+            slug="book-with-missing-subjects",
+            description="Test Book",
+            cover=self.test_doc,
+            title_image=self.test_doc,
+            publish_date=datetime.date.today(),
+            locale=root_page.locale,
+        )
+        book_index.add_child(instance=book)
+        BookSubjects.objects.create(book_subject=book, subject=None)
+        K12BookSubjects.objects.create(k12book_subject=book, subject=None)
+        BookCategories.objects.create(book_category=book, category=None)
+
+        page = RootPage.objects.get(slug="hello-world")
+        page.body = [
+            {
+                "type": "section",
+                "value": {
+                    "content": [
+                        {
+                            "type": "book_list",
+                            "value": {"books": [book.id]},
+                        }
+                    ],
+                    "config": [],
+                },
+            },
+        ]
+        page.save_revision().publish()
+
+        response = self.client.get('/apps/cms/api/v2/pages/{}/?fields=body'.format(page.pk))
+
+        self.assertEqual(response.status_code, 200)
+        capture_exception.assert_not_called()
+        book_data = response.data['body'][0]['value']['content'][0]['value']['books'][0]
+        self.assertEqual(book_data['id'], book.id)
+        self.assertEqual(book_data['subjects'], [])
+        self.assertEqual(book_data['k12subject'], [])
+        self.assertEqual(book_data['subject_categories'], [])
 
     def test_non_hidden_resources_still_appear(self):
         """Resources with hidden=False (default) should appear normally."""
