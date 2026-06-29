@@ -179,6 +179,34 @@ class UpdateSchoolsCommandTest(TestCase):
         self.assertEqual(School.objects.filter(salesforce_id='001duplicate').count(), 2)
 
 
+class SyncSalesforceBookNamesCommandTest(TestCase):
+    @patch('salesforce.management.commands.sync_salesforce_book_names.Salesforce')
+    def test_sync_salesforce_book_names(self, salesforce):
+        from salesforce.models import SalesforceBookName
+        sf = salesforce.return_value.__enter__.return_value
+        sf.query_all.return_value = {'records': [
+            {'Id': 'a0Z000001', 'Name': 'University Physics', 'Official_Name__c': 'University Physics (Calculus)'},
+            {'Id': 'a0Z000002', 'Name': 'College Algebra', 'Official_Name__c': 'College Algebra'},
+        ]}
+
+        call_command('sync_salesforce_book_names')
+
+        self.assertEqual(SalesforceBookName.objects.count(), 2)
+        self.assertEqual(
+            SalesforceBookName.objects.get(salesforce_id='a0Z000001').official_name,
+            'University Physics (Calculus)')
+
+        # Idempotent + updates in place (no duplicates on re-run)
+        sf.query_all.return_value = {'records': [
+            {'Id': 'a0Z000001', 'Name': 'University Physics', 'Official_Name__c': 'University Physics 2e'},
+        ]}
+        call_command('sync_salesforce_book_names')
+        self.assertEqual(SalesforceBookName.objects.count(), 2)
+        self.assertEqual(
+            SalesforceBookName.objects.get(salesforce_id='a0Z000001').official_name,
+            'University Physics 2e')
+
+
 class SyncThankYouNotesCommandTest(TestCase):
     def setUp(self):
         School.objects.create(name='Find Me A Home', salesforce_id='001findme')
