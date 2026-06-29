@@ -161,6 +161,24 @@ class BookTests(WagtailPageTestCase):
             self.assertEqual(data['pdf_url'], data['high_resolution_pdf_url'])
             self.assertNotIn('low_resolution_pdf_url', data)
 
+    def test_dead_fields_removed_from_api(self):
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            book = Book(title="Lean Book", slug="lean-book",
+                        book_uuid='031da8d3-b525-429c-80cf-6c8ed997733a',
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test", cover=self.test_doc, title_image=self.test_doc,
+                        publish_date=datetime.date.today(),
+                        locale=root_page.locale)
+            book_index.add_child(instance=book)
+            resp = self.client.get('/apps/cms/api/v2/pages/{}/?fields=*'.format(book.id))
+            data = resp.json()
+            for gone in ['ibook_link', 'ibook_link_volume_2', 'ibook_isbn_13',
+                         'ibook_volume_2_isbn_13', 'enable_study_edge', 'tutor_marketing_book',
+                         'amazon_iframe', 'comp_copy_available', 'comp_copy_content']:
+                self.assertNotIn(gone, data)
+
     def test_can_create_book_without_cnx_id(self):
         with vcr.use_cassette('fixtures/vcr_cassettes/books_no_cnx_id.yaml'):
             book_index = BookIndex.objects.all()[0]

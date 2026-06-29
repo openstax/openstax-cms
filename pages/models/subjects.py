@@ -237,8 +237,6 @@ class Subject(FrontendPreviewMixin, Page):
                             'cover_color': book.cover_color,
                             'pdf_url': book.pdf_url,
                             'high_resolution_pdf_url': book.pdf_url,  # deprecated alias
-                            'ibook_link': book.ibook_link,
-                            'ibook_link_volume_2': book.ibook_link_volume_2,
                             'webview_link': book.webview_link,
                             'webview_rex_link': book.webview_rex_link,
                             'bookshare_link': book.bookshare_link,
@@ -246,7 +244,6 @@ class Subject(FrontendPreviewMixin, Page):
                             'amazon_coming_soon': book.amazon_coming_soon,
                             'amazon_link': book.amazon_link,
                             'bookstore_coming_soon': book.bookstore_coming_soon,
-                            'comp_copy_available': book.comp_copy_available,
                             'salesforce_abbreviation': book.salesforce_abbreviation,
                             'salesforce_name': book.salesforce_name,
                             'urls': book.book_urls(),
