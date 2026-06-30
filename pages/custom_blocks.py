@@ -549,3 +549,69 @@ class BookBlock(blocks.PageChooserBlock):
         from books.models import get_book_data
         if value:
             return get_book_data(value)
+
+
+CONTENT_REFERENCE_TYPES = [
+    'books.Book',
+    'news.NewsArticle',
+]
+
+
+class ContentChooserBlock(blocks.PageChooserBlock):
+    """References another page on the site, restricted to CONTENT_REFERENCE_TYPES.
+
+    Emits a lean canonical reference; display data (image/excerpt) is hydrated
+    frontend-side from the pages API, not embedded here.
+    """
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault('page_type', CONTENT_REFERENCE_TYPES)
+        kwargs.setdefault('label', 'Content')
+        super().__init__(*args, **kwargs)
+
+    def get_api_representation(self, value, context=None):
+        if value is None:
+            return None
+        page = value.specific  # resolve overridden get_url_parts, like LinkBlock
+        return {
+            'id': value.pk,
+            'type': page._meta.label_lower,
+            'slug': value.slug,
+            'url': page.url or page.url_path,
+            'title': value.title,
+        }
+
+
+class _NullableAPIImageChooserBlock(APIImageChooserBlock):
+    """APIImageChooserBlock that returns None (not {}) when no image is set."""
+    def get_api_representation(self, value, context=None):
+        if value is None:
+            return None
+        return super().get_api_representation(value, context=context)
+
+
+class ContentCardBlock(blocks.StructBlock):
+    """A card linked to another page. Display data is auto-pulled from the
+    referenced page frontend-side; the optional fields override per card."""
+    reference = ContentChooserBlock(required=True)
+    title = blocks.CharBlock(
+        required=False,
+        help_text="Overrides the referenced page's title for this card.")
+    image = _NullableAPIImageChooserBlock(
+        required=False,
+        help_text="Overrides the referenced page's image for this card.")
+    excerpt = blocks.TextBlock(
+        required=False,
+        help_text="Overrides the referenced page's excerpt for this card.")
+
+    def get_api_representation(self, value, context=None):
+        rep = super().get_api_representation(value, context=context)
+        for key in ("title", "excerpt"):
+            if isinstance(rep.get(key), str) and rep[key].strip() == "":
+                rep[key] = None
+        if rep.get("image") == {}:
+            rep["image"] = None
+        return rep
+
+    class Meta:
+        icon = 'doc-empty'
+        label = 'Content Card'
