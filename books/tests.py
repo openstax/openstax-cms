@@ -119,6 +119,143 @@ class BookTests(WagtailPageTestCase):
             self.assertEqual(book.salesforce_abbreviation, 'Prealgebra')
 
 
+    def test_book_callout_snippet_exists_and_is_editable(self):
+        from wagtail.models import Locale
+        from books.models import BookCallout
+        callout = BookCallout.objects.create(
+            locale=Locale.get_default(),
+            rex_callout_title='Recommended',
+            rex_callout_blurb='Highlight and add notes — 100% free!',
+        )
+        self.assertEqual(BookCallout.objects.count(), 1)
+        self.assertEqual(callout.rex_callout_title, 'Recommended')
+        # webinar_content is a StreamField (empty is fine)
+        self.assertEqual(list(callout.webinar_content), [])
+
+    def test_callout_fields_sourced_from_snippet(self):
+        from books.models import BookCallout
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            BookCallout.objects.create(
+                locale=root_page.locale,
+                rex_callout_title='Shared Title',
+                rex_callout_blurb='Shared Blurb',
+            )
+            book = Book(title="Callout Book", slug="callout-book",
+                        book_uuid='031da8d3-b525-429c-80cf-6c8ed997733a',
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test", cover=self.test_doc, title_image=self.test_doc,
+                        publish_date=datetime.date.today(), locale=root_page.locale)
+            book_index.add_child(instance=book)
+            # property reads the snippet
+            self.assertEqual(book.rex_callout_title, 'Shared Title')
+            self.assertEqual(book.rex_callout_blurb, 'Shared Blurb')
+            # API still exposes the same keys with the same types
+            resp = self.client.get(
+                '/apps/cms/api/v2/pages/{}/?fields=rex_callout_title,rex_callout_blurb,webinar_content'.format(book.id))
+            data = resp.json()
+            self.assertEqual(data['rex_callout_title'], 'Shared Title')
+            self.assertEqual(data['rex_callout_blurb'], 'Shared Blurb')
+            self.assertEqual(data['webinar_content'], [])   # empty StreamField -> []
+
+    def test_book_uuid_is_canonical_and_syncs_cnx_id(self):
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            book = Book(title="UUID Sync Book",
+                        slug="uuid-sync-book",
+                        book_uuid='aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test",
+                        cover=self.test_doc,
+                        title_image=self.test_doc,
+                        publish_date=datetime.date.today(),
+                        locale=root_page.locale)
+            book_index.add_child(instance=book)
+            book.refresh_from_db()
+            # cnx_id mirrors the canonical book_uuid
+            self.assertEqual(book.cnx_id, 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee')
+            # cnx_id stays a real, filterable column
+            self.assertTrue(
+                Book.objects.filter(cnx_id='aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee').exists()
+            )
+
+    def test_legacy_cnx_id_backfills_book_uuid(self):
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            book = Book(title="Legacy CNX Book",
+                        slug="legacy-cnx-book",
+                        cnx_id='bbbbbbbb-cccc-dddd-eeee-ffffffffffff',
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test",
+                        cover=self.test_doc,
+                        title_image=self.test_doc,
+                        publish_date=datetime.date.today(),
+                        locale=root_page.locale)
+            book_index.add_child(instance=book)
+            book.refresh_from_db()
+            self.assertEqual(book.book_uuid, 'bbbbbbbb-cccc-dddd-eeee-ffffffffffff')
+            self.assertEqual(book.cnx_id, 'bbbbbbbb-cccc-dddd-eeee-ffffffffffff')
+            self.assertTrue(
+                Book.objects.filter(cnx_id='bbbbbbbb-cccc-dddd-eeee-ffffffffffff').exists()
+            )
+
+    def test_pdf_api_keys(self):
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            book = Book(title="PDF Book", slug="pdf-book",
+                        book_uuid='031da8d3-b525-429c-80cf-6c8ed997733a',
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test", cover=self.test_doc, title_image=self.test_doc,
+                        pdf=self.test_doc,
+                        publish_date=datetime.date.today(),
+                        locale=root_page.locale)
+            book_index.add_child(instance=book)
+            resp = self.client.get(
+                '/apps/cms/api/v2/pages/{}/?fields=pdf_url,high_resolution_pdf_url'.format(book.id))
+            data = resp.json()
+            self.assertIn('pdf_url', data)
+            self.assertIn('high_resolution_pdf_url', data)            # deprecated alias retained
+            self.assertEqual(data['pdf_url'], data['high_resolution_pdf_url'])
+            self.assertNotIn('low_resolution_pdf_url', data)
+
+    def test_dead_fields_removed_from_api(self):
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            book = Book(title="Lean Book", slug="lean-book",
+                        book_uuid='031da8d3-b525-429c-80cf-6c8ed997733a',
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test", cover=self.test_doc, title_image=self.test_doc,
+                        publish_date=datetime.date.today(),
+                        locale=root_page.locale)
+            book_index.add_child(instance=book)
+            resp = self.client.get('/apps/cms/api/v2/pages/{}/?fields=*'.format(book.id))
+            data = resp.json()
+            for gone in ['ibook_link', 'ibook_link_volume_2', 'ibook_isbn_13',
+                         'ibook_volume_2_isbn_13', 'enable_study_edge', 'tutor_marketing_book',
+                         'amazon_iframe', 'comp_copy_available', 'comp_copy_content']:
+                self.assertNotIn(gone, data)
+
+    def test_kindle_chegg_removed_from_api(self):
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            book = Book(title="No KC Book", slug="no-kc-book",
+                        book_uuid='031da8d3-b525-429c-80cf-6c8ed997733a',
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test", cover=self.test_doc, title_image=self.test_doc,
+                        publish_date=datetime.date.today(),
+                        locale=root_page.locale)
+            book_index.add_child(instance=book)
+            resp = self.client.get('/apps/cms/api/v2/pages/{}/?fields=*'.format(book.id))
+            data = resp.json()
+            for gone in ['kindle_link', 'chegg_link', 'chegg_link_text']:
+                self.assertNotIn(gone, data)
+
     def test_can_create_book_without_cnx_id(self):
         with vcr.use_cassette('fixtures/vcr_cassettes/books_no_cnx_id.yaml'):
             book_index = BookIndex.objects.all()[0]
