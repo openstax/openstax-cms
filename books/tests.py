@@ -141,6 +141,27 @@ class BookTests(WagtailPageTestCase):
                 Book.objects.filter(cnx_id='aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee').exists()
             )
 
+    def test_legacy_cnx_id_backfills_book_uuid(self):
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            book = Book(title="Legacy CNX Book",
+                        slug="legacy-cnx-book",
+                        cnx_id='bbbbbbbb-cccc-dddd-eeee-ffffffffffff',
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test",
+                        cover=self.test_doc,
+                        title_image=self.test_doc,
+                        publish_date=datetime.date.today(),
+                        locale=root_page.locale)
+            book_index.add_child(instance=book)
+            book.refresh_from_db()
+            self.assertEqual(book.book_uuid, 'bbbbbbbb-cccc-dddd-eeee-ffffffffffff')
+            self.assertEqual(book.cnx_id, 'bbbbbbbb-cccc-dddd-eeee-ffffffffffff')
+            self.assertTrue(
+                Book.objects.filter(cnx_id='bbbbbbbb-cccc-dddd-eeee-ffffffffffff').exists()
+            )
+
     def test_pdf_api_keys(self):
         with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
             book_index = BookIndex.objects.all()[0]
