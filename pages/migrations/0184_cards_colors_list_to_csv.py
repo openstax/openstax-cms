@@ -58,7 +58,7 @@ def list_colors_to_csv(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('pages', '0182_alter_rootpage_body'),
+        ('pages', '0183_alter_rootpage_body'),
     ]
 
     operations = [
