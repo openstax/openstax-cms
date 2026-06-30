@@ -5,8 +5,10 @@ from django.templatetags.static import static
 from django.utils.html import format_html
 from wagtail import hooks
 from wagtail.models import Page
+from wagtail.snippets.models import register_snippet
+from wagtail.snippets.views.snippets import SnippetViewSet
 
-from pages.models import FlexPage
+from pages.models import FlexPage, PersonTag
 
 
 def _versioned(path):
@@ -38,4 +40,13 @@ def conditional_school_field_js():
 # (pages/custom_blocks.py) — the idiomatic Wagtail mechanism, loaded only when a
 # colour field is on the page. Note: insert_editor_css is NOT rendered in
 # Wagtail 7.4, so widget Media (not that hook) is the correct home for this.
+
+
+class PersonTagViewSet(SnippetViewSet):
+    model = PersonTag
+    icon = "tag"
+    menu_label = "Person Tags"
+
+
+register_snippet(PersonTagViewSet)
 
