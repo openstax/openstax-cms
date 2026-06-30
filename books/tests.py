@@ -120,8 +120,10 @@ class BookTests(WagtailPageTestCase):
 
 
     def test_book_callout_snippet_exists_and_is_editable(self):
+        from wagtail.models import Locale
         from books.models import BookCallout
         callout = BookCallout.objects.create(
+            locale=Locale.get_default(),
             rex_callout_title='Recommended',
             rex_callout_blurb='Highlight and add notes — 100% free!',
         )

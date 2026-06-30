@@ -4,6 +4,7 @@ from sentry_sdk import capture_exception
 
 from django.conf import settings
 from django.db import models
+from django.utils.functional import cached_property
 from django.utils.html import format_html, mark_safe
 from modelcluster.fields import ParentalKey
 from wagtail.admin.panels import (FieldPanel,
@@ -573,6 +574,9 @@ class BookCallout(TranslatableMixin, models.Model):
 
     class Meta(TranslatableMixin.Meta):
         verbose_name = 'Book callout'
+        constraints = [
+            models.UniqueConstraint(fields=['locale'], name='unique_bookcallout_per_locale'),
+        ]
 
     def __str__(self):
         return f'Book callout ({self.locale})'
@@ -584,7 +588,7 @@ class SharedStreamFieldSerializer(Field):
     def to_representation(self, value):
         if not value:
             return []
-        return value.stream_block.get_api_representation(value)
+        return value.stream_block.get_api_representation(value, self.context)
 
 
 class PromoteSnippetContentChooserBlock(SnippetChooserBlock):
@@ -1079,14 +1083,16 @@ class Book(FrontendPreviewMixin, Page):
     def require_login_message_text(self):
         return self.require_login_message.require_login_message if self.require_login_message else None
 
-    @property
+    @cached_property
     def _book_callout(self):
         return BookCallout.objects.filter(locale=self.locale).first()
 
     @property
     def rex_callout_title(self):
         callout = self._book_callout
-        return callout.rex_callout_title if callout else None
+        # Matches the old per-book field's default so locales without a
+        # BookCallout snippet yet (e.g. newly created locales) don't regress.
+        return callout.rex_callout_title if callout else "Recommended"
 
     @property
     def rex_callout_blurb(self):

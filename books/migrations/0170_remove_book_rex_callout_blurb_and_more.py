@@ -9,7 +9,7 @@ def seed_book_callout(apps, schema_editor):
     Book = apps.get_model("books", "Book")
     BookCallout = apps.get_model("books", "BookCallout")
     seen_locales = set()
-    for book in Book.objects.all().order_by("id"):
+    for book in Book.objects.all().order_by("id").iterator():
         if book.locale_id in seen_locales:
             continue
         if not BookCallout.objects.filter(locale_id=book.locale_id).exists():
