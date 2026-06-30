@@ -8,7 +8,7 @@ from wagtail.models import Page
 from wagtail.snippets.models import register_snippet
 from wagtail.snippets.views.snippets import SnippetViewSet
 
-from pages.models import FlexPage, PersonTag
+from pages.models import PersonTag
 
 
 def _versioned(path):

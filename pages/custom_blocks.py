@@ -558,6 +558,7 @@ class PersonTagChooserBlock(SnippetChooserBlock):
     def get_api_representation(self, value, context=None):
         if value:
             return {'id': value.id, 'name': value.name, 'slug': value.slug}
+        return None
 
 
 PERSON_LINK_TYPE_CHOICES = [
