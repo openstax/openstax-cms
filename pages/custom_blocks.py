@@ -6,6 +6,7 @@ from wagtail import blocks
 from wagtail.blocks import FieldBlock, StructBlock
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.documents.blocks import DocumentChooserBlock
+from wagtail.snippets.blocks import SnippetChooserBlock
 from wagtail_ai.blocks import ai_image_block
 from wagtail_color_panel.blocks import NativeColorBlock
 from wagtail_color_panel.widgets import ColorInputWidget, ColorInputWidgetAdapter
@@ -549,3 +550,68 @@ class BookBlock(blocks.PageChooserBlock):
         from books.models import get_book_data
         if value:
             return get_book_data(value)
+
+
+class PersonTagChooserBlock(SnippetChooserBlock):
+    """Serializes a PersonTag snippet inline as {id, name, slug} so the renderer
+    needs no extra fetch (same technique as books.SharedContentChooserBlock)."""
+    def get_api_representation(self, value, context=None):
+        if value:
+            return {'id': value.id, 'name': value.name, 'slug': value.slug}
+
+
+PERSON_LINK_TYPE_CHOICES = [
+    ('linkedin', 'LinkedIn'),
+    ('orcid', 'ORCID'),
+    ('website', 'Website'),
+    ('email', 'Email'),
+    ('scholar', 'Google Scholar'),
+    ('x', 'X'),
+]
+
+
+class PersonLinkBlock(blocks.StructBlock):
+    type = blocks.ChoiceBlock(choices=PERSON_LINK_TYPE_CHOICES, required=True,
+        help_text='Determines the icon shown for this link.')
+    url = blocks.URLBlock(required=True)
+
+    class Meta:
+        label = 'Link'
+
+
+class PersonBlock(blocks.StructBlock):
+    heading = blocks.CharBlock(required=False,
+        help_text='Optional title shown above the grid.')
+    people = blocks.ListBlock(blocks.StructBlock([
+        ('name', blocks.CharBlock(required=True)),
+        ('title', blocks.CharBlock(required=False, help_text='Role, e.g. "Director of Research".')),
+        ('image', APIImageChooserBlock(required=False)),
+        ('short_bio', blocks.TextBlock(required=False, help_text='Shown on the card.')),
+        ('full_bio', APIRichTextBlock(required=False,
+            help_text='If set, the card becomes clickable and opens an expanded modal.')),
+        ('links', blocks.ListBlock(PersonLinkBlock(), default=[], required=False)),
+        ('tags', blocks.ListBlock(PersonTagChooserBlock('pages.PersonTag'), default=[], required=False)),
+    ]))
+    config = blocks.StreamBlock([
+        ('card_columns', blocks.IntegerBlock(min_value=1, max_value=6, help_text='Number of columns for the grid. default auto.')),
+        ('card_style', blocks.ChoiceBlock(choices=CARDS_STYLE_CHOICES, help_text='The border style of the cards. default borderless.')),
+        ('card_size', blocks.IntegerBlock(min_value=0, help_text='Width of individual cards. default 27.')),
+        ('accent_colors', blocks.ListBlock(hex_color_block('Accent color for a card. Must be hex eg: #ff0000.'), default=[], label='Accent Colors')),
+        ('divider_colors', blocks.ListBlock(hex_color_block('Divider color between cards. Must be hex eg: #ff0000.'), default=[], label='Divider Colors')),
+        ('background_color', hex_color_block('Background color for the cards. Must be hex eg: #ff0000.')),
+        ('border_size', blocks.IntegerBlock(min_value=0, help_text='Border width in px.')),
+        ('id', id_config_block()),
+    ], block_counts={
+        'card_columns': {'max_num': 1},
+        'card_style': {'max_num': 1},
+        'card_size': {'max_num': 1},
+        'accent_colors': {'max_num': 1},
+        'divider_colors': {'max_num': 1},
+        'background_color': {'max_num': 1},
+        'border_size': {'max_num': 1},
+        'id': {'max_num': 1},
+    }, required=False)
+
+    class Meta:
+        label = 'People'
+        icon = 'group'
