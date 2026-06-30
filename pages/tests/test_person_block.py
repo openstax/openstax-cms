@@ -76,6 +76,40 @@ class PersonBlockTests(TestCase):
             {"type": "linkedin", "url": "https://linkedin.com/in/ada"},
         )
 
+    def test_email_link_accepts_mailto(self):
+        # url is a CharBlock, so an Email link can hold a mailto: value that a
+        # URLBlock would have rejected.
+        block = PersonBlock()
+        value = block.to_python({
+            "heading": "",
+            "people": [self._person(links=[
+                {"type": "email", "url": "mailto:ada@example.com"},
+            ])],
+            "config": [],
+        })
+        rep = block.get_api_representation(value)
+        self.assertEqual(
+            rep["people"][0]["links"][0],
+            {"type": "email", "url": "mailto:ada@example.com"},
+        )
+
+    def test_config_colors_are_comma_separated_strings(self):
+        # accent_colors / divider_colors mirror cards_block: a single
+        # comma-separated RegexBlock string, not a list.
+        block = PersonBlock()
+        value = block.to_python({
+            "heading": "",
+            "people": [self._person()],
+            "config": [
+                {"type": "accent_colors", "value": "#ff0000,#00ff00"},
+                {"type": "divider_colors", "value": "#0000ff"},
+            ],
+        })
+        rep = block.get_api_representation(value)
+        config = {b["type"]: b["value"] for b in rep["config"]}
+        self.assertEqual(config["accent_colors"], "#ff0000,#00ff00")
+        self.assertEqual(config["divider_colors"], "#0000ff")
+
     def test_tags_serialize_inline(self):
         tag = PersonTag.objects.create(name="Core Team", slug="core-team")
         block = PersonBlock()
