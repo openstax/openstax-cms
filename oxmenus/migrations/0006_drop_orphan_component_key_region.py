@@ -8,8 +8,9 @@ from django.db import migrations
 # Drop them. IF EXISTS keeps this a no-op on databases that never received
 # those columns (fresh installs, CI, prod).
 DROP_ORPHAN_COLUMNS = """
-ALTER TABLE oxmenus_menus DROP COLUMN IF EXISTS component_key;
-ALTER TABLE oxmenus_menus DROP COLUMN IF EXISTS region;
+ALTER TABLE oxmenus_menus
+    DROP COLUMN IF EXISTS component_key,
+    DROP COLUMN IF EXISTS region;
 """
 
 
