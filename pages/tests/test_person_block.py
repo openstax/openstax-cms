@@ -1,6 +1,7 @@
 from django.test import TestCase
 from pages.models import PersonTag
 from pages.custom_blocks import PersonTagChooserBlock, PersonBlock
+from pages.models.constants import BASE_CONTENT_BLOCKS
 
 
 class PersonTagModelTests(TestCase):
@@ -88,3 +89,9 @@ class PersonBlockTests(TestCase):
             rep["people"][0]["tags"][0],
             {"id": tag.id, "name": "Core Team", "slug": "core-team"},
         )
+
+
+class PersonBlockRegistrationTests(TestCase):
+    def test_person_is_a_base_content_block(self):
+        keys = [name for name, _ in BASE_CONTENT_BLOCKS]
+        self.assertIn("person", keys)

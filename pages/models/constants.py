@@ -12,6 +12,7 @@ from pages.custom_blocks import APIImageChooserBlock, \
     QuoteBlock, \
     CTALinkBlock, \
     BookBlock, \
+    PersonBlock, \
     CARDS_STYLE_CHOICES, \
     TEXT_ALIGNMENT_CHOICES, \
     FLEX_CHOICES, \
@@ -97,6 +98,7 @@ BASE_CONTENT_BLOCKS = [
     ('book_list', blocks.StructBlock([
         ('books', blocks.ListBlock(BookBlock(required=True))),
     ], label="Books Block")),
+    ('person', PersonBlock()),
 ]
 
 # Layer 2: Content blocks + well (well references BASE, not itself)
