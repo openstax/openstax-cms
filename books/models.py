@@ -23,7 +23,7 @@ from wagtail.models import Site
 from rest_framework.fields import Field
 
 from openstax.api_fields import APIRichTextBlock, ExpandedRichTextField
-from openstax.functions import build_document_url
+from openstax.functions import build_document_url, build_image_url
 from openstax.preview import FrontendPreviewMixin
 from books.constants import BOOK_STATES, BOOK_COVER_TEXT_COLOR, COVER_COLORS, CC_NC_SA_LICENSE_NAME, CC_BY_LICENSE_NAME, \
     CC_BY_LICENSE_URL, CC_NC_SA_LICENSE_URL, CC_NC_SA_LICENSE_VERSION, CC_BY_LICENSE_VERSION, K12_CATEGORIES
@@ -691,34 +691,66 @@ class Book(FrontendPreviewMixin, Page):
         help_text="Message shown to logged-out users requiring them to log in. "\
                   "If set, logged-out users cannot dismiss content warning and must log in.")
 
+    # Legacy Document fields, kept for fallback until convert_book_images runs in
+    # every environment; dropped in the PR 3b fast-follow.
     cover = models.ForeignKey(
         'wagtaildocs.Document',
         null=True, blank=True,
         on_delete=models.SET_NULL,
         related_name='+',
-        help_text='The book cover to be shown on the website.'
+        help_text='Legacy Document cover (being migrated to "Cover image").'
     )
-
-    def get_cover_url(self):
-        if self.cover:
-            return build_document_url(self.cover.url)
-        else:
-            return ''
-
-    cover_url = property(get_cover_url)
-
     title_image = models.ForeignKey(
         'wagtaildocs.Document',
         null=True, blank=True,
         on_delete=models.SET_NULL,
         related_name='+',
-        help_text='The svg for title image to be shown on the website.'
+        help_text='Legacy Document title image (being migrated to "Banner image").'
     )
 
+    # New Image fields. cover_image backs cover_url; banner_image backs title_image_url.
+    cover_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        verbose_name='Cover image',
+        help_text='The book cover shown on the website.'
+    )
+    banner_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        verbose_name='Title image (banner)',
+        help_text='The title image (banner) shown on the website. SVG supported.'
+    )
+
+    def get_cover_url(self):
+        if self.cover_image:
+            return build_image_url(self.cover_image)
+        if self.cover:
+            return build_document_url(self.cover.url)
+        return ''
+
+    cover_url = property(get_cover_url)
+
     def get_title_image_url(self):
-        return build_document_url(self.title_image.url)
+        if self.banner_image:
+            return build_image_url(self.banner_image)
+        if self.title_image:
+            return build_document_url(self.title_image.url)
+        return ''
 
     title_image_url = property(get_title_image_url)
+
+    @property
+    def cover_alt(self):
+        return self.cover_image.description if self.cover_image else None
+
+    @property
+    def title_image_alt(self):
+        return self.banner_image.description if self.banner_image else None
 
     cover_color = models.CharField(max_length=255, choices=COVER_COLORS, default='blue',
                                    help_text='The color of the cover.')
@@ -882,8 +914,8 @@ class Book(FrontendPreviewMixin, Page):
         FieldPanel('description', classname="full"),
         FieldPanel('content_warning'),
         FieldPanel('require_login_message'),
-        FieldPanel('cover'),
-        FieldPanel('title_image'),
+        FieldPanel('cover_image'),
+        FieldPanel('banner_image'),
         FieldPanel('cover_color'),
         FieldPanel('book_cover_text_color'),
         FieldPanel('reverse_gradient'),
@@ -976,7 +1008,9 @@ class Book(FrontendPreviewMixin, Page):
         APIField('content_warning_text'),
         APIField('require_login_message_text'),
         APIField('cover_url'),
+        APIField('cover_alt'),
         APIField('title_image_url'),
+        APIField('title_image_alt'),
         APIField('cover_color'),
         APIField('book_cover_text_color'),
         APIField('reverse_gradient'),
