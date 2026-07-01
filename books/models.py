@@ -2,10 +2,12 @@ import re
 import html
 from sentry_sdk import capture_exception
 
+from django import forms
 from django.conf import settings
 from django.db import models
 from django.utils.functional import cached_property
 from django.utils.html import format_html, mark_safe
+from wagtail.admin.forms import WagtailAdminPageForm
 from modelcluster.fields import ParentalKey
 from wagtail.admin.panels import (FieldPanel,
                                   InlinePanel,
@@ -643,7 +645,33 @@ class BookCategories(Orderable, BookCategory):
     book_category = ParentalKey('books.Book', related_name='book_categories')
 
 
+class BookAdminForm(WagtailAdminPageForm):
+    """Renders salesforce_name as a dropdown sourced from the locally-synced
+    Salesforce Book__c list so the value can't drift from Salesforce."""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'salesforce_name' not in self.fields:
+            return
+        # Lazy import: salesforce.models imports books.models (circular at module load).
+        from salesforce.models import SalesforceBookName
+        names = (SalesforceBookName.objects
+                 .exclude(official_name__isnull=True).exclude(official_name='')
+                 .values_list('official_name', flat=True).distinct())
+        choices = [('', '---------')] + [(n, n) for n in names]
+        # Preserve a current value that isn't in the synced list (don't force re-entry).
+        current = getattr(self.instance, 'salesforce_name', None)
+        if current and current not in dict(choices):
+            choices.append((current, f'{current} (not in Salesforce list)'))
+        existing = self.fields['salesforce_name']
+        self.fields['salesforce_name'] = forms.ChoiceField(
+            choices=choices, required=False,
+            label=existing.label, help_text=existing.help_text,
+        )
+
+
 class Book(FrontendPreviewMixin, Page):
+    base_form_class = BookAdminForm
+
     licenses = (
         (CC_BY_LICENSE_NAME, CC_BY_LICENSE_NAME),
         (CC_NC_SA_LICENSE_NAME, CC_NC_SA_LICENSE_NAME)

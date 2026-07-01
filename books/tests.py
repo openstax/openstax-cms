@@ -231,6 +231,55 @@ class BookTests(WagtailPageTestCase):
             book.refresh_from_db()
             self.assertEqual(book.cover_image_id, first_cover_id)
 
+    def test_convert_book_images_continues_after_bad_document(self):
+        from django.core.management import call_command
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            broken_doc = Document.objects.create(
+                title='Broken Doc',
+                file=SimpleUploadedFile('broken.png', b'not a real image'))
+            bad_book = Book(title="Bad Book", slug="bad-book",
+                        book_uuid='11111111-1111-1111-1111-111111111111',
+                        description="Test", cover=broken_doc,
+                        publish_date=datetime.date.today(), locale=root_page.locale)
+            book_index.add_child(instance=bad_book)
+            good_book = Book(title="Good Book", slug="good-book",
+                        book_uuid='22222222-2222-2222-2222-222222222222',
+                        description="Test", cover=self.test_doc,
+                        publish_date=datetime.date.today(), locale=root_page.locale)
+            book_index.add_child(instance=good_book)
+
+            call_command('convert_book_images')  # must not raise/abort
+
+            bad_book.refresh_from_db()
+            good_book.refresh_from_db()
+            self.assertIsNone(bad_book.cover_image)          # skipped, not converted
+            self.assertIsNotNone(good_book.cover_image)      # still converted despite the earlier failure
+
+    def test_salesforce_name_is_synced_dropdown(self):
+        from django import forms as dj_forms
+        from books.models import Book
+        from salesforce.models import SalesforceBookName
+        SalesforceBookName.objects.create(
+            salesforce_id='a1', name='UP', official_name='University Physics (Calculus)')
+        SalesforceBookName.objects.create(
+            salesforce_id='a2', name='CA', official_name='College Algebra')
+
+        form_class = Book.get_edit_handler().get_form_class()
+
+        form = form_class(instance=Book(salesforce_name=''))
+        field = form.fields['salesforce_name']
+        self.assertIsInstance(field, dj_forms.ChoiceField)
+        values = [c[0] for c in field.choices]
+        self.assertIn('University Physics (Calculus)', values)
+        self.assertIn('College Algebra', values)
+
+        # An existing value not in the synced list is preserved as an option
+        form2 = form_class(instance=Book(salesforce_name='Legacy Drifted Name'))
+        values2 = [c[0] for c in form2.fields['salesforce_name'].choices]
+        self.assertIn('Legacy Drifted Name', values2)
+
     def test_book_uuid_is_canonical_and_syncs_cnx_id(self):
         with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
             book_index = BookIndex.objects.all()[0]
