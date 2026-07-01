@@ -118,6 +118,39 @@ class BookTests(WagtailPageTestCase):
             book_index.add_child(instance=book)
             self.assertEqual(book.salesforce_abbreviation, 'Prealgebra')
 
+    def test_salesforce_names_seeded_once_then_left_alone_on_resave(self):
+        # Regression: save() used to re-fetch and overwrite both name fields from
+        # Salesforce on every save, silently discarding any manual override or
+        # dropdown selection an editor made after initial creation.
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            book = Book(title="University Physics",
+                        slug="university-physics",
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test Book",
+                        cover=self.test_doc,
+                        title_image=self.test_doc,
+                        publish_date=datetime.date.today(),
+                        locale=root_page.locale
+                        )
+            book_index.add_child(instance=book)
+            self.assertEqual(book.salesforce_abbreviation, 'University Physics (Calc)')
+            self.assertEqual(book.salesforce_name, 'University Physics')
+
+            book.salesforce_abbreviation = 'Manual Override'
+            book.salesforce_name = 'Combined Display Name'
+            book.save()
+            book.refresh_from_db()
+            self.assertEqual(book.salesforce_abbreviation, 'Manual Override')
+            self.assertEqual(book.salesforce_name, 'Combined Display Name')
+
+    def test_effective_salesforce_abbreviation_falls_back_to_salesforce_name(self):
+        book = Book(salesforce_abbreviation='', salesforce_name='Combined Display Name')
+        self.assertEqual(book.effective_salesforce_abbreviation, 'Combined Display Name')
+
+        book.salesforce_abbreviation = 'Manual Override'
+        self.assertEqual(book.effective_salesforce_abbreviation, 'Manual Override')
 
     def test_book_callout_snippet_exists_and_is_editable(self):
         from wagtail.models import Locale

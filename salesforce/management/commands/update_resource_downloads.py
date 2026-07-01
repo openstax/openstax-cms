@@ -25,7 +25,7 @@ class Command(BaseCommand):
                     data_dict_item = {'Contact__c': nrd.contact_id,
                                       'Last_accessed__c': nrd.last_access.strftime('%Y-%m-%d'),
                                       'Name': nrd.resource_name,
-                                      'Book__c': nrd.book.salesforce_abbreviation,
+                                      'Book__c': nrd.book.effective_salesforce_abbreviation,
                                       'Book_Format__c': nrd.book_format,
                                       'Accounts_UUID__c': str(nrd.account_uuid)}
                     new_data.append(data_dict_item)

@@ -22,6 +22,7 @@ from wagtail_ai.panels import AIMultipleChooserPanel
 from wagtail.api import APIField
 from wagtail.models import Site
 
+from rest_framework import serializers
 from rest_framework.fields import Field
 
 from openstax.api_fields import APIRichTextBlock, ExpandedRichTextField
@@ -84,7 +85,7 @@ def get_book_data(book):
             'amazon_link': book.amazon_link,
             'audiobook_link': book.audiobook_link,
             'bookstore_coming_soon': book.bookstore_coming_soon,
-            'salesforce_abbreviation': book.salesforce_abbreviation,
+            'salesforce_abbreviation': book.effective_salesforce_abbreviation,
             'salesforce_name': book.salesforce_name,
             'urls': book.book_urls(),
             'last_updated_pdf': book.last_updated_pdf,
@@ -691,10 +692,10 @@ class Book(FrontendPreviewMixin, Page):
     polish_site_link = models.URLField(blank=True, null=True,
                                        help_text="Stores target URL to the Polish site so that REX Polish page headers lead back to each individual book on the Polish site")
     salesforce_abbreviation = models.CharField(max_length=255, blank=True, null=True, verbose_name='Subject Book Name',
-                                               help_text='This should match the Books Name from Salesforce.')
+                                               help_text='Optional override of the name displayed on website forms and reported to Salesforce. Leave blank to use the "Name displayed on website forms" selection below.')
     salesforce_name = models.CharField(max_length=255, blank=True, null=True,
                                        verbose_name='Name displayed on website forms',
-                                       help_text='This is the name shown on interest/adoption forms and used in Partner filtering. The website only shows unique values from here, so it is possible to combine books for forms')
+                                       help_text='This should match the Book Name from Salesforce and is the name shown on interest/adoption forms and used in Partner filtering. The website only shows unique values from here, so it is possible to combine books for forms')
     salesforce_book_id = models.CharField(max_length=255, blank=True, null=True,
                                           help_text='No tracking and not included on adoption and interest forms if left blank)')
     updated = models.DateTimeField(blank=True, null=True, help_text='Late date web content was updated')
@@ -1025,7 +1026,8 @@ class Book(FrontendPreviewMixin, Page):
         APIField('cnx_id'),
         APIField('book_uuid'),
         APIField('polish_site_link'),
-        APIField('salesforce_abbreviation'),
+        APIField('salesforce_abbreviation', serializer=serializers.CharField(
+            source='effective_salesforce_abbreviation', allow_null=True)),
         APIField('salesforce_name'),
         APIField('salesforce_book_id'),
         APIField('book_subjects'),
@@ -1107,6 +1109,11 @@ class Book(FrontendPreviewMixin, Page):
             '{}',
             mark_safe(self.book.title),
         )
+
+    @property
+    def effective_salesforce_abbreviation(self):
+        """Subject Book Name override, falling back to the salesforce_name dropdown selection."""
+        return self.salesforce_abbreviation or self.salesforce_name
 
     def subjects(self):
         subject_list = []
@@ -1228,12 +1235,16 @@ class Book(FrontendPreviewMixin, Page):
                 self.license_url = CC_NC_SA_LICENSE_URL
                 self.license_version = CC_NC_SA_LICENSE_VERSION
 
-        from salesforce.functions import retrieve_salesforce_names
-        if self.salesforce_book_id:
+        # Seed the name fields from Salesforce when they're unset, without
+        # clobbering a value an editor already set or chose from the dropdown.
+        if self.salesforce_book_id and (not self.salesforce_abbreviation or not self.salesforce_name):
+            from salesforce.functions import retrieve_salesforce_names
             salesforce_names = retrieve_salesforce_names(self.salesforce_book_id)
             if len(salesforce_names) > 0:
-                self.salesforce_abbreviation = salesforce_names['Name']
-                self.salesforce_name = salesforce_names['Official_Name']
+                if not self.salesforce_abbreviation:
+                    self.salesforce_abbreviation = salesforce_names['Name']
+                if not self.salesforce_name:
+                    self.salesforce_name = salesforce_names['Official_Name']
 
         return super(Book, self).save(*args, **kwargs)
 

@@ -243,7 +243,7 @@ class Subject(FrontendPreviewMixin, Page):
                             'amazon_coming_soon': book.amazon_coming_soon,
                             'amazon_link': book.amazon_link,
                             'bookstore_coming_soon': book.bookstore_coming_soon,
-                            'salesforce_abbreviation': book.salesforce_abbreviation,
+                            'salesforce_abbreviation': book.effective_salesforce_abbreviation,
                             'salesforce_name': book.salesforce_name,
                             'urls': book.book_urls(),
                             'last_updated_pdf': book.last_updated_pdf,
