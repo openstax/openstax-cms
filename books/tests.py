@@ -231,6 +231,32 @@ class BookTests(WagtailPageTestCase):
             book.refresh_from_db()
             self.assertEqual(book.cover_image_id, first_cover_id)
 
+    def test_convert_book_images_continues_after_bad_document(self):
+        from django.core.management import call_command
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            broken_doc = Document.objects.create(
+                title='Broken Doc',
+                file=SimpleUploadedFile('broken.png', b'not a real image'))
+            bad_book = Book(title="Bad Book", slug="bad-book",
+                        book_uuid='11111111-1111-1111-1111-111111111111',
+                        description="Test", cover=broken_doc,
+                        publish_date=datetime.date.today(), locale=root_page.locale)
+            book_index.add_child(instance=bad_book)
+            good_book = Book(title="Good Book", slug="good-book",
+                        book_uuid='22222222-2222-2222-2222-222222222222',
+                        description="Test", cover=self.test_doc,
+                        publish_date=datetime.date.today(), locale=root_page.locale)
+            book_index.add_child(instance=good_book)
+
+            call_command('convert_book_images')  # must not raise/abort
+
+            bad_book.refresh_from_db()
+            good_book.refresh_from_db()
+            self.assertIsNone(bad_book.cover_image)          # skipped, not converted
+            self.assertIsNotNone(good_book.cover_image)      # still converted despite the earlier failure
+
     def test_salesforce_name_is_synced_dropdown(self):
         from django import forms as dj_forms
         from books.models import Book

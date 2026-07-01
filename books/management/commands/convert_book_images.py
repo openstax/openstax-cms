@@ -37,20 +37,32 @@ class Command(BaseCommand):
     help = "Convert legacy Book cover/title_image Documents into Wagtail Images (idempotent)."
 
     def handle(self, *args, **options):
-        converted_cover = converted_banner = skipped = 0
-        for book in Book.objects.all().order_by('id'):
+        converted_cover = converted_banner = skipped = errored = 0
+        # select_related avoids a query per Document lookup (cover/title_image);
+        # iterator() keeps memory bounded on the full books table.
+        books = Book.objects.select_related('cover', 'title_image').order_by('id').iterator()
+        for book in books:
             updates = {}
-            if book.cover_id and not book.cover_image_id:
-                updates['cover_image'] = _image_from_document(book.cover, f'{book.title} cover')
-                converted_cover += 1
-            if book.title_image_id and not book.banner_image_id:
-                updates['banner_image'] = _image_from_document(book.title_image, f'{book.title} title image')
-                converted_banner += 1
+            try:
+                if book.cover_id and not book.cover_image_id:
+                    updates['cover_image'] = _image_from_document(book.cover, f'{book.title} cover')
+                if book.title_image_id and not book.banner_image_id:
+                    updates['banner_image'] = _image_from_document(book.title_image, f'{book.title} title image')
+            except Exception as e:
+                # One bad legacy file (missing blob, corrupt image/SVG, etc.)
+                # shouldn't block conversion for every other book.
+                self.stderr.write(self.style.WARNING(
+                    f"Skipping book {book.pk} ({book.title!r}): {e}"))
+                errored += 1
+                continue
             if updates:
+                converted_cover += 'cover_image' in updates
+                converted_banner += 'banner_image' in updates
                 # Direct column update: avoids Book.save() side effects
                 # (Salesforce sync, field broadcasts) — we only set the FKs.
                 Book.objects.filter(pk=book.pk).update(**updates)
             else:
                 skipped += 1
         self.stdout.write(self.style.SUCCESS(
-            f"Converted {converted_cover} covers, {converted_banner} banners; {skipped} books unchanged."))
+            f"Converted {converted_cover} covers, {converted_banner} banners; "
+            f"{skipped} books unchanged; {errored} books errored."))
