@@ -740,7 +740,7 @@ class Book(FrontendPreviewMixin, Page):
             return build_image_url(self.banner_image)
         if self.title_image:
             return build_document_url(self.title_image.url)
-        return None
+        return ''
 
     title_image_url = property(get_title_image_url)
 

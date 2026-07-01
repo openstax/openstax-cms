@@ -166,11 +166,12 @@ class BookTests(WagtailPageTestCase):
         with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
             book_index = BookIndex.objects.all()[0]
             root_page = Page.objects.get(title="Root")
+            with open('pages/static/images/openstax.png', 'rb') as f:
+                image_bytes = f.read()
             img = Image.objects.create(
                 title='Cover img',
                 description='A maths textbook cover',
-                file=SimpleUploadedFile(
-                    'c.png', open('pages/static/images/openstax.png', 'rb').read()),
+                file=SimpleUploadedFile('c.png', image_bytes),
             )
             book = Book(title="Img Book", slug="img-book",
                         book_uuid='031da8d3-b525-429c-80cf-6c8ed997733a',
@@ -183,6 +184,7 @@ class BookTests(WagtailPageTestCase):
                 '/apps/cms/api/v2/pages/{}/?fields=cover_url,title_image_url,cover_alt,title_image_alt'.format(book.id))
             data = resp.json()
             self.assertTrue(data['cover_url'])                      # non-empty URL string
+            self.assertTrue(data['title_image_url'])                # non-empty URL string
             self.assertEqual(data['cover_alt'], 'A maths textbook cover')
             self.assertEqual(data['title_image_alt'], 'A maths textbook cover')
 
@@ -199,7 +201,9 @@ class BookTests(WagtailPageTestCase):
             book_index.add_child(instance=book)
             # No Image set yet -> url falls back to the legacy document
             self.assertTrue(book.cover_url)
+            self.assertTrue(book.title_image_url)
             self.assertIsNone(book.cover_alt)   # no Image -> no alt
+            self.assertIsNone(book.title_image_alt)   # no Image -> no alt
 
     def test_convert_book_images_command(self):
         from django.core.management import call_command

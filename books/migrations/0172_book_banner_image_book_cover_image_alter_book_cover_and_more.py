@@ -7,7 +7,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("books", "0170_remove_book_rex_callout_blurb_and_more"),
+        ("books", "0171_bookcallout_unique_bookcallout_per_locale"),
         ("wagtaildocs", "0014_alter_document_file_size"),
         ("wagtailimages", "0027_image_description"),
     ]
