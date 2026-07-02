@@ -2,9 +2,12 @@ import re
 import html
 from sentry_sdk import capture_exception
 
+from django import forms
 from django.conf import settings
 from django.db import models
+from django.utils.functional import cached_property
 from django.utils.html import format_html, mark_safe
+from wagtail.admin.forms import WagtailAdminPageForm
 from modelcluster.fields import ParentalKey
 from wagtail.admin.panels import (FieldPanel,
                                   InlinePanel,
@@ -12,7 +15,7 @@ from wagtail.admin.panels import (FieldPanel,
 from wagtail.admin.widgets.slug import SlugInput
 from wagtail import blocks
 from wagtail.fields import RichTextField, StreamField
-from wagtail.models import Orderable, Page
+from wagtail.models import Orderable, Page, TranslatableMixin
 from wagtail.snippets.blocks import SnippetChooserBlock
 from wagtail.admin.panels import TabbedInterface, ObjectList
 from wagtail_ai.panels import AIMultipleChooserPanel
@@ -22,7 +25,7 @@ from wagtail.models import Site
 from rest_framework.fields import Field
 
 from openstax.api_fields import APIRichTextBlock, ExpandedRichTextField
-from openstax.functions import build_document_url
+from openstax.functions import build_document_url, build_image_url
 from openstax.preview import FrontendPreviewMixin
 from books.constants import BOOK_STATES, BOOK_COVER_TEXT_COLOR, COVER_COLORS, CC_NC_SA_LICENSE_NAME, CC_BY_LICENSE_NAME, \
     CC_BY_LICENSE_URL, CC_NC_SA_LICENSE_URL, CC_NC_SA_LICENSE_VERSION, CC_BY_LICENSE_VERSION, K12_CATEGORIES
@@ -72,19 +75,15 @@ def get_book_data(book):
             'is_hs': 'High School' in book.subjects(),
             'cover_url': book.cover_url,
             'cover_color': book.cover_color,
-            'high_resolution_pdf_url': book.high_resolution_pdf_url,
-            'low_resolution_pdf_url': book.low_resolution_pdf_url,
-            'ibook_link': book.ibook_link,
-            'ibook_link_volume_2': book.ibook_link_volume_2,
+            'pdf_url': book.pdf_url,
+            'high_resolution_pdf_url': book.pdf_url,  # deprecated alias
             'webview_link': book.webview_link,
             'webview_rex_link': book.webview_rex_link,
             'bookshare_link': book.bookshare_link,
-            'kindle_link': book.kindle_link,
             'amazon_coming_soon': book.amazon_coming_soon,
             'amazon_link': book.amazon_link,
             'audiobook_link': book.audiobook_link,
             'bookstore_coming_soon': book.bookstore_coming_soon,
-            'comp_copy_available': book.comp_copy_available,
             'salesforce_abbreviation': book.salesforce_abbreviation,
             'salesforce_name': book.salesforce_name,
             'urls': book.book_urls(),
@@ -550,6 +549,50 @@ class SharedContentBlock(blocks.StreamBlock):
         required = False
 
 
+class BookCallout(TranslatableMixin, models.Model):
+    """Shared, per-locale REX callout + webinar content for all Book pages.
+
+    These were per-book fields that editors kept identical across every book;
+    now they're edited once here and read by every Book via properties."""
+    rex_callout_title = models.CharField(
+        max_length=255, blank=True, null=True, default="Recommended",
+        help_text='Title of the REX callout (shared across all books).')
+    rex_callout_blurb = models.CharField(
+        max_length=255, blank=True, null=True,
+        help_text='Additional text for the REX callout (shared across all books).')
+    webinar_content = StreamField(SharedContentBlock(), null=True, blank=True, use_json_field=True)
+
+    panels = [
+        FieldPanel('rex_callout_title'),
+        FieldPanel('rex_callout_blurb'),
+        FieldPanel('webinar_content'),
+    ]
+
+    api_fields = (
+        APIField('rex_callout_title'),
+        APIField('rex_callout_blurb'),
+        APIField('webinar_content'),
+    )
+
+    class Meta(TranslatableMixin.Meta):
+        verbose_name = 'Book callout'
+        constraints = [
+            models.UniqueConstraint(fields=['locale'], name='unique_bookcallout_per_locale'),
+        ]
+
+    def __str__(self):
+        return f'Book callout ({self.locale})'
+
+
+class SharedStreamFieldSerializer(Field):
+    """Serialize a StreamField value exposed via a property the same way Wagtail
+    serializes a native StreamField api_field (so output is byte-identical)."""
+    def to_representation(self, value):
+        if not value:
+            return []
+        return value.stream_block.get_api_representation(value, self.context)
+
+
 class PromoteSnippetContentChooserBlock(SnippetChooserBlock):
     def get_api_representation(self, value, context=None):
         if value:
@@ -602,7 +645,33 @@ class BookCategories(Orderable, BookCategory):
     book_category = ParentalKey('books.Book', related_name='book_categories')
 
 
+class BookAdminForm(WagtailAdminPageForm):
+    """Renders salesforce_name as a dropdown sourced from the locally-synced
+    Salesforce Book__c list so the value can't drift from Salesforce."""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if 'salesforce_name' not in self.fields:
+            return
+        # Lazy import: salesforce.models imports books.models (circular at module load).
+        from salesforce.models import SalesforceBookName
+        names = (SalesforceBookName.objects
+                 .exclude(official_name__isnull=True).exclude(official_name='')
+                 .values_list('official_name', flat=True).distinct())
+        choices = [('', '---------')] + [(n, n) for n in names]
+        # Preserve a current value that isn't in the synced list (don't force re-entry).
+        current = getattr(self.instance, 'salesforce_name', None)
+        if current and current not in dict(choices):
+            choices.append((current, f'{current} (not in Salesforce list)'))
+        existing = self.fields['salesforce_name']
+        self.fields['salesforce_name'] = forms.ChoiceField(
+            choices=choices, required=False,
+            label=existing.label, help_text=existing.help_text,
+        )
+
+
 class Book(FrontendPreviewMixin, Page):
+    base_form_class = BookAdminForm
+
     licenses = (
         (CC_BY_LICENSE_NAME, CC_BY_LICENSE_NAME),
         (CC_NC_SA_LICENSE_NAME, CC_NC_SA_LICENSE_NAME)
@@ -611,11 +680,12 @@ class Book(FrontendPreviewMixin, Page):
     created = models.DateTimeField(auto_now_add=True)
     book_state = models.CharField(max_length=255, choices=BOOK_STATES, default='live',
                                   help_text='The state of the book.')
-    cnx_id = models.CharField(
-        max_length=255, help_text="collection.xml UUID. Should be same as book UUID",
-        blank=True, null=True)
     book_uuid = models.CharField(
-        max_length=255, help_text="collection.xml UUID. Should be same as cnx id.",
+        max_length=255, help_text="collection.xml UUID for the book. Canonical book identifier.",
+        blank=True, null=True)
+    cnx_id = models.CharField(
+        max_length=255,
+        help_text="Legacy alias of book_uuid, kept for API back-compat. Auto-synced from book_uuid; do not edit.",
         blank=True, null=True)
 
     polish_site_link = models.URLField(blank=True, null=True,
@@ -649,34 +719,66 @@ class Book(FrontendPreviewMixin, Page):
         help_text="Message shown to logged-out users requiring them to log in. "\
                   "If set, logged-out users cannot dismiss content warning and must log in.")
 
+    # Legacy Document fields, kept for fallback until convert_book_images runs in
+    # every environment; dropped in the PR 3b fast-follow.
     cover = models.ForeignKey(
         'wagtaildocs.Document',
         null=True, blank=True,
         on_delete=models.SET_NULL,
         related_name='+',
-        help_text='The book cover to be shown on the website.'
+        help_text='Legacy Document cover (being migrated to "Cover image").'
     )
-
-    def get_cover_url(self):
-        if self.cover:
-            return build_document_url(self.cover.url)
-        else:
-            return ''
-
-    cover_url = property(get_cover_url)
-
     title_image = models.ForeignKey(
         'wagtaildocs.Document',
         null=True, blank=True,
         on_delete=models.SET_NULL,
         related_name='+',
-        help_text='The svg for title image to be shown on the website.'
+        help_text='Legacy Document title image (being migrated to "Banner image").'
     )
 
+    # New Image fields. cover_image backs cover_url; banner_image backs title_image_url.
+    cover_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        verbose_name='Cover image',
+        help_text='The book cover shown on the website.'
+    )
+    banner_image = models.ForeignKey(
+        'wagtailimages.Image',
+        null=True, blank=True,
+        on_delete=models.SET_NULL,
+        related_name='+',
+        verbose_name='Title image (banner)',
+        help_text='The title image (banner) shown on the website. SVG supported.'
+    )
+
+    def get_cover_url(self):
+        if self.cover_image:
+            return build_image_url(self.cover_image)
+        if self.cover:
+            return build_document_url(self.cover.url)
+        return ''
+
+    cover_url = property(get_cover_url)
+
     def get_title_image_url(self):
-        return build_document_url(self.title_image.url)
+        if self.banner_image:
+            return build_image_url(self.banner_image)
+        if self.title_image:
+            return build_document_url(self.title_image.url)
+        return ''
 
     title_image_url = property(get_title_image_url)
+
+    @property
+    def cover_alt(self):
+        return self.cover_image.description if self.cover_image else None
+
+    @property
+    def title_image_alt(self):
+        return self.banner_image.description if self.banner_image else None
 
     cover_color = models.CharField(max_length=255, choices=COVER_COLORS, default='blue',
                                    help_text='The color of the cover.')
@@ -694,9 +796,6 @@ class Book(FrontendPreviewMixin, Page):
                                                help_text='ISBN 13 for print version (black and white).')
     digital_isbn_13 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 13 for digital version.')
     assignable_isbn_13 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 13 for assignable version.')
-    ibook_isbn_13 = models.CharField(max_length=255, blank=True, null=True, help_text='ISBN 13 for iBook version.')
-    ibook_volume_2_isbn_13 = models.CharField(max_length=255, blank=True, null=True,
-                                              help_text='ISBN 13 for iBook v2 version.')
     license_text = models.TextField(
         blank=True, null=True, help_text="Overrides default license text.")
     license_name = models.CharField(
@@ -707,39 +806,24 @@ class Book(FrontendPreviewMixin, Page):
     license_url = models.CharField(
         max_length=255, blank=True, null=True, editable=False, help_text="External URL of the license.")
 
-    high_resolution_pdf = models.ForeignKey(
+    pdf = models.ForeignKey(
         'wagtaildocs.Document',
         null=True,
         blank=True,
         on_delete=models.SET_NULL,
         related_name='+',
-        help_text="High quality PDF document of the book."
+        verbose_name='PDF',
+        help_text="PDF document of the book."
     )
 
-    def get_high_res_pdf_url(self):
-        if self.high_resolution_pdf:
-            return build_document_url(self.high_resolution_pdf.url)
-        else:
-            return None
+    def get_pdf_url(self):
+        if self.pdf:
+            return build_document_url(self.pdf.url)
+        return None
 
-    high_resolution_pdf_url = property(get_high_res_pdf_url)
-
-    low_resolution_pdf = models.ForeignKey(
-        'wagtaildocs.Document',
-        null=True,
-        blank=True,
-        on_delete=models.SET_NULL,
-        related_name='+',
-        help_text="Low quality PDF document of the book."
-    )
-
-    def get_low_res_pdf_url(self):
-        if self.low_resolution_pdf:
-            return build_document_url(self.low_resolution_pdf.url)
-        else:
-            return None
-
-    low_resolution_pdf_url = property(get_low_res_pdf_url)
+    pdf_url = property(get_pdf_url)
+    # Deprecated alias kept for API back-compat (unknown consumers / REX).
+    high_resolution_pdf_url = property(get_pdf_url)
 
     free_stuff_instructor = StreamField(SharedContentBlock(), null=True, blank=True,
                                         help_text="Snippet to show texts for free instructor resources.",
@@ -782,33 +866,16 @@ class Book(FrontendPreviewMixin, Page):
     community_resource_feature_link_url = property(get_community_resource_feature_link_url)
     community_resource_feature_text = models.TextField(blank=True, help_text='Text of the community resource feature.')
 
-    webinar_content = StreamField(SharedContentBlock(), null=True, blank=True, use_json_field=True)
-    ibook_link = models.URLField(blank=True, help_text="Link to iBook")
-    ibook_link_volume_2 = models.URLField(blank=True, help_text="Link to secondary iBook")
     webview_link = models.URLField(blank=True, help_text="Link to CNX Webview book")
     webview_rex_link = models.URLField(blank=True, help_text="Link to REX Webview book")
-    rex_callout_title = models.CharField(max_length=255, blank=True, null=True, help_text='Title of the REX callout',
-                                         default="Recommended")
-    rex_callout_blurb = models.CharField(max_length=255, blank=True, null=True,
-                                         help_text='Additional text for the REX callout.')
-    enable_study_edge = models.BooleanField(default=False,
-                                            help_text="This will cause the link to the Study Edge app appear on the book details page.")
     bookshare_link = models.URLField(blank=True, help_text="Link to Bookshare resources")
     amazon_coming_soon = models.BooleanField(default=False, verbose_name="Individual Print Coming Soon")
     amazon_link = models.URLField(blank=True, verbose_name="Individual Print Link")
-    amazon_iframe = models.TextField(blank=True, null=True, help_text='Amazon iframe code block')
     audiobook_link = models.URLField(blank=True, verbose_name="Audiobook Link")
-    kindle_link = models.URLField(blank=True, help_text="Link to Kindle version")
-    chegg_link = models.URLField(blank=True, null=True, help_text="Link to Chegg e-reader")
-    chegg_link_text = models.CharField(max_length=255, blank=True, null=True, help_text='Text for Chegg link.')
     bookstore_coming_soon = models.BooleanField(default=False,
                                                 help_text='Whether this book is coming to bookstore soon.')
     bookstore_content = StreamField(SharedContentBlock(), null=True, blank=True, help_text='Bookstore content.',
                                     use_json_field=True)
-    comp_copy_available = models.BooleanField(default=True, help_text='Whether free compy available for teachers.')
-    comp_copy_content = StreamField(SharedContentBlock(), null=True, blank=True, help_text='Content of the free copy.',
-                                    use_json_field=True)
-    tutor_marketing_book = models.BooleanField(default=False, help_text='Whether this is a Tutor marketing book.')
     assignable_book = models.BooleanField(default=False, help_text='Whether this is an Assignable book.')
     partner_list_label = models.CharField(max_length=255, null=True, blank=True,
                                           help_text="Controls the heading text on the book detail page for partners. This will update ALL books to use this value!")
@@ -861,8 +928,8 @@ class Book(FrontendPreviewMixin, Page):
 
     book_detail_panel = Page.content_panels + [
         FieldPanel('book_state'),
-        FieldPanel('cnx_id'),
         FieldPanel('book_uuid'),
+        FieldPanel('cnx_id', read_only=True),
         FieldPanel('polish_site_link'),
         FieldPanel('salesforce_abbreviation'),
         FieldPanel('salesforce_name'),
@@ -875,26 +942,20 @@ class Book(FrontendPreviewMixin, Page):
         FieldPanel('description', classname="full"),
         FieldPanel('content_warning'),
         FieldPanel('require_login_message'),
-        FieldPanel('cover'),
-        FieldPanel('title_image'),
+        FieldPanel('cover_image'),
+        FieldPanel('banner_image'),
         FieldPanel('cover_color'),
         FieldPanel('book_cover_text_color'),
         FieldPanel('reverse_gradient'),
         FieldPanel('print_isbn_13'),
         FieldPanel('print_softcover_isbn_13'),
         FieldPanel('digital_isbn_13'),
-        FieldPanel('ibook_isbn_13'),
-        FieldPanel('ibook_volume_2_isbn_13'),
         FieldPanel('assignable_isbn_13'),
         FieldPanel('license_text'),
         FieldPanel('license_name'),
         FieldPanel('webview_rex_link'),
-        FieldPanel('rex_callout_title'),
-        FieldPanel('rex_callout_blurb'),
-        FieldPanel('enable_study_edge'),
-        FieldPanel('high_resolution_pdf'),
+        FieldPanel('pdf'),
         FieldPanel('last_updated_pdf'),
-        FieldPanel('low_resolution_pdf'),
         FieldPanel('free_stuff_instructor'),
         FieldPanel('free_stuff_student'),
         FieldPanel('community_resource_heading'),
@@ -904,22 +965,12 @@ class Book(FrontendPreviewMixin, Page):
         FieldPanel('community_resource_blurb'),
         FieldPanel('community_resource_feature_link'),
         FieldPanel('community_resource_feature_text'),
-        FieldPanel('webinar_content'),
-        FieldPanel('ibook_link'),
-        FieldPanel('ibook_link_volume_2'),
         FieldPanel('bookshare_link'),
         FieldPanel('amazon_coming_soon'),
         FieldPanel('amazon_link'),
         FieldPanel('audiobook_link'),
-        FieldPanel('amazon_iframe'),
-        FieldPanel('kindle_link'),
-        FieldPanel('chegg_link'),
-        FieldPanel('chegg_link_text'),
         FieldPanel('bookstore_coming_soon'),
         FieldPanel('bookstore_content'),
-        FieldPanel('comp_copy_available'),
-        FieldPanel('comp_copy_content'),
-        FieldPanel('tutor_marketing_book'),
         FieldPanel('assignable_book'),
         FieldPanel('promote_snippet'),
         FieldPanel('partner_list_label'),
@@ -985,7 +1036,9 @@ class Book(FrontendPreviewMixin, Page):
         APIField('content_warning_text'),
         APIField('require_login_message_text'),
         APIField('cover_url'),
+        APIField('cover_alt'),
         APIField('title_image_url'),
+        APIField('title_image_alt'),
         APIField('cover_color'),
         APIField('book_cover_text_color'),
         APIField('reverse_gradient'),
@@ -996,15 +1049,13 @@ class Book(FrontendPreviewMixin, Page):
         APIField('print_isbn_13'),
         APIField('print_softcover_isbn_13'),
         APIField('digital_isbn_13'),
-        APIField('ibook_isbn_13'),
-        APIField('ibook_volume_2_isbn_13'),
         APIField('assignable_isbn_13'),
         APIField('license_text'),
         APIField('license_name'),
         APIField('license_version'),
         APIField('license_url'),
+        APIField('pdf_url'),
         APIField('high_resolution_pdf_url'),
-        APIField('low_resolution_pdf_url'),
         APIField('free_stuff_instructor'),
         APIField('free_stuff_student'),
         APIField('community_resource_heading'),
@@ -1014,29 +1065,19 @@ class Book(FrontendPreviewMixin, Page):
         APIField('community_resource_blurb'),
         APIField('community_resource_feature_link_url'),
         APIField('community_resource_feature_text'),
-        APIField('webinar_content'),
+        APIField('webinar_content', serializer=SharedStreamFieldSerializer()),
         APIField('promote_snippet'),
-        APIField('ibook_link'),
-        APIField('ibook_link_volume_2'),
         APIField('webview_link'),
         APIField('webview_rex_link'),
         APIField('rex_callout_title'),
         APIField('rex_callout_blurb'),
-        APIField('enable_study_edge'),
         APIField('bookshare_link'),
         APIField('amazon_coming_soon'),
         APIField('amazon_link'),
-        APIField('amazon_iframe'),
         APIField('audiobook_link'),
-        APIField('kindle_link'),
-        APIField('chegg_link'),
-        APIField('chegg_link_text'),
         APIField('bookstore_coming_soon'),
         APIField('bookstore_content'),
-        APIField('comp_copy_available'),
-        APIField('comp_copy_content'),
         APIField('errata_content'),
-        APIField('tutor_marketing_book'),
         APIField('assignable_book'),
         APIField('partner_list_label'),
         APIField('partner_page_link_text'),
@@ -1104,6 +1145,27 @@ class Book(FrontendPreviewMixin, Page):
     def require_login_message_text(self):
         return self.require_login_message.require_login_message if self.require_login_message else None
 
+    @cached_property
+    def _book_callout(self):
+        return BookCallout.objects.filter(locale=self.locale).first()
+
+    @property
+    def rex_callout_title(self):
+        callout = self._book_callout
+        # Matches the old per-book field's default so locales without a
+        # BookCallout snippet yet (e.g. newly created locales) don't regress.
+        return callout.rex_callout_title if callout else "Recommended"
+
+    @property
+    def rex_callout_blurb(self):
+        callout = self._book_callout
+        return callout.rex_callout_blurb if callout else None
+
+    @property
+    def webinar_content(self):
+        callout = self._book_callout
+        return callout.webinar_content if callout else None
+
     def get_slug(self):
         return 'books/{}'.format(self.slug)
 
@@ -1123,6 +1185,19 @@ class Book(FrontendPreviewMixin, Page):
         return book_urls
 
     def save(self, *args, **kwargs):
+        # book_uuid is canonical; keep the legacy cnx_id column mirrored for
+        # API back-compat (cnx_id must stay a real column to remain filterable).
+        update_fields = kwargs.get("update_fields")
+        if update_fields is not None:
+            update_fields = set(update_fields)
+        if not self.book_uuid and self.cnx_id:
+            self.book_uuid = self.cnx_id
+            if update_fields is not None:
+                update_fields.add("book_uuid")
+        self.cnx_id = self.book_uuid
+        if update_fields is not None:
+            update_fields.add("cnx_id")
+            kwargs["update_fields"] = sorted(update_fields)
         if self.partner_list_label:
             Book.objects.filter(locale=self.locale).update(partner_list_label=self.partner_list_label)
 
