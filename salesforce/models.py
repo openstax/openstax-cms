@@ -34,6 +34,20 @@ class AdoptionOpportunityRecord(models.Model):
         return self.opportunity_id
 
 
+class SalesforceBookName(models.Model):
+    """Local mirror of the Salesforce Book__c list, synced by
+    sync_salesforce_book_names. Source for the Book.salesforce_name dropdown."""
+    salesforce_id = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255, blank=True, null=True)
+    official_name = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        ordering = ['official_name']
+
+    def __str__(self):
+        return self.official_name or self.name or self.salesforce_id
+
+
 class School(index.Indexed, models.Model):
     salesforce_id = models.CharField(max_length=255, blank=True, null=True)
     name = models.CharField(max_length=255)
