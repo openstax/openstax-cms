@@ -6,7 +6,7 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("pages", "0181_alter_rootpage_body"),
+        ("pages", "0183_cards_colors_list_to_csv"),
     ]
 
     operations = [
