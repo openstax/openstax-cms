@@ -50,13 +50,17 @@ BASE_CONTENT_BLOCKS = [
             ('card_size', blocks.IntegerBlock(min_value=0, help_text='Sets the width of the individual cards. default 27.')),
             ('card_style', blocks.ChoiceBlock(choices=CARDS_STYLE_CHOICES, help_text='The border style of the cards. default borderless.')),
             ('card_columns', blocks.IntegerBlock(min_value=1, max_value=6, help_text='Number of columns for the cards grid. default auto.')),
-            ('accent_colors', blocks.ListBlock(
-                hex_color_block('Accent color for a card. Must be hex eg: #ff0000.'),
-                default=[], label='Accent Colors',
+            ('accent_colors', blocks.RegexBlock(
+                regex=r'^#[0-9a-fA-F]{6}(\s*,\s*#[0-9a-fA-F]{6})*$', required=False,
+                label='Accent Colors',
+                help_text='Comma-separated hex colors for the top accent bar, cycled per card. eg: #ff0000,#00ff00,#0000ff.',
+                error_messages={'invalid': 'Must be comma-separated hex colors. eg: #ff0000,#00ff00.'},
             )),
-            ('divider_colors', blocks.ListBlock(
-                hex_color_block('Divider color between cards. Must be hex eg: #ff0000.'),
-                default=[], label='Divider Colors',
+            ('divider_colors', blocks.RegexBlock(
+                regex=r'^#[0-9a-fA-F]{6}(\s*,\s*#[0-9a-fA-F]{6})*$', required=False,
+                label='Divider Colors',
+                help_text='Comma-separated hex colors for card divider lines, cycled per card. eg: #ff0000,#00ff00.',
+                error_messages={'invalid': 'Must be comma-separated hex colors. eg: #ff0000,#00ff00.'},
             )),
             ('background_color', hex_color_block('Background color for the cards block. Must be hex eg: #ff0000.')),
             ('border_size', blocks.IntegerBlock(min_value=0, help_text='Outer border width in px (all sides). Omit to use the style default; 0 = no border.')),

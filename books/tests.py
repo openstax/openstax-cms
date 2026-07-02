@@ -159,6 +159,127 @@ class BookTests(WagtailPageTestCase):
             self.assertEqual(data['rex_callout_blurb'], 'Shared Blurb')
             self.assertEqual(data['webinar_content'], [])   # empty StreamField -> []
 
+    def test_cover_is_image_with_alt_and_url_fallback(self):
+        from wagtail.images import get_image_model
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        Image = get_image_model()
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            with open('pages/static/images/openstax.png', 'rb') as f:
+                image_bytes = f.read()
+            img = Image.objects.create(
+                title='Cover img',
+                description='A maths textbook cover',
+                file=SimpleUploadedFile('c.png', image_bytes),
+            )
+            book = Book(title="Img Book", slug="img-book",
+                        book_uuid='031da8d3-b525-429c-80cf-6c8ed997733a',
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test",
+                        cover_image=img, banner_image=img,
+                        publish_date=datetime.date.today(), locale=root_page.locale)
+            book_index.add_child(instance=book)
+            resp = self.client.get(
+                '/apps/cms/api/v2/pages/{}/?fields=cover_url,title_image_url,cover_alt,title_image_alt'.format(book.id))
+            data = resp.json()
+            self.assertTrue(data['cover_url'])                      # non-empty URL string
+            self.assertTrue(data['title_image_url'])                # non-empty URL string
+            self.assertEqual(data['cover_alt'], 'A maths textbook cover')
+            self.assertEqual(data['title_image_alt'], 'A maths textbook cover')
+
+    def test_cover_url_falls_back_to_legacy_document(self):
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            book = Book(title="Legacy Book", slug="legacy-book",
+                        book_uuid='031da8d3-b525-429c-80cf-6c8ed997733a',
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test",
+                        cover=self.test_doc, title_image=self.test_doc,
+                        publish_date=datetime.date.today(), locale=root_page.locale)
+            book_index.add_child(instance=book)
+            # No Image set yet -> url falls back to the legacy document
+            self.assertTrue(book.cover_url)
+            self.assertTrue(book.title_image_url)
+            self.assertIsNone(book.cover_alt)   # no Image -> no alt
+            self.assertIsNone(book.title_image_alt)   # no Image -> no alt
+
+    def test_convert_book_images_command(self):
+        from django.core.management import call_command
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            book = Book(title="Convert Book", slug="convert-book",
+                        book_uuid='031da8d3-b525-429c-80cf-6c8ed997733a',
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test",
+                        cover=self.test_doc, title_image=self.test_doc,
+                        publish_date=datetime.date.today(), locale=root_page.locale)
+            book_index.add_child(instance=book)
+            self.assertIsNone(book.cover_image)
+
+            call_command('convert_book_images')
+
+            book.refresh_from_db()
+            self.assertIsNotNone(book.cover_image)        # Image created + linked
+            self.assertIsNotNone(book.banner_image)
+            self.assertTrue(book.cover_url)
+            # Idempotent: a second run does not create duplicates / change links
+            first_cover_id = book.cover_image_id
+            call_command('convert_book_images')
+            book.refresh_from_db()
+            self.assertEqual(book.cover_image_id, first_cover_id)
+
+    def test_convert_book_images_continues_after_bad_document(self):
+        from django.core.management import call_command
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            broken_doc = Document.objects.create(
+                title='Broken Doc',
+                file=SimpleUploadedFile('broken.png', b'not a real image'))
+            bad_book = Book(title="Bad Book", slug="bad-book",
+                        book_uuid='11111111-1111-1111-1111-111111111111',
+                        description="Test", cover=broken_doc,
+                        publish_date=datetime.date.today(), locale=root_page.locale)
+            book_index.add_child(instance=bad_book)
+            good_book = Book(title="Good Book", slug="good-book",
+                        book_uuid='22222222-2222-2222-2222-222222222222',
+                        description="Test", cover=self.test_doc,
+                        publish_date=datetime.date.today(), locale=root_page.locale)
+            book_index.add_child(instance=good_book)
+
+            call_command('convert_book_images')  # must not raise/abort
+
+            bad_book.refresh_from_db()
+            good_book.refresh_from_db()
+            self.assertIsNone(bad_book.cover_image)          # skipped, not converted
+            self.assertIsNotNone(good_book.cover_image)      # still converted despite the earlier failure
+
+    def test_salesforce_name_is_synced_dropdown(self):
+        from django import forms as dj_forms
+        from books.models import Book
+        from salesforce.models import SalesforceBookName
+        SalesforceBookName.objects.create(
+            salesforce_id='a1', name='UP', official_name='University Physics (Calculus)')
+        SalesforceBookName.objects.create(
+            salesforce_id='a2', name='CA', official_name='College Algebra')
+
+        form_class = Book.get_edit_handler().get_form_class()
+
+        form = form_class(instance=Book(salesforce_name=''))
+        field = form.fields['salesforce_name']
+        self.assertIsInstance(field, dj_forms.ChoiceField)
+        values = [c[0] for c in field.choices]
+        self.assertIn('University Physics (Calculus)', values)
+        self.assertIn('College Algebra', values)
+
+        # An existing value not in the synced list is preserved as an option
+        form2 = form_class(instance=Book(salesforce_name='Legacy Drifted Name'))
+        values2 = [c[0] for c in form2.fields['salesforce_name'].choices]
+        self.assertIn('Legacy Drifted Name', values2)
+
     def test_book_uuid_is_canonical_and_syncs_cnx_id(self):
         with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
             book_index = BookIndex.objects.all()[0]
