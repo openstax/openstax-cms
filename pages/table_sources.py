@@ -11,6 +11,11 @@ from django.utils.html import escape, format_html
 
 _HAS_SCHEME = re.compile(r'^([a-z][a-z0-9+.-]*:|//)', re.IGNORECASE)
 
+# Schemes a link cell may carry into an href. Anything else with a scheme
+# (javascript:, data:, file:, ...) degrades to a plain text cell — dynamic
+# sources (endpoint JSON, snippet char fields) are not trusted URL input.
+_SAFE_LINK_SCHEMES = {'http', 'https', 'mailto', 'tel'}
+
 # Cell types authors can pick in source column mappings. 'html' is
 # registry-internal (rich-text fields) and not offered as a choice.
 SOURCE_CELL_TYPE_CHOICES = [
@@ -36,7 +41,8 @@ def build_cell(raw, cell_type):
             raw = {'url': str(raw), 'text': str(raw)}
         url = (raw.get('url') or '').strip()
         text = raw.get('text') or url
-        if not url:
+        scheme = urlsplit(url).scheme.lower()
+        if not url or (scheme and scheme not in _SAFE_LINK_SCHEMES):
             return {'content': escape(str(text)) if text else '', 'cta': []}
         return {'content': '', 'cta': [{
             'text': str(text),

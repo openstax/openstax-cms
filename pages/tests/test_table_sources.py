@@ -61,6 +61,20 @@ class BuildCellTests(TestCase):
             cell = build_cell({'text': 'Contact', 'url': url}, 'link')
             self.assertEqual(cell['cta'][0]['target']['type'], 'external', url)
 
+    def test_link_cell_dangerous_scheme_degrades_to_text(self):
+        for url in ['javascript:alert(1)', 'data:text/html,x',
+                    'vbscript:msgbox', 'file:///etc/passwd']:
+            cell = build_cell({'text': 'Click', 'url': url}, 'link')
+            self.assertEqual(cell['cta'], [], url)
+            self.assertEqual(cell['content'], 'Click', url)
+
+    def test_link_cell_safe_schemes_and_paths_still_link(self):
+        for url in ['https://example.com/x', 'mailto:info@openstax.org',
+                    'tel:+17133486000', '//cdn.example.com/x',
+                    '/details/books/biology-2e']:
+            cell = build_cell({'text': 'Go', 'url': url}, 'link')
+            self.assertEqual(cell['cta'][0]['target']['value'], url, url)
+
     def test_date_cell_non_date_fallback_is_escaped(self):
         cell = build_cell('<b>not a date</b>', 'date')
         self.assertNotIn('<b>', cell['content'])
@@ -162,9 +176,9 @@ class BooksSourceTests(TestCase):
         site = Site.objects.get(is_default_site=True)
         site.root_page = homepage
         site.save()
-        test_image = SimpleUploadedFile(
-            name='openstax.png',
-            content=open("pages/static/images/openstax.png", 'rb').read())
+        with open("pages/static/images/openstax.png", 'rb') as image_file:
+            test_image = SimpleUploadedFile(
+                name='openstax.png', content=image_file.read())
         cls.test_doc = Document.objects.create(title='Test Doc', file=test_image)
         cls.book_index = book_index
 

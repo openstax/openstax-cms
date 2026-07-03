@@ -238,7 +238,9 @@ class TableBlock(blocks.StructBlock):
                 json.dumps({'type': child.block_type, 'value': spec},
                            sort_keys=True, default=str).encode()).hexdigest()
             data = table_sources.resolve_data_source(child.block_type, child.value)
-            cache.set(cache_key, data, None)
+            # 30-day TTL: bounds key accumulation on shared backends while
+            # keeping the fallback useful; older snapshots are stale anyway.
+            cache.set(cache_key, data, 60 * 60 * 24 * 30)
         except Exception as e:
             capture_exception(e)
             data = (cache.get(cache_key) if cache_key else None) or {'columns': [], 'rows': []}
