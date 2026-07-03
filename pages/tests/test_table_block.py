@@ -1,3 +1,6 @@
+from unittest import mock
+
+from django.core.cache import cache
 from django.test import TestCase
 
 from pages.models.constants import BASE_CONTENT_BLOCKS
@@ -74,3 +77,80 @@ class ManualTableBlockTests(TestCase):
         self.assertEqual(entries['empty_message'], 'No books match.')
         self.assertEqual(entries['default_sort_column'], 1)
         self.assertEqual(entries['default_sort_direction'], 'desc')
+
+
+class DynamicTableBlockTests(TestCase):
+    def setUp(self):
+        cache.clear()
+
+    def _dynamic_value(self):
+        block = TableBlock()
+        return block, block.to_python({
+            'caption': 'Live books',
+            'columns': [], 'rows': [],
+            'data_source': [{'type': 'subjects', 'value': {
+                'variant': 'he', 'k12_category': '',
+                'columns': [{'field': 'name', 'header': '', 'type': ''}],
+            }}],
+            'config': [],
+        })
+
+    def test_data_source_never_appears_in_api_output(self):
+        block, value = self._dynamic_value()
+        rep = block.get_api_representation(value)
+        self.assertNotIn('data_source', rep)
+
+    def test_hydrates_columns_and_rows_from_resolver(self):
+        from wagtail.models import Locale
+        from snippets.models import Subject
+        Subject.objects.create(name='Math', locale=Locale.get_default())
+        block, value = self._dynamic_value()
+        rep = block.get_api_representation(value)
+        self.assertEqual(rep['columns'], [{'header': 'Subject', 'type': 'text'}])
+        self.assertEqual(rep['rows'][0]['cells'][0]['content'], 'Math')
+
+    def test_resolver_failure_falls_back_to_snapshot(self):
+        from wagtail.models import Locale
+        from snippets.models import Subject
+        Subject.objects.create(name='Math', locale=Locale.get_default())
+        block, value = self._dynamic_value()
+        block.get_api_representation(value)  # primes the snapshot cache
+        with mock.patch('pages.table_sources.resolve_subjects',
+                        side_effect=RuntimeError('source down')):
+            rep = block.get_api_representation(value)
+        self.assertEqual(rep['rows'][0]['cells'][0]['content'], 'Math')
+
+    def test_key_computation_failure_yields_empty_table_not_error(self):
+        block, value = self._dynamic_value()
+        with mock.patch('pages.table_block.json.dumps',
+                        side_effect=RuntimeError('unhashable spec')):
+            rep = block.get_api_representation(value)
+        self.assertEqual(rep['columns'], [])
+        self.assertEqual(rep['rows'], [])
+
+    def test_resolver_failure_without_snapshot_yields_empty_table(self):
+        block, value = self._dynamic_value()
+        with mock.patch('pages.table_sources.resolve_subjects',
+                        side_effect=RuntimeError('source down')):
+            rep = block.get_api_representation(value)
+        self.assertEqual(rep['columns'], [])
+        self.assertEqual(rep['rows'], [])
+
+    def test_resolver_failure_reports_to_sentry(self):
+        block, value = self._dynamic_value()
+        with mock.patch('pages.table_sources.resolve_subjects',
+                        side_effect=RuntimeError('source down')), \
+             mock.patch('pages.table_block.capture_exception') as capture:
+            block.get_api_representation(value)
+        capture.assert_called_once()
+
+    def test_manual_table_without_source_is_unchanged(self):
+        block = TableBlock()
+        value = block.to_python({
+            'caption': '', 'data_source': [], 'config': [],
+            'columns': [{'header': 'A', 'type': ''}],
+            'rows': [{'cells': [{'content': '<p>x</p>', 'cta': []}]}],
+        })
+        rep = block.get_api_representation(value)
+        self.assertEqual(rep['columns'][0]['header'], 'A')
+        self.assertIn('x', rep['rows'][0]['cells'][0]['content'])

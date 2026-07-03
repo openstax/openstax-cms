@@ -1,3 +1,8 @@
+import hashlib
+import json
+
+from django.core.cache import cache
+from sentry_sdk import capture_exception
 from wagtail import blocks
 from wagtail.snippets.blocks import SnippetChooserBlock
 
@@ -161,6 +166,15 @@ class TableBlock(blocks.StructBlock):
         help_text='Describes the table; rendered as a <caption> for accessibility.')
     columns = blocks.ListBlock(TableColumnBlock(), default=[], label='Columns')
     rows = blocks.ListBlock(TableRowBlock(), default=[], label='Rows')
+    data_source = blocks.StreamBlock([
+        ('books', BooksSourceBlock()),
+        ('news', NewsSourceBlock()),
+        ('book_resources', BookResourcesSourceBlock()),
+        ('subjects', SubjectsSourceBlock()),
+        ('endpoint', EndpointSourceBlock()),
+    ], max_num=1, required=False, label='Data source',
+        help_text='Fill the table from CMS content instead of manual rows. '
+                  'When set, manual Columns and Rows are ignored.')
     config = blocks.StreamBlock([
         ('striped', blocks.ChoiceBlock(choices=[('off', 'Off'), ('on', 'On')],
             help_text='Shade alternating rows. Default shade unless Row Colors is set.')),
@@ -201,3 +215,33 @@ class TableBlock(blocks.StructBlock):
     class Meta:
         label = 'Table'
         icon = 'table'
+
+    def get_api_representation(self, value, context=None):
+        from pages import table_sources
+
+        rep = super().get_api_representation(value, context)
+        rep.pop('data_source', None)
+        stream = value.get('data_source')
+        if not stream:
+            return rep
+
+        child = stream[0]
+        # Snapshot key: hash of the stored (JSON-safe) source spec, so the
+        # last good result survives a source outage at serialize time.
+        # Best-effort: the default cache here is per-process LocMem, so the
+        # snapshot does not survive restarts and is not shared across
+        # workers — a shared backend (e.g. Redis) would upgrade this.
+        cache_key = None
+        try:
+            spec = child.block.get_prep_value(child.value)
+            cache_key = 'table_block_snapshot:' + hashlib.sha256(
+                json.dumps({'type': child.block_type, 'value': spec},
+                           sort_keys=True, default=str).encode()).hexdigest()
+            data = table_sources.resolve_data_source(child.block_type, child.value)
+            cache.set(cache_key, data, None)
+        except Exception as e:
+            capture_exception(e)
+            data = (cache.get(cache_key) if cache_key else None) or {'columns': [], 'rows': []}
+        rep['columns'] = data['columns']
+        rep['rows'] = data['rows']
+        return rep

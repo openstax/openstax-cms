@@ -32,6 +32,8 @@ def build_cell(raw, cell_type):
     if raw is None or raw == '':
         return _empty_cell()
     if cell_type == 'link':
+        if not isinstance(raw, dict):
+            raw = {'url': str(raw), 'text': str(raw)}
         url = (raw.get('url') or '').strip()
         text = raw.get('text') or url
         if not url:
@@ -78,10 +80,10 @@ def build_table(columns_config, registry, items):
         cells = []
         for getter, cell_type in builders:
             try:
-                raw = getter(item)
+                cell = build_cell(getter(item), cell_type)
             except Exception:
-                raw = None
-            cells.append(build_cell(raw, cell_type))
+                cell = {'content': '', 'cta': []}
+            cells.append(cell)
         rows.append({'cells': cells})
     return {'columns': columns, 'rows': rows}
 
@@ -282,3 +284,18 @@ def resolve_endpoint(config):
             cells.append(build_cell(raw, col.get('type') or 'text'))
         rows.append({'cells': cells})
     return {'columns': columns, 'rows': rows}
+
+
+# --- Dispatcher --------------------------------------------------------------
+def resolve_data_source(source_type, config):
+    """Resolve one data_source stream child into {'columns', 'rows'}.
+    Late-bound lookup (not a dict of function refs) so tests can patch the
+    individual resolvers."""
+    resolver = {
+        'books': 'resolve_books',
+        'news': 'resolve_news',
+        'book_resources': 'resolve_book_resources',
+        'subjects': 'resolve_subjects',
+        'endpoint': 'resolve_endpoint',
+    }[source_type]
+    return globals()[resolver](config)

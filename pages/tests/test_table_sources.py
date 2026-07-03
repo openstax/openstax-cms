@@ -1,4 +1,5 @@
 import datetime
+from unittest import mock
 
 import vcr
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -65,6 +66,11 @@ class BuildCellTests(TestCase):
         self.assertNotIn('<b>', cell['content'])
         self.assertIn('&lt;b&gt;', cell['content'])
 
+    def test_link_cell_scalar_raw_is_treated_as_url(self):
+        cell = build_cell('https://example.com/x', 'link')
+        self.assertEqual(cell['cta'][0]['target']['value'], 'https://example.com/x')
+        self.assertEqual(cell['cta'][0]['target']['type'], 'external')
+
 
 class BuildTableTests(TestCase):
     REGISTRY = {
@@ -117,6 +123,16 @@ class BuildTableTests(TestCase):
         self.assertEqual(len(result['columns']), 1)
         self.assertEqual(len(result['rows'][0]['cells']), 1)
         self.assertEqual(result['rows'][0]['cells'][0]['content'], 'x')
+
+    def test_failing_cell_build_degrades_to_empty_cell(self):
+        # After the link-branch guard (build_cell), no registry-reachable raw
+        # value makes build_cell itself raise anymore, so this documents the
+        # build_table containment directly: force build_cell to raise and
+        # confirm one bad cell degrades to empty instead of killing the row.
+        registry = {'bad': ('Bad', lambda item: object(), 'date')}
+        with mock.patch('pages.table_sources.build_cell', side_effect=RuntimeError('boom')):
+            result = build_table([{'field': 'bad', 'header': '', 'type': ''}], registry, [{}])
+        self.assertEqual(result['rows'][0]['cells'][0], {'content': '', 'cta': []})
 
     def test_link_column_collapses_to_text_column_type(self):
         registry = {'link': ('Link', lambda item: {'text': 't', 'url': '/x'}, 'link')}
@@ -284,6 +300,20 @@ class NewsSourceTests(TestCase):
         from pages.table_sources import resolve_news
         result = resolve_news({
             'subject': 'Science', 'tag': '', 'order': '', 'limit': 10,
+            'columns': [{'field': 'heading', 'header': '', 'type': ''}],
+        })
+        self.assertEqual(len(result['rows']), 1)
+        self.assertEqual(result['rows'][0]['cells'][0]['content'], 'Newer post')
+
+    def test_resolve_news_tag_filter_selects_matching_articles(self):
+        from news.models import NewsArticle
+        from pages.table_sources import resolve_news
+        article = NewsArticle.objects.get(slug='post-1')  # 'Newer post'
+        article.tags.add('featured')
+        article.save()  # ClusterTaggableManager defers writes until save()
+
+        result = resolve_news({
+            'subject': '', 'tag': 'featured', 'order': '', 'limit': 10,
             'columns': [{'field': 'heading', 'header': '', 'type': ''}],
         })
         self.assertEqual(len(result['rows']), 1)
