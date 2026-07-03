@@ -1,4 +1,4 @@
 -r dev.txt
-selenium>=4.0.0
-coverage>=6.2
+selenium>=4.45.0
+coverage>=7.14.3
 
