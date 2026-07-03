@@ -3,7 +3,9 @@
 ({'content': html, 'cta': [CTALink dict]}), so the flex renderer consumes
 manual and dynamic tables identically. All access is read-only."""
 
+import json
 import re
+from urllib.parse import urlsplit
 
 from django.utils.html import escape, format_html
 
@@ -218,3 +220,65 @@ def resolve_subjects(config):
     else:
         qs = Subject.objects.filter(locale=locale).order_by('name')
     return build_table(config['columns'], SUBJECT_FIELDS, qs)
+
+
+# --- Endpoint escape hatch ---------------------------------------------------
+# Resolves a RELATIVE CMS API path in-process (no HTTP hop): RequestFactory +
+# URL resolution, then generic dotted-path field mapping over the JSON items.
+# Only /apps/cms/api/ paths are allowed — these are public-read endpoints, so
+# calling them unauthenticated leaks nothing, and relative paths keep the spec
+# portable across dev/staging/prod.
+ENDPOINT_PREFIX = '/apps/cms/api/'
+
+
+def _dig(obj, dotted):
+    for part in dotted.split('.'):
+        if not isinstance(obj, dict):
+            return None
+        obj = obj.get(part)
+    return obj
+
+
+def resolve_endpoint(config):
+    from django.test import RequestFactory
+    from django.urls import resolve as url_resolve
+
+    path = (config.get('path') or '').strip()
+    parsed = urlsplit(path)
+    if parsed.scheme or parsed.netloc or not parsed.path.startswith(ENDPOINT_PREFIX):
+        raise ValueError(f'Endpoint path must be relative and start with {ENDPOINT_PREFIX}')
+
+    request = RequestFactory().get(path)
+    try:
+        match = url_resolve(parsed.path)
+        response = match.func(request, *match.args, **match.kwargs)
+        if hasattr(response, 'render'):
+            response.render()
+    except Exception as e:
+        raise ValueError(f'Endpoint {parsed.path} could not be resolved: {e}') from e
+    if response.status_code != 200:
+        raise ValueError(f'Endpoint {parsed.path} returned {response.status_code}')
+    payload = json.loads(response.content)
+
+    items_key = config.get('items_key', 'items')
+    if items_key:
+        if not isinstance(payload, dict):
+            raise ValueError('Endpoint response is not an object; clear the items key for bare-list responses')
+        items = payload.get(items_key) or []
+    else:
+        items = payload
+    if not isinstance(items, list):
+        raise ValueError(f'Endpoint response key {items_key!r} is not a list')
+
+    columns, rows = [], []
+    for col in config['columns']:
+        cell_type = col.get('type') or 'text'
+        renderer_type = cell_type if cell_type in RENDERER_COLUMN_TYPES else 'text'
+        columns.append({'header': col.get('header') or col['field'], 'type': renderer_type})
+    for item in items:
+        cells = []
+        for col in config['columns']:
+            raw = _dig(item, col['field'])
+            cells.append(build_cell(raw, col.get('type') or 'text'))
+        rows.append({'cells': cells})
+    return {'columns': columns, 'rows': rows}

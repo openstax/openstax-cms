@@ -431,3 +431,58 @@ class SubjectsSourceTests(TestCase):
         cta = result['rows'][0]['cells'][0]['cta'][0]
         self.assertEqual(cta['text'], 'Algebra')
         self.assertEqual(cta['target']['value'], '/k12/algebra')
+
+
+class EndpointSourceTests(BooksSourceTests):
+    # Inherits setUpTestData (homepage/BookIndex/site/doc) from BooksSourceTests
+    # so the Wagtail pages API root has a site whose root page serves pages.
+
+    def test_rejects_paths_outside_cms_api(self):
+        from pages.table_sources import resolve_endpoint
+        for bad in ['/admin/', 'https://openstax.org/apps/cms/api/v2/pages/',
+                    '/apps/other/', '//evil.com/apps/cms/api/']:
+            with self.assertRaises(ValueError):
+                resolve_endpoint({'path': bad, 'items_key': 'items', 'columns': []})
+
+    def test_resolves_wagtail_pages_api_and_maps_dotted_fields(self):
+        from pages.table_sources import resolve_endpoint
+        # The Wagtail pages API root always serves the Root page in tests.
+        result = resolve_endpoint({
+            'path': '/apps/cms/api/v2/pages/?limit=5',
+            'items_key': 'items',
+            'columns': [
+                {'field': 'title', 'header': 'Page', 'type': ''},
+                {'field': 'meta.type', 'header': 'Type', 'type': ''},
+            ],
+        })
+        self.assertEqual(result['columns'][0], {'header': 'Page', 'type': 'text'})
+        self.assertTrue(result['rows'])
+        self.assertTrue(result['rows'][0]['cells'][1]['content'])  # meta.type resolved
+
+    def test_missing_field_yields_empty_cell(self):
+        from pages.table_sources import resolve_endpoint
+        result = resolve_endpoint({
+            'path': '/apps/cms/api/v2/pages/?limit=1',
+            'items_key': 'items',
+            'columns': [{'field': 'no.such.key', 'header': 'X', 'type': ''}],
+        })
+        self.assertEqual(result['rows'][0]['cells'][0], {'content': '', 'cta': []})
+
+    def test_nonexistent_resource_raises_value_error(self):
+        from pages.table_sources import resolve_endpoint
+        with self.assertRaises(ValueError):
+            resolve_endpoint({'path': '/apps/cms/api/books/definitely-does-not-exist-xyz/',
+                              'items_key': 'items', 'columns': []})
+
+    def test_malformed_subpath_raises_value_error(self):
+        from pages.table_sources import resolve_endpoint
+        with self.assertRaises(ValueError):
+            resolve_endpoint({'path': '/apps/cms/api/../../admin/',
+                              'items_key': 'items', 'columns': []})
+
+    def test_bare_list_payload_with_items_key_raises_value_error(self):
+        from pages.table_sources import resolve_endpoint
+        # snippets/roles/ is an unpaginated DRF list view: bare JSON list.
+        with self.assertRaises(ValueError):
+            resolve_endpoint({'path': '/apps/cms/api/snippets/roles/',
+                              'items_key': 'items', 'columns': []})

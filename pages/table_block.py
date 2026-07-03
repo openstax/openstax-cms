@@ -107,6 +107,29 @@ class SubjectsSourceBlock(blocks.StructBlock):
         icon = 'tag'
 
 
+class EndpointSourceBlock(blocks.StructBlock):
+    path = blocks.RegexBlock(regex=r'^/apps/cms/api/\S*$',
+        label='Endpoint path',
+        help_text='Relative CMS API path including query string, e.g. '
+                  '/apps/cms/api/v2/pages/?type=books.Book&fields=title,cover_url&book_state=live. '
+                  'Must start with /apps/cms/api/. No absolute URLs — they break across environments.',
+        error_messages={'invalid': 'Must be a relative path starting with /apps/cms/api/.'})
+    items_key = blocks.CharBlock(required=False, default='items',
+        help_text='JSON key holding the list of rows. Default "items" (the Wagtail API shape); clear it if the response is a bare list.')
+    columns = blocks.ListBlock(blocks.StructBlock([
+        ('field', blocks.CharBlock(required=True,
+            help_text='Dotted path into each item, e.g. title or meta.slug.')),
+        ('header', blocks.CharBlock(required=False,
+            help_text='Column header. Defaults to the field path.')),
+        ('type', blocks.ChoiceBlock(choices=SOURCE_CELL_TYPE_CHOICES, required=False,
+            help_text='Cell type. Default text.')),
+    ], label='Column'), min_num=1, label='Columns')
+
+    class Meta:
+        label = 'CMS API endpoint (advanced)'
+        icon = 'code'
+
+
 class TableCellBlock(blocks.StructBlock):
     content = APIRichTextBlock(required=False,
         help_text='Rich-text cell content. Ignored when a Call To Action is set.')
