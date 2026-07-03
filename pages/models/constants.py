@@ -13,6 +13,7 @@ from pages.custom_blocks import APIImageChooserBlock, \
     CTALinkBlock, \
     BookBlock, \
     PersonBlock, \
+    OpenStaxColorBlock, \
     CARDS_STYLE_CHOICES, \
     TEXT_ALIGNMENT_CHOICES, \
     FLEX_CHOICES, \
@@ -46,27 +47,19 @@ BASE_CONTENT_BLOCKS = [
                     max_num=1,
                     label='Call To Action'
                 )),
+                ('accent_color', OpenStaxColorBlock(required=False,
+                    help_text='Accent color for this card: the border on rounded style, the top accent bar on square (needs Accent Size). Leave unset for the default palette.')),
+                ('divider_color', OpenStaxColorBlock(required=False,
+                    help_text='Color for divider lines in this card. Leave unset for the default palette.')),
             ]),
         )),
         ('config', blocks.StreamBlock([
             ('card_size', blocks.IntegerBlock(min_value=0, help_text='Sets the width of the individual cards. default 27.')),
             ('card_style', blocks.ChoiceBlock(choices=CARDS_STYLE_CHOICES, help_text='The border style of the cards. default borderless.')),
             ('card_columns', blocks.IntegerBlock(min_value=1, max_value=6, help_text='Number of columns for the cards grid. default auto.')),
-            ('accent_colors', blocks.RegexBlock(
-                regex=r'^#[0-9a-fA-F]{6}(\s*,\s*#[0-9a-fA-F]{6})*$', required=False,
-                label='Accent Colors',
-                help_text='Comma-separated hex colors for the top accent bar, cycled per card. eg: #ff0000,#00ff00,#0000ff.',
-                error_messages={'invalid': 'Must be comma-separated hex colors. eg: #ff0000,#00ff00.'},
-            )),
-            ('divider_colors', blocks.RegexBlock(
-                regex=r'^#[0-9a-fA-F]{6}(\s*,\s*#[0-9a-fA-F]{6})*$', required=False,
-                label='Divider Colors',
-                help_text='Comma-separated hex colors for card divider lines, cycled per card. eg: #ff0000,#00ff00.',
-                error_messages={'invalid': 'Must be comma-separated hex colors. eg: #ff0000,#00ff00.'},
-            )),
             ('background_color', hex_color_block('Background color for the cards block. Must be hex eg: #ff0000.')),
             ('border_size', blocks.IntegerBlock(min_value=0, help_text='Outer border width in px (all sides). Omit to use the style default; 0 = no border.')),
-            ('accent_size', blocks.IntegerBlock(min_value=0, help_text='Top accent bar height in px, independent of the border. Color comes from Accent Colors.')),
+            ('accent_size', blocks.IntegerBlock(min_value=0, help_text='Top accent bar height in px, independent of the border. Color comes from each card\'s Accent Color.')),
             ('padding', blocks.IntegerBlock(min_value=0, help_text='Top and bottom spacing around the block, in 10px increments.')),
             ('padding_top', blocks.IntegerBlock(min_value=0, help_text='Top spacing around the block, in 10px increments.')),
             ('padding_bottom', blocks.IntegerBlock(min_value=0, help_text='Bottom spacing around the block, in 10px increments.')),
@@ -74,8 +67,6 @@ BASE_CONTENT_BLOCKS = [
             'card_size': {'max_num': 1},
             'card_style': {'max_num': 1},
             'card_columns': {'max_num': 1},
-            'accent_colors': {'max_num': 1},
-            'divider_colors': {'max_num': 1},
             'background_color': {'max_num': 1},
             'border_size': {'max_num': 1},
             'accent_size': {'max_num': 1},
