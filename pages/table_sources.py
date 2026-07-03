@@ -86,3 +86,35 @@ def build_table(columns_config, registry, items):
 
 def field_choices(registry):
     return [(key, label) for key, (label, _getter, _type) in registry.items()]
+
+
+# --- Books source ---------------------------------------------------------
+# Getters return raw values; link/image getters return the dict build_cell
+# expects. Lambdas take a books.models.Book page.
+BOOK_FIELDS = {
+    'title': ('Title', lambda b: b.title, 'text'),
+    'title_link': ('Title (linked to book page)',
+                   lambda b: {'text': b.title, 'url': f'/details/books/{b.slug}'}, 'link'),
+    'subjects': ('Subjects', lambda b: ', '.join(b.subjects()), 'text'),
+    'publish_date': ('Publish date', lambda b: b.publish_date, 'date'),
+    'book_state': ('State', lambda b: b.get_book_state_display(), 'text'),
+    'cover': ('Cover image', lambda b: {'url': b.cover_url, 'alt': b.title}, 'image'),
+    'is_ap': ('AP', lambda b: 'Yes' if b.is_ap else '', 'text'),
+    'read_online': ('Read online (link)',
+                    lambda b: {'text': 'Read online',
+                               'url': b.webview_rex_link or b.webview_link}, 'link'),
+}
+
+DEFAULT_ROW_CAP = 100
+
+
+def resolve_books(config):
+    from books.models import Book
+    qs = Book.objects.live().exclude(book_state__in=['unlisted', 'retired'])
+    if config.get('book_state'):
+        qs = qs.filter(book_state=config['book_state'])
+    if config.get('subject'):
+        qs = qs.filter(book_subjects__subject=config['subject'])
+    qs = qs.order_by(config.get('order') or 'title')
+    limit = config.get('limit') or DEFAULT_ROW_CAP
+    return build_table(config['columns'], BOOK_FIELDS, qs.distinct()[:limit])

@@ -1,6 +1,10 @@
 import datetime
 
+import vcr
+from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
+from wagtail.documents.models import Document
+from wagtail.models import Page, Site
 
 from pages.table_sources import build_cell, build_table, field_choices
 
@@ -122,3 +126,93 @@ class BuildTableTests(TestCase):
             [{}],
         )
         self.assertEqual(result['columns'][0]['type'], 'text')
+
+
+class BooksSourceTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        from books.models import BookIndex
+        from pages.models import RootPage
+        root_page = Page.objects.get(title="Root")
+        homepage = RootPage(title="Hello World", slug="openstax-homepage")
+        root_page.add_child(instance=homepage)
+        book_index = BookIndex(title="Book Index",
+                               page_description="Test",
+                               dev_standard_1_description="Test",
+                               dev_standard_2_description="Test",
+                               dev_standard_3_description="Test",
+                               dev_standard_4_description="Test")
+        homepage.add_child(instance=book_index)
+        site = Site.objects.get(is_default_site=True)
+        site.root_page = homepage
+        site.save()
+        test_image = SimpleUploadedFile(
+            name='openstax.png',
+            content=open("pages/static/images/openstax.png", 'rb').read())
+        cls.test_doc = Document.objects.create(title='Test Doc', file=test_image)
+        cls.book_index = book_index
+
+    def _make_book(self, **overrides):
+        import datetime
+        from books.models import Book
+        data = dict(title="University Physics",
+                    slug="university-physics",
+                    cnx_id='031da8d3-b525-429c-80cf-6c8ed997733a',
+                    salesforce_book_id='a0ZU0000008pyvQMAQ',
+                    description="Test Book",
+                    cover=self.test_doc,
+                    title_image=self.test_doc,
+                    publish_date=datetime.date(2016, 8, 3),
+                    locale=self.book_index.locale)
+        data.update(overrides)
+        book = Book(**data)
+        self.book_index.add_child(instance=book)
+        return book
+
+    def test_resolve_books_builds_rows(self):
+        from pages.table_sources import resolve_books
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            self._make_book()
+        result = resolve_books({
+            'subject': None, 'book_state': 'live', 'order': 'title', 'limit': 10,
+            'columns': [
+                {'field': 'title', 'header': '', 'type': ''},
+                {'field': 'publish_date', 'header': '', 'type': ''},
+            ],
+        })
+        self.assertEqual(result['columns'][0], {'header': 'Title', 'type': 'text'})
+        self.assertEqual(result['rows'][0]['cells'][0]['content'], 'University Physics')
+        self.assertEqual(result['rows'][0]['cells'][1]['content'], '08/03/2016')
+
+    def test_resolve_books_title_link_builds_details_cta(self):
+        from pages.table_sources import resolve_books
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            self._make_book()
+        result = resolve_books({
+            'subject': None, 'book_state': 'live', 'order': 'title', 'limit': 10,
+            'columns': [{'field': 'title_link', 'header': '', 'type': ''}],
+        })
+        cta = result['rows'][0]['cells'][0]['cta'][0]
+        self.assertEqual(cta['text'], 'University Physics')
+        self.assertEqual(cta['target'],
+                         {'value': '/details/books/university-physics', 'type': 'internal'})
+
+    def test_resolve_books_filters_by_state(self):
+        from pages.table_sources import resolve_books
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            self._make_book(book_state='retired')
+        result = resolve_books({
+            'subject': None, 'book_state': 'live', 'order': 'title', 'limit': 10,
+            'columns': [{'field': 'title', 'header': '', 'type': ''}],
+        })
+        self.assertEqual(result['rows'], [])
+
+    def test_resolve_books_excludes_retired_when_state_filter_empty(self):
+        from pages.table_sources import resolve_books
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            self._make_book(book_state='retired')
+        result = resolve_books({
+            'subject': None, 'book_state': '', 'order': 'title', 'limit': 10,
+            'columns': [{'field': 'title', 'header': '', 'type': ''}],
+        })
+        self.assertEqual(result['rows'], [])

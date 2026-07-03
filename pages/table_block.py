@@ -1,7 +1,12 @@
 from wagtail import blocks
+from wagtail.snippets.blocks import SnippetChooserBlock
 
 from openstax.api_fields import APIRichTextBlock
 from pages.custom_blocks import CTALinkBlock, id_config_block
+from pages.table_sources import (
+    SOURCE_CELL_TYPE_CHOICES, field_choices,
+    BOOK_FIELDS,
+)
 
 
 # User-facing column sort types (renderer uses these to pick a comparator).
@@ -10,6 +15,44 @@ COLUMN_TYPE_CHOICES = [
     ('number', 'Number'),
     ('date', 'Date'),
 ]
+
+
+def source_columns_block(choices):
+    """Field → column mapping list shared by all dynamic source blocks."""
+    return blocks.ListBlock(blocks.StructBlock([
+        ('field', blocks.ChoiceBlock(choices=choices, required=True)),
+        ('header', blocks.CharBlock(required=False,
+            help_text='Column header shown to readers. Defaults to the field label.')),
+        ('type', blocks.ChoiceBlock(choices=SOURCE_CELL_TYPE_CHOICES, required=False,
+            help_text='Overrides how the value is shown and sorted. Default per field.')),
+    ], label='Column'), min_num=1, label='Columns')
+
+
+BOOK_STATE_CHOICES = [
+    ('live', 'Live'),
+    ('coming_soon', 'Coming Soon'),
+    ('new_edition_available', 'New Edition Forthcoming'),
+    ('deprecated', 'Deprecated'),
+]
+
+
+class BooksSourceBlock(blocks.StructBlock):
+    subject = SnippetChooserBlock('snippets.Subject', required=False,
+        help_text='Only books in this subject. Leave empty for all subjects.')
+    book_state = blocks.ChoiceBlock(choices=BOOK_STATE_CHOICES, required=False,
+        help_text='Only books in this state. Leave empty for all listed books.')
+    order = blocks.ChoiceBlock(choices=[
+        ('title', 'Title A–Z'),
+        ('-publish_date', 'Newest first'),
+        ('publish_date', 'Oldest first'),
+    ], required=False, help_text='Row order. Default Title A–Z.')
+    limit = blocks.IntegerBlock(required=False, min_value=1, max_value=500,
+        help_text='Maximum number of rows. Default 100.')
+    columns = source_columns_block(field_choices(BOOK_FIELDS))
+
+    class Meta:
+        label = 'Books'
+        icon = 'doc-full'
 
 
 class TableCellBlock(blocks.StructBlock):
