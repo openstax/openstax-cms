@@ -397,3 +397,37 @@ class BookResourcesSourceTests(BooksSourceTests):
         self.assertTrue(cta['target']['value'].startswith('/'),
                         cta['target']['value'])
         self.assertEqual(cta['target']['type'], 'internal')
+
+
+class SubjectsSourceTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        from wagtail.models import Locale
+        from snippets.models import Subject, K12Subject
+        locale = Locale.get_default()
+        Subject.objects.create(name='Math', locale=locale)
+        Subject.objects.create(name='Science', locale=locale)
+        K12Subject.objects.create(name='Algebra', subject_category='Math',
+                                  subject_link='/k12/algebra', locale=locale)
+        K12Subject.objects.create(name='Biology', subject_category='Science',
+                                  subject_link='/k12/biology', locale=locale)
+
+    def test_resolve_he_subjects_sorted_by_name(self):
+        from pages.table_sources import resolve_subjects
+        result = resolve_subjects({
+            'variant': 'he', 'k12_category': '',
+            'columns': [{'field': 'name', 'header': '', 'type': ''}],
+        })
+        names = [r['cells'][0]['content'] for r in result['rows']]
+        self.assertEqual(names, ['Math', 'Science'])
+
+    def test_resolve_k12_subjects_filters_category_and_links(self):
+        from pages.table_sources import resolve_subjects
+        result = resolve_subjects({
+            'variant': 'k12', 'k12_category': 'Math',
+            'columns': [{'field': 'link', 'header': '', 'type': ''}],
+        })
+        self.assertEqual(len(result['rows']), 1)
+        cta = result['rows'][0]['cells'][0]['cta'][0]
+        self.assertEqual(cta['text'], 'Algebra')
+        self.assertEqual(cta['target']['value'], '/k12/algebra')

@@ -192,3 +192,29 @@ def resolve_book_resources(config):
     if config.get('audience') == 'k12':
         resources = [r for r in resources if r.display_on_k12]
     return build_table(config['columns'], RESOURCE_FIELDS, resources)
+
+
+# --- Subjects source (HE Subject + K12Subject snippets) ---------------------
+SUBJECT_FIELDS = {
+    'name': ('Subject', lambda s: s.name, 'text'),
+    'category': ('Category', lambda s: getattr(s, 'subject_category', ''), 'text'),
+    'color': ('Color', lambda s: s.subject_color, 'text'),
+    'icon': ('Icon', lambda s: {
+        'url': getattr(s, 'subject_icon', None) or getattr(s, 'subject_image', None),
+        'alt': s.name}, 'image'),
+    'link': ('Link (K12 subject pages)', lambda s: {
+        'text': s.name, 'url': getattr(s, 'subject_link', '') or ''}, 'link'),
+}
+
+
+def resolve_subjects(config):
+    from wagtail.models import Locale
+    from snippets.models import Subject, K12Subject
+    locale = Locale.get_default()
+    if config.get('variant') == 'k12':
+        qs = K12Subject.objects.filter(locale=locale).order_by('name')
+        if config.get('k12_category'):
+            qs = qs.filter(subject_category__iexact=config['k12_category'])
+    else:
+        qs = Subject.objects.filter(locale=locale).order_by('name')
+    return build_table(config['columns'], SUBJECT_FIELDS, qs)

@@ -5,7 +5,7 @@ from openstax.api_fields import APIRichTextBlock
 from pages.custom_blocks import CTALinkBlock, id_config_block
 from pages.table_sources import (
     SOURCE_CELL_TYPE_CHOICES, field_choices,
-    BOOK_FIELDS, NEWS_FIELDS, RESOURCE_FIELDS,
+    BOOK_FIELDS, NEWS_FIELDS, RESOURCE_FIELDS, SUBJECT_FIELDS,
 )
 
 
@@ -91,6 +91,20 @@ class BookResourcesSourceBlock(blocks.StructBlock):
     class Meta:
         label = 'Book resources'
         icon = 'clipboard-list'
+
+
+class SubjectsSourceBlock(blocks.StructBlock):
+    variant = blocks.ChoiceBlock(choices=[
+        ('he', 'Higher Ed subjects'),
+        ('k12', 'K12 subjects'),
+    ], default='he')
+    k12_category = blocks.CharBlock(required=False,
+        help_text='K12 only: limit to a category, e.g. Math.')
+    columns = source_columns_block(field_choices(SUBJECT_FIELDS))
+
+    class Meta:
+        label = 'Subjects'
+        icon = 'tag'
 
 
 class TableCellBlock(blocks.StructBlock):
