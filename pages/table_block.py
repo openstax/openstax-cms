@@ -5,7 +5,7 @@ from openstax.api_fields import APIRichTextBlock
 from pages.custom_blocks import CTALinkBlock, id_config_block
 from pages.table_sources import (
     SOURCE_CELL_TYPE_CHOICES, field_choices,
-    BOOK_FIELDS,
+    BOOK_FIELDS, NEWS_FIELDS,
 )
 
 
@@ -53,6 +53,25 @@ class BooksSourceBlock(blocks.StructBlock):
     class Meta:
         label = 'Books'
         icon = 'doc-full'
+
+
+class NewsSourceBlock(blocks.StructBlock):
+    subject = blocks.CharBlock(required=False,
+        help_text='Only articles with this subject, e.g. Science. Matches the article\'s subjects list.')
+    tag = blocks.CharBlock(required=False,
+        help_text='Only articles with this tag (exact tag name).')
+    order = blocks.ChoiceBlock(choices=[
+        ('-date', 'Newest first'),
+        ('date', 'Oldest first'),
+        ('heading', 'Heading A–Z'),
+    ], required=False, help_text='Row order. Default newest first.')
+    limit = blocks.IntegerBlock(required=False, min_value=1, max_value=500,
+        help_text='Maximum number of rows. Default 20.')
+    columns = source_columns_block(field_choices(NEWS_FIELDS))
+
+    class Meta:
+        label = 'Blog posts'
+        icon = 'doc-empty'
 
 
 class TableCellBlock(blocks.StructBlock):

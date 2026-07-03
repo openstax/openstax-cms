@@ -118,3 +118,38 @@ def resolve_books(config):
     qs = qs.order_by(config.get('order') or 'title')
     limit = config.get('limit') or DEFAULT_ROW_CAP
     return build_table(config['columns'], BOOK_FIELDS, qs.distinct()[:limit])
+
+
+# --- Blog (news) source ----------------------------------------------------
+NEWS_FIELDS = {
+    'heading': ('Heading', lambda a: a.heading, 'text'),
+    'heading_link': ('Heading (linked to article)',
+                     lambda a: {'text': a.heading, 'url': f'/blog/{a.slug}'}, 'link'),
+    'subheading': ('Subheading', lambda a: a.subheading, 'text'),
+    'author': ('Author', lambda a: a.author, 'text'),
+    'date': ('Post date', lambda a: a.date, 'date'),
+    'image': ('Article image', lambda a: {'url': a.article_image, 'alt': a.heading}, 'image'),
+}
+
+
+def resolve_news(config):
+    from news.models import NewsArticle
+    qs = NewsArticle.objects.live().order_by(config.get('order') or '-date')
+    if config.get('tag'):
+        qs = qs.filter(tags__name__iexact=config['tag'])
+    limit = config.get('limit') or 20
+    subject = (config.get('subject') or '').strip().lower()
+    if subject:
+        # article_subjects stores Subject snippet IDs, so match against the
+        # resolved subject names via the model's search_subject_names().
+        # Iterate lazily and stop at limit so no arbitrary pre-cap can drop
+        # later matches.
+        articles = []
+        for article in qs.iterator():
+            if subject in article.search_subject_names().lower():
+                articles.append(article)
+                if len(articles) >= limit:
+                    break
+    else:
+        articles = qs[:limit]
+    return build_table(config['columns'], NEWS_FIELDS, articles)

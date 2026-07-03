@@ -216,3 +216,75 @@ class BooksSourceTests(TestCase):
             'columns': [{'field': 'title', 'header': '', 'type': ''}],
         })
         self.assertEqual(result['rows'], [])
+
+
+class NewsSourceTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        import datetime
+        from news.models import NewsIndex, NewsArticle
+        root_page = Page.objects.get(title="Root")
+        news_index = NewsIndex(title="News")
+        root_page.add_child(instance=news_index)
+        for i, (heading, date) in enumerate([
+            ('Older post', datetime.date(2026, 1, 1)),
+            ('Newer post', datetime.date(2026, 6, 1)),
+        ]):
+            article = NewsArticle(title=heading, slug=f'post-{i}',
+                                  heading=heading, subheading='sub',
+                                  author='OpenStax', date=date,
+                                  body='[]')
+            news_index.add_child(instance=article)
+
+    def test_resolve_news_orders_newest_first_by_default(self):
+        from pages.table_sources import resolve_news
+        result = resolve_news({
+            'subject': '', 'tag': '', 'order': '', 'limit': 10,
+            'columns': [
+                {'field': 'heading', 'header': '', 'type': ''},
+                {'field': 'date', 'header': '', 'type': ''},
+            ],
+        })
+        self.assertEqual(result['rows'][0]['cells'][0]['content'], 'Newer post')
+        self.assertEqual(result['rows'][0]['cells'][1]['content'], '06/01/2026')
+
+    def test_resolve_news_heading_link_builds_blog_url(self):
+        from pages.table_sources import resolve_news
+        result = resolve_news({
+            'subject': '', 'tag': '', 'order': '', 'limit': 10,
+            'columns': [{'field': 'heading_link', 'header': '', 'type': ''}],
+        })
+        cta = result['rows'][0]['cells'][0]['cta'][0]
+        self.assertEqual(cta['target']['value'], '/blog/post-1')
+        self.assertEqual(cta['target']['type'], 'internal')
+
+    def test_resolve_news_respects_limit(self):
+        from pages.table_sources import resolve_news
+        result = resolve_news({
+            'subject': '', 'tag': '', 'order': '', 'limit': 1,
+            'columns': [{'field': 'heading', 'header': '', 'type': ''}],
+        })
+        self.assertEqual(len(result['rows']), 1)
+
+    def test_resolve_news_subject_filter_selects_matching_articles(self):
+        import json
+        from news.models import NewsArticle
+        from snippets.models import Subject
+        from wagtail.models import Locale
+        science = Subject.objects.create(name='Science', locale=Locale.get_default())
+        # Real StreamField shape: SubjectBlock's chooser stores the Subject
+        # snippet's ID (see NewsArticle.blog_subjects / search_subject_names).
+        NewsArticle.objects.filter(slug='post-1').update(article_subjects=json.dumps([{
+            'type': 'subject',
+            'value': [{'type': 'item', 'value': {'subject': science.id, 'featured': False}}],
+        }]))
+        article = NewsArticle.objects.get(slug='post-1')
+        self.assertEqual(article.search_subject_names(), 'Science')  # guards fixture shape
+
+        from pages.table_sources import resolve_news
+        result = resolve_news({
+            'subject': 'Science', 'tag': '', 'order': '', 'limit': 10,
+            'columns': [{'field': 'heading', 'header': '', 'type': ''}],
+        })
+        self.assertEqual(len(result['rows']), 1)
+        self.assertEqual(result['rows'][0]['cells'][0]['content'], 'Newer post')
