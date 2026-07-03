@@ -153,3 +153,42 @@ def resolve_news(config):
     else:
         articles = qs[:limit]
     return build_table(config['columns'], NEWS_FIELDS, articles)
+
+
+# --- Book resources source --------------------------------------------------
+def _resource_link(r):
+    if r.link_external:
+        return r.link_external
+    if r.link_document:
+        return r.link_document_url
+    if r.link_page:
+        page = r.link_page.specific
+        return page.url or page.url_path
+    return ''
+
+
+RESOURCE_FIELDS = {
+    'heading': ('Resource', lambda r: r.resource_heading if r.resource else '', 'text'),
+    'description': ('Description',
+                    lambda r: r.resource_description if r.resource else '', 'html'),
+    'link': ('Link', lambda r: {'text': r.link_text or 'View resource',
+                                'url': _resource_link(r)}, 'link'),
+    'coming_soon': ('Coming soon', lambda r: r.coming_soon_text or '', 'text'),
+    'k12': ('K12', lambda r: 'Yes' if r.display_on_k12 else '', 'text'),
+    'unlocked': ('Unlocked',
+                 lambda r: 'Yes' if (r.resource and r.resource.unlocked_resource) else '', 'text'),
+}
+
+
+def resolve_book_resources(config):
+    book = config.get('book')
+    if book is None:
+        return {'columns': [], 'rows': []}
+    book = book.specific
+    if config.get('resource_type') == 'student':
+        resources = book.book_student_resources.all()
+    else:
+        resources = book.book_faculty_resources.all()
+    if config.get('audience') == 'k12':
+        resources = [r for r in resources if r.display_on_k12]
+    return build_table(config['columns'], RESOURCE_FIELDS, resources)

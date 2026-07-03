@@ -288,3 +288,112 @@ class NewsSourceTests(TestCase):
         })
         self.assertEqual(len(result['rows']), 1)
         self.assertEqual(result['rows'][0]['cells'][0]['content'], 'Newer post')
+
+
+class BookResourcesSourceTests(BooksSourceTests):
+    # Inherits setUpTestData (homepage/BookIndex/site/doc) from BooksSourceTests.
+
+    def _make_book_with_resources(self):
+        from books.models import BookFacultyResources, BookStudentResources
+        from snippets.models import FacultyResource, StudentResource
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book = self._make_book()
+        faculty_snippet = FacultyResource.objects.create(
+            heading='Instructor Getting Started Guide',
+            description='<p>Start here.</p>', unlocked_resource=True,
+            locale=book.locale)
+        BookFacultyResources.objects.create(
+            book_faculty_resource=book, resource=faculty_snippet,
+            link_external='https://example.com/guide.pdf',
+            link_text='Download guide', display_on_k12=True)
+        student_snippet = StudentResource.objects.create(
+            heading='Student Solution Manual',
+            description='<p>Solutions.</p>', unlocked_resource=True,
+            locale=book.locale)
+        BookStudentResources.objects.create(
+            book_student_resource=book, resource=student_snippet,
+            link_external='https://example.com/solutions.pdf',
+            link_text='Download solutions')
+        return book
+
+    def test_resolve_instructor_resources(self):
+        from pages.table_sources import resolve_book_resources
+        book = self._make_book_with_resources()
+        result = resolve_book_resources({
+            'book': book, 'resource_type': 'instructor', 'audience': '',
+            'columns': [
+                {'field': 'heading', 'header': '', 'type': ''},
+                {'field': 'link', 'header': '', 'type': ''},
+            ],
+        })
+        self.assertEqual(result['rows'][0]['cells'][0]['content'],
+                         'Instructor Getting Started Guide')
+        cta = result['rows'][0]['cells'][1]['cta'][0]
+        self.assertEqual(cta['text'], 'Download guide')
+        self.assertEqual(cta['target']['value'], 'https://example.com/guide.pdf')
+
+    def test_resolve_student_resources(self):
+        from pages.table_sources import resolve_book_resources
+        book = self._make_book_with_resources()
+        result = resolve_book_resources({
+            'book': book, 'resource_type': 'student', 'audience': '',
+            'columns': [{'field': 'heading', 'header': '', 'type': ''}],
+        })
+        self.assertEqual(result['rows'][0]['cells'][0]['content'],
+                         'Student Solution Manual')
+
+    def test_k12_audience_filters_unflagged_resources(self):
+        from pages.table_sources import resolve_book_resources
+        book = self._make_book_with_resources()
+        instructor = resolve_book_resources({
+            'book': book, 'resource_type': 'instructor', 'audience': 'k12',
+            'columns': [{'field': 'heading', 'header': '', 'type': ''}],
+        })
+        self.assertEqual(len(instructor['rows']), 1)  # flagged display_on_k12
+        student = resolve_book_resources({
+            'book': book, 'resource_type': 'student', 'audience': 'k12',
+            'columns': [{'field': 'heading', 'header': '', 'type': ''}],
+        })
+        self.assertEqual(student['rows'], [])  # not flagged
+
+    def test_resource_link_precedence_external_over_document(self):
+        from books.models import BookFacultyResources
+        from snippets.models import FacultyResource
+        from pages.table_sources import resolve_book_resources
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book = self._make_book()
+        snippet = FacultyResource.objects.create(
+            heading='Both Links', description='<p>x</p>', unlocked_resource=True,
+            locale=book.locale)
+        BookFacultyResources.objects.create(
+            book_faculty_resource=book, resource=snippet,
+            link_external='https://example.com/wins.pdf',
+            link_document=self.test_doc, link_text='Get it')
+        result = resolve_book_resources({
+            'book': book, 'resource_type': 'instructor', 'audience': '',
+            'columns': [{'field': 'link', 'header': '', 'type': ''}],
+        })
+        cta = result['rows'][0]['cells'][0]['cta'][0]
+        self.assertEqual(cta['target']['value'], 'https://example.com/wins.pdf')
+        self.assertEqual(cta['target']['type'], 'external')
+
+    def test_resource_page_link_is_internal_relative(self):
+        from books.models import BookFacultyResources
+        from snippets.models import FacultyResource
+        from pages.table_sources import resolve_book_resources
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book = self._make_book()
+        snippet = FacultyResource.objects.create(
+            heading='Page Link', description='<p>x</p>', unlocked_resource=True,
+            locale=book.locale)
+        BookFacultyResources.objects.create(
+            book_faculty_resource=book, resource=snippet,
+            link_page=self.book_index, link_text='Browse')
+        result = resolve_book_resources({
+            'book': book, 'resource_type': 'instructor', 'audience': '',
+            'columns': [{'field': 'link', 'header': '', 'type': ''}],
+        })
+        cta = result['rows'][0]['cells'][0]['cta'][0]
+        self.assertTrue(cta['target']['value'].startswith('/'),
+                        cta['target']['value'])
+        self.assertEqual(cta['target']['type'], 'internal')
