@@ -22,6 +22,8 @@ from pages.custom_blocks import APIImageChooserBlock, \
     gradient_block_counts, \
     id_config_block
 
+from pages.table_block import TableBlock
+
 
 
 # Constants for styling options on Root/Flex pages
@@ -94,6 +96,7 @@ BASE_CONTENT_BLOCKS = [
         ('books', blocks.ListBlock(BookBlock(required=True))),
     ], label="Books Block")),
     ('person', PersonBlock()),
+    ('table', TableBlock()),
 ]
 
 # Layer 2: Content blocks + well (well references BASE, not itself)
