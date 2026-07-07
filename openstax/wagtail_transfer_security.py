@@ -34,11 +34,19 @@ from django.http import Http404
 # revision's `user` FK is not a leak risk here because auth.user is in
 # WAGTAILTRANSFER_NO_FOLLOW_MODELS (settings/base.py) — the importer leaves it
 # null rather than pulling the user across.
+# wagtailcore.collection is required: every image/document carries a non-nullable
+# collection FK, so importing a page's images fetches their collection via
+# api/objects/. Without it that POST 404s (and, headless, comes back as the SPA
+# shell → JSONDecodeError). Collections carry no PII, so no NO_FOLLOW entry is
+# needed. Preseed wagtailcore.collection so collections match instead of
+# duplicating across envs (root id=1 everywhere; dev/staging book collections
+# align by id — see docs/api/flex-draft-save.md / the transfer runbook).
 _ALWAYS_EXPORTABLE = {
     'wagtailcore.page',
     'wagtailcore.revision',
     'wagtailimages.image',
     'wagtaildocs.document',
+    'wagtailcore.collection',
     'wagtailcore.locale',
     'contenttypes.contenttype',
     'taggit.tag',
