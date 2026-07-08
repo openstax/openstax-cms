@@ -80,8 +80,11 @@ class NewsSourceBlock(blocks.StructBlock):
 
 
 class BookResourcesSourceBlock(blocks.StructBlock):
-    book = blocks.PageChooserBlock(page_type=['books.Book'], required=True,
-        help_text='The book whose resources fill the table.')
+    books = blocks.ListBlock(
+        blocks.PageChooserBlock(page_type=['books.Book']),
+        min_num=1, label='Books',
+        help_text='The book(s) whose resources fill the table. A resource shared '
+                  'across several books is listed once, with all its book names.')
     resource_type = blocks.ChoiceBlock(choices=[
         ('instructor', 'Instructor resources'),
         ('student', 'Student resources'),
