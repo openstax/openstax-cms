@@ -29,13 +29,9 @@ from django.http import Http404
 # Models always allowed through the object/model export endpoints, on top of
 # whatever snippets are configured for transfer via WAGTAILTRANSFER_LOOKUP_FIELDS.
 #
-# wagtailcore.revision is kept here as belt-and-suspenders. It is now in
-# WAGTAILTRANSFER_NO_FOLLOW_MODELS (settings/base.py) — see the rationale there:
-# following page.latest_revision creates a Page<->Revision dependency cycle that
-# wagtail-transfer resolves only intermittently, so the importer no longer requests
-# revisions via api/objects/. This allowlist entry therefore should never be hit,
-# but leaving it exportable guards against a regression that starts following them
-# again (a revision's only sensitive FK is `user`, itself NO_FOLLOW'd).
+# wagtailcore.revision is now NO_FOLLOW'd (settings/base.py), so the importer
+# should never request one; kept exportable as a guard against a regression that
+# starts following revisions again.
 # wagtailcore.collection: images/documents have a non-nullable collection FK, so
 # page imports fetch it via api/objects/. No PII. Preseed it (see transfer runbook).
 _ALWAYS_EXPORTABLE = {

@@ -3,14 +3,12 @@ Runtime patches for wagtail-transfer 0.11.
 
 Three patches, all installed by `apply_patches()`:
 
-0. get_base_model multi-level MTI fix. wagtail-transfer keys pages by their base
-   model (top of the MTI chain) for IDMapping/preseed/objectives, but upstream
-   returns `get_parent_list()[0]` — the nearest ancestor. Our pages are two-level
-   (Page → RootPage → FlexPage), so a FlexPage resolved to RootPage, not Page:
-   locators reject it (ImproperlyConfigured) and it keys under pages.rootpage
-   instead of wagtailcore.page → `KeyError: (RootPage, <id>)` mid-import. We
-   return the topmost concrete model and rebind it in every module that imported
-   it by name. Patch 1 relies on it. No-op for single-level MTI.
+0. get_base_model multi-level MTI fix. Upstream returns the nearest ancestor
+   (`get_parent_list()[0]`), so our two-level FlexPage (Page → RootPage → FlexPage)
+   resolved to RootPage, not Page — keying under pages.rootpage and failing with
+   `KeyError: (RootPage, <id>)` mid-import. We return the topmost concrete model
+   and rebind it in every module that imported it by name. No-op for single-level
+   MTI. Patch 1 relies on it.
 
 1. Objective base-model normalization. When importing pages, an Objective is
    occasionally constructed with a Page subclass (e.g. pages.RootPage) instead
