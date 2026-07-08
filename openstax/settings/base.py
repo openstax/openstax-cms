@@ -283,6 +283,13 @@ INSTALLED_APPS = [
 WAGTAILTRANSFER_SECRET_KEY = os.getenv('WAGTAILTRANSFER_SECRET_KEY', 'change-me-in-production')
 WAGTAILTRANSFER_INSECURE_SECRET_KEY = 'change-me-in-production'
 
+# Read timeout (seconds) for the destination-side chooser proxy that fetches the
+# source's page tree while you browse to select a page. The package default is 5s,
+# which is too tight when the source (e.g. dev) is slow to serialize a page plus
+# its descendants — it surfaces as a ReadTimeout. This is browsing metadata only;
+# the actual page/object/image transfer requests are untimed and unaffected.
+WAGTAILTRANSFER_CHOOSER_API_PROXY_TIMEOUT = int(os.getenv('WAGTAILTRANSFER_CHOOSER_API_PROXY_TIMEOUT', '30'))
+
 # Models the importer must NOT follow into when it encounters a reference.
 # This is the package default (wagtailcore.page, contenttypes.contenttype) plus
 # auth.user: transferred objects such as wagtailcore.revision carry a `user` FK,
