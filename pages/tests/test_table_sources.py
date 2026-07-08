@@ -462,7 +462,7 @@ class BookResourcesSourceTests(BooksSourceTests):
             'columns': [{'field': 'description', 'header': '', 'type': 'text'}],
         })
         content = result['rows'][0]['cells'][0]['content']
-        self.assertNotIn('&lt;p&gt;', content)      # not escaped to visible tags
+        self.assertNotIn('&lt;p', content)          # not escaped to visible tags (with or without attrs)
         self.assertNotIn('linktype', content)       # link was expanded
         self.assertIn('href=', content)
 

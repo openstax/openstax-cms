@@ -191,7 +191,7 @@ RESOURCE_FIELDS = {
     # Expanded like the normal resource API (books.models uses ExpandedRichTextField)
     # so internal links resolve and the renderer paints it as HTML, not raw tags.
     'description': ('Description',
-                    lambda r: expand_db_html(r.resource_description) if r.resource else '', 'html'),
+                    lambda r: expand_db_html(r.resource_description or '') if r.resource else '', 'html'),
     'link': ('Link', lambda r: {'text': r.link_text or 'View resource',
                                 'url': _resource_link(r)}, 'link'),
     'coming_soon': ('Coming soon', lambda r: r.coming_soon_text or '', 'text'),
@@ -212,8 +212,10 @@ def resolve_book_resources(config):
     # resource with no snippet (deleted) stays a distinct row via id().
     deduped, order = {}, []
     for book in books:
-        resources = (book.book_student_resources if student
-                     else book.book_faculty_resources).all()
+        manager = book.book_student_resources if student else book.book_faculty_resources
+        # Getters touch resource/link_page/link_document per row — pull them in
+        # one query each rather than N+1 (multiplied now across several books).
+        resources = manager.select_related('resource', 'link_page', 'link_document')
         for r in resources:
             if k12_only and not r.display_on_k12:
                 continue
