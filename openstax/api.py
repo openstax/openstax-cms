@@ -1,6 +1,7 @@
 from django.core.exceptions import MultipleObjectsReturned
 from django.shortcuts import redirect
 from django.urls import reverse, path
+from django.urls.exceptions import NoReverseMatch
 from django.conf import settings
 
 from rest_framework.response import Response
@@ -8,13 +9,51 @@ from rest_framework.response import Response
 from wagtail.models import Page, PageViewRestriction, Site
 from wagtail.api.v2.router import WagtailAPIRouter
 from wagtail.api.v2.views import PagesAPIViewSet, BaseAPIViewSet
+from wagtail.api.v2.serializers import PageSerializer, PageHtmlUrlField
+from wagtail.images import get_image_model
 from wagtail.images.api.v2.views import ImagesAPIViewSet
 from wagtail.documents.api.v2.views import DocumentsAPIViewSet
+
+
+class OpenstaxPageHtmlUrlField(PageHtmlUrlField):
+    """
+    Resolves html_url with the current request so Wagtail caches site root
+    paths on the request (avoiding a Site query per page in a listing).
+    """
+
+    def to_representation(self, page):
+        try:
+            return page.get_full_url(request=self.context.get("request"))
+        except NoReverseMatch:
+            return None
+
+
+class OpenstaxPageSerializer(PageSerializer):
+    html_url = OpenstaxPageHtmlUrlField(read_only=True)
+
 
 class OpenstaxPagesAPIEndpoint(PagesAPIViewSet):
     """
     OpenStax custom Pages API endpoint that allows finding pages and books by pk or slug
     """
+
+    base_serializer_class = OpenstaxPageSerializer
+
+    def get_object(self):
+        instance = super().get_object()
+
+        # select_related any Image FK fields on the concrete page so the
+        # serializer doesn't issue one query per image field (N+1).
+        image_model = get_image_model()
+        image_fields = [
+            field.name
+            for field in instance._meta.concrete_fields
+            if getattr(field, "related_model", None) is image_model
+        ]
+        if image_fields:
+            instance = type(instance).objects.select_related(*image_fields).get(pk=instance.pk)
+
+        return instance
 
     def detail_view(self, request, pk=None, slug=None):
         param = pk
@@ -68,6 +107,9 @@ class OpenstaxPagesAPIEndpoint(PagesAPIViewSet):
         else:
             # Get all live pages
             queryset = Page.objects.all().live()
+
+        # Avoid one wagtailcore_locale query per page when serializing a listing
+        queryset = queryset.select_related("locale")
 
         # Exclude pages that the user doesn't have access to
         restricted_pages = [

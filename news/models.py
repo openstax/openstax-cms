@@ -1,5 +1,6 @@
 from bs4 import BeautifulSoup
 
+from django.core.cache import cache
 from django.db import models
 from django import forms
 
@@ -28,6 +29,29 @@ from openstax.functions import build_image_url
 from openstax.preview import FrontendPreviewMixin
 from snippets.models import NewsSource, BlogContentType, BlogCollection, Subject
 from pages.custom_blocks import APIImageChooserBlock, FAQBlock, APIRichTextBlock
+
+
+def _in_bulk_cache_key(model):
+    return f'{model._meta.label_lower}_by_id'
+
+
+def _cached_in_bulk(model, timeout=3600):
+    """
+    Reference snippet tables (Subject, BlogCollection, BlogContentType) are
+    small and rarely change, so a single cached in_bulk() lookup avoids one
+    query per row/block when serializing many articles at once. Invalidated
+    on save/delete below; the timeout is just a backstop.
+    """
+    return cache.get_or_set(_in_bulk_cache_key(model), lambda: model.objects.in_bulk(), timeout)
+
+
+def _invalidate_in_bulk_cache(sender, **kwargs):
+    cache.delete(_in_bulk_cache_key(sender))
+
+
+for _model in (Subject, BlogCollection, BlogContentType):
+    models.signals.post_save.connect(_invalidate_in_bulk_cache, sender=_model)
+    models.signals.post_delete.connect(_invalidate_in_bulk_cache, sender=_model)
 
 
 class ImageChooserBlock(ImageChooserBlock):
@@ -111,6 +135,10 @@ class BlogCollectionChooserBlock(SnippetChooserBlock):
                 'name': value.name,
             }
 
+    def bulk_to_python(self, values):
+        all_objects = _cached_in_bulk(self.model_class)
+        return [all_objects.get(pk) for pk in values]
+
 
 class SubjectChooserBlock(SnippetChooserBlock):
     def get_api_representation(self, value, context=None):
@@ -126,6 +154,10 @@ class ContentTypeChooserBlock(SnippetChooserBlock):
             return {
                 'content_type': value.content_type,
             }
+
+    def bulk_to_python(self, values):
+        all_objects = _cached_in_bulk(self.model_class)
+        return [all_objects.get(pk) for pk in values]
 
 
 class SubjectBlock(StructBlock):
@@ -275,32 +307,34 @@ class NewsArticle(FrontendPreviewMixin, Page):
     @property
     def blog_content_types(self):
         prep_value = self.content_types.get_prep_value()
+        all_types = _cached_in_bulk(BlogContentType)
         types = []
         for t in prep_value:
             if len(t['value']) > 0:
                 if 'value' in t['value'][0]:
                     type_id = t['value'][0]['value']['content_type']
-                    type = BlogContentType.objects.filter(id=type_id)
-                    types.append(str(type[0]))
+                    if type_id in all_types:
+                        types.append(str(all_types[type_id]))
         return types
 
     @property
     def blog_subjects(self):
         prep_value = self.article_subjects.get_prep_value()
+        all_subjects = _cached_in_bulk(Subject)
         subjects = []
         for s in prep_value:
             if len(s['value']) > 0:
                 if 'value' in s['value'][0]:
                     subject_id = s['value'][0]['value']['subject']
                     featured = s['value'][0]['value']['featured']
-                    subject = Subject.objects.filter(id=subject_id)
-                    data = {'name': str(subject[0]), 'featured': featured}
-                    subjects.append(data)
+                    if subject_id in all_subjects:
+                        subjects.append({'name': str(all_subjects[subject_id]), 'featured': featured})
         return subjects
 
     @property
     def blog_collections(self):
         prep_value = self.collections.get_prep_value()
+        all_collections = _cached_in_bulk(BlogCollection)
         cols = []
         for c in prep_value:
             if len(c['value']) > 0:
@@ -308,9 +342,8 @@ class NewsArticle(FrontendPreviewMixin, Page):
                     collection_id = c['value'][0]['value']['collection']
                     featured = c['value'][0]['value']['featured']
                     popular = c['value'][0]['value']['popular']
-                    collection = BlogCollection.objects.filter(id=collection_id)
-                    data = {'name': str(collection[0]), 'featured': featured, 'popular': popular}
-                    cols.append(data)
+                    if collection_id in all_collections:
+                        cols.append({'name': str(all_collections[collection_id]), 'featured': featured, 'popular': popular})
         return cols
 
     def search_subject_names(self):

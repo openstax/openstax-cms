@@ -1105,7 +1105,7 @@ class Book(FrontendPreviewMixin, Page):
     def book_title(self):
         return format_html(
             '{}',
-            mark_safe(self.book.title),
+            mark_safe(self.title),
         )
 
     def subjects(self):
