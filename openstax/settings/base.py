@@ -288,16 +288,31 @@ WAGTAILTRANSFER_INSECURE_SECRET_KEY = 'change-me-in-production'
 WAGTAILTRANSFER_CHOOSER_API_PROXY_TIMEOUT = int(os.getenv('WAGTAILTRANSFER_CHOOSER_API_PROXY_TIMEOUT', '30'))
 
 # Models the importer must NOT follow into when it encounters a reference.
-# This is the package default (wagtailcore.page, contenttypes.contenttype) plus
-# auth.user: transferred objects such as wagtailcore.revision carry a `user` FK,
-# and following it would 404 on the export allowlist (auth.user is intentionally
-# not exportable) and try to pull user PII across. Leaving it unfollowed nulls
-# the FK instead — fine, since these user FKs are nullable. Keep the two package
-# defaults here; this setting REPLACES the default rather than extending it.
+# This is the package default (wagtailcore.page, contenttypes.contenttype) plus:
+#
+# auth.user: transferred objects carry a `user` FK, and following it would 404 on
+#   the export allowlist (auth.user is intentionally not exportable) and try to pull
+#   user PII across. Leaving it unfollowed nulls the FK instead — fine, since these
+#   user FKs are nullable.
+#
+# wagtailcore.revision: a page's `latest_revision` FK is nullable (soft dependency)
+#   while a revision's FK back to its page is non-nullable (hard), forming a
+#   Revision --hard--> Page --soft--> Revision cycle. wagtail-transfer can only break
+#   such a cycle when it happens to enter via the soft edge, and it picks operations
+#   from a set (nondeterministic order): enter via the revision first and the cycle
+#   propagates uncaught out of ImportPlanner.run() as a CircularDependencyException
+#   (a 500), so imports fail intermittently. We don't need the source's revision: the
+#   page's live content is serialized from the page's own fields, and run() calls
+#   save_revision() on every imported page, so the destination gets a fresh revision.
+#   Not following it drops only the source's unpublished-draft/history revisions.
+#
+# This setting REPLACES the package default rather than extending it, so the two
+# package defaults must stay listed here.
 WAGTAILTRANSFER_NO_FOLLOW_MODELS = [
     'wagtailcore.page',
     'contenttypes.contenttype',
     'auth.user',
+    'wagtailcore.revision',
 ]
 
 # The secret key is validated two ways, both living outside this (declarative)
