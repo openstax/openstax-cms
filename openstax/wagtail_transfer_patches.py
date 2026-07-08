@@ -122,8 +122,8 @@ def apply_patches():
         installed = None
     if installed and installed != EXPECTED_WAGTAIL_TRANSFER_VERSION:
         logger.warning(
-            "wagtail-transfer is %s but the Objective base-model patch was written "
-            "for %s. Re-verify openstax/wagtail_transfer_patches.py.",
+            "wagtail-transfer is %s but these patches were written for %s. "
+            "Re-verify openstax/wagtail_transfer_patches.py.",
             installed, EXPECTED_WAGTAIL_TRANSFER_VERSION,
         )
 
