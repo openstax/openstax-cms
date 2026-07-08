@@ -283,17 +283,24 @@ INSTALLED_APPS = [
 WAGTAILTRANSFER_SECRET_KEY = os.getenv('WAGTAILTRANSFER_SECRET_KEY', 'change-me-in-production')
 WAGTAILTRANSFER_INSECURE_SECRET_KEY = 'change-me-in-production'
 
+# Chooser-proxy read timeout (s); the 5s default is too tight when the source is
+# slow to serialize a page tree.
+WAGTAILTRANSFER_CHOOSER_API_PROXY_TIMEOUT = int(os.getenv('WAGTAILTRANSFER_CHOOSER_API_PROXY_TIMEOUT', '30'))
+
 # Models the importer must NOT follow into when it encounters a reference.
-# This is the package default (wagtailcore.page, contenttypes.contenttype) plus
-# auth.user: transferred objects such as wagtailcore.revision carry a `user` FK,
-# and following it would 404 on the export allowlist (auth.user is intentionally
-# not exportable) and try to pull user PII across. Leaving it unfollowed nulls
-# the FK instead — fine, since these user FKs are nullable. Keep the two package
-# defaults here; this setting REPLACES the default rather than extending it.
+# REPLACES the package default, so wagtailcore.page + contenttypes.contenttype
+# must stay listed. Additions:
+#   auth.user — the `user` FK on transferred objects; not exportable, so following
+#     it 404s and would pull PII. Nulled instead (the FKs are nullable).
+#   wagtailcore.revision — page.latest_revision forms a Page<->Revision cycle that
+#     wagtail-transfer breaks only when it enters via the soft edge, which it picks
+#     nondeterministically — otherwise a CircularDependencyException 500. Safe to
+#     drop: run() calls save_revision() on every imported page anyway.
 WAGTAILTRANSFER_NO_FOLLOW_MODELS = [
     'wagtailcore.page',
     'contenttypes.contenttype',
     'auth.user',
+    'wagtailcore.revision',
 ]
 
 # The secret key is validated two ways, both living outside this (declarative)

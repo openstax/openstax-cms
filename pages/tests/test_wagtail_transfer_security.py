@@ -53,11 +53,18 @@ class ExportApiSecurityTests(TestCase):
 
 class ExportableModelAllowlistTests(TestCase):
     def test_revision_is_exportable(self):
-        # Importing a page fetches its latest revision via api/objects/; without
-        # wagtailcore.revision on the allowlist the whole import 404s on it.
+        # Kept exportable as a regression guard even though revisions are now
+        # NO_FOLLOW'd (see NoFollowModelsTests.test_revision_is_not_followed).
         from openstax.wagtail_transfer_security import get_exportable_model_labels
 
         self.assertIn('wagtailcore.revision', get_exportable_model_labels())
+
+    def test_collection_is_exportable(self):
+        # Images/documents carry a non-nullable collection FK fetched via
+        # api/objects/, so it must be exportable.
+        from openstax.wagtail_transfer_security import get_exportable_model_labels
+
+        self.assertIn('wagtailcore.collection', get_exportable_model_labels())
 
 
 class NoFollowModelsTests(TestCase):
@@ -73,6 +80,11 @@ class NoFollowModelsTests(TestCase):
 
     def test_user_model_is_not_followed(self):
         self.assertIn('auth.user', self._no_follow())
+
+    def test_revision_is_not_followed(self):
+        # Following page.latest_revision creates a Page<->Revision cycle that
+        # surfaces as an intermittent CircularDependencyException 500.
+        self.assertIn('wagtailcore.revision', self._no_follow())
 
     def test_package_defaults_are_preserved(self):
         no_follow = self._no_follow()
