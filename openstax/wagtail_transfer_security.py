@@ -39,8 +39,8 @@ from django.http import Http404
 # api/objects/. Without it that POST 404s (and, headless, comes back as the SPA
 # shell → JSONDecodeError). Collections carry no PII, so no NO_FOLLOW entry is
 # needed. Preseed wagtailcore.collection so collections match instead of
-# duplicating across envs (root id=1 everywhere; dev/staging book collections
-# align by id — see docs/api/flex-draft-save.md / the transfer runbook).
+# duplicating across envs (root id=1 everywhere; consider preseeding a safe
+# id range per environment per the transfer runbook).
 _ALWAYS_EXPORTABLE = {
     'wagtailcore.page',
     'wagtailcore.revision',
