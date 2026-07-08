@@ -24,13 +24,8 @@ class ObjectivePatchTests(TestCase):
 
 
 class GetBaseModelPatchTests(TestCase):
-    """Patch 0: get_base_model must return the TOP of a multi-level MTI chain.
-
-    Our pages are Page -> RootPage -> FlexPage. Upstream get_base_model returns
-    the nearest parent (RootPage for a FlexPage); the patch must return Page so
-    every page keys under wagtailcore.page (matching preseed + the rest of the
-    package's single-level assumptions).
-    """
+    """Patch 0: get_base_model must return the top of a multi-level MTI chain
+    (Page for FlexPage), not the nearest parent (RootPage)."""
 
     def _models_get_base_model(self):
         import importlib
@@ -84,8 +79,7 @@ class GetBaseModelPatchTests(TestCase):
         from pages.models import FlexPage
 
         apply_patches()
-        # Patch 1 (Objective) leans on patch 0; a FlexPage objective must key on
-        # Page, not the intermediate RootPage.
+        # Patch 1 leans on patch 0: a FlexPage objective must key on Page.
         objective = Objective(FlexPage, 1, context=None)
         self.assertIs(objective.model, Page)
 

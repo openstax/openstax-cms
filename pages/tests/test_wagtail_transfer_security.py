@@ -60,10 +60,8 @@ class ExportableModelAllowlistTests(TestCase):
         self.assertIn('wagtailcore.revision', get_exportable_model_labels())
 
     def test_collection_is_exportable(self):
-        # Images/documents carry a non-nullable collection FK; importing a page's
-        # images fetches their collection via api/objects/. Without
-        # wagtailcore.collection on the allowlist that fetch 404s and the import
-        # dies on the (headless) SPA shell it gets back instead of JSON.
+        # Images/documents carry a non-nullable collection FK fetched via
+        # api/objects/, so it must be exportable.
         from openstax.wagtail_transfer_security import get_exportable_model_labels
 
         self.assertIn('wagtailcore.collection', get_exportable_model_labels())
