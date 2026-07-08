@@ -8,6 +8,7 @@ import re
 from urllib.parse import urlsplit
 
 from django.utils.html import escape, format_html
+from wagtail.rich_text import expand_db_html
 
 _HAS_SCHEME = re.compile(r'^([a-z][a-z0-9+.-]*:|//)', re.IGNORECASE)
 
@@ -77,8 +78,15 @@ def build_table(columns_config, registry, items):
         if entry is None:
             continue  # field removed from the registry after the page was saved
         label, getter, default_type = entry
-        cell_type = col.get('type') or default_type
-        renderer_type = cell_type if cell_type in RENDERER_COLUMN_TYPES else 'text'
+        requested = col.get('type')
+        # Rich-text fields always render as HTML (never escaped); the column
+        # type dropdown only picks their sort order. Everything else escapes.
+        if default_type == 'html':
+            cell_type = 'html'
+            renderer_type = requested if requested in RENDERER_COLUMN_TYPES else 'text'
+        else:
+            cell_type = requested or default_type
+            renderer_type = cell_type if cell_type in RENDERER_COLUMN_TYPES else 'text'
         columns.append({'header': col.get('header') or label, 'type': renderer_type})
         builders.append((getter, cell_type))
     rows = []
@@ -178,9 +186,12 @@ def _resource_link(r):
 
 
 RESOURCE_FIELDS = {
+    'book': ('Book(s)', lambda r: ', '.join(getattr(r, '_book_titles', [])), 'text'),
     'heading': ('Resource', lambda r: r.resource_heading if r.resource else '', 'text'),
+    # Expanded like the normal resource API (books.models uses ExpandedRichTextField)
+    # so internal links resolve and the renderer paints it as HTML, not raw tags.
     'description': ('Description',
-                    lambda r: r.resource_description if r.resource else '', 'html'),
+                    lambda r: expand_db_html(r.resource_description) if r.resource else '', 'html'),
     'link': ('Link', lambda r: {'text': r.link_text or 'View resource',
                                 'url': _resource_link(r)}, 'link'),
     'coming_soon': ('Coming soon', lambda r: r.coming_soon_text or '', 'text'),
@@ -191,17 +202,30 @@ RESOURCE_FIELDS = {
 
 
 def resolve_book_resources(config):
-    book = config.get('book')
-    if book is None:
+    books = [b.specific for b in (config.get('books') or []) if b]
+    if not books:
         return {'columns': [], 'rows': []}
-    book = book.specific
-    if config.get('resource_type') == 'student':
-        resources = book.book_student_resources.all()
-    else:
-        resources = book.book_faculty_resources.all()
-    if config.get('audience') == 'k12':
-        resources = [r for r in resources if r.display_on_k12]
-    return build_table(config['columns'], RESOURCE_FIELDS, resources)
+    student = config.get('resource_type') == 'student'
+    k12_only = config.get('audience') == 'k12'
+    # A resource snippet can be attached to several books; show it once and list
+    # every book it belongs to (its "Book(s)" cell). Keyed by snippet id, so a
+    # resource with no snippet (deleted) stays a distinct row via id().
+    deduped, order = {}, []
+    for book in books:
+        resources = (book.book_student_resources if student
+                     else book.book_faculty_resources).all()
+        for r in resources:
+            if k12_only and not r.display_on_k12:
+                continue
+            key = r.resource_id or id(r)
+            if key not in deduped:
+                r._book_titles = []
+                deduped[key] = r
+                order.append(key)
+            titles = deduped[key]._book_titles
+            if book.title not in titles:
+                titles.append(book.title)
+    return build_table(config['columns'], RESOURCE_FIELDS, [deduped[k] for k in order])
 
 
 # --- Subjects source (HE Subject + K12Subject snippets) ---------------------

@@ -364,7 +364,7 @@ class BookResourcesSourceTests(BooksSourceTests):
         from pages.table_sources import resolve_book_resources
         book = self._make_book_with_resources()
         result = resolve_book_resources({
-            'book': book, 'resource_type': 'instructor', 'audience': '',
+            'books': [book], 'resource_type': 'instructor', 'audience': '',
             'columns': [
                 {'field': 'heading', 'header': '', 'type': ''},
                 {'field': 'link', 'header': '', 'type': ''},
@@ -380,7 +380,7 @@ class BookResourcesSourceTests(BooksSourceTests):
         from pages.table_sources import resolve_book_resources
         book = self._make_book_with_resources()
         result = resolve_book_resources({
-            'book': book, 'resource_type': 'student', 'audience': '',
+            'books': [book], 'resource_type': 'student', 'audience': '',
             'columns': [{'field': 'heading', 'header': '', 'type': ''}],
         })
         self.assertEqual(result['rows'][0]['cells'][0]['content'],
@@ -390,12 +390,12 @@ class BookResourcesSourceTests(BooksSourceTests):
         from pages.table_sources import resolve_book_resources
         book = self._make_book_with_resources()
         instructor = resolve_book_resources({
-            'book': book, 'resource_type': 'instructor', 'audience': 'k12',
+            'books': [book], 'resource_type': 'instructor', 'audience': 'k12',
             'columns': [{'field': 'heading', 'header': '', 'type': ''}],
         })
         self.assertEqual(len(instructor['rows']), 1)  # flagged display_on_k12
         student = resolve_book_resources({
-            'book': book, 'resource_type': 'student', 'audience': 'k12',
+            'books': [book], 'resource_type': 'student', 'audience': 'k12',
             'columns': [{'field': 'heading', 'header': '', 'type': ''}],
         })
         self.assertEqual(student['rows'], [])  # not flagged
@@ -414,7 +414,7 @@ class BookResourcesSourceTests(BooksSourceTests):
             link_external='https://example.com/wins.pdf',
             link_document=self.test_doc, link_text='Get it')
         result = resolve_book_resources({
-            'book': book, 'resource_type': 'instructor', 'audience': '',
+            'books': [book], 'resource_type': 'instructor', 'audience': '',
             'columns': [{'field': 'link', 'header': '', 'type': ''}],
         })
         cta = result['rows'][0]['cells'][0]['cta'][0]
@@ -434,13 +434,72 @@ class BookResourcesSourceTests(BooksSourceTests):
             book_faculty_resource=book, resource=snippet,
             link_page=self.book_index, link_text='Browse')
         result = resolve_book_resources({
-            'book': book, 'resource_type': 'instructor', 'audience': '',
+            'books': [book], 'resource_type': 'instructor', 'audience': '',
             'columns': [{'field': 'link', 'header': '', 'type': ''}],
         })
         cta = result['rows'][0]['cells'][0]['cta'][0]
         self.assertTrue(cta['target']['value'].startswith('/'),
                         cta['target']['value'])
         self.assertEqual(cta['target']['type'], 'internal')
+
+    def test_description_renders_expanded_html_not_raw_tags(self):
+        from books.models import BookFacultyResources
+        from snippets.models import FacultyResource
+        from pages.table_sources import resolve_book_resources
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book = self._make_book()
+        # Internal page link in stored richtext form; expand_db_html turns it
+        # into a real href (raw tags/linktype would be broken output).
+        snippet = FacultyResource.objects.create(
+            heading='Guide',
+            description=f'<p>See <a linktype="page" id="{self.book_index.id}">here</a>.</p>',
+            unlocked_resource=True, locale=book.locale)
+        BookFacultyResources.objects.create(
+            book_faculty_resource=book, resource=snippet, link_external='https://x.co')
+        # Column type set to Text must NOT escape a rich-text field.
+        result = resolve_book_resources({
+            'books': [book], 'resource_type': 'instructor', 'audience': '',
+            'columns': [{'field': 'description', 'header': '', 'type': 'text'}],
+        })
+        content = result['rows'][0]['cells'][0]['content']
+        self.assertNotIn('&lt;p&gt;', content)      # not escaped to visible tags
+        self.assertNotIn('linktype', content)       # link was expanded
+        self.assertIn('href=', content)
+
+    def test_book_column_lists_book_title(self):
+        from pages.table_sources import resolve_book_resources
+        book = self._make_book_with_resources()
+        result = resolve_book_resources({
+            'books': [book], 'resource_type': 'instructor', 'audience': '',
+            'columns': [{'field': 'book', 'header': '', 'type': ''}],
+        })
+        self.assertEqual(result['rows'][0]['cells'][0]['content'], 'University Physics')
+
+    def test_dedupes_resource_shared_across_books(self):
+        from books.models import BookFacultyResources
+        from snippets.models import FacultyResource
+        from pages.table_sources import resolve_book_resources
+        # Both books share the default salesforce_book_id, so the SF lookup
+        # fires twice against the one recorded interaction — allow the replay.
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml',
+                              allow_playback_repeats=True):
+            book_a = self._make_book()
+            book_b = self._make_book(title='College Physics', slug='college-physics')
+        shared = FacultyResource.objects.create(
+            heading='Shared Guide', description='<p>x</p>',
+            unlocked_resource=True, locale=book_a.locale)
+        BookFacultyResources.objects.create(book_faculty_resource=book_a, resource=shared)
+        BookFacultyResources.objects.create(book_faculty_resource=book_b, resource=shared)
+        result = resolve_book_resources({
+            'books': [book_a, book_b], 'resource_type': 'instructor', 'audience': '',
+            'columns': [
+                {'field': 'heading', 'header': '', 'type': ''},
+                {'field': 'book', 'header': '', 'type': ''},
+            ],
+        })
+        self.assertEqual(len(result['rows']), 1)  # one row, not two
+        self.assertEqual(result['rows'][0]['cells'][1]['content'],
+                         'University Physics, College Physics')
 
 
 class SubjectsSourceTests(TestCase):
