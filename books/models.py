@@ -6,7 +6,7 @@ from django import forms
 from django.conf import settings
 from django.db import models
 from django.utils.functional import cached_property
-from django.utils.html import format_html, mark_safe
+from django.utils.html import format_html
 from wagtail.admin.forms import WagtailAdminPageForm
 from modelcluster.fields import ParentalKey
 from wagtail.admin.panels import (FieldPanel,
@@ -1105,7 +1105,7 @@ class Book(FrontendPreviewMixin, Page):
     def book_title(self):
         return format_html(
             '{}',
-            mark_safe(self.book.title),
+            self.title,
         )
 
     def subjects(self):
