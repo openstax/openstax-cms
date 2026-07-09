@@ -198,8 +198,8 @@ RESOURCE_FIELDS = {
     'k12': ('K12', lambda r: 'Yes' if r.display_on_k12 else '', 'text'),
     'unlocked': ('Unlocked',
                  lambda r: 'Yes' if (r.resource and r.resource.unlocked_resource) else '', 'text'),
-    'resource_category': ('Category',
-                          lambda r: r.resource.resource_category if r.resource else '', 'text'),
+'resource_category': ('Category',
+                      lambda r: (r.resource.resource_category or '') if r.resource else '', 'text'),
 }
 
 
