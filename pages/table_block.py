@@ -7,7 +7,7 @@ from wagtail import blocks
 from wagtail.snippets.blocks import SnippetChooserBlock
 
 from openstax.api_fields import APIRichTextBlock
-from pages.custom_blocks import CTALinkBlock, id_config_block
+from pages.shared_blocks import CTALinkBlock, id_config_block
 from pages.table_sources import (
     SOURCE_CELL_TYPE_CHOICES, field_choices,
     BOOK_FIELDS, NEWS_FIELDS, RESOURCE_FIELDS, SUBJECT_FIELDS,

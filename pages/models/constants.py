@@ -10,17 +10,14 @@ from pages.custom_blocks import APIImageChooserBlock, \
     CTAButtonBarBlock, \
     LinksGroupBlock, \
     QuoteBlock, \
-    CTALinkBlock, \
     BookBlock, \
     PersonBlock, \
-    OpenStaxColorBlock, \
     CARDS_STYLE_CHOICES, \
     TEXT_ALIGNMENT_CHOICES, \
-    FLEX_CHOICES, \
-    hex_color_block, \
-    gradient_config_options, \
-    gradient_block_counts, \
-    id_config_block
+    FLEX_CHOICES
+
+from pages.shared_blocks import CTALinkBlock, OpenStaxColorBlock, hex_color_block, \
+    gradient_config_options, gradient_block_counts, id_config_block
 
 from pages.table_block import TableBlock
 
