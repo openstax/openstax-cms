@@ -209,9 +209,10 @@ def resolve_book_resources(config):
         return {'columns': [], 'rows': []}
     student = config.get('resource_type') == 'student'
     k12_only = config.get('audience') == 'k12'
-    # A resource snippet can be attached to several books; show it once and list
-    # every book it belongs to (its "Book(s)" cell). Keyed by snippet id, so a
-    # resource with no snippet (deleted) stays a distinct row via id().
+    # A resource snippet can be attached to several books; each distinct
+    # (resource, link) pair gets one row, listing every book sharing it in
+    # the "Book(s)" cell. See the key comment below for why link identity
+    # is part of the key, not just the snippet id.
     deduped, order = {}, []
     for book in books:
         manager = book.book_student_resources if student else book.book_faculty_resources
