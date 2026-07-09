@@ -218,6 +218,7 @@ class TableBlock(blocks.StructBlock):
     class Meta:
         label = 'Table'
         icon = 'table'
+        collapsed = True
 
     def get_api_representation(self, value, context=None):
         from pages import table_sources

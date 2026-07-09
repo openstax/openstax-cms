@@ -11,6 +11,7 @@ from api.serializers import ImageSerializer
 from openstax.functions import build_image_url, build_document_url
 from openstax.api_fields import APIRichTextBlock
 from pages.shared_blocks import CTALinkBlock, LinkInfoBlock, hex_color_block, id_config_block
+from pages.table_block import TableBlock
 
 
 # --- Choice constants ---
@@ -191,6 +192,15 @@ class FAQBlock(blocks.StructBlock):
     slug = blocks.CharBlock(required=True, help_text='Not visible to user, must be unique in this FAQ.')
     answer = APIRichTextBlock(required=True, help_text='The answer to the question, is hidden until the question is expanded.')
     document = DocumentChooserBlock(required=False, help_text='Not sure this does anything.')
+    content = blocks.StreamBlock([
+        ('table', TableBlock()),
+        ('image', blocks.StructBlock([
+            ('image', APIImageChooserBlock(required=True)),
+            ('alt_text', blocks.CharBlock(required=False)),
+        ], label='Image')),
+        ('text', APIRichTextBlock()),
+    ], required=False, collapsed=True, label='Additional content',
+        help_text='Optional table, image, or extra text shown as part of the answer.')
 
     class Meta:
         icon = 'bars'
