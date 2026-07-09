@@ -70,7 +70,7 @@ BASE_CONTENT_BLOCKS = [
             'padding': {'max_num': 1},
             'padding_top': {'max_num': 1},
             'padding_bottom': {'max_num': 1},
-        }, required=False)),
+        }, required=False, collapsed=True)),
     ], label="Cards Block")),
     ('text', APIRichTextBlock()),
     ('html', EnhancedHTMLBlock()),
@@ -130,7 +130,7 @@ SECTION_CONTENT_BLOCKS = BASE_CONTENT_BLOCKS + [
             'text_alignment': {'max_num': 1},
             'analytics_label': {'max_num': 1},
             'id': {'max_num': 1},
-        }, required=False)),
+        }, required=False, collapsed=True)),
     ], label="Well")),
 ]
 
@@ -174,7 +174,7 @@ BODY_BLOCKS = [
             'image_border_size': {'max_num': 1},
             'image_overhang': {'max_num': 1},
             'rendering_condition': {'max_num': 1},
-        }, required=False))
+        }, required=False, collapsed=True))
     ])),
     ('section', blocks.StructBlock([
         ('content', blocks.StreamBlock(SECTION_CONTENT_BLOCKS)),
@@ -200,7 +200,7 @@ BODY_BLOCKS = [
             'analytics_label': {'max_num': 1},
             'flex': {'max_num': 1},
             'rendering_condition': {'max_num': 1},
-        }, required=False))
+        }, required=False, collapsed=True))
     ])),
     ('columns', blocks.StructBlock([
         ('left_content', blocks.StreamBlock(SECTION_CONTENT_BLOCKS)),
@@ -229,7 +229,7 @@ BODY_BLOCKS = [
             'gap': {'max_num': 1},
             'left_size': {'max_num': 1},
             'right_size': {'max_num': 1},
-        }, required=False)),
+        }, required=False, collapsed=True)),
     ], label="Columns")),
     ('divider', DividerBlock()),
     ('html', EnhancedHTMLBlock()),

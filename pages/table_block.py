@@ -213,7 +213,7 @@ class TableBlock(blocks.StructBlock):
         'row_limit': {'max_num': 1},
         'empty_message': {'max_num': 1},
         'id': {'max_num': 1},
-    }, required=False)
+    }, required=False, collapsed=True)
 
     class Meta:
         label = 'Table'

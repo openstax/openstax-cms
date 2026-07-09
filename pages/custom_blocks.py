@@ -67,7 +67,7 @@ class LinksGroupBlock(blocks.StructBlock):
         'size': {'max_num': 1},
         'layout': {'max_num': 1},
         'analytics_label': {'max_num': 1},
-    }, required=False)
+    }, required=False, collapsed=True)
 
     class Meta:
         icon = 'placeholder'
@@ -89,7 +89,7 @@ class CTAButtonBarBlock(blocks.StructBlock):
         'analytics_label': {'max_num': 1},
         'layout': {'max_num': 1},
         'rendering_condition': {'max_num': 1},
-    }, required=False)
+    }, required=False, collapsed=True)
 
     class Meta:
         icon = 'placeholder'
@@ -128,7 +128,7 @@ class QuoteBlock(StructBlock):
     ], block_counts={
         'layout': {'max_num': 1},
         'accent_color': {'max_num': 1},
-    }, required=False)
+    }, required=False, collapsed=True)
 
 
 class DividerBlock(StructBlock):
@@ -163,7 +163,7 @@ class DividerBlock(StructBlock):
         'height': {'max_num': 1},
         'offset_vertical': {'max_num': 1},
         'offset_horizontal': {'max_num': 1},
-    }, required=False)
+    }, required=False, collapsed=True)
 
 
 @ai_image_block()
@@ -405,7 +405,7 @@ class PersonBlock(blocks.StructBlock):
         'background_color': {'max_num': 1},
         'border_size': {'max_num': 1},
         'id': {'max_num': 1},
-    }, required=False)
+    }, required=False, collapsed=True)
 
     class Meta:
         label = 'People'

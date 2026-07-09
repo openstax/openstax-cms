@@ -223,7 +223,7 @@ class CTALinkBlock(LinkInfoBlock):
     ], block_counts={
         'style': {'max_num': 1},
         'custom_color': {'max_num': 1},
-    }, required=False)
+    }, required=False, collapsed=True)
 
     class Meta:
         icon = 'placeholder'

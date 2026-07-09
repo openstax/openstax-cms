@@ -63,7 +63,7 @@ class RootPage(FrontendPreviewMixin, Page):
                 'analytics_label': {'max_num': 1},
                 'border_width': {'max_num': 1},
                 'id': {'max_num': 1},
-            }, required=False)),
+            }, required=False, collapsed=True)),
         ], label="Tabbed Content")),
     ], use_json_field=True)
 
