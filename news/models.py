@@ -50,8 +50,12 @@ def _invalidate_in_bulk_cache(sender, **kwargs):
 
 
 for _model in (Subject, BlogCollection, BlogContentType):
-    models.signals.post_save.connect(_invalidate_in_bulk_cache, sender=_model)
-    models.signals.post_delete.connect(_invalidate_in_bulk_cache, sender=_model)
+    models.signals.post_save.connect(
+        _invalidate_in_bulk_cache, sender=_model, dispatch_uid=f'invalidate_in_bulk_cache_save_{_model._meta.label_lower}'
+    )
+    models.signals.post_delete.connect(
+        _invalidate_in_bulk_cache, sender=_model, dispatch_uid=f'invalidate_in_bulk_cache_delete_{_model._meta.label_lower}'
+    )
 
 
 class ImageChooserBlock(ImageChooserBlock):
@@ -306,7 +310,7 @@ class NewsArticle(FrontendPreviewMixin, Page):
 
     @property
     def blog_content_types(self):
-        prep_value = self.content_types.get_prep_value()
+        prep_value = self.content_types.get_prep_value() or []
         all_types = _cached_in_bulk(BlogContentType)
         types = []
         for t in prep_value:
@@ -319,7 +323,7 @@ class NewsArticle(FrontendPreviewMixin, Page):
 
     @property
     def blog_subjects(self):
-        prep_value = self.article_subjects.get_prep_value()
+        prep_value = self.article_subjects.get_prep_value() or []
         all_subjects = _cached_in_bulk(Subject)
         subjects = []
         for s in prep_value:
@@ -333,7 +337,7 @@ class NewsArticle(FrontendPreviewMixin, Page):
 
     @property
     def blog_collections(self):
-        prep_value = self.collections.get_prep_value()
+        prep_value = self.collections.get_prep_value() or []
         all_collections = _cached_in_bulk(BlogCollection)
         cols = []
         for c in prep_value:

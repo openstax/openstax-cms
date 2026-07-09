@@ -146,6 +146,11 @@ class OpenstaxPagesAPIEndpoint(PagesAPIViewSet):
             site = Site.find_for_request(self.request)
 
         if site:
+            # Cache the resolved site on the request so html_url serialization
+            # (which also calls Site.find_for_request) agrees with the ?site=
+            # filter instead of re-deriving the site from the request's Host header.
+            request._wagtail_site = site
+
             base_queryset = queryset
             queryset = base_queryset.descendant_of(site.root_page, inclusive=True)
 
