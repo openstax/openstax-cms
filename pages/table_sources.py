@@ -198,6 +198,8 @@ RESOURCE_FIELDS = {
     'k12': ('K12', lambda r: 'Yes' if r.display_on_k12 else '', 'text'),
     'unlocked': ('Unlocked',
                  lambda r: 'Yes' if (r.resource and r.resource.unlocked_resource) else '', 'text'),
+    'resource_category': ('Category',
+                          lambda r: r.resource.resource_category if r.resource else '', 'text'),
 }
 
 
@@ -219,7 +221,12 @@ def resolve_book_resources(config):
         for r in resources:
             if k12_only and not r.display_on_k12:
                 continue
-            key = r.resource_id or id(r)
+            # Two books' resource rows merge into one table row only when they
+            # share both the resource heading AND resolve to the same file —
+            # sharing just the heading (e.g. "PowerPoint Slides") is common
+            # and each book's copy is usually a distinct file (see spec).
+            key = ((r.resource_id, r.link_document_id, r.link_page_id, r.link_external)
+                   if r.resource_id else id(r))
             if key not in deduped:
                 r._book_titles = []
                 deduped[key] = r
