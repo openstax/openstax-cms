@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from pages.shared_blocks import (
@@ -14,7 +15,7 @@ class SharedBlocksImportTests(TestCase):
 
     def test_id_config_block_rejects_invalid_id(self):
         block = id_config_block()
-        with self.assertRaises(Exception):
+        with self.assertRaises(ValidationError):
             block.clean('not a valid id!')
 
     def test_gradient_config_options_and_counts_match(self):
