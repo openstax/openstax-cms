@@ -198,6 +198,8 @@ RESOURCE_FIELDS = {
     'k12': ('K12', lambda r: 'Yes' if r.display_on_k12 else '', 'text'),
     'unlocked': ('Unlocked',
                  lambda r: 'Yes' if (r.resource and r.resource.unlocked_resource) else '', 'text'),
+'resource_category': ('Category',
+                      lambda r: (r.resource.resource_category or '') if r.resource else '', 'text'),
 }
 
 
@@ -207,9 +209,10 @@ def resolve_book_resources(config):
         return {'columns': [], 'rows': []}
     student = config.get('resource_type') == 'student'
     k12_only = config.get('audience') == 'k12'
-    # A resource snippet can be attached to several books; show it once and list
-    # every book it belongs to (its "Book(s)" cell). Keyed by snippet id, so a
-    # resource with no snippet (deleted) stays a distinct row via id().
+    # A resource snippet can be attached to several books; each distinct
+    # (resource, link) pair gets one row, listing every book sharing it in
+    # the "Book(s)" cell. See the key comment below for why link identity
+    # is part of the key, not just the snippet id.
     deduped, order = {}, []
     for book in books:
         manager = book.book_student_resources if student else book.book_faculty_resources
@@ -219,7 +222,12 @@ def resolve_book_resources(config):
         for r in resources:
             if k12_only and not r.display_on_k12:
                 continue
-            key = r.resource_id or id(r)
+            # Two books' resource rows merge into one table row only when they
+            # share both the resource heading AND resolve to the same file —
+            # sharing just the heading (e.g. "PowerPoint Slides") is common
+            # and each book's copy is usually a distinct file (see spec).
+            key = ((r.resource_id, r.link_document_id, r.link_page_id, r.link_external)
+                   if r.resource_id else id(r))
             if key not in deduped:
                 r._book_titles = []
                 deduped[key] = r
