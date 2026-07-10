@@ -196,6 +196,7 @@ class LinkBlock(blocks.StreamBlock):
                 }
             else:
                 return None
+        return None
 
 
 class LinkInfoBlock(blocks.StructBlock):
