@@ -9,10 +9,10 @@ from wagtail.documents.blocks import DocumentChooserBlock
 from wagtail_color_panel.blocks import NativeColorBlock
 from wagtail_color_panel.widgets import ColorInputWidget, ColorInputWidgetAdapter
 
-# Leaf module: color/link/id primitives shared by pages/custom_blocks.py and
-# pages/table_block.py. Must not import from either — table_block.py already
-# imports from custom_blocks.py, so this module importing back from either
-# would recreate the circular import this extraction exists to avoid.
+# Leaf module: color/link/id primitives shared by pages/custom_blocks.py,
+# pages/models/*, and pages/table_block.py.
+# Keep this module free of imports from pages.custom_blocks or pages.table_block
+# to avoid circular-import issues.
 
 GRADIENT_DIRECTION_CHOICES = [
     ('to right', 'To Right'),
