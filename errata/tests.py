@@ -146,7 +146,7 @@ class ErrataAdminSharedInstanceTest(TestCase):
         rf = RequestFactory()
         errata_admin = ErrataAdmin(Errata, admin.site)
 
-        vendor_group = Group.objects.create(name='Editorial Vendor')
+        vendor_group, _ = Group.objects.get_or_create(name='Editorial Vendor')
         plain_user = User.objects.create_user('plain', is_staff=True)
         vendor_user = User.objects.create_user('vendor', is_staff=True)
         vendor_user.groups.add(vendor_group)
@@ -187,11 +187,11 @@ class ErrataAdminRolesTest(TestCase):
             'super_admin', is_staff=True, is_superuser=True
         )
 
-        content_managers = Group.objects.create(name='Content Managers')
+        content_managers, _ = Group.objects.get_or_create(name='Content Managers')
         self.internal_editor = User.objects.create_user('internal_editor', is_staff=True)
         self.internal_editor.groups.add(content_managers)
 
-        vendor_group = Group.objects.create(name='Editorial Vendor')
+        vendor_group, _ = Group.objects.get_or_create(name='Editorial Vendor')
         self.vendor = User.objects.create_user('vendor', is_staff=True)
         self.vendor.groups.add(vendor_group)
 
@@ -245,6 +245,64 @@ class ErrataAdminRolesTest(TestCase):
         internal_editor_actions = self.errata_admin.get_actions(self._request_as(self.internal_editor))
         self.assertIn('delete_selected', super_admin_actions)
         self.assertNotIn('delete_selected', internal_editor_actions)
+
+
+class ErrataPermissionGroupsMigrationTest(TestCase):
+    """errata/migrations/0057_create_errata_permission_groups.py must create
+    both groups with sane defaults on a fresh database, and must never
+    clobber a group's permissions if it already exists (that's exactly how
+    the 2026-07-10 incident happened - a hand-edited group with no code
+    review or environment parity)."""
+
+    def test_creates_groups_with_default_permissions(self):
+        import importlib
+        from django.apps import apps as global_apps
+        from django.contrib.auth.models import Group
+
+        migration = importlib.import_module(
+            'errata.migrations.0057_create_errata_permission_groups'
+        )
+
+        Group.objects.filter(name__in=['Content Managers', 'Editorial Vendor']).delete()
+
+        migration.create_errata_permission_groups(global_apps, None)
+
+        expected_codenames = {'add_errata', 'change_errata', 'view_errata'}
+        content_managers = Group.objects.get(name='Content Managers')
+        vendor = Group.objects.get(name='Editorial Vendor')
+        self.assertEqual(
+            set(content_managers.permissions.values_list('codename', flat=True)),
+            expected_codenames,
+        )
+        self.assertEqual(
+            set(vendor.permissions.values_list('codename', flat=True)),
+            expected_codenames,
+        )
+
+    def test_does_not_clobber_an_existing_groups_permissions(self):
+        import importlib
+        from django.apps import apps as global_apps
+        from django.contrib.auth.models import Group, Permission
+
+        migration = importlib.import_module(
+            'errata.migrations.0057_create_errata_permission_groups'
+        )
+
+        content_managers, _ = Group.objects.get_or_create(name='Content Managers')
+        delete_perm = Permission.objects.get(
+            content_type__app_label='errata',
+            content_type__model='errata',
+            codename='delete_errata',
+        )
+        content_managers.permissions.set([delete_perm])
+
+        migration.create_errata_permission_groups(global_apps, None)
+
+        content_managers.refresh_from_db()
+        self.assertEqual(
+            set(content_managers.permissions.values_list('codename', flat=True)),
+            {'delete_errata'},
+        )
 
 
 class ErrataPostHogCaptureTest(TestCase):
