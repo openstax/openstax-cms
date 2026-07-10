@@ -167,6 +167,86 @@ class ErrataAdminSharedInstanceTest(TestCase):
         self.assertIsNotNone(form_class)
 
 
+class ErrataAdminRolesTest(TestCase):
+    """Verifies the role model in
+    docs/superpowers/specs/2026-07-10-errata-admin-permissions-design.md:
+    Super Admin (is_superuser), Internal Editor ('Content Managers' group,
+    or superuser), and everyone else treated as Editorial Vendor tier
+    (least-privilege default - not just the named 'Editorial Vendor' group).
+    """
+
+    def setUp(self):
+        from django.test import RequestFactory
+        from django.contrib.auth.models import User, Group
+        from errata.admin import ErrataAdmin
+
+        self.factory = RequestFactory()
+        self.errata_admin = ErrataAdmin(Errata, admin.site)
+
+        self.super_admin = User.objects.create_user(
+            'super_admin', is_staff=True, is_superuser=True
+        )
+
+        content_managers = Group.objects.create(name='Content Managers')
+        self.internal_editor = User.objects.create_user('internal_editor', is_staff=True)
+        self.internal_editor.groups.add(content_managers)
+
+        vendor_group = Group.objects.create(name='Editorial Vendor')
+        self.vendor = User.objects.create_user('vendor', is_staff=True)
+        self.vendor.groups.add(vendor_group)
+
+        # No group, not superuser - the least-privilege fallback case.
+        self.unassigned_staff = User.objects.create_user('unassigned_staff', is_staff=True)
+
+    def _request_as(self, user):
+        request = self.factory.get('/errata/errata/add/')
+        request.user = user
+        return request
+
+    def test_super_admin_sees_accounts_link_and_can_delete(self):
+        request = self._request_as(self.super_admin)
+        self.assertIn('accounts_link', self.errata_admin.get_fields(request))
+        self.assertIn('accounts_link', self.errata_admin.get_readonly_fields(request))
+        self.assertTrue(self.errata_admin.has_delete_permission(request))
+
+    def test_internal_editor_sees_accounts_link_but_cannot_delete(self):
+        request = self._request_as(self.internal_editor)
+        self.assertIn('accounts_link', self.errata_admin.get_fields(request))
+        self.assertIn('accounts_link', self.errata_admin.get_readonly_fields(request))
+        self.assertFalse(self.errata_admin.has_delete_permission(request))
+
+    def test_vendor_does_not_see_accounts_link_and_cannot_delete(self):
+        request = self._request_as(self.vendor)
+        self.assertNotIn('accounts_link', self.errata_admin.get_fields(request))
+        self.assertNotIn('accounts_link', self.errata_admin.get_readonly_fields(request))
+        self.assertFalse(self.errata_admin.has_delete_permission(request))
+
+    def test_unassigned_staff_is_treated_as_vendor_tier(self):
+        request = self._request_as(self.unassigned_staff)
+        self.assertNotIn('accounts_link', self.errata_admin.get_fields(request))
+        self.assertFalse(self.errata_admin.has_delete_permission(request))
+
+    def test_super_admin_and_internal_editor_get_identical_fields(self):
+        super_admin_fields = self.errata_admin.get_fields(self._request_as(self.super_admin))
+        internal_editor_fields = self.errata_admin.get_fields(self._request_as(self.internal_editor))
+        self.assertEqual(super_admin_fields, internal_editor_fields)
+
+    def test_bulk_status_actions_are_internal_only(self):
+        internal_actions = self.errata_admin.get_actions(self._request_as(self.internal_editor))
+        vendor_actions = self.errata_admin.get_actions(self._request_as(self.vendor))
+        unassigned_actions = self.errata_admin.get_actions(self._request_as(self.unassigned_staff))
+        for action_name in ('mark_in_review', 'mark_reviewed', 'mark_archived', 'mark_completed'):
+            self.assertIn(action_name, internal_actions)
+            self.assertNotIn(action_name, vendor_actions)
+            self.assertNotIn(action_name, unassigned_actions)
+
+    def test_delete_selected_only_available_to_users_with_delete_permission(self):
+        super_admin_actions = self.errata_admin.get_actions(self._request_as(self.super_admin))
+        internal_editor_actions = self.errata_admin.get_actions(self._request_as(self.internal_editor))
+        self.assertIn('delete_selected', super_admin_actions)
+        self.assertNotIn('delete_selected', internal_editor_actions)
+
+
 class ErrataPostHogCaptureTest(TestCase):
     def _instance(self, account_id=None):
         return mock.Mock(
