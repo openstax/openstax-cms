@@ -400,6 +400,30 @@ class BookResourcesSourceTests(BooksSourceTests):
         })
         self.assertEqual(student['rows'], [])  # not flagged
 
+    def test_resource_category_filters_rows(self):
+        from books.models import BookFacultyResources
+        from snippets.models import FacultyResource
+        from pages.table_sources import resolve_book_resources
+        book = self._make_book_with_resources()
+        FacultyResource.objects.filter(heading='Instructor Getting Started Guide').update(
+            resource_category='Getting Started')
+        other_snippet = FacultyResource.objects.create(
+            heading='Instructor PowerPoint Slides',
+            description='<p>Slides.</p>', unlocked_resource=True,
+            locale=book.locale)
+        BookFacultyResources.objects.create(
+            book_faculty_resource=book, resource=other_snippet,
+            link_external='https://example.com/slides.pdf',
+            link_text='Download slides')
+        result = resolve_book_resources({
+            'books': [book], 'resource_type': 'instructor', 'audience': '',
+            'resource_category': 'Getting Started',
+            'columns': [{'field': 'heading', 'header': '', 'type': ''}],
+        })
+        self.assertEqual(len(result['rows']), 1)
+        self.assertEqual(result['rows'][0]['cells'][0]['content'],
+                         'Instructor Getting Started Guide')
+
     def test_resource_link_precedence_external_over_document(self):
         from books.models import BookFacultyResources
         from snippets.models import FacultyResource

@@ -94,6 +94,8 @@ class BookResourcesSourceBlock(blocks.StructBlock):
         ('k12', 'K12 only'),
     ], required=False,
         help_text='K12 only limits rows to resources flagged "Display on K12".')
+    resource_category = blocks.CharBlock(required=False,
+        help_text='Only resources with this exact category (e.g. "Getting Started"). Leave empty for all categories.')
     columns = source_columns_block(field_choices(RESOURCE_FIELDS))
 
     class Meta:
