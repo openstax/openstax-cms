@@ -72,7 +72,7 @@ class Migration(migrations.Migration):
                         },
                     ),
                     9: (
-                        "pages.custom_blocks.OpenStaxColorBlock",
+                        "pages.shared_blocks.OpenStaxColorBlock",
                         (),
                         {"help_text": "Custom color for the button. Must be hex eg: #ff0000."},
                     ),
@@ -88,7 +88,7 @@ class Migration(migrations.Migration):
                     ),
                     12: ("wagtail.blocks.ListBlock", (11,), {"default": [], "label": "Call To Action", "max_num": 1}),
                     13: (
-                        "pages.custom_blocks.OpenStaxColorBlock",
+                        "pages.shared_blocks.OpenStaxColorBlock",
                         (),
                         {
                             "help_text": "Accent color for this card: the border on rounded style, the top accent bar on square (needs Accent Size). Leave unset for the default palette.",
@@ -96,7 +96,7 @@ class Migration(migrations.Migration):
                         },
                     ),
                     14: (
-                        "pages.custom_blocks.OpenStaxColorBlock",
+                        "pages.shared_blocks.OpenStaxColorBlock",
                         (),
                         {
                             "help_text": "Color for divider lines in this card. Leave unset for the default palette.",
@@ -132,7 +132,7 @@ class Migration(migrations.Migration):
                         },
                     ),
                     20: (
-                        "pages.custom_blocks.OpenStaxColorBlock",
+                        "pages.shared_blocks.OpenStaxColorBlock",
                         (),
                         {"help_text": "Background color for the cards block. Must be hex eg: #ff0000."},
                     ),
@@ -267,7 +267,7 @@ class Migration(migrations.Migration):
                         },
                     ),
                     41: (
-                        "pages.custom_blocks.OpenStaxColorBlock",
+                        "pages.shared_blocks.OpenStaxColorBlock",
                         (),
                         {"help_text": "Custom color for the links. Must be hex eg: #ff0000."},
                     ),
@@ -338,7 +338,7 @@ class Migration(migrations.Migration):
                         },
                     ),
                     51: (
-                        "pages.custom_blocks.OpenStaxColorBlock",
+                        "pages.shared_blocks.OpenStaxColorBlock",
                         (),
                         {"help_text": "Accent color for the quote. Must be hex eg: #ff0000."},
                     ),
@@ -501,7 +501,7 @@ class Migration(migrations.Migration):
                         },
                     ),
                     85: (
-                        "pages.custom_blocks.OpenStaxColorBlock",
+                        "pages.shared_blocks.OpenStaxColorBlock",
                         (),
                         {"help_text": "Background color for the cards. Must be hex eg: #ff0000."},
                     ),
@@ -1005,12 +1005,12 @@ class Migration(migrations.Migration):
                         {},
                     ),
                     151: (
-                        "pages.custom_blocks.OpenStaxColorBlock",
+                        "pages.shared_blocks.OpenStaxColorBlock",
                         (),
                         {"help_text": "Background color of the well. Must be hex eg: #ff0000."},
                     ),
                     152: (
-                        "pages.custom_blocks.OpenStaxColorBlock",
+                        "pages.shared_blocks.OpenStaxColorBlock",
                         (),
                         {"help_text": "Sets the gradient end color. Must be hex eg: #ff0000."},
                     ),
@@ -1037,7 +1037,7 @@ class Migration(migrations.Migration):
                         {"help_text": "Border radius in pixels. default 0.", "min_value": 0},
                     ),
                     155: (
-                        "pages.custom_blocks.OpenStaxColorBlock",
+                        "pages.shared_blocks.OpenStaxColorBlock",
                         (),
                         {"help_text": "Border color. Must be hex eg: #ff0000."},
                     ),
@@ -1156,7 +1156,7 @@ class Migration(migrations.Migration):
                         },
                     ),
                     168: (
-                        "pages.custom_blocks.OpenStaxColorBlock",
+                        "pages.shared_blocks.OpenStaxColorBlock",
                         (),
                         {
                             "help_text": "Sets the background color of the section. value must be hex eg: #ff0000. Default grey."
@@ -1199,7 +1199,7 @@ class Migration(migrations.Migration):
                         {"help_text": "Border radius for the hero image in pixels. default 0.", "min_value": 0},
                     ),
                     175: (
-                        "pages.custom_blocks.OpenStaxColorBlock",
+                        "pages.shared_blocks.OpenStaxColorBlock",
                         (),
                         {"help_text": "Border color for the hero image. Must be hex eg: #ff0000."},
                     ),
@@ -1309,7 +1309,7 @@ class Migration(migrations.Migration):
                     ),
                     182: ("wagtail.blocks.StructBlock", [[("content", 165), ("config", 181)]], {}),
                     183: (
-                        "pages.custom_blocks.OpenStaxColorBlock",
+                        "pages.shared_blocks.OpenStaxColorBlock",
                         (),
                         {"help_text": "Background color of the columns container. Must be hex eg: #ff0000."},
                     ),
@@ -1495,12 +1495,12 @@ class Migration(migrations.Migration):
                         },
                     ),
                     206: (
-                        "pages.custom_blocks.OpenStaxColorBlock",
+                        "pages.shared_blocks.OpenStaxColorBlock",
                         (),
                         {"help_text": "Color of the active tab indicator. Must be hex eg: #ff0000."},
                     ),
                     207: (
-                        "pages.custom_blocks.OpenStaxColorBlock",
+                        "pages.shared_blocks.OpenStaxColorBlock",
                         (),
                         {"help_text": "Background color of the tabbed content area. Must be hex eg: #ff0000."},
                     ),
