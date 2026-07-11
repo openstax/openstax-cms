@@ -417,7 +417,7 @@ class BookResourcesSourceTests(BooksSourceTests):
             link_text='Download slides')
         result = resolve_book_resources({
             'books': [book], 'resource_type': 'instructor', 'audience': '',
-            'resource_category': 'Getting Started',
+            'resource_category': ' Getting Started ',
             'columns': [{'field': 'heading', 'header': '', 'type': ''}],
         })
         self.assertEqual(len(result['rows']), 1)
