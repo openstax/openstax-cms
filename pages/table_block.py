@@ -7,7 +7,7 @@ from wagtail import blocks
 from wagtail.snippets.blocks import SnippetChooserBlock
 
 from openstax.api_fields import APIRichTextBlock
-from pages.custom_blocks import CTALinkBlock, id_config_block
+from pages.shared_blocks import CTALinkBlock, id_config_block
 from pages.table_sources import (
     SOURCE_CELL_TYPE_CHOICES, field_choices,
     BOOK_FIELDS, NEWS_FIELDS, RESOURCE_FIELDS, SUBJECT_FIELDS,
@@ -79,6 +79,19 @@ class NewsSourceBlock(blocks.StructBlock):
         icon = 'doc-empty'
 
 
+def resource_category_choices():
+    # Called each time the edit form renders, so the dropdown tracks whatever
+    # categories editors have actually typed into the (free-text) snippet field.
+    from snippets.models import FacultyResource, StudentResource
+    categories = set()
+    for model in (FacultyResource, StudentResource):
+        categories.update(
+            model.objects.exclude(resource_category__isnull=True)
+            .exclude(resource_category__exact='')
+            .values_list('resource_category', flat=True))
+    return [(c, c) for c in sorted(categories)]
+
+
 class BookResourcesSourceBlock(blocks.StructBlock):
     books = blocks.ListBlock(
         blocks.PageChooserBlock(page_type=['books.Book']),
@@ -94,6 +107,8 @@ class BookResourcesSourceBlock(blocks.StructBlock):
         ('k12', 'K12 only'),
     ], required=False,
         help_text='K12 only limits rows to resources flagged "Display on K12".')
+    resource_category = blocks.ChoiceBlock(choices=resource_category_choices, required=False,
+        help_text='Only resources with this category. Leave blank for all categories.')
     columns = source_columns_block(field_choices(RESOURCE_FIELDS))
 
     class Meta:
@@ -213,11 +228,12 @@ class TableBlock(blocks.StructBlock):
         'row_limit': {'max_num': 1},
         'empty_message': {'max_num': 1},
         'id': {'max_num': 1},
-    }, required=False)
+    }, required=False, collapsed=True)
 
     class Meta:
         label = 'Table'
         icon = 'table'
+        collapsed = True
 
     def get_api_representation(self, value, context=None):
         from pages import table_sources

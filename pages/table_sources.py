@@ -209,6 +209,7 @@ def resolve_book_resources(config):
         return {'columns': [], 'rows': []}
     student = config.get('resource_type') == 'student'
     k12_only = config.get('audience') == 'k12'
+    category = (config.get('resource_category') or '').strip()
     # A resource snippet can be attached to several books; each distinct
     # (resource, link) pair gets one row, listing every book sharing it in
     # the "Book(s)" cell. See the key comment below for why link identity
@@ -219,6 +220,8 @@ def resolve_book_resources(config):
         # Getters touch resource/link_page/link_document per row — pull them in
         # one query each rather than N+1 (multiplied now across several books).
         resources = manager.select_related('resource', 'link_page', 'link_document')
+        if category:
+            resources = resources.filter(resource__resource_category=category)
         for r in resources:
             if k12_only and not r.display_on_k12:
                 continue
