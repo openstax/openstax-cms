@@ -132,7 +132,7 @@ class ActiveBookListFilterTests(TestCase):
 
 class ErrataAdminSharedInstanceTest(TestCase):
     """ErrataAdmin is registered once and reused by Django across every request.
-    get_fields/get_readonly_fields/get_list_display must be computed per-request
+    get_fields/get_readonly_fields must be computed per-request
     rather than assigned to self, or one user's role can leak into another's
     concurrent request. See the comment above these methods in errata/admin.py.
     """
@@ -235,7 +235,8 @@ class ErrataAdminRolesTest(TestCase):
         internal_actions = self.errata_admin.get_actions(self._request_as(self.internal_editor))
         vendor_actions = self.errata_admin.get_actions(self._request_as(self.vendor))
         unassigned_actions = self.errata_admin.get_actions(self._request_as(self.unassigned_staff))
-        for action_name in ('mark_in_review', 'mark_reviewed', 'mark_archived', 'mark_completed'):
+        for action_name in ('mark_in_review', 'mark_OpenStax_editorial_review', 'mark_cartridge_review',
+                            'mark_reviewed', 'mark_archived', 'mark_completed'):
             self.assertIn(action_name, internal_actions)
             self.assertNotIn(action_name, vendor_actions)
             self.assertNotIn(action_name, unassigned_actions)
@@ -256,8 +257,10 @@ class ErrataPermissionGroupsMigrationTest(TestCase):
 
     def test_creates_groups_with_default_permissions(self):
         import importlib
+        from types import SimpleNamespace
         from django.apps import apps as global_apps
         from django.contrib.auth.models import Group
+        from django.db import connection
 
         migration = importlib.import_module(
             'errata.migrations.0057_create_errata_permission_groups'
@@ -265,7 +268,8 @@ class ErrataPermissionGroupsMigrationTest(TestCase):
 
         Group.objects.filter(name__in=['Content Managers', 'Editorial Vendor']).delete()
 
-        migration.create_errata_permission_groups(global_apps, None)
+        migration.create_errata_permission_groups(
+            global_apps, SimpleNamespace(connection=connection))
 
         expected_codenames = {'add_errata', 'change_errata', 'view_errata'}
         content_managers = Group.objects.get(name='Content Managers')
@@ -281,8 +285,10 @@ class ErrataPermissionGroupsMigrationTest(TestCase):
 
     def test_does_not_clobber_an_existing_groups_permissions(self):
         import importlib
+        from types import SimpleNamespace
         from django.apps import apps as global_apps
         from django.contrib.auth.models import Group, Permission
+        from django.db import connection
 
         migration = importlib.import_module(
             'errata.migrations.0057_create_errata_permission_groups'
@@ -296,7 +302,8 @@ class ErrataPermissionGroupsMigrationTest(TestCase):
         )
         content_managers.permissions.set([delete_perm])
 
-        migration.create_errata_permission_groups(global_apps, None)
+        migration.create_errata_permission_groups(
+            global_apps, SimpleNamespace(connection=connection))
 
         content_managers.refresh_from_db()
         self.assertEqual(

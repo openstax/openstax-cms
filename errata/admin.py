@@ -146,7 +146,8 @@ class ErrataAdmin(ImportExportActionModelAdmin, VersionAdmin):
         # carry an allowed_permissions attribute for Django to check itself.
         actions = super(ErrataAdmin, self).get_actions(request)
         if not self._is_internal_editor(request):
-            for action_name in ('mark_in_review', 'mark_reviewed', 'mark_archived', 'mark_completed'):
+            for action_name in ('mark_in_review', 'mark_OpenStax_editorial_review', 'mark_cartridge_review',
+                                'mark_reviewed', 'mark_archived', 'mark_completed'):
                 actions.pop(action_name, None)
         return actions
 

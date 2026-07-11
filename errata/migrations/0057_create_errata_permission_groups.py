@@ -11,7 +11,8 @@ def create_errata_permission_groups(apps, schema_editor):
     # only fires after every app's migrations finish in this run - too late
     # for a data migration that needs to query Permission rows for this app
     # on a from-scratch database (fresh dev DB, CI). Force creation now.
-    create_permissions(global_apps.get_app_config('errata'), apps=apps, verbosity=0)
+    create_permissions(global_apps.get_app_config('errata'), apps=apps, verbosity=0,
+                       using=schema_editor.connection.alias)
 
     Group = apps.get_model('auth', 'Group')
     Permission = apps.get_model('auth', 'Permission')
