@@ -79,6 +79,19 @@ class NewsSourceBlock(blocks.StructBlock):
         icon = 'doc-empty'
 
 
+def resource_category_choices():
+    # Called each time the edit form renders, so the dropdown tracks whatever
+    # categories editors have actually typed into the (free-text) snippet field.
+    from snippets.models import FacultyResource, StudentResource
+    categories = set()
+    for model in (FacultyResource, StudentResource):
+        categories.update(
+            model.objects.exclude(resource_category__isnull=True)
+            .exclude(resource_category__exact='')
+            .values_list('resource_category', flat=True))
+    return [(c, c) for c in sorted(categories)]
+
+
 class BookResourcesSourceBlock(blocks.StructBlock):
     books = blocks.ListBlock(
         blocks.PageChooserBlock(page_type=['books.Book']),
@@ -94,8 +107,8 @@ class BookResourcesSourceBlock(blocks.StructBlock):
         ('k12', 'K12 only'),
     ], required=False,
         help_text='K12 only limits rows to resources flagged "Display on K12".')
-    resource_category = blocks.CharBlock(required=False,
-        help_text='Only resources with this exact category (e.g. "Getting Started"). Leave empty for all categories.')
+    resource_category = blocks.ChoiceBlock(choices=resource_category_choices, required=False,
+        help_text='Only resources with this category. Leave blank for all categories.')
     columns = source_columns_block(field_choices(RESOURCE_FIELDS))
 
     class Meta:

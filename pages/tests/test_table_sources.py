@@ -424,6 +424,19 @@ class BookResourcesSourceTests(BooksSourceTests):
         self.assertEqual(result['rows'][0]['cells'][0]['content'],
                          'Instructor Getting Started Guide')
 
+    def test_resource_category_choices_lists_populated_values(self):
+        from snippets.models import FacultyResource, StudentResource
+        from pages.table_block import resource_category_choices
+        book = self._make_book_with_resources()
+        FacultyResource.objects.filter(heading='Instructor Getting Started Guide').update(
+            resource_category='Getting Started')
+        StudentResource.objects.create(
+            heading='Student Slides', description='<p>x</p>',
+            unlocked_resource=True, resource_category='Slides',
+            locale=book.locale)
+        self.assertEqual(resource_category_choices(),
+                         [('Getting Started', 'Getting Started'), ('Slides', 'Slides')])
+
     def test_resource_link_precedence_external_over_document(self):
         from books.models import BookFacultyResources
         from snippets.models import FacultyResource
