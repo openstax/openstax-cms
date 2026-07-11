@@ -1,0 +1,141 @@
+name: Daily CI Summary to Slack
+
+on:
+  schedule:
+    # Runs every weekday at 9:00 AM UTC (4:00 AM Central)
+    - cron: '0 9 * * 1-5'
+  workflow_dispatch: # Allow manual triggers
+
+jobs:
+  summary:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0  # Full history for commit analysis
+
+      - name: Gather CI insights
+        id: insights
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+
+          # --- Recent commits (last 24h) ---
+          SINCE=$(date -u -d '24 hours ago' '+%Y-%m-%dT%H:%M:%SZ')
+          COMMITS=$(git log --since="$SINCE" --oneline --no-merges | head -20)
+          COMMIT_COUNT=$(echo "$COMMITS" | grep -c . || echo 0)
+
+          # --- Open PRs ---
+          OPEN_PRS=$(gh pr list --state open --json number,title,author,updatedAt,isDraft --limit 20)
+          OPEN_PR_COUNT=$(echo "$OPEN_PRS" | jq 'length')
+          DRAFT_PR_COUNT=$(echo "$OPEN_PRS" | jq '[.[] | select(.isDraft)] | length')
+          READY_PR_COUNT=$((OPEN_PR_COUNT - DRAFT_PR_COUNT))
+
+          # --- Recently merged PRs (last 24h) ---
+          MERGED_PRS=$(gh pr list --state merged --json number,title,author,mergedAt --limit 50 | \
+            jq --arg since "$SINCE" '[.[] | select(.mergedAt >= $since)]')
+          MERGED_COUNT=$(echo "$MERGED_PRS" | jq 'length')
+
+          # --- CI health: last 5 workflow runs on main ---
+          RECENT_RUNS=$(gh run list --branch main --workflow tests.yml --limit 5 --json conclusion,startedAt,updatedAt)
+          PASS_COUNT=$(echo "$RECENT_RUNS" | jq '[.[] | select(.conclusion == "success")] | length')
+          FAIL_COUNT=$(echo "$RECENT_RUNS" | jq '[.[] | select(.conclusion == "failure")] | length')
+          TOTAL_RUNS=$(echo "$RECENT_RUNS" | jq 'length')
+
+          if [ "$TOTAL_RUNS" -gt 0 ]; then
+            HEALTH_PCT=$(( PASS_COUNT * 100 / TOTAL_RUNS ))
+          else
+            HEALTH_PCT="N/A"
+          fi
+
+          # --- Stale PRs (no update in 7+ days) ---
+          STALE_CUTOFF=$(date -u -d '7 days ago' '+%Y-%m-%dT%H:%M:%SZ')
+          STALE_PRS=$(echo "$OPEN_PRS" | jq --arg cutoff "$STALE_CUTOFF" \
+            '[.[] | select(.updatedAt < $cutoff and .isDraft == false)]')
+          STALE_COUNT=$(echo "$STALE_PRS" | jq 'length')
+
+          # --- Build summary message ---
+          {
+            echo "SUMMARY<<EOF"
+
+            # CI Health
+            if [ "$HEALTH_PCT" = "N/A" ]; then
+              echo ":white_circle: *CI Health:* No recent runs"
+            elif [ "$HEALTH_PCT" -ge 80 ]; then
+              echo ":large_green_circle: *CI Health:* ${HEALTH_PCT}% passing (${PASS_COUNT}/${TOTAL_RUNS} recent runs)"
+            elif [ "$HEALTH_PCT" -ge 50 ]; then
+              echo ":large_yellow_circle: *CI Health:* ${HEALTH_PCT}% passing (${PASS_COUNT}/${TOTAL_RUNS} recent runs)"
+            else
+              echo ":red_circle: *CI Health:* ${HEALTH_PCT}% passing (${PASS_COUNT}/${TOTAL_RUNS} recent runs)"
+            fi
+
+            echo ""
+
+            # Activity
+            echo "*Activity (last 24h):*"
+            echo "• ${COMMIT_COUNT} commits pushed"
+            echo "• ${MERGED_COUNT} PRs merged"
+            echo ""
+
+            # PR overview
+            echo "*Open PRs:* ${OPEN_PR_COUNT} total (${READY_PR_COUNT} ready for review, ${DRAFT_PR_COUNT} drafts)"
+
+            # Stale PRs warning
+            if [ "$STALE_COUNT" -gt 0 ]; then
+              echo ""
+              echo ":warning: *${STALE_COUNT} stale PR(s)* (no activity in 7+ days):"
+              echo "$STALE_PRS" | jq -r '.[] | "  • #\(.number) \(.title) (@\(.author.login))"' | head -5
+            fi
+
+            # Recent merges
+            if [ "$MERGED_COUNT" -gt 0 ]; then
+              echo ""
+              echo "*Merged today:*"
+              echo "$MERGED_PRS" | jq -r '.[] | "  • #\(.number) \(.title) (@\(.author.login))"' | head -5
+            fi
+
+            # Recent failures detail
+            if [ "$FAIL_COUNT" -gt 0 ]; then
+              echo ""
+              echo ":x: *${FAIL_COUNT} failed CI run(s)* on main — investigate:"
+              gh run list --branch main --workflow tests.yml --limit 5 --json conclusion,databaseId,headBranch \
+                | jq -r '.[] | select(.conclusion == "failure") | "  • Run <https://github.com/${{ github.repository }}/actions/runs/\(.databaseId)|#\(.databaseId)>"' | head -3
+            fi
+
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Post to Slack
+        uses: slackapi/slack-github-action@v2.1.0
+        with:
+          webhook: ${{ secrets.SLACK_CI_WEBHOOK_URL }}
+          webhook-type: incoming-webhook
+          payload: |
+            {
+              "blocks": [
+                {
+                  "type": "header",
+                  "text": {
+                    "type": "plain_text",
+                    "text": "📊 CMS Daily CI Summary"
+                  }
+                },
+                {
+                  "type": "section",
+                  "text": {
+                    "type": "mrkdwn",
+                    "text": ${{ toJSON(steps.insights.outputs.SUMMARY) }}
+                  }
+                },
+                {
+                  "type": "context",
+                  "elements": [
+                    {
+                      "type": "mrkdwn",
+                      "text": "<https://github.com/${{ github.repository }}/actions|View all workflows> • <https://github.com/${{ github.repository }}/pulls|Open PRs>"
+                    }
+                  ]
+                }
+              ]
+            }
