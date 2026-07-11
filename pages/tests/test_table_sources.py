@@ -475,7 +475,7 @@ class BookResourcesSourceTests(BooksSourceTests):
         })
         self.assertEqual(result['rows'][0]['cells'][0]['content'], 'University Physics')
 
-    def test_dedupes_resource_shared_across_books(self):
+    def test_same_resource_different_links_get_separate_rows(self):
         from books.models import BookFacultyResources
         from snippets.models import FacultyResource
         from pages.table_sources import resolve_book_resources
@@ -486,20 +486,71 @@ class BookResourcesSourceTests(BooksSourceTests):
             book_a = self._make_book()
             book_b = self._make_book(title='College Physics', slug='college-physics')
         shared = FacultyResource.objects.create(
-            heading='Shared Guide', description='<p>x</p>',
+            heading='PowerPoint Slides', description='<p>x</p>',
             unlocked_resource=True, locale=book_a.locale)
-        BookFacultyResources.objects.create(book_faculty_resource=book_a, resource=shared)
-        BookFacultyResources.objects.create(book_faculty_resource=book_b, resource=shared)
+        BookFacultyResources.objects.create(
+            book_faculty_resource=book_a, resource=shared,
+            link_external='https://example.com/a.pdf')
+        BookFacultyResources.objects.create(
+            book_faculty_resource=book_b, resource=shared,
+            link_external='https://example.com/b.pdf')
         result = resolve_book_resources({
             'books': [book_a, book_b], 'resource_type': 'instructor', 'audience': '',
             'columns': [
                 {'field': 'heading', 'header': '', 'type': ''},
                 {'field': 'book', 'header': '', 'type': ''},
+                {'field': 'link', 'header': '', 'type': ''},
             ],
         })
-        self.assertEqual(len(result['rows']), 1)  # one row, not two
+        self.assertEqual(len(result['rows']), 2)  # distinct files, not merged
+        books_seen = [row['cells'][1]['content'] for row in result['rows']]
+        self.assertEqual(books_seen, ['University Physics', 'College Physics'])
+        links_seen = [row['cells'][2]['cta'][0]['target']['value'] for row in result['rows']]
+        self.assertEqual(links_seen,
+                         ['https://example.com/a.pdf', 'https://example.com/b.pdf'])
+
+    def test_same_resource_same_link_stays_one_row(self):
+        from books.models import BookFacultyResources
+        from snippets.models import FacultyResource
+        from pages.table_sources import resolve_book_resources
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml',
+                              allow_playback_repeats=True):
+            book_a = self._make_book()
+            book_b = self._make_book(title='College Physics', slug='college-physics')
+        shared = FacultyResource.objects.create(
+            heading='Instructor Getting Started Guide', description='<p>x</p>',
+            unlocked_resource=True, locale=book_a.locale)
+        BookFacultyResources.objects.create(
+            book_faculty_resource=book_a, resource=shared,
+            link_external='https://example.com/guide.pdf')
+        BookFacultyResources.objects.create(
+            book_faculty_resource=book_b, resource=shared,
+            link_external='https://example.com/guide.pdf')
+        result = resolve_book_resources({
+            'books': [book_a, book_b], 'resource_type': 'instructor', 'audience': '',
+            'columns': [
+                {'field': 'heading', 'header': '', 'type': ''},
+                {'field': 'book', 'header': '', 'type': ''},
+                {'field': 'link', 'header': '', 'type': ''},
+            ],
+        })
+        self.assertEqual(len(result['rows']), 1)  # same file, one row
         self.assertEqual(result['rows'][0]['cells'][1]['content'],
                          'University Physics, College Physics')
+        cta = result['rows'][0]['cells'][2]['cta'][0]
+        self.assertEqual(cta['target']['value'], 'https://example.com/guide.pdf')
+
+    def test_resource_category_column(self):
+        from snippets.models import FacultyResource
+        from pages.table_sources import resolve_book_resources
+        book = self._make_book_with_resources()
+        FacultyResource.objects.filter(heading='Instructor Getting Started Guide').update(
+            resource_category='Getting Started')
+        result = resolve_book_resources({
+            'books': [book], 'resource_type': 'instructor', 'audience': '',
+            'columns': [{'field': 'resource_category', 'header': '', 'type': ''}],
+        })
+        self.assertEqual(result['rows'][0]['cells'][0]['content'], 'Getting Started')
 
 
 class SubjectsSourceTests(TestCase):
