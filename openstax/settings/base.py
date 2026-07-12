@@ -17,6 +17,16 @@ ENVIRONMENT = os.getenv('ENVIRONMENT', 'local')
 RELEASE_VERSION = os.getenv('RELEASE_VERSION')
 DEPLOYMENT_VERSION = os.getenv('DEPLOYMENT_VERSION')
 
+# django-admin-env-notice: colored banner in /django-admin/ so admins editing
+# errata (or anything else) can tell at a glance which environment they're on.
+ENVIRONMENT_NAME = ENVIRONMENT.upper()
+if ENVIRONMENT == 'prod':
+    ENVIRONMENT_COLOR = '#c0392b'  # red
+elif ENVIRONMENT == 'local':
+    ENVIRONMENT_COLOR = '#27ae60'  # green
+else:
+    ENVIRONMENT_COLOR = '#e67e22'  # orange - rc/staging/dev/etc.
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.join(os.path.dirname(__file__), '..', '..')
 
@@ -46,7 +56,13 @@ WAGTAIL_APPEND_SLASH = True
 
 # urls.W002 warns about slashes at the start of URLs.  But we need those so
 #   we don't have to have slashes at the end of URLs.  So ignore.
-SILENCED_SYSTEM_CHECKS = ['urls.W002']
+# security.W019 is django-admin-interface's X_FRAME_OPTIONS=SAMEORIGIN warning
+#   (needed for its theme editor's logo/favicon preview iframe).
+SILENCED_SYSTEM_CHECKS = ['urls.W002', 'security.W019']
+
+# Required by django-admin-interface (theme editor previews itself in an
+# iframe); SAMEORIGIN still blocks cross-site framing.
+X_FRAME_OPTIONS = 'SAMEORIGIN'
 
 ADMINS = ('Michael Volo', 'volo@rice.edu')
 
@@ -200,6 +216,7 @@ TEMPLATES = [
                 'django.template.context_processors.tz',
                 'django.contrib.messages.context_processors.messages',
                 'django.template.context_processors.request',
+                'django_admin_env_notice.context_processors.from_settings',
             ],
         },
     },
@@ -217,6 +234,15 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.postgres',
+    # admin theming - must load before django.contrib.admin so their
+    # admin/base_site.html overrides take effect. django_admin_env_notice
+    # must come before admin_interface: its base_site.html extends
+    # "admin/base_site.html", which Django resolves to the next app in this
+    # list that provides one (admin_interface) - reversed, admin_interface's
+    # template (which doesn't chain further) would shadow env-notice's banner.
+    'django_admin_env_notice',
+    'admin_interface',
+    'colorfield',
     'django.contrib.admin',
     'django.contrib.sitemaps',
     # contrib

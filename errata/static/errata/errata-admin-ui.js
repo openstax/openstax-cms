@@ -2,8 +2,6 @@ django.jQuery(function ($) {
     $(document).ready(function(){
         let status = document.getElementById("id_status")
         let resolution = document.getElementById("id_resolution")
-        let archived = document.getElementById("id_junk")
-        let junk = document.getElementById("id_junk")
 
         let savebtn = $('input[name="_save"]')
         let savenewbtn = $('input[name="_saveasnew"]')

@@ -4,11 +4,13 @@ from import_export.admin import ExportActionMixin, ImportExportActionModelAdmin
 from import_export.formats import base_formats
 from import_export.fields import Field
 
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.contrib.admin.filters import RelatedFieldListFilter
+from django.core.exceptions import ValidationError
 from django.db import models
 from django.forms import CheckboxSelectMultiple
 from django.http import HttpResponse
+from django.urls import path
 from django.utils.html import mark_safe
 
 from rangefilter.filters import DateRangeFilter
@@ -19,6 +21,7 @@ from reversion.admin import VersionAdmin
 
 from .models import Errata, BlockedUser, EmailText, InternalDocumentation
 from .forms import ErrataForm
+from . import views
 
 
 class ErrataResource(resources.ModelResource):
@@ -63,21 +66,58 @@ class ActiveBookListFilter(RelatedFieldListFilter):
         ]
 
 
+class DefaultActiveQueueFilter(admin.SimpleListFilter):
+    """Hides archived/junk noise by default so the changelist reads as a
+    working queue, without breaking the existing archived/junk list_filter
+    dropdowns - those still work for anyone who explicitly filters by them.
+    ?view=all is the escape hatch back to an unfiltered list."""
+    title = 'queue'
+    parameter_name = 'view'
+
+    def lookups(self, request, model_admin):
+        return (('all', 'All (including archived/junk)'),)
+
+    def choices(self, changelist):
+        yield {
+            'selected': self.value() is None,
+            'query_string': changelist.get_query_string(remove=[self.parameter_name]),
+            'display': 'Active queue',
+        }
+        for lookup, title in self.lookup_choices:
+            yield {
+                'selected': self.value() == lookup,
+                'query_string': changelist.get_query_string({self.parameter_name: lookup}),
+                'display': title,
+            }
+
+    def queryset(self, request, queryset):
+        if self.value() == 'all':
+            return queryset
+        return queryset.filter(archived=False, junk=False)
+
+
 class ErrataAdmin(ImportExportActionModelAdmin, VersionAdmin):
     def get_queryset(self, request):
         return super(ErrataAdmin, self).get_queryset(request).select_related('book')
 
+    def get_urls(self):
+        custom_urls = [
+            path('dashboard/', self.admin_site.admin_view(views.errata_dashboard), name='errata_errata_dashboard'),
+        ]
+        return custom_urls + super().get_urls()
+
+    change_list_template = 'admin/errata/errata/change_list.html'
+
     class Media:
         js = (
-            '//ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js',  # jquery
-            'errata/errata-admin-ui.js',  # custom errata javascript
+            'errata/errata-admin-ui.js',  # custom errata javascript (uses django.jQuery, already loaded by admin)
         )
     resource_class = ErrataResource
-    # ordering = ['created']
+    ordering = ['created']
 
     form = ErrataForm
-    list_max_show_all = 10000
-    list_per_page = 200
+    list_max_show_all = 500
+    list_per_page = 100
     save_as = True
 
     # Columns/filters aren't role-sensitive - accounts_link (the one FERPA-adjacent
@@ -86,8 +126,9 @@ class ErrataAdmin(ImportExportActionModelAdmin, VersionAdmin):
                      'error_type', 'resource', 'location', 'additional_location_information', 'resolution',
                      'archived', 'junk']
     list_display_links = ['book_title']
-    list_filter = (('created', DateRangeFilter), ('modified', DateRangeFilter), ('book', ActiveBookListFilter),
-                   'status', 'is_assessment_errata', 'error_type', 'resolution', 'archived', 'junk', 'resource')
+    list_filter = (DefaultActiveQueueFilter, ('created', DateRangeFilter), ('modified', DateRangeFilter),
+                   ('book', ActiveBookListFilter), 'status', 'is_assessment_errata', 'error_type', 'resolution',
+                   'archived', 'junk', 'resource')
 
     search_fields = ('id',
                      'book__title',
@@ -113,29 +154,61 @@ class ErrataAdmin(ImportExportActionModelAdmin, VersionAdmin):
     def get_export_formats(self):
         return [base_formats.CSV]
 
-    """Actions for the Django Admin list view"""
+    """Actions for the Django Admin list view.
+
+    These call .save() per object rather than queryset.update() - update()
+    is a raw SQL UPDATE that never calls Errata.save() and never fires
+    post_save, so it silently skipped date auto-stamping, resolution_notes
+    autofill, the reporter-notification email, and clean()'s
+    resolution-required rule. Objects that fail that validation (e.g. no
+    resolution set yet) are left untouched and reported back to the user
+    instead of being forced into an inconsistent state.
+    """
+    def _apply_bulk_change(self, request, queryset, label, **field_updates):
+        updated = 0
+        skipped = []
+        for obj in queryset:
+            for field, value in field_updates.items():
+                setattr(obj, field, value)
+            try:
+                obj.clean()
+            except ValidationError as e:
+                skipped.append('#{}: {}'.format(obj.pk, e.messages[0]))
+                continue
+            obj.save()
+            updated += 1
+
+        if skipped:
+            self.message_user(
+                request,
+                '{}: {} updated, {} skipped - {}'.format(label, updated, len(skipped), '; '.join(skipped)),
+                level=messages.WARNING,
+            )
+        else:
+            self.message_user(request, '{}: {} updated.'.format(label, updated))
+
     def mark_in_review(self, request, queryset):
-        queryset.update(status='Editorial Review')
+        self._apply_bulk_change(request, queryset, 'Mark as Editorial Review', status='Editorial Review')
     mark_in_review.short_description = "Mark errata as Editorial Review"
 
     def mark_OpenStax_editorial_review(self, request, queryset):
-        queryset.update(status='OpenStax Editorial Review')
+        self._apply_bulk_change(request, queryset, 'Mark as OpenStax Editorial Review', status='OpenStax Editorial Review')
     mark_OpenStax_editorial_review.short_description = "Mark errata as OpenStax Editorial Review"
 
     def mark_cartridge_review(self, request, queryset):
-        queryset.update(status='Cartridge Review')
+        self._apply_bulk_change(request, queryset, 'Mark as Cartridge Review', status='Cartridge Review')
     mark_cartridge_review.short_description = "Mark errata as cartridge review"
 
     def mark_reviewed(self, request, queryset):
-        queryset.update(status='Reviewed')
+        self._apply_bulk_change(request, queryset, 'Mark as Reviewed', status='Reviewed')
     mark_reviewed.short_description = "Mark errata as reviewed"
 
     def mark_archived(self, request, queryset):
-        queryset.update(archived=True)
+        self._apply_bulk_change(request, queryset, 'Mark as archived', archived=True)
     mark_archived.short_description = "Mark errata as archived"
 
     def mark_completed(self, request, queryset):
-        queryset.update(status='Completed')
+        self._apply_bulk_change(request, queryset, 'Mark as Completed', status='Completed')
     mark_completed.short_description = "Mark errata as completed"
 
     def get_actions(self, request):
