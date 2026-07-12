@@ -1,0 +1,7 @@
+# Ignore sensitive settings and secrets
+.env
+
+# Ignore temporary folders and caches
+__pycache__/
+*.pyc
+*.pyo
