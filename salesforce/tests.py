@@ -85,6 +85,11 @@ class PartnerTest(APITestCase, TestCase):
         response = self.client.get('/apps/cms/api/salesforce/partners/{}/'.format(invalid_partner_id), format='json')
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
+    def test_sync_populates_renamed_assignment_outside_resources_field(self):
+        # Salesforce's own field name (Assignment_outside_resources__c) was always
+        # spelled correctly; only the Django field had the typo, now fixed.
+        self.assertTrue(Partner.objects.filter(assignment_outside_resources=True).exists())
+
 
 class SalesforceTest(LiveServerTestCase, WagtailPageTestCase):
 
