@@ -90,6 +90,41 @@ BASE_CONTENT_BLOCKS = [
     ('faq', blocks.StreamBlock([
         ('faq', FAQBlock()),
     ])),
+    ('accordion', blocks.StructBlock([
+        ('items', blocks.ListBlock(
+            blocks.StructBlock([
+                ('header', blocks.CharBlock(required=True, help_text='The visible text of the item.')),
+                ('content', APIRichTextBlock(required=True, help_text='Hidden until the item is expanded.')),
+                ('id', id_config_block()),
+            ]),
+            label='Items',
+        )),
+        ('config', blocks.StreamBlock([
+            ('heading_level', blocks.ChoiceBlock(choices=[
+                ('2', 'H2'),
+                ('3', 'H3'),
+                ('4', 'H4'),
+            ], help_text='Heading level for each item, for the document outline and screen-reader navigation. Default H3.')),
+            ('allow_multiple', blocks.ChoiceBlock(choices=[
+                ('false', 'No'),
+                ('true', 'Yes'),
+            ], help_text='Allow more than one item to be open at the same time. Default No.')),
+            ('accent_color', hex_color_block('Hex color for the expand/collapse icon and item divider.')),
+            ('accent_colors', blocks.RegexBlock(
+                regex=r'^#[0-9a-fA-F]{6}(\s*,\s*#[0-9a-fA-F]{6})*$', required=False,
+                label='Accent Colors',
+                help_text='Comma-separated hex colors cycled per item, e.g. #ff0000,#00ff00. Overrides Accent Color.',
+                error_messages={'invalid': 'Must be comma-separated hex colors. eg: #ff0000,#00ff00.'},
+            )),
+            ('top_border_color', hex_color_block('Adds a colored border above the whole accordion.')),
+        ], block_counts={
+            'heading_level': {'max_num': 1},
+            'allow_multiple': {'max_num': 1},
+            'accent_color': {'max_num': 1},
+            'accent_colors': {'max_num': 1},
+            'top_border_color': {'max_num': 1},
+        }, required=False, collapsed=True)),
+    ], label="Accordion")),
     ('book_list', blocks.StructBlock([
         ('books', blocks.ListBlock(BookBlock(required=True))),
     ], label="Books Block")),
