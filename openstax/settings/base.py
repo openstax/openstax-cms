@@ -27,7 +27,7 @@ if not SECRET_KEY:
         # Default to a key starting with django-insecure for local development.
         SECRET_KEY = 'django-insecure-wq21wtjo3@d_qfjvd-#td!%7gfy2updj2z+nev^k$iy%=m4_tr'
     else:
-        raise ImproperlyConfigured("The SECRET_KEY setting must not be empty.")
+        raise ImproperlyConfigured(f"SECRET_KEY is required when ENVIRONMENT is {ENVIRONMENT!r}. Set the SECRET_KEY environment variable.")
 
 # check if running local dev server - else default to DEBUG=False
 if len(sys.argv) > 1:
