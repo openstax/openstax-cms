@@ -33,6 +33,11 @@ CARDS_STYLE_CHOICES = [
     ('impact', 'Impact'),
 ]
 
+WELL_LAYOUT_CHOICES = [
+    ('stack', 'Stack'),
+    ('wrap', 'Wrap (side by side, reflowing to fewer per row on narrow screens)'),
+]
+
 
 class LinksGroupBlock(blocks.StructBlock):
     links = blocks.ListBlock(

@@ -14,6 +14,7 @@ from pages.custom_blocks import APIImageChooserBlock, \
     PersonBlock, \
     CARDS_STYLE_CHOICES, \
     TEXT_ALIGNMENT_CHOICES, \
+    WELL_LAYOUT_CHOICES, \
     FLEX_CHOICES
 
 from pages.shared_blocks import CTALinkBlock, OpenStaxColorBlock, hex_color_block, \
@@ -115,6 +116,8 @@ SECTION_CONTENT_BLOCKS = BASE_CONTENT_BLOCKS + [
                 error_messages={'invalid': 'not a valid size.'}
             )),
             ('text_alignment', blocks.ChoiceBlock(choices=TEXT_ALIGNMENT_CHOICES, help_text='Text alignment inside the well. Default left.')),
+            ('layout', blocks.ChoiceBlock(choices=WELL_LAYOUT_CHOICES,
+                help_text='How the well lays out its content blocks. "Wrap" puts them side by side (e.g. a row of Big Numbers), reflowing to fewer per row as the screen narrows. Default stack.')),
             ('analytics_label', blocks.CharBlock(required=False, help_text='Sets the "analytics nav" field for links within this well.')),
             ('id', id_config_block()),
         ], block_counts={
@@ -128,6 +131,7 @@ SECTION_CONTENT_BLOCKS = BASE_CONTENT_BLOCKS + [
             'pull_up': {'max_num': 1},
             'width': {'max_num': 1},
             'text_alignment': {'max_num': 1},
+            'layout': {'max_num': 1},
             'analytics_label': {'max_num': 1},
             'id': {'max_num': 1},
         }, required=False, collapsed=True)),
