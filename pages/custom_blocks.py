@@ -38,6 +38,11 @@ WELL_LAYOUT_CHOICES = [
     ('wrap', 'Wrap (side by side, reflowing to fewer per row on narrow screens)'),
 ]
 
+WELL_HEADING_STYLE_CHOICES = [
+    ('normal', 'Normal'),
+    ('display', 'Display Quote'),
+]
+
 
 class LinksGroupBlock(blocks.StructBlock):
     links = blocks.ListBlock(

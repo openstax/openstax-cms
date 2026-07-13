@@ -15,6 +15,7 @@ from pages.custom_blocks import APIImageChooserBlock, \
     CARDS_STYLE_CHOICES, \
     TEXT_ALIGNMENT_CHOICES, \
     WELL_LAYOUT_CHOICES, \
+    WELL_HEADING_STYLE_CHOICES, \
     FLEX_CHOICES
 
 from pages.shared_blocks import CTALinkBlock, OpenStaxColorBlock, hex_color_block, \
@@ -153,6 +154,8 @@ SECTION_CONTENT_BLOCKS = BASE_CONTENT_BLOCKS + [
             ('text_alignment', blocks.ChoiceBlock(choices=TEXT_ALIGNMENT_CHOICES, help_text='Text alignment inside the well. Default left.')),
             ('layout', blocks.ChoiceBlock(choices=WELL_LAYOUT_CHOICES,
                 help_text='How the well lays out its content blocks. "Wrap" puts them side by side (e.g. a row of Big Numbers), reflowing to fewer per row as the screen narrows. Default stack.')),
+            ('heading_style', blocks.ChoiceBlock(choices=WELL_HEADING_STYLE_CHOICES,
+                help_text='Renders a Text block\'s h6 headings as a large, fluid-sized display quote (e.g. a testimonial pull-quote) instead of regular heading size. Default normal.')),
             ('analytics_label', blocks.CharBlock(required=False, help_text='Sets the "analytics nav" field for links within this well.')),
             ('id', id_config_block()),
         ], block_counts={
@@ -167,6 +170,7 @@ SECTION_CONTENT_BLOCKS = BASE_CONTENT_BLOCKS + [
             'width': {'max_num': 1},
             'text_alignment': {'max_num': 1},
             'layout': {'max_num': 1},
+            'heading_style': {'max_num': 1},
             'analytics_label': {'max_num': 1},
             'id': {'max_num': 1},
         }, required=False, collapsed=True)),
