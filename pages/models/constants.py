@@ -13,6 +13,7 @@ from pages.custom_blocks import APIImageChooserBlock, \
     BookBlock, \
     PersonBlock, \
     CARDS_STYLE_CHOICES, \
+    CARDS_LAYOUT_CHOICES, \
     TEXT_ALIGNMENT_CHOICES, \
     WELL_LAYOUT_CHOICES, \
     WELL_HEADING_STYLE_CHOICES, \
@@ -55,6 +56,8 @@ BASE_CONTENT_BLOCKS = [
         ('config', blocks.StreamBlock([
             ('card_size', blocks.IntegerBlock(min_value=0, help_text='Sets the width of the individual cards. default 27.')),
             ('card_style', blocks.ChoiceBlock(choices=CARDS_STYLE_CHOICES, help_text='The border style of the cards. default borderless.')),
+            ('layout', blocks.ChoiceBlock(choices=CARDS_LAYOUT_CHOICES,
+                help_text='Grid aligns cards into rows (default); Masonry packs them into columns by height, for decorative card walls.')),
             ('card_columns', blocks.IntegerBlock(min_value=1, max_value=6, help_text='Number of columns for the cards grid. default auto.')),
             ('background_color', hex_color_block('Background color for the cards block. Must be hex eg: #ff0000.')),
             ('border_size', blocks.IntegerBlock(min_value=0, help_text='Outer border width in px (all sides). Omit to use the style default; 0 = no border.')),
@@ -65,6 +68,7 @@ BASE_CONTENT_BLOCKS = [
         ], block_counts={
             'card_size': {'max_num': 1},
             'card_style': {'max_num': 1},
+            'layout': {'max_num': 1},
             'card_columns': {'max_num': 1},
             'background_color': {'max_num': 1},
             'border_size': {'max_num': 1},
