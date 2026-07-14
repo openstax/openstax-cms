@@ -55,24 +55,25 @@ def cleanhtml(raw_html):
 def prefetch_book_resources(queryset):
     """Prefetch related faculty and student resources for a queryset of books."""
     return queryset.prefetch_related(
-        models.Prefetch('bookfacultyresources_set', queryset=BookFacultyResources.objects.all(), to_attr='prefetched_faculty_resources'),
-        models.Prefetch('bookstudentresources_set', queryset=BookStudentResources.objects.all(), to_attr='prefetched_student_resources')
+        models.Prefetch('book_faculty_resources', queryset=BookFacultyResources.objects.all(), to_attr='prefetched_faculty_resources'),
+        models.Prefetch('book_student_resources', queryset=BookStudentResources.objects.all(), to_attr='prefetched_student_resources')
     )
 
 def get_book_data(book):
     has_faculty_resources = hasattr(book, 'prefetched_faculty_resources') and bool(book.prefetched_faculty_resources)
     has_student_resources = hasattr(book, 'prefetched_student_resources') and bool(book.prefetched_student_resources)
     try:
+        subjects = book.subjects()
         return {
             'id': book.id,
             'slug': f'books/{book.slug}',
             'book_state': book.book_state,
             'title': book.title,
-            'subjects': book.subjects(),
+            'subjects': subjects,
             'subject_categories': book.subject_categories,
             'k12subject': book.k12subjects(),
             'is_ap': book.is_ap,
-            'is_hs': 'High School' in book.subjects(),
+            'is_hs': 'High School' in subjects,
             'cover_url': book.cover_url,
             'cover_color': book.cover_color,
             'pdf_url': book.pdf_url,
