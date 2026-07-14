@@ -331,14 +331,15 @@ class BookBlock(blocks.PageChooserBlock):
 
     def bulk_to_python(self, values):
         # get_api_representation (via get_book_data) touches book_subjects,
-        # k12book_subjects, book_categories, cover_image/cover/title_image/pdf,
-        # and the faculty/student resource flags for every book in a Book
-        # Block or Book List — resolving those relations one book at a time
-        # turns an N-book block into 10+N DB queries. Fetch them all at once.
+        # k12book_subjects, book_categories, cover_image/cover/title_image/
+        # banner_image/pdf, and the faculty/student resource flags for every
+        # book in a Book Block or Book List — resolving those relations one
+        # book at a time turns an N-book block into 10+N DB queries. Fetch
+        # them all at once.
         from books.models import prefetch_book_resources
         queryset = prefetch_book_resources(
             self.model_class.objects
-            .select_related('cover_image', 'cover', 'title_image', 'pdf')
+            .select_related('cover_image', 'cover', 'title_image', 'banner_image', 'pdf')
             .prefetch_related('book_subjects__subject', 'k12book_subjects__subject', 'book_categories__category')
         )
         objects = queryset.in_bulk(values)

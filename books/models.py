@@ -53,10 +53,15 @@ def cleanhtml(raw_html):
 
 
 def prefetch_book_resources(queryset):
-    """Prefetch related faculty and student resources for a queryset of books."""
+    """Prefetch related faculty and student resources for a queryset of books.
+
+    Filtered to hidden=False to match HiddenFilterChildRelationField, which
+    excludes hidden resources from the API's own resource list — a book with
+    only hidden resources should read as having none.
+    """
     return queryset.prefetch_related(
-        models.Prefetch('book_faculty_resources', queryset=BookFacultyResources.objects.all(), to_attr='prefetched_faculty_resources'),
-        models.Prefetch('book_student_resources', queryset=BookStudentResources.objects.all(), to_attr='prefetched_student_resources')
+        models.Prefetch('book_faculty_resources', queryset=BookFacultyResources.objects.filter(hidden=False), to_attr='prefetched_faculty_resources'),
+        models.Prefetch('book_student_resources', queryset=BookStudentResources.objects.filter(hidden=False), to_attr='prefetched_student_resources')
     )
 
 def get_book_data(book):
