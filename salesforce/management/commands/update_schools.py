@@ -37,7 +37,7 @@ class Command(BaseCommand):
                                 "BillingLongitude, " \
                                 "Research_Agreement_Start_Date__c, " \
                                 "Research_Agreement_End_Date__c " \
-                                "FROM Account WHERE Industry = 'HE' OR Industry = 'K12'", lazy_operation=True)
+                                "FROM Account WHERE Industry = 'HE' OR Industry = 'K12' OR Name = 'Find Me A Home'", lazy_operation=True)
             sf_schools = []
             for list_results in fetch_results:
                 sf_schools.extend(list_results)
