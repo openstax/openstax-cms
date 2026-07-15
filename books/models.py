@@ -1139,6 +1139,11 @@ class Book(FrontendPreviewMixin, Page):
 
     @property
     def errata_content(self):
+        # BookBlock.bulk_to_python prefetches this per (book_state, locale)
+        # combo instead of per book, since it's not a real FK and a block's
+        # books usually share just a handful of combos.
+        if hasattr(self, '_prefetched_errata_content'):
+            return self._prefetched_errata_content.content
         if self.locale == 'es':
             return snippets.ErrataContent.objects.filter(locale=self.locale).first().content
         return snippets.ErrataContent.objects.filter(book_state=self.book_state, locale=self.locale).first().content

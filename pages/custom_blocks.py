@@ -332,14 +332,14 @@ class BookBlock(blocks.PageChooserBlock):
     def bulk_to_python(self, values):
         # get_api_representation (via get_book_data) touches book_subjects,
         # k12book_subjects, book_categories, cover_image/cover/title_image/
-        # banner_image/pdf, and the faculty/student resource flags for every
-        # book in a Book Block or Book List — resolving those relations one
-        # book at a time turns an N-book block into 10+N DB queries. Fetch
-        # them all at once.
+        # banner_image/pdf/locale, and the faculty/student resource flags for
+        # every book in a Book Block or Book List — resolving those relations
+        # one book at a time turns an N-book block into 10+N DB queries.
+        # Fetch them all at once.
         from books.models import prefetch_book_resources
         queryset = prefetch_book_resources(
             self.model_class.objects
-            .select_related('cover_image', 'cover', 'title_image', 'banner_image', 'pdf')
+            .select_related('cover_image', 'cover', 'title_image', 'banner_image', 'pdf', 'locale')
             .prefetch_related('book_subjects__subject', 'k12book_subjects__subject', 'book_categories__category')
         )
         objects = queryset.in_bulk(values)
@@ -351,7 +351,40 @@ class BookBlock(blocks.PageChooserBlock):
                 obj = copy.copy(obj)
             result.append(obj)
             seen_ids.add(id)
+
+        self._prefetch_locale_keyed_content(book for book in result if book is not None)
         return result
+
+    def _prefetch_locale_keyed_content(self, books):
+        # book_urls() (called for every book to build the 'urls' API field)
+        # sweeps all of Book.api_fields, which includes rex_callout_title/
+        # rex_callout_blurb/webinar_content (backed by a single BookCallout
+        # row per locale) and errata_content (an ErrataContent row per
+        # book_state+locale). Neither is a real FK on Book, so select_related
+        # can't fetch them — but a block's books usually share just a
+        # handful of locale/book_state combos, so look each combo up once
+        # and reuse it instead of querying per book.
+        from books.models import BookCallout
+        import snippets.models as snippets
+
+        callout_cache = {}
+        errata_cache = {}
+        for book in books:
+            if book.locale_id not in callout_cache:
+                callout_cache[book.locale_id] = BookCallout.objects.filter(locale_id=book.locale_id).first()
+            book.__dict__['_book_callout'] = callout_cache[book.locale_id]
+
+            # Matches errata_content's existing (buggy but unchanged-here)
+            # `self.locale == 'es'` check, which compares a Locale instance
+            # to a string and is therefore always False — see PR comments.
+            is_es = book.locale == 'es'
+            errata_key = ('es', book.locale_id) if is_es else (book.book_state, book.locale_id)
+            if errata_key not in errata_cache:
+                errata_qs = snippets.ErrataContent.objects.filter(locale_id=book.locale_id)
+                if not is_es:
+                    errata_qs = errata_qs.filter(book_state=book.book_state)
+                errata_cache[errata_key] = errata_qs.first()
+            book._prefetched_errata_content = errata_cache[errata_key]
 
     def get_api_representation(self, value, context=None):
         from books.models import get_book_data
