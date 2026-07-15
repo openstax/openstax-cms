@@ -4,6 +4,7 @@ from wagtail.admin.widgets.slug import SlugInput
 from wagtail.fields import RichTextField
 from wagtail.models import Page
 from wagtail.api import APIField
+from wagtail_periodic_review.models import PeriodicReviewMixin
 
 from openstax.api_fields import ExpandedRichTextField
 from openstax.preview import FrontendPreviewMixin
@@ -13,7 +14,7 @@ from openstax.preview import FrontendPreviewMixin
 
 
 
-class TermsOfService(FrontendPreviewMixin, Page):
+class TermsOfService(FrontendPreviewMixin, PeriodicReviewMixin, Page):
     intro_heading = models.CharField(max_length=255)
     terms_of_service_content = RichTextField()
     promote_image = models.ForeignKey(
@@ -47,13 +48,15 @@ class TermsOfService(FrontendPreviewMixin, Page):
         FieldPanel('promote_image')
     ]
 
+    settings_panels = PeriodicReviewMixin.review_panels + Page.settings_panels
+
     template = 'page.html'
 
     parent_page_types = ['pages.RootPage']
     max_count = 1
 
 
-class Accessibility(FrontendPreviewMixin, Page):
+class Accessibility(FrontendPreviewMixin, PeriodicReviewMixin, Page):
     intro_heading = models.CharField(max_length=255)
     accessibility_content = RichTextField()
     promote_image = models.ForeignKey(
@@ -87,13 +90,15 @@ class Accessibility(FrontendPreviewMixin, Page):
         FieldPanel('promote_image')
     ]
 
+    settings_panels = PeriodicReviewMixin.review_panels + Page.settings_panels
+
     template = 'page.html'
 
     parent_page_types = ['pages.RootPage']
     max_count = 1
 
 
-class Licensing(FrontendPreviewMixin, Page):
+class Licensing(FrontendPreviewMixin, PeriodicReviewMixin, Page):
     intro_heading = models.CharField(max_length=255)
     licensing_content = RichTextField()
     promote_image = models.ForeignKey(
@@ -127,13 +132,15 @@ class Licensing(FrontendPreviewMixin, Page):
         FieldPanel('promote_image')
     ]
 
+    settings_panels = PeriodicReviewMixin.review_panels + Page.settings_panels
+
     template = 'page.html'
 
     parent_page_types = ['pages.RootPage']
     max_count = 1
 
 
-class PrivacyPolicy(FrontendPreviewMixin, Page):
+class PrivacyPolicy(FrontendPreviewMixin, PeriodicReviewMixin, Page):
     intro_heading = models.CharField(max_length=255)
     privacy_content = RichTextField()
     promote_image = models.ForeignKey(
@@ -166,6 +173,8 @@ class PrivacyPolicy(FrontendPreviewMixin, Page):
         FieldPanel('search_description'),
         FieldPanel('promote_image')
     ]
+
+    settings_panels = PeriodicReviewMixin.review_panels + Page.settings_panels
 
     template = 'page.html'
 
