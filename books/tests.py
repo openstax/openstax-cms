@@ -12,6 +12,7 @@ from books.models import (
     BookSubjects,
     K12BookSubjects,
 )
+from pages.custom_blocks import BookBlock
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
 from salesforce.tests import openstax_vcr as vcr
 from django.core.files.uploadedfile import SimpleUploadedFile
@@ -100,6 +101,44 @@ class BookTests(WagtailPageTestCase):
             # path '/'), so assert on the host portion of each link field.
             self.assertIn("https://openstax.org", found)
             self.assertIn("https://amazon.com", found)
+
+    def test_book_block_has_resources_flags_via_bulk_to_python(self):
+        # Regression: BookBlock.bulk_to_python (added to fix N+1 queries when
+        # resolving a Book Block/Book List) is the only path that populates
+        # prefetched_faculty_resources/prefetched_student_resources, which
+        # has_faculty_resources/has_student_resources read. Also covers that
+        # hidden resources don't count as "has resources" (prefetch_book_
+        # resources filters hidden=False).
+        book_index = BookIndex.objects.all()[0]
+        root_page = Page.objects.get(title="Root")
+
+        def make_book(slug):
+            book = Book(title=slug, slug=slug, description="Test Book",
+                        cover=self.test_doc, title_image=self.test_doc,
+                        publish_date=datetime.date.today(), locale=root_page.locale)
+            book_index.add_child(instance=book)
+            return book
+
+        visible_book = make_book("has-visible-resources")
+        BookFacultyResources.objects.create(book_faculty_resource=visible_book, hidden=False)
+        BookStudentResources.objects.create(book_student_resource=visible_book, hidden=False)
+
+        hidden_only_book = make_book("has-only-hidden-resources")
+        BookFacultyResources.objects.create(book_faculty_resource=hidden_only_book, hidden=True)
+        BookStudentResources.objects.create(book_student_resource=hidden_only_book, hidden=True)
+
+        no_resources_book = make_book("has-no-resources")
+
+        block = BookBlock()
+        books = block.bulk_to_python([visible_book.id, hidden_only_book.id, no_resources_book.id])
+        data = {book.slug: block.get_api_representation(book) for book in books}
+
+        self.assertTrue(data["has-visible-resources"]["has_faculty_resources"])
+        self.assertTrue(data["has-visible-resources"]["has_student_resources"])
+        self.assertFalse(data["has-only-hidden-resources"]["has_faculty_resources"])
+        self.assertFalse(data["has-only-hidden-resources"]["has_student_resources"])
+        self.assertFalse(data["has-no-resources"]["has_faculty_resources"])
+        self.assertFalse(data["has-no-resources"]["has_student_resources"])
 
     def test_can_create_ap_book(self):
         with vcr.use_cassette('fixtures/vcr_cassettes/books_prealgebra.yaml'):

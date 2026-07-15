@@ -53,26 +53,32 @@ def cleanhtml(raw_html):
 
 
 def prefetch_book_resources(queryset):
-    """Prefetch related faculty and student resources for a queryset of books."""
+    """Prefetch related faculty and student resources for a queryset of books.
+
+    Filtered to hidden=False to match HiddenFilterChildRelationField, which
+    excludes hidden resources from the API's own resource list — a book with
+    only hidden resources should read as having none.
+    """
     return queryset.prefetch_related(
-        models.Prefetch('bookfacultyresources_set', queryset=BookFacultyResources.objects.all(), to_attr='prefetched_faculty_resources'),
-        models.Prefetch('bookstudentresources_set', queryset=BookStudentResources.objects.all(), to_attr='prefetched_student_resources')
+        models.Prefetch('book_faculty_resources', queryset=BookFacultyResources.objects.filter(hidden=False), to_attr='prefetched_faculty_resources'),
+        models.Prefetch('book_student_resources', queryset=BookStudentResources.objects.filter(hidden=False), to_attr='prefetched_student_resources')
     )
 
 def get_book_data(book):
     has_faculty_resources = hasattr(book, 'prefetched_faculty_resources') and bool(book.prefetched_faculty_resources)
     has_student_resources = hasattr(book, 'prefetched_student_resources') and bool(book.prefetched_student_resources)
     try:
+        subjects = book.subjects()
         return {
             'id': book.id,
             'slug': f'books/{book.slug}',
             'book_state': book.book_state,
             'title': book.title,
-            'subjects': book.subjects(),
+            'subjects': subjects,
             'subject_categories': book.subject_categories,
             'k12subject': book.k12subjects(),
             'is_ap': book.is_ap,
-            'is_hs': 'High School' in book.subjects(),
+            'is_hs': 'High School' in subjects,
             'cover_url': book.cover_url,
             'cover_color': book.cover_color,
             'pdf_url': book.pdf_url,
@@ -1133,6 +1139,11 @@ class Book(FrontendPreviewMixin, Page):
 
     @property
     def errata_content(self):
+        # BookBlock.bulk_to_python prefetches this per (book_state, locale)
+        # combo instead of per book, since it's not a real FK and a block's
+        # books usually share just a handful of combos.
+        if hasattr(self, '_prefetched_errata_content'):
+            return self._prefetched_errata_content.content
         if self.locale == 'es':
             return snippets.ErrataContent.objects.filter(locale=self.locale).first().content
         return snippets.ErrataContent.objects.filter(book_state=self.book_state, locale=self.locale).first().content
