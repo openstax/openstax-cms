@@ -35,6 +35,21 @@ CARDS_STYLE_CHOICES = [
     ('impact', 'Impact'),
 ]
 
+CARDS_LAYOUT_CHOICES = [
+    ('grid', 'Grid'),
+    ('masonry', 'Masonry (Pinterest-style columns, packed by height)'),
+]
+
+WELL_LAYOUT_CHOICES = [
+    ('stack', 'Stack'),
+    ('wrap', 'Wrap (side by side, reflowing to fewer per row on narrow screens)'),
+]
+
+WELL_HEADING_STYLE_CHOICES = [
+    ('normal', 'Normal'),
+    ('display', 'Display Quote'),
+]
+
 
 class LinksGroupBlock(blocks.StructBlock):
     links = blocks.ListBlock(
