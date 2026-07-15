@@ -6,6 +6,7 @@ import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
 from dotenv import load_dotenv
+from django.core.exceptions import ImproperlyConfigured
 
 import logging.config
 from django.utils.log import DEFAULT_LOGGING
@@ -20,8 +21,13 @@ DEPLOYMENT_VERSION = os.getenv('DEPLOYMENT_VERSION')
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.join(os.path.dirname(__file__), '..', '..')
 
-# Default to a key starting with django-insecure for local development.
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-wq21wtjo3@d_qfjvd-#td!%7gfy2updj2z+nev^k$iy%=m4_tr')
+SECRET_KEY = os.getenv('SECRET_KEY')
+if not SECRET_KEY:
+    if ENVIRONMENT in ('local', 'test'):
+        # Default to a key starting with django-insecure for local development.
+        SECRET_KEY = 'django-insecure-wq21wtjo3@d_qfjvd-#td!%7gfy2updj2z+nev^k$iy%=m4_tr'
+    else:
+        raise ImproperlyConfigured(f"SECRET_KEY is required when ENVIRONMENT is {ENVIRONMENT!r}. Set the SECRET_KEY environment variable.")
 
 # check if running local dev server - else default to DEBUG=False
 if len(sys.argv) > 1:
