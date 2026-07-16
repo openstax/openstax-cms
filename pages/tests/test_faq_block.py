@@ -15,8 +15,11 @@ class FAQBlockContentTests(TestCase):
             'content': [
                 {'type': 'table', 'value': {
                     'caption': 'Formats',
-                    'columns': [{'header': 'Format', 'type': ''}],
-                    'rows': [{'cells': [{'content': '<p>PDF</p>', 'cta': []}]}],
+                    'manual': {
+                        'columns': [{'type': 'text', 'heading': 'Format'}],
+                        'rows': [{'values': ['PDF']}],
+                        'caption': '',
+                    },
                 }},
                 {'type': 'text', 'value': '<p>Extra note.</p>'},
             ],

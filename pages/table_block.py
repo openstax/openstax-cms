@@ -15,6 +15,34 @@ from pages.table_sources import (
 )
 
 
+def _manual_cell_from_api_value(cell_type, api_value):
+    if cell_type == 'cta':
+        return {'content': '', 'cta': api_value or []}
+    if cell_type == 'date':
+        return {'content': api_value.strftime('%m/%d/%Y') if api_value else '', 'cta': []}
+    return {'content': api_value or '', 'cta': []}
+
+
+def _manual_table_representation(manual_rep, renderer_column_types):
+    """manual_rep is TypedTableBlock's own get_api_representation() output:
+    {'columns': [{'type': block_name, 'heading': str}], 'rows': [{'values': [...]}], 'caption': str}.
+    Reshapes it into the renderer's {'columns': [{'header', 'type'}], 'rows': [{'cells': [{'content','cta'}]}]}."""
+    columns = manual_rep['columns']
+    out_columns = [
+        {'header': col['heading'],
+         'type': col['type'] if col['type'] in renderer_column_types else 'text'}
+        for col in columns
+    ]
+    out_rows = []
+    for row in manual_rep['rows']:
+        cells = [
+            _manual_cell_from_api_value(col['type'], value)
+            for col, value in zip(columns, row['values'])
+        ]
+        out_rows.append({'cells': cells})
+    return {'columns': out_columns, 'rows': out_rows}
+
+
 def source_columns_block(choices):
     """Field → column mapping list shared by all dynamic source blocks."""
     return blocks.ListBlock(blocks.StructBlock([
@@ -165,7 +193,7 @@ class TableBlock(blocks.StructBlock):
         ('endpoint', EndpointSourceBlock()),
     ], max_num=1, required=False, label='Data source',
         help_text='Fill the table from CMS content instead of manual rows. '
-                  'When set, manual Columns and Rows are ignored.')
+                  'When set, the manual table is ignored.')
     config = blocks.StreamBlock([
         ('striped', blocks.ChoiceBlock(choices=[('off', 'Off'), ('on', 'On')],
             help_text='Shade alternating rows. Default shade unless Row Colors is set.')),
@@ -212,9 +240,11 @@ class TableBlock(blocks.StructBlock):
         from pages import table_sources
 
         rep = super().get_api_representation(value, context)
+        manual_rep = rep.pop('manual')
         rep.pop('data_source', None)
         stream = value.get('data_source')
         if not stream:
+            rep.update(_manual_table_representation(manual_rep, table_sources.RENDERER_COLUMN_TYPES))
             return rep
 
         child = stream[0]
