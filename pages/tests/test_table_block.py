@@ -154,3 +154,16 @@ class DynamicTableBlockTests(TestCase):
         rep = block.get_api_representation(value)
         self.assertEqual(rep['columns'][0]['header'], 'A')
         self.assertIn('x', rep['rows'][0]['cells'][0]['content'])
+
+
+class ManualFieldDefinitionTests(TestCase):
+    def test_manual_field_is_typed_table_block_with_expected_cell_types(self):
+        from wagtail.contrib.typed_table_block.blocks import TypedTableBlock
+
+        block = TableBlock()
+        manual_block = block.child_blocks['manual']
+        self.assertIsInstance(manual_block, TypedTableBlock)
+        self.assertEqual(
+            set(manual_block.child_blocks.keys()),
+            {'text', 'number', 'date', 'rich_text', 'cta'},
+        )
