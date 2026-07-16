@@ -84,19 +84,28 @@ def _fix_stream(node):
     return changed
 
 
+def _migrate_stream_field(pages, field_name):
+    for page in pages.iterator():
+        stream_field = getattr(page, field_name)
+        raw = list(stream_field.raw_data)
+        if _fix_stream(raw):
+            setattr(page, field_name, StreamValue(stream_field.stream_block, raw, is_lazy=True))
+            page.save(update_fields=[field_name])
+
+
 def migrate_table_manual_rows(apps, schema_editor):
     RootPage = apps.get_model('pages', 'RootPage')
-    for page in RootPage.objects.all().iterator():
-        raw = list(page.body.raw_data)
-        if _fix_stream(raw):
-            page.body = StreamValue(page.body.stream_block, raw, is_lazy=True)
-            page.save(update_fields=['body'])
+    _migrate_stream_field(RootPage.objects.all(), 'body')
+
+    PressIndex = apps.get_model('news', 'PressIndex')
+    _migrate_stream_field(PressIndex.objects.all(), 'faqs')
 
 
 class Migration(migrations.Migration):
 
     dependencies = [
         ('pages', '0199_alter_assignable_faqs_alter_faq_questions_and_more'),
+        ('news', '0058_alter_pressindex_faqs'),
     ]
 
     operations = [
