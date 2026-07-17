@@ -1,3 +1,5 @@
+import threading
+
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -270,8 +272,15 @@ class Errata(models.Model):
         if(is_user_shadow_blocked(self.submitted_by_account_id)):
             self.archived = True
 
-        # invalidate cloudfront cache so FE updates (remove when errata is no longer in CMS)
-        invalidate_cloudfront_caches('errata')
+        # junk implies archived (see help_text on the field)
+        if self.junk:
+            self.archived = True
+
+        # invalidate cloudfront cache so FE updates (remove when errata is no longer in CMS).
+        # Backgrounded: this is a live AWS API call and every admin save was blocking on it.
+        # ponytail: fire-and-forget thread, no retry/backpressure - move to a real task queue
+        # if invalidation volume or reliability ever becomes a problem.
+        threading.Thread(target=invalidate_cloudfront_caches, args=('errata',), daemon=True).start()
 
         super(Errata, self).save(*args, **kwargs)
 
@@ -291,6 +300,11 @@ class Errata(models.Model):
     class Meta:
         verbose_name = "erratum list"
         verbose_name_plural = "errata list"
+        indexes = [
+            models.Index(fields=['status']),
+            models.Index(fields=['archived', 'junk']),
+            models.Index(fields=['created']),
+        ]
 
 
 class EmailText(models.Model):

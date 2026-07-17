@@ -1,0 +1,48 @@
+{% extends "admin/base_site.html" %}
+{% block content %}
+    <h1>Status funnel</h1>
+    {% for row in funnel %}
+        <div style="margin-bottom: 0.75em;">
+            <div>{{ row.label }} &mdash; {{ row.count }}</div>
+            <div style="background: #e5e5e5; height: 10px; width: 100%; max-width: 400px;">
+                <div style="background: #417690; height: 10px; width: {{ row.pct }}%;"></div>
+            </div>
+        </div>
+    {% endfor %}
+
+    <h1>Time to resolution</h1>
+    {% if avg_resolution_days is not None %}
+        <p>Average of {{ avg_resolution_days }} days across {{ resolved_count }} resolved reports.</p>
+    {% else %}
+        <p>No resolved reports yet.</p>
+    {% endif %}
+
+    <h1>Oldest open reports</h1>
+    {% if oldest_open %}
+        <table>
+            <thead><tr><th>ID</th><th>Book</th><th>Status</th><th>Submitted</th></tr></thead>
+            <tbody>
+            {% for erratum in oldest_open %}
+                <tr>
+                    <td><a href="{% url 'admin:errata_errata_change' erratum.pk %}">{{ erratum.id }}</a></td>
+                    <td>{{ erratum.book.title }}</td>
+                    <td>{{ erratum.status }}</td>
+                    <td>{{ erratum.created|date:"SHORT_DATE_FORMAT" }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Nothing open right now.</p>
+    {% endif %}
+
+    <h1>Open reports by book</h1>
+    {% for row in per_book %}
+        <div style="margin-bottom: 0.75em;">
+            <div>{{ row.book__title }} &mdash; {{ row.count }}</div>
+            <div style="background: #e5e5e5; height: 10px; width: 100%; max-width: 400px;">
+                <div style="background: #ba2121; height: 10px; width: {{ row.pct }}%;"></div>
+            </div>
+        </div>
+    {% endfor %}
+{% endblock %}

@@ -1,0 +1,11 @@
+{% extends "reversion/change_list.html" %}
+{# ErrataAdmin also mixes in reversion's VersionAdmin, whose own change_list.html
+   is what normally adds the "Recover deleted errata list" link (object-tools-items
+   there does the same {{ block.super }} chain down to stock admin/change_list.html).
+   Extending stock admin/change_list.html directly here would silently drop that
+   link - extend reversion's template instead so both compose. #}
+
+{% block object-tools-items %}
+    <li><a href="dashboard/">Dashboard</a></li>
+    {{ block.super }}
+{% endblock %}
