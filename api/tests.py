@@ -185,3 +185,16 @@ class APITests(TestCase, WagtailTestUtils):
         self.assertEqual(response.status_code, 200)
         self.assertIn("\"value\": \"Test value\"", response.content.decode("utf-8"))
 
+
+
+class FeatureFlagWagtailAdminTests(TestCase, WagtailTestUtils):
+    def test_feature_flag_registered_as_snippet_in_settings_menu(self):
+        from django.urls import reverse
+        from wagtail.snippets.models import get_snippet_models
+        from api.models import FeatureFlag
+        from api.wagtail_hooks import FeatureFlagViewSet
+
+        self.assertIn(FeatureFlag, get_snippet_models())
+        self.assertTrue(FeatureFlagViewSet.add_to_settings_menu)
+        # snippet index resolves, so editors can manage flags without django-admin
+        reverse("wagtailsnippets_api_featureflag:list")
