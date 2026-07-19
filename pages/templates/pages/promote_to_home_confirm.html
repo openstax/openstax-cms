@@ -9,9 +9,15 @@
         {% endblocktrans %}
     </p>
     <p>
-        {% blocktrans trimmed with flex_title=flex_page.title home_title=home_page.title %}
-            Promote "{{ flex_title }}" to the home page ("{{ home_title }}")?
-        {% endblocktrans %}
+        {% if home_page %}
+            {% blocktrans trimmed with flex_title=flex_page.title home_title=home_page.title %}
+                Promote "{{ flex_title }}" to the home page ("{{ home_title }}")?
+            {% endblocktrans %}
+        {% else %}
+            {% blocktrans trimmed with flex_title=flex_page.title %}
+                Promote "{{ flex_title }}" to the home page?
+            {% endblocktrans %}
+        {% endif %}
     </p>
 
     <form action="{% url 'promote_to_home' flex_page.id %}" method="POST">
