@@ -148,3 +148,28 @@ class OXMenusLinkModeTest(TestCase):
         self.assertIn("menu", data)
         self.assertNotIn("label", data)
         self.assertNotIn("partial_url", data)
+
+
+class OXMenusTransferSyncTest(TestCase):
+    """Menus must stay syncable across environments via wagtail-transfer."""
+
+    def test_menus_is_a_registered_snippet(self):
+        # wagtail-transfer's model-import chooser lists SNIPPET_MODELS only
+        from wagtail.snippets.models import get_snippet_models
+        self.assertIn(Menus, get_snippet_models())
+
+    def test_lookup_fields_configured_for_name_matching(self):
+        from django.conf import settings
+        self.assertEqual(settings.WAGTAILTRANSFER_LOOKUP_FIELDS.get('oxmenus.menus'), ['name'])
+
+    def test_name_is_unique(self):
+        # name is the cross-env natural key; duplicates would break matching
+        from django.db import IntegrityError
+        Menus.objects.create(name="Subjects", menu=json.dumps([]))
+        with self.assertRaises(IntegrityError):
+            Menus.objects.create(name="Subjects", menu=json.dumps([]))
+
+    def test_admin_urls_preserved(self):
+        # /admin/oxmenus/ bookmarks must survive the ModelViewSet -> SnippetViewSet move
+        from django.urls import reverse
+        self.assertEqual(reverse('oxmenus:list'), '/admin/oxmenus/')
