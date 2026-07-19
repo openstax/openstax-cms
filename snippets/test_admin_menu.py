@@ -36,7 +36,9 @@ class ModelViewSetMenuTests(TestCase):
         # wagtail_modeladmin onto ModelViewSets.
         for url_name in (
             "webinars:index",
-            "oxmenus:index",
+            # oxmenus moved again, ModelViewSet -> SnippetViewSet (for
+            # wagtail-transfer sync); snippet index views are named "list".
+            "oxmenus:list",
             "donationpopup:index",
             "fundraiser:index",
             "sitebanner:index",
