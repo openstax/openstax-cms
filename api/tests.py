@@ -196,5 +196,5 @@ class FeatureFlagWagtailAdminTests(TestCase, WagtailTestUtils):
 
         self.assertIn(FeatureFlag, get_snippet_models())
         self.assertTrue(FeatureFlagViewSet.add_to_settings_menu)
-        # snippet index resolves, so editors can manage flags without django-admin
+        self.assertFalse(getattr(FeatureFlagViewSet, "add_to_admin_menu", True))
         reverse("wagtailsnippets_api_featureflag:list")

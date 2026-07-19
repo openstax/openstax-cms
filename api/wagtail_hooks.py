@@ -8,8 +8,8 @@ class FeatureFlagViewSet(SnippetViewSet):
     model = FeatureFlag
     icon = "cog"
     menu_label = "Feature Flags"
+    add_to_admin_menu = False
     add_to_settings_menu = True
-    list_display = ("name", "feature_active", "description", "updated")
     list_filter = ("feature_active",)
     search_fields = ("name", "description")
 
