@@ -1,0 +1,30 @@
+{% extends "wagtailadmin/generic/base.html" %}
+{% load i18n %}
+
+{% block main_content %}
+    <p>
+        {% blocktrans trimmed with title=flex_page.title %}
+            This will replace the home page's draft content with this page's content.
+            The live home page is not changed until someone publishes the draft.
+        {% endblocktrans %}
+    </p>
+    <p>
+        {% if home_page %}
+            {% blocktrans trimmed with flex_title=flex_page.title home_title=home_page.title %}
+                Promote "{{ flex_title }}" to the home page ("{{ home_title }}")?
+            {% endblocktrans %}
+        {% else %}
+            {% blocktrans trimmed with flex_title=flex_page.title %}
+                Promote "{{ flex_title }}" to the home page?
+            {% endblocktrans %}
+        {% endif %}
+    </p>
+
+    <form action="{% url 'promote_to_home' flex_page.id %}" method="POST">
+        {% csrf_token %}
+        <div>
+            <button class="button" type="submit">{% trans "Yes, promote it" %}</button>
+            <a href="{% url 'wagtailadmin_pages:edit' flex_page.id %}" class="button button-secondary">{% trans "Cancel" %}</a>
+        </div>
+    </form>
+{% endblock %}
