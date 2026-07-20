@@ -30,9 +30,7 @@ class MenuBlock(blocks.StructBlock):
 
 
 class Menus(models.Model):
-    # unique: wagtail-transfer matches menus across environments by name
-    # (WAGTAILTRANSFER_LOOKUP_FIELDS), which needs an unambiguous lookup.
-    name = models.CharField(max_length=255, unique=True,
+    name = models.CharField(max_length=255,
         help_text='Top-level nav label, e.g. "What we do" or "Subjects".')
     sort_order = models.IntegerField(default=0,
         help_text='Controls the order menus appear in the nav (lowest first), e.g. 10, 20, 30. '

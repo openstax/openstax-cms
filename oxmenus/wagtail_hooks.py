@@ -1,13 +1,10 @@
-from wagtail.snippets.models import register_snippet
-from wagtail.snippets.views.snippets import SnippetViewSet
+from wagtail import hooks
+from wagtail.admin.viewsets.model import ModelViewSet
 
 from .models import Menus
 
 
-# SnippetViewSet (not ModelViewSet) so Menus shows up in wagtail-transfer's
-# snippet import UI — its model chooser lists SNIPPET_MODELS only. Cross-env
-# rows are matched by name via WAGTAILTRANSFER_LOOKUP_FIELDS.
-class OXMenusViewSet(SnippetViewSet):
+class OXMenusViewSet(ModelViewSet):
     model = Menus
     icon = "grip"
     menu_label = "OX Menu"
@@ -17,9 +14,8 @@ class OXMenusViewSet(SnippetViewSet):
     ordering = ("sort_order", "id")
     search_fields = ("name",)
     exclude_form_fields = []
-    # keep the pre-snippet URL layout so /admin/oxmenus/ links survive
-    admin_url_namespace = "oxmenus"
-    base_url_path = "oxmenus"
 
 
-register_snippet(OXMenusViewSet)
+@hooks.register("register_admin_viewset")
+def register_oxmenus_viewset():
+    return OXMenusViewSet("oxmenus")
