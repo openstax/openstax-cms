@@ -407,8 +407,6 @@ WAGTAILTRANSFER_LOOKUP_FIELDS = {
     'snippets.amazonbookblurb':    ['locale__language_code'],
     'snippets.contentwarning':     ['locale__language_code'],
     'snippets.requireloginmessage': ['locale__language_code'],
-    # Not translatable, so no locale in the key; name is unique=True on the model.
-    'oxmenus.menus':               ['name'],
 }
 
 # --- Wagtail AI integration -------------------------------------------------
