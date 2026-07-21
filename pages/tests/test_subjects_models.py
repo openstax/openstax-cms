@@ -1,7 +1,6 @@
 from types import SimpleNamespace
+from unittest import TestCase
 from unittest.mock import MagicMock, patch
-
-from django.test import SimpleTestCase
 
 from pages.models.subjects import Subject, Subjects
 
@@ -21,24 +20,25 @@ class _ChainableList(list):
 
 
 class _FakeBook:
-    id = 1
-    slug = "fake-book"
-    book_state = "live"
-    title = "Fake Book"
-    subject_categories = ["Algebra"]
-    is_ap = False
-    cover_url = "https://example.com/cover.png"
-    cover_color = "blue"
-    pdf_url = "https://example.com/book.pdf"
-    webview_link = "https://example.com/webview"
-    webview_rex_link = "https://example.com/rex"
-    bookshare_link = ""
-    amazon_coming_soon = False
-    amazon_link = ""
-    bookstore_coming_soon = False
-    salesforce_abbreviation = ""
-    salesforce_name = ""
-    last_updated_pdf = ""
+    def __init__(self):
+        self.id = 1
+        self.slug = "fake-book"
+        self.book_state = "live"
+        self.title = "Fake Book"
+        self.subject_categories = ["Algebra"]
+        self.is_ap = False
+        self.cover_url = "https://example.com/cover.png"
+        self.cover_color = "blue"
+        self.pdf_url = "https://example.com/book.pdf"
+        self.webview_link = "https://example.com/webview"
+        self.webview_rex_link = "https://example.com/rex"
+        self.bookshare_link = ""
+        self.amazon_coming_soon = False
+        self.amazon_link = ""
+        self.bookstore_coming_soon = False
+        self.salesforce_abbreviation = ""
+        self.salesforce_name = ""
+        self.last_updated_pdf = ""
 
     def subjects(self):
         return ["Math"]
@@ -50,7 +50,7 @@ class _FakeBook:
         return []
 
 
-class SubjectsModelTests(SimpleTestCase):
+class SubjectsModelTests(TestCase):
     def test_subjects_property_batches_subject_category_queries(self):
         subject1 = SimpleNamespace(id=1, name="Math", subject_icon="math-icon")
         subject2 = SimpleNamespace(id=2, name="Science", subject_icon="science-icon")
@@ -75,14 +75,14 @@ class SubjectsModelTests(SimpleTestCase):
     def test_subject_property_batches_category_queries_and_filters_books(self):
         selected_subject = SimpleNamespace(id=10, name="Math", subject_icon="math-icon")
         category = SimpleNamespace(subject_id=10, subject_category="Algebra", description="desc")
-        books_qs = _ChainableList([_FakeBook()])
+        mock_books = _ChainableList([_FakeBook()])
 
         categories_qs = MagicMock()
         categories_qs.order_by.return_value = [category]
 
         with patch("pages.models.subjects.snippets.Subject.objects.filter", return_value=[selected_subject]):
             with patch("pages.models.subjects.snippets.SubjectCategory.objects.filter", return_value=categories_qs) as category_filter:
-                with patch("pages.models.subjects.Book.objects.filter", return_value=books_qs) as book_filter:
+                with patch("pages.models.subjects.Book.objects.filter", return_value=mock_books) as book_filter:
                     page = SimpleNamespace(selected_subject=[SimpleNamespace(subject_name="Math")])
                     result = Subject.subjects.fget(page)
 
