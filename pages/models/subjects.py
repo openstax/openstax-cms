@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from django.db import models
 from modelcluster.fields import ParentalKey
 from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel
@@ -60,13 +62,16 @@ class Subjects(FrontendPreviewMixin, Page):
     @property
     def subjects(self):
         subject_list = {}
-        for subject in snippets.Subject.objects.filter(locale=self.locale).order_by('name'):
+        subjects = list(snippets.Subject.objects.filter(locale=self.locale).order_by('name'))
+        subject_ids = [subject.id for subject in subjects]
+        categories_by_subject_id = defaultdict(list)
+        for category in snippets.SubjectCategory.objects.filter(subject_id__in=subject_ids).order_by('subject_category'):
+            categories_by_subject_id[category.subject_id].append(category.subject_category)
+
+        for subject in subjects:
             subject_categories = {}
-            categories = []
             subject_categories['icon'] = subject.subject_icon
-            for category in snippets.SubjectCategory.objects.filter(subject_id=subject.id).order_by('subject_category'):
-                categories.append(category.subject_category)
-            subject_categories['categories'] = categories
+            subject_categories['categories'] = categories_by_subject_id.get(subject.id, [])
             subject_list[subject.name] = subject_categories
 
         return subject_list
@@ -210,13 +215,21 @@ class Subject(FrontendPreviewMixin, Page):
     @property
     def subjects(self):
         subject_list = {}
-        for subject in snippets.Subject.objects.filter(name=str(self.selected_subject[0].subject_name)):
+        selected_subjects = list(snippets.Subject.objects.filter(name=str(self.selected_subject[0].subject_name)))
+        subject_ids = [subject.id for subject in selected_subjects]
+        categories_by_subject_id = defaultdict(list)
+        for category in snippets.SubjectCategory.objects.filter(subject_id__in=subject_ids).order_by('subject_category'):
+            categories_by_subject_id[category.subject_id].append(category)
+
+        for subject in selected_subjects:
             subject_categories = {}
             categories = {}
 
             subject_categories['icon'] = subject.subject_icon
-            all_books = [book for book in Book.objects.all().order_by('title') if subject.name in book.subjects()]
-            for category in snippets.SubjectCategory.objects.filter(subject_id=subject.id).order_by('subject_category'):
+            all_books = Book.objects.filter(book_subjects__subject=subject).exclude(
+                book_state__in=['retired', 'unlisted']
+            ).prefetch_related('book_subjects__subject', 'book_categories__category').order_by('title').distinct()
+            for category in categories_by_subject_id.get(subject.id, []):
                 books = {}
                 book_list = {}
                 for book in all_books:
@@ -311,5 +324,4 @@ class Subject(FrontendPreviewMixin, Page):
 
     class Meta:
         verbose_name = "Subject Page"
-
 
