@@ -13,9 +13,10 @@ closes both:
    returns 403 on deployed environments still using the placeholder.
 
 2. ``models_for_export`` / ``objects_for_export`` will serialize *any* model
-   addressable by ``app_label.model`` — including ``auth.user`` (names, emails,
-   password hashes). ``restrict_exportable_models`` limits them to an explicit
-   allowlist: pages, images, documents, and the snippets we actually transfer.
+   addressable by ``app_label.model`` — including ``auth.user`` (staff account
+   fields, password hashes). ``restrict_exportable_models`` limits them to an
+   explicit allowlist: pages, images, documents, and the snippets we actually
+   transfer.
 
 These wrap the package views in ``openstax/wagtail_transfer_urls.py``.
 """
@@ -33,9 +34,9 @@ from django.http import Http404
 # should never request one; kept exportable as a guard against a regression that
 # starts following revisions again.
 # wagtailcore.collection: images/documents have a non-nullable collection FK, so
-# page imports fetch it via api/objects/. No PII. Preseed it (see transfer runbook).
+# page imports fetch it via api/objects/. Preseed it (see transfer runbook).
 # taggit.taggeditem: the join row linking a tagged page to a taggit.tag. Pages
-# with tags fetch it via api/objects/ alongside the tag itself. No PII.
+# with tags fetch it via api/objects/ alongside the tag itself.
 _ALWAYS_EXPORTABLE = {
     'wagtailcore.page',
     'wagtailcore.revision',

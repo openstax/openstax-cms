@@ -76,9 +76,9 @@ class ExportableModelAllowlistTests(TestCase):
 
 class NoFollowModelsTests(TestCase):
     """Revisions (and other transferred objects) carry a `user` FK. Following it
-    would 404 on the export allowlist and attempt to pull user PII across, so
-    auth.user must stay unfollowed (left as a null FK). The two package defaults
-    must be preserved when we override the setting."""
+    would 404 on the export allowlist and attempt to pull staff accounts across,
+    so auth.user must stay unfollowed (left as a null FK). The two package
+    defaults must be preserved when we override the setting."""
 
     def _no_follow(self):
         from django.conf import settings
