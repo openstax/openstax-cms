@@ -66,6 +66,13 @@ class ExportableModelAllowlistTests(TestCase):
 
         self.assertIn('wagtailcore.collection', get_exportable_model_labels())
 
+    def test_tagged_item_is_exportable(self):
+        # A tagged page's TaggedItem join row is fetched via api/objects/
+        # alongside its taggit.tag, so it must be exportable too.
+        from openstax.wagtail_transfer_security import get_exportable_model_labels
+
+        self.assertIn('taggit.taggeditem', get_exportable_model_labels())
+
 
 class NoFollowModelsTests(TestCase):
     """Revisions (and other transferred objects) carry a `user` FK. Following it

@@ -34,6 +34,8 @@ from django.http import Http404
 # starts following revisions again.
 # wagtailcore.collection: images/documents have a non-nullable collection FK, so
 # page imports fetch it via api/objects/. No PII. Preseed it (see transfer runbook).
+# taggit.taggeditem: the join row linking a tagged page to a taggit.tag. Pages
+# with tags fetch it via api/objects/ alongside the tag itself. No PII.
 _ALWAYS_EXPORTABLE = {
     'wagtailcore.page',
     'wagtailcore.revision',
@@ -43,6 +45,7 @@ _ALWAYS_EXPORTABLE = {
     'wagtailcore.locale',
     'contenttypes.contenttype',
     'taggit.tag',
+    'taggit.taggeditem',
 }
 
 
