@@ -33,6 +33,11 @@ addition is the how-to panel above the form.
                 environment you select below. Nothing is changed on the source
                 environment.
             </p>
+            <p>
+                <a href="https://scribehow.com/o/jGUaNi72Qay710Vi452_JA/viewer/How_to_Import_Pages_in_the_OpenStax_Admin_Dashboard__FWajw9pwQxeYK34ZZWEcsg" target="_blank" rel="noopener">
+                    Step-by-step walkthrough with screenshots (Scribe)
+                </a>
+            </p>
             <ol>
                 <li>
                     <strong>Get the content ready on the source.</strong> Pages come
@@ -84,6 +89,30 @@ addition is the how-to panel above the form.
                     imports overwrite content and can't be undone from this screen.
                 </li>
             </ul>
+            <p><strong>Switching a live page over to newly imported content:</strong></p>
+            <p>
+                Importing a rebuilt page doesn't touch the live page at the same URL —
+                it creates a separate page, so both exist side by side until you swap
+                them. This is a one-time, per-page dance:
+            </p>
+            <ol>
+                <li>Import the new page here, into production.</li>
+                <li>
+                    On the <strong>existing live page</strong>, change the title (e.g.
+                    add "(old)") and the slug (e.g. add "-old"), then save as a draft.
+                </li>
+                <li>
+                    Unpublish the old page. The URL is briefly down until the next step.
+                </li>
+                <li>
+                    On the <strong>newly imported page</strong>, set the title and slug
+                    back to the original values, then publish.
+                </li>
+            </ol>
+            <p>
+                The home page is the one exception — don't import over it. Use
+                "Promote to home page" on the new FlexPage instead.
+            </p>
         </div>
 
         <div data-wagtail-component="content-import-form" data-local-api-base-url="{% url 'wagtail_transfer_admin:page_chooser_api:pages:listing' %}" data-local-check-uid-url="{% url 'wagtail_transfer_admin:check_uid' %}" data-sources="{{ sources_data }}" data-action="{% url 'wagtail_transfer_admin:import' %}" data-csrf-token="{{ csrf_token }}"></div>
