@@ -20,12 +20,19 @@ class WagtailTransferChoosePageTests(TestCase):
         self.assertTemplateUsed(response, 'wagtail_transfer/choose_page.html')
         # Our how-to panel
         self.assertContains(response, 'Importing content from another environment')
-        self.assertContains(response, 'Select the source environment')
+        self.assertContains(response, 'Pick the source environment')
         self.assertContains(response, 'refresh-from-prod-runbook.md')
         # The Scribe walkthrough link
         self.assertContains(response, 'scribehow.com/o/jGUaNi72Qay710Vi452_JA')
-        # The switchover blurb
-        self.assertContains(response, 'Switching a live page over to newly imported content')
+        # The CMS support Slack channel link
+        self.assertContains(response, 'openstax.slack.com/archives/C69BU01RC')
+        # The draft-vs-published / what-gets-imported details
+        self.assertContains(response, 'What actually gets imported')
+        self.assertContains(response, 'Draft edits never transfer')
+        self.assertContains(response, 'Published state carries over')
+        # The updating-vs-replacing details, and the switchover dance within it
+        self.assertContains(response, 'Updating a page vs. replacing one at a different URL')
+        self.assertContains(response, 'updates it in place')
         self.assertContains(response, 'Promote to home page')
         # The import form component from the original template must survive the override
         self.assertContains(response, 'data-wagtail-component="content-import-form"')
