@@ -8,6 +8,9 @@ from wagtail.admin.telepath import register
 from wagtail.documents.blocks import DocumentChooserBlock
 from wagtail_color_panel.blocks import NativeColorBlock
 from wagtail_color_panel.widgets import ColorInputWidget, ColorInputWidgetAdapter
+from wagtail_html_editor.blocks import EnhancedHTMLBlock
+from wagtail_html_editor.telepath import EnhancedHTMLWidgetAdapter
+from wagtail_html_editor.widgets import EnhancedHTMLWidget
 
 # Leaf module: color/link/id primitives shared by pages/custom_blocks.py,
 # pages/models/*, and pages/table_block.py.
@@ -129,6 +132,50 @@ class OpenStaxColorBlock(NativeColorBlock):
 
 def hex_color_block(help_text):
     return OpenStaxColorBlock(help_text=help_text)
+
+
+class CollapsibleHTMLWidget(EnhancedHTMLWidget):
+    """EnhancedHTMLWidget with the openstax-collapse-block Stimulus controller
+    attached, so the block starts collapsed in the StreamField editor.
+
+    A plain field widget has no `collapsed` Meta option of its own (only
+    Struct/Stream/ListBlock containers respect it), so this drives the
+    editor's existing per-block collapse toggle directly instead — see
+    openstax-collapse-block.js. HTML blocks are usually long and rarely
+    need editing once written, so hiding them by default keeps the block
+    list scannable."""
+
+    def build_attrs(self, *args, **kwargs):
+        attrs = super().build_attrs(*args, **kwargs)
+        controllers = (attrs.get('data-controller') or '').split()
+        if 'openstax-collapse-block' not in controllers:
+            controllers.append('openstax-collapse-block')
+        attrs['data-controller'] = ' '.join(controllers)
+        return attrs
+
+    @property
+    def media(self):
+        return super().media + forms.Media(js=['pages/openstax-collapse-block.js'])
+
+
+class CollapsibleHTMLWidgetAdapter(EnhancedHTMLWidgetAdapter):
+    # Reuses the package's JS constructor + rendering; telepath needs an
+    # adapter registered against this exact widget subclass.
+    pass
+
+
+register(CollapsibleHTMLWidgetAdapter(), CollapsibleHTMLWidget)
+
+
+class CollapsedHTMLBlock(EnhancedHTMLBlock):
+    """EnhancedHTMLBlock using CollapsibleHTMLWidget in place of the
+    package's default widget, so it starts collapsed in the editor."""
+
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        # Preserve whatever attrs EnhancedHTMLBlock's own widget ended up
+        # with, rather than dropping them by constructing a bare replacement.
+        self.field.widget = CollapsibleHTMLWidget(attrs=dict(self.field.widget.attrs))
 
 
 def gradient_config_options():
