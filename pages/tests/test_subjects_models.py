@@ -1,5 +1,5 @@
 from types import SimpleNamespace
-from django.test import TestCase
+from django.test import SimpleTestCase
 from unittest.mock import MagicMock, patch
 
 from pages.models.subjects import Subject, Subjects
@@ -50,7 +50,7 @@ class _FakeBook:
         return []
 
 
-class SubjectsModelTests(TestCase):
+class SubjectsModelTests(SimpleTestCase):
     def test_subjects_property_batches_subject_category_queries(self):
         subject1 = SimpleNamespace(id=1, name="Math", subject_icon="math-icon", locale="en")
         subject2 = SimpleNamespace(id=2, name="Science", subject_icon="science-icon", locale="en")
@@ -80,12 +80,15 @@ class SubjectsModelTests(TestCase):
         categories_qs = MagicMock()
         categories_qs.order_by.return_value = [category]
 
-        with patch("pages.models.subjects.snippets.Subject.objects.filter", return_value=[selected_subject]):
+        with patch("pages.models.subjects.snippets.Subject.objects.filter", return_value=[selected_subject]) as subject_filter:
             with patch("pages.models.subjects.snippets.SubjectCategory.objects.filter", return_value=categories_qs) as category_filter:
                 with patch("pages.models.subjects.Book.objects.filter", return_value=mock_books) as book_filter:
                     page = SimpleNamespace(locale="en", selected_subject=[SimpleNamespace(subject_name="Math")])
                     result = Subject.subjects.fget(page)
 
+        # Locks in the locale filter: without it, a Subject snippet with the
+        # same name in another locale could resolve here instead.
+        subject_filter.assert_called_once_with(name="Math", locale="en")
         category_filter.assert_called_once_with(subject_id__in=[10])
         book_filter.assert_called_once_with(book_subjects__subject=selected_subject)
         self.assertIn("Algebra", result["Math"]["categories"])
