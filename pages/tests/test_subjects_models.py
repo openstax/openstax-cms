@@ -18,6 +18,9 @@ class _ChainableList(list):
     def distinct(self):
         return self
 
+    def first(self):
+        return self[0] if self else None
+
 
 class _FakeBook:
     def __init__(self):
@@ -83,7 +86,10 @@ class SubjectsModelTests(SimpleTestCase):
         with patch("pages.models.subjects.snippets.Subject.objects.filter", return_value=[selected_subject]) as subject_filter:
             with patch("pages.models.subjects.snippets.SubjectCategory.objects.filter", return_value=categories_qs) as category_filter:
                 with patch("pages.models.subjects.Book.objects.filter", return_value=mock_books) as book_filter:
-                    page = SimpleNamespace(locale="en", selected_subject=[SimpleNamespace(subject_name="Math")])
+                    page = SimpleNamespace(
+                        locale="en",
+                        selected_subject=_ChainableList([SimpleNamespace(subject_name="Math")]),
+                    )
                     result = Subject.subjects.fget(page)
 
         # Locks in the locale filter: without it, a Subject snippet with the
@@ -93,3 +99,15 @@ class SubjectsModelTests(SimpleTestCase):
         book_filter.assert_called_once_with(book_subjects__subject=selected_subject)
         self.assertIn("Algebra", result["Math"]["categories"])
         self.assertIn("Fake Book", result["Math"]["categories"]["Algebra"]["books"])
+
+    def test_subject_property_returns_empty_dict_without_selected_subject(self):
+        # InlinePanel(min_num=1) only enforces this in the admin form, not at
+        # the database level, so a page with no related "subject" child
+        # (legacy content, programmatic creation, a partially-saved revision)
+        # must not raise IndexError when serialized via the API.
+        with patch("pages.models.subjects.snippets.Subject.objects.filter") as subject_filter:
+            page = SimpleNamespace(locale="en", selected_subject=_ChainableList([]))
+            result = Subject.subjects.fget(page)
+
+        self.assertEqual(result, {})
+        subject_filter.assert_not_called()

@@ -217,7 +217,10 @@ class Subject(FrontendPreviewMixin, Page):
     @property
     def subjects(self):
         subject_list = {}
-        selected_subjects = list(snippets.Subject.objects.filter(name=str(self.selected_subject[0].subject_name), locale=self.locale))
+        first_selected = self.selected_subject.first()
+        if first_selected is None:
+            return subject_list
+        selected_subjects = list(snippets.Subject.objects.filter(name=str(first_selected.subject_name), locale=self.locale))
         subject_ids = [subject.id for subject in selected_subjects]
         categories_by_subject_id = defaultdict(list)
         for category in snippets.SubjectCategory.objects.filter(subject_id__in=subject_ids).order_by('subject_category'):
