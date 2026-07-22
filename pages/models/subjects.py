@@ -63,6 +63,8 @@ class Subjects(FrontendPreviewMixin, Page):
     def subjects(self):
         subject_list = {}
         subjects = list(snippets.Subject.objects.filter(locale=self.locale).order_by('name'))
+        if not subjects:
+            return subject_list
         subject_ids = [subject.id for subject in subjects]
         categories_by_subject_id = defaultdict(list)
         for category in snippets.SubjectCategory.objects.filter(subject_id__in=subject_ids).order_by('subject_category'):
@@ -215,7 +217,7 @@ class Subject(FrontendPreviewMixin, Page):
     @property
     def subjects(self):
         subject_list = {}
-        selected_subjects = list(snippets.Subject.objects.filter(name=str(self.selected_subject[0].subject_name)))
+        selected_subjects = list(snippets.Subject.objects.filter(name=str(self.selected_subject[0].subject_name), locale=self.locale))
         subject_ids = [subject.id for subject in selected_subjects]
         categories_by_subject_id = defaultdict(list)
         for category in snippets.SubjectCategory.objects.filter(subject_id__in=subject_ids).order_by('subject_category'):
@@ -234,8 +236,7 @@ class Subject(FrontendPreviewMixin, Page):
                 book_list = {}
                 for book in all_books:
                     if book.subject_categories is not None \
-                            and category.subject_category in book.subject_categories \
-                            and book.book_state not in ['retired', 'unlisted']:
+                            and category.subject_category in book.subject_categories:
                         book_data = []
                         book_data.append({
                             'id': book.id,

@@ -1,5 +1,5 @@
 from types import SimpleNamespace
-from unittest import TestCase
+from django.test import TestCase
 from unittest.mock import MagicMock, patch
 
 from pages.models.subjects import Subject, Subjects
@@ -83,7 +83,7 @@ class SubjectsModelTests(TestCase):
         with patch("pages.models.subjects.snippets.Subject.objects.filter", return_value=[selected_subject]):
             with patch("pages.models.subjects.snippets.SubjectCategory.objects.filter", return_value=categories_qs) as category_filter:
                 with patch("pages.models.subjects.Book.objects.filter", return_value=mock_books) as book_filter:
-                    page = SimpleNamespace(selected_subject=[SimpleNamespace(subject_name="Math")])
+                    page = SimpleNamespace(locale="en", selected_subject=[SimpleNamespace(subject_name="Math")])
                     result = Subject.subjects.fget(page)
 
         category_filter.assert_called_once_with(subject_id__in=[10])
