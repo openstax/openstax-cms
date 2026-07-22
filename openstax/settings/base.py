@@ -297,7 +297,8 @@ WAGTAILTRANSFER_CHOOSER_API_PROXY_TIMEOUT = int(os.getenv('WAGTAILTRANSFER_CHOOS
 # REPLACES the package default, so wagtailcore.page + contenttypes.contenttype
 # must stay listed. Additions:
 #   auth.user — the `user` FK on transferred objects; not exportable, so following
-#     it 404s and would pull PII. Nulled instead (the FKs are nullable).
+#     it 404s and would try to pull staff account fields across environments.
+#     Nulled instead (the FKs are nullable).
 #   wagtailcore.revision — page.latest_revision forms a Page<->Revision cycle that
 #     wagtail-transfer breaks only when it enters via the soft edge, which it picks
 #     nondeterministically — otherwise a CircularDependencyException 500. Safe to
