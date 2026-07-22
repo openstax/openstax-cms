@@ -1,7 +1,7 @@
 """
 Runtime patches for wagtail-transfer 0.11.
 
-Three patches, all installed by `apply_patches()`:
+Four patches, all installed by `apply_patches()`:
 
 0. get_base_model multi-level MTI fix. Upstream returns the nearest ancestor
    (`get_parent_list()[0]`), so our two-level FlexPage (Page → RootPage → FlexPage)
@@ -36,6 +36,25 @@ Three patches, all installed by `apply_patches()`:
    chooser proxy's deliberate status passthrough is untouched and we copy no
    upstream view logic that could drift when the pin moves.
 
+3. Import view error surfacing. `do_import` (the single admin endpoint both
+   "Import page" and "Import snippet" post to) has no error handling of its
+   own: a WagtailTransferImportError from patch 2 — or any other exception
+   raised while contacting the source or running the import — propagates
+   straight out of the view, past Wagtail's admin chrome, to Django's bare
+   500 handler. In production (DEBUG=False) that renders as an unstyled
+   white page with no message, so the clear error from patch 2 never reaches
+   the editor who triggered the import. This patch wraps do_import to catch
+   the failure, queue it as a Wagtail admin message (the same messages
+   framework do_import already uses on success), and redirect back to the
+   Choose page, where the message renders next to the how-to instructions.
+   Safe to patch directly: admin_urls.py's `path('import/', views.do_import, …)`
+   reads `views.do_import` as a plain attribute at import time, and hook
+   discovery (which imports admin_urls) is Wagtail's own lazy
+   `search_for_hooks()`, not triggered until the first admin URL is resolved —
+   always after `apply_patches()` has run in `ready()`. No per-module rebind
+   needed here (contrast patch 0, which rebinds because callers there did
+   `from .models import get_base_model`, a local name, not an attribute read).
+
 `apply_patches()` is idempotent and is called from
 global_settings.apps.GlobalSettingsConfig.ready(), so it runs in every process
 that calls django.setup() — management commands, shell, Celery, WSGI/ASGI —
@@ -44,6 +63,8 @@ not only when the URLconf happens to be imported.
 import json
 import logging
 
+from django.contrib import messages
+from django.shortcuts import redirect
 from wagtail_transfer.operations import ImportPlanner, Objective
 
 logger = logging.getLogger(__name__)
@@ -60,6 +81,7 @@ EXPECTED_WAGTAIL_TRANSFER_VERSION = '0.11'
 _PATCH_FLAG = '_openstax_base_model_patch'
 _ADD_JSON_PATCH_FLAG = '_openstax_add_json_guard'
 _GET_BASE_MODEL_PATCH_FLAG = '_openstax_get_base_model_patch'
+_DO_IMPORT_PATCH_FLAG = '_openstax_do_import_error_guard'
 
 # Rebound in each module that did `from .models import get_base_model` (each holds
 # its own binding). get_base_model_for_path calls it models-locally, so it's covered.
@@ -113,6 +135,21 @@ def _patched_add_json(self, json_data):
         ) from exc
 
 
+def _patched_do_import(request):
+    try:
+        return _patched_do_import._original(request)
+    except WagtailTransferImportError as exc:
+        messages.error(request, str(exc))
+    except Exception:
+        logger.exception("wagtail-transfer import failed")
+        messages.error(
+            request,
+            "The import failed unexpectedly. Check the server logs for details, "
+            "or ask in the CMS support channel.",
+        )
+    return redirect('wagtail_transfer_admin:choose_page')
+
+
 def apply_patches():
     """Install the wagtail-transfer runtime patches. Idempotent."""
     try:
@@ -144,3 +181,9 @@ def apply_patches():
         _patched_add_json._original = ImportPlanner.add_json
         setattr(_patched_add_json, _ADD_JSON_PATCH_FLAG, True)
         ImportPlanner.add_json = _patched_add_json
+
+    wt_views = importlib.import_module('wagtail_transfer.views')
+    if not getattr(wt_views.do_import, _DO_IMPORT_PATCH_FLAG, False):
+        _patched_do_import._original = wt_views.do_import
+        setattr(_patched_do_import, _DO_IMPORT_PATCH_FLAG, True)
+        wt_views.do_import = _patched_do_import
