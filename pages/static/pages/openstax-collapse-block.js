@@ -17,16 +17,25 @@
  * Fragile to a Wagtail admin UI rewrite: if `[data-panel]`/`[data-panel-toggle]`
  * ever change, this becomes a silent no-op (the guard clauses just return),
  * not a crash.
+ *
+ * A drag-reorder (or other DOM churn) can disconnect and reconnect this
+ * controller without the panel itself being torn down, so a marker on the
+ * panel (not the controller instance, which doesn't survive that cycle)
+ * remembers that the one-time collapse already ran -- otherwise a block the
+ * editor deliberately re-expanded would collapse again on the next reconnect.
  */
 (function () {
     'use strict';
 
+    const INITIALIZED_ATTR = 'data-openstax-collapse-block-initialized';
+
     class OpenStaxCollapseBlockController extends window.StimulusModule.Controller {
         connect() {
             const panel = this.element.closest('[data-panel]');
-            if (!panel) {
+            if (!panel || panel.hasAttribute(INITIALIZED_ATTR)) {
                 return;
             }
+            panel.setAttribute(INITIALIZED_ATTR, '');
             const toggle = panel.querySelector('[data-panel-toggle]');
             if (!toggle || toggle.getAttribute('aria-expanded') !== 'true') {
                 return;

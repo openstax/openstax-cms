@@ -1,3 +1,5 @@
+import re
+
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
@@ -45,9 +47,13 @@ class CollapsedHTMLBlockTests(TestCase):
     browser/JS behavior, verified manually (see openstax-collapse-block.js)."""
 
     def test_widget_carries_the_collapse_controller(self):
+        # build_attrs appends to any existing data-controller value, so this
+        # doesn't assume it's the only controller on the element.
         block = CollapsedHTMLBlock()
         rendered = block.field.widget.render('body-0-value', '<p>hi</p>')
-        self.assertIn('data-controller="openstax-collapse-block"', rendered)
+        match = re.search(r'data-controller="([^"]*)"', rendered)
+        self.assertIsNotNone(match, msg='no data-controller attribute rendered')
+        self.assertIn('openstax-collapse-block', match.group(1).split())
 
     def test_media_includes_the_collapse_controller_script(self):
         block = CollapsedHTMLBlock()
