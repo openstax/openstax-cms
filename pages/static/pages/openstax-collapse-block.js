@@ -35,11 +35,14 @@
             if (!panel || panel.hasAttribute(INITIALIZED_ATTR)) {
                 return;
             }
-            panel.setAttribute(INITIALIZED_ATTR, '');
             const toggle = panel.querySelector('[data-panel-toggle]');
             if (!toggle || toggle.getAttribute('aria-expanded') !== 'true') {
                 return;
             }
+            // Mark only once we know we're actually collapsing -- if the
+            // toggle isn't there yet (or already collapsed) this leaves the
+            // panel unmarked so a later connect() can still try.
+            panel.setAttribute(INITIALIZED_ATTR, '');
             toggle.click();
         }
     }

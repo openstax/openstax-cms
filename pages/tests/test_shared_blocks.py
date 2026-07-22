@@ -55,6 +55,15 @@ class CollapsedHTMLBlockTests(TestCase):
         self.assertIsNotNone(match, msg='no data-controller attribute rendered')
         self.assertIn('openstax-collapse-block', match.group(1).split())
 
+    def test_widget_keeps_the_parent_blocks_own_attrs(self):
+        # EnhancedHTMLBlock's own widget carries data-wagtail-html-editor and
+        # rows (EnhancedHTMLWidget's default_attrs); swapping in
+        # CollapsibleHTMLWidget must not drop them.
+        block = CollapsedHTMLBlock()
+        rendered = block.field.widget.render('body-0-value', '<p>hi</p>')
+        self.assertIn('data-wagtail-html-editor="true"', rendered)
+        self.assertIn('rows="10"', rendered)
+
     def test_media_includes_the_collapse_controller_script(self):
         block = CollapsedHTMLBlock()
         self.assertIn('pages/openstax-collapse-block.js', str(block.field.widget.media))

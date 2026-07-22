@@ -173,7 +173,9 @@ class CollapsedHTMLBlock(EnhancedHTMLBlock):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.field.widget = CollapsibleHTMLWidget()
+        # Preserve whatever attrs EnhancedHTMLBlock's own widget ended up
+        # with, rather than dropping them by constructing a bare replacement.
+        self.field.widget = CollapsibleHTMLWidget(attrs=dict(self.field.widget.attrs))
 
 
 def gradient_config_options():
