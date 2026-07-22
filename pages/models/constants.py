@@ -1,5 +1,4 @@
 from wagtail import blocks
-from wagtail_html_editor.blocks import EnhancedHTMLBlock
 
 
 
@@ -20,7 +19,7 @@ from pages.custom_blocks import APIImageChooserBlock, \
     FLEX_CHOICES
 
 from pages.shared_blocks import CTALinkBlock, OpenStaxColorBlock, hex_color_block, \
-    gradient_config_options, gradient_block_counts, id_config_block
+    gradient_config_options, gradient_block_counts, id_config_block, CollapsedHTMLBlock
 
 from pages.table_block import TableBlock
 
@@ -79,7 +78,7 @@ BASE_CONTENT_BLOCKS = [
         }, required=False, collapsed=True)),
     ], label="Cards Block")),
     ('text', APIRichTextBlock()),
-    ('html', EnhancedHTMLBlock()),
+    ('html', CollapsedHTMLBlock()),
     ('cta_block', CTAButtonBarBlock()),
     ('links_group', LinksGroupBlock()),
     ('quote', QuoteBlock()),
@@ -279,7 +278,7 @@ BODY_BLOCKS = [
         }, required=False, collapsed=True)),
     ], label="Columns")),
     ('divider', DividerBlock()),
-    ('html', EnhancedHTMLBlock()),
+    ('html', CollapsedHTMLBlock()),
 ]
 
 # we have one RootPage, which is the parent of all other pages

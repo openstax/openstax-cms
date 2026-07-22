@@ -2,8 +2,8 @@ from django.core.exceptions import ValidationError
 from django.test import TestCase
 
 from pages.shared_blocks import (
-    CTALinkBlock, LinkInfoBlock, OpenStaxColorBlock, gradient_block_counts,
-    gradient_config_options, hex_color_block, id_config_block,
+    CollapsedHTMLBlock, CTALinkBlock, LinkInfoBlock, OpenStaxColorBlock,
+    gradient_block_counts, gradient_config_options, hex_color_block, id_config_block,
 )
 
 
@@ -34,3 +34,21 @@ class SharedBlocksImportTests(TestCase):
         rep = block.get_api_representation(value)
         self.assertEqual(rep['text'], 'View book')
         self.assertEqual(rep['target'], {'value': 'https://openstax.org', 'type': 'external'})
+
+
+class CollapsedHTMLBlockTests(TestCase):
+    """A plain field block (RawHTMLBlock/EnhancedHTMLBlock) has no `collapsed`
+    Meta option of its own -- only Struct/Stream/ListBlock containers respect
+    it -- so this block instead attaches a Stimulus controller that drives
+    the editor's existing per-block collapse toggle. This just checks the
+    controller is wired onto the rendered widget; the actual collapsing is
+    browser/JS behavior, verified manually (see openstax-collapse-block.js)."""
+
+    def test_widget_carries_the_collapse_controller(self):
+        block = CollapsedHTMLBlock()
+        rendered = block.field.widget.render('body-0-value', '<p>hi</p>')
+        self.assertIn('data-controller="openstax-collapse-block"', rendered)
+
+    def test_media_includes_the_collapse_controller_script(self):
+        block = CollapsedHTMLBlock()
+        self.assertIn('pages/openstax-collapse-block.js', str(block.field.widget.media))
