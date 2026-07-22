@@ -52,8 +52,8 @@ class _FakeBook:
 
 class SubjectsModelTests(TestCase):
     def test_subjects_property_batches_subject_category_queries(self):
-        subject1 = SimpleNamespace(id=1, name="Math", subject_icon="math-icon")
-        subject2 = SimpleNamespace(id=2, name="Science", subject_icon="science-icon")
+        subject1 = SimpleNamespace(id=1, name="Math", subject_icon="math-icon", locale="en")
+        subject2 = SimpleNamespace(id=2, name="Science", subject_icon="science-icon", locale="en")
         category1 = SimpleNamespace(subject_id=1, subject_category="Algebra")
         category2 = SimpleNamespace(subject_id=2, subject_category="Biology")
 
@@ -73,7 +73,7 @@ class SubjectsModelTests(TestCase):
         self.assertEqual(result["Science"]["categories"], ["Biology"])
 
     def test_subject_property_batches_category_queries_and_filters_books(self):
-        selected_subject = SimpleNamespace(id=10, name="Math", subject_icon="math-icon")
+        selected_subject = SimpleNamespace(id=10, name="Math", subject_icon="math-icon", locale="en")
         category = SimpleNamespace(subject_id=10, subject_category="Algebra", description="desc")
         mock_books = _ChainableList([_FakeBook()])
 
