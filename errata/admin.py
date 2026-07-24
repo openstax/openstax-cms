@@ -8,8 +8,6 @@ from django.contrib import admin
 from django.contrib.admin.filters import RelatedFieldListFilter
 from django.db import models
 from django.forms import CheckboxSelectMultiple
-from django.utils.decorators import method_decorator
-from django.views.decorators.csrf import csrf_protect
 from django.http import HttpResponse
 from django.utils.html import mark_safe
 
@@ -80,29 +78,8 @@ class ErrataAdmin(ImportExportActionModelAdmin, VersionAdmin):
     form = ErrataForm
     list_max_show_all = 10000
     list_per_page = 200
+    list_display_links = ['book_title']
 
-    fields = ['id',
-              'created',
-              'modified',
-              'book',
-              'is_assessment_errata',
-              'assessment_id',
-              'status',
-              'resolution',
-              'duplicate_id',
-              'archived',
-              'junk',
-              'location',
-              'additional_location_information',
-              'detail',
-              'internal_notes',
-              'resolution_notes',
-              'resolution_date',
-              'error_type',
-              'number_of_errors',
-              'resource',
-              'file_1',
-              'file_2']
     search_fields = ('id',
                      'book__title',
                      'detail',
@@ -174,138 +151,57 @@ class ErrataAdmin(ImportExportActionModelAdmin, VersionAdmin):
     book_title.admin_order_field = 'book__title'
 
     """Model permissions"""
-    @method_decorator(csrf_protect)
-    def changelist_view(self, request, extra_context=None):
-        if request.user.is_superuser or request.user.groups.filter(name__in=['Content Managers']).exists():
-            self.list_display = ['id', 'book_title', 'created', 'modified', 'short_detail', 'number_of_errors', 'status', 'error_type', 'resource', 'location', 'additional_location_information', 'resolution', 'archived', 'junk'] # list of fields to show if user is in Content Manager group or is a superuser
-            self.list_display_links = ['book_title']
-            self.list_filter = (('created', DateRangeFilter), ('modified', DateRangeFilter), ('book', ActiveBookListFilter), 'status', 'created', 'modified', 'is_assessment_errata', 'modified', 'error_type', 'resolution', 'archived', 'junk', 'resource')
-            self.editable = ['resolution']
+    # ErrataAdmin is a single instance shared across all requests, so per-request
+    # field/permission lists must be computed and returned (get_list_display,
+    # get_fields, etc.) rather than assigned to self - mutating self.* here raced
+    # across concurrent requests from different user roles and produced
+    # "Unknown field(s) specified for Errata" 500s (Sentry OPENSTAX-CMS-VJ/VH).
+    def _is_content_manager(self, request):
+        return request.user.is_superuser or request.user.groups.filter(name__in=['Content Managers']).exists()
 
-        else:
-            self.list_display = ['id', 'book_title', 'created', 'short_detail', 'status', 'error_type', 'resource', 'location', 'created', 'archived'] # list of fields to show otherwise
-            self.list_display_links = ['book_title']
-            self.list_filter = (('created', DateRangeFilter), ('modified', DateRangeFilter), ('book', ActiveBookListFilter), 'status', 'created', 'modified', 'is_assessment_errata', 'error_type', 'resolution', 'archived', 'resource')
-        return super(ErrataAdmin, self).changelist_view(request, extra_context)
+    def _is_editorial_vendor(self, request):
+        return request.user.groups.filter(name__in=['Editorial Vendor']).exists()
 
-    @method_decorator(csrf_protect)
-    def get_form(self, request, obj=None, **kwargs):
-        # CONTENT MANAGERS AND ADMINS
-        if request.user.is_superuser or request.user.groups.filter(name__in=['Content Managers']).exists():
-            self.fields = ['id',
-                           'created',
-                           'modified',
-                           'book',
-                           'is_assessment_errata',
-                           'assessment_id',
-                           'status',
-                           'resolution',
-                           'duplicate_id',
-                           'location',
-                           'additional_location_information',
-                           'detail',
-                           'internal_notes',
-                           'resolution_notes',
-                           'resolution_date',
-                           'error_type',
-                           'number_of_errors',
-                           'resource',
-                           'accounts_link',
-                           'file_1',
-                           'file_2',
-                           'archived',
-                           'junk',
-                           ] # fields to show on the actual form
-            self.readonly_fields = ['id',
-                                    'created',
-                                    'modified',
-                                    'accounts_link',
-                                    ]
+    def get_list_display(self, request):
+        if self._is_content_manager(request):
+            return ['id', 'book_title', 'created', 'modified', 'short_detail', 'number_of_errors', 'status', 'error_type', 'resource', 'location', 'additional_location_information', 'resolution', 'archived', 'junk']
+        return ['id', 'book_title', 'created', 'short_detail', 'status', 'error_type', 'resource', 'location', 'created', 'archived']
 
-            self.save_as = True
-        elif request.user.groups.filter(name__in=['Editorial Vendor']).exists():
-            self.fields = ['id',
-                           'created',
-                           'modified',
-                           'book',
-                           'is_assessment_errata',
-                           'assessment_id',
-                           'status',
-                           'resolution',
-                           'duplicate_id',
-                           'location',
-                           'additional_location_information',
-                           'detail',
-                           'internal_notes',
-                           'resolution_notes',
-                           'resolution_date',
-                           'error_type',
-                           'number_of_errors',
-                           'resource',
-                           'accounts_user_faculty_status',
-                           'file_1',
-                           'file_2',
-                           'archived',
-                            ]  # fields to show on the actual form
-            self.readonly_fields = ['id',
-                                    'created',
-                                    'modified',
-                                    'accounts_user_faculty_status',
-                                    'archived',
-                                    'junk',
-                                    ]
+    def get_list_filter(self, request):
+        if self._is_content_manager(request):
+            return (('created', DateRangeFilter), ('modified', DateRangeFilter), ('book', ActiveBookListFilter), 'status', 'created', 'modified', 'is_assessment_errata', 'modified', 'error_type', 'resolution', 'archived', 'junk', 'resource')
+        return (('created', DateRangeFilter), ('modified', DateRangeFilter), ('book', ActiveBookListFilter), 'status', 'created', 'modified', 'is_assessment_errata', 'error_type', 'resolution', 'archived', 'resource')
 
-            self.save_as = True
-        else:
-            self.fields = ['id',
-                           'created',
-                           'modified',
-                           'book',
-                           'is_assessment_errata',
-                           'assessment_id',
-                           'status',
-                           'resolution',
-                           'duplicate_id',
-                           'location',
-                           'additional_location_information',
-                           'detail',
-                           'internal_notes',
-                           'resolution_notes',
-                           'resolution_date',
-                           'error_type',
-                           'number_of_errors',
-                           'resource',
-                           'accounts_link',
-                           'file_1',
-                           'file_2',
-                           'archived',
-                           ]
-            self.readonly_fields = ['id',
-                                    'created',
-                                    'modified',
-                                    'book',
-                                    'is_assessment_errata',
-                                    'assessment_id',
-                                    'status',
-                                    'resolution',
-                                    'duplicate_id',
-                                    'archived',
-                                    'location',
-                                    'additional_location_information',
-                                    'detail',
-                                    'internal_notes',
-                                    'resolution_notes',
-                                    'resolution_date',
-                                    'error_type',
-                                    'number_of_errors',
-                                    'resource',
-                                    'accounts_link',
-                                    'file_1',
-                                    'file_2',
-                                    ]
-            self.save_as = False
+    def get_fields(self, request, obj=None):
+        if self._is_content_manager(request):
+            return ['id', 'created', 'modified', 'book', 'is_assessment_errata', 'assessment_id', 'status',
+                    'resolution', 'duplicate_id', 'location', 'additional_location_information', 'detail',
+                    'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'number_of_errors',
+                    'resource', 'accounts_link', 'file_1', 'file_2', 'archived', 'junk']
+        elif self._is_editorial_vendor(request):
+            return ['id', 'created', 'modified', 'book', 'is_assessment_errata', 'assessment_id', 'status',
+                    'resolution', 'duplicate_id', 'location', 'additional_location_information', 'detail',
+                    'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'number_of_errors',
+                    'resource', 'accounts_user_faculty_status', 'file_1', 'file_2', 'archived']
+        return ['id', 'created', 'modified', 'book', 'is_assessment_errata', 'assessment_id', 'status',
+                'resolution', 'duplicate_id', 'location', 'additional_location_information', 'detail',
+                'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'number_of_errors',
+                'resource', 'accounts_link', 'file_1', 'file_2', 'archived']
 
-        return super(ErrataAdmin, self).get_form(request, obj, **kwargs)
+    def get_readonly_fields(self, request, obj=None):
+        if self._is_content_manager(request):
+            return ['id', 'created', 'modified', 'accounts_link']
+        elif self._is_editorial_vendor(request):
+            return ['id', 'created', 'modified', 'accounts_user_faculty_status', 'archived', 'junk']
+        return ['id', 'created', 'modified', 'book', 'is_assessment_errata', 'assessment_id', 'status',
+                'resolution', 'duplicate_id', 'archived', 'location', 'additional_location_information', 'detail',
+                'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'number_of_errors',
+                'resource', 'accounts_link', 'file_1', 'file_2']
+
+    def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
+        response = super().render_change_form(request, context, add, change, form_url, obj)
+        response.context_data['save_as'] = self._is_content_manager(request) or self._is_editorial_vendor(request)
+        return response
 
 admin.site.register(Errata, ErrataAdmin)
 admin.site.register(BlockedUser, BlockedUserAdmin)
