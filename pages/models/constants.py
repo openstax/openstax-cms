@@ -46,10 +46,13 @@ BASE_CONTENT_BLOCKS = [
                     max_num=1,
                     label='Call To Action'
                 )),
-                ('accent_color', OpenStaxColorBlock(required=False,
-                    help_text='Accent color for this card: the border on rounded style, the top accent bar on square (needs Accent Size). Leave unset for the default palette.')),
-                ('divider_color', OpenStaxColorBlock(required=False,
-                    help_text='Color for divider lines in this card. Leave unset for the default palette.')),
+                ('config', blocks.StreamBlock([
+                    ('accent_color', OpenStaxColorBlock(help_text='Accent color for this card: the border on rounded style, the top accent bar on square (needs Accent Size). Leave unset for the default palette.')),
+                    ('divider_color', OpenStaxColorBlock(help_text='Color for divider lines in this card. Leave unset for the default palette.')),
+                ], block_counts={
+                    'accent_color': {'max_num': 1},
+                    'divider_color': {'max_num': 1},
+                }, required=False, collapsed=True)),
             ]),
         )),
         ('config', blocks.StreamBlock([
