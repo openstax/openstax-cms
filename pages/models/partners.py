@@ -10,7 +10,7 @@ from openstax.api_fields import ExpandedRichTextField
 from openstax.functions import build_image_url
 from openstax.preview import FrontendPreviewMixin
 
-from salesforce.models import PartnerTypeMapping, PartnerFieldNameMapping, PartnerCategoryMapping, Partner
+from salesforce import partner_filters
 
 from pages.custom_blocks import ImageBlock, \
     APIRichTextBlock
@@ -386,38 +386,15 @@ class PartnersPage(FrontendPreviewMixin, Page):
 
     @staticmethod
     def category_mapping():
-        field_mappings = PartnerCategoryMapping.objects.all()
-        mapping_dict = {}
-        field_name_mappings = PartnerFieldNameMapping.objects.values_list('salesforce_name', flat=True).filter(
-            hidden=False)
-        field_name_mappings = list(field_name_mappings)
-
-        for field in field_mappings:
-            if any(name.startswith(field.salesforce_name) for name in field_name_mappings):
-                mapping_dict[field.display_name] = field.salesforce_name
-
-        return mapping_dict
+        return partner_filters.category_mapping()
 
     @staticmethod
     def field_name_mapping():
-        field_mappings = PartnerFieldNameMapping.objects.filter(hidden=False)
-        mapping_dict = {}
-
-        for field in field_mappings:
-            mapping_dict[field.display_name] = field.salesforce_name
-
-        return mapping_dict
+        return partner_filters.field_name_mapping()
 
     @staticmethod
     def partner_type_choices():
-        partner_types_array = []
-        partner_type_mappings = PartnerTypeMapping.objects.all()
-        types_from_partners = Partner.objects.values_list('partner_type', flat=True).exclude(partner_type__isnull=True)
-        for partner_type in partner_type_mappings:
-            if any(p_type.lower().startswith(partner_type.display_name.lower()) for p_type in types_from_partners):
-                partner_types_array.append(partner_type.display_name)
-
-        return partner_types_array
+        return partner_filters.partner_type_choices()
 
     content_panels = [
         TitleFieldPanel('title', classname='full title', help_text="Internal name for page."),
