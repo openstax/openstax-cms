@@ -17,17 +17,18 @@ class ManualTableBlockTests(TestCase):
     def _value(self, **overrides):
         data = {
             'caption': 'OpenStax books',
-            'columns': [
-                {'header': 'Title', 'type': ''},
-                {'header': 'Published', 'type': 'date'},
-            ],
-            'rows': [
-                {'cells': [
-                    {'content': '<p>Biology 2e</p>', 'cta': []},
-                    {'content': '<p>2018</p>', 'cta': []},
-                ]},
-            ],
+            'manual': {
+                'columns': [
+                    {'type': 'text', 'heading': 'Title'},
+                    {'type': 'date', 'heading': 'Published'},
+                ],
+                'rows': [
+                    {'values': ['Biology 2e', '2018-01-01']},
+                ],
+                'caption': '',
+            },
             'config': [],
+            'data_source': [],
         }
         data.update(overrides)
         return data
@@ -40,21 +41,42 @@ class ManualTableBlockTests(TestCase):
         self.assertEqual(rep['columns'][0]['header'], 'Title')
         self.assertEqual(rep['columns'][1]['type'], 'date')
         cell = rep['rows'][0]['cells'][0]
-        self.assertIn('Biology 2e', cell['content'])
+        self.assertEqual(cell['content'], 'Biology 2e')
         self.assertEqual(cell['cta'], [])
+
+    def test_date_cell_formats_as_mm_dd_yyyy(self):
+        block = TableBlock()
+        value = block.to_python(self._value())
+        rep = block.get_api_representation(value)
+        self.assertEqual(rep['rows'][0]['cells'][1]['content'], '01/01/2018')
+
+    def test_rich_text_cell_expands_and_wraps_as_content(self):
+        block = TableBlock()
+        value = block.to_python(self._value(manual={
+            'columns': [{'type': 'rich_text', 'heading': 'Description'}],
+            'rows': [{'values': ['<p>Great book.</p>']}],
+            'caption': '',
+        }))
+        rep = block.get_api_representation(value)
+        self.assertEqual(rep['rows'][0]['cells'][0]['content'], '<p>Great book.</p>')
+        self.assertEqual(rep['rows'][0]['cells'][0]['cta'], [])
 
     def test_cta_cell_serializes_ctalink_shape(self):
         block = TableBlock()
-        value = block.to_python(self._value(rows=[
-            {'cells': [{'content': '', 'cta': [{
+        value = block.to_python(self._value(manual={
+            'columns': [{'type': 'cta', 'heading': 'Access'}],
+            'rows': [{'values': [[{
                 'text': 'View book',
                 'aria_label': '',
                 'target': [{'type': 'external', 'value': 'https://openstax.org/details/books/biology-2e'}],
                 'config': [],
-            }]}]},
-        ]))
+            }]]}],
+            'caption': '',
+        }))
         rep = block.get_api_representation(value)
-        cta = rep['rows'][0]['cells'][0]['cta'][0]
+        cell = rep['rows'][0]['cells'][0]
+        self.assertEqual(cell['content'], '')
+        cta = cell['cta'][0]
         self.assertEqual(cta['text'], 'View book')
         self.assertEqual(cta['target'], {
             'value': 'https://openstax.org/details/books/biology-2e',
@@ -148,9 +170,25 @@ class DynamicTableBlockTests(TestCase):
         block = TableBlock()
         value = block.to_python({
             'caption': '', 'data_source': [], 'config': [],
-            'columns': [{'header': 'A', 'type': ''}],
-            'rows': [{'cells': [{'content': '<p>x</p>', 'cta': []}]}],
+            'manual': {
+                'columns': [{'type': 'text', 'heading': 'A'}],
+                'rows': [{'values': ['x']}],
+                'caption': '',
+            },
         })
         rep = block.get_api_representation(value)
         self.assertEqual(rep['columns'][0]['header'], 'A')
-        self.assertIn('x', rep['rows'][0]['cells'][0]['content'])
+        self.assertEqual(rep['rows'][0]['cells'][0]['content'], 'x')
+
+
+class ManualFieldDefinitionTests(TestCase):
+    def test_manual_field_is_typed_table_block_with_expected_cell_types(self):
+        from wagtail.contrib.typed_table_block.blocks import TypedTableBlock
+
+        block = TableBlock()
+        manual_block = block.child_blocks['manual']
+        self.assertIsInstance(manual_block, TypedTableBlock)
+        self.assertEqual(
+            set(manual_block.child_blocks.keys()),
+            {'text', 'number', 'date', 'rich_text', 'cta'},
+        )

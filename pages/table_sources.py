@@ -1,5 +1,5 @@
 """Resolvers that turn a dynamic table data-source spec into renderer-shaped
-{columns, rows}. Output cells match the manual TableCellBlock API shape
+{columns, rows}. Output cells match the manual table's cell API shape
 ({'content': html, 'cta': [CTALink dict]}), so the flex renderer consumes
 manual and dynamic tables identically. All access is read-only."""
 

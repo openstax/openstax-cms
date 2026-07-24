@@ -275,6 +275,7 @@ INSTALLED_APPS = [
     'wagtail.search',
     'wagtail.contrib.redirects',
     'wagtail.contrib.simple_translation',
+    'wagtail.contrib.typed_table_block',
     'wagtail.locales',
     'wagtail.contrib.forms',
     'wagtail.sites',

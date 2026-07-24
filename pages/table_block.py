@@ -5,6 +5,7 @@ from django.core.cache import cache
 from sentry_sdk import capture_exception
 from wagtail import blocks
 from wagtail.snippets.blocks import SnippetChooserBlock
+from wagtail.contrib.typed_table_block.blocks import TypedTableBlock
 
 from openstax.api_fields import APIRichTextBlock
 from pages.shared_blocks import CTALinkBlock, id_config_block
@@ -14,12 +15,32 @@ from pages.table_sources import (
 )
 
 
-# User-facing column sort types (renderer uses these to pick a comparator).
-COLUMN_TYPE_CHOICES = [
-    ('text', 'Text'),
-    ('number', 'Number'),
-    ('date', 'Date'),
-]
+def _manual_cell_from_api_value(cell_type, api_value):
+    if cell_type == 'cta':
+        return {'content': '', 'cta': api_value or []}
+    if cell_type == 'date':
+        return {'content': api_value.strftime('%m/%d/%Y') if api_value else '', 'cta': []}
+    return {'content': api_value or '', 'cta': []}
+
+
+def _manual_table_representation(manual_rep, renderer_column_types):
+    """manual_rep is TypedTableBlock's own get_api_representation() output:
+    {'columns': [{'type': block_name, 'heading': str}], 'rows': [{'values': [...]}], 'caption': str}.
+    Reshapes it into the renderer's {'columns': [{'header', 'type'}], 'rows': [{'cells': [{'content','cta'}]}]}."""
+    columns = manual_rep['columns']
+    out_columns = [
+        {'header': col['heading'],
+         'type': col['type'] if col['type'] in renderer_column_types else 'text'}
+        for col in columns
+    ]
+    out_rows = []
+    for row in manual_rep['rows']:
+        cells = [
+            _manual_cell_from_api_value(col['type'], value)
+            for col, value in zip(columns, row['values'])
+        ]
+        out_rows.append({'cells': cells})
+    return {'columns': out_columns, 'rows': out_rows}
 
 
 def source_columns_block(choices):
@@ -153,37 +174,17 @@ class EndpointSourceBlock(blocks.StructBlock):
         icon = 'code'
 
 
-class TableCellBlock(blocks.StructBlock):
-    content = APIRichTextBlock(required=False,
-        help_text='Rich-text cell content. Ignored when a Call To Action is set.')
-    cta = blocks.ListBlock(CTALinkBlock(required=False, label='Link'),
-        default=[], max_num=1, label='Call To Action')
-
-    class Meta:
-        label = 'Cell'
-
-
-class TableColumnBlock(blocks.StructBlock):
-    header = blocks.CharBlock(required=True)
-    type = blocks.ChoiceBlock(choices=COLUMN_TYPE_CHOICES, required=False,
-        help_text='How readers sort this column. Default text.')
-
-    class Meta:
-        label = 'Column'
-
-
-class TableRowBlock(blocks.StructBlock):
-    cells = blocks.ListBlock(TableCellBlock(), default=[])
-
-    class Meta:
-        label = 'Row'
-
-
 class TableBlock(blocks.StructBlock):
     caption = blocks.CharBlock(required=False,
         help_text='Describes the table; rendered as a <caption> for accessibility.')
-    columns = blocks.ListBlock(TableColumnBlock(), default=[], label='Columns')
-    rows = blocks.ListBlock(TableRowBlock(), default=[], label='Rows')
+    manual = TypedTableBlock([
+        ('text', blocks.CharBlock(required=False)),
+        ('number', blocks.CharBlock(required=False)),
+        ('date', blocks.DateBlock(required=False)),
+        ('rich_text', APIRichTextBlock(required=False)),
+        ('cta', blocks.ListBlock(CTALinkBlock(required=False), default=[], max_num=1, label='CTA')),
+    ], required=False, label='Manual table',
+        help_text='Authored columns and rows. Ignored when a Data source is set below.')
     data_source = blocks.StreamBlock([
         ('books', BooksSourceBlock()),
         ('news', NewsSourceBlock()),
@@ -192,7 +193,7 @@ class TableBlock(blocks.StructBlock):
         ('endpoint', EndpointSourceBlock()),
     ], max_num=1, required=False, label='Data source',
         help_text='Fill the table from CMS content instead of manual rows. '
-                  'When set, manual Columns and Rows are ignored.')
+                  'When set, the manual table is ignored.')
     config = blocks.StreamBlock([
         ('striped', blocks.ChoiceBlock(choices=[('off', 'Off'), ('on', 'On')],
             help_text='Shade alternating rows. Default shade unless Row Colors is set.')),
@@ -239,9 +240,11 @@ class TableBlock(blocks.StructBlock):
         from pages import table_sources
 
         rep = super().get_api_representation(value, context)
+        manual_rep = rep.pop('manual')
         rep.pop('data_source', None)
         stream = value.get('data_source')
         if not stream:
+            rep.update(_manual_table_representation(manual_rep, table_sources.RENDERER_COLUMN_TYPES))
             return rep
 
         child = stream[0]
