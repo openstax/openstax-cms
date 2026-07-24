@@ -280,6 +280,7 @@ INSTALLED_APPS = [
     'wagtail.sites',
     'wagtail.api.v2',
     'wagtail.contrib.settings',
+    'wagtail_periodic_review',
 ]
 
 ####################

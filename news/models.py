@@ -21,6 +21,7 @@ from wagtail.api import APIField
 from wagtail.images.api.fields import ImageRenditionField
 from openstax.api_fields import ExpandedRichTextField
 from wagtail.models import Site
+from wagtail_periodic_review.models import PeriodicReviewMixin
 
 from modelcluster.fields import ParentalKey
 from modelcluster.contrib.taggit import ClusterTaggableManager
@@ -250,7 +251,7 @@ class NewsArticleRelatedPage(Orderable):
     related_page = models.ForeignKey('wagtailcore.Page', on_delete=models.CASCADE, related_name='+')
 
 
-class NewsArticle(FrontendPreviewMixin, Page):
+class NewsArticle(FrontendPreviewMixin, PeriodicReviewMixin, Page):
     date = models.DateField("Post date")
     heading = models.CharField(max_length=250, help_text="Heading displayed on website")
     subheading = models.CharField(max_length=250, blank=True, null=True)
@@ -428,6 +429,8 @@ class NewsArticle(FrontendPreviewMixin, Page):
         FieldPanel('search_description'),
         FieldPanel('promote_image')
     ]
+
+    settings_panels = PeriodicReviewMixin.review_panels + Page.settings_panels
 
     api_fields = [
         APIField('date'),

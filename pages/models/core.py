@@ -10,6 +10,7 @@ from wagtail_html_editor.blocks import EnhancedHTMLBlock
 from wagtail.fields import StreamField
 from wagtail.models import Orderable, Page
 from wagtail.api import APIField
+from wagtail_periodic_review.models import PeriodicReviewMixin
 
 from openstax.preview import FrontendPreviewMixin
 
@@ -170,7 +171,7 @@ class FlexPage(RootPage):
         return site_id, site_root_url, '/{}'.format(self.slug)
 
 
-class GeneralPage(FrontendPreviewMixin, Page):
+class GeneralPage(FrontendPreviewMixin, PeriodicReviewMixin, Page):
     body = StreamField([
         ('heading', blocks.CharBlock(classname="full title")),
         ('tagline', blocks.CharBlock(classname="full title")),
@@ -223,5 +224,7 @@ class GeneralPage(FrontendPreviewMixin, Page):
         FieldPanel('search_description'),
         FieldPanel('promote_image')
     ]
+
+    settings_panels = PeriodicReviewMixin.review_panels + Page.settings_panels
 
 

@@ -41,5 +41,6 @@ wagtail-autocomplete==0.12.0
 wagtail-color-panel>=1.8.1,<1.9.0
 wagtail-html-editor==1.0.1
 wagtail-modeladmin==2.4.0
+wagtail-periodic-review==0.5.0
 wagtail-transfer==0.11
 whitenoise==6.12.0
