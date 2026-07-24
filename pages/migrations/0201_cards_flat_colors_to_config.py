@@ -22,14 +22,20 @@ def _fix_stream(node):
                     continue
                 for field in ('accent_color', 'divider_color'):
                     color = card_value.pop(field, None)
-                    if color:
-                        config = card_value.setdefault('config', [])
-                        config.append({
-                            'type': field,
-                            'id': str(uuid.uuid4()),
-                            'value': color,
-                        })
-                        changed = True
+                    if not color:
+                        continue
+                    config = card_value.setdefault('config', [])
+                    if not isinstance(config, list):
+                        config = []
+                        card_value['config'] = config
+                    if any(isinstance(item, dict) and item.get('type') == field for item in config):
+                        continue
+                    config.append({
+                        'type': field,
+                        'id': str(uuid.uuid4()),
+                        'value': color,
+                    })
+                    changed = True
         for value in node.values():
             changed = _fix_stream(value) or changed
     return changed
