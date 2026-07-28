@@ -605,19 +605,19 @@ class BookResourcesSourceTests(BooksSourceTests):
         from snippets.models import Subject
         from pages.table_sources import resolve_book_resources
         book = self._make_book_with_resources()
-        physics = Subject.objects.create(name='Science', locale=book.locale)
-        BookSubjects.objects.create(book_subject=book, subject=physics)
-        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
-            other = self._make_book(title='Art History', slug='art-history')
-        art = Subject.objects.create(name='Arts', locale=book.locale)
-        BookSubjects.objects.create(book_subject=other, subject=art)
+        science = Subject.objects.create(name='Science', locale=book.locale)
+        arts = Subject.objects.create(name='Arts', locale=book.locale)
+        BookSubjects.objects.create(book_subject=book, subject=science)
 
-        result = resolve_book_resources({
-            'books': [], 'subject': physics, 'resource_type': 'instructor',
-            'columns': [{'field': 'heading', 'header': '', 'type': ''}],
-        })
-        self.assertEqual([r['cells'][0]['content'] for r in result['rows']],
+        cols = [{'field': 'heading', 'header': '', 'type': ''}]
+        matched = resolve_book_resources({
+            'books': [], 'subject': science, 'resource_type': 'instructor', 'columns': cols})
+        self.assertEqual([r['cells'][0]['content'] for r in matched['rows']],
                          ['Instructor Getting Started Guide'])
+        # A subject the book isn't in returns nothing.
+        missed = resolve_book_resources({
+            'books': [], 'subject': arts, 'resource_type': 'instructor', 'columns': cols})
+        self.assertEqual(missed['rows'], [])
 
     def test_k12_subject_filter_selects_matching_books(self):
         from books.models import K12BookSubjects
