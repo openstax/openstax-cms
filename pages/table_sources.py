@@ -203,8 +203,23 @@ RESOURCE_FIELDS = {
 }
 
 
+def _resource_books(config):
+    """Books whose resources fill the table. Explicit picks win; otherwise all
+    listed books, narrowed by HE subject and/or K12 subject area if set."""
+    manual = [b.specific for b in (config.get('books') or []) if b]
+    if manual:
+        return manual
+    from books.models import Book
+    qs = Book.objects.live().exclude(book_state__in=['unlisted', 'retired'])
+    if config.get('subject'):
+        qs = qs.filter(book_subjects__subject=config['subject'])
+    if config.get('k12_subject'):
+        qs = qs.filter(k12book_subjects__subject=config['k12_subject'])
+    return list(qs.distinct().order_by('title'))
+
+
 def resolve_book_resources(config):
-    books = [b.specific for b in (config.get('books') or []) if b]
+    books = _resource_books(config)
     if not books:
         return {'columns': [], 'rows': []}
     student = config.get('resource_type') == 'student'

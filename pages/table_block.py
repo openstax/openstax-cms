@@ -93,11 +93,18 @@ def resource_category_choices():
 
 
 class BookResourcesSourceBlock(blocks.StructBlock):
+    subject = SnippetChooserBlock('snippets.Subject', required=False,
+        help_text='All books in this Higher Ed subject. Leave empty for all subjects.')
+    k12_subject = SnippetChooserBlock('snippets.K12Subject', required=False,
+        help_text='All books in this K12 subject area. Combine with the subject '
+                  'above to require both.')
     books = blocks.ListBlock(
         blocks.PageChooserBlock(page_type=['books.Book']),
-        min_num=1, label='Books',
-        help_text='The book(s) whose resources fill the table. A resource shared '
-                  'across several books is listed once, with all its book names.')
+        required=False, label='Specific books',
+        help_text='Pick individual books instead. When set, the subject filters '
+                  'above are ignored. Leave empty to use the subjects above — or, '
+                  'with no filters at all, every book. A resource shared across '
+                  'several books is listed once, with all its book names.')
     resource_type = blocks.ChoiceBlock(choices=[
         ('instructor', 'Instructor resources'),
         ('student', 'Student resources'),
