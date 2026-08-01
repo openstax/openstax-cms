@@ -34,3 +34,9 @@ class ConfigStreamsCollapsedTests(TestCase):
         body_stream_block = RootPage._meta.get_field('body').stream_block
         tabbed_content = body_stream_block.child_blocks['tabbed_content']
         self.assertTrue(tabbed_content.child_blocks['config'].meta.collapsed)
+
+    def test_accordion_config_collapsed(self):
+        accordion = dict(BASE_CONTENT_BLOCKS)['accordion']
+        self.assertTrue(accordion.child_blocks['config'].meta.collapsed)
+        item_block = accordion.child_blocks['items'].child_block
+        self.assertTrue(item_block.child_blocks['config'].meta.collapsed)
