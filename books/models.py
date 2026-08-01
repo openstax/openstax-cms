@@ -133,7 +133,6 @@ class OrientationFacultyResource(models.Model):
     resource_heading = models.CharField(max_length=255, null=True)
     resource_description = RichTextField(blank=True, null=True)
     resource_unlocked = models.BooleanField(default=False)
-    creator_fest_resource = models.BooleanField(default=False)
 
     link_external = models.URLField("External link", blank=True,
                                     help_text="Provide an external URL starting with https:// (or fill out either one of the following two).")
@@ -173,7 +172,6 @@ class OrientationFacultyResource(models.Model):
         APIField('resource_heading'),
         APIField('resource_description', serializer=ExpandedRichTextField()),
         APIField('resource_unlocked'),
-        APIField('creator_fest_resource'),
         APIField('link_external'),
         APIField('link_page'),
         APIField('link_document_url'),
@@ -188,7 +186,6 @@ class OrientationFacultyResource(models.Model):
         FieldPanel('resource_heading'),
         FieldPanel('resource_description'),
         FieldPanel('resource_unlocked'),
-        FieldPanel('creator_fest_resource'),
         FieldPanel('link_external'),
         PageChooserPanel('link_page'),
         FieldPanel('link_document'),
@@ -227,11 +224,6 @@ class FacultyResources(models.Model):
         return self.resource.resource_icon
 
     resource_icon = property(get_resource_icon)
-
-    def get_resource_creator_fest_resource(self):
-        return self.resource.creator_fest_resource
-
-    creator_fest_resource = property(get_resource_creator_fest_resource)
 
     link_external = models.URLField("External link", default='', blank=True,
                                     help_text="Provide an external URL starting with https:// (or fill out either one of the following two).")
@@ -283,7 +275,6 @@ class FacultyResources(models.Model):
         APIField('resource_description', serializer=ExpandedRichTextField()),
         APIField('resource_unlocked'),
         APIField('resource_icon'),
-        APIField('creator_fest_resource'),
         APIField('link_external'),
         APIField('link_page'),
         APIField('link_document_url'),

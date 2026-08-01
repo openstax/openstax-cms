@@ -480,8 +480,7 @@ class BookTests(WagtailPageTestCase):
 
         faculty_resource = snippets.models.FacultyResource(heading="Instructor Getting Started Guide",
                                                            description="<p data-block-key=\"6o2yl\">Download our helpful guide to all things OpenStax.<br/></p>",
-                                                           unlocked_resource=False,
-                                                           creator_fest_resource=False)
+                                                           unlocked_resource=False)
         faculty_resource.save()
 
         book_faculty_resource = BookFacultyResources.objects.create(link_external="https://openstax.org",
@@ -543,14 +542,12 @@ class BookTests(WagtailPageTestCase):
 
         faculty_resource = snippets.models.FacultyResource(heading="Visible Resource",
                                                            description="Visible",
-                                                           unlocked_resource=False,
-                                                           creator_fest_resource=False)
+                                                           unlocked_resource=False)
         faculty_resource.save()
 
         hidden_faculty_resource = snippets.models.FacultyResource(heading="Hidden Resource",
                                                                    description="Hidden",
-                                                                   unlocked_resource=False,
-                                                                   creator_fest_resource=False)
+                                                                   unlocked_resource=False)
         hidden_faculty_resource.save()
 
         BookFacultyResources.objects.create(link_external="https://openstax.org",
@@ -583,14 +580,12 @@ class BookTests(WagtailPageTestCase):
 
         faculty_resource = snippets.models.FacultyResource(heading="Visible Resource",
                                                            description="Visible",
-                                                           unlocked_resource=False,
-                                                           creator_fest_resource=False)
+                                                           unlocked_resource=False)
         faculty_resource.save()
 
         hidden_faculty_resource = snippets.models.FacultyResource(heading="Hidden Resource",
                                                                    description="Hidden",
-                                                                   unlocked_resource=False,
-                                                                   creator_fest_resource=False)
+                                                                   unlocked_resource=False)
         hidden_faculty_resource.save()
 
         BookFacultyResources.objects.create(link_external="https://openstax.org",
@@ -756,14 +751,12 @@ class BookTests(WagtailPageTestCase):
 
         faculty_resource = snippets.models.FacultyResource(heading="Resource 1",
                                                            description="First",
-                                                           unlocked_resource=False,
-                                                           creator_fest_resource=False)
+                                                           unlocked_resource=False)
         faculty_resource.save()
 
         faculty_resource_2 = snippets.models.FacultyResource(heading="Resource 2",
                                                               description="Second",
-                                                              unlocked_resource=False,
-                                                              creator_fest_resource=False)
+                                                              unlocked_resource=False)
         faculty_resource_2.save()
 
         BookFacultyResources.objects.create(link_external="https://openstax.org/1",
