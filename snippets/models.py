@@ -96,7 +96,6 @@ class FacultyResource(TranslatableMixin, index.Indexed, models.Model):
     heading = models.CharField(max_length=255)
     description = RichTextField(blank=True, null=True)
     unlocked_resource = models.BooleanField(default=False)
-    creator_fest_resource = models.BooleanField(default=False)
     icon = models.ForeignKey(
         'wagtailimages.Image',
         null=True,
@@ -112,7 +111,7 @@ class FacultyResource(TranslatableMixin, index.Indexed, models.Model):
 
     resource_icon = property(get_resource_icon)
 
-    api_fields = ('heading', APIField('description', serializer=ExpandedRichTextField()), 'unlocked_resource', 'creator_fest_resource',  'resource_icon', 'resource_category')
+    api_fields = ('heading', APIField('description', serializer=ExpandedRichTextField()), 'unlocked_resource', 'resource_icon', 'resource_category')
 
     class Meta(TranslatableMixin.Meta):
         constraints = [
@@ -123,7 +122,6 @@ class FacultyResource(TranslatableMixin, index.Indexed, models.Model):
         FieldPanel('heading'),
         FieldPanel('description'),
         FieldPanel('unlocked_resource'),
-        FieldPanel('creator_fest_resource'),
         FieldPanel('icon'),
         FieldPanel('resource_category')
     ]
