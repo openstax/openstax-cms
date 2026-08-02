@@ -130,7 +130,7 @@ class APIImageChooserBlock(ImageChooserBlock):
             return None
 
 class QuoteBlock(StructBlock):
-    image = APIImageChooserBlock()
+    image = APIImageChooserBlock(required=False, help_text="Optional profile image for the quote.")
     content = APIRichTextBlock(help_text="The quote content.")
     name = blocks.CharBlock(help_text="The name of the person or entity to attribute the quote to.")
     title = blocks.CharBlock(required=False, help_text="Additional title or label about the quotee.")
