@@ -11,10 +11,11 @@ from pages.custom_blocks import APIImageChooserBlock, \
     QuoteBlock, \
     BookBlock, \
     PersonBlock, \
+    BigNumberBlock, \
+    BigNumbersBlock, \
     CARDS_STYLE_CHOICES, \
     CARDS_LAYOUT_CHOICES, \
     TEXT_ALIGNMENT_CHOICES, \
-    WELL_LAYOUT_CHOICES, \
     WELL_HEADING_STYLE_CHOICES, \
     FLEX_CHOICES
 
@@ -85,15 +86,8 @@ BASE_CONTENT_BLOCKS = [
     ('cta_block', CTAButtonBarBlock()),
     ('links_group', LinksGroupBlock()),
     ('quote', QuoteBlock()),
-    ('big_number', blocks.StructBlock([
-        ('number', blocks.CharBlock(help_text='The statistic to display large, e.g. 8M+.')),
-        ('caption', blocks.CharBlock(required=False, help_text='Optional supporting text shown below the number.')),
-        ('color', blocks.ChoiceBlock(required=False, choices=[
-            ('blue', 'Blue'),
-            ('green', 'Green'),
-            ('orange', 'Orange'),
-        ], help_text='Brand color for the number. Defaults to the inherited text color.')),
-    ], label="Big Number")),
+    ('big_number', BigNumberBlock()),
+    ('big_numbers', BigNumbersBlock()),
     ('faq', blocks.StreamBlock([
         ('faq', FAQBlock()),
     ])),
@@ -154,10 +148,8 @@ SECTION_CONTENT_BLOCKS = BASE_CONTENT_BLOCKS + [
                 error_messages={'invalid': 'not a valid size.'}
             )),
             ('text_alignment', blocks.ChoiceBlock(choices=TEXT_ALIGNMENT_CHOICES, help_text='Text alignment inside the well. Default left.')),
-            ('layout', blocks.ChoiceBlock(choices=WELL_LAYOUT_CHOICES,
-                help_text='How the well lays out its content blocks. "Wrap" puts them side by side (e.g. a row of Big Numbers), reflowing to fewer per row as the screen narrows. Default stack.')),
             ('heading_style', blocks.ChoiceBlock(choices=WELL_HEADING_STYLE_CHOICES,
-                help_text='Renders a Text block\'s h6 headings as a large, fluid-sized display quote (e.g. a testimonial pull-quote) instead of regular heading size. Default normal.')),
+                help_text='Display Quote makes any level-6 heading (H6) inside this well render as a large, oversized pull-quote — for short testimonial-style lines. Normal leaves headings at their usual size.')),
             ('analytics_label', blocks.CharBlock(required=False, help_text='Sets the "analytics nav" field for links within this well.')),
             ('id', id_config_block()),
         ], block_counts={
@@ -171,7 +163,6 @@ SECTION_CONTENT_BLOCKS = BASE_CONTENT_BLOCKS + [
             'pull_up': {'max_num': 1},
             'width': {'max_num': 1},
             'text_alignment': {'max_num': 1},
-            'layout': {'max_num': 1},
             'heading_style': {'max_num': 1},
             'analytics_label': {'max_num': 1},
             'id': {'max_num': 1},
