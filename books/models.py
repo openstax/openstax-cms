@@ -154,12 +154,12 @@ class OrientationFacultyResource(models.Model):
     )
 
     def get_link_document(self):
-        return build_document_url(self.link_document.url)
+        return self.link_document and build_document_url(self.link_document.url)
 
     link_document_url = property(get_link_document)
 
     def get_document_title(self):
-        return self.link_document.title
+        return self.link_document and self.link_document.title
 
     link_document_title = property(get_document_title)
 
@@ -205,23 +205,25 @@ class FacultyResources(models.Model):
         on_delete=models.SET_NULL
     )
 
+    # The resource snippet is SET_NULL, so a deleted snippet leaves rows with
+    # resource=None — every derived property has to survive that.
     def get_resource_heading(self):
-        return self.resource.heading
+        return self.resource and self.resource.heading
 
     resource_heading = property(get_resource_heading)
 
     def get_resource_description(self):
-        return self.resource.description
+        return self.resource and self.resource.description
 
     resource_description = property(get_resource_description)
 
     def get_resource_unlocked(self):
-        return self.resource.unlocked_resource
+        return self.resource and self.resource.unlocked_resource
 
     resource_unlocked = property(get_resource_unlocked)
 
     def get_resource_icon(self):
-        return self.resource.resource_icon
+        return self.resource and self.resource.resource_icon
 
     resource_icon = property(get_resource_icon)
 
@@ -245,12 +247,12 @@ class FacultyResources(models.Model):
     )
 
     def get_link_document(self):
-        return build_document_url(self.link_document.url)
+        return self.link_document and build_document_url(self.link_document.url)
 
     link_document_url = property(get_link_document)
 
     def get_document_title(self):
-        return self.link_document.title
+        return self.link_document and self.link_document.title
 
     link_document_title = property(get_document_title)
 
@@ -266,7 +268,7 @@ class FacultyResources(models.Model):
     hidden = models.BooleanField(default=False, help_text="Hide this resource from the live book page")
 
     def get_resource_category(self):
-        return self.resource.resource_category
+        return self.resource and self.resource.resource_category
 
     resource_category = property(get_resource_category)
 
@@ -317,23 +319,24 @@ class StudentResources(models.Model):
         on_delete=models.SET_NULL
     )
 
+    # See FacultyResources: resource is SET_NULL and can be None.
     def get_resource_heading(self):
-        return self.resource.heading
+        return self.resource and self.resource.heading
 
     resource_heading = property(get_resource_heading)
 
     def get_resource_description(self):
-        return self.resource.description
+        return self.resource and self.resource.description
 
     resource_description = property(get_resource_description)
 
     def get_resource_unlocked(self):
-        return self.resource.unlocked_resource
+        return self.resource and self.resource.unlocked_resource
 
     resource_unlocked = property(get_resource_unlocked)
 
     def get_resource_icon(self):
-        return self.resource.resource_icon
+        return self.resource and self.resource.resource_icon
 
     resource_icon = property(get_resource_icon)
 
@@ -357,12 +360,12 @@ class StudentResources(models.Model):
     )
 
     def get_link_document(self):
-        return build_document_url(self.link_document.url)
+        return self.link_document and build_document_url(self.link_document.url)
 
     link_document_url = property(get_link_document)
 
     def get_document_title(self):
-        return self.link_document.title
+        return self.link_document and self.link_document.title
 
     link_document_title = property(get_document_title)
 
@@ -375,7 +378,7 @@ class StudentResources(models.Model):
     hidden = models.BooleanField(default=False, help_text="Hide this resource from the live book page")
 
     def get_resource_category(self):
-        return self.resource.resource_category
+        return self.resource and self.resource.resource_category
 
     resource_category = property(get_resource_category)
 

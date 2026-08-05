@@ -498,6 +498,46 @@ class BookTests(WagtailPageTestCase):
         response = self.client.get('/apps/cms/api/books/resources/?slug=university-physics&x=y')
         self.assertEqual(response.data['book_faculty_resources'][0]['link_external'], '')
 
+    def test_resources_api_survives_deleted_resource_snippet(self):
+        """Deleting a resource snippet SET_NULLs the FK; the API must not 500."""
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            book = Book(title="University Physics",
+                        slug="university-physics",
+                        cnx_id='031da8d3-b525-429c-80cf-6c8ed997733a',
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test Book",
+                        cover=self.test_doc,
+                        title_image=self.test_doc,
+                        publish_date=datetime.date.today(),
+                        locale=root_page.locale
+                        )
+            book_index.add_child(instance=book)
+
+        faculty_resource = snippets.models.FacultyResource.objects.create(heading="Orphan me")
+        student_resource = snippets.models.StudentResource.objects.create(heading="Orphan me too")
+        BookFacultyResources.objects.create(link_external="https://openstax.org", link_text="Go!",
+                                            resource=faculty_resource, book_faculty_resource=book)
+        BookStudentResources.objects.create(link_external="https://openstax.org", link_text="Go!",
+                                            resource=student_resource, book_student_resource=book)
+        faculty_resource.delete()
+        student_resource.delete()
+
+        # the page API is where the resource_* properties are serialized
+        response = self.client.get('/apps/cms/api/v2/pages/{}/'.format(book.pk))
+        self.assertEqual(response.status_code, 200)
+        for key in ('book_faculty_resources', 'book_student_resources'):
+            resource = response.data[key][0]
+            self.assertIsNone(resource['resource_description'])
+            self.assertIsNone(resource['resource_heading'])
+            self.assertIsNone(resource['link_document_url'])
+
+        # ...and the resources endpoint reads the nested snippet directly
+        response = self.client.get('/apps/cms/api/books/resources/?slug=university-physics')
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNone(response.data['book_faculty_resources'][0]['resource'])
+
     def test_bad_faculty_resources_slug(self):
         response = self.client.get('/apps/cms/api/books/resources/?slug=university-physic')
         self.assertEqual(response.data, {})
