@@ -156,11 +156,11 @@ class ErrataAdminSharedInstanceTest(TestCase):
         vendor_request = rf.get('/errata/add/')
         vendor_request.user = vendor_user
 
-        # Mirrors Django's own _changeform_view: get_fieldsets() runs for one
-        # user, then get_form() runs for a *different* user before the first
-        # request finishes - the interleaving that produced the "Unknown
-        # field(s) specified for Errata" 500s in production.
-        errata_admin.get_form(plain_request, None)
+        # Mirrors the cross-request interleaving in Django’s _changeform_view:
+        # one request runs get_form() (mutating admin state in the pre-fix code),
+        # then another request runs get_fieldsets() followed by get_form() using
+        # those fieldsets. That mismatch is what produced the "Unknown field(s)
+        # specified for Errata" 500s in production.
         fieldsets = errata_admin.get_fieldsets(vendor_request, None)
         form_class = errata_admin.get_form(vendor_request, None, fields=flatten_fieldsets(fieldsets))
 

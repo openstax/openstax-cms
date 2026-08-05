@@ -165,7 +165,7 @@ class ErrataAdmin(ImportExportActionModelAdmin, VersionAdmin):
     def get_list_display(self, request):
         if self._is_content_manager(request):
             return ['id', 'book_title', 'created', 'modified', 'short_detail', 'number_of_errors', 'status', 'error_type', 'resource', 'location', 'additional_location_information', 'resolution', 'archived', 'junk']
-        return ['id', 'book_title', 'created', 'short_detail', 'status', 'error_type', 'resource', 'location', 'created', 'archived']
+        return ['id', 'book_title', 'created', 'short_detail', 'status', 'error_type', 'resource', 'location', 'archived']
 
     def get_list_filter(self, request):
         filters = [
@@ -212,10 +212,18 @@ class ErrataAdmin(ImportExportActionModelAdmin, VersionAdmin):
                 'internal_notes', 'resolution_notes', 'resolution_date', 'error_type', 'number_of_errors',
                 'resource', 'accounts_link', 'file_1', 'file_2']
 
+    save_as = True
+
+    def changeform_view(self, request, object_id=None, form_url='', extra_context=None):
+        if request.method == 'POST' and '_saveasnew' in request.POST and not (self._is_content_manager(request) or self._is_editorial_vendor(request)):
+            post = request.POST.copy()
+            post.pop('_saveasnew', None)
+            request.POST = post
+        return super().changeform_view(request, object_id, form_url, extra_context)
+
     def render_change_form(self, request, context, add=False, change=False, form_url='', obj=None):
-        response = super().render_change_form(request, context, add, change, form_url, obj)
-        response.context_data['save_as'] = self._is_content_manager(request) or self._is_editorial_vendor(request)
-        return response
+        context['save_as'] = self._is_content_manager(request) or self._is_editorial_vendor(request)
+        return super().render_change_form(request, context, add, change, form_url, obj)
 
 admin.site.register(Errata, ErrataAdmin)
 admin.site.register(BlockedUser, BlockedUserAdmin)
