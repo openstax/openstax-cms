@@ -40,11 +40,6 @@ CARDS_LAYOUT_CHOICES = [
     ('masonry', 'Masonry (Pinterest-style columns, packed by height)'),
 ]
 
-WELL_LAYOUT_CHOICES = [
-    ('stack', 'Stack'),
-    ('wrap', 'Wrap (side by side, reflowing to fewer per row on narrow screens)'),
-]
-
 WELL_HEADING_STYLE_CHOICES = [
     ('normal', 'Normal'),
     ('display', 'Display Quote'),
@@ -202,6 +197,30 @@ class ColumnBlock(blocks.StructBlock):
 
     class Meta:
         icon = 'placeholder'
+
+
+class BigNumberBlock(blocks.StructBlock):
+    number = blocks.CharBlock(help_text='The statistic to display large, e.g. 8M+.')
+    caption = blocks.CharBlock(required=False, help_text='Optional supporting text shown below the number.')
+    color = blocks.ChoiceBlock(required=False, choices=[
+        ('blue', 'Blue'),
+        ('green', 'Green'),
+        ('orange', 'Orange'),
+    ], help_text='Brand color for the number. Defaults to the inherited text color.')
+
+    class Meta:
+        icon = 'placeholder'
+        label = 'Big Number'
+
+
+class BigNumbersBlock(blocks.StructBlock):
+    content = blocks.StreamBlock([
+        ('big_number', BigNumberBlock()),
+    ], required=False)
+
+    class Meta:
+        icon = 'placeholder'
+        label = 'Big Numbers'
 
 
 class FAQBlock(blocks.StructBlock):
