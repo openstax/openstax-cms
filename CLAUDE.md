@@ -148,6 +148,24 @@ publishes** (a human reviews and publishes in the Wagtail admin).
 Wagtail 7.4 note: prefer **deferred validation** for draft saves (required-field
 checks happen at publish time) and `ImageRenditionField` for headless images.
 
+## Home Page Workflow (Promote to Home)
+
+The `RootPage` (site root, serves `/`) never moves between environments — it was
+created after the wagtail-transfer preseed, so its ID differs per env and
+transfers would duplicate it (and drag the whole child tree along). Instead:
+
+1. Stage a homepage redesign as a **FlexPage** (previewable at `/<slug>`,
+   transferable between envs — first transfer creates the ID mapping).
+2. On the target env, use **"Promote to home page"** (button on FlexPages in
+   the page listing "..." menu and editor header) — it copies `layout`, `body`,
+   `school`, `promote_image`, `seo_title`, `search_description` onto that env's
+   RootPage as a **draft revision only**. A human reviews and publishes.
+
+Service: `pages/promote_home.py` (`promote_to_home(flex_page, user)`); view/hooks:
+`pages/views_promote.py`, `pages/wagtail_hooks.py`. Rollback = revision revert.
+Note: `RootPage.max_count = 1` is dead code (MTI — `RootPage.objects.count()`
+includes FlexPages), left in place deliberately.
+
 ## Additional Documentation
 
 - [CMS Editing Documentation](https://openstax.atlassian.net/wiki/spaces/BIT/pages/2193391617/CMS+Editing)

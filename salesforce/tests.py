@@ -295,6 +295,33 @@ class SyncThankYouNotesCommandTest(TestCase):
         self.assertNotIn('Accounts_UUID__c', payload)
         capture_exception.assert_not_called()
 
+    @patch('salesforce.management.commands.sync_thank_you_notes.capture_exception')
+    @patch('salesforce.management.commands.sync_thank_you_notes.Salesforce')
+    def test_missing_find_me_a_home_school_does_not_crash_the_batch(self, salesforce, capture_exception):
+        # simulates update_schools not having synced the "Find Me A Home" placeholder account
+        School.objects.filter(name='Find Me A Home').delete()
+        note = ThankYouNote.objects.create(
+            thank_you_note='OpenStax saved me a fortune, thank you!',
+            first_name='Sam',
+            last_name='Lee',
+            institution='Some Unmatched School',
+            contact_email_address='sam@example.com',
+            source='PDF download',
+        )
+
+        sf = salesforce.return_value.__enter__.return_value
+        sf.Thank_You_Note__c.create.return_value = {'id': 'a01nohome'}
+
+        call_command('sync_thank_you_notes')
+
+        sf.Thank_You_Note__c.create.assert_called_once()
+        payload = sf.Thank_You_Note__c.create.call_args.args[0]
+        self.assertIsNone(payload['Related_Account__c'])
+        capture_exception.assert_called()
+
+        note.refresh_from_db()
+        self.assertEqual(note.salesforce_id, 'a01nohome')
+
 
 class AdoptionOpportunityTest(TestCase):
     def setUp(self):

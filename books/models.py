@@ -53,26 +53,32 @@ def cleanhtml(raw_html):
 
 
 def prefetch_book_resources(queryset):
-    """Prefetch related faculty and student resources for a queryset of books."""
+    """Prefetch related faculty and student resources for a queryset of books.
+
+    Filtered to hidden=False to match HiddenFilterChildRelationField, which
+    excludes hidden resources from the API's own resource list — a book with
+    only hidden resources should read as having none.
+    """
     return queryset.prefetch_related(
-        models.Prefetch('bookfacultyresources_set', queryset=BookFacultyResources.objects.all(), to_attr='prefetched_faculty_resources'),
-        models.Prefetch('bookstudentresources_set', queryset=BookStudentResources.objects.all(), to_attr='prefetched_student_resources')
+        models.Prefetch('book_faculty_resources', queryset=BookFacultyResources.objects.filter(hidden=False), to_attr='prefetched_faculty_resources'),
+        models.Prefetch('book_student_resources', queryset=BookStudentResources.objects.filter(hidden=False), to_attr='prefetched_student_resources')
     )
 
 def get_book_data(book):
     has_faculty_resources = hasattr(book, 'prefetched_faculty_resources') and bool(book.prefetched_faculty_resources)
     has_student_resources = hasattr(book, 'prefetched_student_resources') and bool(book.prefetched_student_resources)
     try:
+        subjects = book.subjects()
         return {
             'id': book.id,
             'slug': f'books/{book.slug}',
             'book_state': book.book_state,
             'title': book.title,
-            'subjects': book.subjects(),
+            'subjects': subjects,
             'subject_categories': book.subject_categories,
             'k12subject': book.k12subjects(),
             'is_ap': book.is_ap,
-            'is_hs': 'High School' in book.subjects(),
+            'is_hs': 'High School' in subjects,
             'cover_url': book.cover_url,
             'cover_color': book.cover_color,
             'pdf_url': book.pdf_url,
@@ -127,7 +133,6 @@ class OrientationFacultyResource(models.Model):
     resource_heading = models.CharField(max_length=255, null=True)
     resource_description = RichTextField(blank=True, null=True)
     resource_unlocked = models.BooleanField(default=False)
-    creator_fest_resource = models.BooleanField(default=False)
 
     link_external = models.URLField("External link", blank=True,
                                     help_text="Provide an external URL starting with https:// (or fill out either one of the following two).")
@@ -167,7 +172,6 @@ class OrientationFacultyResource(models.Model):
         APIField('resource_heading'),
         APIField('resource_description', serializer=ExpandedRichTextField()),
         APIField('resource_unlocked'),
-        APIField('creator_fest_resource'),
         APIField('link_external'),
         APIField('link_page'),
         APIField('link_document_url'),
@@ -182,7 +186,6 @@ class OrientationFacultyResource(models.Model):
         FieldPanel('resource_heading'),
         FieldPanel('resource_description'),
         FieldPanel('resource_unlocked'),
-        FieldPanel('creator_fest_resource'),
         FieldPanel('link_external'),
         PageChooserPanel('link_page'),
         FieldPanel('link_document'),
@@ -221,11 +224,6 @@ class FacultyResources(models.Model):
         return self.resource.resource_icon
 
     resource_icon = property(get_resource_icon)
-
-    def get_resource_creator_fest_resource(self):
-        return self.resource.creator_fest_resource
-
-    creator_fest_resource = property(get_resource_creator_fest_resource)
 
     link_external = models.URLField("External link", default='', blank=True,
                                     help_text="Provide an external URL starting with https:// (or fill out either one of the following two).")
@@ -277,7 +275,6 @@ class FacultyResources(models.Model):
         APIField('resource_description', serializer=ExpandedRichTextField()),
         APIField('resource_unlocked'),
         APIField('resource_icon'),
-        APIField('creator_fest_resource'),
         APIField('link_external'),
         APIField('link_page'),
         APIField('link_document_url'),
@@ -690,11 +687,11 @@ class Book(FrontendPreviewMixin, Page):
 
     polish_site_link = models.URLField(blank=True, null=True,
                                        help_text="Stores target URL to the Polish site so that REX Polish page headers lead back to each individual book on the Polish site")
-    salesforce_abbreviation = models.CharField(max_length=255, blank=True, null=True, verbose_name='Subject Book Name',
-                                               help_text='This should match the Books Name from Salesforce.')
-    salesforce_name = models.CharField(max_length=255, blank=True, null=True,
-                                       verbose_name='Name displayed on website forms',
-                                       help_text='This is the name shown on interest/adoption forms and used in Partner filtering. The website only shows unique values from here, so it is possible to combine books for forms')
+    salesforce_abbreviation = models.CharField(max_length=255, blank=True, null=True,
+                                               verbose_name='Name displayed on website forms',
+                                               help_text='This is the name shown on interest/adoption forms and used in Partner filtering. The website only shows unique values from here, so it is possible to combine books for forms')
+    salesforce_name = models.CharField(max_length=255, blank=True, null=True, verbose_name='Subject Book Name',
+                                       help_text='This should match the Books Name from Salesforce.')
     salesforce_book_id = models.CharField(max_length=255, blank=True, null=True,
                                           help_text='No tracking and not included on adoption and interest forms if left blank)')
     updated = models.DateTimeField(blank=True, null=True, help_text='Late date web content was updated')
@@ -1133,6 +1130,11 @@ class Book(FrontendPreviewMixin, Page):
 
     @property
     def errata_content(self):
+        # BookBlock.bulk_to_python prefetches this per (book_state, locale)
+        # combo instead of per book, since it's not a real FK and a block's
+        # books usually share just a handful of combos.
+        if hasattr(self, '_prefetched_errata_content'):
+            return self._prefetched_errata_content.content
         if self.locale == 'es':
             return snippets.ErrataContent.objects.filter(locale=self.locale).first().content
         return snippets.ErrataContent.objects.filter(book_state=self.book_state, locale=self.locale).first().content

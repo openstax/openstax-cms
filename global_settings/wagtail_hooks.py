@@ -105,19 +105,6 @@ def register_clear_cache_menu_item():
     return MenuItem('Clear Cloudfront Cache', reverse('clear_entire_cache'), classname='icon icon-bin', order=11000)
 
 
-@hooks.register('register_admin_urls')
-def register_experiments_guide_url():
-    return [path('experiments/', views.experiments_guide, name='experiments_guide')]
-
-
-@hooks.register('register_settings_menu_item')
-def register_experiments_menu_item():
-    return MenuItem(
-        'Experiments & Measurement',
-        reverse('experiments_guide'),
-        icon_name='bulb',
-        order=9000,
-    )
 # --- Wagtail Transfer "Import" menu ----------------------------------------
 # The package only shows its Import menu item once WAGTAILTRANSFER_SOURCES is
 # configured, so it is invisible on a fresh/local environment with no sources.

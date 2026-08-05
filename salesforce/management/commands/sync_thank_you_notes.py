@@ -31,7 +31,9 @@ class Command(BaseCommand):
                     note.save()
 
 
-                account_id = school_list["Find Me A Home"]
+                account_id = school_list.get("Find Me A Home")
+                if account_id is None:
+                    capture_exception(Exception('School "Find Me A Home" not found — run update_schools'))
 
                 # If note has a school name, see if we can match it and use that account id when creating
                 if note.institution:
@@ -44,7 +46,7 @@ class Command(BaseCommand):
                             account_id = school_list[best_match]
                         else:
                             capture_exception(Exception(f"Could not find a match for {school_string}"))
-                            account_id = school_list["Find Me A Home"]
+                            account_id = school_list.get("Find Me A Home")
 
                 message = (note.thank_you_note or "").strip()
                 if not message and note.account_uuid:

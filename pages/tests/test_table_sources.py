@@ -400,6 +400,43 @@ class BookResourcesSourceTests(BooksSourceTests):
         })
         self.assertEqual(student['rows'], [])  # not flagged
 
+    def test_resource_category_filters_rows(self):
+        from books.models import BookFacultyResources
+        from snippets.models import FacultyResource
+        from pages.table_sources import resolve_book_resources
+        book = self._make_book_with_resources()
+        FacultyResource.objects.filter(heading='Instructor Getting Started Guide').update(
+            resource_category='Getting Started')
+        other_snippet = FacultyResource.objects.create(
+            heading='Instructor PowerPoint Slides',
+            description='<p>Slides.</p>', unlocked_resource=True,
+            locale=book.locale)
+        BookFacultyResources.objects.create(
+            book_faculty_resource=book, resource=other_snippet,
+            link_external='https://example.com/slides.pdf',
+            link_text='Download slides')
+        result = resolve_book_resources({
+            'books': [book], 'resource_type': 'instructor', 'audience': '',
+            'resource_category': ' Getting Started ',
+            'columns': [{'field': 'heading', 'header': '', 'type': ''}],
+        })
+        self.assertEqual(len(result['rows']), 1)
+        self.assertEqual(result['rows'][0]['cells'][0]['content'],
+                         'Instructor Getting Started Guide')
+
+    def test_resource_category_choices_lists_populated_values(self):
+        from snippets.models import FacultyResource, StudentResource
+        from pages.table_block import resource_category_choices
+        book = self._make_book_with_resources()
+        FacultyResource.objects.filter(heading='Instructor Getting Started Guide').update(
+            resource_category='Getting Started')
+        StudentResource.objects.create(
+            heading='Student Slides', description='<p>x</p>',
+            unlocked_resource=True, resource_category='Slides',
+            locale=book.locale)
+        self.assertEqual(resource_category_choices(),
+                         [('Getting Started', 'Getting Started'), ('Slides', 'Slides')])
+
     def test_resource_link_precedence_external_over_document(self):
         from books.models import BookFacultyResources
         from snippets.models import FacultyResource
@@ -551,6 +588,64 @@ class BookResourcesSourceTests(BooksSourceTests):
             'columns': [{'field': 'resource_category', 'header': '', 'type': ''}],
         })
         self.assertEqual(result['rows'][0]['cells'][0]['content'], 'Getting Started')
+
+    def test_all_books_when_no_books_or_filters(self):
+        # No manual books and no subject filters => every listed book's resources.
+        from pages.table_sources import resolve_book_resources
+        self._make_book_with_resources()
+        result = resolve_book_resources({
+            'books': [], 'resource_type': 'instructor', 'audience': '',
+            'columns': [{'field': 'heading', 'header': '', 'type': ''}],
+        })
+        self.assertEqual(result['rows'][0]['cells'][0]['content'],
+                         'Instructor Getting Started Guide')
+
+    def test_he_subject_filter_selects_matching_books(self):
+        from books.models import BookSubjects
+        from snippets.models import Subject
+        from pages.table_sources import resolve_book_resources
+        book = self._make_book_with_resources()
+        science = Subject.objects.create(name='Science', locale=book.locale)
+        arts = Subject.objects.create(name='Arts', locale=book.locale)
+        BookSubjects.objects.create(book_subject=book, subject=science)
+
+        cols = [{'field': 'heading', 'header': '', 'type': ''}]
+        matched = resolve_book_resources({
+            'books': [], 'subject': science, 'resource_type': 'instructor', 'columns': cols})
+        self.assertEqual([r['cells'][0]['content'] for r in matched['rows']],
+                         ['Instructor Getting Started Guide'])
+        # A subject the book isn't in returns nothing.
+        missed = resolve_book_resources({
+            'books': [], 'subject': arts, 'resource_type': 'instructor', 'columns': cols})
+        self.assertEqual(missed['rows'], [])
+
+    def test_k12_subject_filter_selects_matching_books(self):
+        from books.models import K12BookSubjects
+        from snippets.models import K12Subject
+        from pages.table_sources import resolve_book_resources
+        book = self._make_book_with_resources()
+        k12 = K12Subject.objects.create(name='High School Physics',
+                                        subject_category='Science', locale=book.locale)
+        K12BookSubjects.objects.create(k12book_subject=book, subject=k12)
+
+        result = resolve_book_resources({
+            'books': [], 'k12_subject': k12, 'resource_type': 'instructor',
+            'columns': [{'field': 'heading', 'header': '', 'type': ''}],
+        })
+        self.assertEqual([r['cells'][0]['content'] for r in result['rows']],
+                         ['Instructor Getting Started Guide'])
+
+    def test_manual_books_take_precedence_over_filters(self):
+        # A stray subject filter is ignored when specific books are chosen.
+        from snippets.models import Subject
+        from pages.table_sources import resolve_book_resources
+        book = self._make_book_with_resources()
+        unrelated = Subject.objects.create(name='Nowhere', locale=book.locale)
+        result = resolve_book_resources({
+            'books': [book], 'subject': unrelated, 'resource_type': 'instructor',
+            'columns': [{'field': 'heading', 'header': '', 'type': ''}],
+        })
+        self.assertEqual(len(result['rows']), 1)
 
 
 class SubjectsSourceTests(TestCase):

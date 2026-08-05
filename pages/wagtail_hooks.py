@@ -2,12 +2,15 @@ import os
 
 from django.contrib.staticfiles import finders
 from django.templatetags.static import static
+from django.urls import path, reverse
 from django.utils.html import format_html
 from wagtail import hooks
+from wagtail.admin import widgets as wagtailadmin_widgets
 from wagtail.snippets.models import register_snippet
 from wagtail.snippets.views.snippets import SnippetViewSet
 
-from pages.models import PersonTag
+from pages.models import FlexPage, PersonTag
+from pages.views_promote import promote_to_home_view
 
 
 def _versioned(path):
@@ -48,4 +51,39 @@ class PersonTagViewSet(SnippetViewSet):
 
 
 register_snippet(PersonTagViewSet)
+
+
+@hooks.register('register_admin_urls')
+def register_promote_to_home_url():
+    return [
+        path('promote-to-home/<int:page_id>/', promote_to_home_view, name='promote_to_home'),
+    ]
+
+
+def _is_flex_page(page):
+    # specific_class (content-type lookup) instead of .specific (extra query per row) —
+    # these hooks run once per listing row, so avoid fetching the full instance.
+    return page.specific_class is FlexPage
+
+
+@hooks.register('register_page_listing_more_buttons')
+def promote_to_home_listing_button(page, user, next_url=None):
+    if _is_flex_page(page):
+        yield wagtailadmin_widgets.Button(
+            'Promote to home page',
+            reverse('promote_to_home', args=[page.id]),
+            icon_name='upload',
+            priority=70,
+        )
+
+
+@hooks.register('register_page_header_buttons')
+def promote_to_home_header_button(page, user, view_name, next_url=None):
+    if _is_flex_page(page):
+        yield wagtailadmin_widgets.Button(
+            'Promote to home page',
+            reverse('promote_to_home', args=[page.id]),
+            icon_name='upload',
+            priority=80,
+        )
 

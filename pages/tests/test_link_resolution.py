@@ -7,7 +7,8 @@ from wagtail.fields import RichTextField
 from wagtail.api import APIField
 from books.models import Book
 from openstax.api_fields import APIRichTextBlock, ExpandedRichTextField, strip_empty_paragraphs
-from pages.custom_blocks import AssignableBookBlock, LinkBlock, LinksGroupBlock
+from pages.custom_blocks import AssignableBookBlock, LinksGroupBlock
+from pages.shared_blocks import LinkBlock
 
 
 class ExpandedRichTextFieldTests(TestCase):
