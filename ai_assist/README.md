@@ -35,12 +35,26 @@ Two pieces make it work; both share an origin, so no CORS is involved:
 - Agent features (title/description, content feedback, image description) use `WAGTAIL_AI["PROVIDERS"]` (any-llm).
 - Related pages use a `django_ai_core` `VectorIndex` (`PageVectorIndex`) with pgvector storage; embeddings via OpenAI.
 
-### Provider routing (any-llm 0.20.3 workarounds)
-Most agent features run on the Anthropic `default` provider, but two are routed
-to OpenAI because any-llm 0.20.3's Anthropic provider can't handle them. Both
-revert to `default` once any-llm is upgraded to >=1.x.
-- **Image description** → `image_description` provider (OpenAI) via `IMAGE_DESCRIPTION_PROVIDER`: the Anthropic provider doesn't translate OpenAI `image_url` blocks.
-- **Content feedback** → `content_feedback` provider (OpenAI): it's the only agent that requests structured output (`response_format`), which the Anthropic provider rejects (Anthropic has no OpenAI-style JSON mode). `ContentFeedbackAgent` hardcodes `provider_alias="default"`, so `ai_assist/agent_patches.py` repoints it in `AiAssistConfig.ready()`.
+### Provider routing
+All agent features run on Anthropic. Two aliases exist for cost, not capability:
+- **`default`** (Sonnet) — title/description suggestions, content feedback.
+- **`image_description`** (Haiku, via `IMAGE_DESCRIPTION_PROVIDER`) — alt text is cheap and high-volume, so it gets the smaller model.
+- **`embedding`** — OpenAI, because Anthropic has no embedding models.
+
+Until any-llm 1.x (see below), image description and content feedback were both
+forced onto OpenAI: 0.20.3's Anthropic provider didn't translate OpenAI
+`image_url` blocks and rejected `response_format`. 1.23 converts `image_url` to
+Anthropic's `image`/`source` and maps `response_format` to `output_config`, so
+both features run on Claude and `ai_assist/agent_patches.py` is gone.
+
+Note: any-llm's Anthropic provider still rejects `response_format={"type":
+"json_object"}`. `ContentFeedbackAgent` passes a Pydantic model
+(`ContentFeedbackSchema`), which takes the supported JSON-schema path.
+
+### Upgrading any-llm
+`any-llm-sdk` is pinned transitively by `django-ai-core` (exact pin before
+0.1.6, `>=1.23.0,<2` since). Bump both together in `requirements/base.txt` or
+pip resolves to a conflict.
 
 ## Environment variables
 | Var | Purpose | Default |
@@ -48,7 +62,7 @@ revert to `default` once any-llm is upgraded to >=1.x.
 | `ANTHROPIC_API_KEY` | Claude — rich-text backends and the default agent provider. **Required.** | — |
 | `OPENAI_API_KEY` | OpenAI — required for related-pages **embeddings**, and the optional `openai` backend. | — |
 | `WAGTAIL_AI_AGENT_MODEL` | Claude model for agent features. | `claude-sonnet-4-6` |
-| `WAGTAIL_AI_CONTENT_FEEDBACK_MODEL` | OpenAI model for the content-feedback agent (routed to OpenAI — see Provider routing). | `gpt-4o-mini` |
+| `WAGTAIL_AI_IMAGE_DESCRIPTION_MODEL` | Claude model for alt-text generation (cheaper than the default — see Provider routing). | `claude-haiku-4-5-20251001` |
 | `WAGTAIL_AI_EMBEDDING_MODEL` | OpenAI embedding model. **Must stay 1536-dim** (e.g. `text-embedding-3-small`/`-ada-002`); the `vector` column is fixed at 1536. Switching to a different-dimension model (e.g. `text-embedding-3-large`, 3072) also requires editing `VectorField(dimensions=...)` in `ai_assist/models.py` and adding a migration, or inserts will fail. | `text-embedding-3-small` |
 | `WAGTAIL_AI_DEFAULT_MODEL` / `WAGTAIL_AI_QUALITY_MODEL` / `WAGTAIL_AI_OPENAI_MODEL` | Rich-text backend model IDs. BACKENDS use the `provider/model` format the `llm` library requires; the PROVIDERS rows above use a bare model id because the provider is a separate field. | `anthropic/claude-haiku-4-5-20251001` / `anthropic/claude-sonnet-4-6` / `gpt-4o-mini` |
 
