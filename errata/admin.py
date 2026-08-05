@@ -168,9 +168,23 @@ class ErrataAdmin(ImportExportActionModelAdmin, VersionAdmin):
         return ['id', 'book_title', 'created', 'short_detail', 'status', 'error_type', 'resource', 'location', 'created', 'archived']
 
     def get_list_filter(self, request):
+        filters = [
+            ('created', DateRangeFilter),
+            ('modified', DateRangeFilter),
+            ('book', ActiveBookListFilter),
+            'status',
+            'created',
+            'modified',
+            'is_assessment_errata',
+            'error_type',
+            'resolution',
+            'archived',
+            'resource',
+        ]
         if self._is_content_manager(request):
-            return (('created', DateRangeFilter), ('modified', DateRangeFilter), ('book', ActiveBookListFilter), 'status', 'created', 'modified', 'is_assessment_errata', 'modified', 'error_type', 'resolution', 'archived', 'junk', 'resource')
-        return (('created', DateRangeFilter), ('modified', DateRangeFilter), ('book', ActiveBookListFilter), 'status', 'created', 'modified', 'is_assessment_errata', 'error_type', 'resolution', 'archived', 'resource')
+            filters.insert(7, 'modified')
+            filters.insert(10, 'junk')
+        return filters
 
     def get_fields(self, request, obj=None):
         if self._is_content_manager(request):
