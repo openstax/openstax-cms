@@ -1,7 +1,9 @@
 import datetime
+import json
 from unittest import mock
 
 import vcr
+from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from wagtail.documents.models import Document
@@ -246,6 +248,75 @@ class BooksSourceTests(TestCase):
             'columns': [{'field': 'title', 'header': '', 'type': ''}],
         })
         self.assertEqual(result['rows'], [])
+
+    def test_resolve_books_omitting_remediation_matches_pre_change_output(self):
+        # Regression: a config dict saved before this feature has no
+        # 'remediation' key at all — behavior must be identical to 'All'.
+        from pages.table_sources import resolve_books
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            self._make_book()
+        result = resolve_books({
+            'subject': None, 'book_state': 'live', 'order': 'title', 'limit': 10,
+            'columns': [{'field': 'title', 'header': '', 'type': ''}],
+        })
+        self.assertEqual(result['rows'][0]['cells'][0]['content'], 'University Physics')
+
+    def test_resolve_books_remediation_clear_requires_tracked_and_no_outstanding(self):
+        from books.models import BookFacultyResources
+        from snippets.models import FacultyResource
+        from pages.table_sources import resolve_books
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml',
+                              allow_playback_repeats=True):
+            clear_book = self._make_book(remediation_status='fixed')
+            outstanding_book = self._make_book(title='College Physics', slug='college-physics')
+            untracked_book = self._make_book(title='Chemistry', slug='chemistry')
+        # clear_book: book status tracked (fixed) and its one resource is fixed too.
+        clear_snippet = FacultyResource.objects.create(
+            heading='Slides', description='<p>x</p>', unlocked_resource=True,
+            locale=clear_book.locale)
+        BookFacultyResources.objects.create(
+            book_faculty_resource=clear_book, resource=clear_snippet,
+            link_external='https://x.co', remediation_status='fixed')
+        # outstanding_book: nothing on the book itself, but a resource is in progress.
+        outstanding_snippet = FacultyResource.objects.create(
+            heading='Outstanding slides', description='<p>x</p>', unlocked_resource=True,
+            locale=outstanding_book.locale)
+        BookFacultyResources.objects.create(
+            book_faculty_resource=outstanding_book, resource=outstanding_snippet,
+            link_external='https://x.co', remediation_status='in_progress')
+        # untracked_book has no remediation_status anywhere — must not read as "clear".
+        result = resolve_books({
+            'subject': None, 'book_state': 'live', 'order': 'title', 'limit': 10,
+            'remediation': 'clear',
+            'columns': [{'field': 'title', 'header': '', 'type': ''}],
+        })
+        titles = {r['cells'][0]['content'] for r in result['rows']}
+        self.assertEqual(titles, {'University Physics'})
+        self.assertNotIn('College Physics', titles)
+        self.assertNotIn('Chemistry', titles)
+
+    def test_resolve_books_remediation_outstanding_matches_book_or_resource(self):
+        from books.models import BookFacultyResources
+        from snippets.models import FacultyResource
+        from pages.table_sources import resolve_books
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml',
+                              allow_playback_repeats=True):
+            book_level = self._make_book(remediation_status='removed')
+            resource_level = self._make_book(title='College Physics', slug='college-physics')
+            self._make_book(title='Chemistry', slug='chemistry', remediation_status='fixed')
+        snippet = FacultyResource.objects.create(
+            heading='Slides', description='<p>x</p>', unlocked_resource=True,
+            locale=resource_level.locale)
+        BookFacultyResources.objects.create(
+            book_faculty_resource=resource_level, resource=snippet,
+            link_external='https://x.co', remediation_status='deprecated')
+        result = resolve_books({
+            'subject': None, 'book_state': 'live', 'order': 'title', 'limit': 10,
+            'remediation': 'outstanding',
+            'columns': [{'field': 'title', 'header': '', 'type': ''}],
+        })
+        titles = {r['cells'][0]['content'] for r in result['rows']}
+        self.assertEqual(titles, {'University Physics', 'College Physics'})
 
 
 class NewsSourceTests(TestCase):
@@ -646,6 +717,208 @@ class BookResourcesSourceTests(BooksSourceTests):
             'columns': [{'field': 'heading', 'header': '', 'type': ''}],
         })
         self.assertEqual(len(result['rows']), 1)
+
+    def test_omitting_new_config_keys_matches_pre_change_shape(self):
+        # Regression: a config dict saved before this feature has no
+        # resource_type='all', 'remediation', or 'include_web_pdf' keys at all.
+        from pages.table_sources import resolve_book_resources
+        book = self._make_book_with_resources()
+        result = resolve_book_resources({
+            'books': [book], 'resource_type': 'instructor', 'audience': '',
+            'columns': [
+                {'field': 'heading', 'header': '', 'type': ''},
+                {'field': 'book', 'header': '', 'type': ''},
+                {'field': 'link', 'header': '', 'type': ''},
+            ],
+        })
+        self.assertEqual(len(result['rows']), 1)  # no Web PDF row snuck in
+        self.assertEqual(result['rows'][0]['cells'][0]['content'],
+                         'Instructor Getting Started Guide')
+        self.assertEqual(result['rows'][0]['cells'][1]['content'], 'University Physics')
+        self.assertEqual(result['rows'][0]['cells'][2]['cta'][0]['target']['value'],
+                         'https://example.com/guide.pdf')
+
+    def test_remediation_status_column_and_blank_status_renders_empty(self):
+        from books.models import BookFacultyResources
+        from snippets.models import FacultyResource
+        from pages.table_sources import resolve_book_resources
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book = self._make_book()
+        tracked = FacultyResource.objects.create(
+            heading='Tracked', description='<p>x</p>', unlocked_resource=True,
+            locale=book.locale)
+        BookFacultyResources.objects.create(
+            book_faculty_resource=book, resource=tracked, link_external='https://x.co',
+            remediation_status='fixed')
+        untracked = FacultyResource.objects.create(
+            heading='Untracked', description='<p>x</p>', unlocked_resource=True,
+            locale=book.locale)
+        BookFacultyResources.objects.create(
+            book_faculty_resource=book, resource=untracked, link_external='https://y.co')
+        result = resolve_book_resources({
+            'books': [book], 'resource_type': 'instructor', 'audience': '',
+            'columns': [
+                {'field': 'heading', 'header': '', 'type': ''},
+                {'field': 'remediation_status', 'header': '', 'type': ''},
+            ],
+        })
+        rows = {r['cells'][0]['content']: r['cells'][1]['content'] for r in result['rows']}
+        self.assertEqual(rows['Tracked'], 'Fixed (remediated)')
+        self.assertEqual(rows['Untracked'], '')
+
+    def test_resource_type_all_returns_both_instructor_and_student_tagged(self):
+        from pages.table_sources import resolve_book_resources
+        book = self._make_book_with_resources()
+        result = resolve_book_resources({
+            'books': [book], 'resource_type': 'all', 'audience': '',
+            'columns': [
+                {'field': 'heading', 'header': '', 'type': ''},
+                {'field': 'resource_type', 'header': '', 'type': ''},
+            ],
+        })
+        tags = {r['cells'][0]['content']: r['cells'][1]['content'] for r in result['rows']}
+        self.assertEqual(tags, {
+            'Instructor Getting Started Guide': 'Instructor',
+            'Student Solution Manual': 'Student',
+        })
+
+    def test_remediation_outstanding_filter_excludes_fixed_na_and_blank(self):
+        from books.models import BookFacultyResources
+        from snippets.models import FacultyResource
+        from pages.table_sources import resolve_book_resources
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book = self._make_book()
+        for status in ['fixed', 'in_progress', 'deprecated', 'removed', 'na', '']:
+            snippet = FacultyResource.objects.create(
+                heading=f'R-{status or "blank"}', description='<p>x</p>',
+                unlocked_resource=True, locale=book.locale)
+            BookFacultyResources.objects.create(
+                book_faculty_resource=book, resource=snippet, link_external='https://x.co',
+                remediation_status=status)
+        result = resolve_book_resources({
+            'books': [book], 'resource_type': 'instructor', 'audience': '',
+            'remediation': 'outstanding',
+            'columns': [{'field': 'heading', 'header': '', 'type': ''}],
+        })
+        headings = {r['cells'][0]['content'] for r in result['rows']}
+        self.assertEqual(headings, {'R-in_progress', 'R-deprecated', 'R-removed'})
+
+    def test_include_web_pdf_emits_one_row_per_book_with_book_status(self):
+        from pages.table_sources import resolve_book_resources
+        book = self._make_book_with_resources()
+        book.remediation_status = 'deprecated'
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml',
+                              allow_playback_repeats=True):
+            book.save()
+        result = resolve_book_resources({
+            'books': [book], 'resource_type': 'instructor', 'audience': '',
+            'include_web_pdf': True,
+            'columns': [
+                {'field': 'heading', 'header': '', 'type': ''},
+                {'field': 'remediation_status', 'header': '', 'type': ''},
+                {'field': 'resource_type', 'header': '', 'type': ''},
+            ],
+        })
+        web_pdf_rows = [r for r in result['rows'] if r['cells'][0]['content'] == 'Web PDF']
+        self.assertEqual(len(web_pdf_rows), 1)
+        self.assertEqual(web_pdf_rows[0]['cells'][1]['content'], 'Deprecated (temporarily removed)')
+        self.assertEqual(web_pdf_rows[0]['cells'][2]['content'], 'Book')
+
+    def test_include_web_pdf_respects_remediation_filter(self):
+        from pages.table_sources import resolve_book_resources
+        book = self._make_book_with_resources()
+        book.remediation_status = 'fixed'  # not outstanding
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml',
+                              allow_playback_repeats=True):
+            book.save()
+        result = resolve_book_resources({
+            'books': [book], 'resource_type': 'instructor', 'audience': '',
+            'include_web_pdf': True, 'remediation': 'outstanding',
+            'columns': [{'field': 'heading', 'header': '', 'type': ''}],
+        })
+        self.assertNotIn('Web PDF', [r['cells'][0]['content'] for r in result['rows']])
+
+    def test_locked_resource_link_becomes_login_prompt_no_real_url_leaks(self):
+        # No request/user reaches this resolver and its output is cached for
+        # 30 days for every visitor, so a locked resource's real file URL must
+        # never be baked into the cell — fail closed to a login prompt.
+        from books.models import BookFacultyResources
+        from snippets.models import FacultyResource
+        from pages.table_sources import resolve_book_resources
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book = self._make_book()
+        locked_snippet = FacultyResource.objects.create(
+            heading='Locked Guide', description='<p>x</p>', locale=book.locale)  # unlocked_resource default False
+        row = BookFacultyResources.objects.create(
+            book_faculty_resource=book, resource=locked_snippet,
+            link_document=self.test_doc, link_text='Download')
+        real_url = row.link_document_url
+        result = resolve_book_resources({
+            'books': [book], 'resource_type': 'instructor', 'audience': '',
+            'columns': [{'field': 'link', 'header': '', 'type': ''}],
+        })
+        cell = result['rows'][0]['cells'][0]
+        cta = cell['cta'][0]
+        self.assertEqual(cta['text'], 'Login to unlock')
+        self.assertEqual(cta['target']['value'], f'{settings.ACCOUNTS_URL}/login/')
+        serialized = json.dumps(cell)
+        self.assertNotIn(real_url, serialized)
+        self.assertNotIn('Download', serialized)  # original CTA text must not leak either
+
+    def test_resource_fk_none_fails_closed_no_link(self):
+        # resource is nullable (SET_NULL) — treat a null FK as locked, not
+        # unlocked, since there's no unlocked_resource flag to check.
+        from books.models import BookFacultyResources
+        from pages.table_sources import resolve_book_resources
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book = self._make_book()
+        BookFacultyResources.objects.create(
+            book_faculty_resource=book, resource=None,
+            link_external='https://example.com/secret.pdf', link_text='Download')
+        result = resolve_book_resources({
+            'books': [book], 'resource_type': 'instructor', 'audience': '',
+            'columns': [{'field': 'link', 'header': '', 'type': ''}],
+        })
+        cell = result['rows'][0]['cells'][0]
+        self.assertEqual(cell['cta'][0]['text'], 'Login to unlock')
+        self.assertNotIn('secret.pdf', json.dumps(cell))
+
+    def test_student_resource_default_unlocked_emits_real_link(self):
+        # Regression guard for the live Student Resource Hub page (id 987):
+        # StudentResource.unlocked_resource defaults True, so its links must
+        # keep working without any explicit override.
+        from books.models import BookStudentResources
+        from snippets.models import StudentResource
+        from pages.table_sources import resolve_book_resources
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book = self._make_book()
+        snippet = StudentResource.objects.create(
+            heading='Study Guide', description='<p>x</p>', locale=book.locale)
+        BookStudentResources.objects.create(
+            book_student_resource=book, resource=snippet,
+            link_external='https://example.com/study.pdf', link_text='Get it')
+        result = resolve_book_resources({
+            'books': [book], 'resource_type': 'student', 'audience': '',
+            'columns': [{'field': 'link', 'header': '', 'type': ''}],
+        })
+        cta = result['rows'][0]['cells'][0]['cta'][0]
+        self.assertEqual(cta['text'], 'Get it')
+        self.assertEqual(cta['target']['value'], 'https://example.com/study.pdf')
+
+    def test_web_pdf_row_link_is_public_not_gated(self):
+        from pages.table_sources import resolve_book_resources
+        book = self._make_book_with_resources()
+        result = resolve_book_resources({
+            'books': [book], 'resource_type': 'instructor', 'audience': '',
+            'include_web_pdf': True,
+            'columns': [
+                {'field': 'heading', 'header': '', 'type': ''},
+                {'field': 'link', 'header': '', 'type': ''},
+            ],
+        })
+        web_pdf = next(r for r in result['rows'] if r['cells'][0]['content'] == 'Web PDF')
+        self.assertEqual(web_pdf['cells'][1]['cta'], [])
+        self.assertEqual(web_pdf['cells'][1]['content'], 'View resource')
 
 
 class SubjectsSourceTests(TestCase):
