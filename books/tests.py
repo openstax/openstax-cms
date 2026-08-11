@@ -11,6 +11,7 @@ from books.models import (
     BookStudentResources,
     BookSubjects,
     K12BookSubjects,
+    VideoFacultyResources,
 )
 from pages.custom_blocks import BookBlock
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
@@ -935,6 +936,29 @@ class RemediationBackfillTests(TestCase):
 
         faculty_row = BookFacultyResources.objects.get(book_faculty_resource=book)
         self.assertEqual(faculty_row.remediation_status, 'fixed')
+
+    def test_videos_resource_type_routes_to_video_model_leaving_others_alone(self):
+        book = self._make_book('videos-book')
+        faculty_snippet = snippets.models.FacultyResource(heading="Instructor Guide")
+        faculty_snippet.save()
+        faculty_row = BookFacultyResources.objects.create(
+            book_faculty_resource=book, resource=faculty_snippet)
+        video_row = VideoFacultyResources.objects.create(
+            book_video_faculty_resource=book, resource_heading="Interface")
+
+        html = """
+        <table class="os-rem"><tbody>
+        <tr class="os-book-row"><td colspan="3"><a href="https://openstax.org/details/books/videos-book">Videos Book</a></td></tr>
+        <tr><td>Videos</td><td>Interface</td><td><span class="os-st os-st-fixed">Fixed</span></td></tr>
+        </tbody></table>
+        """
+        call_command('backfill_remediation_status',
+                     html=self._write_html(html), commit=True, report=self._report_path())
+
+        video_row.refresh_from_db()
+        faculty_row.refresh_from_db()
+        self.assertEqual(video_row.remediation_status, 'fixed')
+        self.assertEqual(faculty_row.remediation_status, '')  # untouched
 
     def test_ambiguous_and_no_match_rows_are_reported_not_written(self):
         book = self._make_book('ambiguous-book')

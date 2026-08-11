@@ -112,6 +112,10 @@ class VideoFacultyResource(models.Model):
     video_title = models.CharField(max_length=255, blank=True, null=True)
     video_url = models.URLField(blank=True, null=True)
     video_file = models.FileField(upload_to='resource_videos', blank=True, null=True)
+    remediation_status = models.CharField(
+        max_length=20, choices=REMEDIATION_STATUSES, blank=True, default='',
+        help_text="Accessibility remediation status for this book's copy of the resource, "
+                  "published on the Accessibility Hub. Leave blank to keep it off the hub.")
 
     api_fields = [
         APIField('resource_heading'),
@@ -119,6 +123,7 @@ class VideoFacultyResource(models.Model):
         APIField('video_title'),
         APIField('video_url'),
         APIField('video_file'),
+        APIField('remediation_status'),
     ]
 
     panels = [
@@ -127,6 +132,7 @@ class VideoFacultyResource(models.Model):
         FieldPanel('video_title'),
         FieldPanel('video_url'),
         FieldPanel('video_file'),
+        FieldPanel('remediation_status'),
     ]
 
 

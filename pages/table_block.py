@@ -125,7 +125,8 @@ class BookResourcesSourceBlock(blocks.StructBlock):
     resource_type = blocks.ChoiceBlock(choices=[
         ('instructor', 'Instructor resources'),
         ('student', 'Student resources'),
-        ('all', 'Instructor and student'),
+        ('video', 'Video resources'),
+        ('all', 'Instructor, student, and video'),
     ], default='instructor')
     audience = blocks.ChoiceBlock(choices=[
         ('all', 'All'),

@@ -274,6 +274,38 @@ class _WebPDFRow:
         return dict(REMEDIATION_STATUSES).get(self.remediation_status, '')
 
 
+class _VideoResourceRow:
+    """Wraps a books.models.VideoFacultyResources row for RESOURCE_FIELDS.
+    VideoFacultyResource has no `resource` FK at all — video ancillaries are
+    public, never access-gated — and no link_external/link_document/
+    link_page/coming_soon_text/display_on_k12 fields. Expose exactly the
+    attributes the RESOURCE_FIELDS getters touch, same approach as
+    _WebPDFRow above, so _resource_link_cell's fail-closed check doesn't
+    wrongly gate a public video row into a login prompt. The real
+    video_url/video_file link rides in as link_external so _resource_link
+    picks it up unmodified; with neither set, it degrades to a textual
+    "no real link" cell exactly like a Web PDF row with no link, rather
+    than inventing one."""
+    resource = SimpleNamespace(unlocked_resource=True, resource_category='')
+    link_document = None
+    link_page = None
+    coming_soon_text = ''
+    display_on_k12 = False
+    _resource_type = 'Videos'
+
+    def __init__(self, video):
+        self.resource_heading = video.resource_heading
+        self.resource_description = video.resource_description
+        self.remediation_status = video.remediation_status
+        self.link_text = video.video_title or ''
+        self.link_external = video.video_url or (video.video_file.url if video.video_file else '')
+        self._get_display = video.get_remediation_status_display
+        self._book_titles = []
+
+    def get_remediation_status_display(self):
+        return self._get_display()
+
+
 def _resource_books(config):
     """Books whose resources fill the table. Explicit picks win; otherwise all
     listed books, narrowed by HE subject and/or K12 subject area if set."""
@@ -311,6 +343,7 @@ def resolve_book_resources(config):
         managers.append(('Instructor', 'book_faculty_resources'))
     if resource_type in ('student', 'all'):
         managers.append(('Student', 'book_student_resources'))
+    include_video = resource_type in ('video', 'all')
     k12_only = config.get('audience') == 'k12'
     category = (config.get('resource_category') or '').strip()
     remediation = (config.get('remediation') or '').strip()
@@ -325,6 +358,21 @@ def resolve_book_resources(config):
             key = ('web_pdf', book.pk)  # one per book — never collides with resource keys
             deduped[key] = _WebPDFRow(book)
             order.append(key)
+        # Videos are a separate model (no `resource` FK, no resource_category,
+        # no display_on_k12) — a category filter or K12-only view can never
+        # match one, so skip the pool entirely rather than letting an
+        # attribute lookup on those filters fail.
+        if include_video and not category and not k12_only:
+            for v in book.book_video_faculty_resources.all():
+                if not _keep_remediation(v.remediation_status, remediation):
+                    continue
+                key = ('video', v.pk)  # one per book — a video row is never shared across books
+                if key not in deduped:
+                    deduped[key] = _VideoResourceRow(v)
+                    order.append(key)
+                titles = deduped[key]._book_titles
+                if book.title not in titles:
+                    titles.append(book.title)
         for label, manager_attr in managers:
             manager = getattr(book, manager_attr)
             # Getters touch resource/link_page/link_document per row — pull them in

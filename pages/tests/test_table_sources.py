@@ -408,6 +408,13 @@ class NewsSourceTests(TestCase):
 class BookResourcesSourceTests(BooksSourceTests):
     # Inherits setUpTestData (homepage/BookIndex/site/doc) from BooksSourceTests.
 
+    def _add_video(self, book, **overrides):
+        from books.models import VideoFacultyResources
+        data = dict(book_video_faculty_resource=book, resource_heading='Interface',
+                    resource_description='<p>How to use it.</p>')
+        data.update(overrides)
+        return VideoFacultyResources.objects.create(**data)
+
     def _make_book_with_resources(self):
         from books.models import BookFacultyResources, BookStudentResources
         from snippets.models import FacultyResource, StudentResource
@@ -919,6 +926,97 @@ class BookResourcesSourceTests(BooksSourceTests):
         web_pdf = next(r for r in result['rows'] if r['cells'][0]['content'] == 'Web PDF')
         self.assertEqual(web_pdf['cells'][1]['cta'], [])
         self.assertEqual(web_pdf['cells'][1]['content'], 'View resource')
+
+    def test_video_resource_remediation_status_renders_display_label(self):
+        from pages.table_sources import resolve_book_resources
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book = self._make_book()
+        self._add_video(book, resource_heading='Alto', remediation_status='fixed')
+        result = resolve_book_resources({
+            'books': [book], 'resource_type': 'video', 'audience': '',
+            'columns': [
+                {'field': 'heading', 'header': '', 'type': ''},
+                {'field': 'remediation_status', 'header': '', 'type': ''},
+            ],
+        })
+        self.assertEqual(result['rows'][0]['cells'][0]['content'], 'Alto')
+        self.assertEqual(result['rows'][0]['cells'][1]['content'], 'Fixed (remediated)')
+
+    def test_resource_type_video_returns_only_video_rows(self):
+        from pages.table_sources import resolve_book_resources
+        book = self._make_book_with_resources()
+        self._add_video(book, resource_heading='Evernote')
+        result = resolve_book_resources({
+            'books': [book], 'resource_type': 'video', 'audience': '',
+            'columns': [{'field': 'heading', 'header': '', 'type': ''}],
+        })
+        self.assertEqual([r['cells'][0]['content'] for r in result['rows']], ['Evernote'])
+
+    def test_resource_type_all_includes_instructor_student_and_video(self):
+        from pages.table_sources import resolve_book_resources
+        book = self._make_book_with_resources()
+        self._add_video(book, resource_heading='Google Home')
+        result = resolve_book_resources({
+            'books': [book], 'resource_type': 'all', 'audience': '',
+            'columns': [
+                {'field': 'heading', 'header': '', 'type': ''},
+                {'field': 'resource_type', 'header': '', 'type': ''},
+            ],
+        })
+        tags = {r['cells'][0]['content']: r['cells'][1]['content'] for r in result['rows']}
+        self.assertEqual(tags, {
+            'Instructor Getting Started Guide': 'Instructor',
+            'Student Solution Manual': 'Student',
+            'Google Home': 'Videos',
+        })
+
+    def test_video_row_with_video_url_emits_real_link_not_login_prompt(self):
+        from pages.table_sources import resolve_book_resources
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book = self._make_book()
+        self._add_video(book, resource_heading='Concept Trailers',
+                        video_title='Watch now', video_url='https://example.com/watch')
+        result = resolve_book_resources({
+            'books': [book], 'resource_type': 'video', 'audience': '',
+            'columns': [{'field': 'link', 'header': '', 'type': ''}],
+        })
+        cell = result['rows'][0]['cells'][0]
+        cta = cell['cta'][0]
+        self.assertEqual(cta['text'], 'Watch now')
+        self.assertEqual(cta['target']['value'], 'https://example.com/watch')
+        self.assertNotIn('Login to unlock', json.dumps(cell))
+
+    def test_video_row_with_no_link_field_emits_empty_link_not_login_prompt(self):
+        # Video ancillaries are public and have no `resource` FK to check —
+        # a video row with neither video_url nor video_file set must not be
+        # wrongly gated into the "Login to unlock" prompt (the fail-closed
+        # path _resource_link_cell uses for real, access-gated resources).
+        from pages.table_sources import resolve_book_resources
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book = self._make_book()
+        self._add_video(book, resource_heading='Video Series')
+        result = resolve_book_resources({
+            'books': [book], 'resource_type': 'video', 'audience': '',
+            'columns': [{'field': 'link', 'header': '', 'type': ''}],
+        })
+        cell = result['rows'][0]['cells'][0]
+        self.assertEqual(cell['cta'], [])
+        self.assertNotIn('Login to unlock', cell['content'])
+
+    def test_video_remediation_outstanding_filter_applies_to_video_rows(self):
+        from pages.table_sources import resolve_book_resources
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book = self._make_book()
+        for status in ['fixed', 'in_progress', 'deprecated', 'removed', 'na', '']:
+            self._add_video(book, resource_heading=f'V-{status or "blank"}',
+                            remediation_status=status)
+        result = resolve_book_resources({
+            'books': [book], 'resource_type': 'video', 'audience': '',
+            'remediation': 'outstanding',
+            'columns': [{'field': 'heading', 'header': '', 'type': ''}],
+        })
+        headings = {r['cells'][0]['content'] for r in result['rows']}
+        self.assertEqual(headings, {'V-in_progress', 'V-deprecated', 'V-removed'})
 
 
 class SubjectsSourceTests(TestCase):

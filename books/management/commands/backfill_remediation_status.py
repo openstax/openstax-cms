@@ -37,6 +37,7 @@ _STATUS_LABELS = {
 # an extra match candidate.
 _FACULTY_TYPES = {'instructor'}
 _STUDENT_TYPES = {'student'}
+_VIDEO_TYPES = {'videos'}
 _KNOWN_TYPES = {'instructor', 'student', 'book', 'videos', 'instructor and student'}
 
 REPORT_FIELDNAMES = ['subject', 'book_title', 'book_slug', 'resource_type', 'ancillary', 'status', 'reason']
@@ -120,7 +121,7 @@ def resolve_book(href, slug, title):
     return None, False
 
 
-def find_resource(faculty, student, resource_type, ancillary):
+def find_resource(faculty, student, video, resource_type, ancillary):
     """Match `ancillary` (falling back to `resource_type` when the type column
     holds an ancillary name instead of a real type) against resource.heading.
     Returns a resource instance, 'AMBIGUOUS', or None."""
@@ -129,8 +130,10 @@ def find_resource(faculty, student, resource_type, ancillary):
         pool = list(faculty)
     elif rt_norm in _STUDENT_TYPES:
         pool = list(student)
+    elif rt_norm in _VIDEO_TYPES:
+        pool = list(video)
     else:
-        pool = list(faculty) + list(student)
+        pool = list(faculty) + list(student) + list(video)
 
     # Ancillary is the primary candidate; resource_type is only a candidate
     # name when it isn't itself one of the real type labels (the one-off rows
@@ -236,6 +239,7 @@ class Command(BaseCommand):
 
             faculty = list(book.book_faculty_resources.all())
             student = list(book.book_student_resources.all())
+            video = list(book.book_video_faculty_resources.all())
 
             for row in group:
                 status_value = row['status_value']
@@ -257,7 +261,7 @@ class Command(BaseCommand):
                 if is_web_pdf:
                     target = book
                 else:
-                    target = find_resource(faculty, student, resource_type, ancillary)
+                    target = find_resource(faculty, student, video, resource_type, ancillary)
 
                 if target is None:
                     unmatched += 1
