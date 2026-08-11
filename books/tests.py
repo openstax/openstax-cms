@@ -2,7 +2,7 @@ from wagtail.test.utils import WagtailPageTestCase
 from wagtail.models import Page, Site
 
 import snippets.models
-from pages.models import RootPage
+from pages.models import FlexPage, RootPage
 from books.models import (
     BookIndex,
     Book,
@@ -16,10 +16,16 @@ from pages.custom_blocks import BookBlock
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
 from salesforce.tests import openstax_vcr as vcr
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.management import call_command
 from django.test import Client, TestCase
 from unittest.mock import patch
 from wagtail.documents.models import Document
+import csv
 import datetime
+import os
+import tempfile
+
+from books.management.commands.backfill_remediation_status import parse_table, resolve_book
 
 
 class BookTests(WagtailPageTestCase):
@@ -825,3 +831,181 @@ class BookPreviewTests(TestCase):
             mock_super.return_value = 'fallback'
             result = book.serve_preview(None, 'some-mode')
         self.assertEqual(result, 'fallback')
+
+
+FIXTURE_HTML = """
+<table class="os-rem"><tbody>
+<tr class="os-subj-row"><td colspan="3">Business</td></tr>
+<tr class="os-book-row"><td colspan="3"><a href="https://openstax.org/details/books/principles-financial-accounting">Principles of Accounting Volume 1: Financial Accounting</a></td></tr>
+<tr><td>Instructor</td><td>Blackboard Course Package</td><td><span class="os-st os-st-fixed">Fixed</span></td></tr>
+<tr><td>Book</td><td>Web PDF</td><td><span class="os-st os-st-fixed">Fixed</span></td></tr>
+</tbody></table>
+"""
+
+
+class RemediationBackfillTests(TestCase):
+    """books/management/commands/backfill_remediation_status.py"""
+
+    @classmethod
+    def setUpTestData(cls):
+        root_page = Page.objects.get(title="Root")
+        homepage = RootPage(title="Remediation Home", slug="remediation-home")
+        root_page.add_child(instance=homepage)
+        cls.homepage = Page.objects.get(id=homepage.id)
+
+        book_index = BookIndex(title="Remediation Book Index", page_description="Test",
+                               dev_standard_1_description="Test", dev_standard_2_description="Test",
+                               dev_standard_3_description="Test", dev_standard_4_description="Test")
+        cls.homepage.add_child(instance=book_index)
+        cls.book_index = Page.objects.get(id=book_index.id)
+
+    def _make_book(self, slug, title="Test Book"):
+        book = Book(title=title, slug=slug, description="Test", locale=self.book_index.locale,
+                   publish_date=datetime.date.today())
+        self.book_index.add_child(instance=book)
+        return Book.objects.get(id=book.id)
+
+    def _write_html(self, html):
+        f = tempfile.NamedTemporaryFile(mode='w', suffix='.html', delete=False)
+        f.write(html)
+        f.close()
+        self.addCleanup(os.unlink, f.name)
+        return f.name
+
+    def _report_path(self):
+        f = tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False)
+        f.close()
+        self.addCleanup(os.unlink, f.name)
+        return f.name
+
+    def test_parse_table_extracts_subject_book_and_resource_rows(self):
+        rows = parse_table(FIXTURE_HTML)
+        self.assertEqual(len(rows), 2)
+        self.assertEqual(rows[0]['subject'], 'Business')
+        self.assertEqual(rows[0]['book_slug'], 'principles-financial-accounting')
+        self.assertEqual(rows[0]['resource_type'], 'Instructor')
+        self.assertEqual(rows[0]['ancillary'], 'Blackboard Course Package')
+        self.assertEqual(rows[0]['status_value'], 'fixed')
+        self.assertEqual(rows[1]['resource_type'], 'Book')
+        self.assertEqual(rows[1]['ancillary'], 'Web PDF')
+        self.assertEqual(rows[1]['status_value'], 'fixed')
+
+    def test_slug_matching_wins_over_typo_title(self):
+        book = self._make_book('principles-financial-accounting',
+                               title='Principles of Financial Accounting')
+        # href/slug are correct; the hand-typed title is not — slug must win.
+        resolved, via_title = resolve_book(
+            'https://openstax.org/details/books/principles-financial-accounting',
+            'principles-financial-accounting',
+            'Principels of Financial Accountingg')
+        self.assertEqual(resolved.id, book.id)
+        self.assertFalse(via_title)
+
+    def test_title_fallback_used_only_when_no_href(self):
+        book = self._make_book('no-href-book', title='No Href Book')
+        resolved, via_title = resolve_book(None, None, 'No Href Book')
+        self.assertEqual(resolved.id, book.id)
+        self.assertTrue(via_title)
+        # A row with a real (but unmatched) href/slug never falls back to title.
+        resolved2, via_title2 = resolve_book(
+            'https://openstax.org/details/books/wrong-slug', 'wrong-slug', 'No Href Book')
+        self.assertIsNone(resolved2)
+
+    def test_web_pdf_routes_to_book_field(self):
+        book = self._make_book('principles-financial-accounting')
+        call_command('backfill_remediation_status',
+                     html=self._write_html(FIXTURE_HTML), commit=True, report=self._report_path())
+        book.refresh_from_db()
+        self.assertEqual(book.remediation_status, 'fixed')
+
+    def test_normalized_ancillary_matches_apostrophe_and_case_differences(self):
+        book = self._make_book('normalize-book')
+        resource = snippets.models.FacultyResource(heading="Instructor's Manual")
+        resource.save()
+        BookFacultyResources.objects.create(book_faculty_resource=book, resource=resource)
+
+        html = """
+        <table class="os-rem"><tbody>
+        <tr class="os-book-row"><td colspan="3"><a href="https://openstax.org/details/books/normalize-book">Normalize Book</a></td></tr>
+        <tr><td>Instructor</td><td>instructors manual</td><td><span class="os-st os-st-fixed">Fixed</span></td></tr>
+        </tbody></table>
+        """
+        call_command('backfill_remediation_status',
+                     html=self._write_html(html), commit=True, report=self._report_path())
+
+        faculty_row = BookFacultyResources.objects.get(book_faculty_resource=book)
+        self.assertEqual(faculty_row.remediation_status, 'fixed')
+
+    def test_ambiguous_and_no_match_rows_are_reported_not_written(self):
+        book = self._make_book('ambiguous-book')
+        r1 = snippets.models.FacultyResource(heading="Study Guide")
+        r1.save()
+        r2 = snippets.models.FacultyResource(heading="Study  Guide")  # normalizes the same as r1
+        r2.save()
+        fr1 = BookFacultyResources.objects.create(book_faculty_resource=book, resource=r1)
+        fr2 = BookFacultyResources.objects.create(book_faculty_resource=book, resource=r2)
+
+        html = """
+        <table class="os-rem"><tbody>
+        <tr class="os-book-row"><td colspan="3"><a href="https://openstax.org/details/books/ambiguous-book">Ambiguous Book</a></td></tr>
+        <tr><td>Instructor</td><td>Study Guide</td><td><span class="os-st os-st-fixed">Fixed</span></td></tr>
+        <tr><td>Instructor</td><td>Nonexistent Ancillary</td><td><span class="os-st os-st-fixed">Fixed</span></td></tr>
+        </tbody></table>
+        """
+        report_path = self._report_path()
+        call_command('backfill_remediation_status', html=self._write_html(html), commit=True, report=report_path)
+
+        fr1.refresh_from_db()
+        fr2.refresh_from_db()
+        self.assertEqual(fr1.remediation_status, '')
+        self.assertEqual(fr2.remediation_status, '')
+
+        with open(report_path) as f:
+            reasons = [row['reason'] for row in csv.DictReader(f)]
+        self.assertIn('ambiguous', reasons)
+        self.assertIn('no_resource', reasons)
+
+    def test_dry_run_writes_nothing(self):
+        book = self._make_book('dry-run-book')
+        html = """
+        <table class="os-rem"><tbody>
+        <tr class="os-book-row"><td colspan="3"><a href="https://openstax.org/details/books/dry-run-book">Dry Run Book</a></td></tr>
+        <tr><td>Book</td><td>Web PDF</td><td><span class="os-st os-st-fixed">Fixed</span></td></tr>
+        </tbody></table>
+        """
+        call_command('backfill_remediation_status', html=self._write_html(html), report=self._report_path())
+        book.refresh_from_db()
+        self.assertEqual(book.remediation_status, '')
+
+    def test_existing_differing_value_needs_overwrite_flag(self):
+        book = self._make_book('overwrite-book')
+        book.remediation_status = 'in_progress'
+        book.save()
+        html = """
+        <table class="os-rem"><tbody>
+        <tr class="os-book-row"><td colspan="3"><a href="https://openstax.org/details/books/overwrite-book">Overwrite Book</a></td></tr>
+        <tr><td>Book</td><td>Web PDF</td><td><span class="os-st os-st-fixed">Fixed</span></td></tr>
+        </tbody></table>
+        """
+        html_path = self._write_html(html)
+
+        call_command('backfill_remediation_status', html=html_path, commit=True, report=self._report_path())
+        book.refresh_from_db()
+        self.assertEqual(book.remediation_status, 'in_progress')  # unchanged without --overwrite
+
+        call_command('backfill_remediation_status', html=html_path, commit=True, overwrite=True,
+                     report=self._report_path())
+        book.refresh_from_db()
+        self.assertEqual(book.remediation_status, 'fixed')
+
+    def test_page_lookup_by_slug_finds_os_rem_table(self):
+        book = self._make_book('principles-financial-accounting')
+        flex = FlexPage(title="Accessibility Hub", slug="accessibility-hub",
+                        layout=[{"type": "default", "value": {}}],
+                        body=[{"type": "html", "value": FIXTURE_HTML}])
+        self.homepage.add_child(instance=flex)
+
+        call_command('backfill_remediation_status', commit=True, report=self._report_path())
+
+        book.refresh_from_db()
+        self.assertEqual(book.remediation_status, 'fixed')
