@@ -6,7 +6,7 @@ manual and dynamic tables identically. All access is read-only."""
 import json
 import re
 from types import SimpleNamespace
-from urllib.parse import urlsplit
+from urllib.parse import quote, urlsplit
 
 from django.conf import settings
 from django.utils.html import escape, format_html
@@ -214,15 +214,43 @@ def _resource_link(r):
     return ''
 
 
+# The book detail page selects its tab from a bare query-string key matching the
+# tab label (os-webview findSelectedTab reads URLSearchParams keys), so
+# ?Instructor%20resources opens that tab.
+_BOOK_TABS = {'Student': 'Student resources', 'Videos': 'Videos'}
+
+
+def _add_book(row, book):
+    """Record a book on a (possibly shared) row. Titles gate the append so
+    _book_slugs stays index-aligned with _book_titles."""
+    if book.title not in row._book_titles:
+        row._book_titles.append(book.title)
+        row._book_slugs.append(book.slug)
+
+
+def _book_page_link(r):
+    """Book detail page URL, on the tab this row's resource lives under."""
+    slug = next(iter(getattr(r, '_book_slugs', [])), '')
+    if not slug:
+        return ''
+    tab = _BOOK_TABS.get(getattr(r, '_resource_type', ''), 'Instructor resources')
+    return f'/details/books/{slug}?{quote(tab)}'
+
+
 def _resource_link_cell(r):
     """The redaction books/serializers.py does per-request (blank the link
     unless ?x=y and the resource is unlocked) can't run here: this table's
     get_api_representation has no request/user and its output is cached and
-    served to every visitor for up to 30 days. So fail closed at this one
-    chokepoint instead — a locked (or FK-null, SET_NULL) resource never gets
-    its real file URL baked into public JSON; it gets a login prompt instead."""
+    served to every visitor for up to 30 days.
+
+    So a locked (or FK-null, SET_NULL) resource never gets its real file URL
+    baked into public JSON. It points at the book detail page instead, where the
+    existing resource box applies the normal gate with a working post-login
+    return path — something we can't build here, since one cached cell is served
+    to every reader and has no per-visitor "where you came from"."""
     if not (r.resource and r.resource.unlocked_resource):
-        return {'text': 'Login to unlock', 'url': f'{settings.ACCOUNTS_URL}/login/'}
+        url = _book_page_link(r)
+        return {'text': 'View on book page', 'url': url} if url else {'text': '', 'url': ''}
     return {'text': r.link_text or 'View resource', 'url': _resource_link(r)}
 
 
@@ -269,6 +297,7 @@ class _WebPDFRow:
     def __init__(self, book):
         self.remediation_status = book.remediation_status
         self._book_titles = [book.title]
+        self._book_slugs = [book.slug]
 
     def get_remediation_status_display(self):
         return dict(REMEDIATION_STATUSES).get(self.remediation_status, '')
@@ -301,6 +330,7 @@ class _VideoResourceRow:
         self.link_external = video.video_url or (video.video_file.url if video.video_file else '')
         self._get_display = video.get_remediation_status_display
         self._book_titles = []
+        self._book_slugs = []
 
     def get_remediation_status_display(self):
         return self._get_display()
@@ -370,9 +400,7 @@ def resolve_book_resources(config):
                 if key not in deduped:
                     deduped[key] = _VideoResourceRow(v)
                     order.append(key)
-                titles = deduped[key]._book_titles
-                if book.title not in titles:
-                    titles.append(book.title)
+                _add_book(deduped[key], book)
         for label, manager_attr in managers:
             manager = getattr(book, manager_attr)
             # Getters touch resource/link_page/link_document per row — pull them in
@@ -395,12 +423,11 @@ def resolve_book_resources(config):
                        if r.resource_id else (label, id(r)))
                 if key not in deduped:
                     r._book_titles = []
+                    r._book_slugs = []
                     r._resource_type = label
                     deduped[key] = r
                     order.append(key)
-                titles = deduped[key]._book_titles
-                if book.title not in titles:
-                    titles.append(book.title)
+                _add_book(deduped[key], book)
     return build_table(config['columns'], RESOURCE_FIELDS, [deduped[k] for k in order])
 
 

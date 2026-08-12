@@ -845,10 +845,11 @@ class BookResourcesSourceTests(BooksSourceTests):
         })
         self.assertNotIn('Web PDF', [r['cells'][0]['content'] for r in result['rows']])
 
-    def test_locked_resource_link_becomes_login_prompt_no_real_url_leaks(self):
+    def test_locked_resource_link_points_at_book_page_no_real_url_leaks(self):
         # No request/user reaches this resolver and its output is cached for
         # 30 days for every visitor, so a locked resource's real file URL must
-        # never be baked into the cell — fail closed to a login prompt.
+        # never be baked into the cell — point at the book detail page, where
+        # the existing resource box applies the gate with a working return path.
         from books.models import BookFacultyResources
         from snippets.models import FacultyResource
         from pages.table_sources import resolve_book_resources
@@ -866,11 +867,63 @@ class BookResourcesSourceTests(BooksSourceTests):
         })
         cell = result['rows'][0]['cells'][0]
         cta = cell['cta'][0]
-        self.assertEqual(cta['text'], 'Login to unlock')
-        self.assertEqual(cta['target']['value'], f'{settings.ACCOUNTS_URL}/login/')
+        self.assertEqual(cta['text'], 'View on book page')
+        self.assertEqual(cta['target']['value'],
+                         f'/details/books/{book.slug}?Instructor%20resources')
         serialized = json.dumps(cell)
         self.assertNotIn(real_url, serialized)
         self.assertNotIn('Download', serialized)  # original CTA text must not leak either
+
+    def test_locked_student_resource_links_to_student_tab(self):
+        # The book page picks its tab from a bare query-string key matching the
+        # tab label, so a student row must not send readers to the instructor tab.
+        from books.models import BookStudentResources
+        from snippets.models import StudentResource
+        from pages.table_sources import resolve_book_resources
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book = self._make_book()
+        locked = StudentResource.objects.create(
+            heading='Locked Student Guide', description='<p>x</p>',
+            locale=book.locale, unlocked_resource=False)
+        BookStudentResources.objects.create(
+            book_student_resource=book, resource=locked,
+            link_external='https://example.com/secret.pdf')
+        result = resolve_book_resources({
+            'books': [book], 'resource_type': 'student', 'audience': '',
+            'columns': [{'field': 'link', 'header': '', 'type': ''}],
+        })
+        cta = result['rows'][0]['cells'][0]['cta'][0]
+        self.assertEqual(cta['target']['value'],
+                         f'/details/books/{book.slug}?Student%20resources')
+        self.assertNotIn('secret.pdf', json.dumps(result['rows'][0]))
+
+    def test_book_slugs_stay_aligned_with_titles_when_row_shared(self):
+        # A resource shared across books merges into one row listing both books;
+        # _book_slugs must track _book_titles so the link targets a real book.
+        from books.models import BookFacultyResources
+        from snippets.models import FacultyResource
+        from pages.table_sources import resolve_book_resources
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml',
+                              allow_playback_repeats=True):
+            book_a = self._make_book()
+            book_b = self._make_book(title='College Physics', slug='college-physics')
+        shared = FacultyResource.objects.create(
+            heading='Shared Guide', description='<p>x</p>', locale=book_a.locale)
+        for b in (book_a, book_b):
+            BookFacultyResources.objects.create(
+                book_faculty_resource=b, resource=shared, link_external='https://example.com/s.pdf')
+        result = resolve_book_resources({
+            'books': [book_a, book_b], 'resource_type': 'instructor', 'audience': '',
+            'columns': [{'field': 'book', 'header': '', 'type': ''},
+                        {'field': 'link', 'header': '', 'type': ''}],
+        })
+        self.assertEqual(len(result['rows']), 1)
+        books_cell, link_cell = result['rows'][0]['cells']
+        self.assertIn(book_a.title, books_cell['content'])
+        self.assertIn(book_b.title, books_cell['content'])
+        # First listed book wins the link, matching the first listed title.
+        self.assertEqual(link_cell['cta'][0]['target']['value'],
+                         f'/details/books/{book_a.slug}?Instructor%20resources')
 
     def test_resource_fk_none_fails_closed_no_link(self):
         # resource is nullable (SET_NULL) — treat a null FK as locked, not
@@ -887,7 +940,7 @@ class BookResourcesSourceTests(BooksSourceTests):
             'columns': [{'field': 'link', 'header': '', 'type': ''}],
         })
         cell = result['rows'][0]['cells'][0]
-        self.assertEqual(cell['cta'][0]['text'], 'Login to unlock')
+        self.assertEqual(cell['cta'][0]['text'], 'View on book page')
         self.assertNotIn('secret.pdf', json.dumps(cell))
 
     def test_student_resource_default_unlocked_emits_real_link(self):
@@ -984,12 +1037,12 @@ class BookResourcesSourceTests(BooksSourceTests):
         cta = cell['cta'][0]
         self.assertEqual(cta['text'], 'Watch now')
         self.assertEqual(cta['target']['value'], 'https://example.com/watch')
-        self.assertNotIn('Login to unlock', json.dumps(cell))
+        self.assertNotIn('View on book page', json.dumps(cell))
 
     def test_video_row_with_no_link_field_emits_empty_link_not_login_prompt(self):
         # Video ancillaries are public and have no `resource` FK to check —
         # a video row with neither video_url nor video_file set must not be
-        # wrongly gated into the "Login to unlock" prompt (the fail-closed
+        # wrongly gated into the book-page fallback (the fail-closed
         # path _resource_link_cell uses for real, access-gated resources).
         from pages.table_sources import resolve_book_resources
         with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
@@ -1001,7 +1054,7 @@ class BookResourcesSourceTests(BooksSourceTests):
         })
         cell = result['rows'][0]['cells'][0]
         self.assertEqual(cell['cta'], [])
-        self.assertNotIn('Login to unlock', cell['content'])
+        self.assertNotIn('View on book page', cell['content'])
 
     def test_video_remediation_outstanding_filter_applies_to_video_rows(self):
         from pages.table_sources import resolve_book_resources
