@@ -227,6 +227,7 @@ def _add_book(row, book):
     if book.title not in row._book_titles:
         row._book_titles.append(book.title)
         row._book_slugs.append(book.slug)
+        row._book_ids.append(book.pk)
 
 
 def _book_page_link(r):
@@ -265,6 +266,10 @@ def _resource_link_cell(r):
                 'type': 'resource_ref',
                 'value': {
                     'book_slug': next(iter(getattr(r, '_book_slugs', [])), ''),
+                    # trackLink() needs the numeric book id to post a
+                    # download-tracking record; it is absent from the
+                    # books/resources/ payload, so it has to ride along here.
+                    'book_id': next(iter(getattr(r, '_book_ids', [])), None),
                     'heading': r.resource_heading if r.resource else '',
                     'resource_type': getattr(r, '_resource_type', ''),
                 },
@@ -317,6 +322,7 @@ class _WebPDFRow:
         self.remediation_status = book.remediation_status
         self._book_titles = [book.title]
         self._book_slugs = [book.slug]
+        self._book_ids = [book.pk]
 
     def get_remediation_status_display(self):
         return dict(REMEDIATION_STATUSES).get(self.remediation_status, '')
@@ -350,6 +356,7 @@ class _VideoResourceRow:
         self._get_display = video.get_remediation_status_display
         self._book_titles = []
         self._book_slugs = []
+        self._book_ids = []
 
     def get_remediation_status_display(self):
         return self._get_display()
@@ -443,6 +450,7 @@ def resolve_book_resources(config):
                 if key not in deduped:
                     r._book_titles = []
                     r._book_slugs = []
+                    r._book_ids = []
                     r._resource_type = label
                     deduped[key] = r
                     order.append(key)

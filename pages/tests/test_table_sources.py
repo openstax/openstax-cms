@@ -885,6 +885,9 @@ class BookResourcesSourceTests(BooksSourceTests):
         self.assertEqual(cta['text'], 'View on book page')
         self.assertEqual(cta['target']['value'],
                          f'/details/books/{book.slug}?Instructor%20resources')
+        marker = next(c for c in cta['config'] if c['type'] == 'resource_ref')
+        # trackLink() needs the numeric book id; it is not in the resources API.
+        self.assertEqual(marker['value']['book_id'], book.pk)
         serialized = json.dumps(cell)
         self.assertNotIn(real_url, serialized)
         self.assertNotIn('Download', serialized)  # original CTA text must not leak either
@@ -892,7 +895,8 @@ class BookResourcesSourceTests(BooksSourceTests):
         # override, which resolves the real per-user link client-side.
         self.assertEqual(cta['config'], [{
             'type': 'resource_ref',
-            'value': {'book_slug': book.slug, 'heading': 'Locked Guide',
+            'value': {'book_slug': book.slug, 'book_id': book.pk,
+                      'heading': 'Locked Guide',
                       'resource_type': 'Instructor'},
         }])
         # The marker's book_slug must never drift from the fallback URL's slug.
@@ -923,7 +927,8 @@ class BookResourcesSourceTests(BooksSourceTests):
         self.assertNotIn('secret.pdf', json.dumps(result['rows'][0]))
         self.assertEqual(cta['config'], [{
             'type': 'resource_ref',
-            'value': {'book_slug': book.slug, 'heading': 'Locked Student Guide',
+            'value': {'book_slug': book.slug, 'book_id': book.pk,
+                      'heading': 'Locked Student Guide',
                       'resource_type': 'Student'},
         }])
 
