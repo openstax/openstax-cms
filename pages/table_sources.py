@@ -8,7 +8,6 @@ import re
 from types import SimpleNamespace
 from urllib.parse import quote, urlsplit
 
-from django.conf import settings
 from django.utils.html import escape, format_html
 from wagtail.rich_text import expand_db_html
 

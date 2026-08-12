@@ -145,8 +145,7 @@ def find_resource(faculty, student, video, resource_type, ancillary):
         cand_norm = normalize(candidate)
         if not cand_norm:
             continue
-        matches = [r for r in pool if normalize(r.resource_heading) == cand_norm]
-        if len(matches) == 1:
+        matches = [r for r in pool if r.resource and normalize(r.resource.heading) == cand_norm]
             return matches[0]
         if len(matches) > 1:
             return 'AMBIGUOUS'
