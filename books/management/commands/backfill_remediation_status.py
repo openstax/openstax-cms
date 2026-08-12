@@ -238,10 +238,8 @@ class Command(BaseCommand):
             if via_title:
                 title_fallback_books.append((first['book_title'], book.slug))
 
-            # resource is SET_NULL, so a deleted snippet leaves rows whose
-            # resource_heading property raises. They can't match a heading anyway.
-            faculty = list(book.book_faculty_resources.exclude(resource__isnull=True))
-            student = list(book.book_student_resources.exclude(resource__isnull=True))
+            faculty = list(book.book_faculty_resources.all())
+            student = list(book.book_student_resources.all())
             video = list(book.book_video_faculty_resources.all())
 
             for row in group:
