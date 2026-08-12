@@ -14,11 +14,13 @@ class FacultyResourcesSerializer(serializers.ModelSerializer):
         for resource in book_faculty_resources:
             # remove listing of linked book data
             resource['book_faculty_resource'] = {}
+            # the resource snippet is SET_NULL, so a deleted snippet leaves this None
+            snippet = resource['resource'] or {}
             #field added to API to match previous book API field
-            resource['resource']['resource_unlocked'] = resource['resource']['unlocked_resource']
+            snippet['resource_unlocked'] = snippet.get('unlocked_resource')
             # if parameter sent, clear links to faculty resources
             if x_param and x_param == 'y':
-                if not resource['resource']['unlocked_resource']:
+                if not snippet.get('unlocked_resource'):
                     if resource['link_document'] is not None:
                         resource['link_document']['file'] = ''
                     if resource['link_page'] is not None:
