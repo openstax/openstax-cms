@@ -6,6 +6,7 @@ from sentry_sdk import capture_exception
 from wagtail import blocks
 from wagtail.snippets.blocks import SnippetChooserBlock
 
+from books.constants import REMEDIATION_STATUSES
 from openstax.api_fields import APIRichTextBlock
 from pages.shared_blocks import CTALinkBlock, id_config_block
 from pages.table_sources import (
@@ -40,6 +41,19 @@ BOOK_STATE_CHOICES = [
     ('deprecated', 'Deprecated'),
 ]
 
+BOOKS_REMEDIATION_CHOICES = [
+    ('', 'All'),
+    ('clear', 'Fully remediated (no outstanding items, and something has been tracked)'),
+    ('outstanding', 'Has at least one outstanding item'),
+]
+
+# Per-resource-row remediation filter: broad buckets plus one entry per exact status.
+RESOURCE_REMEDIATION_CHOICES = [
+    ('', 'All'),
+    ('outstanding', 'Outstanding only (In Progress / Deprecated / Removed)'),
+    ('tracked', 'Any tracked status'),
+] + list(REMEDIATION_STATUSES)
+
 
 class BooksSourceBlock(blocks.StructBlock):
     subject = SnippetChooserBlock('snippets.Subject', required=False,
@@ -53,6 +67,9 @@ class BooksSourceBlock(blocks.StructBlock):
     ], required=False, help_text='Row order. Default Title A–Z.')
     limit = blocks.IntegerBlock(required=False, min_value=1, max_value=500,
         help_text='Maximum number of rows. Default 100.')
+    remediation = blocks.ChoiceBlock(choices=BOOKS_REMEDIATION_CHOICES, required=False,
+        help_text='Filter by accessibility remediation status of the book and its resources. '
+                  'The Accessibility Hub\'s "fully remediated" list uses "Fully remediated".')
     columns = source_columns_block(field_choices(BOOK_FIELDS))
 
     class Meta:
@@ -108,6 +125,8 @@ class BookResourcesSourceBlock(blocks.StructBlock):
     resource_type = blocks.ChoiceBlock(choices=[
         ('instructor', 'Instructor resources'),
         ('student', 'Student resources'),
+        ('video', 'Video resources'),
+        ('all', 'Instructor, student, and video'),
     ], default='instructor')
     audience = blocks.ChoiceBlock(choices=[
         ('all', 'All'),
@@ -116,6 +135,13 @@ class BookResourcesSourceBlock(blocks.StructBlock):
         help_text='K12 only limits rows to resources flagged "Display on K12".')
     resource_category = blocks.ChoiceBlock(choices=resource_category_choices, required=False,
         help_text='Only resources with this category. Leave blank for all categories.')
+    remediation = blocks.ChoiceBlock(choices=RESOURCE_REMEDIATION_CHOICES, required=False,
+        help_text='Filter rows by accessibility remediation status. "Outstanding only" is '
+                  'what the Accessibility Hub table uses.')
+    include_web_pdf = blocks.BooleanBlock(required=False, default=False,
+        label='Include Web PDF rows',
+        help_text='Adds one "Web PDF" row per book, carrying the book\'s own remediation '
+                  'status (not an ancillary resource). Also subject to the remediation filter above.')
     columns = source_columns_block(field_choices(RESOURCE_FIELDS))
 
     class Meta:
