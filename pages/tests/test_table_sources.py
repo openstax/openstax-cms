@@ -87,6 +87,20 @@ class BuildCellTests(TestCase):
         self.assertEqual(cell['cta'][0]['target']['value'], 'https://example.com/x')
         self.assertEqual(cell['cta'][0]['target']['type'], 'external')
 
+    def test_link_cell_passes_through_optional_config(self):
+        # A link getter (e.g. _resource_link_cell) may attach extra CTA config
+        # (the resource_ref marker); build_cell must thread it through unchanged.
+        marker = [{'type': 'resource_ref',
+                   'value': {'book_slug': 'biology-2e', 'heading': 'Guide', 'resource_type': 'Instructor'}}]
+        cell = build_cell({'text': 'View', 'url': '/x', 'config': marker}, 'link')
+        self.assertEqual(cell['cta'][0]['config'], marker)
+
+    def test_link_cell_dangerous_scheme_drops_config_marker(self):
+        # A marker must not resurrect a link the unsafe-scheme guard rejected.
+        marker = [{'type': 'resource_ref', 'value': {}}]
+        cell = build_cell({'text': 'Click', 'url': 'javascript:alert(1)', 'config': marker}, 'link')
+        self.assertEqual(cell['cta'], [])
+
 
 class BuildTableTests(TestCase):
     REGISTRY = {
@@ -453,6 +467,7 @@ class BookResourcesSourceTests(BooksSourceTests):
         cta = result['rows'][0]['cells'][1]['cta'][0]
         self.assertEqual(cta['text'], 'Download guide')
         self.assertEqual(cta['target']['value'], 'https://example.com/guide.pdf')
+        self.assertEqual(cta['config'], [])  # unlocked: real URL, no resource_ref marker
 
     def test_resolve_student_resources(self):
         from pages.table_sources import resolve_book_resources
@@ -873,6 +888,16 @@ class BookResourcesSourceTests(BooksSourceTests):
         serialized = json.dumps(cell)
         self.assertNotIn(real_url, serialized)
         self.assertNotIn('Download', serialized)  # original CTA text must not leak either
+        # Machine-readable marker for os-webview's progressive-enhancement
+        # override, which resolves the real per-user link client-side.
+        self.assertEqual(cta['config'], [{
+            'type': 'resource_ref',
+            'value': {'book_slug': book.slug, 'heading': 'Locked Guide',
+                      'resource_type': 'Instructor'},
+        }])
+        # The marker's book_slug must never drift from the fallback URL's slug.
+        self.assertIn(f'/details/books/{cta["config"][0]["value"]["book_slug"]}',
+                      cta['target']['value'])
 
     def test_locked_student_resource_links_to_student_tab(self):
         # The book page picks its tab from a bare query-string key matching the
@@ -896,6 +921,11 @@ class BookResourcesSourceTests(BooksSourceTests):
         self.assertEqual(cta['target']['value'],
                          f'/details/books/{book.slug}?Student%20resources')
         self.assertNotIn('secret.pdf', json.dumps(result['rows'][0]))
+        self.assertEqual(cta['config'], [{
+            'type': 'resource_ref',
+            'value': {'book_slug': book.slug, 'heading': 'Locked Student Guide',
+                      'resource_type': 'Student'},
+        }])
 
     def test_book_slugs_stay_aligned_with_titles_when_row_shared(self):
         # A resource shared across books merges into one row listing both books;
@@ -943,6 +973,16 @@ class BookResourcesSourceTests(BooksSourceTests):
         self.assertEqual(cell['cta'][0]['text'], 'View on book page')
         self.assertNotIn('secret.pdf', json.dumps(cell))
 
+    def test_locked_resource_with_no_book_slug_yields_plain_empty_cell(self):
+        # Current behavior for a locked row with nothing to link to at all:
+        # no fallback URL means no CTA and no resource_ref marker either.
+        from types import SimpleNamespace
+        from pages.table_sources import _resource_link_cell
+        row = SimpleNamespace(
+            resource=SimpleNamespace(unlocked_resource=False),
+            _book_slugs=[], _resource_type='Instructor', resource_heading='Orphan Guide')
+        self.assertEqual(_resource_link_cell(row), {'text': '', 'url': ''})
+
     def test_student_resource_default_unlocked_emits_real_link(self):
         # Regression guard for the live Student Resource Hub page (id 987):
         # StudentResource.unlocked_resource defaults True, so its links must
@@ -977,7 +1017,7 @@ class BookResourcesSourceTests(BooksSourceTests):
             ],
         })
         web_pdf = next(r for r in result['rows'] if r['cells'][0]['content'] == 'Web PDF')
-        self.assertEqual(web_pdf['cells'][1]['cta'], [])
+        self.assertEqual(web_pdf['cells'][1]['cta'], [])  # no resource_ref marker either
         self.assertEqual(web_pdf['cells'][1]['content'], 'View resource')
 
     def test_video_resource_remediation_status_renders_display_label(self):
@@ -1038,6 +1078,7 @@ class BookResourcesSourceTests(BooksSourceTests):
         self.assertEqual(cta['text'], 'Watch now')
         self.assertEqual(cta['target']['value'], 'https://example.com/watch')
         self.assertNotIn('View on book page', json.dumps(cell))
+        self.assertEqual(cta['config'], [])  # video rows never carry a resource_ref marker
 
     def test_video_row_with_no_link_field_emits_empty_link_not_login_prompt(self):
         # Video ancillaries are public and have no `resource` FK to check —

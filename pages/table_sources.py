@@ -55,7 +55,9 @@ def build_cell(raw, cell_type):
                 'value': url,
                 'type': 'external' if _HAS_SCHEME.match(url) else 'internal',
             },
-            'config': [],
+            # Link getters may opt into extra CTA config (e.g. resource_ref
+            # markers); everyone else gets the same [] as before.
+            'config': raw.get('config') or [],
         }]}
     if cell_type == 'image':
         url = raw.get('url') if isinstance(raw, dict) else raw
@@ -249,7 +251,25 @@ def _resource_link_cell(r):
     to every reader and has no per-visitor "where you came from"."""
     if not (r.resource and r.resource.unlocked_resource):
         url = _book_page_link(r)
-        return {'text': 'View on book page', 'url': url} if url else {'text': '', 'url': ''}
+        if not url:
+            return {'text': '', 'url': ''}
+        # Marker for os-webview's progressive-enhancement override: it resolves
+        # the real per-user link client-side (where verified-instructor status
+        # is visible) and matches this cell back to a resource by heading.
+        # book_slug is computed the same way as the fallback url above, so the
+        # two can never drift apart.
+        return {
+            'text': 'View on book page',
+            'url': url,
+            'config': [{
+                'type': 'resource_ref',
+                'value': {
+                    'book_slug': next(iter(getattr(r, '_book_slugs', [])), ''),
+                    'heading': r.resource_heading if r.resource else '',
+                    'resource_type': getattr(r, '_resource_type', ''),
+                },
+            }],
+        }
     return {'text': r.link_text or 'View resource', 'url': _resource_link(r)}
 
 
