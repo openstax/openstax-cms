@@ -3,7 +3,6 @@ import json
 from unittest import mock
 
 import vcr
-from django.conf import settings
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import TestCase
 from wagtail.documents.models import Document
@@ -283,7 +282,7 @@ class BooksSourceTests(TestCase):
                               allow_playback_repeats=True):
             clear_book = self._make_book(remediation_status='fixed')
             outstanding_book = self._make_book(title='College Physics', slug='college-physics')
-            untracked_book = self._make_book(title='Chemistry', slug='chemistry')
+            self._make_book(title='Chemistry', slug='chemistry')
         # clear_book: book status tracked (fixed) and its one resource is fixed too.
         clear_snippet = FacultyResource.objects.create(
             heading='Slides', description='<p>x</p>', unlocked_resource=True,
@@ -298,7 +297,7 @@ class BooksSourceTests(TestCase):
         BookFacultyResources.objects.create(
             book_faculty_resource=outstanding_book, resource=outstanding_snippet,
             link_external='https://x.co', remediation_status='in_progress')
-        # untracked_book has no remediation_status anywhere — must not read as "clear".
+        # The Chemistry book has no remediation_status anywhere — must not read as "clear".
         result = resolve_books({
             'subject': None, 'book_state': 'live', 'order': 'title', 'limit': 10,
             'remediation': 'clear',
@@ -315,7 +314,7 @@ class BooksSourceTests(TestCase):
         from pages.table_sources import resolve_books
         with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml',
                               allow_playback_repeats=True):
-            book_level = self._make_book(remediation_status='removed')
+            self._make_book(remediation_status='removed')
             resource_level = self._make_book(title='College Physics', slug='college-physics')
             self._make_book(title='Chemistry', slug='chemistry', remediation_status='fixed')
         snippet = FacultyResource.objects.create(
