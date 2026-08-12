@@ -40,12 +40,6 @@ CARDS_LAYOUT_CHOICES = [
     ('masonry', 'Masonry (Pinterest-style columns, packed by height)'),
 ]
 
-WELL_HEADING_STYLE_CHOICES = [
-    ('normal', 'Normal'),
-    ('display', 'Display Quote'),
-]
-
-
 class LinksGroupBlock(blocks.StructBlock):
     links = blocks.ListBlock(
         LinkInfoBlock(required=False, label="Link"),
