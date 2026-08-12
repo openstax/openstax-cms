@@ -440,33 +440,21 @@ WAGTAIL_AI = {
         },
     },
     "IMAGE_DESCRIPTION_BACKEND": "default",
-    # Image description uses the django-ai-core agent path, which sends images
-    # as OpenAI `image_url` content blocks. any-llm 0.20.3's Anthropic provider
-    # doesn't translate that block (Anthropic expects `image`/`source`), so route
-    # image requests to OpenAI, whose native format is `image_url`. Text prompts
-    # stay on the Anthropic "default" provider. Revert to "default" once any-llm
-    # is upgraded to >=1.x (its Anthropic provider converts the block).
+    # Alt text is cheap and high-volume, so it gets its own alias on a smaller
+    # model instead of the "default" Sonnet one (mirrors the BACKENDS split).
     "IMAGE_DESCRIPTION_PROVIDER": "image_description",
     "PROVIDERS": {
         "default": {
             "provider": "anthropic",
             "model": os.getenv("WAGTAIL_AI_AGENT_MODEL", "claude-sonnet-4-6"),
         },
-        "image_description": {  # OpenAI vision: any-llm passes image_url natively
-            "provider": "openai",
-            "model": os.getenv("WAGTAIL_AI_IMAGE_DESCRIPTION_MODEL", "gpt-4o-mini"),
+        "image_description": {
+            "provider": "anthropic",
+            "model": os.getenv(
+                "WAGTAIL_AI_IMAGE_DESCRIPTION_MODEL", "claude-haiku-4-5-20251001"
+            ),
         },
-        # Content feedback is the only agent that requests structured output
-        # (response_format). any-llm 0.20.3's Anthropic provider raises
-        # UnsupportedParameterError on it (Anthropic has no OpenAI-style JSON
-        # mode), so route it to OpenAI, whose provider supports response_format.
-        # ContentFeedbackAgent hardcodes provider_alias="default" with no setting
-        # to override it, so ai_assist.agent_patches points it at this alias.
-        # Revert to "default" once any-llm is upgraded to >=1.x.
-        "content_feedback": {
-            "provider": "openai",
-            "model": os.getenv("WAGTAIL_AI_CONTENT_FEEDBACK_MODEL", "gpt-4o-mini"),
-        },
+        # Anthropic has no embedding models, so embeddings stay on OpenAI.
         "embedding": {
             "provider": "openai",
             "model": os.getenv("WAGTAIL_AI_EMBEDDING_MODEL", "text-embedding-3-small"),

@@ -1,11 +1,11 @@
-any-llm-sdk==0.20.3
+any-llm-sdk==1.23.0
 boto3==1.43.47
 botocore==1.43.47
 bs4==0.0.2
 certifi==2026.6.17
 Django==6.0.7
 django-admin-rangefilter==0.13.5
-django-ai-core==0.1.5
+django-ai-core==0.1.6
 django-compressor==4.6.0
 django-crontab==0.7.1
 django-filter==26.1
