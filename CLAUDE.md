@@ -148,6 +148,37 @@ publishes** (a human reviews and publishes in the Wagtail admin).
 Wagtail 7.4 note: prefer **deferred validation** for draft saves (required-field
 checks happen at publish time) and `ImageRenditionField` for headless images.
 
+## Accessibility Remediation Status
+
+The Accessibility Hub (`/accessibility-hub`) publishes per-ancillary WCAG
+remediation status. It used to be a hand-maintained raw-HTML table of 653 rows;
+it is now driven by `TableBlock` data sources.
+
+- **Field:** `remediation_status` on `books.FacultyResources`,
+  `books.StudentResources` (per-book, because the same resource snippet can have
+  a different status on each book) and on `books.Book` (the book's own Web PDF).
+  Choices: `books.constants.REMEDIATION_STATUSES`; `REMEDIATION_OUTSTANDING`
+  names the subset the hub shows. Blank = untracked, stays off the hub.
+- **Table config:** the `book_resources` source gained `remediation`
+  (`outstanding` is what the hub uses), `include_web_pdf`, and
+  `resource_type='all'`; the `books` source gained `remediation='clear'` for the
+  "fully remediated" list at the top of the page.
+- **Backfill:** `manage.py backfill_remediation_status` parses the old HTML
+  table into the fields. Dry-run by default, `--commit` to write. Matches books
+  by the slug in each row's href (hub titles are hand-typed and contain typos).
+
+**Locked resources:** `RESOURCE_FIELDS['link']` fails closed via
+`_resource_link_cell` — a locked (or FK-null) resource emits a login prompt, never
+its file URL. The per-request `?x=y` redaction in `books/serializers.py` cannot
+work here: `get_api_representation` runs with no user and its output is cached and
+served to every visitor.
+
+**Adding config to a nested StreamField block requires a migration.** Wagtail
+bakes each StreamField's full block-tree deconstruction into migration state, so
+editing `TableBlock`'s sub-blocks drifts every StreamField that nests it
+(`news.PressIndex.faqs`, `pages.RootPage.body`, …). These are state-only, no
+schema change — but CI runs `makemigrations --check`, so generate them.
+
 ## Home Page Workflow (Promote to Home)
 
 The `RootPage` (site root, serves `/`) never moves between environments — it was
