@@ -145,7 +145,9 @@ def find_resource(faculty, student, video, resource_type, ancillary):
         cand_norm = normalize(candidate)
         if not cand_norm:
             continue
-        matches = [r for r in pool if r.resource and normalize(r.resource.heading) == cand_norm]
+        # resource_heading, not resource.heading: video rows have no resource FK.
+        matches = [r for r in pool if normalize(r.resource_heading) == cand_norm]
+        if len(matches) == 1:
             return matches[0]
         if len(matches) > 1:
             return 'AMBIGUOUS'
@@ -236,8 +238,10 @@ class Command(BaseCommand):
             if via_title:
                 title_fallback_books.append((first['book_title'], book.slug))
 
-            faculty = list(book.book_faculty_resources.all())
-            student = list(book.book_student_resources.all())
+            # resource is SET_NULL, so a deleted snippet leaves rows whose
+            # resource_heading property raises. They can't match a heading anyway.
+            faculty = list(book.book_faculty_resources.exclude(resource__isnull=True))
+            student = list(book.book_student_resources.exclude(resource__isnull=True))
             video = list(book.book_video_faculty_resources.all())
 
             for row in group:
