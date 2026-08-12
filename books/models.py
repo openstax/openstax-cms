@@ -28,7 +28,8 @@ from openstax.api_fields import APIRichTextBlock, ExpandedRichTextField
 from openstax.functions import build_document_url, build_image_url
 from openstax.preview import FrontendPreviewMixin
 from books.constants import BOOK_STATES, BOOK_COVER_TEXT_COLOR, COVER_COLORS, CC_NC_SA_LICENSE_NAME, CC_BY_LICENSE_NAME, \
-    CC_BY_LICENSE_URL, CC_NC_SA_LICENSE_URL, CC_NC_SA_LICENSE_VERSION, CC_BY_LICENSE_VERSION, K12_CATEGORIES
+    CC_BY_LICENSE_URL, CC_NC_SA_LICENSE_URL, CC_NC_SA_LICENSE_VERSION, CC_BY_LICENSE_VERSION, K12_CATEGORIES, \
+    REMEDIATION_STATUSES
 import snippets.models as snippets
 
 
@@ -111,6 +112,10 @@ class VideoFacultyResource(models.Model):
     video_title = models.CharField(max_length=255, blank=True, null=True)
     video_url = models.URLField(blank=True, null=True)
     video_file = models.FileField(upload_to='resource_videos', blank=True, null=True)
+    remediation_status = models.CharField(
+        max_length=20, choices=REMEDIATION_STATUSES, blank=True, default='',
+        help_text="Accessibility remediation status for this book's copy of the resource, "
+                  "published on the Accessibility Hub. Leave blank to keep it off the hub.")
 
     api_fields = [
         APIField('resource_heading'),
@@ -118,6 +123,7 @@ class VideoFacultyResource(models.Model):
         APIField('video_title'),
         APIField('video_url'),
         APIField('video_file'),
+        APIField('remediation_status'),
     ]
 
     panels = [
@@ -126,6 +132,7 @@ class VideoFacultyResource(models.Model):
         FieldPanel('video_title'),
         FieldPanel('video_url'),
         FieldPanel('video_file'),
+        FieldPanel('remediation_status'),
     ]
 
 
@@ -266,6 +273,10 @@ class FacultyResources(models.Model):
     display_on_k12 = models.BooleanField(default=False, help_text="Display resource on K12 subject pages")
     print_link = models.URLField(blank=True, null=True, help_text="Link for Buy Print link on resource")
     hidden = models.BooleanField(default=False, help_text="Hide this resource from the live book page")
+    remediation_status = models.CharField(
+        max_length=20, choices=REMEDIATION_STATUSES, blank=True, default='',
+        help_text="Accessibility remediation status for this book's copy of the resource, "
+                  "published on the Accessibility Hub. Leave blank to keep it off the hub.")
 
     def get_resource_category(self):
         return self.resource and self.resource.resource_category
@@ -284,6 +295,7 @@ class FacultyResources(models.Model):
         APIField('link_text'),
         APIField('coming_soon_text'),
         APIField('video_reference_number'),
+        APIField('remediation_status'),
         APIField('updated'),
         APIField('featured'),
         APIField('k12'),
@@ -306,7 +318,8 @@ class FacultyResources(models.Model):
         FieldPanel('k12'),
         FieldPanel('display_on_k12'),
         FieldPanel('print_link'),
-        FieldPanel('hidden')
+        FieldPanel('hidden'),
+        FieldPanel('remediation_status')
     ]
 
 
@@ -376,6 +389,10 @@ class StudentResources(models.Model):
     print_link = models.URLField(blank=True, null=True, help_text="Link for Buy Print link on resource")
     display_on_k12 = models.BooleanField(default=False, help_text="Display resource on K12 subject pages")
     hidden = models.BooleanField(default=False, help_text="Hide this resource from the live book page")
+    remediation_status = models.CharField(
+        max_length=20, choices=REMEDIATION_STATUSES, blank=True, default='',
+        help_text="Accessibility remediation status for this book's copy of the resource, "
+                  "published on the Accessibility Hub. Leave blank to keep it off the hub.")
 
     def get_resource_category(self):
         return self.resource and self.resource.resource_category
@@ -394,6 +411,7 @@ class StudentResources(models.Model):
         APIField('link_text'),
         APIField('coming_soon_text'),
         APIField('updated'),
+        APIField('remediation_status'),
         APIField('print_link'),
         APIField('display_on_k12'),
         APIField('resource_category'),
@@ -410,7 +428,8 @@ class StudentResources(models.Model):
         FieldPanel('updated'),
         FieldPanel('print_link'),
         FieldPanel('display_on_k12'),
-        FieldPanel('hidden')
+        FieldPanel('hidden'),
+        FieldPanel('remediation_status')
     ]
 
 
@@ -699,6 +718,12 @@ class Book(FrontendPreviewMixin, Page):
                                           help_text='No tracking and not included on adoption and interest forms if left blank)')
     updated = models.DateTimeField(blank=True, null=True, help_text='Late date web content was updated')
     is_ap = models.BooleanField(default=False, help_text='Whether this book is an AP (Advanced Placement) book.')
+    # The book's own PDF, not an ancillary — the hub lists it as a "Web PDF" row
+    # alongside each book's resources.
+    remediation_status = models.CharField(
+        max_length=20, choices=REMEDIATION_STATUSES, blank=True, default='',
+        help_text="Accessibility remediation status of this book's Web PDF, published on "
+                  "the Accessibility Hub. Leave blank to keep it off the hub.")
     description = RichTextField(
         blank=True, help_text="Description shown on Book Detail page.")
 
@@ -939,6 +964,7 @@ class Book(FrontendPreviewMixin, Page):
         InlinePanel('book_categories', label='Subject Categories'),
         InlinePanel('k12book_subjects', label='K12 Subjects'),
         FieldPanel('is_ap'),
+        FieldPanel('remediation_status'),
         FieldPanel('description', classname="full"),
         FieldPanel('content_warning'),
         FieldPanel('require_login_message'),
@@ -1032,6 +1058,7 @@ class Book(FrontendPreviewMixin, Page):
         APIField('book_categories'),
         APIField('k12book_subjects'),
         APIField('is_ap'),
+        APIField('remediation_status'),
         APIField('description', serializer=ExpandedRichTextField()),
         APIField('content_warning_text'),
         APIField('require_login_message_text'),

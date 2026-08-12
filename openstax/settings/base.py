@@ -649,7 +649,10 @@ WAGTAILIMAGES_FORMAT_CONVERSIONS = {
     'png': 'webp',
 }
 WAGTAILIMAGES_MAX_UPLOAD_SIZE = 20 * 1024 * 1024  # 20MB
-DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
+# A manual table block posts ~6 fields per cell (+5 per row), so a few hundred
+# rows blows past Django's default. Note: raising the ceiling, not removing it —
+# tables that big should use the block's Data source instead of manual rows.
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 51200
 
 # CodeMirror-based HTML editor (wagtail-html-editor) for raw-HTML StreamField
 # blocks. Values below are the package defaults, spelled out for discoverability.
