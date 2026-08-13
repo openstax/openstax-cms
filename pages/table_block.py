@@ -131,9 +131,9 @@ class BookResourcesSourceBlock(blocks.StructBlock):
         help_text='Pick individual books instead. When set, the subject filters '
                   'above are ignored. Leave empty to use the subjects above — or, '
                   'with no filters at all, every book. A resource shared across '
-                  'several books is listed once, with all its book names. Retired, '
-                  'unlisted, and unpublished books are rejected: their resources '
-                  'are not reachable on the book page.')
+                  'several books is listed once, with all its book names. Retired '
+                  'books are rejected — their resources are no longer served — and so '
+                  'are unlisted and unpublished ones, which are kept out of listings.')
     resource_type = blocks.ChoiceBlock(choices=[
         ('instructor', 'Instructor resources'),
         ('student', 'Student resources'),
@@ -163,9 +163,9 @@ class BookResourcesSourceBlock(blocks.StructBlock):
                     if reason]
         if unusable:
             raise StructBlockValidationError({'books': ValidationError(
-                f"These books produce no rows: {', '.join(unusable)}. Their resources "
-                "aren't reachable on the book page, so the table would only show dead "
-                "links. Remove them, or pick the current edition instead.")})
+                f"These books produce no rows: {', '.join(unusable)}. A retired book no "
+                "longer serves its resources, and unlisted or unpublished books are kept "
+                "out of listings. Remove them, or pick a current edition instead.")})
         return result
 
     class Meta:

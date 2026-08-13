@@ -368,9 +368,10 @@ def _resource_books(config):
     """Books whose resources fill the table. Explicit picks win; otherwise all
     listed books, narrowed by HE subject and/or K12 subject area if set.
 
-    Retired and unlisted books are dropped either way. Their detail pages don't
-    serve resources — books/views.py 404s the resources endpoint for a retired
-    book — so their rows can only ever be dead ends."""
+    Retired and unlisted books are dropped either way, for different reasons: a
+    retired book's resources endpoint 404s (books/views.py), so its rows can only
+    ever be dead ends, and an unlisted book is deliberately kept out of listings
+    — which is what a table is."""
     manual = [b.specific for b in (config.get('books') or []) if b]
     if manual:
         return [b for b in manual if b.live and b.book_state not in HIDDEN_BOOK_STATES]
