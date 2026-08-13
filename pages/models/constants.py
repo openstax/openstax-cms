@@ -16,7 +16,6 @@ from pages.custom_blocks import APIImageChooserBlock, \
     CARDS_STYLE_CHOICES, \
     CARDS_LAYOUT_CHOICES, \
     TEXT_ALIGNMENT_CHOICES, \
-    WELL_HEADING_STYLE_CHOICES, \
     FLEX_CHOICES
 
 from pages.shared_blocks import CTALinkBlock, OpenStaxColorBlock, hex_color_block, \
@@ -148,8 +147,6 @@ SECTION_CONTENT_BLOCKS = BASE_CONTENT_BLOCKS + [
                 error_messages={'invalid': 'not a valid size.'}
             )),
             ('text_alignment', blocks.ChoiceBlock(choices=TEXT_ALIGNMENT_CHOICES, help_text='Text alignment inside the well. Default left.')),
-            ('heading_style', blocks.ChoiceBlock(choices=WELL_HEADING_STYLE_CHOICES,
-                help_text='Display Quote makes any level-6 heading (H6) inside this well render as a large, oversized pull-quote — for short testimonial-style lines. Normal leaves headings at their usual size.')),
             ('analytics_label', blocks.CharBlock(required=False, help_text='Sets the "analytics nav" field for links within this well.')),
             ('id', id_config_block()),
         ], block_counts={
@@ -163,7 +160,6 @@ SECTION_CONTENT_BLOCKS = BASE_CONTENT_BLOCKS + [
             'pull_up': {'max_num': 1},
             'width': {'max_num': 1},
             'text_alignment': {'max_num': 1},
-            'heading_style': {'max_num': 1},
             'analytics_label': {'max_num': 1},
             'id': {'max_num': 1},
         }, required=False, collapsed=True)),
