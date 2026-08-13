@@ -692,6 +692,50 @@ class BookResourcesSourceTests(BooksSourceTests):
         self.assertEqual(result['rows'][0]['cells'][0]['content'],
                          'Instructor Getting Started Guide')
 
+    def test_manually_picked_hidden_book_contributes_no_rows(self):
+        # A retired book's resources endpoint 404s and an unlisted book is meant
+        # to stay out of listings, so neither belongs in a table however it was
+        # picked.
+        from pages.table_sources import resolve_book_resources
+        from books.models import Book
+        book = self._make_book_with_resources()
+        for state in ('retired', 'unlisted'):
+            with self.subTest(book_state=state):
+                # .update(): saving a Book calls out to Salesforce.
+                Book.objects.filter(pk=book.pk).update(book_state=state)
+                book.refresh_from_db()
+                result = resolve_book_resources({
+                    'books': [book], 'resource_type': 'instructor', 'audience': '',
+                    'columns': [{'field': 'heading', 'header': '', 'type': ''}],
+                })
+                self.assertEqual(result['rows'], [])
+
+    def _clean_source(self, book):
+        from pages.table_block import BookResourcesSourceBlock
+        block = BookResourcesSourceBlock()
+        return block.clean(block.to_python({
+            'books': [book.pk], 'resource_type': 'instructor',
+            'columns': [{'field': 'heading', 'header': '', 'type': ''}],
+        }))
+
+    def test_picking_a_hidden_book_is_a_validation_error(self):
+        from django.core.exceptions import ValidationError
+        from books.models import Book
+        book = self._make_book_with_resources()
+        for state in ('retired', 'unlisted'):
+            with self.subTest(book_state=state):
+                Book.objects.filter(pk=book.pk).update(book_state=state)
+
+                with self.assertRaises(ValidationError) as caught:
+                    self._clean_source(book)
+                self.assertIn(f'University Physics ({state})',
+                              str(caught.exception.block_errors['books']))
+
+    def test_picking_a_live_book_validates(self):
+        book = self._make_book_with_resources()
+
+        self.assertEqual(list(self._clean_source(book)['books']), [book])
+
     def test_he_subject_filter_selects_matching_books(self):
         from books.models import BookSubjects
         from snippets.models import Subject

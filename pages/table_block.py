@@ -2,15 +2,17 @@ import hashlib
 import json
 
 from django.core.cache import cache
+from django.core.exceptions import ValidationError
 from sentry_sdk import capture_exception
 from wagtail import blocks
+from wagtail.blocks.struct_block import StructBlockValidationError
 from wagtail.snippets.blocks import SnippetChooserBlock
 
 from books.constants import REMEDIATION_STATUSES
 from openstax.api_fields import APIRichTextBlock
 from pages.shared_blocks import CTALinkBlock, id_config_block
 from pages.table_sources import (
-    SOURCE_CELL_TYPE_CHOICES, field_choices,
+    SOURCE_CELL_TYPE_CHOICES, HIDDEN_BOOK_STATES, field_choices,
     BOOK_FIELDS, NEWS_FIELDS, RESOURCE_FIELDS, SUBJECT_FIELDS,
 )
 
@@ -109,6 +111,14 @@ def resource_category_choices():
     return [(c, c) for c in sorted(categories)]
 
 
+def _unusable_book_reason(book):
+    """Why a manually picked book would contribute no rows, or None if it will."""
+    if not book.live:
+        return 'unpublished'
+    state = book.specific.book_state
+    return state if state in HIDDEN_BOOK_STATES else None
+
+
 class BookResourcesSourceBlock(blocks.StructBlock):
     subject = SnippetChooserBlock('snippets.Subject', required=False,
         help_text='All books in this Higher Ed subject. Leave empty for all subjects.')
@@ -121,7 +131,9 @@ class BookResourcesSourceBlock(blocks.StructBlock):
         help_text='Pick individual books instead. When set, the subject filters '
                   'above are ignored. Leave empty to use the subjects above — or, '
                   'with no filters at all, every book. A resource shared across '
-                  'several books is listed once, with all its book names.')
+                  'several books is listed once, with all its book names. Retired '
+                  'books are rejected — their resources are no longer served — and so '
+                  'are unlisted and unpublished ones, which are kept out of listings.')
     resource_type = blocks.ChoiceBlock(choices=[
         ('instructor', 'Instructor resources'),
         ('student', 'Student resources'),
@@ -143,6 +155,18 @@ class BookResourcesSourceBlock(blocks.StructBlock):
         help_text='Adds one "Web PDF" row per book, carrying the book\'s own remediation '
                   'status (not an ancillary resource). Also subject to the remediation filter above.')
     columns = source_columns_block(field_choices(RESOURCE_FIELDS))
+
+    def clean(self, value):
+        result = super().clean(value)
+        unusable = [f'{book.title} ({reason})'
+                    for book, reason in ((b, _unusable_book_reason(b)) for b in result['books'] if b)
+                    if reason]
+        if unusable:
+            raise StructBlockValidationError({'books': ValidationError(
+                f"These books produce no rows: {', '.join(unusable)}. A retired book no "
+                "longer serves its resources, and unlisted or unpublished books are kept "
+                "out of listings. Remove them, or pick a current edition instead.")})
+        return result
 
     class Meta:
         label = 'Book resources'
