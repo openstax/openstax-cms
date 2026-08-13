@@ -707,6 +707,30 @@ class BookResourcesSourceTests(BooksSourceTests):
         })
         self.assertEqual(result['rows'], [])
 
+    def _clean_source(self, book):
+        from pages.table_block import BookResourcesSourceBlock
+        block = BookResourcesSourceBlock()
+        return block.clean(block.to_python({
+            'books': [book.pk], 'resource_type': 'instructor',
+            'columns': [{'field': 'heading', 'header': '', 'type': ''}],
+        }))
+
+    def test_picking_a_retired_book_is_a_validation_error(self):
+        from django.core.exceptions import ValidationError
+        from books.models import Book
+        book = self._make_book_with_resources()
+        Book.objects.filter(pk=book.pk).update(book_state='retired')
+
+        with self.assertRaises(ValidationError) as caught:
+            self._clean_source(book)
+        self.assertIn('University Physics (retired)',
+                      str(caught.exception.block_errors['books']))
+
+    def test_picking_a_live_book_validates(self):
+        book = self._make_book_with_resources()
+
+        self.assertEqual(list(self._clean_source(book)['books']), [book])
+
     def test_he_subject_filter_selects_matching_books(self):
         from books.models import BookSubjects
         from snippets.models import Subject
