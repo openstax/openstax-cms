@@ -121,7 +121,9 @@ class BookResourcesSourceBlock(blocks.StructBlock):
         help_text='Pick individual books instead. When set, the subject filters '
                   'above are ignored. Leave empty to use the subjects above — or, '
                   'with no filters at all, every book. A resource shared across '
-                  'several books is listed once, with all its book names.')
+                  'several books is listed once, with all its book names. Retired '
+                  'and unlisted books are skipped: their resources are no longer '
+                  'reachable on the book page.')
     resource_type = blocks.ChoiceBlock(choices=[
         ('instructor', 'Instructor resources'),
         ('student', 'Student resources'),

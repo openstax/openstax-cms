@@ -692,6 +692,21 @@ class BookResourcesSourceTests(BooksSourceTests):
         self.assertEqual(result['rows'][0]['cells'][0]['content'],
                          'Instructor Getting Started Guide')
 
+    def test_manually_picked_retired_book_contributes_no_rows(self):
+        # A retired book's detail page won't serve its resources, so a row
+        # pointing at one is a dead end however it got into the table.
+        from pages.table_sources import resolve_book_resources
+        from books.models import Book
+        book = self._make_book_with_resources()
+        # .update() rather than .save(): saving a Book calls out to Salesforce.
+        Book.objects.filter(pk=book.pk).update(book_state='retired')
+        book.refresh_from_db()
+        result = resolve_book_resources({
+            'books': [book], 'resource_type': 'instructor', 'audience': '',
+            'columns': [{'field': 'heading', 'header': '', 'type': ''}],
+        })
+        self.assertEqual(result['rows'], [])
+
     def test_he_subject_filter_selects_matching_books(self):
         from books.models import BookSubjects
         from snippets.models import Subject

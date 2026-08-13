@@ -132,11 +132,13 @@ BOOK_FIELDS = {
 
 DEFAULT_ROW_CAP = 100
 
+HIDDEN_BOOK_STATES = ['unlisted', 'retired']
+
 
 def resolve_books(config):
     from django.db.models import Exists, OuterRef, Q
     from books.models import Book, BookFacultyResources, BookStudentResources
-    qs = Book.objects.live().exclude(book_state__in=['unlisted', 'retired'])
+    qs = Book.objects.live().exclude(book_state__in=HIDDEN_BOOK_STATES)
     if config.get('book_state'):
         qs = qs.filter(book_state=config['book_state'])
     if config.get('subject'):
@@ -364,12 +366,16 @@ class _VideoResourceRow:
 
 def _resource_books(config):
     """Books whose resources fill the table. Explicit picks win; otherwise all
-    listed books, narrowed by HE subject and/or K12 subject area if set."""
+    listed books, narrowed by HE subject and/or K12 subject area if set.
+
+    Retired and unlisted books are dropped either way. Their detail pages don't
+    serve resources — books/views.py 404s the resources endpoint for a retired
+    book — so their rows can only ever be dead ends."""
     manual = [b.specific for b in (config.get('books') or []) if b]
     if manual:
-        return manual
+        return [b for b in manual if b.live and b.book_state not in HIDDEN_BOOK_STATES]
     from books.models import Book
-    qs = Book.objects.live().exclude(book_state__in=['unlisted', 'retired'])
+    qs = Book.objects.live().exclude(book_state__in=HIDDEN_BOOK_STATES)
     if config.get('subject'):
         qs = qs.filter(book_subjects__subject=config['subject'])
     if config.get('k12_subject'):
