@@ -173,6 +173,12 @@ its file URL. The per-request `?x=y` redaction in `books/serializers.py` cannot
 work here: `get_api_representation` runs with no user and its output is cached and
 served to every visitor.
 
+The cell also carries a `resource_ref` marker (book slug/id, heading, resource
+type) that os-webview uses to swap in the real per-user resource box client-side.
+Renaming those keys breaks that override — and note os-webview camelCases every
+key of a page payload before a block sees it, so it reads them as
+`bookSlug`/`bookId`/`resourceType`.
+
 **Adding config to a nested StreamField block requires a migration.** Wagtail
 bakes each StreamField's full block-tree deconstruction into migration state, so
 editing `TableBlock`'s sub-blocks drifts every StreamField that nests it
