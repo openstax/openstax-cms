@@ -144,12 +144,30 @@ PARTNER_FILTER_CATEGORIES = [
 ]
 
 
+def _validate_partner_filter_registry():
+    labels = set()
+    field_names = set()
+
+    for category in PARTNER_FILTER_CATEGORIES:
+        for field_name, label in category["fields"].items():
+            if field_name in field_names:
+                raise ValueError(f"Duplicate partner filter field name in registry: {field_name}")
+            field_names.add(field_name)
+
+            if label in labels:
+                raise ValueError(f"Duplicate partner filter label in registry: {label}")
+            labels.add(label)
+
+
+_validate_partner_filter_registry()
+
+
 def _used_field_names(field_names):
     checked = [name for name in field_names if name not in ALWAYS_VISIBLE_FIELDS]
     used = {name for name in field_names if name in ALWAYS_VISIBLE_FIELDS}
     visible_partners = Partner.objects.filter(visible_on_website=True)
     if checked:
-        for row in visible_partners.values(*checked):
+        for row in visible_partners.values(*checked).iterator():
             used.update(name for name, value in row.items() if value)
     return used
 

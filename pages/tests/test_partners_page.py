@@ -3,7 +3,7 @@ thin delegators to salesforce.partner_filters - see salesforce/test_partner_filt
 for the actual derivation logic tests."""
 from django.test import TestCase
 
-from pages.models.partners import PartnersPage
+from pages.models import PartnersPage
 from salesforce import partner_filters
 from salesforce.models import Partner
 
