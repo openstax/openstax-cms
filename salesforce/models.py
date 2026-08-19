@@ -328,14 +328,6 @@ class PartnerTypeMapping(models.Model):
 
 
 class ResourceDownload(models.Model):
-    # A resource can sit on more than one page, so the same resource_name says
-    # nothing about where the reader found it. K12 provenance is what separates
-    # a dual-credit teacher from a college instructor taking the same file.
-    SOURCES = (
-        ('Book detail', 'Book detail'),
-        ('K12 subject', 'K12 subject'),
-        ('Flex page', 'Flex page'),
-    )
     BOOK_FORMATS = (
         ('Online', 'Online'),
         ('PDF', 'PDF'),
@@ -354,8 +346,11 @@ class ResourceDownload(models.Model):
     last_access = models.DateTimeField()
     resource_name = models.CharField(max_length=255, null=True, blank=True)
     contact_id = models.CharField(max_length=100, null=True, blank=True)
-    source = models.CharField(max_length=100, choices=SOURCES, null=True, blank=True,
-                              help_text="Which page the reader downloaded from")
+    # The path, not a page type: /dual-credit and any other flex page are the
+    # same type but not the same signal, and a new page needs no code change
+    # here to show up in the data.
+    source = models.CharField(max_length=255, null=True, blank=True,
+                              help_text="Path of the page the reader downloaded from")
 
     class Meta:
         indexes = [

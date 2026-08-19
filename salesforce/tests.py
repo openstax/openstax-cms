@@ -245,49 +245,44 @@ class UpdateResourceDownloadsCommandTest(TestCase):
             'account_uuid': account_uuid,
             'last_access': timezone.now(),
             'resource_name': 'Instructor Answer Guide',
-            'source': 'K12 subject',
+            'source': '/k12/subjects/math',
         }
         fields.update(overrides)
         return ResourceDownload.objects.create(**fields)
 
     @patch('salesforce.management.commands.update_resource_downloads.Salesforce')
-    def test_sends_the_source_and_links_a_matching_student(self, salesforce):
-        student_uuid = '310bb96b-0df8-4d10-a759-c7d366c1f524'
+    def test_sends_the_page_path_and_the_account_uuid(self, salesforce):
         sf = salesforce.return_value.__enter__.return_value
-        sf.query_all.return_value = {'records': [{'Id': 'a0S000001', 'Name': student_uuid}]}
-        self.make_download(student_uuid)
+        self.make_download('310bb96b-0df8-4d10-a759-c7d366c1f524', source='/dual-credit')
 
         call_command('update_resource_downloads')
 
         sent = sf.bulk.Resource__c.insert.call_args[0][0]
         self.assertEqual(1, len(sent))
-        self.assertEqual('K12 subject', sent[0]['Source__c'])
-        self.assertEqual('a0S000001', sent[0]['Student__c'])
+        self.assertEqual('/dual-credit', sent[0]['Source__c'])
+        # What the Salesforce flow matches a student on.
+        self.assertEqual('310bb96b-0df8-4d10-a759-c7d366c1f524', sent[0]['Accounts_UUID__c'])
 
     @patch('salesforce.management.commands.update_resource_downloads.Salesforce')
-    def test_a_download_whose_student_does_not_exist_yet_is_still_sent(self, salesforce):
+    def test_sends_a_student_download_that_has_no_contact(self, salesforce):
         sf = salesforce.return_value.__enter__.return_value
-        sf.query_all.return_value = {'records': []}
-        self.make_download('310bb96b-0df8-4d10-a759-c7d366c1f525')
+        self.make_download('310bb96b-0df8-4d10-a759-c7d366c1f525', contact_id=None)
 
         call_command('update_resource_downloads')
 
         sent = sf.bulk.Resource__c.insert.call_args[0][0]
         self.assertEqual(1, len(sent))
-        self.assertIsNone(sent[0]['Student__c'])
-        # Accounts_UUID__c is what lets Salesforce match it once the student lands.
-        self.assertEqual('310bb96b-0df8-4d10-a759-c7d366c1f525', sent[0]['Accounts_UUID__c'])
+        self.assertIsNone(sent[0]['Contact__c'])
 
     @patch('salesforce.management.commands.update_resource_downloads.Salesforce')
-    def test_looks_students_up_in_one_query_per_chunk(self, salesforce):
+    def test_needs_no_salesforce_query_to_build_the_batch(self, salesforce):
         sf = salesforce.return_value.__enter__.return_value
-        sf.query_all.return_value = {'records': []}
-        for n in range(3):
-            self.make_download('310bb96b-0df8-4d10-a759-c7d366c1f5{:02d}'.format(30 + n))
+        self.make_download('310bb96b-0df8-4d10-a759-c7d366c1f526')
 
         call_command('update_resource_downloads')
 
-        self.assertEqual(1, sf.query_all.call_count)
+        sf.query_all.assert_not_called()
+
 
 class SyncThankYouNotesCommandTest(TestCase):
     def setUp(self):
@@ -638,21 +633,21 @@ class ResourceDownloadTest(TestCase):
     def test_the_same_resource_from_two_pages_is_recorded_separately(self):
         book = self.make_book()
 
-        self.post_download(book=book.pk, resource_name="Test Bank", source="K12 subject")
-        self.post_download(book=book.pk, resource_name="Test Bank", source="Book detail")
+        self.post_download(book=book.pk, resource_name="Test Bank", source="/k12/subjects/math")
+        self.post_download(book=book.pk, resource_name="Test Bank", source="/details/books/university-physics")
 
         self.assertEqual(
-            {"K12 subject", "Book detail"},
+            {"/k12/subjects/math", "/details/books/university-physics"},
             set(ResourceDownload.objects.values_list('source', flat=True)),
         )
 
     def test_source_is_stored_as_sent(self):
         book = self.make_book()
 
-        response = self.post_download(book=book.pk, resource_name="Test Bank", source="K12 subject")
+        response = self.post_download(book=book.pk, resource_name="Test Bank", source="/k12/subjects/math")
 
-        self.assertEqual("K12 subject", response.data['source'])
-        self.assertEqual("K12 subject", ResourceDownload.objects.get().source)
+        self.assertEqual('/k12/subjects/math', response.data['source'])
+        self.assertEqual('/k12/subjects/math', ResourceDownload.objects.get().source)
 
     def test_a_download_without_a_contact_keeps_the_one_already_known(self):
         book = self.make_book()

@@ -5,27 +5,6 @@ from django.utils import timezone
 from datetime import timedelta
 
 
-# Student__c.Name holds the account uuid, which is the only key the two sides
-# share. Accounts creates those records, so a download can easily arrive before
-# the student it belongs to; an unmatched row still carries Accounts_UUID__c and
-# can be matched later.
-STUDENT_LOOKUP_CHUNK = 200
-
-
-def student_ids_by_uuid(sf, account_uuids):
-    wanted = sorted({str(uuid) for uuid in account_uuids if uuid})
-    found = {}
-
-    for start in range(0, len(wanted), STUDENT_LOOKUP_CHUNK):
-        chunk = wanted[start:start + STUDENT_LOOKUP_CHUNK]
-        quoted = ', '.join("'{}'".format(uuid) for uuid in chunk)
-        results = sf.query_all("SELECT Id, Name FROM Student__c WHERE Name IN ({})".format(quoted))
-        for record in results['records']:
-            found.setdefault(record['Name'], record['Id'])
-
-    return found
-
-
 class Command(BaseCommand):
     help = "update resource download records with SF"
 
@@ -40,17 +19,14 @@ class Command(BaseCommand):
         self.stdout.write(self.style.WARNING("Found {} records. Uploading to Salesforce...".format(new_resource_downloads.count())))
 
         with Salesforce() as sf:
-            students = student_ids_by_uuid(
-                sf, [nrd.account_uuid for nrd in new_resource_downloads if nrd.book])
             new_data = []
-            matched_students = 0
             for nrd in new_resource_downloads:
                 if nrd.book:
-                    student_id = students.get(str(nrd.account_uuid))
-                    if student_id:
-                        matched_students += 1
+                    # Contact__c is empty for students. Accounts_UUID__c is on
+                    # every record, and a Salesforce flow attaches it to the
+                    # Student__c record once that record exists - which means
+                    # downloads need not wait for the student backfill.
                     data_dict_item = {'Contact__c': nrd.contact_id,
-                                      'Student__c': student_id,
                                       'Last_accessed__c': nrd.last_access.strftime('%Y-%m-%d'),
                                       'Name': nrd.resource_name,
                                       'Book__c': nrd.book.salesforce_abbreviation,
@@ -63,5 +39,4 @@ class Command(BaseCommand):
                 sf.bulk.Resource__c.insert(new_data)
 
             self.stdout.write(self.style.SUCCESS(
-                "SF Resource Download Completed. Sent: {}. Matched to a student: {}.".format(
-                    len(new_data), matched_students)))
+                "SF Resource Download Completed. Sent: {}.".format(len(new_data))))
