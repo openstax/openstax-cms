@@ -8,6 +8,7 @@ from django.test import LiveServerTestCase, TestCase, Client
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.conf import settings
+from django.utils import timezone
 
 from books.models import BookIndex, Book
 from donations.models import ThankYouNote
@@ -206,6 +207,87 @@ class SyncSalesforceBookNamesCommandTest(TestCase):
             SalesforceBookName.objects.get(salesforce_id='a0Z000001').official_name,
             'University Physics 2e')
 
+
+class UpdateResourceDownloadsCommandTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        root_page = Page.objects.get(title="Root")
+        homepage = RootPage(title="Hello World", slug="hello-world")
+        root_page.add_child(instance=homepage)
+        book_index = BookIndex(title="Book Index",
+                               page_description="Test",
+                               dev_standard_1_description="Test",
+                               dev_standard_2_description="Test",
+                               dev_standard_3_description="Test",
+                               dev_standard_4_description="Test",
+                               )
+        homepage.add_child(instance=book_index)
+        test_image = SimpleUploadedFile(name='openstax.png',
+                                        content=open("pages/static/images/openstax.png", 'rb').read())
+        test_doc = Document.objects.create(title='Test Doc', file=test_image)
+        book = Book(title="University Physics",
+                    slug="university-physics",
+                    cnx_id='031da8d3-b525-429c-80cf-6c8ed997733a',
+                    salesforce_book_id='',
+                    salesforce_abbreviation='UPhysics',
+                    description="Test Book",
+                    cover=test_doc,
+                    title_image=test_doc,
+                    publish_date=datetime.date.today(),
+                    locale=root_page.locale
+                    )
+        book_index.add_child(instance=book)
+        cls.book = book
+
+    def make_download(self, account_uuid, **overrides):
+        fields = {
+            'book': self.book,
+            'account_uuid': account_uuid,
+            'last_access': timezone.now(),
+            'resource_name': 'Instructor Answer Guide',
+            'source': 'K12 subject',
+        }
+        fields.update(overrides)
+        return ResourceDownload.objects.create(**fields)
+
+    @patch('salesforce.management.commands.update_resource_downloads.Salesforce')
+    def test_sends_the_source_and_links_a_matching_student(self, salesforce):
+        student_uuid = '310bb96b-0df8-4d10-a759-c7d366c1f524'
+        sf = salesforce.return_value.__enter__.return_value
+        sf.query_all.return_value = {'records': [{'Id': 'a0S000001', 'Name': student_uuid}]}
+        self.make_download(student_uuid)
+
+        call_command('update_resource_downloads')
+
+        sent = sf.bulk.Resource__c.insert.call_args[0][0]
+        self.assertEqual(1, len(sent))
+        self.assertEqual('K12 subject', sent[0]['Source__c'])
+        self.assertEqual('a0S000001', sent[0]['Student__c'])
+
+    @patch('salesforce.management.commands.update_resource_downloads.Salesforce')
+    def test_a_download_whose_student_does_not_exist_yet_is_still_sent(self, salesforce):
+        sf = salesforce.return_value.__enter__.return_value
+        sf.query_all.return_value = {'records': []}
+        self.make_download('310bb96b-0df8-4d10-a759-c7d366c1f525')
+
+        call_command('update_resource_downloads')
+
+        sent = sf.bulk.Resource__c.insert.call_args[0][0]
+        self.assertEqual(1, len(sent))
+        self.assertIsNone(sent[0]['Student__c'])
+        # Accounts_UUID__c is what lets Salesforce match it once the student lands.
+        self.assertEqual('310bb96b-0df8-4d10-a759-c7d366c1f525', sent[0]['Accounts_UUID__c'])
+
+    @patch('salesforce.management.commands.update_resource_downloads.Salesforce')
+    def test_looks_students_up_in_one_query_per_chunk(self, salesforce):
+        sf = salesforce.return_value.__enter__.return_value
+        sf.query_all.return_value = {'records': []}
+        for n in range(3):
+            self.make_download('310bb96b-0df8-4d10-a759-c7d366c1f5{:02d}'.format(30 + n))
+
+        call_command('update_resource_downloads')
+
+        self.assertEqual(1, sf.query_all.call_count)
 
 class SyncThankYouNotesCommandTest(TestCase):
     def setUp(self):
