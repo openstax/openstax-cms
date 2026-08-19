@@ -131,30 +131,36 @@ class SalesforceFormsSerializer(serializers.ModelSerializer):
 
 
 class ResourceDownloadSerializer(serializers.ModelSerializer):
+    # A reader coming back to the same thing updates that row's last access;
+    # a different resource, or a different format of the same book, is its own
+    # row. first() rather than get() because nothing stops the table from
+    # already holding duplicates.
     def create(self, validated_data):
-        book = validated_data.get('book', None)
-        book_format = validated_data.get('book_format', None)
-        account_uuid = validated_data.get('account_uuid', None)
-        resource_name = validated_data.get('resource_name', None)
-        contact_id = validated_data.get('contact_id', None)
-        rd = []
-        try:
-            rd = ResourceDownload.objects.filter(account_uuid=account_uuid, book=book)
-            if resource_name:
-                rd.filter(resource_name=resource_name)
+        existing = ResourceDownload.objects.filter(
+            account_uuid=validated_data.get('account_uuid'),
+            book=validated_data.get('book'),
+            book_format=validated_data.get('book_format'),
+            resource_name=validated_data.get('resource_name'),
+        ).first()
 
-            rd = rd[0]
-            rd.contact_id = contact_id
-            rd.save()
-        except (ResourceDownload.DoesNotExist, IndexError):
-            rd = ResourceDownload.objects.create(**validated_data)
+        if not existing:
+            return ResourceDownload.objects.create(**validated_data)
 
-        return rd
+        contact_id = validated_data.get('contact_id')
+
+        existing.last_access = validated_data.get('last_access', existing.last_access)
+        # Signed-in students have no Salesforce contact, so an incoming
+        # download without one must not erase a contact we already know.
+        if contact_id:
+            existing.contact_id = contact_id
+        existing.save()
+
+        return existing
 
     class Meta:
         model = ResourceDownload
         fields = ('id', 'book', 'book_format', 'account_uuid', 'contact_id', 'last_access', 'resource_name', 'created')
-        read_only_fields = ('id', 'created', 'last_access', 'number_of_times_accessed')
+        read_only_fields = ('id', 'created', 'last_access')
 
 
 class SavingsNumberSerializer(serializers.ModelSerializer):
