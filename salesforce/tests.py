@@ -473,32 +473,20 @@ class ResourceDownloadTest(TestCase):
         cls.test_doc = Document.objects.create(title='Test Doc', file=test_image)
 
     def test_resource_download_post(self):
-        root_page = Page.objects.get(title="Root")
-        book_index = BookIndex.objects.all()[0]
-        book = Book(title="University Physics",
-                    slug="university-physics",
-                    cnx_id='031da8d3-b525-429c-80cf-6c8ed997733a',
-                    salesforce_book_id='',
-                    description="Test Book",
-                    cover=self.test_doc,
-                    title_image=self.test_doc,
-                    publish_date=datetime.date.today(),
-                    locale=root_page.locale
-                    )
-        book_index.add_child(instance=book)
-        data = {
-            "book": book.pk,
-            "book_format": "PDF",
-            "account_uuid": "310bb96b-0df8-4d10-a759-c7d366c1f524",
-            "resource_name": "Book PDF",
-            "contact_id": "0032f00003zYVdSAAZ"
-            }
-        response = self.client.post('/apps/cms/api/salesforce/download-tracking/', data, format='json')
+        book = self.make_book()
+
+        response = self.post_download(
+            book=book.pk,
+            book_format="PDF",
+            resource_name="Book PDF",
+            contact_id="0032f00003zYVdSAAZ",
+        )
+
         self.assertEqual("PDF", response.data['book_format'])
 
     def make_book(self, title="University Physics", slug="university-physics"):
         root_page = Page.objects.get(title="Root")
-        book_index = BookIndex.objects.all()[0]
+        book_index = BookIndex.objects.first()
         book = Book(title=title,
                     slug=slug,
                     cnx_id='031da8d3-b525-429c-80cf-6c8ed997733a',
@@ -552,6 +540,23 @@ class ResourceDownloadTest(TestCase):
 
         self.assertEqual(1, ResourceDownload.objects.count())
         self.assertGreater(ResourceDownload.objects.get().last_access, original_access)
+
+    def test_updates_the_newest_of_the_rows_the_old_behaviour_duplicated(self):
+        book = self.make_book()
+        account_uuid = "310bb96b-0df8-4d10-a759-c7d366c1f524"
+        common = dict(account_uuid=account_uuid, book=book, resource_name="Test Bank")
+        older = ResourceDownload.objects.create(
+            last_access=datetime.datetime(2020, 1, 1, tzinfo=datetime.timezone.utc), **common)
+        newer = ResourceDownload.objects.create(
+            last_access=datetime.datetime(2021, 1, 1, tzinfo=datetime.timezone.utc), **common)
+
+        self.post_download(book=book.pk, resource_name="Test Bank")
+
+        older.refresh_from_db()
+        newer.refresh_from_db()
+        self.assertEqual(datetime.datetime(2020, 1, 1, tzinfo=datetime.timezone.utc), older.last_access)
+        self.assertGreater(newer.last_access, datetime.datetime(2021, 1, 1, tzinfo=datetime.timezone.utc))
+        self.assertEqual(2, ResourceDownload.objects.count())
 
     def test_a_download_without_a_contact_keeps_the_one_already_known(self):
         book = self.make_book()

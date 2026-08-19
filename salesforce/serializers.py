@@ -133,15 +133,16 @@ class SalesforceFormsSerializer(serializers.ModelSerializer):
 class ResourceDownloadSerializer(serializers.ModelSerializer):
     # A reader coming back to the same thing updates that row's last access;
     # a different resource, or a different format of the same book, is its own
-    # row. first() rather than get() because nothing stops the table from
-    # already holding duplicates.
+    # row. Rows duplicated by the pre-fix behaviour are still in the table and
+    # nothing constrains against them, so this takes the most recently accessed
+    # match rather than get()-ing and raising.
     def create(self, validated_data):
         existing = ResourceDownload.objects.filter(
             account_uuid=validated_data.get('account_uuid'),
             book=validated_data.get('book'),
             book_format=validated_data.get('book_format'),
             resource_name=validated_data.get('resource_name'),
-        ).first()
+        ).order_by('-last_access').first()
 
         if not existing:
             return ResourceDownload.objects.create(**validated_data)
