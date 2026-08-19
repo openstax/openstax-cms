@@ -135,8 +135,9 @@ class ResourceDownloadSerializer(serializers.ModelSerializer):
     # a different resource, format, or page is its own row. Source belongs in
     # the key because the same resource reached from a K12 page and from the
     # book detail page are the two facts we most need to tell apart.
-    # first() rather than get() because nothing stops the table from already
-    # holding duplicates.
+    # Rows duplicated by the pre-fix behaviour are still in the table and
+    # nothing constrains against them, so this takes the most recently accessed
+    # match rather than get()-ing and raising.
     def create(self, validated_data):
         existing = ResourceDownload.objects.filter(
             account_uuid=validated_data.get('account_uuid'),
@@ -144,7 +145,7 @@ class ResourceDownloadSerializer(serializers.ModelSerializer):
             book_format=validated_data.get('book_format'),
             resource_name=validated_data.get('resource_name'),
             source=validated_data.get('source'),
-        ).first()
+        ).order_by('-last_access').first()
 
         if not existing:
             return ResourceDownload.objects.create(**validated_data)
