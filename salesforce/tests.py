@@ -553,6 +553,25 @@ class ResourceDownloadTest(TestCase):
         self.assertEqual(1, ResourceDownload.objects.count())
         self.assertGreater(ResourceDownload.objects.get().last_access, original_access)
 
+    def test_the_same_resource_from_two_pages_is_recorded_separately(self):
+        book = self.make_book()
+
+        self.post_download(book=book.pk, resource_name="Test Bank", source="K12 subject")
+        self.post_download(book=book.pk, resource_name="Test Bank", source="Book detail")
+
+        self.assertEqual(
+            {"K12 subject", "Book detail"},
+            set(ResourceDownload.objects.values_list('source', flat=True)),
+        )
+
+    def test_source_is_stored_as_sent(self):
+        book = self.make_book()
+
+        response = self.post_download(book=book.pk, resource_name="Test Bank", source="K12 subject")
+
+        self.assertEqual("K12 subject", response.data['source'])
+        self.assertEqual("K12 subject", ResourceDownload.objects.get().source)
+
     def test_a_download_without_a_contact_keeps_the_one_already_known(self):
         book = self.make_book()
 

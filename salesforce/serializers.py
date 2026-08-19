@@ -132,15 +132,18 @@ class SalesforceFormsSerializer(serializers.ModelSerializer):
 
 class ResourceDownloadSerializer(serializers.ModelSerializer):
     # A reader coming back to the same thing updates that row's last access;
-    # a different resource, or a different format of the same book, is its own
-    # row. first() rather than get() because nothing stops the table from
-    # already holding duplicates.
+    # a different resource, format, or page is its own row. Source belongs in
+    # the key because the same resource reached from a K12 page and from the
+    # book detail page are the two facts we most need to tell apart.
+    # first() rather than get() because nothing stops the table from already
+    # holding duplicates.
     def create(self, validated_data):
         existing = ResourceDownload.objects.filter(
             account_uuid=validated_data.get('account_uuid'),
             book=validated_data.get('book'),
             book_format=validated_data.get('book_format'),
             resource_name=validated_data.get('resource_name'),
+            source=validated_data.get('source'),
         ).first()
 
         if not existing:
@@ -159,7 +162,7 @@ class ResourceDownloadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ResourceDownload
-        fields = ('id', 'book', 'book_format', 'account_uuid', 'contact_id', 'last_access', 'resource_name', 'created')
+        fields = ('id', 'book', 'book_format', 'account_uuid', 'contact_id', 'last_access', 'resource_name', 'source', 'created')
         read_only_fields = ('id', 'created', 'last_access')
 
 
