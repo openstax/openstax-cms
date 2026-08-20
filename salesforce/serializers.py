@@ -132,16 +132,26 @@ class SalesforceFormsSerializer(serializers.ModelSerializer):
 
 class ResourceDownloadSerializer(serializers.ModelSerializer):
     # A reader coming back to the same thing updates that row's last access;
-    # a different resource, or a different format of the same book, is its own
-    # row. Rows duplicated by the pre-fix behaviour are still in the table and
+    # a different resource, format, or page is its own row. Source belongs in
+    # the key because the same resource reached from a K12 page and from the
+    # book detail page are the two facts we most need to tell apart.
+    # Rows duplicated by the pre-fix behaviour are still in the table and
     # nothing constrains against them, so this takes the most recently accessed
     # match rather than get()-ing and raising.
     def create(self, validated_data):
+        # An empty string and NULL both mean "not provided", and every one of
+        # these is part of the key - so letting the two differ would file one
+        # reader's download twice.
+        for field in ('book_format', 'resource_name', 'source', 'contact_id'):
+            if validated_data.get(field) == '':
+                validated_data[field] = None
+
         existing = ResourceDownload.objects.filter(
             account_uuid=validated_data.get('account_uuid'),
             book=validated_data.get('book'),
             book_format=validated_data.get('book_format'),
             resource_name=validated_data.get('resource_name'),
+            source=validated_data.get('source'),
         ).order_by('-last_access').first()
 
         if not existing:
@@ -160,7 +170,7 @@ class ResourceDownloadSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = ResourceDownload
-        fields = ('id', 'book', 'book_format', 'account_uuid', 'contact_id', 'last_access', 'resource_name', 'created')
+        fields = ('id', 'book', 'book_format', 'account_uuid', 'contact_id', 'last_access', 'resource_name', 'source', 'created')
         read_only_fields = ('id', 'created', 'last_access')
 
 

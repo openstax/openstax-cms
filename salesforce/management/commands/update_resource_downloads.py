@@ -22,16 +22,21 @@ class Command(BaseCommand):
             new_data = []
             for nrd in new_resource_downloads:
                 if nrd.book:
+                    # Contact__c is empty for students. Accounts_UUID__c is on
+                    # every record, and a Salesforce flow attaches it to the
+                    # Student__c record once that record exists - which means
+                    # downloads need not wait for the student backfill.
                     data_dict_item = {'Contact__c': nrd.contact_id,
                                       'Last_accessed__c': nrd.last_access.strftime('%Y-%m-%d'),
                                       'Name': nrd.resource_name,
                                       'Book__c': nrd.book.salesforce_abbreviation,
                                       'Book_Format__c': nrd.book_format,
+                                      'Source__c': nrd.source,
                                       'Accounts_UUID__c': str(nrd.account_uuid)}
                     new_data.append(data_dict_item)
 
             if len(new_data) > 0:
-                new_results = sf.bulk.Resource__c.insert(new_data)
+                sf.bulk.Resource__c.insert(new_data)
 
-            response = self.style.SUCCESS("SF Resource Download Completed. Sent: {}.".format(len(new_data)))
-            self.stdout.write(response)
+            self.stdout.write(self.style.SUCCESS(
+                "SF Resource Download Completed. Sent: {}.".format(len(new_data))))

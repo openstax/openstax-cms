@@ -8,6 +8,7 @@ from django.test import LiveServerTestCase, TestCase, Client
 from django.core.exceptions import ValidationError
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.conf import settings
+from django.utils import timezone
 
 from books.models import BookIndex, Book
 from donations.models import ThankYouNote
@@ -205,6 +206,83 @@ class SyncSalesforceBookNamesCommandTest(TestCase):
         self.assertEqual(
             SalesforceBookName.objects.get(salesforce_id='a0Z000001').official_name,
             'University Physics 2e')
+
+
+class UpdateResourceDownloadsCommandTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        root_page = Page.objects.get(title="Root")
+        homepage = RootPage(title="Hello World", slug="hello-world")
+        root_page.add_child(instance=homepage)
+        book_index = BookIndex(title="Book Index",
+                               page_description="Test",
+                               dev_standard_1_description="Test",
+                               dev_standard_2_description="Test",
+                               dev_standard_3_description="Test",
+                               dev_standard_4_description="Test",
+                               )
+        homepage.add_child(instance=book_index)
+        with open("pages/static/images/openstax.png", 'rb') as image_file:
+            image_content = image_file.read()
+        test_image = SimpleUploadedFile(name='openstax.png', content=image_content)
+        test_doc = Document.objects.create(title='Test Doc', file=test_image)
+        book = Book(title="University Physics",
+                    slug="university-physics",
+                    cnx_id='031da8d3-b525-429c-80cf-6c8ed997733a',
+                    salesforce_book_id='',
+                    salesforce_abbreviation='UPhysics',
+                    description="Test Book",
+                    cover=test_doc,
+                    title_image=test_doc,
+                    publish_date=datetime.date.today(),
+                    locale=root_page.locale
+                    )
+        book_index.add_child(instance=book)
+        cls.book = book
+
+    def make_download(self, account_uuid, **overrides):
+        fields = {
+            'book': self.book,
+            'account_uuid': account_uuid,
+            'last_access': timezone.now(),
+            'resource_name': 'Instructor Answer Guide',
+            'source': '/k12/subjects/math',
+        }
+        fields.update(overrides)
+        return ResourceDownload.objects.create(**fields)
+
+    @patch('salesforce.management.commands.update_resource_downloads.Salesforce')
+    def test_sends_the_page_path_and_the_account_uuid(self, salesforce):
+        sf = salesforce.return_value.__enter__.return_value
+        self.make_download('310bb96b-0df8-4d10-a759-c7d366c1f524', source='/dual-credit')
+
+        call_command('update_resource_downloads')
+
+        sent = sf.bulk.Resource__c.insert.call_args[0][0]
+        self.assertEqual(1, len(sent))
+        self.assertEqual('/dual-credit', sent[0]['Source__c'])
+        # What the Salesforce flow matches a student on.
+        self.assertEqual('310bb96b-0df8-4d10-a759-c7d366c1f524', sent[0]['Accounts_UUID__c'])
+
+    @patch('salesforce.management.commands.update_resource_downloads.Salesforce')
+    def test_sends_a_student_download_that_has_no_contact(self, salesforce):
+        sf = salesforce.return_value.__enter__.return_value
+        self.make_download('310bb96b-0df8-4d10-a759-c7d366c1f525', contact_id=None)
+
+        call_command('update_resource_downloads')
+
+        sent = sf.bulk.Resource__c.insert.call_args[0][0]
+        self.assertEqual(1, len(sent))
+        self.assertIsNone(sent[0]['Contact__c'])
+
+    @patch('salesforce.management.commands.update_resource_downloads.Salesforce')
+    def test_needs_no_salesforce_query_to_build_the_batch(self, salesforce):
+        sf = salesforce.return_value.__enter__.return_value
+        self.make_download('310bb96b-0df8-4d10-a759-c7d366c1f526')
+
+        call_command('update_resource_downloads')
+
+        sf.query_all.assert_not_called()
 
 
 class SyncThankYouNotesCommandTest(TestCase):
@@ -468,8 +546,9 @@ class ResourceDownloadTest(TestCase):
                                )
         # add book index to homepage
         homepage.add_child(instance=book_index)
-        test_image = SimpleUploadedFile(name='openstax.png',
-                                        content=open("pages/static/images/openstax.png", 'rb').read())
+        with open("pages/static/images/openstax.png", 'rb') as image_file:
+            image_content = image_file.read()
+        test_image = SimpleUploadedFile(name='openstax.png', content=image_content)
         cls.test_doc = Document.objects.create(title='Test Doc', file=test_image)
 
     def test_resource_download_post(self):
@@ -486,7 +565,7 @@ class ResourceDownloadTest(TestCase):
 
     def make_book(self, title="University Physics", slug="university-physics"):
         root_page = Page.objects.get(title="Root")
-        book_index = BookIndex.objects.first()
+        book_index = BookIndex.objects.get(title="Book Index")
         book = Book(title=title,
                     slug=slug,
                     cnx_id='031da8d3-b525-429c-80cf-6c8ed997733a',
@@ -557,6 +636,60 @@ class ResourceDownloadTest(TestCase):
         self.assertEqual(datetime.datetime(2020, 1, 1, tzinfo=datetime.timezone.utc), older.last_access)
         self.assertGreater(newer.last_access, datetime.datetime(2021, 1, 1, tzinfo=datetime.timezone.utc))
         self.assertEqual(2, ResourceDownload.objects.count())
+
+    def test_the_same_resource_from_two_pages_is_recorded_separately(self):
+        book = self.make_book()
+
+        self.post_download(book=book.pk, resource_name="Test Bank", source="/k12/subjects/math")
+        self.post_download(book=book.pk, resource_name="Test Bank", source="/details/books/university-physics")
+
+        self.assertEqual(
+            {"/k12/subjects/math", "/details/books/university-physics"},
+            set(ResourceDownload.objects.values_list('source', flat=True)),
+        )
+
+    def test_source_is_stored_as_sent(self):
+        book = self.make_book()
+
+        response = self.post_download(book=book.pk, resource_name="Test Bank", source="/k12/subjects/math")
+
+        self.assertEqual('/k12/subjects/math', response.data['source'])
+        self.assertEqual('/k12/subjects/math', ResourceDownload.objects.get().source)
+
+    def test_updates_the_newest_of_the_rows_the_old_behaviour_duplicated(self):
+        book = self.make_book()
+        account_uuid = "310bb96b-0df8-4d10-a759-c7d366c1f524"
+        common = dict(account_uuid=account_uuid, book=book, resource_name="Test Bank")
+        older = ResourceDownload.objects.create(
+            last_access=datetime.datetime(2020, 1, 1, tzinfo=datetime.timezone.utc), **common)
+        newer = ResourceDownload.objects.create(
+            last_access=datetime.datetime(2021, 1, 1, tzinfo=datetime.timezone.utc), **common)
+
+        self.post_download(book=book.pk, resource_name="Test Bank")
+
+        older.refresh_from_db()
+        newer.refresh_from_db()
+        self.assertEqual(datetime.datetime(2020, 1, 1, tzinfo=datetime.timezone.utc), older.last_access)
+        self.assertGreater(newer.last_access, datetime.datetime(2021, 1, 1, tzinfo=datetime.timezone.utc))
+        self.assertEqual(2, ResourceDownload.objects.count())
+
+    def test_a_blank_source_is_stored_as_null_and_does_not_split_the_row(self):
+        book = self.make_book()
+
+        self.post_download(book=book.pk, resource_name="Test Bank", source="")
+        self.post_download(book=book.pk, resource_name="Test Bank")
+
+        self.assertEqual(1, ResourceDownload.objects.count())
+        self.assertIsNone(ResourceDownload.objects.get().source)
+
+    def test_a_later_download_updates_the_contact_it_carries(self):
+        book = self.make_book()
+
+        self.post_download(book=book.pk, resource_name="Test Bank", contact_id="0032f00003zYVdSAAZ")
+        self.post_download(book=book.pk, resource_name="Test Bank", contact_id="0032f00003zAnother")
+
+        self.assertEqual(1, ResourceDownload.objects.count())
+        self.assertEqual("0032f00003zAnother", ResourceDownload.objects.get().contact_id)
 
     def test_a_download_without_a_contact_keeps_the_one_already_known(self):
         book = self.make_book()
