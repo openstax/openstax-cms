@@ -142,7 +142,7 @@ class ResourceDownloadSerializer(serializers.ModelSerializer):
         # An empty string and NULL both mean "not provided", and every one of
         # these is part of the key - so letting the two differ would file one
         # reader's download twice.
-        for field in ('book_format', 'resource_name', 'source', 'contact_id'):
+        for field in ('book_format', 'resource_name', 'source', 'contact_id', 'role'):
             if validated_data.get(field) == '':
                 validated_data[field] = None
 
@@ -158,19 +158,24 @@ class ResourceDownloadSerializer(serializers.ModelSerializer):
             return ResourceDownload.objects.create(**validated_data)
 
         contact_id = validated_data.get('contact_id')
+        role = validated_data.get('role')
 
         existing.last_access = validated_data.get('last_access', existing.last_access)
         # Signed-in students have no Salesforce contact, so an incoming
         # download without one must not erase a contact we already know.
         if contact_id:
             existing.contact_id = contact_id
+        # A student who gets verified keeps the same rows; report the role they
+        # hold now rather than the one they held the first time.
+        if role:
+            existing.role = role
         existing.save()
 
         return existing
 
     class Meta:
         model = ResourceDownload
-        fields = ('id', 'book', 'book_format', 'account_uuid', 'contact_id', 'last_access', 'resource_name', 'source', 'created')
+        fields = ('id', 'book', 'book_format', 'account_uuid', 'contact_id', 'last_access', 'resource_name', 'source', 'role', 'created')
         read_only_fields = ('id', 'created', 'last_access')
 
 
