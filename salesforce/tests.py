@@ -717,7 +717,7 @@ class ResourceDownloadTest(TestCase):
         self.assertEqual("instructor", response.data['role'])
         self.assertEqual("instructor", ResourceDownload.objects.get().role)
 
-    def test_a_verified_student_keeps_one_row_and_reports_the_role_they_hold_now(self):
+    def test_a_changed_role_keeps_one_row_and_reports_the_role_held_now(self):
         book = self.make_book()
 
         self.post_download(book=book.pk, resource_name="Test Bank", role="student")

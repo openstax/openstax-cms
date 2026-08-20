@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
             model_name="resourcedownload",
             name="role",
             field=models.CharField(
-                blank=True, help_text="Whether the reader was an instructor or a student", max_length=20, null=True
+                blank=True, help_text="Role the reader reports for themselves in their account", max_length=20, null=True
             ),
         ),
     ]

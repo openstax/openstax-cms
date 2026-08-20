@@ -165,8 +165,8 @@ class ResourceDownloadSerializer(serializers.ModelSerializer):
         # download without one must not erase a contact we already know.
         if contact_id:
             existing.contact_id = contact_id
-        # A student who gets verified keeps the same rows; report the role they
-        # hold now rather than the one they held the first time.
+        # A reader who changes the role on their account keeps the same rows;
+        # report the role they hold now, not the one they held the first time.
         if role:
             existing.role = role
         existing.save()
