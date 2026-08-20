@@ -276,6 +276,16 @@ class UpdateResourceDownloadsCommandTest(TestCase):
         self.assertIsNone(sent[0]['Contact__c'])
 
     @patch('salesforce.management.commands.update_resource_downloads.Salesforce')
+    def test_sends_the_role_of_the_person_who_downloaded(self, salesforce):
+        sf = salesforce.return_value.__enter__.return_value
+        self.make_download('310bb96b-0df8-4d10-a759-c7d366c1f527', role='instructor')
+
+        call_command('update_resource_downloads')
+
+        sent = sf.bulk.Resource__c.insert.call_args[0][0]
+        self.assertEqual('instructor', sent[0]['Role__c'])
+
+    @patch('salesforce.management.commands.update_resource_downloads.Salesforce')
     def test_needs_no_salesforce_query_to_build_the_batch(self, salesforce):
         sf = salesforce.return_value.__enter__.return_value
         self.make_download('310bb96b-0df8-4d10-a759-c7d366c1f526')
@@ -698,3 +708,28 @@ class ResourceDownloadTest(TestCase):
         self.post_download(book=book.pk, resource_name="Test Bank")
 
         self.assertEqual("0032f00003zYVdSAAZ", ResourceDownload.objects.get().contact_id)
+
+    def test_role_is_stored_as_sent(self):
+        book = self.make_book()
+
+        response = self.post_download(book=book.pk, resource_name="Test Bank", role="instructor")
+
+        self.assertEqual("instructor", response.data['role'])
+        self.assertEqual("instructor", ResourceDownload.objects.get().role)
+
+    def test_a_verified_student_keeps_one_row_and_reports_the_role_they_hold_now(self):
+        book = self.make_book()
+
+        self.post_download(book=book.pk, resource_name="Test Bank", role="student")
+        self.post_download(book=book.pk, resource_name="Test Bank", role="instructor")
+
+        self.assertEqual(1, ResourceDownload.objects.count())
+        self.assertEqual("instructor", ResourceDownload.objects.get().role)
+
+    def test_a_download_without_a_role_keeps_the_one_already_known(self):
+        book = self.make_book()
+
+        self.post_download(book=book.pk, resource_name="Test Bank", role="instructor")
+        self.post_download(book=book.pk, resource_name="Test Bank", role="")
+
+        self.assertEqual("instructor", ResourceDownload.objects.get().role)

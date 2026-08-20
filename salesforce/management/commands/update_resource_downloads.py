@@ -32,6 +32,7 @@ class Command(BaseCommand):
                                       'Book__c': nrd.book.salesforce_abbreviation,
                                       'Book_Format__c': nrd.book_format,
                                       'Source__c': nrd.source,
+                                      'Role__c': nrd.role,
                                       'Accounts_UUID__c': str(nrd.account_uuid)}
                     new_data.append(data_dict_item)
 

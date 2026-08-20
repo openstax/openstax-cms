@@ -351,6 +351,8 @@ class ResourceDownload(models.Model):
     # here to show up in the data.
     source = models.CharField(max_length=255, null=True, blank=True,
                               help_text="Path of the page the reader downloaded from")
+    role = models.CharField(max_length=20, null=True, blank=True,
+                            help_text="Whether the reader was an instructor or a student")
 
     class Meta:
         indexes = [
