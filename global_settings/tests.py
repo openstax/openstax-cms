@@ -1,8 +1,22 @@
 import re
+import uuid as uuid_module
+from datetime import timedelta
+from unittest.mock import patch
 
+from botocore.exceptions import ClientError, NoCredentialsError
 from django.test import TestCase, Client
+from django.utils import timezone
 from wagtail.contrib.sitemaps.sitemap_generator import Sitemap
+from wagtail.models import Site
+from wagtail.signals import page_published
 
+from global_settings.functions import (
+    PAGE_PUBLISH_PATHS,
+    flush_pending_page_invalidation,
+    invalidate_cloudfront_caches,
+    request_page_invalidation,
+)
+from global_settings.models import CloudfrontDistribution
 from global_settings.views import SlashlessSitemap
 
 
@@ -73,24 +87,6 @@ class WagtailTransferChooserCssHookTest(TestCase):
 
         self.assertIn('<link', outputs)
         self.assertIn('wagtail_transfer_chooser', outputs)
-
-
-import uuid as uuid_module
-from datetime import timedelta
-from unittest.mock import patch
-
-from botocore.exceptions import ClientError, NoCredentialsError
-from django.utils import timezone
-from wagtail.models import Site
-from wagtail.signals import page_published
-
-from global_settings.functions import (
-    PAGE_PUBLISH_PATHS,
-    flush_pending_page_invalidation,
-    invalidate_cloudfront_caches,
-    request_page_invalidation,
-)
-from global_settings.models import CloudfrontDistribution
 
 
 def _make_distribution():
@@ -199,6 +195,16 @@ class PageInvalidationThrottleTests(TestCase):
         flush_pending_page_invalidation()
         self.create_invalidation.assert_not_called()
 
+    def test_blank_distribution_id_is_noop(self):
+        self.distribution.distribution_id = ''
+        self.distribution.save()
+        request_page_invalidation()
+        flush_pending_page_invalidation()
+        self.create_invalidation.assert_not_called()
+        refreshed = self._refresh()
+        self.assertFalse(refreshed.invalidation_pending)
+        self.assertIsNone(refreshed.last_invalidated_at)
+
     def test_failed_invalidation_stays_pending_for_retry(self):
         self.create_invalidation.side_effect = _client_error()
         with self.assertLogs('global_settings.functions', level='ERROR'):
@@ -232,3 +238,6 @@ class ResourceSnippetInvalidationTests(TestCase):
         from snippets.models import StudentResource
         StudentResource.objects.create(heading='Test Student Resource')
         self.create_invalidation.assert_called_once()
+        items = self.create_invalidation.call_args.kwargs['InvalidationBatch']['Paths']['Items']
+        self.assertIn('/apps/cms/api/v2/pages*', items)
+        self.assertIn('/apps/cms/api/books/resources*', items)

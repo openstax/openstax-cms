@@ -20,13 +20,14 @@ PAGE_PUBLISH_PATHS = ['v2/pages', 'spike', 'general', 'books/resources']
 PAGE_INVALIDATION_WINDOW_SECONDS = 300
 
 
-def invalidate_cloudfront_caches(paths=None):
+def invalidate_cloudfront_caches(paths=None, distribution=None):
     """Create one CloudFront invalidation covering the given API prefix(es).
 
     paths: a prefix string, a list of prefixes, or None to invalidate the
     whole API. Returns True if the invalidation was created.
     """
-    distribution = CloudfrontDistribution.objects.first()
+    if distribution is None:
+        distribution = CloudfrontDistribution.objects.first()
     if distribution is None or not distribution.distribution_id:
         return False
     if paths is None:
@@ -67,7 +68,7 @@ def request_page_invalidation():
     """
     with transaction.atomic():
         distribution = CloudfrontDistribution.objects.select_for_update().first()
-        if distribution is None:
+        if distribution is None or not distribution.distribution_id:
             return
         now = timezone.now()
         last = distribution.last_invalidated_at
@@ -80,7 +81,7 @@ def request_page_invalidation():
         # for DB work; concurrent publishers see the fresh timestamp and just
         # mark pending.
         _claim(distribution, now)
-    _send_page_invalidation(distribution.pk)
+    _send_page_invalidation(distribution)
 
 
 def flush_pending_page_invalidation():
@@ -91,10 +92,11 @@ def flush_pending_page_invalidation():
     """
     with transaction.atomic():
         distribution = CloudfrontDistribution.objects.select_for_update().first()
-        if distribution is None or not distribution.invalidation_pending:
+        if distribution is None or not distribution.distribution_id \
+                or not distribution.invalidation_pending:
             return
         _claim(distribution, timezone.now())
-    _send_page_invalidation(distribution.pk)
+    _send_page_invalidation(distribution)
 
 
 def _claim(distribution, now):
@@ -103,7 +105,7 @@ def _claim(distribution, now):
     distribution.save(update_fields=['invalidation_pending', 'last_invalidated_at'])
 
 
-def _send_page_invalidation(distribution_pk):
-    if not invalidate_cloudfront_caches(PAGE_PUBLISH_PATHS):
+def _send_page_invalidation(distribution):
+    if not invalidate_cloudfront_caches(PAGE_PUBLISH_PATHS, distribution=distribution):
         # Re-flag so the cron retries the failed invalidation.
-        CloudfrontDistribution.objects.filter(pk=distribution_pk).update(invalidation_pending=True)
+        CloudfrontDistribution.objects.filter(pk=distribution.pk).update(invalidation_pending=True)
