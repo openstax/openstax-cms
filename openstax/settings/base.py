@@ -486,6 +486,7 @@ CRONJOBS = [
     ('0 0 8 * *', 'django.core.management.call_command', ['update_schools_and_mapbox']),
     ('0 10 * * *', 'django.core.management.call_command', ['update_partners']),
     ('0 11 * * *', 'django.core.management.call_command', ['sync_thank_you_notes']),
+    ('*/5 * * * *', 'django.core.management.call_command', ['flush_cloudfront_invalidations']),
 ]
 
 if ENVIRONMENT == 'prod':
