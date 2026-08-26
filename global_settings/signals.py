@@ -3,17 +3,12 @@ from django.dispatch import receiver
 
 from wagtail.signals import page_published
 
-from .functions import invalidate_cloudfront_caches
+from .functions import invalidate_cloudfront_caches, request_page_invalidation
 from .models import EmergencyMessaging, Footer, GiveToday
 
 
 def clear_cloudfront_on_page_publish(sender, **kwargs):
-    invalidate_cloudfront_caches('v2/pages')
-    # clear general pages
-    invalidate_cloudfront_caches('spike')
-    invalidate_cloudfront_caches('general')
-    # clear resources
-    invalidate_cloudfront_caches('books/resources')
+    request_page_invalidation()
 
 
 page_published.connect(clear_cloudfront_on_page_publish)
@@ -23,7 +18,6 @@ page_published.connect(clear_cloudfront_on_page_publish)
 @receiver(post_save, sender=EmergencyMessaging)
 def clear_cloudfront_on_emergency_save(sender, **kwargs):
     invalidate_cloudfront_caches('emergency')
-    invalidate_cloudfront_caches('emergency/')
 
 
 @receiver(post_save, sender=Footer)
@@ -34,4 +28,3 @@ def clear_cloudfront_on_footer_save(sender, **kwargs):
 @receiver(post_save, sender=GiveToday)
 def clear_cloudfront_on_give_save(sender, **kwargs):
     invalidate_cloudfront_caches('give-today')
-

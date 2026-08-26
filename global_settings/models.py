@@ -42,6 +42,9 @@ class Footer(BaseSiteSetting):
 @register_setting(icon='cogs')
 class CloudfrontDistribution(BaseSiteSetting):
     distribution_id = models.CharField(max_length=255, null=True, blank=True)
+    # Throttle state for page-publish invalidations (see global_settings.functions).
+    last_invalidated_at = models.DateTimeField(null=True, blank=True, editable=False)
+    invalidation_pending = models.BooleanField(default=False, editable=False)
 
     class Meta:
         verbose_name = 'CloudFront Distribution'
