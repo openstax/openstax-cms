@@ -251,6 +251,14 @@ class TestOpenGraphMiddleware(TestCase):
         self.assertContains(response, 'twitter:title')
         self.assertContains(response, 'OpenStax Home')
 
+    def test_snapshot_canonical_url_has_no_query_string(self):
+        """Query-string variants (e.g. utm parameters) declare the clean URL
+        as canonical so their signal consolidates onto one page."""
+        response = self.client.get('/?utm_source=chatgpt.com&utm_medium=referral')
+        self.assertContains(response, 'rel="canonical" href="http://testserver"')
+        self.assertContains(response, 'og:url" content="http://testserver"')
+        self.assertNotContains(response, 'utm_source')
+
     def test_k12_flexpage_link_preview(self):
         """K12 subject-group pages are FlexPages (e.g. k12-math), not K12Subjects.
         The middleware should fall back to FlexPage when no K12Subject matches."""

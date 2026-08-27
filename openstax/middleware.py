@@ -137,7 +137,9 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
             return self.page_by_slug(page_slug)
 
     def build_template(self, page, page_url):
-        page_url = page_url.rstrip('/')
+        # canonical and og:url point at the clean URL so query-string
+        # variants consolidate their signal onto one page
+        page_url = page_url.split('?', 1)[0].rstrip('/')
         image_url = self.image_url(page.promote_image)
         # Use seo_title if available, otherwise fall back to title
         display_title = page.seo_title if page.seo_title else page.title
