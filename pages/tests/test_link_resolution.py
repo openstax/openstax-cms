@@ -8,6 +8,7 @@ from wagtail.api import APIField
 from books.models import Book
 from openstax.api_fields import APIRichTextBlock, ExpandedRichTextField, strip_empty_paragraphs
 from pages.custom_blocks import AssignableBookBlock, LinksGroupBlock
+from pages.models import FlexPage
 from pages.shared_blocks import LinkBlock
 
 
@@ -125,6 +126,34 @@ class ModelRichTextWiringTests(TestCase):
                 if isinstance(e, APIField) and e.name == 'resource_description'
             )
             self.assertIsInstance(entry.serializer, ExpandedRichTextField)
+
+
+class FlexPageUrlTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        root = Page.objects.get(id=1)
+        site, _ = Site.objects.get_or_create(
+            hostname="localhost", defaults={"root_page": root, "is_default_site": True}
+        )
+        site.root_page = root
+        site.save()
+        Site.clear_site_root_paths_cache()
+        cls.k12_math = FlexPage(title="Math", slug="k12-math")
+        root.add_child(instance=cls.k12_math)
+        cls.about = FlexPage(title="About", slug="about-us")
+        root.add_child(instance=cls.about)
+
+    def test_k12_flexpage_url_uses_k12_prefix(self):
+        # k12 subject-group FlexPages are served by the osweb SPA at /k12/<subject>,
+        # not the flat /k12-math tree slug.
+        _, _, path = self.k12_math.get_url_parts()
+        self.assertEqual(path, '/k12/math')
+        self.assertEqual(self.k12_math.url, '/k12/math')
+
+    def test_non_k12_flexpage_url_is_flat(self):
+        _, _, path = self.about.get_url_parts()
+        self.assertEqual(path, '/about-us')
+        self.assertEqual(self.about.url, '/about-us')
 
 
 class LinkBlockTargetTests(TestCase):
