@@ -258,7 +258,10 @@ def _resource_link_cell(r):
             return {'text': '', 'url': ''}
         # Marker for os-webview's progressive-enhancement override: it resolves
         # the real per-user link client-side (where verified-instructor status
-        # is visible) and matches this cell back to a resource by heading.
+        # is visible) and matches this cell back to a resource, by id first
+        # (equal to the books/resources/ row's own id) with heading as a
+        # fallback for already-cached table JSON (up to 30 days old) that
+        # predates resource_id.
         # book_slug is computed the same way as the fallback url above, so the
         # two can never drift apart.
         return {
@@ -272,6 +275,12 @@ def _resource_link_cell(r):
                     # download-tracking record; it is absent from the
                     # books/resources/ payload, so it has to ride along here.
                     'book_id': next(iter(getattr(r, '_book_ids', [])), None),
+                    # r is the through-model row (BookFacultyResources/
+                    # BookStudentResources); its pk equals the `id` the
+                    # resources API serializes for the same row. A synthetic
+                    # row (no real pk) yields None here, and the frontend
+                    # falls back to heading matching.
+                    'resource_id': getattr(r, 'pk', None),
                     'heading': r.resource_heading if r.resource else '',
                     'resource_type': getattr(r, '_resource_type', ''),
                 },

@@ -931,6 +931,9 @@ class BookResourcesSourceTests(BooksSourceTests):
         marker = next(c for c in cta['config'] if c['type'] == 'resource_ref')
         # trackLink() needs the numeric book id; it is not in the resources API.
         self.assertEqual(marker['value']['book_id'], book.pk)
+        # resource_id is the through-row pk, matching the id the
+        # books/resources/ endpoint serializes for the same row.
+        self.assertEqual(marker['value']['resource_id'], row.pk)
         serialized = json.dumps(cell)
         self.assertNotIn(real_url, serialized)
         self.assertNotIn('Download', serialized)  # original CTA text must not leak either
@@ -939,6 +942,7 @@ class BookResourcesSourceTests(BooksSourceTests):
         self.assertEqual(cta['config'], [{
             'type': 'resource_ref',
             'value': {'book_slug': book.slug, 'book_id': book.pk,
+                      'resource_id': row.pk,
                       'heading': 'Locked Guide',
                       'resource_type': 'Instructor'},
         }])
@@ -957,7 +961,7 @@ class BookResourcesSourceTests(BooksSourceTests):
         locked = StudentResource.objects.create(
             heading='Locked Student Guide', description='<p>x</p>',
             locale=book.locale, unlocked_resource=False)
-        BookStudentResources.objects.create(
+        row = BookStudentResources.objects.create(
             book_student_resource=book, resource=locked,
             link_external='https://example.com/secret.pdf')
         result = resolve_book_resources({
@@ -971,9 +975,39 @@ class BookResourcesSourceTests(BooksSourceTests):
         self.assertEqual(cta['config'], [{
             'type': 'resource_ref',
             'value': {'book_slug': book.slug, 'book_id': book.pk,
+                      'resource_id': row.pk,
                       'heading': 'Locked Student Guide',
                       'resource_type': 'Student'},
         }])
+
+    def test_resource_ref_marker_resource_id_matches_resources_api_row_id(self):
+        # The frontend matches a marker back to a books/resources/ row by id
+        # first (heading is only a fallback for pre-resource_id cached JSON),
+        # so the two ids must agree.
+        from books.models import BookFacultyResources
+        from snippets.models import FacultyResource
+        from pages.table_sources import resolve_book_resources
+        from books.serializers import FacultyResourcesSerializer
+        from django.test import RequestFactory
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book = self._make_book()
+        locked_snippet = FacultyResource.objects.create(
+            heading='Cross-checked Guide', description='<p>x</p>', locale=book.locale)
+        row = BookFacultyResources.objects.create(
+            book_faculty_resource=book, resource=locked_snippet,
+            link_external='https://example.com/g.pdf', link_text='Go')
+        result = resolve_book_resources({
+            'books': [book], 'resource_type': 'instructor', 'audience': '',
+            'columns': [{'field': 'link', 'header': '', 'type': ''}],
+        })
+        marker = result['rows'][0]['cells'][0]['cta'][0]['config'][0]['value']
+
+        request = RequestFactory().get('/apps/cms/api/books/resources/', {'slug': book.slug})
+        serializer = FacultyResourcesSerializer(book, context={'request': request})
+        api_row = serializer.data['book_faculty_resources'][0]
+
+        self.assertEqual(marker['resource_id'], row.pk)
+        self.assertEqual(marker['resource_id'], api_row['id'])
 
     def test_book_slugs_stay_aligned_with_titles_when_row_shared(self):
         # A resource shared across books merges into one row listing both books;
