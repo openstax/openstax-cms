@@ -167,6 +167,11 @@ class FlexPage(RootPage):
             return None
 
         site_id, site_root_url, page_url_relative_to_site_root = url_parts
+
+        # the osweb SPA serves these at /k12/<subject> (see os-webview page-routes)
+        if self.slug.startswith('k12-'):
+            return site_id, site_root_url, '/k12/{}'.format(self.slug.removeprefix('k12-'))
+
         return site_id, site_root_url, '/{}'.format(self.slug)
 
 

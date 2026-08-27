@@ -11,7 +11,7 @@ from api.models import FeatureFlag
 from books.models import Book, BookIndex
 from openstax.functions import build_image_url
 from news.models import NewsArticle
-from pages.models import Supporters, PrivacyPolicy, K12Subject, Subject, Subjects, RootPage
+from pages.models import Supporters, PrivacyPolicy, K12Subject, Subject, Subjects, RootPage, FlexPage
 
 
 class CommonMiddlewareAppendSlashWithoutRedirect(CommonMiddleware):
@@ -67,19 +67,33 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
     OG_USER_AGENTS = {
         'baiduspider', 'bingbot', 'embedly', 'facebookbot', 'facebookexternalhit/1.1',
         'facebookexternalhit', 'facebot', 'google.*snippet', 'googlebot', 'linkedinbot',
-        'MetadataScraper', 'outbrain', 'pinterest', 'pinterestbot', 'quora', 'quora link preview',
-        'rogerbot', 'showyoubot', 'slackbot', 'slackbot-linkexpanding', 'twitterbot', 'vkShare',
-        'W3C_Validator', 'WhatsApp', 'yandex', 'yahoo'
+        'metadatascraper', 'outbrain', 'pinterest', 'pinterestbot', 'quora', 'quora link preview',
+        'rogerbot', 'showyoubot', 'slackbot', 'slackbot-linkexpanding', 'twitterbot', 'vkshare',
+        'w3c_validator', 'whatsapp', 'yandex', 'yahoo',
+        'gptbot', 'perplexitybot', 'applebot',
+        'oai-searchbot', 'claudebot', 'claude-searchbot',
     }
+
+    # ua_parser doesn't resolve these AI crawlers to a stable family
+    # (e.g. ChatGPT-User parses as family "com/bot"), so they're matched
+    # as raw substrings, mirroring the nginx user-agent map.
+    AI_CRAWLER_USER_AGENT_SUBSTRINGS = (
+        'chatgpt-user', 'google-extended', 'anthropic-ai', 'claude-web',
+        'claude-user', 'perplexity-user',
+    )
 
     def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request, *args, **kwargs):
         if 'HTTP_USER_AGENT' in request.META:
-            user_agent = user_agent_parser.ParseUserAgent(request.META["HTTP_USER_AGENT"])
-            if user_agent['family'].lower() in self.OG_USER_AGENTS:
-                url_path = unquote(request.get_full_path()[:-1])
+            raw_user_agent = request.META['HTTP_USER_AGENT']
+            user_agent = user_agent_parser.ParseUserAgent(raw_user_agent)
+            is_og_user_agent = user_agent['family'].lower() in self.OG_USER_AGENTS or any(
+                substring in raw_user_agent.lower() for substring in self.AI_CRAWLER_USER_AGENT_SUBSTRINGS
+            )
+            if is_og_user_agent:
+                url_path = unquote(request.path_info.rstrip('/'))
                 full_url = unquote(request.build_absolute_uri())
                 page_slug = "home" if url_path == '' else url_path.rsplit('/', 1)[-1]
 
@@ -89,7 +103,13 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
 
                     page = self.get_page(url_path, page_slug)
                     if page:
-                        template = self.build_template(page[0], full_url)
+                        instance = page[0]
+                        # answer-engine crawlers don't execute JS and can only cite
+                        # what's in the raw HTML, so FlexPages serve their full
+                        # content-bearing template
+                        if isinstance(instance, FlexPage):
+                            return instance.serve(request).render()
+                        template = self.build_template(instance, full_url)
                         return HttpResponse(template)
         return self.get_response(request)
 
@@ -101,7 +121,8 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
         elif '/privacy' in url_path:
             return PrivacyPolicy.objects.filter(slug='privacy-policy')
         elif '/k12' in url_path:
-            return K12Subject.objects.filter(slug='k12-' + page_slug)
+            return (K12Subject.objects.filter(slug='k12-' + page_slug)
+                    or FlexPage.objects.filter(slug='k12-' + page_slug))
         elif '/subjects' in url_path:
             flag = FeatureFlag.objects.filter(name='new_subjects')
             if flag[0].feature_active:
@@ -116,7 +137,9 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
             return self.page_by_slug(page_slug)
 
     def build_template(self, page, page_url):
-        page_url = page_url.rstrip('/')
+        # canonical and og:url point at the clean URL so query-string
+        # variants consolidate their signal onto one page
+        page_url = page_url.split('?', 1)[0].rstrip('/')
         image_url = self.image_url(page.promote_image)
         # Use seo_title if available, otherwise fall back to title
         display_title = page.seo_title if page.seo_title else page.title

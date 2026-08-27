@@ -7,7 +7,7 @@ from django.http import HttpResponse, HttpResponseNotFound
 from django.core.files.uploadedfile import SimpleUploadedFile
 from openstax.middleware import CommonMiddlewareAppendSlashWithoutRedirect
 from wagtail.models import Page
-from pages.models import RootPage
+from pages.models import RootPage, FlexPage
 from books.models import BookIndex, Book
 from news.models import NewsIndex, NewsArticle
 from snippets.models import Subject, BlogContentType, BlogCollection
@@ -250,4 +250,125 @@ class TestOpenGraphMiddleware(TestCase):
         # Should use seo_title in twitter:title meta tag
         self.assertContains(response, 'twitter:title')
         self.assertContains(response, 'OpenStax Home')
+
+    def test_snapshot_canonical_url_has_no_query_string(self):
+        """Query-string variants (e.g. utm parameters) declare the clean URL
+        as canonical so their signal consolidates onto one page."""
+        response = self.client.get('/?utm_source=chatgpt.com&utm_medium=referral')
+        self.assertContains(response, 'rel="canonical" href="http://testserver"')
+        self.assertContains(response, 'og:url" content="http://testserver"')
+        self.assertNotContains(response, 'utm_source')
+
+    def test_k12_flexpage_link_preview(self):
+        """K12 subject-group pages are FlexPages (e.g. k12-math), not K12Subjects.
+        The middleware should fall back to FlexPage when no K12Subject matches."""
+        self.k12_math = FlexPage(title="Math",
+                                 slug="k12-math",
+                                 seo_title='K12 Math SEO Title',
+                                 search_description='K12 Math page description')
+        self.homepage.add_child(instance=self.k12_math)
+        self.client = Client(HTTP_USER_AGENT='facebookexternalhit/1.1')
+        response = self.client.get('/k12/math/')
+        self.assertContains(response, 'og:image')
+        self.assertContains(response, 'K12 Math SEO Title')
+
+    def test_ai_crawler_gets_og_page(self):
+        """AI crawlers (GPTBot etc.) must get the OG snapshot too, not Wagtail's
+        404 -- their real UA strings don't always resolve to a stable ua_parser
+        family, so the middleware also checks for them by raw substring."""
+        self.k12_math = FlexPage(title="Math",
+                                 slug="k12-math",
+                                 seo_title='K12 Math SEO Title',
+                                 search_description='K12 Math page description')
+        self.homepage.add_child(instance=self.k12_math)
+        self.client = Client(HTTP_USER_AGENT=(
+            'Mozilla/5.0 AppleWebKit/537.36 (KHTML, like Gecko); compatible; '
+            'GPTBot/1.1; +https://openai.com/gptbot'
+        ))
+        response = self.client.get('/k12/math/')
+        self.assertContains(response, 'og:image')
+        self.assertContains(response, 'K12 Math SEO Title')
+
+    def test_claudebot_gets_og_page(self):
+        """ClaudeBot (Anthropic's training crawler) resolves to a stable ua_parser
+        family and must get the OG page like the other current-generation AI
+        crawlers nginx now routes through."""
+        self.k12_math = FlexPage(title="Math",
+                                 slug="k12-math",
+                                 seo_title='K12 Math SEO Title',
+                                 search_description='K12 Math page description')
+        self.homepage.add_child(instance=self.k12_math)
+        self.client = Client(HTTP_USER_AGENT=(
+            'Mozilla/5.0 (compatible; ClaudeBot/1.0; +claudebot@anthropic.com)'
+        ))
+        response = self.client.get('/k12/math/')
+        self.assertContains(response, 'og:image')
+        self.assertContains(response, 'K12 Math SEO Title')
+
+    def test_human_user_agent_does_not_get_og_page(self):
+        """A normal browser UA must not be served the bot-only OG snapshot."""
+        self.k12_math = FlexPage(title="Math",
+                                 slug="k12-math",
+                                 seo_title='K12 Math SEO Title',
+                                 search_description='K12 Math page description')
+        self.homepage.add_child(instance=self.k12_math)
+        self.client = Client(HTTP_USER_AGENT=(
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+            '(KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36'
+        ))
+        response = self.client.get('/k12/math/')
+        self.assertNotContains(response, 'K12 Math SEO Title', status_code=404)
+
+    def test_k12_flexpage_serves_real_template_with_jsonld(self):
+        """Answer-engine crawlers don't execute JS and can only cite text in the
+        raw HTML, so k12 FlexPages serve their full content-bearing template
+        with JSON-LD."""
+        self.k12_math = FlexPage(title="Math",
+                                 slug="k12-math",
+                                 seo_title='K12 Math SEO Title',
+                                 search_description='K12 Math page description')
+        self.homepage.add_child(instance=self.k12_math)
+        self.client = Client(HTTP_USER_AGENT='facebookexternalhit/1.1')
+        response = self.client.get('/k12/math/')
+        self.assertContains(response, 'K12 Math SEO Title')
+        self.assertContains(response, 'application/ld+json')
+        self.assertContains(response, '"@type": "CollectionPage"')
+        self.assertContains(response, 'og:site_name')
+        self.assertContains(response, 'og:type" content="website"')
+        self.assertContains(response, f'og:url" content="{self.k12_math.get_full_url()}"')
+        self.assertContains(response, f'href="{self.k12_math.get_full_url()}"')
+
+    def test_non_flexpage_og_case_still_uses_build_template(self):
+        """A non-FlexPage OG match (e.g. book) serves the build_template snapshot;
+        the full-template path is FlexPage-only."""
+        with open("pages/static/images/openstax.png", 'rb') as image_file:
+            image_content = image_file.read()
+        test_image = SimpleUploadedFile(name='openstax.png', content=image_content)
+        self.test_doc = Document.objects.create(title='Test Doc', file=test_image)
+        book_index = BookIndex(title="Book Index",
+                               page_description="Test",
+                               dev_standard_1_description="Test",
+                               dev_standard_2_description="Test",
+                               dev_standard_3_description="Test",
+                               dev_standard_4_description="Test",
+                               )
+        self.homepage.add_child(instance=book_index)
+        book = Book(title="Biology 2e",
+                    slug="biology-2e-build-template-check",
+                    cnx_id='031da8d3-b525-429c-80cf-6c8ed997733a',
+                    description="Test Book",
+                    cover=self.test_doc,
+                    title_image=self.test_doc,
+                    publish_date=datetime.date.today(),
+                    locale=self.root_page.locale,
+                    license_name='Creative Commons Attribution License',
+                    seo_title='Biology 2e',
+                    search_description='2nd edition of Biology'
+                    )
+        book_index.add_child(instance=book)
+        self.client = Client(HTTP_USER_AGENT='Slackbot-LinkExpanding 1.0 (+https://api.slack.com/robots)')
+        response = self.client.get('/details/books/biology-2e-build-template-check/')
+        self.assertContains(response, 'og:image')
+        self.assertContains(response, '<body></body>')
+        self.assertNotContains(response, 'application/ld+json')
 
