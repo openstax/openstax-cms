@@ -608,6 +608,68 @@ class BookTests(WagtailPageTestCase):
         self.assertEqual(len(response.data['book_faculty_resources']), 1)
         self.assertEqual(response.data['book_faculty_resources'][0]['link_text'], 'Visible')
 
+    def test_student_resources_available_from_resources_api(self):
+        """book_student_resources must be served with the same flat shape
+        (resource_heading/resource_description/resource_unlocked) os-webview
+        already reads from the Book page API, plus its own id, hidden filtered
+        out, and locked links redacted only when verified (?x=y)."""
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            book = Book(title="University Physics",
+                        slug="university-physics-student",
+                        cnx_id='031da8d3-b525-429c-80cf-6c8ed997733a',
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test Book",
+                        cover=self.test_doc,
+                        title_image=self.test_doc,
+                        publish_date=datetime.date.today(),
+                        locale=root_page.locale
+                        )
+            book_index.add_child(instance=book)
+
+        locked_resource = snippets.models.StudentResource(heading="Study Guide",
+                                                           description="Solutions",
+                                                           unlocked_resource=False)
+        locked_resource.save()
+
+        hidden_resource = snippets.models.StudentResource(heading="Hidden Guide",
+                                                           description="Hidden",
+                                                           unlocked_resource=True)
+        hidden_resource.save()
+
+        row = BookStudentResources.objects.create(link_external="https://openstax.org/solutions",
+                                                   link_text="Get it", resource=locked_resource,
+                                                   book_student_resource=book)
+        BookStudentResources.objects.create(link_external="https://openstax.org/hidden",
+                                            link_text="Hidden", resource=hidden_resource,
+                                            book_student_resource=book, hidden=True)
+
+        # hidden rows filtered out, flat fields present, id present
+        response = self.client.get('/apps/cms/api/books/resources/?slug=university-physics-student')
+        student_resources = response.data['book_student_resources']
+        self.assertEqual(len(student_resources), 1)
+        resource = student_resources[0]
+        self.assertEqual(resource['id'], row.pk)
+        self.assertEqual(resource['resource_heading'], 'Study Guide')
+        self.assertEqual(resource['resource_description'], 'Solutions')
+        self.assertFalse(resource['resource_unlocked'])
+        # book back-reference cleared, matching the faculty resources shape
+        self.assertEqual(resource['book_student_resource'], {})
+        # unverified: locked resource's link stays intact
+        self.assertEqual(resource['link_external'], 'https://openstax.org/solutions')
+
+        # verified flag on a locked resource: link redacted
+        response = self.client.get('/apps/cms/api/books/resources/?slug=university-physics-student&x=y')
+        self.assertEqual(response.data['book_student_resources'][0]['link_external'], '')
+
+        # verified flag on an unlocked resource: link stays intact
+        locked_resource.unlocked_resource = True
+        locked_resource.save()
+        response = self.client.get('/apps/cms/api/books/resources/?slug=university-physics-student&x=y')
+        self.assertEqual(response.data['book_student_resources'][0]['link_external'],
+                         'https://openstax.org/solutions')
+
     def test_hidden_faculty_resources_filtered_from_pages_api(self):
         """HiddenFilterChildRelationField excludes hidden faculty resources from Wagtail Pages API."""
         with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
