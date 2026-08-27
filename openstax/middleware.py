@@ -67,9 +67,9 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
     OG_USER_AGENTS = {
         'baiduspider', 'bingbot', 'embedly', 'facebookbot', 'facebookexternalhit/1.1',
         'facebookexternalhit', 'facebot', 'google.*snippet', 'googlebot', 'linkedinbot',
-        'MetadataScraper', 'outbrain', 'pinterest', 'pinterestbot', 'quora', 'quora link preview',
-        'rogerbot', 'showyoubot', 'slackbot', 'slackbot-linkexpanding', 'twitterbot', 'vkShare',
-        'W3C_Validator', 'WhatsApp', 'yandex', 'yahoo',
+        'metadatascraper', 'outbrain', 'pinterest', 'pinterestbot', 'quora', 'quora link preview',
+        'rogerbot', 'showyoubot', 'slackbot', 'slackbot-linkexpanding', 'twitterbot', 'vkshare',
+        'w3c_validator', 'whatsapp', 'yandex', 'yahoo',
         'gptbot', 'perplexitybot', 'applebot',
         'oai-searchbot', 'claudebot', 'claude-searchbot',
     }
@@ -93,7 +93,7 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
                 substring in raw_user_agent.lower() for substring in self.AI_CRAWLER_USER_AGENT_SUBSTRINGS
             )
             if is_og_user_agent:
-                url_path = unquote(request.get_full_path()[:-1])
+                url_path = unquote(request.path_info.rstrip('/'))
                 full_url = unquote(request.build_absolute_uri())
                 page_slug = "home" if url_path == '' else url_path.rsplit('/', 1)[-1]
 

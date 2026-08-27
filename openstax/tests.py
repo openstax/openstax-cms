@@ -333,8 +333,9 @@ class TestOpenGraphMiddleware(TestCase):
     def test_non_flexpage_og_case_still_uses_build_template(self):
         """A non-FlexPage OG match (e.g. book) serves the build_template snapshot;
         the full-template path is FlexPage-only."""
-        test_image = SimpleUploadedFile(name='openstax.png',
-                                        content=open("pages/static/images/openstax.png", 'rb').read())
+        with open("pages/static/images/openstax.png", 'rb') as image_file:
+            image_content = image_file.read()
+        test_image = SimpleUploadedFile(name='openstax.png', content=image_content)
         self.test_doc = Document.objects.create(title='Test Doc', file=test_image)
         book_index = BookIndex(title="Book Index",
                                page_description="Test",
