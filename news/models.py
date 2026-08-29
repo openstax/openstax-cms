@@ -1,7 +1,7 @@
 from bs4 import BeautifulSoup
 
 from django.core.cache import cache
-from django.db import models
+from django.db import models, transaction
 from django import forms
 
 from wagtail.models import Page, Orderable
@@ -250,6 +250,56 @@ class NewsArticleRelatedPage(Orderable):
     related_page = models.ForeignKey('wagtailcore.Page', on_delete=models.CASCADE, related_name='+')
 
 
+def _facet_ids(streamfield, key, model):
+    """All ids for `key` across every block/list-item of a StreamField's raw
+    JSON — same traversal as search_subject_names() et al, just returning ids
+    instead of resolved names. Ids whose snippet has since been deleted are
+    dropped: they linger in the JSON, and the facet FK would reject them."""
+    existing = _cached_in_bulk(model)
+    prep_value = streamfield.get_prep_value() or []
+    return {
+        item.get('value', {}).get(key)
+        for block in prep_value
+        for item in (block.get('value') or [])
+        if item.get('value', {}).get(key) in existing
+    }
+
+
+class NewsArticleSubject(models.Model):
+    """Derived query cache of NewsArticle.article_subjects, kept in sync by
+    NewsArticle._sync_search_facets(). Not editor-facing — editors still use
+    the StreamField picker."""
+    page = models.ForeignKey('news.NewsArticle', on_delete=models.CASCADE, related_name='subject_links')
+    subject = models.ForeignKey('snippets.Subject', on_delete=models.CASCADE, related_name='+')
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['page', 'subject'], name='unique_newsarticlesubject_page_subject'),
+        ]
+
+
+class NewsArticleCollection(models.Model):
+    """Derived query cache of NewsArticle.collections. See NewsArticleSubject."""
+    page = models.ForeignKey('news.NewsArticle', on_delete=models.CASCADE, related_name='collection_links')
+    collection = models.ForeignKey('snippets.BlogCollection', on_delete=models.CASCADE, related_name='+')
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['page', 'collection'], name='unique_newsarticlecollection_page_collection'),
+        ]
+
+
+class NewsArticleContentType(models.Model):
+    """Derived query cache of NewsArticle.content_types. See NewsArticleSubject."""
+    page = models.ForeignKey('news.NewsArticle', on_delete=models.CASCADE, related_name='content_type_links')
+    content_type = models.ForeignKey('snippets.BlogContentType', on_delete=models.CASCADE, related_name='+')
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['page', 'content_type'], name='unique_newsarticlecontenttype_page_content_type'),
+        ]
+
+
 class NewsArticle(FrontendPreviewMixin, Page):
     date = models.DateField("Post date")
     heading = models.CharField(max_length=250, help_text="Heading displayed on website")
@@ -396,6 +446,10 @@ class NewsArticle(FrontendPreviewMixin, Page):
         index.SearchField('body'),
         index.SearchField('search_content_type_names'),
         index.RelatedFields('tags', [index.SearchField('name')]),
+        index.FilterField('date'),
+        index.RelatedFields('subject_links', [index.FilterField('subject_id')]),
+        index.RelatedFields('collection_links', [index.FilterField('collection_id')]),
+        index.RelatedFields('content_type_links', [index.FilterField('content_type_id')]),
     ]
 
     content_panels = Page.content_panels + [
@@ -463,7 +517,29 @@ class NewsArticle(FrontendPreviewMixin, Page):
                     pin.pin_to_top = False
                     pin.save()
 
-        return super(NewsArticle, self).save(*args, **kwargs)
+        result = super(NewsArticle, self).save(*args, **kwargs)
+        self._sync_search_facets()
+        return result
+
+    def _sync_search_facets(self):
+        # atomic: a crash between the delete and the bulk_create for any one
+        # facet type would otherwise leave that facet empty until next save.
+        with transaction.atomic():
+            NewsArticleSubject.objects.filter(page=self).delete()
+            NewsArticleSubject.objects.bulk_create([
+                NewsArticleSubject(page=self, subject_id=sid)
+                for sid in _facet_ids(self.article_subjects, 'subject', Subject)
+            ])
+            NewsArticleCollection.objects.filter(page=self).delete()
+            NewsArticleCollection.objects.bulk_create([
+                NewsArticleCollection(page=self, collection_id=cid)
+                for cid in _facet_ids(self.collections, 'collection', BlogCollection)
+            ])
+            NewsArticleContentType.objects.filter(page=self).delete()
+            NewsArticleContentType.objects.bulk_create([
+                NewsArticleContentType(page=self, content_type_id=tid)
+                for tid in _facet_ids(self.content_types, 'content_type', BlogContentType)
+            ])
 
     def get_url_parts(self, *args, **kwargs):
         url_parts = super().get_url_parts(*args, **kwargs)

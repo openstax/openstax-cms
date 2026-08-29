@@ -3,6 +3,7 @@ import json
 
 from django.utils import timezone
 from django.test import TestCase
+from django.http import QueryDict
 from wagtail.test.utils import WagtailPageTestCase
 from wagtail.models import Page
 from pages.models import RootPage
@@ -10,8 +11,11 @@ from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
 from unittest.mock import MagicMock, patch
 from django.db import connection
 from django.test.utils import CaptureQueriesContext
-from news.models import NewsIndex, NewsArticle, PressIndex, PressRelease
-from news.search import MAX_SEARCH_TERMS
+from news.models import (
+    NewsIndex, NewsArticle, PressIndex, PressRelease,
+    NewsArticleSubject, NewsArticleCollection, NewsArticleContentType,
+)
+from news.search import MAX_SEARCH_TERMS, build_news_queryset, _csv_param
 from snippets.models import Subject, BlogContentType, BlogCollection
 
 
@@ -450,6 +454,15 @@ class NewsTests(WagtailPageTestCase, TestCase):
             "Title-match (older) article should appear before body-only (newer) article when ordered by relevance"
         )
 
+    def test_saving_survives_a_deleted_subject_left_in_the_streamfield(self):
+        """A deleted snippet lingers in the StreamField JSON; the facet FK would reject it."""
+        article = NewsArticle.objects.get(slug='article')
+        self.math.delete()
+
+        article.save()
+
+        self.assertEqual(article.subject_links.count(), 0)
+
     def test_very_long_query_does_not_blow_the_recursion_limit(self):
         """A query with more terms than the backend can nest must still return 200."""
         self._populate_search_index()
@@ -499,6 +512,87 @@ class NewsTests(WagtailPageTestCase, TestCase):
 
         self.assertEqual(grown_articles, baseline_articles + 5)
         self.assertEqual(grown_queries, baseline_queries)
+
+    def test_facet_filter_runs_in_sql_not_python(self):
+        """A subject filter with no query string must be a real join against
+        the through-table, not a Python filter pass over a fully-loaded list."""
+        params = QueryDict(mutable=True)
+        params['subjects'] = 'Math'
+        qs = build_news_queryset(params)
+        self.assertIn('newsarticlesubject', str(qs.query).lower())
+        self.assertEqual({a.slug for a in qs}, {'article', 'article3'})
+
+    def test_csv_param_accepts_bare_querydict(self):
+        """_csv_param must take the params mapping directly — DRF's
+        request.query_params has no .GET, so request.GET.get(...) would
+        AttributeError if this regressed to expecting a request object."""
+        params = QueryDict(mutable=True)
+        params['types'] = 'Video,Case Study'
+        self.assertEqual(_csv_param(params, 'types'), ['Video', 'Case Study'])
+
+    def test_save_syncs_facet_link_rows(self):
+        self.assertEqual(
+            set(NewsArticleSubject.objects.filter(page=self.article).values_list('subject_id', flat=True)),
+            {self.math.id})
+        self.assertEqual(
+            set(NewsArticleCollection.objects.filter(page=self.article).values_list('collection_id', flat=True)),
+            {self.learning.id})
+        self.assertEqual(
+            set(NewsArticleContentType.objects.filter(page=self.article).values_list('content_type_id', flat=True)),
+            {self.case_study.id})
+
+    def test_editing_subjects_resyncs_link_rows(self):
+        self.article.article_subjects = json.dumps([
+            {'type': 'subject', 'value': [{'type': 'item', 'value': {'subject': self.economics.id, 'featured': False}}]}
+        ])
+        self.article.save()
+        self.assertEqual(
+            set(NewsArticleSubject.objects.filter(page=self.article).values_list('subject_id', flat=True)),
+            {self.economics.id})
+
+    def test_legacy_response_shape_unchanged(self):
+        response = self.client.get('/apps/cms/api/search/', {'subjects': 'Math'})
+        data = json.loads(response.content)
+        self.assertIsInstance(data, list)  # bare array, not a paginated envelope
+        article_data = next(item for item in data if item['slug'] == 'article')
+        self.assertEqual(set(article_data.keys()), {
+            'id', 'title', 'subheading', 'body_blurb', 'article_image',
+            'article_image_alt', 'date', 'author', 'pin_to_top', 'tags',
+            'collections', 'article_subjects', 'content_types', 'slug',
+            'seo_title', 'search_description',
+        })
+        self.assertEqual(article_data['article_subjects'], [{'name': 'Math', 'featured': False}])
+        self.assertEqual(article_data['collections'],
+                         [{'name': 'Teaching and Learning', 'featured': False, 'popular': False}])
+        self.assertEqual(article_data['content_types'], ['Case Study'])
+
+    def test_sort_newest_is_stable_across_pages(self):
+        """q + sort=newest must return a stable order across LIMIT/OFFSET
+        pages even when every match ties on the same (day-granularity) date."""
+        news_index = NewsIndex.objects.all()[0]
+        same_day = timezone.now()
+        for i in range(6):
+            news_index.add_child(instance=NewsArticle(
+                title=f"Stable Article {i}",
+                slug=f'stable-{i}',
+                date=same_day,
+                heading="Heading", subheading="Sub", author="OpenStax",
+                body=json.dumps([{"type": "paragraph", "value": "<p>Uniqueterm content here.</p>"}]),
+                article_subjects=json.dumps([]), content_types=json.dumps([]), collections=json.dumps([]),
+            ))
+        self._populate_search_index()
+
+        params = QueryDict(mutable=True)
+        params['q'] = 'uniqueterm'
+        params['sort'] = 'newest'
+        expected = [f'stable-{i}' for i in reversed(range(6))]  # same date -> highest id (newest) first
+
+        full_slugs = [a.slug for a in build_news_queryset(params)]
+        self.assertEqual(full_slugs, expected)
+
+        paged_slugs = [a.slug for a in build_news_queryset(params)[0:3]]
+        paged_slugs += [a.slug for a in build_news_queryset(params)[3:6]]
+        self.assertEqual(paged_slugs, expected)
 
 
 class PressTests(WagtailPageTestCase):

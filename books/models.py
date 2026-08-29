@@ -21,6 +21,7 @@ from wagtail.admin.panels import TabbedInterface, ObjectList
 from wagtail_ai.panels import AIMultipleChooserPanel
 from wagtail.api import APIField
 from wagtail.models import Site
+from wagtail.search import index
 
 from rest_framework.fields import Field
 
@@ -1041,6 +1042,15 @@ class Book(FrontendPreviewMixin, Page):
         ObjectList(promote_panels, heading='Promote'),
         ObjectList(Page.settings_panels, heading='Settings', classname="settings"),
     ])
+
+    search_fields = Page.search_fields + [
+        index.SearchField('description'),
+        index.FilterField('book_state'),
+        index.RelatedFields('book_subjects', [
+            index.SearchField('subject_name', boost=5),
+            index.FilterField('subject_id'),
+        ]),
+    ]
 
     api_fields = [
         APIField('created'),
