@@ -1,12 +1,24 @@
+import re
 
 from django.http import JsonResponse
 
 from news.models import NewsArticle
 
+# The Postgres backend nests one expression per whitespace/hyphen-separated
+# term, and Django recurses that tree when hashing it — past ~150 terms a query
+# raises RecursionError instead of returning results.
+MAX_SEARCH_TERMS = 25
+
 
 def _csv_param(request, name):
     raw = request.GET.get(name, '').strip()
     return [v.strip() for v in raw.split(',') if v.strip()]
+
+
+def _live_articles():
+    return NewsArticle.objects.live() \
+        .select_related('featured_image') \
+        .prefetch_related('tags')
 
 
 def search(request):
@@ -18,13 +30,14 @@ def search(request):
     sort = request.GET.get('sort', 'relevance').strip()
 
     if q:
-        results = NewsArticle.objects.live().search(q)
+        q = ' '.join(re.split(r'[\s\-]+', q)[:MAX_SEARCH_TERMS])
+        results = _live_articles().search(q)
     elif tag:
-        results = NewsArticle.objects.filter(
-            tags__name__in=[tag], live=True
+        results = _live_articles().filter(
+            tags__name__in=[tag]
         ).order_by('-date').distinct()
     else:
-        results = NewsArticle.objects.filter(live=True).order_by('-date')
+        results = _live_articles().order_by('-date')
 
     articles = list(results)
     if subjects:
@@ -58,7 +71,7 @@ def search(request):
             'date': result.date,
             'author': result.author,
             'pin_to_top': result.pin_to_top,
-            'tags': list(result.tags.names()),
+            'tags': [t.name for t in result.tags.all()],
             'collections': result.blog_collections,
             'article_subjects': result.blog_subjects,
             'content_types': result.blog_content_types,
