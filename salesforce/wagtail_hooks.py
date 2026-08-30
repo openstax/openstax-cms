@@ -30,9 +30,6 @@ from wagtail.admin.widgets import HeaderButton
 
 from .models import (
     Partner,
-    PartnerTypeMapping,
-    PartnerCategoryMapping,
-    PartnerFieldNameMapping,
     School,
     AdoptionOpportunityRecord,
     ResourceDownload,
@@ -145,40 +142,12 @@ class PartnerViewSet(ModelViewSet):
         ]
 
 
-# --- Partner mapping tables (small config models) --------------------------
-class PartnerTypeMappingViewSet(ModelViewSet):
-    model = PartnerTypeMapping
-    icon = "tag"
-    menu_label = "Partner Types"
-    list_display = ("display_name",)
-    exclude_form_fields = []
-
-
-class PartnerCategoryMappingViewSet(ModelViewSet):
-    model = PartnerCategoryMapping
-    icon = "tag"
-    menu_label = "Partner Categories"
-    list_display = ("display_name", "salesforce_name")
-    exclude_form_fields = []
-
-
-class PartnerFieldNameMappingViewSet(ModelViewSet):
-    model = PartnerFieldNameMapping
-    icon = "tag"
-    menu_label = "Partner Field Names"
-    list_display = ("display_name", "salesforce_name")
-    exclude_form_fields = []
-
-
 class PartnersGroup(ModelViewSetGroup):
     menu_label = "Partners"
     menu_icon = "group"
     menu_order = 500
     items = (
         PartnerViewSet("partners"),
-        PartnerTypeMappingViewSet("partner_types"),
-        PartnerCategoryMappingViewSet("partner_categories"),
-        PartnerFieldNameMappingViewSet("partner_field_names"),
     )
 
 
