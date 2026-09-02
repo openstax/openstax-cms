@@ -25,8 +25,10 @@ def clear_cloudfront_on_site_banner_save(sender, **kwargs):
 def capture_thank_you_note(sender, instance, created, **kwargs):
     if not created:
         return
+    # PostHog action 259398 (formerly fed by GTM Tag 2) matches this exact name;
+    # any other spelling drops these notes off the dashboard tile silently.
     posthog_capture(
-        'thank_you_note_submitted',
+        'thankyou_note_submitted',
         distinct_id=instance.account_uuid,
         properties={'form_type': 'donation_thank_you'},
     )
