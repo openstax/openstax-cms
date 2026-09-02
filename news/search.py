@@ -28,9 +28,11 @@ def search(request):
     collection = request.GET.get('collection', '').strip()
     content_types = _csv_param(request, 'types')
     sort = request.GET.get('sort', 'relevance').strip()
+    q = ' '.join(
+        token for token in re.split(r'[\s\-]+', q)[:MAX_SEARCH_TERMS] if token
+    )
 
     if q:
-        q = ' '.join(re.split(r'[\s\-]+', q)[:MAX_SEARCH_TERMS])
         results = _live_articles().search(q)
     elif tag:
         results = _live_articles().filter(

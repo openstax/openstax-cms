@@ -469,6 +469,15 @@ class NewsTests(WagtailPageTestCase, TestCase):
         searched = live_articles.return_value.search.call_args[0][0]
         self.assertEqual(len(searched.split()), MAX_SEARCH_TERMS)
 
+    def test_degenerate_query_falls_back_to_tag_search(self):
+        with patch('news.search._live_articles') as live_articles:
+            self.client.get('/apps/cms/api/search/', {'q': '---', 'tag': 'Physics'})
+
+        live_articles.return_value.search.assert_not_called()
+        live_articles.return_value.filter.assert_called_once_with(
+            tags__name__in=['Physics']
+        )
+
     def test_result_count_does_not_change_query_count(self):
         """Serializing images and tags must not run per-article queries."""
         news_index = NewsIndex.objects.all()[0]
