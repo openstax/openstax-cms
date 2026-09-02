@@ -25,8 +25,8 @@ def clear_cloudfront_on_site_banner_save(sender, **kwargs):
 def capture_thank_you_note(sender, instance, created, **kwargs):
     if not created:
         return
-    # Name matches PostHog action 259398, which GTM Tag 2 used to feed. Renaming
-    # this detaches the dashboard tile from every thank-you note.
+    # PostHog action 259398 (formerly fed by GTM Tag 2) matches this exact name;
+    # any other spelling drops these notes off the dashboard tile silently.
     posthog_capture(
         'thankyou_note_submitted',
         distinct_id=instance.account_uuid,
