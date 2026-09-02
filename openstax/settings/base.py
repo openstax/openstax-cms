@@ -440,6 +440,11 @@ WAGTAIL_AI = {
         },
     },
     "IMAGE_DESCRIPTION_BACKEND": "default",
+    # wagtail-ai hardcodes "data:image/jpeg" on the image it uploads, and
+    # Anthropic rejects a payload whose bytes don't match that media type. Our
+    # WAGTAILIMAGES_FORMAT_CONVERSIONS turns every rendition into webp, so the
+    # rendition sent for alt text has to be pinned back to jpeg.
+    "IMAGE_DESCRIPTION_RENDITION_FILTER": "max-800x600|format-jpeg",
     # Alt text is cheap and high-volume, so it gets its own alias on a smaller
     # model instead of the "default" Sonnet one (mirrors the BACKENDS split).
     "IMAGE_DESCRIPTION_PROVIDER": "image_description",
