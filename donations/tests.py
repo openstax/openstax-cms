@@ -183,6 +183,26 @@ class ThankYouNotePostHogTest(APITestCase, TestCase):
             mock_capture.call_args.kwargs['properties']['form_type'],
             'donation_thank_you',
         )
+        self.assertIsNone(mock_capture.call_args.kwargs['distinct_id'])
+
+    @mock.patch('donations.signals.posthog_capture')
+    def test_posthog_event_identifies_signed_in_submitter(self, mock_capture):
+        account_uuid = "11111111-1111-1111-1111-111111111111"
+        data = {
+            "thank_you_note": "Thanks OpenStax!",
+            "last_name": "Reed",
+            "first_name": "Robin",
+            "school": "Rice University",
+            "source": "PDF download",
+            "account_uuid": account_uuid,
+        }
+        response = self.client.post(
+            '/apps/cms/api/donations/thankyounote/', data, format='json'
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(
+            str(mock_capture.call_args.kwargs['distinct_id']), account_uuid
+        )
 
 
 class ThankYouNoteFieldFallbackTest(APITestCase, TestCase):
