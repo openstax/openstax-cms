@@ -132,11 +132,13 @@ BOOK_FIELDS = {
 
 DEFAULT_ROW_CAP = 100
 
+HIDDEN_BOOK_STATES = ['unlisted', 'retired']
+
 
 def resolve_books(config):
     from django.db.models import Exists, OuterRef, Q
     from books.models import Book, BookFacultyResources, BookStudentResources
-    qs = Book.objects.live().exclude(book_state__in=['unlisted', 'retired'])
+    qs = Book.objects.live().exclude(book_state__in=HIDDEN_BOOK_STATES)
     if config.get('book_state'):
         qs = qs.filter(book_state=config['book_state'])
     if config.get('subject'):
@@ -256,7 +258,10 @@ def _resource_link_cell(r):
             return {'text': '', 'url': ''}
         # Marker for os-webview's progressive-enhancement override: it resolves
         # the real per-user link client-side (where verified-instructor status
-        # is visible) and matches this cell back to a resource by heading.
+        # is visible) and matches this cell back to a resource, by id first
+        # (equal to the books/resources/ row's own id) with heading as a
+        # fallback for already-cached table JSON (up to 30 days old) that
+        # predates resource_id.
         # book_slug is computed the same way as the fallback url above, so the
         # two can never drift apart.
         return {
@@ -270,6 +275,12 @@ def _resource_link_cell(r):
                     # download-tracking record; it is absent from the
                     # books/resources/ payload, so it has to ride along here.
                     'book_id': next(iter(getattr(r, '_book_ids', [])), None),
+                    # r is the through-model row (BookFacultyResources/
+                    # BookStudentResources); its pk equals the `id` the
+                    # resources API serializes for the same row. A synthetic
+                    # row (no real pk) yields None here, and the frontend
+                    # falls back to heading matching.
+                    'resource_id': getattr(r, 'pk', None),
                     'heading': r.resource_heading if r.resource else '',
                     'resource_type': getattr(r, '_resource_type', ''),
                 },
@@ -364,12 +375,17 @@ class _VideoResourceRow:
 
 def _resource_books(config):
     """Books whose resources fill the table. Explicit picks win; otherwise all
-    listed books, narrowed by HE subject and/or K12 subject area if set."""
+    listed books, narrowed by HE subject and/or K12 subject area if set.
+
+    Retired and unlisted books are dropped either way, for different reasons: a
+    retired book's resources endpoint 404s (books/views.py), so its rows can only
+    ever be dead ends, and an unlisted book is deliberately kept out of listings
+    — which is what a table is."""
     manual = [b.specific for b in (config.get('books') or []) if b]
     if manual:
-        return manual
+        return [b for b in manual if b.live and b.book_state not in HIDDEN_BOOK_STATES]
     from books.models import Book
-    qs = Book.objects.live().exclude(book_state__in=['unlisted', 'retired'])
+    qs = Book.objects.live().exclude(book_state__in=HIDDEN_BOOK_STATES)
     if config.get('subject'):
         qs = qs.filter(book_subjects__subject=config['subject'])
     if config.get('k12_subject'):

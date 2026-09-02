@@ -346,6 +346,13 @@ class ResourceDownload(models.Model):
     last_access = models.DateTimeField()
     resource_name = models.CharField(max_length=255, null=True, blank=True)
     contact_id = models.CharField(max_length=100, null=True, blank=True)
+    # The path, not a page type: /dual-credit and any other flex page are the
+    # same type but not the same signal, and a new page needs no code change
+    # here to show up in the data.
+    source = models.CharField(max_length=255, null=True, blank=True,
+                              help_text="Path of the page the reader downloaded from")
+    role = models.CharField(max_length=20, null=True, blank=True,
+                            help_text="Whether the reader was an instructor or a student")
 
     class Meta:
         indexes = [

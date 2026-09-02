@@ -692,6 +692,50 @@ class BookResourcesSourceTests(BooksSourceTests):
         self.assertEqual(result['rows'][0]['cells'][0]['content'],
                          'Instructor Getting Started Guide')
 
+    def test_manually_picked_hidden_book_contributes_no_rows(self):
+        # A retired book's resources endpoint 404s and an unlisted book is meant
+        # to stay out of listings, so neither belongs in a table however it was
+        # picked.
+        from pages.table_sources import resolve_book_resources
+        from books.models import Book
+        book = self._make_book_with_resources()
+        for state in ('retired', 'unlisted'):
+            with self.subTest(book_state=state):
+                # .update(): saving a Book calls out to Salesforce.
+                Book.objects.filter(pk=book.pk).update(book_state=state)
+                book.refresh_from_db()
+                result = resolve_book_resources({
+                    'books': [book], 'resource_type': 'instructor', 'audience': '',
+                    'columns': [{'field': 'heading', 'header': '', 'type': ''}],
+                })
+                self.assertEqual(result['rows'], [])
+
+    def _clean_source(self, book):
+        from pages.table_block import BookResourcesSourceBlock
+        block = BookResourcesSourceBlock()
+        return block.clean(block.to_python({
+            'books': [book.pk], 'resource_type': 'instructor',
+            'columns': [{'field': 'heading', 'header': '', 'type': ''}],
+        }))
+
+    def test_picking_a_hidden_book_is_a_validation_error(self):
+        from django.core.exceptions import ValidationError
+        from books.models import Book
+        book = self._make_book_with_resources()
+        for state in ('retired', 'unlisted'):
+            with self.subTest(book_state=state):
+                Book.objects.filter(pk=book.pk).update(book_state=state)
+
+                with self.assertRaises(ValidationError) as caught:
+                    self._clean_source(book)
+                self.assertIn(f'University Physics ({state})',
+                              str(caught.exception.block_errors['books']))
+
+    def test_picking_a_live_book_validates(self):
+        book = self._make_book_with_resources()
+
+        self.assertEqual(list(self._clean_source(book)['books']), [book])
+
     def test_he_subject_filter_selects_matching_books(self):
         from books.models import BookSubjects
         from snippets.models import Subject
@@ -887,6 +931,9 @@ class BookResourcesSourceTests(BooksSourceTests):
         marker = next(c for c in cta['config'] if c['type'] == 'resource_ref')
         # trackLink() needs the numeric book id; it is not in the resources API.
         self.assertEqual(marker['value']['book_id'], book.pk)
+        # resource_id is the through-row pk, matching the id the
+        # books/resources/ endpoint serializes for the same row.
+        self.assertEqual(marker['value']['resource_id'], row.pk)
         serialized = json.dumps(cell)
         self.assertNotIn(real_url, serialized)
         self.assertNotIn('Download', serialized)  # original CTA text must not leak either
@@ -895,6 +942,7 @@ class BookResourcesSourceTests(BooksSourceTests):
         self.assertEqual(cta['config'], [{
             'type': 'resource_ref',
             'value': {'book_slug': book.slug, 'book_id': book.pk,
+                      'resource_id': row.pk,
                       'heading': 'Locked Guide',
                       'resource_type': 'Instructor'},
         }])
@@ -913,7 +961,7 @@ class BookResourcesSourceTests(BooksSourceTests):
         locked = StudentResource.objects.create(
             heading='Locked Student Guide', description='<p>x</p>',
             locale=book.locale, unlocked_resource=False)
-        BookStudentResources.objects.create(
+        row = BookStudentResources.objects.create(
             book_student_resource=book, resource=locked,
             link_external='https://example.com/secret.pdf')
         result = resolve_book_resources({
@@ -927,9 +975,39 @@ class BookResourcesSourceTests(BooksSourceTests):
         self.assertEqual(cta['config'], [{
             'type': 'resource_ref',
             'value': {'book_slug': book.slug, 'book_id': book.pk,
+                      'resource_id': row.pk,
                       'heading': 'Locked Student Guide',
                       'resource_type': 'Student'},
         }])
+
+    def test_resource_ref_marker_resource_id_matches_resources_api_row_id(self):
+        # The frontend matches a marker back to a books/resources/ row by id
+        # first (heading is only a fallback for pre-resource_id cached JSON),
+        # so the two ids must agree.
+        from books.models import BookFacultyResources
+        from snippets.models import FacultyResource
+        from pages.table_sources import resolve_book_resources
+        from books.serializers import FacultyResourcesSerializer
+        from django.test import RequestFactory
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book = self._make_book()
+        locked_snippet = FacultyResource.objects.create(
+            heading='Cross-checked Guide', description='<p>x</p>', locale=book.locale)
+        row = BookFacultyResources.objects.create(
+            book_faculty_resource=book, resource=locked_snippet,
+            link_external='https://example.com/g.pdf', link_text='Go')
+        result = resolve_book_resources({
+            'books': [book], 'resource_type': 'instructor', 'audience': '',
+            'columns': [{'field': 'link', 'header': '', 'type': ''}],
+        })
+        marker = result['rows'][0]['cells'][0]['cta'][0]['config'][0]['value']
+
+        request = RequestFactory().get('/apps/cms/api/books/resources/', {'slug': book.slug})
+        serializer = FacultyResourcesSerializer(book, context={'request': request})
+        api_row = serializer.data['book_faculty_resources'][0]
+
+        self.assertEqual(marker['resource_id'], row.pk)
+        self.assertEqual(marker['resource_id'], api_row['id'])
 
     def test_book_slugs_stay_aligned_with_titles_when_row_shared(self):
         # A resource shared across books merges into one row listing both books;
