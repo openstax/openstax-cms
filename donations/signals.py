@@ -27,5 +27,6 @@ def capture_thank_you_note(sender, instance, created, **kwargs):
         return
     posthog_capture(
         'thank_you_note_submitted',
+        distinct_id=instance.account_uuid,
         properties={'form_type': 'donation_thank_you'},
     )
