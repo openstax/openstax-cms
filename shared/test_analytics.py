@@ -36,7 +36,7 @@ class AnalyticsCaptureTest(TestCase):
     @mock.patch('shared.analytics.Posthog')
     def test_capture_anonymous_disables_person_profile(self, mock_posthog):
         client = mock_posthog.return_value
-        analytics.capture('thank_you_note_submitted')
+        analytics.capture('errata_submitted')
         kwargs = client.capture.call_args.kwargs
         self.assertIs(kwargs['properties']['$process_person_profile'], False)
         self.assertTrue(kwargs['distinct_id'])  # a generated id, not empty
