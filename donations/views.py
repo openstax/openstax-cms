@@ -12,27 +12,23 @@ class ThankYouNoteViewSet(viewsets.ModelViewSet):
 
     @action(methods=['post'], detail=True)
     def post(self, request):
-        thank_you_note = request.data['thank_you_note']
-        first_name = request.data['first_name']
-        last_name = request.data['last_name']
-        institution = request.data['school']
-        consent_to_share_or_contact = request.data.get('consent_to_share_or_contact', False)
-        contact_email_address = request.data.get('contact_email_address', '')
-        source = request.data.get('source', '')
-        account_uuid = request.data.get('account_uuid') or None
+        thank_you_note = str(request.data.get('thank_you_note') or '').strip()
+        if not thank_you_note:
+            return JsonResponse(status=400, data={'thank_you_note': 'This field is required.'})
+
+        # 'institution' is the pre-2025 field name, still posted by stale cached SPA bundles
+        institution = request.data.get('school') or request.data.get('institution', '')
 
         ty_note = ThankYouNote.objects.create(thank_you_note=thank_you_note,
-                                              first_name=first_name,
-                                              last_name=last_name,
+                                              first_name=request.data.get('first_name', ''),
+                                              last_name=request.data.get('last_name', ''),
                                               institution=institution,
-                                              consent_to_share_or_contact=consent_to_share_or_contact,
-                                              contact_email_address=contact_email_address,
-                                              source=source,
-                                              account_uuid=account_uuid)
+                                              consent_to_share_or_contact=request.data.get('consent_to_share_or_contact', False),
+                                              contact_email_address=request.data.get('contact_email_address', ''),
+                                              source=request.data.get('source', ''),
+                                              account_uuid=request.data.get('account_uuid') or None)
 
-        serializer = ThankYouNoteSerializer(data=request.data)
-        if serializer.is_valid():
-            return JsonResponse(status=201, data=serializer.data)
+        return JsonResponse(status=201, data=ThankYouNoteSerializer(ty_note).data)
 
 
 class DonationPopupViewSet(viewsets.ModelViewSet):

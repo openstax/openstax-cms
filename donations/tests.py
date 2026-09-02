@@ -183,3 +183,44 @@ class ThankYouNotePostHogTest(APITestCase, TestCase):
             mock_capture.call_args.kwargs['properties']['form_type'],
             'donation_thank_you',
         )
+        self.assertIsNone(mock_capture.call_args.kwargs['distinct_id'])
+
+    @mock.patch('donations.signals.posthog_capture')
+    def test_posthog_event_identifies_signed_in_submitter(self, mock_capture):
+        account_uuid = "11111111-1111-1111-1111-111111111111"
+        data = {
+            "thank_you_note": "Thanks OpenStax!",
+            "last_name": "Reed",
+            "first_name": "Robin",
+            "school": "Rice University",
+            "source": "PDF download",
+            "account_uuid": account_uuid,
+        }
+        response = self.client.post(
+            '/apps/cms/api/donations/thankyounote/', data, format='json'
+        )
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(
+            str(mock_capture.call_args.kwargs['distinct_id']), account_uuid
+        )
+
+
+class ThankYouNoteFieldFallbackTest(APITestCase, TestCase):
+    """Stale cached SPA bundles post 'institution' instead of 'school' (Sentry OPENSTAX-CMS-WM)."""
+
+    def test_accepts_legacy_institution_field(self):
+        data = {"thank_you_note": "Thanks!", "first_name": "Francis", "last_name": "Martindale",
+                "institution": "Open University", "source": "PDF download"}
+        response = self.client.post('/apps/cms/api/donations/thankyounote/', data)
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(ThankYouNote.objects.get(last_name='Martindale').institution, 'Open University')
+
+    def test_missing_optional_fields_do_not_error(self):
+        response = self.client.post('/apps/cms/api/donations/thankyounote/', {"thank_you_note": "Thanks!"})
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertEqual(ThankYouNote.objects.get(thank_you_note='Thanks!').institution, '')
+
+    def test_missing_note_returns_400(self):
+        response = self.client.post('/apps/cms/api/donations/thankyounote/', {"first_name": "Bot"})
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertFalse(ThankYouNote.objects.exists())
