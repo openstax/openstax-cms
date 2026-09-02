@@ -1,6 +1,7 @@
 from django.db import models
 from wagtail import blocks
 from wagtail.fields import StreamField
+from wagtail.search import index
 
 from news.models import SubjectBlock, BlogCollectionChooserBlock
 from snippets.models import Subject, WebinarCollection
@@ -37,7 +38,15 @@ def webinar_collection_search(collection):
     return webinars_to_return
 
 
-class Webinar(models.Model):
+class Webinar(index.Indexed, models.Model):
+    search_fields = [
+        # Mirrors the hand-rolled vector in webinars/search.py: title and
+        # description weight='A' (strongest), speakers weight='B'.
+        index.SearchField('title', boost=10),
+        index.SearchField('description', boost=10),
+        index.SearchField('speakers', boost=5),
+    ]
+
     start = models.DateTimeField()
     end = models.DateTimeField()
     title = models.CharField(max_length=255)

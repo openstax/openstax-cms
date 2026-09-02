@@ -260,6 +260,7 @@ INSTALLED_APPS = [
     'wagtail_transfer',
     'versions',
     'oxmenus',
+    'search',
     # wagtail
     'wagtail_ai',
     'wagtail_color_panel',
