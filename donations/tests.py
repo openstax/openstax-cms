@@ -178,7 +178,7 @@ class ThankYouNotePostHogTest(APITestCase, TestCase):
         )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         mock_capture.assert_called_once()
-        self.assertEqual(mock_capture.call_args.args[0], 'thank_you_note_submitted')
+        self.assertEqual(mock_capture.call_args.args[0], 'thankyou_note_submitted')
         self.assertEqual(
             mock_capture.call_args.kwargs['properties']['form_type'],
             'donation_thank_you',
