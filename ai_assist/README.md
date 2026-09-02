@@ -72,6 +72,16 @@ pip resolves to a conflict.
 3. `collectstatic` so the wagtail-ai admin JS is served.
 4. `python manage.py seed_ai_prompts` (idempotent).
 5. `python manage.py rebuild_indexes` — builds the embeddings for related-pages suggestions (re-run after large content changes).
+6. `python manage.py check_ai_config` — one live call per configured provider and
+   backend, plus the admin assets and seeded prompts. Exits non-zero and names
+   what broke. Run it on the box after every deploy: the editor UI shows a
+   generic error (or nothing at all) for a missing key, an un-collected asset, or
+   an unknown model id, so a green deploy tells you nothing about whether the AI
+   features actually work.
+
+Secrets reach the instance from SSM at `/shared/cms/` and `/<env>/cms/`
+(`bit-deployment`'s `update-secrets.py` uppercases each name into an env var), so
+`ANTHROPIC_API_KEY` and `OPENAI_API_KEY` must exist under one of those paths.
 
 ## The `ai` rich-text feature
 The wand only renders on editors whose feature list includes `"ai"`. wagtail-ai
@@ -88,6 +98,7 @@ created lazily, so the app boots without `OPENAI_API_KEY`; suggestions only work
 once the key is set and `rebuild_indexes` has run.
 
 ## Manual QA (staging)
+- [ ] `python manage.py check_ai_config` passes.
 - [ ] Rich-text toolbar shows the AI wand + the seeded "Improve writing (OpenStax voice)" prompt.
 - [ ] Title and meta-description fields show the AI suggestion button.
 - [ ] Image editor offers alt-text generation; StreamField image blocks too.
