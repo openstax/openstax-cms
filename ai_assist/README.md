@@ -5,6 +5,8 @@ django-ai-core + any-llm). Always enabled; the tools only appear in the editor,
 so anyone with Wagtail edit access can use them. Features:
 
 - **Rich-text wand** — rewrite/grammar/completion in rich-text fields.
+- **OpenStax voice rewrite** — a second toolbar button that rewrites the
+  selected blocks with page context, keeping the field's own markup.
 - **Title & meta-description suggestions** — on every page type (`AITitleFieldPanel` / `AIDescriptionFieldPanel`, applied in `panel_patches.py`).
 - **Image alt text** — in the image editor (`WAGTAILIMAGES_IMAGE_FORM_BASE`) and contextually in StreamField image blocks (`AIImageBlock`).
 - **Content feedback** — quality suggestions in the Checks side panel. Reads
@@ -89,6 +91,36 @@ adds it to `default_features`, but this project pins an explicit list in
 `WAGTAILADMIN_RICH_TEXT_EDITORS`, so `"ai"` must stay in that list
 (`tests/test_rich_text_features.py` guards it).
 
+## OpenStax voice rewrite
+Our own Draftail control, separate from wagtail-ai's wand, because the wand
+posts `getPlainText()` and pastes the reply back as plain text: it cannot see
+where the field sits and it destroys links, emphasis, and block structure.
+
+The button rewrites the blocks the selection touches (the whole field when
+nothing is selected) and leaves everything else alone.
+
+- **No HTML crosses the wire.** The browser sends ContentState; the server
+  converts with Wagtail's own `ContentstateConverter`, so the field's real
+  feature list is applied in both directions and markup the model invents but
+  the field does not allow is dropped on the way back in. `draftail_features.py`
+  recovers that feature list by mapping the editor's option types (`BOLD`,
+  `header-two`) back to Wagtail feature names — converting with a narrower list
+  than the field allows would silently delete the editor's own markup.
+- **Context** (`rewrite_context.py`) comes from the *saved* page: title, page
+  type, the field's label, and the neighbouring copy. Unsaved edits are
+  invisible to it, which is fine — it is tone context, not source material.
+- **Voice** (`prompts.py`: `VOICE_RULES`, `VOICE_EXEMPLARS`, `voice_prompt`) is
+  static exemplars, not retrieval. `PageVectorIndex` embeds titles and meta
+  descriptions only, and retrieving from our own body copy would teach the model
+  the voice we are trying to move away from.
+- **Provider** is the any-llm `default` alias (Sonnet), not the legacy `llm`
+  BACKENDS path.
+
+Pieces: `views.py` (`/admin/ai-assist/rewrite/`), `rewrite.py`,
+`rewrite_context.py`, `draftail_features.py`, `wagtail_hooks.py`,
+`static/ai_assist/draftail_rewrite.js`. Tests in `tests/test_rewrite.py`; the JS
+has no test harness in this repo, so the editor side is checked by hand.
+
 ## Related pages
 `PageVectorIndex` (in `vector_index.py`) indexes NewsArticle, Book, and FlexPage
 (title + search_description). Each exposes a "Related pages" chooser
@@ -100,6 +132,7 @@ once the key is set and `rebuild_indexes` has run.
 ## Manual QA (staging)
 - [ ] `python manage.py check_ai_config` passes.
 - [ ] Rich-text toolbar shows the AI wand + the seeded "Improve writing (OpenStax voice)" prompt.
+- [ ] The OpenStax voice button rewrites a selection, keeps its links and bold, and leaves the rest of the field alone.
 - [ ] Title and meta-description fields show the AI suggestion button.
 - [ ] Image editor offers alt-text generation; StreamField image blocks too.
 - [ ] Content feedback appears in the Checks panel.
