@@ -1,4 +1,5 @@
 import json
+import logging
 
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
@@ -8,6 +9,7 @@ from .rewrite import RewriteError, rewrite_contentstate
 from .rewrite_context import build_brief
 
 MAX_LABEL_CHARS = 100
+logger = logging.getLogger(__name__)
 
 
 def _page_id(value):
@@ -48,7 +50,8 @@ def rewrite(request):
             editor_options=editor_options,
             brief=brief,
         )
-    except RewriteError as error:
-        return JsonResponse({"error": str(error)}, status=400)
+    except RewriteError:
+        logger.exception("Rewrite failed in ai_assist.rewrite view")
+        return JsonResponse({"error": "Unable to rewrite content."}, status=400)
 
     return JsonResponse({"contentstate": rewritten})
