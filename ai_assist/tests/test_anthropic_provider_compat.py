@@ -97,3 +97,38 @@ class AgentProviderRoutingTests(SimpleTestCase):
             base.WAGTAIL_AI["PROVIDERS"][alias]["model"],
             base.WAGTAIL_AI["PROVIDERS"]["default"]["model"],
         )
+
+
+class LLMBackendAnthropicCompatTests(SimpleTestCase):
+    """The rich-text prompts run on simonw's ``llm``, not any-llm.
+
+    llm-anthropic builds the SDK call kwargs itself, so an Anthropic SDK release
+    that moves a parameter (1.0 took temperature/top_p/top_k off the method and
+    into extra_body) breaks every prompt with a TypeError at call time. Binding
+    the kwargs against the installed signature catches that without a live call.
+    """
+
+    def test_backend_kwargs_bind_to_the_installed_sdk_signature(self):
+        import inspect
+
+        import anthropic
+        import llm
+
+        from openstax.settings import base
+
+        client = anthropic.Anthropic(api_key="not-a-real-key")
+        model_ids = [
+            cfg["CONFIG"]["MODEL_ID"]
+            for cfg in base.WAGTAIL_AI["BACKENDS"].values()
+            if cfg["CONFIG"]["MODEL_ID"].startswith("anthropic/")
+        ]
+        self.assertTrue(model_ids)
+
+        for model_id in model_ids:
+            with self.subTest(model_id=model_id):
+                model = llm.get_model(model_id)
+                kwargs = model.build_kwargs(
+                    llm.Prompt("ping", model=model, options=model.Options()), None
+                )
+                messages = client.beta.messages if "betas" in kwargs else client.messages
+                inspect.signature(messages.stream).bind(**kwargs)
