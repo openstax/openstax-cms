@@ -148,6 +148,21 @@ publishes** (a human reviews and publishes in the Wagtail admin).
 Wagtail 7.4 note: prefer **deferred validation** for draft saves (required-field
 checks happen at publish time) and `ImageRenditionField` for headless images.
 
+## AI Authoring Assists (`ai_assist/`)
+
+Wagtail AI integration (wagtail-ai + django-ai-core + any-llm) lives in
+`ai_assist/`; see `ai_assist/README.md` for the whole picture. Two things worth
+knowing before touching it:
+
+- **Two provider stacks.** Rich-text prompts run on the legacy `llm` library
+  (`WAGTAIL_AI["BACKENDS"]`); everything else — title/description, alt text,
+  content feedback, the OpenStax voice rewrite — runs on any-llm
+  (`WAGTAIL_AI["PROVIDERS"]`). New work should use the any-llm path.
+- **OpenStax voice rewrite** is ours, not wagtail-ai's: it round-trips
+  ContentState through Wagtail's `ContentstateConverter` server-side so the
+  field's own feature list survives the rewrite, and briefs the model with the
+  page it is editing.
+
 ## Accessibility Remediation Status
 
 The Accessibility Hub (`/accessibility-hub`) publishes per-ancillary WCAG
