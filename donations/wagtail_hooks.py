@@ -53,28 +53,11 @@ class SiteMessagingGroup(ModelViewSetGroup):
     items = (SiteBannerViewSet,)
 
 
-class GivingGroup(ModelViewSetGroup):
-    menu_label = "Giving"
-    menu_icon = "link-external"
-    menu_order = 290
-    items = (DonationPopupViewSet, DonationLinkViewSet, FundraiserViewSet)
-
-
-@hooks.register("register_admin_viewset")
-def register_site_messaging_group():
-    return SiteMessagingGroup()
-
-
-@hooks.register("register_admin_viewset")
-def register_giving_group():
-    return GivingGroup()
-
-
 class SettingsLinkMenuItem(MenuItem):
     """Deep-links a BaseSiteSetting, hidden from users who cannot change it.
 
     Wagtail's own SettingMenuItem does the permission check but derives its label
-    from the model's verbose_name; these need labels that say where a give link lives.
+    from the model's verbose_name; these need labels of their own.
     """
 
     def __init__(self, label, model, **kwargs):
@@ -89,31 +72,45 @@ class SettingsLinkMenuItem(MenuItem):
         return self.permission_policy.user_has_permission(request.user, "change")
 
 
-@hooks.register("register_admin_menu_item")
-def register_give_today_settings_menu_item():
-    # GiveToday is a BaseSiteSetting, not a ModelViewSet, so it can't be a
-    # registerable in GivingGroup above (Wagtail's ViewSetRegistry requires every
-    # group member to be a real ViewSet with its own on_register/get_urlpatterns).
-    # This deep-links straight to its edit page as a top-level item next to Giving,
-    # so editors still find it in one place.
-    return SettingsLinkMenuItem(
-        "Give Today (header + book details)",
-        GiveToday,
-        name="give-today-settings",
-        icon_name="cog",
-        order=291,
-    )
+class GivingGroup(ModelViewSetGroup):
+    menu_label = "Giving"
+    menu_icon = "link-external"
+    menu_order = 290
+    items = (DonationPopupViewSet, DonationLinkViewSet, FundraiserViewSet)
+
+    def get_submenu_items(self):
+        # `items` has to hold real ViewSets, but the submenu is just a list of
+        # MenuItems, so the two give-related settings pages belong here too rather
+        # than as loose top-level entries beside the group.
+        menu_items = super().get_submenu_items()
+        settings_links = (
+            ("Give Today", GiveToday, "give-today-settings"),
+            ("Footer give link", Footer, "footer-give-link-settings"),
+        )
+
+        for offset, (label, model, name) in enumerate(settings_links):
+            menu_items.append(
+                SettingsLinkMenuItem(
+                    label, model, name=name, icon_name="cog",
+                    order=len(menu_items) + offset + 1
+                )
+            )
+        return menu_items
 
 
-@hooks.register("register_admin_menu_item")
-def register_footer_give_link_menu_item():
-    # The footer's give link is an anchor inside Footer.supporters rather than a
-    # field of its own, so there is nothing to point a viewset at. The label says
-    # where to look; without it the link is effectively unfindable.
-    return SettingsLinkMenuItem(
-        "Footer (give link in Supporters HTML)",
-        Footer,
-        name="footer-give-link-settings",
-        icon_name="cog",
-        order=292,
-    )
+@hooks.register("register_admin_viewset")
+def register_site_messaging_group():
+    return SiteMessagingGroup()
+
+
+@hooks.register("register_admin_viewset")
+def register_giving_group():
+    return GivingGroup()
+
+
+@hooks.register("construct_settings_menu")
+def remove_give_today_from_settings(request, menu_items):
+    # Give Today is reachable from Giving, and it is wholly a giving concern, so a
+    # second entry here is just another place for editors to look. Footer stays in
+    # Settings: it owns the copyright, AP statement and social links too.
+    menu_items[:] = [item for item in menu_items if item.name != "give-today"]

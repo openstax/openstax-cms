@@ -168,90 +168,92 @@ class MainMenuStructureTests(TestCase):
 
 
 class GivingGroupMenuTests(TestCase):
-    """Donation Popup, Donation Links, and Fundraisers moved into a new
-    top-level "Giving" group so donation-related admin is findable in one
-    place; Give Today (a BaseSiteSetting) gets a deep-link item beside it."""
+    """Everything to do with giving lives under one top-level "Giving" group:
+    the three donation viewsets plus deep-links to the two settings pages that
+    hold give links. Nothing giving-related sits loose beside it."""
 
-    def test_giving_group_registered_with_expected_items(self):
+    def setUp(self):
         from django.contrib.auth.models import User
         from django.test import RequestFactory
+
+        self.request = RequestFactory().get("/admin/")
+        self.request.user = User.objects.create_superuser(
+            "givingadmin", "giving@openstax.org", "pw"
+        )
+
+    def giving_submenu_names(self):
         from wagtail.admin.menu import admin_menu
 
-        user = User.objects.create_superuser("givingadmin", "giving@openstax.org", "pw")
-        request = RequestFactory().get("/admin/")
-        request.user = user
+        items = admin_menu.menu_items_for_request(self.request)
+        giving = next(item for item in items if item.name == "giving")
 
-        items = admin_menu.menu_items_for_request(request)
-        names = [item.name for item in items]
-        self.assertIn("giving", names)
-        self.assertIn("give-today-settings", names)
-
-        giving_item = next(item for item in items if item.name == "giving")
-        giving_names = [
+        return [
             item.name
             for item in sorted(
-                giving_item.menu.menu_items_for_request(request),
+                giving.menu.menu_items_for_request(self.request),
                 key=lambda item: item.order,
             )
         ]
-        self.assertEqual(["donation-popup", "donation-links", "fundraisers"], giving_names)
+
+    def test_giving_group_holds_every_give_link(self):
+        self.assertEqual(
+            [
+                "donation-popup",
+                "donation-links",
+                "fundraisers",
+                "give-today-settings",
+                "footer-give-link-settings",
+            ],
+            self.giving_submenu_names(),
+        )
+
+    def test_nothing_giving_related_sits_beside_the_group(self):
+        from wagtail.admin.menu import admin_menu
+
+        names = [
+            item.name for item in admin_menu.menu_items_for_request(self.request)
+        ]
+
+        self.assertIn("giving", names)
+        self.assertNotIn("give-today-settings", names)
+        self.assertNotIn("footer-give-link-settings", names)
 
     def test_site_messaging_no_longer_holds_donation_popup_or_fundraisers(self):
-        from django.contrib.auth.models import User
-        from django.test import RequestFactory
         from wagtail.admin.menu import admin_menu
 
-        user = User.objects.create_superuser("sitemsgadmin", "sm@openstax.org", "pw")
-        request = RequestFactory().get("/admin/")
-        request.user = user
-
-        items = admin_menu.menu_items_for_request(request)
+        items = admin_menu.menu_items_for_request(self.request)
         site_messaging = next(item for item in items if item.name == "site-messaging")
-        site_messaging_names = [
-            item.name for item in site_messaging.menu.menu_items_for_request(request)
+        names = [
+            item.name
+            for item in site_messaging.menu.menu_items_for_request(self.request)
         ]
-        self.assertEqual(["site-banners"], site_messaging_names)
 
-    def test_give_today_settings_menu_item_links_to_settings_edit_page(self):
-        from django.contrib.auth.models import User
-        from django.test import RequestFactory
+        self.assertEqual(["site-banners"], names)
+
+    def test_settings_deep_links_point_at_the_settings_edit_pages(self):
         from django.urls import reverse
         from wagtail.admin.menu import admin_menu
 
-        from global_settings.models import GiveToday
+        from global_settings.models import Footer, GiveToday
 
-        user = User.objects.create_superuser("givetodayadmin", "gt@openstax.org", "pw")
-        request = RequestFactory().get("/admin/")
-        request.user = user
+        items = admin_menu.menu_items_for_request(self.request)
+        giving = next(item for item in items if item.name == "giving")
+        by_name = {
+            item.name: item
+            for item in giving.menu.menu_items_for_request(self.request)
+        }
 
-        items = admin_menu.menu_items_for_request(request)
-        give_today_item = next(item for item in items if item.name == "give-today-settings")
-        expected_url = reverse(
-            "wagtailsettings:edit", args=(GiveToday._meta.app_label, GiveToday._meta.model_name)
-        )
-        self.assertEqual(give_today_item.url, expected_url)
-
-    def test_footer_give_link_menu_item_links_to_settings_edit_page(self):
-        from django.contrib.auth.models import User
-        from django.test import RequestFactory
-        from django.urls import reverse
-        from wagtail.admin.menu import admin_menu
-
-        from global_settings.models import Footer
-
-        user = User.objects.create_superuser("footeradmin", "footer@openstax.org", "pw")
-        request = RequestFactory().get("/admin/")
-        request.user = user
-
-        items = admin_menu.menu_items_for_request(request)
-        names = [item.name for item in items]
-        self.assertIn("footer-give-link-settings", names)
-
-        footer_item = next(item for item in items if item.name == "footer-give-link-settings")
-        expected_url = reverse(
-            "wagtailsettings:edit", args=(Footer._meta.app_label, Footer._meta.model_name)
-        )
-        self.assertEqual(footer_item.url, expected_url)
+        for name, model in (
+            ("give-today-settings", GiveToday),
+            ("footer-give-link-settings", Footer),
+        ):
+            self.assertEqual(
+                reverse(
+                    "wagtailsettings:edit",
+                    args=(model._meta.app_label, model._meta.model_name),
+                ),
+                by_name[name].url,
+            )
 
     def test_settings_deep_links_are_hidden_without_change_permission(self):
         from django.contrib.auth.models import User
@@ -264,27 +266,31 @@ class GivingGroupMenuTests(TestCase):
         request = RequestFactory().get("/admin/")
         request.user = editor
 
-        names = [item.name for item in admin_menu.menu_items_for_request(request)]
+        giving = [
+            item
+            for item in admin_menu.menu_items_for_request(request)
+            if item.name == "giving"
+        ]
+        names = [
+            item.name
+            for item in (
+                giving[0].menu.menu_items_for_request(request) if giving else []
+            )
+        ]
+
         self.assertNotIn("give-today-settings", names)
         self.assertNotIn("footer-give-link-settings", names)
 
-    def test_giving_menu_items_are_adjacent_and_ordered(self):
-        from django.contrib.auth.models import User
-        from django.test import RequestFactory
-        from wagtail.admin.menu import admin_menu
+    def test_give_today_no_longer_duplicated_in_the_settings_menu(self):
+        from wagtail.admin.menu import settings_menu
 
-        user = User.objects.create_superuser("orderadmin", "order@openstax.org", "pw")
-        request = RequestFactory().get("/admin/")
-        request.user = user
+        names = [
+            item.name for item in settings_menu.menu_items_for_request(self.request)
+        ]
 
-        items = admin_menu.menu_items_for_request(request)
-        ordered = [item.name for item in sorted(items, key=lambda item: item.order)]
-        start = ordered.index("giving")
-
-        self.assertEqual(
-            ["giving", "give-today-settings", "footer-give-link-settings"],
-            ordered[start:start + 3],
-        )
+        self.assertNotIn("give-today", names)
+        # Footer stays: it owns the copyright, AP statement and social links too.
+        self.assertIn("footer", names)
 
 
 class GiveTodaySettingTests(TestCase):
