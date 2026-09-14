@@ -131,6 +131,7 @@ class DonationLinkTest(APITestCase, TestCase):
             url="https://riceconnect.rice.edu/donation/support-openstax-subject-b",
             give_link_text="Give $50",
             header_subtitle="Join us in sustaining OpenStax as a public good for years to come by giving today.",
+            header_image="data-science3x.max-165x165.png",
             is_active=True,
         )
         self.inactive = DonationLink.objects.create(
@@ -155,15 +156,20 @@ class DonationLinkTest(APITestCase, TestCase):
         data = DonationLinkSerializer(self.active_control).data
         self.assertEqual(
             set(data.keys()),
-            {"placement", "variant", "url", "give_link_text", "header_subtitle", "is_active"},
+            {"placement", "variant", "header_image", "url", "give_link_text", "header_subtitle", "is_active"},
         )
         self.assertEqual(data["placement"], "pdf")
         self.assertEqual(data["variant"], "test-control")
         self.assertEqual(data["give_link_text"], "")
+        self.assertFalse(data["header_image"])
 
     def test_serializer_round_trips_give_link_text(self):
         data = DonationLinkSerializer(self.active_public_good).data
         self.assertEqual(data["give_link_text"], "Give $50")
+
+    def test_serializer_round_trips_header_image(self):
+        data = DonationLinkSerializer(self.active_public_good).data
+        self.assertIn("data-science3x.max-165x165.png", data["header_image"])
 
     def test_donation_links_api_returns_only_active_rows(self):
         response = self.client.get('/apps/cms/api/donations/donation-links/', format='json')
@@ -178,18 +184,25 @@ class DonationLinkTest(APITestCase, TestCase):
         row = next(r for r in response.data if r['variant'] == 'test-public-good')
         self.assertEqual(
             set(row.keys()),
-            {"placement", "variant", "url", "give_link_text", "header_subtitle", "is_active"},
+            {"placement", "variant", "header_image", "url", "give_link_text", "header_subtitle", "is_active"},
         )
         self.assertEqual(row['give_link_text'], "Give $50")
         self.assertEqual(
             row['header_subtitle'],
             "Join us in sustaining OpenStax as a public good for years to come by giving today.",
         )
+        self.assertIn("data-science3x.max-165x165.png", row['header_image'])
 
     def test_donation_links_api_give_link_text_blank_on_unset_rows(self):
         response = self.client.get('/apps/cms/api/donations/donation-links/', format='json')
         row = next(r for r in response.data if r['variant'] == 'test-control')
         self.assertEqual(row['give_link_text'], "")
+
+    def test_donation_links_api_header_image_falsy_on_unset_rows(self):
+        response = self.client.get('/apps/cms/api/donations/donation-links/', format='json')
+        row = next(r for r in response.data if r['variant'] == 'test-control')
+        self.assertIn('header_image', row)
+        self.assertFalse(row['header_image'])
 
 
 class DonationLinkSeedMigrationTest(TestCase):
@@ -269,6 +282,13 @@ class DonationLinkSeedMigrationTest(TestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         row = next(r for r in response.data if r['placement'] == 'pdf' and r['variant'] == 'control')
         self.assertEqual(row['give_link_text'], '')
+
+    def test_seeded_rows_header_image_falsy_through_api(self):
+        response = self.client.get('/apps/cms/api/donations/donation-links/', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        row = next(r for r in response.data if r['placement'] == 'pdf' and r['variant'] == 'control')
+        self.assertIn('header_image', row)
+        self.assertFalse(row['header_image'])
 
 
 class ThankYouNoteTest(APITestCase, TestCase):

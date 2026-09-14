@@ -104,6 +104,12 @@ class DonationLink(models.Model):
                   "so name it accordingly. Two or more rows sharing a placement with different "
                   "variants run an A/B test on that placement; a single row means no test."
     )
+    header_image = models.ImageField(
+        null=True,
+        blank=True,
+        help_text="Overrides the Donation Popup's image for this variant; leave blank to use "
+                  "the default"
+    )
     url = models.URLField(help_text="Where this donation link sends people")
     give_link_text = models.CharField(
         max_length=255,
@@ -123,6 +129,7 @@ class DonationLink(models.Model):
     panels = [
         FieldPanel('placement'),
         FieldPanel('variant'),
+        FieldPanel('header_image'),
         FieldPanel('url'),
         FieldPanel('give_link_text'),
         FieldPanel('header_subtitle'),

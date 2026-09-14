@@ -59,6 +59,7 @@ class DonationLinkSerializer(serializers.ModelSerializer):
         model = DonationLink
         fields = ('placement',
                   'variant',
+                  'header_image',
                   'url',
                   'give_link_text',
                   'header_subtitle',
