@@ -4,7 +4,7 @@ from wagtail import hooks
 from wagtail.admin.menu import MenuItem
 from wagtail.admin.viewsets.model import ModelViewSet, ModelViewSetGroup
 
-from global_settings.models import GiveToday
+from global_settings.models import Footer, GiveToday
 from .models import DonationPopup, DonationLink, Fundraiser, SiteBanner
 
 
@@ -83,4 +83,18 @@ def register_give_today_settings_menu_item():
         name="give-today-settings",
         icon_name="cog",
         order=291,
+    )
+
+
+@hooks.register("register_admin_menu_item")
+def register_footer_give_link_menu_item():
+    # The footer's give link is an anchor inside Footer.supporters rather than a
+    # field of its own, so there is nothing to point a viewset at. The label says
+    # where to look; without it the link is effectively unfindable.
+    return MenuItem(
+        "Footer (give link in Supporters HTML)",
+        reverse("wagtailsettings:edit", args=(Footer._meta.app_label, Footer._meta.model_name)),
+        name="footer-give-link-settings",
+        icon_name="cog",
+        order=292,
     )

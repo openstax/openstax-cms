@@ -231,6 +231,46 @@ class GivingGroupMenuTests(TestCase):
         )
         self.assertEqual(give_today_item.url, expected_url)
 
+    def test_footer_give_link_menu_item_links_to_settings_edit_page(self):
+        from django.contrib.auth.models import User
+        from django.test import RequestFactory
+        from django.urls import reverse
+        from wagtail.admin.menu import admin_menu
+
+        from global_settings.models import Footer
+
+        user = User.objects.create_superuser("footeradmin", "footer@openstax.org", "pw")
+        request = RequestFactory().get("/admin/")
+        request.user = user
+
+        items = admin_menu.menu_items_for_request(request)
+        names = [item.name for item in items]
+        self.assertIn("footer-give-link-settings", names)
+
+        footer_item = next(item for item in items if item.name == "footer-give-link-settings")
+        expected_url = reverse(
+            "wagtailsettings:edit", args=(Footer._meta.app_label, Footer._meta.model_name)
+        )
+        self.assertEqual(footer_item.url, expected_url)
+
+    def test_giving_menu_items_are_adjacent_and_ordered(self):
+        from django.contrib.auth.models import User
+        from django.test import RequestFactory
+        from wagtail.admin.menu import admin_menu
+
+        user = User.objects.create_superuser("orderadmin", "order@openstax.org", "pw")
+        request = RequestFactory().get("/admin/")
+        request.user = user
+
+        items = admin_menu.menu_items_for_request(request)
+        ordered = [item.name for item in sorted(items, key=lambda item: item.order)]
+        start = ordered.index("giving")
+
+        self.assertEqual(
+            ["giving", "give-today-settings", "footer-give-link-settings"],
+            ordered[start:start + 3],
+        )
+
 
 class GiveTodaySettingTests(TestCase):
     def test_give_today_registered_as_setting(self):
