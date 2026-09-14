@@ -60,6 +60,7 @@ class DonationLinkSerializer(serializers.ModelSerializer):
         fields = ('placement',
                   'variant',
                   'url',
+                  'give_link_text',
                   'header_subtitle',
                   'is_active')
         read_only_fields = fields

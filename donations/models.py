@@ -98,6 +98,13 @@ class DonationLink(models.Model):
                   "variants run an A/B test on that placement; a single row means no test."
     )
     url = models.URLField(help_text="Where this donation link sends people")
+    give_link_text = models.CharField(
+        max_length=255,
+        blank=True,
+        default="",
+        help_text="Overrides the Donation Popup's button label for this variant; leave blank to "
+                  "use the default. Use this to A/B test different giving amounts."
+    )
     header_subtitle = models.TextField(
         blank=True,
         default="",
@@ -110,6 +117,7 @@ class DonationLink(models.Model):
         FieldPanel('placement'),
         FieldPanel('variant'),
         FieldPanel('url'),
+        FieldPanel('give_link_text'),
         FieldPanel('header_subtitle'),
         FieldPanel('is_active'),
     ]
