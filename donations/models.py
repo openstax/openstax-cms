@@ -55,7 +55,14 @@ class DonationPopup(models.Model):
     def __str__(self):
         return 'Donation Popup'
 
+    def clean(self):
+        super().clean()
+        if DonationPopup.objects.exists() and not self.pk:
+            raise ValidationError('There can be only one donation popup instance')
+
     def save(self, *args, **kwargs):
+        # Backstop for programmatic creation (scripts, shell, data migrations) that
+        # bypasses a ModelForm and so never calls clean().
         if DonationPopup.objects.exists() and not self.pk:
             raise ValidationError('There can be only one donation popup instance')
         return super(DonationPopup, self).save(*args, **kwargs)

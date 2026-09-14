@@ -1,8 +1,11 @@
 from datetime import timedelta
 from unittest import mock
 
+from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
 from django.test import TestCase
+from django.urls import reverse
 from django.utils import timezone
 
 from donations.models import DonationPopup, DonationLink, ThankYouNote, Fundraiser, SiteBanner
@@ -37,6 +40,78 @@ class DonationPopupTest(APITestCase, TestCase):
         serializer = DonationPopupSerializer(popup, many=True)
         self.assertEqual(response.data[0]['header_title'], serializer.data[0]['header_title'])
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class DonationPopupSingletonTest(APITestCase, TestCase):
+    """A second DonationPopup must surface as a normal form error in the
+    Wagtail admin (CORE-1390), not the 500 that raising only from save()
+    produced: form validation runs, saves, and only then does .save() get a
+    chance to object."""
+
+    def setUp(self):
+        self.existing = DonationPopup.objects.create(
+            download_ready="Your download is ready",
+            header_title="Support as much as you can",
+            header_subtitle="Give back to support more resources for all",
+            give_link_text="Give Today",
+            give_link="https://openstax.org/give",
+            thank_you_link_text="Send a thank you note",
+            thank_you_link="https://openstax.org",
+            giving_optional="Giving is optional",
+            go_to_pdf_link_text="Go to PDF",
+            hide_donation_popup=False,
+        )
+
+    def test_full_clean_raises_when_a_popup_already_exists(self):
+        second = DonationPopup(
+            download_ready="Your download is ready",
+            header_title="Support as much as you can",
+            header_subtitle="Give back to support more resources for all",
+            give_link_text="Give Today",
+            give_link="https://openstax.org/give",
+            thank_you_link_text="Send a thank you note",
+            thank_you_link="https://openstax.org",
+            giving_optional="Giving is optional",
+            go_to_pdf_link_text="Go to PDF",
+        )
+        with self.assertRaisesMessage(ValidationError, 'There can be only one donation popup instance'):
+            second.full_clean()
+
+    def test_save_still_guards_programmatic_creation(self):
+        # Backstop for callers that bypass a ModelForm (scripts, shell, data migrations).
+        with self.assertRaisesMessage(ValidationError, 'There can be only one donation popup instance'):
+            DonationPopup.objects.create(
+                download_ready="Your download is ready",
+                header_title="Support as much as you can",
+                header_subtitle="Give back to support more resources for all",
+                give_link_text="Give Today",
+                give_link="https://openstax.org/give",
+                thank_you_link_text="Send a thank you note",
+                thank_you_link="https://openstax.org",
+                giving_optional="Giving is optional",
+                go_to_pdf_link_text="Go to PDF",
+            )
+
+    def test_admin_add_view_returns_form_error_not_500(self):
+        self.client.force_login(
+            User.objects.create_superuser("popupadmin", "popup@openstax.org", "pw")
+        )
+        data = {
+            "download_ready": "Your download is ready",
+            "header_title": "Support as much as you can",
+            "header_subtitle": "Give back to support more resources for all",
+            "give_link_text": "Give Today",
+            "give_link": "https://openstax.org/give",
+            "thank_you_link_text": "Send a thank you note",
+            "thank_you_link": "https://openstax.org",
+            "giving_optional": "Giving is optional",
+            "go_to_pdf_link_text": "Go to PDF",
+        }
+        response = self.client.post(reverse("donationpopup:add"), data)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertContains(response, "There can be only one donation popup instance")
+        # No second row was created.
+        self.assertEqual(DonationPopup.objects.count(), 1)
 
 
 class DonationLinkTest(APITestCase, TestCase):
