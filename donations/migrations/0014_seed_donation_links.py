@@ -34,9 +34,17 @@ def seed_donation_links(apps, schema_editor):
 
 
 def remove_seeded_donation_links(apps, schema_editor):
+    # Only drop rows still holding exactly what we seeded. Anything an editor has
+    # since changed is their content now, not ours to delete on a rollback.
     DonationLink = apps.get_model('donations', 'DonationLink')
-    for placement, variant, _url, _header_subtitle in DONATION_LINKS:
-        DonationLink.objects.filter(placement=placement, variant=variant).delete()
+    for placement, variant, url, header_subtitle in DONATION_LINKS:
+        DonationLink.objects.filter(
+            placement=placement,
+            variant=variant,
+            url=url,
+            header_subtitle=header_subtitle,
+            is_active=True,
+        ).delete()
 
 
 class Migration(migrations.Migration):

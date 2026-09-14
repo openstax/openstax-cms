@@ -231,6 +231,39 @@ class DonationLinkSeedMigrationTest(TestCase):
             self.assertEqual(link.give_link_text, '')
             self.assertTrue(link.is_active)
 
+    def test_deleting_a_donation_link_invalidates_the_cached_list(self):
+        from unittest.mock import patch
+
+        link = DonationLink.objects.create(
+            placement='pdf', variant='temporary', url='https://example.com/temp'
+        )
+
+        with patch('donations.signals.invalidate_cloudfront_caches') as invalidate:
+            link.delete()
+
+        invalidate.assert_called_with('donations/donation-links')
+
+    def test_rollback_leaves_edited_rows_alone(self):
+        from importlib import import_module
+
+        from django.apps import apps
+
+        migration = import_module('donations.migrations.0014_seed_donation_links')
+        edited = DonationLink.objects.filter(placement='pdf', variant='control').first()
+        edited.url = 'https://example.com/edited-by-an-editor'
+        edited.save()
+
+        migration.remove_seeded_donation_links(apps, None)
+
+        self.assertTrue(
+            DonationLink.objects.filter(pk=edited.pk).exists(),
+            'a row an editor changed must survive a rollback'
+        )
+        self.assertFalse(
+            DonationLink.objects.filter(placement='other', variant='control').exists(),
+            'untouched seeded rows should still be removed'
+        )
+
     def test_seeded_rows_give_link_text_blank_through_api(self):
         response = self.client.get('/apps/cms/api/donations/donation-links/', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)

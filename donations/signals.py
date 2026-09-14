@@ -1,4 +1,4 @@
-from django.db.models.signals import post_save
+from django.db.models.signals import post_delete, post_save
 from django.dispatch import receiver
 
 from global_settings.functions import invalidate_cloudfront_caches
@@ -12,7 +12,10 @@ def clear_cloudfront_on_donation_popup_save(sender, **kwargs):
 
 
 @receiver(post_save, sender=DonationLink)
-def clear_cloudfront_on_donation_link_save(sender, **kwargs):
+@receiver(post_delete, sender=DonationLink)
+def clear_cloudfront_on_donation_link_change(sender, **kwargs):
+    # Deletes change the list endpoint just as much as saves do, and the cached
+    # response would otherwise keep serving a URL that no longer exists.
     invalidate_cloudfront_caches('donations/donation-links')
 
 
