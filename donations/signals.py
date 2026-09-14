@@ -3,12 +3,17 @@ from django.dispatch import receiver
 
 from global_settings.functions import invalidate_cloudfront_caches
 from shared.analytics import capture as posthog_capture
-from .models import DonationPopup, Fundraiser, SiteBanner, ThankYouNote
+from .models import DonationPopup, DonationLink, Fundraiser, SiteBanner, ThankYouNote
 
 
 @receiver(post_save, sender=DonationPopup)
 def clear_cloudfront_on_donation_popup_save(sender, **kwargs):
     invalidate_cloudfront_caches('donations/donation-popup')
+
+
+@receiver(post_save, sender=DonationLink)
+def clear_cloudfront_on_donation_link_save(sender, **kwargs):
+    invalidate_cloudfront_caches('donations/donation-links')
 
 
 @receiver(post_save, sender=Fundraiser)

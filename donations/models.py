@@ -81,6 +81,51 @@ class Fundraiser(models.Model):
     goal_time = models.DateTimeField(blank=True, null=True)
 
 
+DONATION_LINK_PLACEMENT_CHOICES = (
+    ('pdf', 'PDF Download Popup'),
+    ('instructor_resources', 'Instructor Resources Popup'),
+    ('student_resources', 'Student Resources Popup'),
+    ('other', 'Other Popups (View Online, K12)'),
+)
+
+
+class DonationLink(models.Model):
+    placement = models.CharField(max_length=32, choices=DONATION_LINK_PLACEMENT_CHOICES)
+    variant = models.CharField(
+        max_length=255,
+        help_text="A/B variant label for this placement. This is what shows up in analytics, "
+                  "so name it accordingly. Two or more rows sharing a placement with different "
+                  "variants run an A/B test on that placement; a single row means no test."
+    )
+    url = models.URLField(help_text="Where this donation link sends people")
+    header_subtitle = models.TextField(
+        blank=True,
+        default="",
+        help_text="Overrides the Donation Popup's subtitle for this variant; leave blank to use "
+                  "the default"
+    )
+    is_active = models.BooleanField(default=True)
+
+    panels = [
+        FieldPanel('placement'),
+        FieldPanel('variant'),
+        FieldPanel('url'),
+        FieldPanel('header_subtitle'),
+        FieldPanel('is_active'),
+    ]
+
+    def __str__(self):
+        return f'{self.get_placement_display()} - {self.variant}'
+
+    class Meta:
+        verbose_name = 'Donation Link'
+        verbose_name_plural = 'Donation Links'
+        ordering = ['placement', 'variant']
+        constraints = [
+            models.UniqueConstraint(fields=['placement', 'variant'], name='unique_donation_link_placement_variant'),
+        ]
+
+
 CONTEXT_FILTER_CHOICES = (
     ('all', 'All Pages'),
     ('subjects', 'Subjects Pages'),

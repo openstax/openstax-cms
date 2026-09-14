@@ -1,11 +1,12 @@
 from datetime import timedelta
 from unittest import mock
 
+from django.db import IntegrityError, transaction
 from django.test import TestCase
 from django.utils import timezone
 
-from donations.models import DonationPopup, ThankYouNote, Fundraiser, SiteBanner
-from donations.serializers import DonationPopupSerializer, FundraiserSerializer
+from donations.models import DonationPopup, DonationLink, ThankYouNote, Fundraiser, SiteBanner
+from donations.serializers import DonationPopupSerializer, DonationLinkSerializer, FundraiserSerializer
 
 from rest_framework import status
 from rest_framework.test import APITestCase
@@ -36,6 +37,111 @@ class DonationPopupTest(APITestCase, TestCase):
         serializer = DonationPopupSerializer(popup, many=True)
         self.assertEqual(response.data[0]['header_title'], serializer.data[0]['header_title'])
         self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+
+class DonationLinkTest(APITestCase, TestCase):
+    """Uses its own variant names (distinct from the 8 seeded by migration
+    0014) so assertions don't get tangled up with that seed data."""
+
+    def setUp(self):
+        self.active_control = DonationLink.objects.create(
+            placement="pdf",
+            variant="test-control",
+            url="https://riceconnect.rice.edu/donation/support-openstax-subject",
+            is_active=True,
+        )
+        self.active_public_good = DonationLink.objects.create(
+            placement="pdf",
+            variant="test-public-good",
+            url="https://riceconnect.rice.edu/donation/support-openstax-subject-b",
+            header_subtitle="Join us in sustaining OpenStax as a public good for years to come by giving today.",
+            is_active=True,
+        )
+        self.inactive = DonationLink.objects.create(
+            placement="other",
+            variant="test-inactive",
+            url="https://riceconnect.rice.edu/donation/support-openstax-subject",
+            is_active=False,
+        )
+
+    def test_str_uses_placement_display_and_variant(self):
+        self.assertEqual(str(self.active_control), "PDF Download Popup - test-control")
+
+    def test_placement_and_variant_must_be_unique_together(self):
+        with self.assertRaises(IntegrityError), transaction.atomic():
+            DonationLink.objects.create(
+                placement="pdf",
+                variant="test-control",
+                url="https://riceconnect.rice.edu/donation/support-openstax-subject",
+            )
+
+    def test_serializer_output_shape(self):
+        data = DonationLinkSerializer(self.active_control).data
+        self.assertEqual(
+            set(data.keys()),
+            {"placement", "variant", "url", "header_subtitle", "is_active"},
+        )
+        self.assertEqual(data["placement"], "pdf")
+        self.assertEqual(data["variant"], "test-control")
+
+    def test_donation_links_api_returns_only_active_rows(self):
+        response = self.client.get('/apps/cms/api/donations/donation-links/', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        variants = {(row['placement'], row['variant']) for row in response.data}
+        self.assertIn(('pdf', 'test-control'), variants)
+        self.assertIn(('pdf', 'test-public-good'), variants)
+        self.assertNotIn(('other', 'test-inactive'), variants)
+
+    def test_donation_links_api_field_shape(self):
+        response = self.client.get('/apps/cms/api/donations/donation-links/', format='json')
+        row = next(r for r in response.data if r['variant'] == 'test-public-good')
+        self.assertEqual(
+            set(row.keys()),
+            {"placement", "variant", "url", "header_subtitle", "is_active"},
+        )
+        self.assertEqual(
+            row['header_subtitle'],
+            "Join us in sustaining OpenStax as a public good for years to come by giving today.",
+        )
+
+
+class DonationLinkSeedMigrationTest(TestCase):
+    """Migration 0014 must reproduce the pre-existing hardcoded os-webview
+    give-link pairs exactly, so behavior is unchanged on deploy."""
+
+    def test_seeded_rows_match_previously_hardcoded_links(self):
+        expected = {
+            ('pdf', 'control'): ('https://riceconnect.rice.edu/donation/support-openstax-subject', ''),
+            ('pdf', 'public good'): (
+                'https://riceconnect.rice.edu/donation/support-openstax-subject-b',
+                'Join us in sustaining OpenStax as a public good for years to come by giving today.',
+            ),
+            ('instructor_resources', 'control'): (
+                'https://riceconnect.rice.edu/donation/support-openstax-instructor-resources', '',
+            ),
+            ('instructor_resources', 'public good'): (
+                'https://riceconnect.rice.edu/donation/support-openstax-instructor-resources-b',
+                'Join us in sustaining OpenStax as a public good for years to come by giving today.',
+            ),
+            ('student_resources', 'control'): (
+                'https://riceconnect.rice.edu/donation/support-openstax-student-resources', '',
+            ),
+            ('student_resources', 'public good'): (
+                'https://riceconnect.rice.edu/donation/support-openstax-student-resources-b',
+                'Join us in sustaining OpenStax as a public good for years to come by giving today.',
+            ),
+            ('other', 'control'): ('https://riceconnect.rice.edu/donation/support-openstax-subject', ''),
+            ('other', 'public good'): (
+                'https://riceconnect.rice.edu/donation/support-openstax-subject-b',
+                'Join us in sustaining OpenStax as a public good for years to come by giving today.',
+            ),
+        }
+        self.assertEqual(DonationLink.objects.count(), len(expected))
+        for (placement, variant), (url, header_subtitle) in expected.items():
+            link = DonationLink.objects.get(placement=placement, variant=variant)
+            self.assertEqual(link.url, url)
+            self.assertEqual(link.header_subtitle, header_subtitle)
+            self.assertTrue(link.is_active)
 
 
 class ThankYouNoteTest(APITestCase, TestCase):

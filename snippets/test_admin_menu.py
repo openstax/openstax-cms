@@ -38,6 +38,7 @@ class ModelViewSetMenuTests(TestCase):
             "webinars:index",
             "oxmenus:index",
             "donationpopup:index",
+            "donationlink:index",
             "fundraiser:index",
             "sitebanner:index",
         ):
@@ -164,6 +165,71 @@ class MainMenuStructureTests(TestCase):
         )
         response = self.client.get(reverse("books:index"))
         self.assertEqual(response.status_code, 200)
+
+
+class GivingGroupMenuTests(TestCase):
+    """Donation Popup, Donation Links, and Fundraisers moved into a new
+    top-level "Giving" group so donation-related admin is findable in one
+    place; Give Today (a BaseSiteSetting) gets a deep-link item beside it."""
+
+    def test_giving_group_registered_with_expected_items(self):
+        from django.contrib.auth.models import User
+        from django.test import RequestFactory
+        from wagtail.admin.menu import admin_menu
+
+        user = User.objects.create_superuser("givingadmin", "giving@openstax.org", "pw")
+        request = RequestFactory().get("/admin/")
+        request.user = user
+
+        items = admin_menu.menu_items_for_request(request)
+        names = [item.name for item in items]
+        self.assertIn("giving", names)
+        self.assertIn("give-today-settings", names)
+
+        giving_item = next(item for item in items if item.name == "giving")
+        giving_names = [
+            item.name
+            for item in sorted(
+                giving_item.menu.menu_items_for_request(request),
+                key=lambda item: item.order,
+            )
+        ]
+        self.assertEqual(["donation-popup", "donation-links", "fundraisers"], giving_names)
+
+    def test_site_messaging_no_longer_holds_donation_popup_or_fundraisers(self):
+        from django.contrib.auth.models import User
+        from django.test import RequestFactory
+        from wagtail.admin.menu import admin_menu
+
+        user = User.objects.create_superuser("sitemsgadmin", "sm@openstax.org", "pw")
+        request = RequestFactory().get("/admin/")
+        request.user = user
+
+        items = admin_menu.menu_items_for_request(request)
+        site_messaging = next(item for item in items if item.name == "site-messaging")
+        site_messaging_names = [
+            item.name for item in site_messaging.menu.menu_items_for_request(request)
+        ]
+        self.assertEqual(["site-banners"], site_messaging_names)
+
+    def test_give_today_settings_menu_item_links_to_settings_edit_page(self):
+        from django.contrib.auth.models import User
+        from django.test import RequestFactory
+        from django.urls import reverse
+        from wagtail.admin.menu import admin_menu
+
+        from global_settings.models import GiveToday
+
+        user = User.objects.create_superuser("givetodayadmin", "gt@openstax.org", "pw")
+        request = RequestFactory().get("/admin/")
+        request.user = user
+
+        items = admin_menu.menu_items_for_request(request)
+        give_today_item = next(item for item in items if item.name == "give-today-settings")
+        expected_url = reverse(
+            "wagtailsettings:edit", args=(GiveToday._meta.app_label, GiveToday._meta.model_name)
+        )
+        self.assertEqual(give_today_item.url, expected_url)
 
 
 class GiveTodaySettingTests(TestCase):
