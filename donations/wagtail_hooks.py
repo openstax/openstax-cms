@@ -70,6 +70,25 @@ def register_giving_group():
     return GivingGroup()
 
 
+class SettingsLinkMenuItem(MenuItem):
+    """Deep-links a BaseSiteSetting, hidden from users who cannot change it.
+
+    Wagtail's own SettingMenuItem does the permission check but derives its label
+    from the model's verbose_name; these need labels that say where a give link lives.
+    """
+
+    def __init__(self, label, model, **kwargs):
+        self.permission_policy = model.get_permission_policy()
+        super().__init__(
+            label,
+            reverse("wagtailsettings:edit", args=(model._meta.app_label, model._meta.model_name)),
+            **kwargs,
+        )
+
+    def is_shown(self, request):
+        return self.permission_policy.user_has_permission(request.user, "change")
+
+
 @hooks.register("register_admin_menu_item")
 def register_give_today_settings_menu_item():
     # GiveToday is a BaseSiteSetting, not a ModelViewSet, so it can't be a
@@ -77,9 +96,9 @@ def register_give_today_settings_menu_item():
     # group member to be a real ViewSet with its own on_register/get_urlpatterns).
     # This deep-links straight to its edit page as a top-level item next to Giving,
     # so editors still find it in one place.
-    return MenuItem(
+    return SettingsLinkMenuItem(
         "Give Today (header + book details)",
-        reverse("wagtailsettings:edit", args=(GiveToday._meta.app_label, GiveToday._meta.model_name)),
+        GiveToday,
         name="give-today-settings",
         icon_name="cog",
         order=291,
@@ -91,9 +110,9 @@ def register_footer_give_link_menu_item():
     # The footer's give link is an anchor inside Footer.supporters rather than a
     # field of its own, so there is nothing to point a viewset at. The label says
     # where to look; without it the link is effectively unfindable.
-    return MenuItem(
+    return SettingsLinkMenuItem(
         "Footer (give link in Supporters HTML)",
-        reverse("wagtailsettings:edit", args=(Footer._meta.app_label, Footer._meta.model_name)),
+        Footer,
         name="footer-give-link-settings",
         icon_name="cog",
         order=292,

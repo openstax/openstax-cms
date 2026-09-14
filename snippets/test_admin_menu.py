@@ -253,6 +253,21 @@ class GivingGroupMenuTests(TestCase):
         )
         self.assertEqual(footer_item.url, expected_url)
 
+    def test_settings_deep_links_are_hidden_without_change_permission(self):
+        from django.contrib.auth.models import User
+        from django.test import RequestFactory
+        from wagtail.admin.menu import admin_menu
+
+        editor = User.objects.create_user("plainadmin", "plain@openstax.org", "pw")
+        editor.is_staff = True
+        editor.save()
+        request = RequestFactory().get("/admin/")
+        request.user = editor
+
+        names = [item.name for item in admin_menu.menu_items_for_request(request)]
+        self.assertNotIn("give-today-settings", names)
+        self.assertNotIn("footer-give-link-settings", names)
+
     def test_giving_menu_items_are_adjacent_and_ordered(self):
         from django.contrib.auth.models import User
         from django.test import RequestFactory
