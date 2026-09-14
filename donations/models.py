@@ -118,6 +118,12 @@ class DonationLink(models.Model):
         help_text="Overrides the Donation Popup's button label for this variant; leave blank to "
                   "use the default. Use this to A/B test different giving amounts."
     )
+    header_title = models.TextField(
+        blank=True,
+        default="",
+        help_text="Overrides the Donation Popup's title for this variant; leave blank to use "
+                  "the default"
+    )
     header_subtitle = models.TextField(
         blank=True,
         default="",
@@ -132,6 +138,7 @@ class DonationLink(models.Model):
         FieldPanel('header_image'),
         FieldPanel('url'),
         FieldPanel('give_link_text'),
+        FieldPanel('header_title'),
         FieldPanel('header_subtitle'),
         FieldPanel('is_active'),
     ]

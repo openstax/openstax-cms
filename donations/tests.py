@@ -130,6 +130,7 @@ class DonationLinkTest(APITestCase, TestCase):
             variant="test-public-good",
             url="https://riceconnect.rice.edu/donation/support-openstax-subject-b",
             give_link_text="Give $50",
+            header_title="Support as much as you can",
             header_subtitle="Join us in sustaining OpenStax as a public good for years to come by giving today.",
             header_image="data-science3x.max-165x165.png",
             is_active=True,
@@ -156,7 +157,10 @@ class DonationLinkTest(APITestCase, TestCase):
         data = DonationLinkSerializer(self.active_control).data
         self.assertEqual(
             set(data.keys()),
-            {"placement", "variant", "header_image", "url", "give_link_text", "header_subtitle", "is_active"},
+            {
+                "placement", "variant", "header_image", "url", "give_link_text",
+                "header_title", "header_subtitle", "is_active",
+            },
         )
         self.assertEqual(data["placement"], "pdf")
         self.assertEqual(data["variant"], "test-control")
@@ -171,6 +175,10 @@ class DonationLinkTest(APITestCase, TestCase):
         data = DonationLinkSerializer(self.active_public_good).data
         self.assertIn("data-science3x.max-165x165.png", data["header_image"])
 
+    def test_serializer_round_trips_header_title(self):
+        data = DonationLinkSerializer(self.active_public_good).data
+        self.assertEqual(data["header_title"], "Support as much as you can")
+
     def test_donation_links_api_returns_only_active_rows(self):
         response = self.client.get('/apps/cms/api/donations/donation-links/', format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)
@@ -184,9 +192,13 @@ class DonationLinkTest(APITestCase, TestCase):
         row = next(r for r in response.data if r['variant'] == 'test-public-good')
         self.assertEqual(
             set(row.keys()),
-            {"placement", "variant", "header_image", "url", "give_link_text", "header_subtitle", "is_active"},
+            {
+                "placement", "variant", "header_image", "url", "give_link_text",
+                "header_title", "header_subtitle", "is_active",
+            },
         )
         self.assertEqual(row['give_link_text'], "Give $50")
+        self.assertEqual(row['header_title'], "Support as much as you can")
         self.assertEqual(
             row['header_subtitle'],
             "Join us in sustaining OpenStax as a public good for years to come by giving today.",
@@ -203,6 +215,11 @@ class DonationLinkTest(APITestCase, TestCase):
         row = next(r for r in response.data if r['variant'] == 'test-control')
         self.assertIn('header_image', row)
         self.assertFalse(row['header_image'])
+
+    def test_donation_links_api_header_title_blank_on_unset_rows(self):
+        response = self.client.get('/apps/cms/api/donations/donation-links/', format='json')
+        row = next(r for r in response.data if r['variant'] == 'test-control')
+        self.assertEqual(row['header_title'], "")
 
 
 class DonationLinkSeedMigrationTest(TestCase):
@@ -242,6 +259,7 @@ class DonationLinkSeedMigrationTest(TestCase):
             self.assertEqual(link.url, url)
             self.assertEqual(link.header_subtitle, header_subtitle)
             self.assertEqual(link.give_link_text, '')
+            self.assertEqual(link.header_title, '')
             self.assertTrue(link.is_active)
 
     def test_deleting_a_donation_link_invalidates_the_cached_list(self):
@@ -289,6 +307,12 @@ class DonationLinkSeedMigrationTest(TestCase):
         row = next(r for r in response.data if r['placement'] == 'pdf' and r['variant'] == 'control')
         self.assertIn('header_image', row)
         self.assertFalse(row['header_image'])
+
+    def test_seeded_rows_header_title_blank_through_api(self):
+        response = self.client.get('/apps/cms/api/donations/donation-links/', format='json')
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        row = next(r for r in response.data if r['placement'] == 'pdf' and r['variant'] == 'control')
+        self.assertEqual(row['header_title'], '')
 
 
 class ThankYouNoteTest(APITestCase, TestCase):
