@@ -203,6 +203,63 @@ def id_config_block():
     )
 
 
+AUDIENCE_CONDITION_CHOICES = [
+    ('role:anonymous', 'Role — Signed out'),
+    ('role:student', 'Role — Student'),
+    ('role:instructor', 'Role — Instructor (verified)'),
+    ('role:admin', 'Role — Administrator / librarian / designer'),
+    ('status:verified', 'Status — Instructor verified'),
+    ('status:pending', 'Status — Instructor verification pending'),
+    ('school:assignable', 'School — Already uses Assignable'),
+    ('adopter:yes', 'Adoption — Already adopted a book'),
+]
+
+
+class RenderingConditionBlock(blocks.MultipleChoiceBlock):
+    """Multi-select of known audience slugs that gate whether a block renders.
+
+    The frontend renderer already shipped in production reads this field as a
+    comma-separated string and calls ``.split(',')`` on it, so
+    ``get_api_representation`` is overridden to keep emitting that shape --
+    a plain MultipleChoiceBlock would serialize its list value as a JSON
+    array instead and crash the renderer.
+
+    ``to_python``/``normalize`` also accept a bare string, splitting it on
+    commas: a page revision saved back when this field was a free-text
+    CharBlock -- including a single value with no commas -- still loads in
+    the admin instead of erroring."""
+
+    def __init__(self, **kwargs):
+        kwargs.setdefault('choices', AUDIENCE_CONDITION_CHOICES)
+        kwargs.setdefault('required', False)
+        super().__init__(**kwargs)
+
+    @staticmethod
+    def _coerce(value):
+        if isinstance(value, str):
+            return [v.strip() for v in value.split(',') if v.strip()]
+        return value
+
+    def to_python(self, value):
+        return super().to_python(self._coerce(value))
+
+    def normalize(self, value):
+        return super().normalize(self._coerce(value))
+
+    def get_api_representation(self, value, context=None):
+        if not value:
+            return ''
+        return ','.join(value)
+
+
+def rendering_condition_block():
+    return RenderingConditionBlock(
+        help_text='Audience(s) that must be true for this block to render, eg: only for signed-out '
+                   'visitors or verified instructors. Leave empty to always render. Selecting several '
+                   'renders the block for any of them.'
+    )
+
+
 class LinkBlock(blocks.StreamBlock):
     external = blocks.URLBlock(required=False, help_text='External links are full urls that can go anywhere')
     internal = blocks.PageChooserBlock(required=False)
