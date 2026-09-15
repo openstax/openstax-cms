@@ -225,6 +225,58 @@ class OXMenusPlacementFilterTest(TestCase):
         self.assertEqual(labels, ["Header One", "Header Two"])
 
 
+class PlacementFormScopingTest(TestCase):
+    """`placement` must not be editable: the queryset is scoped, so a row moved to
+    the other nav would vanish from its list and be served by the wrong menu."""
+
+    def setUp(self):
+        from django.contrib.auth.models import User
+
+        self.user = User.objects.create_superuser("placementadmin", "pa@openstax.org", "pw")
+        self.client.force_login(self.user)
+
+    def test_placement_is_not_an_editable_form_field(self):
+        from oxmenus.wagtail_hooks import FooterMenusViewSet, HeaderMenusViewSet
+
+        for viewset in (HeaderMenusViewSet, FooterMenusViewSet):
+            self.assertIn("placement", viewset.exclude_form_fields)
+
+    def test_create_view_forces_its_own_placement(self):
+        from django.test import RequestFactory
+
+        from oxmenus.wagtail_hooks import FooterMenusCreateView, HeaderMenusCreateView
+
+        class _StubForm:
+            """Stands in for the real ModelForm, whose StreamField makes a full POST
+            unwieldy. save_instance() is the hook under test."""
+
+            def __init__(self, instance):
+                self.instance = instance
+
+            def save(self):
+                self.instance.save()
+                return self.instance
+
+        for view_class, expected in (
+            (HeaderMenusCreateView, 'header'),
+            (FooterMenusCreateView, 'footer'),
+        ):
+            view = view_class()
+            view.request = RequestFactory().post('/admin/')
+            view.request.user = self.user
+            # a row arriving marked for the other nav must not stay that way
+            other = 'footer' if expected == 'header' else 'header'
+            view.form = _StubForm(
+                Menus(name=f'Added {expected}', sort_order=40,
+                      key=f'added-{expected}', placement=other, menu=[])
+            )
+
+            view.save_instance()
+
+            created = Menus.objects.get(key=f'added-{expected}')
+            self.assertEqual(expected, created.placement)
+
+
 class SeededFooterMenusTest(TestCase):
     """The 0013 data migration seeds Help/OpenStax/Policies footer columns on
     every environment (mirroring the hardcoded os-webview JSX); assert the API

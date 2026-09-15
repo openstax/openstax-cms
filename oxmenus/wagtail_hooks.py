@@ -10,15 +10,18 @@ from .models import Menus
 
 
 class _PlacementScopedCreateView(generic.CreateView):
-    """Defaults a new row's `placement` to whichever nav this viewset manages, so
-    an editor adding a row under Header/Footer gets a row for that nav."""
+    """Sets a new row's `placement` from whichever nav this viewset manages.
+
+    `placement` is kept out of the form entirely, so it is set here rather than
+    defaulted: an editable field would let someone move a row into the other nav,
+    where it would vanish from this list and be served by the wrong menu.
+    """
 
     placement = None
 
-    def get_initial(self):
-        initial = super().get_initial()
-        initial.setdefault('placement', self.placement)
-        return initial
+    def save_instance(self):
+        self.form.instance.placement = self.placement
+        return super().save_instance()
 
 
 class _PlacementScopedMenusViewSet(ModelViewSet):
@@ -31,7 +34,7 @@ class _PlacementScopedMenusViewSet(ModelViewSet):
     list_display = ("name", "sort_order", "key", "feature_flag")
     ordering = ("sort_order", "id")
     search_fields = ("name",)
-    exclude_form_fields = []
+    exclude_form_fields = ["placement"]
     placement = None
 
     def get_common_view_kwargs(self, **kwargs):
