@@ -184,6 +184,46 @@ class OXMenusPlacementFilterTest(TestCase):
         labels = [item["label"] for item in response.json()]
         self.assertEqual(labels, ["Header One", "Header Two"])
 
+    def test_translated_rows_are_not_served_alongside_their_source(self):
+        from wagtail.models import Locale
+
+        spanish = Locale.objects.create(language_code="es")
+        Menus.objects.create(
+            name="Encabezado Uno", partial_url="/uno", sort_order=10,
+            placement="header", locale=spanish
+        )
+
+        labels = [
+            item["label"]
+            for item in self.client.get('/apps/cms/api/oxmenus/').json()
+        ]
+
+        self.assertEqual(labels, ["Header One", "Header Two"])
+
+    def test_locale_param_selects_the_translated_rows(self):
+        from wagtail.models import Locale
+
+        spanish = Locale.objects.create(language_code="es")
+        Menus.objects.create(
+            name="Encabezado Uno", partial_url="/uno", sort_order=10,
+            placement="header", locale=spanish
+        )
+
+        labels = [
+            item["label"]
+            for item in self.client.get('/apps/cms/api/oxmenus/?locale=es').json()
+        ]
+
+        self.assertEqual(labels, ["Encabezado Uno"])
+
+    def test_unknown_locale_falls_back_to_the_default(self):
+        labels = [
+            item["label"]
+            for item in self.client.get('/apps/cms/api/oxmenus/?locale=zz').json()
+        ]
+
+        self.assertEqual(labels, ["Header One", "Header Two"])
+
 
 class SeededFooterMenusTest(TestCase):
     """The 0013 data migration seeds Help/OpenStax/Policies footer columns on
