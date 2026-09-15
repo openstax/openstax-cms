@@ -58,9 +58,27 @@ class Footer(BaseSiteSetting):
     social_links = StreamField(
         blocks.StreamBlock([('social_link', SocialLinkBlock())]),
         use_json_field=True, blank=True, default='[]',
-        help_text='Social links shown in the footer, in order. facebook_link/twitter_link/'
-                  'linkedin_link above are kept for backward compatibility with older '
-                  'frontends and are not read once a frontend uses this field.')
+        help_text='Social links shown in the footer, in order. Add, remove and reorder '
+                  'them here; the frontend maps each platform to its icon.')
+
+    panels = [
+        FieldPanel('supporters'),
+        FieldPanel('copyright'),
+        FieldPanel('ap_statement'),
+        FieldPanel('social_links'),
+        MultiFieldPanel(
+            [
+                FieldPanel('facebook_link'),
+                FieldPanel('twitter_link'),
+                FieldPanel('linkedin_link'),
+            ],
+            heading='Legacy social links (do not edit)',
+            classname='collapsed',
+            help_text='Only read by a frontend released before Social links existed. '
+                      'Kept so a cached response cannot leave the footer without icons, '
+                      'and removable once that release is out.',
+        ),
+    ]
 
     def social_links_json(self):
         return [

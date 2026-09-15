@@ -277,6 +277,43 @@ class PlacementFormScopingTest(TestCase):
             self.assertEqual(expected, created.placement)
 
 
+class FooterSettingsMenuTest(TestCase):
+    def setUp(self):
+        from django.contrib.auth.models import User
+        from django.test import RequestFactory
+
+        self.request = RequestFactory().get('/admin/')
+        self.request.user = User.objects.create_superuser(
+            "settingsadmin", "sa@openstax.org", "pw"
+        )
+
+    def test_footer_is_no_longer_duplicated_in_the_settings_menu(self):
+        from wagtail.admin.menu import settings_menu
+
+        names = [
+            item.name for item in settings_menu.menu_items_for_request(self.request)
+        ]
+
+        self.assertNotIn("footer", names)
+
+    def test_the_footer_settings_page_is_still_reachable(self):
+        from django.urls import reverse
+
+        from global_settings.models import Footer
+
+        self.client.force_login(self.request.user)
+        # Wagtail redirects this to the site-scoped edit URL, so follow it.
+        response = self.client.get(
+            reverse(
+                "wagtailsettings:edit",
+                args=(Footer._meta.app_label, Footer._meta.model_name),
+            ),
+            follow=True,
+        )
+
+        self.assertEqual(200, response.status_code)
+
+
 class SeededFooterMenusTest(TestCase):
     """The 0013 data migration seeds Help/OpenStax/Policies footer columns on
     every environment (mirroring the hardcoded os-webview JSX); assert the API

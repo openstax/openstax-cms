@@ -119,3 +119,11 @@ def register_header_menus_group():
 @hooks.register("register_admin_viewset")
 def register_footer_menus_group():
     return FooterMenusGroup()
+
+
+@hooks.register("construct_settings_menu")
+def remove_footer_from_settings(request, menu_items):
+    # Footer is reachable from the Footer group, which is where everything else
+    # about the footer now lives, so a second entry here is just another place to
+    # look. The settings page itself is unchanged; only this menu entry goes.
+    menu_items[:] = [item for item in menu_items if item.name != "footer"]
