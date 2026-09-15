@@ -333,13 +333,15 @@ class OXMenusAdminMenuTests(TestCase):
         )
         request = RequestFactory().get('/admin/')
         request.user = staffer
-        items = self._menu_items_for(staffer)
-        # A plain, unprivileged staff user shouldn't even see the Footer group's
-        # submenu items when they lack any admin permissions at all; check the
-        # deep-link's own is_shown() directly against a user who IS staff/logged
-        # in but specifically lacks change permission on Footer.
+
         from global_settings.models import Footer
         from oxmenus.wagtail_hooks import SettingsLinkMenuItem
 
+        # Staff without change permission on Footer must not be offered the
+        # deep-link, or clicking it 403s.
         link = SettingsLinkMenuItem("Footer Content", Footer, name="footer-content-settings")
         self.assertFalse(link.is_shown(request))
+
+        # And it must not reach the rendered menu either.
+        names = [item.name for item in self._menu_items_for(staffer)]
+        self.assertNotIn("footer-content-settings", names)
