@@ -19,7 +19,8 @@ from pages.custom_blocks import APIImageChooserBlock, \
     FLEX_CHOICES
 
 from pages.shared_blocks import CTALinkBlock, OpenStaxColorBlock, hex_color_block, \
-    gradient_config_options, gradient_block_counts, id_config_block, CollapsedHTMLBlock
+    gradient_config_options, gradient_block_counts, id_config_block, CollapsedHTMLBlock, \
+    rendering_condition_block
 
 from pages.table_block import TableBlock
 
@@ -190,7 +191,7 @@ BODY_BLOCKS = [
                 help_text='How much the image overhangs the section boundary. Must be a valid css measurement. eg: 30px, 50%, 10rem.',
                 error_messages={'invalid': 'not a valid size.'},
             )),
-            ('rendering_condition', blocks.CharBlock(required=False, help_text='Condition that determines if this block should render. eg: defined by the frontend.')),
+            ('rendering_condition', rendering_condition_block()),
         ], block_counts={
             'image_alignment': {'max_num': 1},
             'id': {'max_num': 1},
@@ -220,7 +221,7 @@ BODY_BLOCKS = [
             ('text_alignment', blocks.ChoiceBlock(choices=TEXT_ALIGNMENT_CHOICES, default='left', help_text='Configures text alignment within the container. Default Left.')),
             ('analytics_label', blocks.CharBlock(required=False, help_text='Sets the "analytics nav" field for links within this section.')),
             ('flex', blocks.ChoiceBlock(choices=FLEX_CHOICES, help_text='Flex behavior of this section. Default none.')),
-            ('rendering_condition', blocks.CharBlock(required=False, help_text='Condition that determines if this block should render. eg: defined by the frontend.')),
+            ('rendering_condition', rendering_condition_block()),
         ], block_counts={
             'id': {'max_num': 1},
             'background_color': {'max_num': 1},

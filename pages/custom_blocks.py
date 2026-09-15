@@ -12,7 +12,7 @@ from wagtail_ai.blocks import ai_image_block
 from api.serializers import ImageSerializer
 from openstax.functions import build_image_url, build_document_url
 from openstax.api_fields import APIRichTextBlock
-from pages.shared_blocks import CTALinkBlock, LinkInfoBlock, hex_color_block, id_config_block
+from pages.shared_blocks import CTALinkBlock, LinkInfoBlock, hex_color_block, id_config_block, rendering_condition_block
 from pages.table_block import TableBlock
 
 
@@ -90,7 +90,7 @@ class CTAButtonBarBlock(blocks.StructBlock):
         ('layout', blocks.ChoiceBlock(choices=[
             ('inline', 'Inline'),
         ], help_text='Layout of the buttons. Inline places description and buttons side-by-side.')),
-        ('rendering_condition', blocks.CharBlock(required=False, help_text='Condition that determines if this block should render. eg: defined by the frontend.')),
+        ('rendering_condition', rendering_condition_block()),
     ], block_counts={
         'analytics_label': {'max_num': 1},
         'layout': {'max_num': 1},
