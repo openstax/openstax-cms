@@ -3,9 +3,12 @@ import re
 from django.core.exceptions import ValidationError
 from django.test import TestCase
 
+from pages.custom_blocks import CTAButtonBarBlock
+from pages.models.constants import BODY_BLOCKS
 from pages.shared_blocks import (
-    CollapsedHTMLBlock, CTALinkBlock, LinkInfoBlock, OpenStaxColorBlock,
-    gradient_block_counts, gradient_config_options, hex_color_block, id_config_block,
+    AUDIENCE_CONDITION_CHOICES, CollapsedHTMLBlock, CTALinkBlock, LinkInfoBlock, OpenStaxColorBlock,
+    RenderingConditionBlock, gradient_block_counts, gradient_config_options, hex_color_block,
+    id_config_block, rendering_condition_block,
 )
 
 
@@ -36,6 +39,78 @@ class SharedBlocksImportTests(TestCase):
         rep = block.get_api_representation(value)
         self.assertEqual(rep['text'], 'View book')
         self.assertEqual(rep['target'], {'value': 'https://openstax.org', 'type': 'external'})
+
+
+class RenderingConditionBlockTests(TestCase):
+    def test_accepts_multiple_selections(self):
+        block = rendering_condition_block()
+        value = block.to_python(['role:student', 'role:instructor'])
+        self.assertEqual(value, ['role:student', 'role:instructor'])
+
+    def test_choice_values_match_the_agreed_vocabulary(self):
+        values = [value for value, _label in AUDIENCE_CONDITION_CHOICES]
+        self.assertEqual(values, [
+            'role:anonymous', 'role:student', 'role:instructor', 'role:admin',
+            'status:verified', 'status:pending', 'school:assignable', 'adopter:yes',
+        ])
+
+    def test_get_api_representation_joins_several_values(self):
+        block = rendering_condition_block()
+        rep = block.get_api_representation(['role:student', 'role:instructor'])
+        self.assertEqual(rep, 'role:student,role:instructor')
+
+    def test_get_api_representation_single_value_has_no_comma(self):
+        block = rendering_condition_block()
+        rep = block.get_api_representation(['role:student'])
+        self.assertEqual(rep, 'role:student')
+        self.assertNotIn(',', rep)
+
+    def test_get_api_representation_empty_or_none_is_blank_string(self):
+        block = rendering_condition_block()
+        self.assertEqual(block.get_api_representation([]), '')
+        self.assertEqual(block.get_api_representation(None), '')
+
+    def test_tolerates_a_legacy_comma_joined_string_value(self):
+        # A page revision saved back when this field was a free-text CharBlock
+        # could hold a bare string rather than a list; to_python must not error.
+        block = rendering_condition_block()
+        value = block.to_python('role:student,role:instructor')
+        self.assertEqual(value, ['role:student', 'role:instructor'])
+
+    def test_tolerates_a_legacy_single_string_value_with_no_comma(self):
+        block = rendering_condition_block()
+        value = block.to_python('role:student')
+        self.assertEqual(value, ['role:student'])
+
+    def test_rendering_condition_present_in_cta_button_bar_config(self):
+        config = CTAButtonBarBlock().child_blocks['config']
+        self.assertIsInstance(config.child_blocks['rendering_condition'], RenderingConditionBlock)
+        self.assertEqual(config.meta.block_counts['rendering_condition'], {'max_num': 1})
+
+    def test_rendering_condition_present_in_hero_and_section_config(self):
+        body_blocks = dict(BODY_BLOCKS)
+        for name in ('hero', 'section'):
+            with self.subTest(block=name):
+                config = body_blocks[name].child_blocks['config']
+                self.assertIsInstance(config.child_blocks['rendering_condition'], RenderingConditionBlock)
+                self.assertEqual(config.meta.block_counts['rendering_condition'], {'max_num': 1})
+
+    def test_serializes_through_the_full_cta_button_bar_config_stream(self):
+        # Confirms StreamBlock.get_api_representation actually reaches the
+        # override on the nested rendering_condition child, not just the
+        # block in isolation.
+        block = CTAButtonBarBlock()
+        value = block.to_python({
+            'description': '',
+            'actions': [],
+            'config': [
+                {'type': 'rendering_condition', 'value': ['role:student', 'status:verified']},
+            ],
+        })
+        rep = block.get_api_representation(value)
+        condition_entries = [entry for entry in rep['config'] if entry['type'] == 'rendering_condition']
+        self.assertEqual(len(condition_entries), 1)
+        self.assertEqual(condition_entries[0]['value'], 'role:student,status:verified')
 
 
 class CollapsedHTMLBlockTests(TestCase):
