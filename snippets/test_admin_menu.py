@@ -33,10 +33,12 @@ class SnippetRegistrationTests(TestCase):
 class ModelViewSetMenuTests(TestCase):
     def test_retired_modeladmins_now_have_viewset_urls(self):
         # Webinars, OX Menu, and the Site Messaging models moved off
-        # wagtail_modeladmin onto ModelViewSets.
+        # wagtail_modeladmin onto ModelViewSets. OX Menu was later split into
+        # separate Header/Footer viewsets (see oxmenus/wagtail_hooks.py).
         for url_name in (
             "webinars:index",
-            "oxmenus:index",
+            "headermenus:index",
+            "footermenus:index",
             "donationpopup:index",
             "fundraiser:index",
             "sitebanner:index",

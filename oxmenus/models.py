@@ -3,6 +3,12 @@ from wagtail import blocks
 from wagtail.fields import StreamField
 from wagtail.admin.panels import FieldPanel
 from wagtail.api import APIField
+from wagtail.models import TranslatableMixin
+
+PLACEMENT_CHOICES = (
+    ('header', 'Header'),
+    ('footer', 'Footer'),
+)
 
 
 class MenuItemBlock(blocks.StructBlock):
@@ -29,7 +35,10 @@ class MenuBlock(blocks.StructBlock):
     menu_items = blocks.ListBlock(MenuItemBlock(required=True))
 
 
-class Menus(models.Model):
+class Menus(TranslatableMixin, models.Model):
+    placement = models.CharField(max_length=10, choices=PLACEMENT_CHOICES, default='header',
+        help_text='Which nav this row belongs to: the header dropdown/link bar, or a footer '
+                  'link column.')
     name = models.CharField(max_length=255,
         help_text='Top-level nav label, e.g. "What we do" or "Subjects".')
     sort_order = models.IntegerField(default=0,
@@ -70,12 +79,13 @@ class Menus(models.Model):
     def __str__(self):
         return self.name
 
-    class Meta:
+    class Meta(TranslatableMixin.Meta):
         verbose_name = "Menu"
         verbose_name_plural = "Menus"
         ordering = ['sort_order', 'id']
 
     panels = [
+        FieldPanel('placement'),
         FieldPanel('name'),
         FieldPanel('sort_order'),
         FieldPanel('key'),

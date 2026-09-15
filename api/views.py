@@ -58,6 +58,7 @@ def footer(request):
         'facebook_link': footer.facebook_link,
         'twitter_link': footer.twitter_link,
         'linkedin_link': footer.linkedin_link,
+        'social_links': footer.social_links_json(),
     })
 
 

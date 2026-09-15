@@ -1,6 +1,26 @@
 from django.db import models
+from wagtail import blocks
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.contrib.settings.models import BaseSiteSetting, register_setting
+from wagtail.fields import StreamField
+
+SOCIAL_PLATFORM_CHOICES = (
+    ('facebook', 'Facebook'),
+    ('twitter', 'Twitter/X'),
+    ('linkedin', 'LinkedIn'),
+    ('instagram', 'Instagram'),
+    ('youtube', 'YouTube'),
+    ('tiktok', 'TikTok'),
+    ('threads', 'Threads'),
+    ('bluesky', 'Bluesky'),
+    ('mastodon', 'Mastodon'),
+)
+
+
+class SocialLinkBlock(blocks.StructBlock):
+    platform = blocks.ChoiceBlock(choices=SOCIAL_PLATFORM_CHOICES,
+        help_text='Which platform this link is for. The frontend maps this to an icon.')
+    url = blocks.URLBlock(help_text='Full URL to the OpenStax profile/page on this platform.')
 
 
 @register_setting(icon='warning')
@@ -35,6 +55,18 @@ class Footer(BaseSiteSetting):
     facebook_link =models.URLField()
     twitter_link = models.URLField()
     linkedin_link = models.URLField()
+    social_links = StreamField(
+        blocks.StreamBlock([('social_link', SocialLinkBlock())]),
+        use_json_field=True, blank=True, default='[]',
+        help_text='Social links shown in the footer, in order. facebook_link/twitter_link/'
+                  'linkedin_link above are kept for backward compatibility with older '
+                  'frontends and are not read once a frontend uses this field.')
+
+    def social_links_json(self):
+        return [
+            {'platform': str(block.value['platform']), 'url': str(block.value['url'])}
+            for block in self.social_links
+        ]
 
     class Meta:
         verbose_name = 'Footer'

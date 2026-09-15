@@ -1,3 +1,4 @@
+import json
 import re
 import uuid as uuid_module
 from datetime import timedelta
@@ -16,7 +17,7 @@ from global_settings.functions import (
     invalidate_cloudfront_caches,
     request_page_invalidation,
 )
-from global_settings.models import CloudfrontDistribution
+from global_settings.models import CloudfrontDistribution, Footer
 from global_settings.views import SlashlessSitemap
 
 
@@ -71,6 +72,45 @@ class SitemapViewTest(TestCase):
                 f'sitemap <loc> should be slash-less: {loc}',
             )
 
+
+
+class FooterSocialLinksApiTest(TestCase):
+    """social_links is additive: the three legacy *_link fields keep serving an
+    old, currently-deployed frontend untouched, while social_links carries the
+    full ordered list (including platforms, like Instagram/YouTube, that never
+    had a dedicated field)."""
+
+    def setUp(self):
+        site = Site.objects.get(is_default_site=True)
+        self.footer = Footer.for_site(site)
+        self.footer.facebook_link = 'https://facebook.com/openstax'
+        self.footer.twitter_link = 'https://twitter.com/openstax'
+        self.footer.linkedin_link = 'https://linkedin.com/company/openstax'
+        self.footer.social_links = json.dumps([
+            {'type': 'social_link', 'value': {'platform': 'facebook', 'url': 'https://facebook.com/openstax'}},
+            {'type': 'social_link', 'value': {'platform': 'twitter', 'url': 'https://twitter.com/openstax'}},
+            {'type': 'social_link', 'value': {'platform': 'linkedin', 'url': 'https://linkedin.com/company/openstax'}},
+            {'type': 'social_link', 'value': {'platform': 'instagram', 'url': 'https://www.instagram.com/openstax/'}},
+            {'type': 'social_link', 'value': {'platform': 'youtube', 'url': 'https://www.youtube.com/openstax/'}},
+        ])
+        self.footer.save()
+
+    def test_social_links_present_in_order(self):
+        response = self.client.get('/apps/cms/api/footer/')
+        data = response.json()
+        self.assertEqual(
+            [link['platform'] for link in data['social_links']],
+            ['facebook', 'twitter', 'linkedin', 'instagram', 'youtube'],
+        )
+        self.assertEqual(data['social_links'][3]['url'], 'https://www.instagram.com/openstax/')
+        self.assertEqual(data['social_links'][4]['url'], 'https://www.youtube.com/openstax/')
+
+    def test_legacy_link_fields_still_present(self):
+        response = self.client.get('/apps/cms/api/footer/')
+        data = response.json()
+        self.assertEqual(data['facebook_link'], 'https://facebook.com/openstax')
+        self.assertEqual(data['twitter_link'], 'https://twitter.com/openstax')
+        self.assertEqual(data['linkedin_link'], 'https://linkedin.com/company/openstax')
 
 
 class WagtailTransferChooserCssHookTest(TestCase):
