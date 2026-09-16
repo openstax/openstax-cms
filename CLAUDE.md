@@ -104,6 +104,22 @@ When you modify model fields in `pages/models/` or other model files:
 - **Use makemigrations** - Don't write migrations manually
 - **One logical change per migration** - Keep migrations focused
 - **Include in PR** - Always commit migrations with model changes
+- **Renumber when two branches claim the same number** - Two open PRs that both
+  add a migration to the same app will generate the same number. Whichever merges
+  second must renumber its files and fix their `dependencies` before merge. That
+  renumbering breaks any local DB that already applied the pre-merge names:
+  `migrate` treats the renumbered file as unapplied and re-runs it, typically
+  failing with `ProgrammingError: column "<name>" ... already exists`. The schema
+  is correct; only `django_migrations` is stale. Fix it by renaming the recorded
+  rows to the merged names, then migrating:
+
+  ```sql
+  UPDATE django_migrations SET name = '<new_name>'
+   WHERE app = '<app>' AND name = '<old_name>';
+  ```
+
+  Compare `django_migrations` against the files on disk to find the stale rows;
+  ignore rows for apps that no longer exist (removed apps leave history behind).
 
 ## Wagtail Concepts
 
