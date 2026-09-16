@@ -1,5 +1,3 @@
-from django.urls import reverse
-
 from wagtail import hooks
 from wagtail.admin.views import generic
 from wagtail.admin.viewsets.model import ModelViewSet, ModelViewSetGroup
