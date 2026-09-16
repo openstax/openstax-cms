@@ -54,6 +54,12 @@ class CloudfrontDistribution(BaseSiteSetting):
 class GiveToday(BaseSiteSetting):
     give_link_text = models.CharField(max_length=255)
     give_link = models.URLField("Give link", blank=True, help_text="URL to Rice Give page or something similar")
+    default_give_link = models.URLField(
+        "Default give link",
+        blank=True,
+        help_text="Used by the header Give button outside the Give Today campaign window. The "
+                  "campaign link above takes over between the menu start and menu expiry dates."
+    )
     start = models.DateTimeField(null=True,
                                  help_text="Set the start date for Give Today to display")
     expires = models.DateTimeField(null=True,

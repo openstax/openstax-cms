@@ -188,6 +188,7 @@ def give_today(request):
     return JsonResponse({
         'give_link_text': give_today.give_link_text,
         'give_link': give_today.give_link,
+        'default_give_link': give_today.default_give_link,
         'start': give_today.start,
         'expires': give_today.expires,
         'menu_start': give_today.menu_start,
