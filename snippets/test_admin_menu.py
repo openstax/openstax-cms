@@ -33,10 +33,12 @@ class SnippetRegistrationTests(TestCase):
 class ModelViewSetMenuTests(TestCase):
     def test_retired_modeladmins_now_have_viewset_urls(self):
         # Webinars, OX Menu, and the Site Messaging models moved off
-        # wagtail_modeladmin onto ModelViewSets.
+        # wagtail_modeladmin onto ModelViewSets. OX Menu was later split into
+        # separate Header/Footer viewsets (see oxmenus/wagtail_hooks.py).
         for url_name in (
             "webinars:index",
-            "oxmenus:index",
+            "headermenus:index",
+            "footermenus:index",
             "donationpopup:index",
             "donationlink:index",
             "fundraiser:index",
@@ -281,16 +283,17 @@ class GivingGroupMenuTests(TestCase):
         self.assertNotIn("give-today-settings", names)
         self.assertNotIn("footer-give-link-settings", names)
 
-    def test_give_today_no_longer_duplicated_in_the_settings_menu(self):
+    def test_give_settings_are_not_duplicated_in_the_settings_menu(self):
         from wagtail.admin.menu import settings_menu
 
         names = [
             item.name for item in settings_menu.menu_items_for_request(self.request)
         ]
 
+        # Both are reachable from Giving, and Footer from the Footer group too, so a
+        # second Settings entry for either is just another place to look.
         self.assertNotIn("give-today", names)
-        # Footer stays: it owns the copyright, AP statement and social links too.
-        self.assertIn("footer", names)
+        self.assertNotIn("footer", names)
 
 
 class GiveTodaySettingTests(TestCase):
