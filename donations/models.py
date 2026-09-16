@@ -1,3 +1,4 @@
+from django import forms
 from django.db import models
 from django.core.exceptions import ValidationError
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
@@ -52,10 +53,41 @@ class DonationPopup(models.Model):
     go_to_pdf_link_text = models.CharField(max_length=255)
     hide_donation_popup = models.BooleanField(default=False)
 
+    # These are TextFields, which Wagtail renders as a full textarea. Everything
+    # below holds a single line -- a URL, a path, one sentence -- so they get a
+    # text input instead. Widget-only: no migration, no risk to existing content.
+    panels = [
+        MultiFieldPanel([
+            FieldPanel('header_image'),
+            FieldPanel('header_title', widget=forms.TextInput),
+            FieldPanel('header_subtitle'),
+        ], heading='Message'),
+        MultiFieldPanel([
+            FieldPanel('give_link_text'),
+            FieldPanel('give_link', widget=forms.TextInput),
+            FieldPanel('thank_you_link_text'),
+            FieldPanel('thank_you_link', widget=forms.TextInput),
+            FieldPanel('giving_optional'),
+        ], heading='Buttons'),
+        MultiFieldPanel([
+            FieldPanel('download_image'),
+            FieldPanel('download_ready', widget=forms.TextInput),
+            FieldPanel('go_to_pdf_link_text'),
+        ], heading='Download'),
+        FieldPanel('hide_donation_popup'),
+    ]
+
     def __str__(self):
         return 'Donation Popup'
 
+    def clean(self):
+        super().clean()
+        if DonationPopup.objects.exists() and not self.pk:
+            raise ValidationError('There can be only one donation popup instance')
+
     def save(self, *args, **kwargs):
+        # Backstop for programmatic creation (scripts, shell, data migrations) that
+        # bypasses a ModelForm and so never calls clean().
         if DonationPopup.objects.exists() and not self.pk:
             raise ValidationError('There can be only one donation popup instance')
         return super(DonationPopup, self).save(*args, **kwargs)
@@ -79,6 +111,79 @@ class Fundraiser(models.Model):
     fundraiser_image = models.ImageField(null=True, blank=True)
     goal_amount = models.IntegerField(blank=True, null=True)
     goal_time = models.DateTimeField(blank=True, null=True)
+
+
+DONATION_LINK_PLACEMENT_CHOICES = (
+    ('pdf', 'PDF Download Popup'),
+    ('instructor_resources', 'Instructor Resources Popup'),
+    ('student_resources', 'Student Resources Popup'),
+    ('other', 'Other Popups (View Online, K12)'),
+)
+
+
+class DonationLink(models.Model):
+    placement = models.CharField(max_length=32, choices=DONATION_LINK_PLACEMENT_CHOICES)
+    variant = models.CharField(
+        max_length=255,
+        help_text="A/B variant label for this placement. This is what shows up in analytics, "
+                  "so name it accordingly. Two or more rows sharing a placement with different "
+                  "variants run an A/B test on that placement; a single row means no test."
+    )
+    header_image = models.ImageField(
+        null=True,
+        blank=True,
+        help_text="Overrides the Donation Popup's image for this variant; leave blank to use "
+                  "the default"
+    )
+    url = models.URLField(
+        blank=True,
+        default="",
+        help_text="Where this donation link sends people; leave blank to use the "
+                  "Donation Popup's link. Blank lets a variant test copy or imagery "
+                  "without repeating the destination."
+    )
+    give_link_text = models.CharField(
+        max_length=255,
+        blank=True,
+        default="",
+        help_text="Overrides the Donation Popup's button label for this variant; leave blank to "
+                  "use the default. Use this to A/B test different giving amounts."
+    )
+    header_title = models.TextField(
+        blank=True,
+        default="",
+        help_text="Overrides the Donation Popup's title for this variant; leave blank to use "
+                  "the default"
+    )
+    header_subtitle = models.TextField(
+        blank=True,
+        default="",
+        help_text="Overrides the Donation Popup's subtitle for this variant; leave blank to use "
+                  "the default"
+    )
+    is_active = models.BooleanField(default=True)
+
+    panels = [
+        FieldPanel('placement'),
+        FieldPanel('variant'),
+        FieldPanel('header_image'),
+        FieldPanel('url'),
+        FieldPanel('give_link_text'),
+        FieldPanel('header_title'),
+        FieldPanel('header_subtitle'),
+        FieldPanel('is_active'),
+    ]
+
+    def __str__(self):
+        return f'{self.get_placement_display()} - {self.variant}'
+
+    class Meta:
+        verbose_name = 'Donation Link'
+        verbose_name_plural = 'Donation Links'
+        ordering = ['placement', 'variant']
+        constraints = [
+            models.UniqueConstraint(fields=['placement', 'variant'], name='unique_donation_link_placement_variant'),
+        ]
 
 
 CONTEXT_FILTER_CHOICES = (

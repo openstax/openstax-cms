@@ -168,6 +168,7 @@ class APITests(TestCase, WagtailTestUtils):
     def test_give_today_api(self):
         response = self.client.get('/apps/cms/api/give-today/')
         self.assertEqual(response.status_code, 200)
+        self.assertIn('default_give_link', response.json())
 
     def test_emergency_api(self):
         response = self.client.get('/apps/cms/api/emergency/')
