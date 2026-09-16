@@ -171,6 +171,25 @@ class DonationLinkTest(APITestCase, TestCase):
         data = DonationLinkSerializer(self.active_public_good).data
         self.assertEqual(data["give_link_text"], "Give $50")
 
+    def test_a_variant_may_leave_its_url_blank(self):
+        """Blank means "use the Donation Popup's link", which is what lets a variant
+        test copy or imagery without repeating the destination. The frontend already
+        falls back on a blank value, so the field must not be required."""
+        link = DonationLink(
+            placement='pdf', variant='copy-only', url='',
+            give_link_text='Give $50'
+        )
+        link.full_clean()
+        link.save()
+
+        row = next(
+            item for item in self.client.get('/apps/cms/api/donations/donation-links/').json()
+            if item['variant'] == 'copy-only'
+        )
+
+        self.assertEqual('', row['url'])
+        self.assertEqual('Give $50', row['give_link_text'])
+
     def test_serializer_round_trips_header_image(self):
         data = DonationLinkSerializer(self.active_public_good).data
         self.assertIn("data-science3x.max-165x165.png", data["header_image"])

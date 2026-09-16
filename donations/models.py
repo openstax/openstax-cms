@@ -110,7 +110,13 @@ class DonationLink(models.Model):
         help_text="Overrides the Donation Popup's image for this variant; leave blank to use "
                   "the default"
     )
-    url = models.URLField(help_text="Where this donation link sends people")
+    url = models.URLField(
+        blank=True,
+        default="",
+        help_text="Where this donation link sends people; leave blank to use the "
+                  "Donation Popup's link. Blank lets a variant test copy or imagery "
+                  "without repeating the destination."
+    )
     give_link_text = models.CharField(
         max_length=255,
         blank=True,
