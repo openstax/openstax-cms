@@ -1,3 +1,4 @@
+from django import forms
 from django.db import models
 from django.core.exceptions import ValidationError
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
@@ -51,6 +52,30 @@ class DonationPopup(models.Model):
     giving_optional = models.CharField(max_length=255)
     go_to_pdf_link_text = models.CharField(max_length=255)
     hide_donation_popup = models.BooleanField(default=False)
+
+    # These are TextFields, which Wagtail renders as a full textarea. Everything
+    # below holds a single line -- a URL, a path, one sentence -- so they get a
+    # text input instead. Widget-only: no migration, no risk to existing content.
+    panels = [
+        MultiFieldPanel([
+            FieldPanel('header_image'),
+            FieldPanel('header_title', widget=forms.TextInput),
+            FieldPanel('header_subtitle'),
+        ], heading='Message'),
+        MultiFieldPanel([
+            FieldPanel('give_link_text'),
+            FieldPanel('give_link', widget=forms.TextInput),
+            FieldPanel('thank_you_link_text'),
+            FieldPanel('thank_you_link', widget=forms.TextInput),
+            FieldPanel('giving_optional'),
+        ], heading='Buttons'),
+        MultiFieldPanel([
+            FieldPanel('download_image'),
+            FieldPanel('download_ready', widget=forms.TextInput),
+            FieldPanel('go_to_pdf_link_text'),
+        ], heading='Download'),
+        FieldPanel('hide_donation_popup'),
+    ]
 
     def __str__(self):
         return 'Donation Popup'

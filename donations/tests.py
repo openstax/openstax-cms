@@ -171,6 +171,24 @@ class DonationLinkTest(APITestCase, TestCase):
         data = DonationLinkSerializer(self.active_public_good).data
         self.assertEqual(data["give_link_text"], "Give $50")
 
+    def test_single_line_popup_fields_render_as_text_inputs(self):
+        """They are TextFields for historical reasons, so without a widget override
+        Wagtail gives a URL or a path a full textarea."""
+        from django.forms import Textarea, TextInput
+
+        from donations.wagtail_hooks import DonationPopupViewSet
+
+        form_class = DonationPopupViewSet().get_form_class()
+        widgets = form_class().fields
+
+        for name in ('give_link', 'thank_you_link', 'header_title', 'download_ready'):
+            self.assertIsInstance(
+                widgets[name].widget, TextInput, f'{name} should be a single-line input'
+            )
+
+        # the subtitle really is prose, so it keeps its textarea
+        self.assertIsInstance(widgets['header_subtitle'].widget, Textarea)
+
     def test_a_variant_may_leave_its_url_blank(self):
         """Blank means "use the Donation Popup's link", which is what lets a variant
         test copy or imagery without repeating the destination. The frontend already
