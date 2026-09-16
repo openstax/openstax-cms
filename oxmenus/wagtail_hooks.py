@@ -1,11 +1,11 @@
 from django.urls import reverse
 
 from wagtail import hooks
-from wagtail.admin.menu import MenuItem
 from wagtail.admin.views import generic
 from wagtail.admin.viewsets.model import ModelViewSet, ModelViewSetGroup
 
 from global_settings.models import Footer
+from global_settings.menu import SettingsLinkMenuItem
 from .models import Menus
 
 
@@ -63,26 +63,6 @@ class FooterMenusViewSet(_PlacementScopedMenusViewSet):
     menu_name = "footermenus"
     placement = 'footer'
     add_view_class = FooterMenusCreateView
-
-
-class SettingsLinkMenuItem(MenuItem):
-    """Deep-links a BaseSiteSetting, hidden from users who cannot change it.
-
-    Wagtail's own SettingMenuItem does the permission check but derives its label
-    from the model's verbose_name; this needs a label of its own ("Footer Content"
-    rather than "Footer", to read clearly nested under the Footer admin group).
-    """
-
-    def __init__(self, label, model, **kwargs):
-        self.permission_policy = model.get_permission_policy()
-        super().__init__(
-            label,
-            reverse("wagtailsettings:edit", args=(model._meta.app_label, model._meta.model_name)),
-            **kwargs,
-        )
-
-    def is_shown(self, request):
-        return self.permission_policy.user_has_permission(request.user, "change")
 
 
 class HeaderMenusGroup(ModelViewSetGroup):

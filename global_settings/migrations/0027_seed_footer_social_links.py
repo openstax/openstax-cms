@@ -57,7 +57,7 @@ def unseed_social_links(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('global_settings', '0024_footer_social_links'),
+        ('global_settings', '0026_footer_social_links'),
     ]
 
     operations = [
