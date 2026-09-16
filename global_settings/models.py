@@ -1,6 +1,26 @@
 from django.db import models
+from wagtail import blocks
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.contrib.settings.models import BaseSiteSetting, register_setting
+from wagtail.fields import StreamField
+
+SOCIAL_PLATFORM_CHOICES = (
+    ('facebook', 'Facebook'),
+    ('twitter', 'Twitter/X'),
+    ('linkedin', 'LinkedIn'),
+    ('instagram', 'Instagram'),
+    ('youtube', 'YouTube'),
+    ('tiktok', 'TikTok'),
+    ('threads', 'Threads'),
+    ('bluesky', 'Bluesky'),
+    ('mastodon', 'Mastodon'),
+)
+
+
+class SocialLinkBlock(blocks.StructBlock):
+    platform = blocks.ChoiceBlock(choices=SOCIAL_PLATFORM_CHOICES,
+        help_text='Which platform this link is for. The frontend maps this to an icon.')
+    url = blocks.URLBlock(help_text='Full URL to the OpenStax profile/page on this platform.')
 
 
 @register_setting(icon='warning')
@@ -35,6 +55,36 @@ class Footer(BaseSiteSetting):
     facebook_link =models.URLField()
     twitter_link = models.URLField()
     linkedin_link = models.URLField()
+    social_links = StreamField(
+        blocks.StreamBlock([('social_link', SocialLinkBlock())]),
+        use_json_field=True, blank=True, default='[]',
+        help_text='Social links shown in the footer, in order. Add, remove and reorder '
+                  'them here; the frontend maps each platform to its icon.')
+
+    panels = [
+        FieldPanel('supporters'),
+        FieldPanel('copyright'),
+        FieldPanel('ap_statement'),
+        FieldPanel('social_links'),
+        MultiFieldPanel(
+            [
+                FieldPanel('facebook_link'),
+                FieldPanel('twitter_link'),
+                FieldPanel('linkedin_link'),
+            ],
+            heading='Legacy social links (do not edit)',
+            classname='collapsed',
+            help_text='Only read by a frontend released before Social links existed. '
+                      'Kept so a cached response cannot leave the footer without icons, '
+                      'and removable once that release is out.',
+        ),
+    ]
+
+    def social_links_json(self):
+        return [
+            {'platform': str(block.value['platform']), 'url': str(block.value['url'])}
+            for block in self.social_links
+        ]
 
     class Meta:
         verbose_name = 'Footer'

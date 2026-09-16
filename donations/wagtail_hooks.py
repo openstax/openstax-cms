@@ -1,10 +1,10 @@
 from django.urls import reverse
 
 from wagtail import hooks
-from wagtail.admin.menu import MenuItem
 from wagtail.admin.viewsets.model import ModelViewSet, ModelViewSetGroup
 
 from global_settings.models import Footer, GiveToday
+from global_settings.menu import SettingsLinkMenuItem
 from .models import DonationPopup, DonationLink, Fundraiser, SiteBanner
 
 
@@ -51,25 +51,6 @@ class SiteMessagingGroup(ModelViewSetGroup):
     menu_icon = "doc-full-inverse"
     menu_order = 300
     items = (SiteBannerViewSet,)
-
-
-class SettingsLinkMenuItem(MenuItem):
-    """Deep-links a BaseSiteSetting, hidden from users who cannot change it.
-
-    Wagtail's own SettingMenuItem does the permission check but derives its label
-    from the model's verbose_name; these need labels of their own.
-    """
-
-    def __init__(self, label, model, **kwargs):
-        self.permission_policy = model.get_permission_policy()
-        super().__init__(
-            label,
-            reverse("wagtailsettings:edit", args=(model._meta.app_label, model._meta.model_name)),
-            **kwargs,
-        )
-
-    def is_shown(self, request):
-        return self.permission_policy.user_has_permission(request.user, "change")
 
 
 class GivingGroup(ModelViewSetGroup):
