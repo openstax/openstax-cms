@@ -1,6 +1,7 @@
 from rest_framework import viewsets
-from .models import ThankYouNote, DonationPopup, Fundraiser, SiteBanner
-from .serializers import ThankYouNoteSerializer, DonationPopupSerializer, FundraiserSerializer, SiteBannerSerializer
+from .models import ThankYouNote, DonationPopup, DonationLink, Fundraiser, SiteBanner
+from .serializers import (ThankYouNoteSerializer, DonationPopupSerializer, DonationLinkSerializer,
+                           FundraiserSerializer, SiteBannerSerializer)
 from rest_framework.decorators import action
 from django.db.models import Q
 from django.utils import timezone
@@ -35,6 +36,13 @@ class DonationPopupViewSet(viewsets.ModelViewSet):
     serializer_class = DonationPopupSerializer
     queryset = DonationPopup.objects.all()
     http_method_names = ['get']
+
+
+class DonationLinkViewSet(viewsets.ReadOnlyModelViewSet):
+    serializer_class = DonationLinkSerializer
+
+    def get_queryset(self):
+        return DonationLink.objects.filter(is_active=True)
 
 
 class FundraiserViewSet(viewsets.ModelViewSet):
