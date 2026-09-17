@@ -8,6 +8,7 @@ from django.http import HttpResponse, HttpResponseNotFound
 from django.core.files.uploadedfile import SimpleUploadedFile
 from openstax.frontend_routes import form_route_heading
 from openstax.middleware import CommonMiddlewareAppendSlashWithoutRedirect
+from wagtail.contrib.redirects.models import Redirect
 from wagtail.models import Locale, Page, PageViewRestriction
 from pages.models import (
     RootPage, FlexPage, FormHeadings, InstitutionalPartnership,
@@ -563,8 +564,8 @@ class TestOpenGraphMiddleware(TestCase):
         self.homepage.add_child(instance=partnership)
         response = self.client.get('/institutional-partnership-application')
         self.assertContains(response, 'Apply to the Institutional Partner Program')
-        # the snapshot's canonical is the requested URL, which is why this slug
-        # stays out of FLEXPAGE_ROUTES_BY_SLUG
+        # the snapshot's canonical is the requested URL, which is also what
+        # this page's get_url_parts now reports (see PAGE_ROUTES_BY_SLUG)
         self.assertContains(
             response,
             'rel="canonical" href="http://testserver/institutional-partnership-application"')
@@ -590,6 +591,32 @@ class TestOpenGraphMiddleware(TestCase):
         press.live = False
         press.save()
         response = self.client.get('/press')
+        self.assertNotContains(response, 'OpenStax Press Room', status_code=404)
+
+    def test_mismatch_target_requested_directly_still_redirects(self):
+        """/news and /institutional-partnership are 301s in production (to
+        /blog and /higher-education). Matching on the target slug alone let a
+        crawler requesting them directly be answered here, which
+        short-circuits RedirectMiddleware -- so a page that had deliberately
+        been moved served a 200 snapshot competing with the URL it moved to."""
+        press = FlexPage(title='Press', slug='news',
+                         seo_title='OpenStax Press Room',
+                         search_description='News and press resources')
+        self.homepage.add_child(instance=press)
+        Redirect.add_redirect('/news', '/blog')
+
+        response = self.client.get('/news')
+        self.assertEqual(response.status_code, 301)
+        self.assertEqual(response['Location'], '/blog')
+
+    def test_mismatch_target_without_a_redirect_is_left_to_wagtail(self):
+        """Without a redirect entry the request simply falls through, rather
+        than being answered from the mismatch branch."""
+        press = FlexPage(title='Press', slug='news',
+                         seo_title='OpenStax Press Room',
+                         search_description='News and press resources')
+        self.homepage.add_child(instance=press)
+        response = self.client.get('/news')
         self.assertNotContains(response, 'OpenStax Press Room', status_code=404)
 
     def test_blog_post_slug_is_not_remapped_by_slug_mismatch(self):

@@ -134,10 +134,12 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
                     # A top-level osweb URL can differ from the slug of the CMS
                     # page it renders. Only remap a whole path: a blog post
                     # slugged 'press' must not resolve to the press page.
-                    if route == page_slug:
-                        page_slug = SLUG_MISMATCHES.get(page_slug, page_slug)
+                    was_remapped = False
+                    if route == page_slug and page_slug in SLUG_MISMATCHES:
+                        page_slug = SLUG_MISMATCHES[page_slug]
+                        was_remapped = True
 
-                    page = self.get_page(url_path, page_slug)
+                    page = self.get_page(url_path, page_slug, was_remapped)
                     if page:
                         instance = page[0]
                         # answer-engine crawlers don't execute JS and can only cite
@@ -149,7 +151,7 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
                         return HttpResponse(template)
         return self.get_response(request)
 
-    def get_page(self, url_path, page_slug):
+    def get_page(self, url_path, page_slug, was_remapped=False):
         if '/details/books/' in url_path:
             return Book.objects.filter(slug=page_slug)
         elif url_path == '/blog':
@@ -181,7 +183,7 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
             else:
                 return BookIndex.objects.filter(slug='subjects')
         else:
-            return self.page_by_slug(page_slug)
+            return self.page_by_slug(page_slug, was_remapped)
 
     def frontend_only_response(self, route, full_url):
         """ Crawler snapshot for a route osweb serves from the SPA with no CMS
@@ -335,17 +337,24 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
         """
         return manager.live().public()
 
-    def page_by_slug(self, page_slug):
+    def page_by_slug(self, page_slug, was_remapped=False):
         if page_slug == 'supporters':
             return Supporters.objects.all()
         if page_slug == 'home':
             return RootPage.objects.filter(locale=1)
-        # Reachable only via SLUG_MISMATCHES, where the osweb URL differs from
-        # where the page sits in the tree -- so Wagtail's own routing can't
-        # serve it and falling through would 404. Restricted to mapped slugs on
-        # purpose: every other path keeps falling through to Wagtail, which
-        # serves the page's full template rather than a bare meta snapshot.
-        if page_slug in SLUG_MISMATCHES.values():
+        # Only for a path SLUG_MISMATCHES actually remapped, where the osweb URL
+        # differs from where the page sits in the tree -- so Wagtail's own
+        # routing can't serve it and falling through would 404. Every other
+        # path keeps falling through to Wagtail, which serves the page's full
+        # template rather than a bare meta snapshot.
+        #
+        # Testing the slug alone wasn't enough: /news and /institutional-
+        # partnership match it when requested directly, and both are 301s in
+        # production (to /blog and /higher-education). Answering them here
+        # short-circuits RedirectMiddleware, so a crawler got a 200 snapshot of
+        # a page that had deliberately been moved -- competing with the URL it
+        # was moved to.
+        if was_remapped:
             # live() alone isn't enough: this result is served directly, so it
             # never reaches Wagtail's view-restriction check. public() is what
             # keeps a restricted page from becoming crawler-readable here.

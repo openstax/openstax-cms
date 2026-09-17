@@ -8,7 +8,7 @@ from wagtail.test.utils import WagtailPageTestCase
 from wagtail.models import Page, Site
 
 from pages import models as page_models
-from pages.models import FlexPage, RootPage
+from pages.models import FlexPage, InstitutionalPartnership, RootPage
 from shared.test_utilities import mock_user_login
 
 
@@ -705,3 +705,22 @@ class FlexPageUrlTest(TestCase):
 
     def test_other_slugs_are_unchanged(self):
         self.assertEqual(self._flex_page('about').get_url_parts()[2], '/about')
+
+    def test_institutional_partnership_reports_the_application_route(self):
+        """Not a FlexPage, so it needs the same treatment on its own model: its
+        slug's URL 301s to /higher-education, which is how the sitemap came to
+        advertise a redirect while /institutional-partnership-application --
+        the URL that actually serves this page -- went unlisted."""
+        partnership = InstitutionalPartnership(
+            title='Institutional Partnership Program Application',
+            slug='institutional-partnership',
+            heading_year='2026',
+            heading='Institutional Partner Program',
+            quote='OpenStax changed our budget.',
+            quote_author='A Partner',
+        )
+        self.homepage.add_child(instance=partnership)
+        self.assertEqual(
+            partnership.get_url_parts()[2],
+            '/institutional-partnership-application',
+        )

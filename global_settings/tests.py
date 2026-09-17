@@ -22,7 +22,9 @@ from global_settings.views import SlashlessSitemap, sitemap
 from openstax.frontend_routes import (
     FORM_PAGE_ROUTES, SLUG_MISMATCHES, STATIC_PAGES, sitemap_routes,
 )
-from pages.models import FlexPage, FormHeadings, RootPage
+from pages.models import (
+    FlexPage, FormHeadings, InstitutionalPartnership, RootPage,
+)
 
 
 class SlashlessSitemapTest(TestCase):
@@ -445,6 +447,35 @@ class SitemapDocumentTest(TestCase):
         # one document carrying URLs from both sections
         self.assertIn('/about</loc>', body)
         self.assertIn('/adopters</loc>', body)
+
+    def test_mismatched_pages_are_listed_at_the_url_osweb_serves(self):
+        """Why SLUG_MISMATCHES routes are left out of the frontend-only
+        section: the Wagtail section covers them -- but only because each
+        mismatched page reports the osweb route from get_url_parts. Without
+        that the sitemap lists a URL that 301s away, which it did for both of
+        these (/news -> /blog, /institutional-partnership ->
+        /higher-education) while the working URL went unlisted."""
+        press = FlexPage(title='Press', slug='news')
+        self.homepage.add_child(instance=press)
+        partnership = InstitutionalPartnership(
+            title='Institutional Partnership Program Application',
+            slug='institutional-partnership',
+            heading_year='2026',
+            heading='Institutional Partner Program',
+            quote='OpenStax changed our budget.',
+            quote_author='A Partner',
+        )
+        self.homepage.add_child(instance=partnership)
+
+        paths = [
+            re.sub(r'^https?://[^/]+', '', loc)
+            for loc in re.findall(r'<loc>(.*?)</loc>', self._body())
+        ]
+        self.assertIn('/press', paths)
+        self.assertIn('/institutional-partnership-application', paths)
+        # ...and not the slugs that redirect away
+        self.assertNotIn('/news', paths)
+        self.assertNotIn('/institutional-partnership', paths)
 
     def test_response_tells_caches_to_revalidate(self):
         """The frontend-only section is derived from CMS state at request time,

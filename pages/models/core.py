@@ -11,7 +11,7 @@ from wagtail.fields import StreamField
 from wagtail.models import Orderable, Page
 from wagtail.api import APIField
 
-from openstax.frontend_routes import FLEXPAGE_ROUTES_BY_SLUG
+from openstax.frontend_routes import PAGE_ROUTES_BY_SLUG
 from openstax.preview import FrontendPreviewMixin
 
 from salesforce.models import School
@@ -174,7 +174,7 @@ class FlexPage(RootPage):
             return site_id, site_root_url, '/k12/{}'.format(self.slug.removeprefix('k12-'))
 
         # ...and serves a few others at a path that isn't /<slug> at all
-        route = FLEXPAGE_ROUTES_BY_SLUG.get(self.slug)
+        route = PAGE_ROUTES_BY_SLUG.get(self.slug)
         if route:
             return site_id, site_root_url, '/{}'.format(route)
 

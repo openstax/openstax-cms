@@ -26,27 +26,27 @@ SLUG_MISMATCHES = {
     'institutional-partnership-application': 'institutional-partnership',
 }
 
-# The subset of the above that FlexPage.get_url_parts has to reflect, keyed the
-# other way round (slug -> osweb route).
+# The subset of the above that the page models' get_url_parts has to reflect,
+# keyed the other way round (slug -> osweb route).
 #
-# Resolving a mismatched URL is only half the job. Where the match is a
-# FlexPage, the crawler is served the page's own full template, whose canonical,
-# og:url and sitemap <loc> all come from get_url_parts -- so without this the
-# snapshot at /press would declare /news canonical, and /news 301s to /blog.
+# Resolving a mismatched URL is only half the job. get_url_parts feeds the
+# sitemap <loc>, the API's html_url, and -- where the crawler is served the
+# page's own template -- its canonical and og:url. A page whose slug is
+# mismatched therefore has to report the URL osweb serves it at, or the sitemap
+# advertises a URL that redirects away while the one that works goes
+# unadvertised. Both entries here were live instances of that:
 #
-# The other two slugs in SLUG_MISMATCHES are left out for their own reasons,
-# not by oversight:
+#   'news' -- listed as /news, which 301s to /blog, while /press was absent.
+#   'institutional-partnership' -- listed as /institutional-partnership, which
+#     301s to /higher-education, while /institutional-partnership-application
+#     (200 in a browser) was absent.
 #
-#   'supporters' -- /supporters is the canonical URL for that FlexPage and
-#     serves it directly, so get_url_parts already reports the right thing.
-#     Only the stale /foundation alias redirects in.
-#   'institutional-partnership' -- that page is a pages.InstitutionalPartnership
-#     rather than a FlexPage, so this map cannot reach it. The crawler gets the
-#     meta-only snapshot instead of the page's own template, and that
-#     snapshot's canonical is built from the requested URL
-#     (/institutional-partnership-application), never from get_url_parts.
-FLEXPAGE_ROUTES_BY_SLUG = {
+# 'supporters' is deliberately not here: /supporters is the canonical URL for
+# that page and serves it directly, so get_url_parts already reports the right
+# thing. Only the stale /foundation alias redirects in.
+PAGE_ROUTES_BY_SLUG = {
     'news': 'press',
+    'institutional-partnership': 'institutional-partnership-application',
 }
 
 # Routes whose copy lives on the single FormHeadings record instead of on a page
