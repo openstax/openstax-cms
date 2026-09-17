@@ -368,3 +368,4 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
             return self.live_public(Page.objects).filter(
                 slug=page_slug, locale=Locale.get_default()
             ).specific()
+        return None
