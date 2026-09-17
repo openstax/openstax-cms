@@ -6,9 +6,12 @@ from .functions import remove_locked_links_detail, remove_locked_links_listing, 
 from django.test import TestCase, SimpleTestCase, Client, RequestFactory, override_settings
 from django.http import HttpResponse, HttpResponseNotFound
 from django.core.files.uploadedfile import SimpleUploadedFile
+from openstax.frontend_routes import form_route_heading
 from openstax.middleware import CommonMiddlewareAppendSlashWithoutRedirect
 from wagtail.models import Page
-from pages.models import RootPage, FlexPage, FormHeadings
+from pages.models import (
+    RootPage, FlexPage, FormHeadings, InstitutionalPartnership,
+)
 from books.models import BookIndex, Book
 from news.models import NewsIndex, NewsArticle
 from salesforce.models import Adopter
@@ -462,9 +465,24 @@ class TestOpenGraphMiddleware(TestCase):
 
     def test_adoption_falls_through_when_form_headings_missing(self):
         """With no FormHeadings record there is nothing to build a snapshot
-        from, so the request must fall through rather than serve empty tags."""
+        from, so the request must fall through rather than serve empty tags.
+
+        sitemap_routes() reads the same record through the same helper, so a
+        route in this state isn't advertised either -- see
+        global_settings.tests.FrontendOnlyPagesSitemapTest."""
         response = self.client.get('/adoption')
         self.assertEqual(response.status_code, 404)
+
+    def test_no_copy_means_no_snapshot_for_that_route(self):
+        """The gate itself, which the middleware and sitemap_routes() share so
+        a route cannot be advertised while 404ing. It answers per route, not
+        per record: a route added to FORM_PAGE_ROUTES before its FormHeadings
+        fields exist has nothing to render and must stay unserved and
+        unadvertised rather than publish an empty title."""
+        headings = self._form_headings()
+        self.assertTrue(form_route_heading(headings, 'adoption'))
+        self.assertEqual(form_route_heading(headings, 'scholarship'), '')
+        self.assertEqual(form_route_heading(None, 'adoption'), '')
 
     def test_browser_user_agent_gets_no_adoption_snapshot(self):
         """The snapshot is crawler-only; browsers keep getting the React form
@@ -487,6 +505,31 @@ class TestOpenGraphMiddleware(TestCase):
         self.homepage.add_child(instance=press)
         response = self.client.get('/press')
         self.assertContains(response, 'OpenStax Press Room')
+
+    def test_institutional_partnership_application_resolves_its_page(self):
+        """osweb serves /institutional-partnership-application from the page
+        slugged 'institutional-partnership' -- the second slug mismatch, and
+        the one that exercises the generic Page lookup: that page is a
+        pages.InstitutionalPartnership, so it gets the meta snapshot rather
+        than a FlexPage's full template."""
+        partnership = InstitutionalPartnership(
+            title='Institutional Partnership Program Application',
+            slug='institutional-partnership',
+            seo_title='Institutional Partnership Program Application',
+            search_description='Apply to the Institutional Partner Program',
+            heading_year='2026',
+            heading='Institutional Partner Program',
+            quote='OpenStax changed our budget.',
+            quote_author='A Partner',
+        )
+        self.homepage.add_child(instance=partnership)
+        response = self.client.get('/institutional-partnership-application')
+        self.assertContains(response, 'Apply to the Institutional Partner Program')
+        # the snapshot's canonical is the requested URL, which is why this slug
+        # stays out of FLEXPAGE_ROUTES_BY_SLUG
+        self.assertContains(
+            response,
+            'rel="canonical" href="http://testserver/institutional-partnership-application"')
 
     def test_blog_post_slug_is_not_remapped_by_slug_mismatch(self):
         """Slug remapping applies to whole top-level paths only: a post slugged

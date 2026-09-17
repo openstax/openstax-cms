@@ -3,7 +3,7 @@ from django.contrib.sitemaps import views as sitemap_views
 from django.http import HttpResponseServerError, HttpResponse
 from wagtail.contrib.sitemaps.sitemap_generator import Sitemap
 from global_settings.functions import invalidate_cloudfront_caches
-from openstax.frontend_routes import SITEMAP_ROUTES
+from openstax.frontend_routes import sitemap_routes
 
 
 def throw_error(request):
@@ -57,7 +57,10 @@ class FrontendOnlyPagesSitemap(StaticSitemap):
     changefreq = 'monthly'
 
     def items(self):
-        return list(SITEMAP_ROUTES)
+        # sitemap_routes() is evaluated per request, not at import: the form
+        # routes it returns depend on CMS content, and a route the middleware
+        # can't answer must not be advertised here.
+        return list(sitemap_routes())
 
     def location(self, route):
         return '/{}'.format(route)

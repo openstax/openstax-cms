@@ -16,12 +16,14 @@ from wagtail.rich_text import expand_db_html
 
 from api.models import FeatureFlag
 from books.models import Book, BookIndex
-from openstax.frontend_routes import FORM_PAGE_ROUTES, SLUG_MISMATCHES, STATIC_PAGES
+from openstax.frontend_routes import (
+    FORM_PAGE_ROUTES, SLUG_MISMATCHES, STATIC_PAGES, form_headings,
+    form_route_heading,
+)
 from openstax.functions import build_image_url
 from news.models import NewsArticle, NewsIndex
 from pages.models import (
     Supporters, PrivacyPolicy, K12Subject, Subject, Subjects, RootPage, FlexPage,
-    FormHeadings,
 )
 
 
@@ -173,10 +175,15 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
             caller falls through to the normal page lookup.
         """
         if route in FORM_PAGE_ROUTES:
-            headings = self.form_headings()
-            if headings is None:
+            headings = form_headings()
+            heading = form_route_heading(headings, route)
+            # No copy to build a snapshot from, so fall through rather than
+            # serve empty tags. sitemap_routes() applies the same test, so a
+            # route in this state isn't advertised either.
+            if not heading:
                 return None
-            return HttpResponse(self.build_form_page_template(headings, route, full_url))
+            return HttpResponse(
+                self.build_form_page_template(headings, heading, route, full_url))
 
         if route in STATIC_PAGES:
             title, description = STATIC_PAGES[route]
@@ -184,20 +191,11 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
 
         return None
 
-    def form_headings(self):
-        """ The FormHeadings record holding the adoption and interest copy.
-
-            max_count = 1 is per-locale (there is an en record and an es one),
-            so this pins the default locale rather than assuming a single row.
-        """
-        return FormHeadings.objects.filter(locale=Locale.get_default()).first()
-
-    def build_form_page_template(self, headings, route, full_url):
-        # Always the logged-out fields: a crawler is never signed in, and the
-        # logged-in variants are the ones that carry {{first_name}} tags.
-        heading = self.strip_placeholders(
-            getattr(headings, '{}_intro_heading'.format(route), '') or ''
-        )
+    def build_form_page_template(self, headings, heading, route, full_url):
+        # `heading` comes from form_route_heading(), i.e. always the logged-out
+        # field -- a crawler is never signed in, and the logged-in variants are
+        # the ones that carry {{first_name}} tags.
+        heading = self.strip_placeholders(heading)
         description_html = self.strip_placeholders(expand_db_html(
             getattr(headings, '{}_intro_description'.format(route), '') or ''
         ))
@@ -271,7 +269,9 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
         # canonical and og:url point at the clean URL so query-string
         # variants consolidate their signal onto one page
         page_url = page_url.split('?', 1)[0].rstrip('/')
-        image_url = self.image_url(page.promote_image)
+        # promote_image is a RootPage field, and SLUG_MISMATCHES can land on a
+        # plain Page (institutional-partnership is a pages.InstitutionalPartnership)
+        image_url = self.image_url(getattr(page, 'promote_image', None))
         # Use seo_title if available, otherwise fall back to title
         display_title = page.seo_title if page.seo_title else page.title
         return f'''<!DOCTYPE html>

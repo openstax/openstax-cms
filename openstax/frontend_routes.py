@@ -32,10 +32,19 @@ SLUG_MISMATCHES = {
 # Resolving a mismatched URL is only half the job. Where the match is a
 # FlexPage, the crawler is served the page's own full template, whose canonical,
 # og:url and sitemap <loc> all come from get_url_parts -- so without this the
-# snapshot at /press would declare /news canonical, and /news is redirected
-# elsewhere. Deliberately not the full reverse of SLUG_MISMATCHES: /supporters
-# and /higher-education are the canonical URLs for their pages, and only their
-# stale aliases redirect in.
+# snapshot at /press would declare /news canonical, and /news 301s to /blog.
+#
+# The other two slugs in SLUG_MISMATCHES are left out for their own reasons,
+# not by oversight:
+#
+#   'supporters' -- /supporters is the canonical URL for that FlexPage and
+#     serves it directly, so get_url_parts already reports the right thing.
+#     Only the stale /foundation alias redirects in.
+#   'institutional-partnership' -- that page is a pages.InstitutionalPartnership
+#     rather than a FlexPage, so this map cannot reach it. The crawler gets the
+#     meta-only snapshot instead of the page's own template, and that
+#     snapshot's canonical is built from the requested URL
+#     (/institutional-partnership-application), never from get_url_parts.
 FLEXPAGE_ROUTES_BY_SLUG = {
     'news': 'press',
 }
@@ -62,7 +71,51 @@ STATIC_PAGES = {
     ),
 }
 
-# Routes sitemap.xml has to advertise itself, because no Wagtail page's
-# get_sitemap_urls() covers them. Routes in SLUG_MISMATCHES are excluded: the
-# CMS page they resolve to is already in the Wagtail-generated section.
-SITEMAP_ROUTES = FORM_PAGE_ROUTES + tuple(STATIC_PAGES)
+
+def form_headings():
+    """ The FormHeadings record the form routes read their copy from.
+
+        max_count = 1 is per-locale (there is an en record and an es one), so
+        this pins the default locale rather than assuming a single row. Returns
+        None when that record doesn't exist, e.g. on a fresh database.
+
+        Imported inside the function because this module is imported from
+        pages.models, so importing the models here would be circular.
+    """
+    from pages.models import FormHeadings
+    from wagtail.models import Locale
+
+    return FormHeadings.objects.filter(locale=Locale.get_default()).first()
+
+
+def form_route_heading(headings, route):
+    """ The heading `route` builds its crawler snapshot around, or '' if the
+        FormHeadings record has no copy for it.
+
+        Always the logged-out field: a crawler is never signed in, and the
+        logged-in variants are the ones carrying {{first_name}} tags.
+
+        This is the one place that decides whether a form route can be served,
+        so the middleware and sitemap_routes() below agree by construction -- a
+        route with nothing to render must not be advertised, which is the bug
+        (advertised in sitemap.xml, 404 to crawlers) this module exists to make
+        unrepresentable.
+    """
+    if headings is None:
+        return ''
+    return (getattr(headings, '{}_intro_heading'.format(route), '') or '').strip()
+
+
+def sitemap_routes():
+    """ Routes sitemap.xml has to advertise itself, because no Wagtail page's
+        get_sitemap_urls() covers them.
+
+        Routes in SLUG_MISMATCHES are excluded: the CMS page they resolve to is
+        already in the Wagtail-generated section. Form routes appear only while
+        their copy exists, since that is exactly when the middleware can answer
+        them.
+    """
+    headings = form_headings()
+    return tuple(
+        route for route in FORM_PAGE_ROUTES if form_route_heading(headings, route)
+    ) + tuple(STATIC_PAGES)

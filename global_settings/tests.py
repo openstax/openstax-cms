@@ -8,7 +8,7 @@ from botocore.exceptions import ClientError, NoCredentialsError
 from django.test import TestCase, Client
 from django.utils import timezone
 from wagtail.contrib.sitemaps.sitemap_generator import Sitemap
-from wagtail.models import Site
+from wagtail.models import Page, Site
 from wagtail.signals import page_published
 
 from global_settings.functions import (
@@ -19,7 +19,10 @@ from global_settings.functions import (
 )
 from global_settings.models import CloudfrontDistribution, Footer
 from global_settings.views import SlashlessSitemap
-from openstax.frontend_routes import SITEMAP_ROUTES, SLUG_MISMATCHES
+from openstax.frontend_routes import (
+    FORM_PAGE_ROUTES, SLUG_MISMATCHES, STATIC_PAGES, sitemap_routes,
+)
+from pages.models import FormHeadings, RootPage
 
 
 class SlashlessSitemapTest(TestCase):
@@ -288,7 +291,34 @@ class FrontendOnlyPagesSitemapTest(TestCase):
     """ Routes osweb serves from the SPA have no Wagtail page, so the page-tree
         sitemap cannot see them -- which is why /adoption was absent from
         sitemap.xml entirely and Google had no way to discover it (CORE-736).
+
+        The section is built from the same registry the OG middleware resolves,
+        so the point of these tests is the invariant rather than the list: a
+        route advertised here has to answer a crawler, which is the failure
+        mode the ticket is about.
     """
+
+    CRAWLER_USER_AGENT = (
+        'Mozilla/5.0 (compatible; Googlebot/2.1; +http://www.google.com/bot.html)'
+    )
+
+    def _form_headings(self, **overrides):
+        """ The single record /adoption and /interest take their copy from. """
+        root_page = Page.objects.get(title='Root')
+        homepage = RootPage(title='Hello World', slug='openstax-homepage')
+        root_page.add_child(instance=homepage)
+        fields = dict(
+            title='Form Headings',
+            slug='form-headings',
+            adoption_intro_heading="Let us know you're using OpenStax",
+            adoption_intro_description='<p>Tell us you have adopted.</p>',
+            interest_intro_heading='Interested in learning more about OpenStax?',
+            interest_intro_description='<p>We will send you more information.</p>',
+        )
+        fields.update(overrides)
+        headings = FormHeadings(**fields)
+        homepage.add_child(instance=headings)
+        return headings
 
     def _sitemap_paths(self):
         response = Client().get('/sitemap.xml')
@@ -298,14 +328,61 @@ class FrontendOnlyPagesSitemapTest(TestCase):
             for loc in re.findall(r'<loc>(.*?)</loc>', response.content.decode())
         ]
 
+    def _assert_advertised_routes_resolve(self):
+        """ Every SPA-only route sitemap.xml advertises has to answer a crawler.
+
+            This is the whole reason the sitemap and the middleware share one
+            registry: /blog was advertised while hard-404ing to crawlers, and
+            nothing failed until Search Console noticed. Asserted against the
+            paths actually in the XML, not against sitemap_routes(), so the
+            check is on the output rather than on the list it came from.
+        """
+        client = Client(HTTP_USER_AGENT=self.CRAWLER_USER_AGENT)
+        candidates = {
+            '/{}'.format(route)
+            for route in FORM_PAGE_ROUTES + tuple(STATIC_PAGES)
+        }
+        advertised = [path for path in self._sitemap_paths() if path in candidates]
+        # a section that advertised nothing would pass the loop vacuously
+        self.assertTrue(advertised)
+        for path in advertised:
+            self.assertEqual(
+                client.get(path).status_code, 200,
+                '{} is in sitemap.xml but does not resolve for a crawler'.format(path),
+            )
+
     def test_frontend_only_routes_are_advertised(self):
+        self._form_headings()
         paths = self._sitemap_paths()
-        for route in SITEMAP_ROUTES:
+        for route in FORM_PAGE_ROUTES + tuple(STATIC_PAGES):
             self.assertIn('/{}'.format(route), paths)
 
     def test_routes_resolved_from_a_cms_page_are_not_duplicated(self):
         """Routes in SLUG_MISMATCHES resolve to a real CMS page, which the
         Wagtail section already covers. Listing them here too would advertise
         the same content under two URLs."""
+        self._form_headings()
         for route in SLUG_MISMATCHES:
-            self.assertNotIn(route, SITEMAP_ROUTES)
+            self.assertNotIn(route, sitemap_routes())
+
+    def test_form_routes_are_not_advertised_without_their_record(self):
+        """The middleware can only build the /adoption and /interest snapshots
+        from the FormHeadings record, and falls through to a 404 without it. So
+        until that record exists the sitemap must not advertise them, or it
+        hands Google exactly the dead URL this registry exists to prevent."""
+        paths = self._sitemap_paths()
+        for route in FORM_PAGE_ROUTES:
+            self.assertNotIn('/{}'.format(route), paths)
+        # ...while the routes that don't depend on CMS content stay listed
+        for route in STATIC_PAGES:
+            self.assertIn('/{}'.format(route), paths)
+
+    def test_advertised_routes_resolve_for_a_crawler(self):
+        self._form_headings()
+        self._assert_advertised_routes_resolve()
+
+    def test_advertised_routes_resolve_with_no_form_headings_record(self):
+        """Same invariant on a database with nothing backing the form routes:
+        the section has to shrink to what still resolves rather than keep
+        advertising them."""
+        self._assert_advertised_routes_resolve()
