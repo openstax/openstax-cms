@@ -11,7 +11,7 @@ from openstax.middleware import CommonMiddlewareAppendSlashWithoutRedirect
 from wagtail.contrib.redirects.models import Redirect
 from wagtail.models import Locale, Page, PageViewRestriction
 from pages.models import (
-    RootPage, FlexPage, FormHeadings, InstitutionalPartnership,
+    RootPage, FlexPage, FormHeadings, GeneralPage, InstitutionalPartnership,
 )
 from books.models import BookIndex, Book
 from news.models import NewsIndex, NewsArticle
@@ -592,6 +592,21 @@ class TestOpenGraphMiddleware(TestCase):
         press.save()
         response = self.client.get('/press')
         self.assertNotContains(response, 'OpenStax Press Room', status_code=404)
+
+    def test_edtech_partner_program_resolves_its_general_page(self):
+        """The entry reading osweb's router turned up: /edtech-partner-program
+        is in its mismatch map, serves 200 in a browser, and 404'd to crawlers.
+        The page is a GeneralPage under a much longer slug."""
+        partner_program = GeneralPage(
+            title='OpenStax Technology Partner Program',
+            slug='openstax-ally-technology-partner-program',
+            seo_title='OpenStax Technology Partner Program',
+            search_description='Partner with OpenStax on educational technology',
+        )
+        self.homepage.add_child(instance=partner_program)
+        response = self.client.get('/edtech-partner-program')
+        self.assertContains(
+            response, 'Partner with OpenStax on educational technology')
 
     def test_mismatch_target_requested_directly_still_redirects(self):
         """/news and /institutional-partnership are 301s in production (to

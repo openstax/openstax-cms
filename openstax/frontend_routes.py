@@ -7,15 +7,23 @@
     gets a 404 for a URL that works perfectly well in a browser, which is what
     kept /adoption out of Google's index (CORE-736).
 
-    Everything here mirrors os-webview
-    src/app/components/shell/router-helpers/page-routes.tsx: SLUG_MISMATCHES is
-    its ``mismatch`` map, and the rest are entries from its ``isNoDataPage()``
-    list. Nothing links the two repos at build time, so they are kept in sync
-    by hand -- adding an SPA-only route there means adding it here.
+    Everything here comes from os-webview
+    src/app/components/shell/router-helpers/page-routes.tsx and the page
+    components it routes to. Nothing links the two repos at build time, so they
+    are kept in sync by hand -- adding an SPA-only route there means adding it
+    here. Checked against that file rather than inferred: reading it is what
+    turned up the /edtech-partner-program entry below, which was 200 in a
+    browser and 404 to crawlers.
 """
 
 # Top-level osweb URLs whose content lives on a CMS page under a different
-# slug. osweb keeps the same mapping in its ``mismatch`` map.
+# slug. The first three are osweb's ``mismatch`` map verbatim.
+#
+# 'institutional-partnership-application' is not in that map -- it is an
+# ``isNoDataPage()`` route, but its page component
+# (pages/institutional-partnership-application) renders
+# <LoaderPage slug="pages/institutional-partnership" doDocumentSetup>, so the
+# CMS page is still where its content and its document head come from.
 #
 # 'foundation' may be redundant: bit-deployment's nginx uri-map 301s /foundation
 # to /supporters before Django ever sees it. Kept because the middleware is also
@@ -23,6 +31,7 @@
 SLUG_MISMATCHES = {
     'foundation': 'supporters',
     'press': 'news',
+    'edtech-partner-program': 'openstax-ally-technology-partner-program',
     'institutional-partnership-application': 'institutional-partnership',
 }
 
@@ -41,9 +50,17 @@ SLUG_MISMATCHES = {
 #     301s to /higher-education, while /institutional-partnership-application
 #     (200 in a browser) was absent.
 #
-# 'supporters' is deliberately not here: /supporters is the canonical URL for
-# that page and serves it directly, so get_url_parts already reports the right
-# thing. Only the stale /foundation alias redirects in.
+# The other two mismatched slugs are deliberately not here:
+#
+#   'supporters' -- /supporters is the canonical URL for that page and serves
+#     it directly, so get_url_parts already reports the right thing. Only the
+#     stale /foundation alias redirects in.
+#   'openstax-ally-technology-partner-program' -- unlike the two above, that
+#     URL doesn't redirect anywhere; it serves the page, and GeneralPage keeps
+#     it out of the sitemap regardless (get_sitemap_urls returns [] for every
+#     slug but three). So nothing here is broken, and which of its two working
+#     URLs should be canonical is a content decision rather than a defect --
+#     see the PR discussion.
 PAGE_ROUTES_BY_SLUG = {
     'news': 'press',
     'institutional-partnership': 'institutional-partnership-application',
