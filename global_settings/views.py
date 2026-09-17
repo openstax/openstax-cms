@@ -1,7 +1,9 @@
+from django.contrib.sitemaps import Sitemap as StaticSitemap
 from django.contrib.sitemaps import views as sitemap_views
 from django.http import HttpResponseServerError, HttpResponse
 from wagtail.contrib.sitemaps.sitemap_generator import Sitemap
 from global_settings.functions import invalidate_cloudfront_caches
+from openstax.frontend_routes import SITEMAP_ROUTES
 
 
 def throw_error(request):
@@ -39,7 +41,32 @@ class SlashlessSitemap(Sitemap):
         return urls
 
 
+class FrontendOnlyPagesSitemap(StaticSitemap):
+    """ Routes osweb serves from the SPA with no Wagtail page of their own.
+
+        SlashlessSitemap walks the page tree, so it cannot see these -- which is
+        why /adoption was absent from sitemap.xml entirely and Google had no way
+        to discover it. Sourced from the same registry the OG middleware
+        resolves, so a route cannot be advertised here while still 404ing to
+        crawlers (the failure /blog is in today).
+
+        <loc>s are slash-less to match SlashlessSitemap and the canonical URLs
+        the frontend serves.
+    """
+    protocol = 'https'
+    changefreq = 'monthly'
+
+    def items(self):
+        return list(SITEMAP_ROUTES)
+
+    def location(self, route):
+        return '/{}'.format(route)
+
+
 def sitemap(request, sitemaps=None, **kwargs):
     if not sitemaps:
-        sitemaps = {"wagtail": SlashlessSitemap(request)}
+        sitemaps = {
+            "wagtail": SlashlessSitemap(request),
+            "frontend-only": FrontendOnlyPagesSitemap(),
+        }
     return sitemap_views.sitemap(request, sitemaps, **kwargs)

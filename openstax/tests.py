@@ -1,5 +1,6 @@
 import datetime
 import json
+import re
 from .functions import remove_locked_links_detail, remove_locked_links_listing, build_document_url, build_image_url
 
 from django.test import TestCase, SimpleTestCase, Client, RequestFactory, override_settings
@@ -7,9 +8,10 @@ from django.http import HttpResponse, HttpResponseNotFound
 from django.core.files.uploadedfile import SimpleUploadedFile
 from openstax.middleware import CommonMiddlewareAppendSlashWithoutRedirect
 from wagtail.models import Page
-from pages.models import RootPage, FlexPage
+from pages.models import RootPage, FlexPage, FormHeadings
 from books.models import BookIndex, Book
 from news.models import NewsIndex, NewsArticle
+from salesforce.models import Adopter
 from snippets.models import Subject, BlogContentType, BlogCollection
 from wagtail.documents.models import Document
 
@@ -372,3 +374,155 @@ class TestOpenGraphMiddleware(TestCase):
         self.assertContains(response, '<body></body>')
         self.assertNotContains(response, 'application/ld+json')
 
+
+    # --- Routes osweb serves from the SPA, with no CMS page of their own ---
+    # These 404'd to crawlers while returning a working page to every browser,
+    # which is why /adoption could never be indexed (CORE-736).
+
+    def _form_headings(self, **overrides):
+        fields = dict(
+            title='Form Headings',
+            slug='form-headings',
+            adoption_intro_heading="Let us know you're using OpenStax",
+            adoption_intro_description=(
+                '<p>Help us keep making free materials by letting us know '
+                'you&#x27;ve adopted!</p>'
+                '<p>Not using OpenStax yet? Go to our '
+                '<a href="/interest">interest form</a>.</p>'
+            ),
+            interest_intro_heading='Interested in learning more about OpenStax?',
+            interest_intro_description=(
+                '<p>Fill out the form below and we will send you more '
+                'information.</p><p><a href="/adoption">Let us know!</a></p>'
+            ),
+        )
+        fields.update(overrides)
+        headings = FormHeadings(**fields)
+        self.homepage.add_child(instance=headings)
+        return headings
+
+    def _meta_description(self, response):
+        match = re.search(
+            r'<meta name="description" content="([^"]*)"',
+            response.content.decode(),
+        )
+        self.assertIsNotNone(match, 'snapshot has no meta description')
+        return match.group(1)
+
+    def test_adoption_snapshot_comes_from_form_headings(self):
+        """/adoption has no page of its own, so its title and description come
+        from the FormHeadings adoption_* fields -- which means marketing edits
+        what crawlers see in Wagtail, with no redeploy."""
+        self._form_headings()
+        response = self.client.get('/adoption')
+        self.assertContains(response, 'Let us know you&#x27;re using OpenStax')
+        self.assertContains(
+            response, 'rel="canonical" href="http://testserver/adoption"')
+
+    def test_adoption_snapshot_body_keeps_prose_and_internal_links(self):
+        """Answer engines can only cite what's in the raw HTML, so the rich-text
+        description is emitted as markup rather than flattened away."""
+        self._form_headings()
+        response = self.client.get('/adoption')
+        self.assertContains(response, 'Help us keep making free materials')
+        self.assertContains(response, 'href="/interest"')
+        self.assertNotContains(response, '<body></body>')
+
+    def test_interest_snapshot_uses_its_own_fields(self):
+        """Both form routes read the same FormHeadings record, so the route has
+        to pick the matching field prefix."""
+        self._form_headings()
+        response = self.client.get('/interest')
+        self.assertContains(response, 'Interested in learning more about OpenStax?')
+        self.assertContains(response, 'href="/adoption"')
+        self.assertNotContains(response, 'Help us keep making free materials')
+
+    def test_form_snapshot_meta_description_is_flattened_text(self):
+        """The body keeps its markup but the meta description can't: it needs
+        tags stripped, and entities unescaped first so escaping the attribute
+        doesn't double-encode them into &amp;#x27;."""
+        self._form_headings()
+        description = self._meta_description(self.client.get('/adoption'))
+        self.assertIn('you&#x27;ve adopted', description)
+        self.assertNotIn('&amp;', description)
+        self.assertNotIn('&lt;p&gt;', description)
+
+    def test_form_snapshot_drops_placeholder_tags(self):
+        """FormHeadings copy supports {{first_name}} tags that only the frontend
+        interpolates. A crawler is never signed in, so any tag reaching the
+        snapshot would be published verbatim."""
+        self._form_headings(
+            adoption_intro_heading='Welcome back, {{first_name}}',
+            adoption_intro_description='<p>Your school is {{school}}.</p>',
+        )
+        response = self.client.get('/adoption')
+        self.assertContains(response, 'Welcome back,')
+        self.assertNotContains(response, 'first_name')
+        self.assertNotContains(response, 'school}}')
+
+    def test_adoption_falls_through_when_form_headings_missing(self):
+        """With no FormHeadings record there is nothing to build a snapshot
+        from, so the request must fall through rather than serve empty tags."""
+        response = self.client.get('/adoption')
+        self.assertEqual(response.status_code, 404)
+
+    def test_browser_user_agent_gets_no_adoption_snapshot(self):
+        """The snapshot is crawler-only; browsers keep getting the React form
+        from S3, so Django must not answer them here."""
+        self._form_headings()
+        self.client = Client(HTTP_USER_AGENT=(
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+            '(KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36'
+        ))
+        response = self.client.get('/adoption')
+        self.assertNotContains(response, 'using OpenStax', status_code=404)
+
+    def test_press_resolves_the_news_page(self):
+        """osweb serves /press from the CMS page slugged 'news' -- a slug
+        mismatch the middleware has to mirror, or /press (plus /newsletter and
+        /newsroom, which redirect to it) all dead-end."""
+        press = FlexPage(title='Press', slug='news',
+                         seo_title='OpenStax Press Room',
+                         search_description='News and press resources')
+        self.homepage.add_child(instance=press)
+        response = self.client.get('/press')
+        self.assertContains(response, 'OpenStax Press Room')
+
+    def test_blog_post_slug_is_not_remapped_by_slug_mismatch(self):
+        """Slug remapping applies to whole top-level paths only: a post slugged
+        'press' must stay itself rather than resolving to the press page."""
+        press = FlexPage(title='Press', slug='news',
+                         seo_title='OpenStax Press Room',
+                         search_description='News and press resources')
+        self.homepage.add_child(instance=press)
+        response = self.client.get('/blog/press')
+        self.assertNotContains(response, 'OpenStax Press Room', status_code=404)
+
+    def test_blog_index_resolves_to_news_index(self):
+        """The index, not a post. url_path is stripped of its trailing slash
+        before the '/blog/' test, so /blog matched nothing and 404'd even though
+        sitemap.xml advertises it."""
+        blog = NewsIndex(title='Blog', slug='openstax-news',
+                         seo_title='OpenStax Blog',
+                         search_description='OpenStax news and updates')
+        self.homepage.add_child(instance=blog)
+        response = self.client.get('/blog')
+        self.assertContains(response, 'OpenStax Blog')
+
+    def test_adopters_snapshot_carries_no_adopter_records(self):
+        """/adopters renders 11,000+ institutions from /apps/cms/api/adopters/,
+        whose description field is unpublished CRM free text the page itself
+        never shows. Serving that to crawlers only would leak internal notes and
+        be cloaking, so the snapshot is title and description with no body."""
+        Adopter.objects.create(
+            sales_id='001',
+            name='Centre College',
+            description='use moodle for course management system at univ.',
+            website='http://www.centre.edu/',
+        )
+        response = self.client.get('/adopters')
+        self.assertContains(
+            response, 'Complete list of institutions that have adopted OpenStax')
+        self.assertNotContains(response, 'Centre College')
+        self.assertNotContains(response, 'use moodle')
+        self.assertContains(response, '<body></body>')

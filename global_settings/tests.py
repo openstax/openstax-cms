@@ -19,6 +19,7 @@ from global_settings.functions import (
 )
 from global_settings.models import CloudfrontDistribution, Footer
 from global_settings.views import SlashlessSitemap
+from openstax.frontend_routes import SITEMAP_ROUTES, SLUG_MISMATCHES
 
 
 class SlashlessSitemapTest(TestCase):
@@ -281,3 +282,30 @@ class ResourceSnippetInvalidationTests(TestCase):
         items = self.create_invalidation.call_args.kwargs['InvalidationBatch']['Paths']['Items']
         self.assertIn('/apps/cms/api/v2/pages*', items)
         self.assertIn('/apps/cms/api/books/resources*', items)
+
+
+class FrontendOnlyPagesSitemapTest(TestCase):
+    """ Routes osweb serves from the SPA have no Wagtail page, so the page-tree
+        sitemap cannot see them -- which is why /adoption was absent from
+        sitemap.xml entirely and Google had no way to discover it (CORE-736).
+    """
+
+    def _sitemap_paths(self):
+        response = Client().get('/sitemap.xml')
+        self.assertEqual(response.status_code, 200)
+        return [
+            re.sub(r'^https?://[^/]+', '', loc)
+            for loc in re.findall(r'<loc>(.*?)</loc>', response.content.decode())
+        ]
+
+    def test_frontend_only_routes_are_advertised(self):
+        paths = self._sitemap_paths()
+        for route in SITEMAP_ROUTES:
+            self.assertIn('/{}'.format(route), paths)
+
+    def test_routes_resolved_from_a_cms_page_are_not_duplicated(self):
+        """Routes in SLUG_MISMATCHES resolve to a real CMS page, which the
+        Wagtail section already covers. Listing them here too would advertise
+        the same content under two URLs."""
+        for route in SLUG_MISMATCHES:
+            self.assertNotIn(route, SITEMAP_ROUTES)

@@ -1,17 +1,28 @@
+import re
+
 from django.http import HttpResponsePermanentRedirect, HttpResponse
 from django.core.handlers.base import BaseHandler
 from django.middleware.common import CommonMiddleware
+from django.utils.html import escape, strip_tags
 from django.utils.http import escape_leading_slashes
+from django.utils.text import Truncator
 from django.conf import settings
 
 from ua_parser import user_agent_parser
+from html import unescape
 from urllib.parse import unquote
+from wagtail.models import Locale, Page
+from wagtail.rich_text import expand_db_html
 
 from api.models import FeatureFlag
 from books.models import Book, BookIndex
+from openstax.frontend_routes import FORM_PAGE_ROUTES, SLUG_MISMATCHES, STATIC_PAGES
 from openstax.functions import build_image_url
-from news.models import NewsArticle
-from pages.models import Supporters, PrivacyPolicy, K12Subject, Subject, Subjects, RootPage, FlexPage
+from news.models import NewsArticle, NewsIndex
+from pages.models import (
+    Supporters, PrivacyPolicy, K12Subject, Subject, Subjects, RootPage, FlexPage,
+    FormHeadings,
+)
 
 
 class CommonMiddlewareAppendSlashWithoutRedirect(CommonMiddleware):
@@ -82,6 +93,10 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
         'claude-user', 'perplexity-user',
     )
 
+    # FormHeadings copy supports these tags, which only the frontend
+    # interpolates (from the signed-in user's profile).
+    PLACEHOLDER_TAG = re.compile(r'\{\{\w+\}\}')
+
     def __init__(self, get_response):
         self.get_response = get_response
 
@@ -98,8 +113,19 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
                 page_slug = "home" if url_path == '' else url_path.rsplit('/', 1)[-1]
 
                 if self.redirect_path_found(url_path):
-                    if page_slug == 'foundation':
-                        page_slug = 'supporters'
+                    route = url_path.lstrip('/')
+
+                    # Routes osweb serves from the SPA with no CMS page of
+                    # their own -- see openstax.frontend_routes.
+                    response = self.frontend_only_response(route, full_url)
+                    if response:
+                        return response
+
+                    # A top-level osweb URL can differ from the slug of the CMS
+                    # page it renders. Only remap a whole path: a blog post
+                    # slugged 'press' must not resolve to the press page.
+                    if route == page_slug:
+                        page_slug = SLUG_MISMATCHES.get(page_slug, page_slug)
 
                     page = self.get_page(url_path, page_slug)
                     if page:
@@ -116,6 +142,11 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
     def get_page(self, url_path, page_slug):
         if '/details/books/' in url_path:
             return Book.objects.filter(slug=page_slug)
+        elif url_path == '/blog':
+            # The blog index, not a post. url_path has already had its trailing
+            # slash stripped, so the '/blog/' test below can never match it --
+            # which left the index 404ing even though sitemap.xml advertises it.
+            return NewsIndex.objects.all()
         elif '/blog/' in url_path:
             return NewsArticle.objects.filter(slug=page_slug)
         elif '/privacy' in url_path:
@@ -135,6 +166,106 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
                 return BookIndex.objects.filter(slug='subjects')
         else:
             return self.page_by_slug(page_slug)
+
+    def frontend_only_response(self, route, full_url):
+        """ Crawler snapshot for a route osweb serves from the SPA with no CMS
+            page of its own. Returns None if `route` isn't one of them, so the
+            caller falls through to the normal page lookup.
+        """
+        if route in FORM_PAGE_ROUTES:
+            headings = self.form_headings()
+            if headings is None:
+                return None
+            return HttpResponse(self.build_form_page_template(headings, route, full_url))
+
+        if route in STATIC_PAGES:
+            title, description = STATIC_PAGES[route]
+            return HttpResponse(self.build_snapshot(title, description, full_url))
+
+        return None
+
+    def form_headings(self):
+        """ The FormHeadings record holding the adoption and interest copy.
+
+            max_count = 1 is per-locale (there is an en record and an es one),
+            so this pins the default locale rather than assuming a single row.
+        """
+        return FormHeadings.objects.filter(locale=Locale.get_default()).first()
+
+    def build_form_page_template(self, headings, route, full_url):
+        # Always the logged-out fields: a crawler is never signed in, and the
+        # logged-in variants are the ones that carry {{first_name}} tags.
+        heading = self.strip_placeholders(
+            getattr(headings, '{}_intro_heading'.format(route), '') or ''
+        )
+        description_html = self.strip_placeholders(expand_db_html(
+            getattr(headings, '{}_intro_description'.format(route), '') or ''
+        ))
+
+        return self.build_snapshot(
+            heading,
+            self.meta_description(description_html),
+            full_url,
+            # emitted as markup, not text, so answer engines get real prose and
+            # the internal /adoption <-> /interest links survive as anchors
+            body=description_html,
+            image_url=self.image_url(headings.promote_image),
+        )
+
+    @classmethod
+    def strip_placeholders(cls, text):
+        """ Drop any {{tag}} the frontend would have interpolated. Nothing
+            interpolates them here, so one left in place would be published
+            verbatim to a crawler.
+        """
+        return cls.PLACEHOLDER_TAG.sub('', text)
+
+    @staticmethod
+    def meta_description(rich_text, limit=155):
+        """ Flatten rich text into a meta description.
+
+            strip_tags leaves entities alone (&#x27;), so they're unescaped here
+            to stop build_snapshot's escape() double-encoding them into
+            &amp;#x27;. Plain CharField copy must not go through this.
+        """
+        text = ' '.join(unescape(strip_tags(rich_text)).split())
+        return Truncator(text).chars(limit)
+
+    def build_snapshot(self, title, description, full_url, body='', image_url=''):
+        """ Snapshot for a route with no CMS page to hand to build_template.
+
+            Everything landing in an attribute is escaped. `body` is trusted
+            CMS rich text and is emitted as markup on purpose.
+        """
+        # canonical and og:url point at the clean URL so query-string
+        # variants consolidate their signal onto one page
+        page_url = escape(full_url.split('?', 1)[0].rstrip('/'))
+        title = escape(title)
+        description = escape(description)
+        image_url = escape(image_url)
+        return f'''<!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <title>{title}</title>
+                <meta name="description" content="{description}">
+                <link rel="canonical" href="{page_url}">
+                <meta property="og:url" content="{page_url}">
+                <meta property="og:type" content="website">
+                <meta property="og:site_name" content="OpenStax">
+                <meta property="og:title" content="{title}">
+                <meta property="og:description" content="{description}">
+                <meta property="og:image" content="{image_url}">
+                <meta property="og:image:alt" content="OpenStax: {title}">
+                <meta name="twitter:card" content="summary_large_image">
+                <meta name="twitter:site" content="@OpenStax">
+                <meta name="twitter:title" content="{title}">
+                <meta name="twitter:description" content="{description}">
+                <meta name="twitter:image" content="{image_url}">
+                <meta name="twitter:image:alt" content="OpenStax">
+            </head>
+            <body>{body}</body>
+            </html>'''
 
     def build_template(self, page, page_url):
         # canonical and og:url point at the clean URL so query-string
@@ -177,3 +308,12 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
             return Supporters.objects.all()
         if page_slug == 'home':
             return RootPage.objects.filter(locale=1)
+        # Reachable only via SLUG_MISMATCHES, where the osweb URL differs from
+        # where the page sits in the tree -- so Wagtail's own routing can't
+        # serve it and falling through would 404. Restricted to mapped slugs on
+        # purpose: every other path keeps falling through to Wagtail, which
+        # serves the page's full template rather than a bare meta snapshot.
+        if page_slug in SLUG_MISMATCHES.values():
+            return Page.objects.live().filter(
+                slug=page_slug, locale=Locale.get_default()
+            ).specific()
