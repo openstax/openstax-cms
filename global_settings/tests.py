@@ -18,7 +18,7 @@ from global_settings.functions import (
     request_page_invalidation,
 )
 from global_settings.models import CloudfrontDistribution, Footer
-from global_settings.views import FrontendOnlyPagesSitemap, SlashlessSitemap, sitemap
+from global_settings.views import SlashlessSitemap, sitemap
 from openstax.frontend_routes import (
     FORM_PAGE_ROUTES, SLUG_MISMATCHES, STATIC_PAGES, sitemap_routes,
 )
