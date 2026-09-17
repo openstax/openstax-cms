@@ -377,6 +377,19 @@ class FrontendOnlyPagesSitemapTest(TestCase):
         for route in STATIC_PAGES:
             self.assertIn('/{}'.format(route), paths)
 
+    def test_form_routes_are_not_advertised_while_their_record_is_a_draft(self):
+        """Publication state feeds through the same gate: the middleware only
+        renders a live, public FormHeadings record, so a drafted or unpublished
+        one has to drop out of the sitemap too rather than advertise a URL that
+        404s."""
+        headings = self._form_headings()
+        headings.live = False
+        headings.save()
+        paths = self._sitemap_paths()
+        for route in FORM_PAGE_ROUTES:
+            self.assertNotIn('/{}'.format(route), paths)
+        self._assert_advertised_routes_resolve()
+
     def test_advertised_routes_resolve_for_a_crawler(self):
         self._form_headings()
         self._assert_advertised_routes_resolve()

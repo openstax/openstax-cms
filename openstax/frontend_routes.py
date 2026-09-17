@@ -73,11 +73,18 @@ STATIC_PAGES = {
 
 
 def form_headings():
-    """ The FormHeadings record the form routes read their copy from.
+    """ The published FormHeadings record the form routes read their copy from.
 
         max_count = 1 is per-locale (there is an en record and an es one), so
         this pins the default locale rather than assuming a single row. Returns
-        None when that record doesn't exist, e.g. on a fresh database.
+        None when there is no such record, e.g. on a fresh database.
+
+        live() and public() are what keep unreleased copy out of a crawler's
+        hands: the middleware renders this straight into a snapshot, so a record
+        an editor has only drafted (or has unpublished, or has put behind a view
+        restriction) would otherwise be published to Google by this path alone.
+        Skipping it here also drops the route from sitemap_routes(), since both
+        go through form_route_heading() below.
 
         Imported inside the function because this module is imported from
         pages.models, so importing the models here would be circular.
@@ -85,7 +92,9 @@ def form_headings():
     from pages.models import FormHeadings
     from wagtail.models import Locale
 
-    return FormHeadings.objects.filter(locale=Locale.get_default()).first()
+    return FormHeadings.objects.live().public().filter(
+        locale=Locale.get_default()
+    ).first()
 
 
 def form_route_heading(headings, route):

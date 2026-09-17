@@ -8,7 +8,7 @@ from django.http import HttpResponse, HttpResponseNotFound
 from django.core.files.uploadedfile import SimpleUploadedFile
 from openstax.frontend_routes import form_route_heading
 from openstax.middleware import CommonMiddlewareAppendSlashWithoutRedirect
-from wagtail.models import Page
+from wagtail.models import Locale, Page, PageViewRestriction
 from pages.models import (
     RootPage, FlexPage, FormHeadings, InstitutionalPartnership,
 )
@@ -450,6 +450,26 @@ class TestOpenGraphMiddleware(TestCase):
         self.assertNotIn('&amp;', description)
         self.assertNotIn('&lt;p&gt;', description)
 
+    def test_meta_description_keeps_words_apart_across_blocks(self):
+        """strip_tags() only deletes tags, so two paragraphs ran together as
+        "adopted!Not using OpenStax yet?" -- a coined word in the one sentence
+        search results actually show. Block boundaries become spaces first."""
+        self._form_headings()
+        description = self._meta_description(self.client.get('/adoption'))
+        self.assertIn('adopted! Not using OpenStax yet?', description)
+        self.assertNotIn('adopted!Not', description)
+
+    def test_meta_description_does_not_space_out_inline_markup(self):
+        """Only block-level tags are boundaries: spacing every tag would put a
+        space before the period after a link, and break a word wrapped in
+        <em>."""
+        self._form_headings(adoption_intro_description=(
+            '<p>Read the <a href="/interest">interest form</a>. '
+            'It is <em>free</em>.</p>'
+        ))
+        description = self._meta_description(self.client.get('/adoption'))
+        self.assertIn('interest form. It is free.', description)
+
     def test_form_snapshot_drops_placeholder_tags(self):
         """FormHeadings copy supports {{first_name}} tags that only the frontend
         interpolates. A crawler is never signed in, so any tag reaching the
@@ -472,6 +492,24 @@ class TestOpenGraphMiddleware(TestCase):
         global_settings.tests.FrontendOnlyPagesSitemapTest."""
         response = self.client.get('/adoption')
         self.assertEqual(response.status_code, 404)
+
+    def test_unpublished_form_headings_are_not_served(self):
+        """The snapshot is rendered straight to the crawler, with none of the
+        checks Wagtail's own routing would run. So a record an editor has
+        drafted or unpublished must not reach it -- this path would otherwise
+        publish unreleased copy to Google on its own."""
+        headings = self._form_headings()
+        headings.live = False
+        headings.save()
+        self.assertEqual(self.client.get('/adoption').status_code, 404)
+
+    def test_restricted_form_headings_are_not_served(self):
+        """Same for a view restriction: live() doesn't exclude it, and nothing
+        downstream of this queryset enforces it."""
+        headings = self._form_headings()
+        PageViewRestriction.objects.create(
+            page=headings, restriction_type=PageViewRestriction.LOGIN)
+        self.assertEqual(self.client.get('/adoption').status_code, 404)
 
     def test_no_copy_means_no_snapshot_for_that_route(self):
         """The gate itself, which the middleware and sitemap_routes() share so
@@ -531,6 +569,29 @@ class TestOpenGraphMiddleware(TestCase):
             response,
             'rel="canonical" href="http://testserver/institutional-partnership-application"')
 
+    def test_restricted_page_is_not_served_through_a_slug_mismatch(self):
+        """A mismatched slug is served directly rather than through Wagtail's
+        routing, so its view restrictions are never checked. public() has to
+        exclude the page here or /press hands a restricted page to crawlers."""
+        press = FlexPage(title='Press', slug='news',
+                         seo_title='OpenStax Press Room',
+                         search_description='News and press resources')
+        self.homepage.add_child(instance=press)
+        PageViewRestriction.objects.create(
+            page=press, restriction_type=PageViewRestriction.LOGIN)
+        response = self.client.get('/press')
+        self.assertNotContains(response, 'OpenStax Press Room', status_code=404)
+
+    def test_unpublished_page_is_not_served_through_a_slug_mismatch(self):
+        press = FlexPage(title='Press', slug='news',
+                         seo_title='OpenStax Press Room',
+                         search_description='News and press resources')
+        self.homepage.add_child(instance=press)
+        press.live = False
+        press.save()
+        response = self.client.get('/press')
+        self.assertNotContains(response, 'OpenStax Press Room', status_code=404)
+
     def test_blog_post_slug_is_not_remapped_by_slug_mismatch(self):
         """Slug remapping applies to whole top-level paths only: a post slugged
         'press' must stay itself rather than resolving to the press page."""
@@ -551,6 +612,35 @@ class TestOpenGraphMiddleware(TestCase):
         self.homepage.add_child(instance=blog)
         response = self.client.get('/blog')
         self.assertContains(response, 'OpenStax Blog')
+
+    def test_unpublished_blog_index_is_not_served(self):
+        """The caller serves whatever this lookup returns first, so .all()
+        would hand over a draft index."""
+        blog = NewsIndex(title='Blog', slug='openstax-news',
+                         seo_title='OpenStax Blog',
+                         search_description='OpenStax news and updates')
+        self.homepage.add_child(instance=blog)
+        blog.live = False
+        blog.save()
+        response = self.client.get('/blog')
+        self.assertNotContains(response, 'OpenStax Blog', status_code=404)
+
+    def test_blog_index_resolves_the_default_locale_index(self):
+        """There is an index per locale, and .all() picked by insertion order.
+        /blog is the English route, so it has to name the locale."""
+        spanish = Locale.objects.create(language_code='es')
+        es_blog = NewsIndex(title='Blog es', slug='openstax-news-es',
+                            seo_title='OpenStax Blog es',
+                            search_description='Noticias de OpenStax',
+                            locale=spanish)
+        self.homepage.add_child(instance=es_blog)
+        en_blog = NewsIndex(title='Blog', slug='openstax-news',
+                            seo_title='OpenStax Blog',
+                            search_description='OpenStax news and updates')
+        self.homepage.add_child(instance=en_blog)
+        response = self.client.get('/blog')
+        self.assertContains(response, 'OpenStax Blog')
+        self.assertNotContains(response, 'Noticias de OpenStax')
 
     def test_adopters_snapshot_carries_no_adopter_records(self):
         """/adopters renders 11,000+ institutions from /apps/cms/api/adopters/,

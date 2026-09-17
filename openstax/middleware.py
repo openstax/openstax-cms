@@ -99,6 +99,14 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
     # interpolates (from the signed-in user's profile).
     PLACEHOLDER_TAG = re.compile(r'\{\{\w+\}\}')
 
+    # Rich-text tags that end a run of prose. Only block-level ones and <br>:
+    # substituting every tag would put a space before the '.' after a link.
+    BLOCK_BOUNDARY = re.compile(
+        r'</(?:p|div|li|ul|ol|h[1-6]|blockquote|figure|figcaption|table|tr|td|th)>'
+        r'|<(?:br|hr)\s*/?>',
+        re.IGNORECASE,
+    )
+
     def __init__(self, get_response):
         self.get_response = get_response
 
@@ -148,7 +156,13 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
             # The blog index, not a post. url_path has already had its trailing
             # slash stripped, so the '/blog/' test below can never match it --
             # which left the index 404ing even though sitemap.xml advertises it.
-            return NewsIndex.objects.all()
+            #
+            # Narrowed rather than .all(): the caller serves whatever comes back
+            # first, so an unpublished index or the es one could be served in
+            # place of the live English page this route is for.
+            return self.live_public(NewsIndex.objects).filter(
+                locale=Locale.get_default()
+            )
         elif '/blog/' in url_path:
             return NewsArticle.objects.filter(slug=page_slug)
         elif '/privacy' in url_path:
@@ -218,15 +232,21 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
         """
         return cls.PLACEHOLDER_TAG.sub('', text)
 
-    @staticmethod
-    def meta_description(rich_text, limit=155):
+    @classmethod
+    def meta_description(cls, rich_text, limit=155):
         """ Flatten rich text into a meta description.
+
+            Block boundaries become spaces first: strip_tags() just deletes the
+            tags, so two paragraphs would run together as
+            "...adopted!Not using OpenStax yet?" -- a coined word in the one
+            sentence search results actually show.
 
             strip_tags leaves entities alone (&#x27;), so they're unescaped here
             to stop build_snapshot's escape() double-encoding them into
             &amp;#x27;. Plain CharField copy must not go through this.
         """
-        text = ' '.join(unescape(strip_tags(rich_text)).split())
+        spaced = cls.BLOCK_BOUNDARY.sub(' ', rich_text)
+        text = ' '.join(unescape(strip_tags(spaced)).split())
         return Truncator(text).chars(limit)
 
     def build_snapshot(self, title, description, full_url, body='', image_url=''):
@@ -303,6 +323,18 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
     def image_url(self, image):
         return build_image_url(image) or ''
 
+    @staticmethod
+    def live_public(manager):
+        """ Published pages a signed-out visitor may read.
+
+            Anything this middleware selects is rendered straight to the
+            crawler, bypassing the routing and restriction checks Wagtail would
+            normally apply -- so the queryset has to do that job itself. live()
+            drops drafts and unpublished pages; public() drops pages behind a
+            view restriction.
+        """
+        return manager.live().public()
+
     def page_by_slug(self, page_slug):
         if page_slug == 'supporters':
             return Supporters.objects.all()
@@ -314,6 +346,9 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
         # purpose: every other path keeps falling through to Wagtail, which
         # serves the page's full template rather than a bare meta snapshot.
         if page_slug in SLUG_MISMATCHES.values():
-            return Page.objects.live().filter(
+            # live() alone isn't enough: this result is served directly, so it
+            # never reaches Wagtail's view-restriction check. public() is what
+            # keeps a restricted page from becoming crawler-readable here.
+            return self.live_public(Page.objects).filter(
                 slug=page_slug, locale=Locale.get_default()
             ).specific()
