@@ -5,7 +5,7 @@ from datetime import timedelta
 from unittest.mock import patch
 
 from botocore.exceptions import ClientError, NoCredentialsError
-from django.test import TestCase, Client
+from django.test import TestCase, Client, RequestFactory
 from django.utils import timezone
 from wagtail.contrib.sitemaps.sitemap_generator import Sitemap
 from wagtail.models import Page, Site
@@ -18,11 +18,11 @@ from global_settings.functions import (
     request_page_invalidation,
 )
 from global_settings.models import CloudfrontDistribution, Footer
-from global_settings.views import SlashlessSitemap
+from global_settings.views import FrontendOnlyPagesSitemap, SlashlessSitemap, sitemap
 from openstax.frontend_routes import (
     FORM_PAGE_ROUTES, SLUG_MISMATCHES, STATIC_PAGES, sitemap_routes,
 )
-from pages.models import FormHeadings, RootPage
+from pages.models import FlexPage, FormHeadings, RootPage
 
 
 class SlashlessSitemapTest(TestCase):
@@ -399,3 +399,92 @@ class FrontendOnlyPagesSitemapTest(TestCase):
         the section has to shrink to what still resolves rather than keep
         advertising them."""
         self._assert_advertised_routes_resolve()
+
+
+class SitemapDocumentTest(TestCase):
+    """ Properties of the /sitemap.xml response itself, now that it is built
+        from two sections rather than one.
+    """
+
+    def setUp(self):
+        root_page = Page.objects.get(title='Root')
+        site = Site.objects.filter(is_default_site=True).first()
+        site.root_page = root_page
+        site.save()
+        self.homepage = RootPage(title='Hello World', slug='openstax-homepage')
+        root_page.add_child(instance=self.homepage)
+        self.about = FlexPage(title='About', slug='about')
+        self.homepage.add_child(instance=self.about)
+        self.headings = FormHeadings(
+            title='Form Headings',
+            slug='form-headings',
+            adoption_intro_heading="Let us know you're using OpenStax",
+            adoption_intro_description='<p>Tell us you have adopted.</p>',
+            interest_intro_heading='Interested in learning more about OpenStax?',
+            interest_intro_description='<p>We will send you more information.</p>',
+        )
+        self.homepage.add_child(instance=self.headings)
+        # what production has: every live page carries a publish date
+        Page.objects.all().update(last_published_at=timezone.now())
+        self.headings.refresh_from_db()
+
+    def _body(self):
+        response = Client().get('/sitemap.xml')
+        self.assertEqual(response.status_code, 200)
+        return response.content.decode()
+
+    def test_both_sections_render_as_one_urlset(self):
+        """A second entry in the sitemaps dict does not turn this into a sitemap
+        index. django.contrib.sitemaps.views.sitemap concatenates every
+        section's URLs into one <urlset>; views.index is the one that emits an
+        index and reverses a per-section URL name, and it isn't routed here. So
+        no sitemap-<section>.xml wiring is needed for the new section."""
+        body = self._body()
+        self.assertIn('<urlset', body)
+        self.assertNotIn('<sitemapindex', body)
+        # one document carrying URLs from both sections
+        self.assertIn('/about</loc>', body)
+        self.assertIn('/adopters</loc>', body)
+
+    def test_response_tells_caches_to_revalidate(self):
+        """The frontend-only section is derived from CMS state at request time,
+        so a cached copy can advertise /adoption after the middleware has
+        stopped serving it -- the same inconsistency, moved to the edge. The
+        origin says so itself rather than relying on CDN configuration."""
+        response = Client().get('/sitemap.xml')
+        self.assertEqual(response.headers['Cache-Control'], 'no-cache')
+
+    def test_last_modified_survives_the_second_section(self):
+        """views.sitemap only sets Last-Modified when *every* section reports a
+        latest_lastmod, so an undated section silently takes the header off the
+        whole document -- including the Wagtail section that supplies it in
+        production today."""
+        with_section = Client().get('/sitemap.xml')
+        self.assertIn('Last-Modified', with_section.headers)
+
+        request = RequestFactory().get('/sitemap.xml')
+        wagtail_only = sitemap(
+            request, sitemaps={'wagtail': SlashlessSitemap(request)})
+        self.assertEqual(
+            with_section.headers['Last-Modified'],
+            wagtail_only.headers['Last-Modified'],
+            'the added section changed the document date',
+        )
+
+    def test_form_routes_report_their_records_publish_date(self):
+        """A crawler learns the copy changed from <lastmod>, and for these
+        routes that date is a real one: when the FormHeadings record was last
+        published."""
+        url_blocks = re.findall(r'<url>(.*?)</url>', self._body(), re.S)
+        adoption = [b for b in url_blocks if '/adoption</loc>' in b]
+        self.assertEqual(len(adoption), 1)
+        self.assertIn(
+            self.headings.last_published_at.strftime('%Y-%m-%d'), adoption[0])
+
+    def test_static_routes_get_no_invented_date(self):
+        """/adopters copy lives in this repo, not in the CMS, so there is no
+        honest date to report for it."""
+        url_blocks = re.findall(r'<url>(.*?)</url>', self._body(), re.S)
+        adopters = [b for b in url_blocks if '/adopters</loc>' in b]
+        self.assertEqual(len(adopters), 1)
+        self.assertNotIn('<lastmod>', adopters[0])

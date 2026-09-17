@@ -115,7 +115,11 @@ def form_route_heading(headings, route):
     return (getattr(headings, '{}_intro_heading'.format(route), '') or '').strip()
 
 
-def sitemap_routes():
+# Distinguishes "no record supplied" from "supplied, and there isn't one".
+_UNSET = object()
+
+
+def sitemap_routes(headings=_UNSET):
     """ Routes sitemap.xml has to advertise itself, because no Wagtail page's
         get_sitemap_urls() covers them.
 
@@ -123,8 +127,12 @@ def sitemap_routes():
         already in the Wagtail-generated section. Form routes appear only while
         their copy exists, since that is exactly when the middleware can answer
         them.
+
+        Pass `headings` to reuse a record the caller has already fetched -- the
+        sitemap needs it again for each route's <lastmod>.
     """
-    headings = form_headings()
+    if headings is _UNSET:
+        headings = form_headings()
     return tuple(
         route for route in FORM_PAGE_ROUTES if form_route_heading(headings, route)
     ) + tuple(STATIC_PAGES)
