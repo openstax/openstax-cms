@@ -669,6 +669,18 @@ class TestOpenGraphMiddleware(TestCase):
         self.assertContains(response, 'OpenStax Blog')
         self.assertNotContains(response, 'Noticias de OpenStax')
 
+    def test_separatemap_snapshot_describes_the_map(self):
+        """The map page does describe itself -- but in JavaScript, via
+        useDocumentHead(), where a crawler never sees it. The snapshot serves
+        the same strings, plus the sentence that introduces the map on /about,
+        since the page itself is an interactive map with no prose to read."""
+        response = self.client.get('/separatemap')
+        self.assertContains(response, '<title>Institution Map - OpenStax</title>')
+        self.assertContains(response, 'Searchable map of institutions')
+        self.assertContains(response, 'more than 160 countries')
+        self.assertContains(
+            response, 'rel="canonical" href="http://testserver/separatemap"')
+
     def test_adopters_snapshot_carries_no_adopter_records(self):
         """/adopters renders 11,000+ institutions from /apps/cms/api/adopters/,
         whose description field is unpublished CRM free text the page itself

@@ -202,8 +202,15 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
                 self.build_form_page_template(headings, heading, route, full_url))
 
         if route in STATIC_PAGES:
-            title, description = STATIC_PAGES[route]
-            return HttpResponse(self.build_snapshot(title, description, full_url))
+            snapshot = STATIC_PAGES[route]
+            return HttpResponse(self.build_snapshot(
+                snapshot['title'],
+                snapshot['description'],
+                full_url,
+                # only where the route has published prose to show -- see
+                # STATIC_PAGES for why /adopters must not have one
+                body=snapshot.get('body', ''),
+            ))
 
         return None
 

@@ -55,20 +55,37 @@ PAGE_ROUTES_BY_SLUG = {
 # what crawlers see in Wagtail, with no redeploy and no duplicate page.
 FORM_PAGE_ROUTES = ('adoption', 'interest')
 
-# Routes with no CMS record at all, mapped to (title, description). This is the
-# only hardcoded SEO copy here; everything else is editable in Wagtail. The
-# title mirrors the <h1> in os-webview src/app/pages/adopters/adopters.tsx.
-#
-# These snapshots deliberately carry no body. /adopters renders 11,000+
-# institutions from /apps/cms/api/adopters/, and that payload's ``description``
-# field is unpublished CRM free text which the page itself never displays.
-# Serving it to crawlers alone would leak internal notes and be cloaking.
+# Routes with no CMS record at all. This is the only hardcoded SEO copy here;
+# everything else is editable in Wagtail, so each entry takes its wording from
+# whatever the osweb page itself already declares rather than inventing any.
 STATIC_PAGES = {
-    'adopters': (
-        'Complete list of institutions that have adopted OpenStax',
-        'Institutions around the world that have adopted OpenStax free, '
-        'openly licensed textbooks.',
-    ),
+    # Title is the <h1> in os-webview src/app/pages/adopters/adopters.tsx,
+    # which is all that page declares.
+    #
+    # No body, on purpose: /adopters renders 11,000+ institutions from
+    # /apps/cms/api/adopters/, and that payload's ``description`` field is
+    # unpublished CRM free text which the page itself never displays. Serving
+    # it to crawlers alone would leak internal notes and be cloaking.
+    'adopters': {
+        'title': 'Complete list of institutions that have adopted OpenStax',
+        'description': 'Institutions around the world that have adopted '
+                       'OpenStax free, openly licensed textbooks.',
+    },
+    # Title and description are the ones separatemap.tsx passes to
+    # useDocumentHead() -- the page does describe itself, just in JavaScript,
+    # where a crawler never sees it. Serving the same strings keeps the
+    # crawler's title identical to the browser's.
+    #
+    # The body is the sentence that introduces this map on /about ("Our global
+    # reach"), because the page itself is an interactive map with no prose to
+    # read. Published copy, not written for crawlers.
+    'separatemap': {
+        'title': 'Institution Map - OpenStax',
+        'description': 'Searchable map of institutions that have adopted '
+                       'OpenStax textbooks',
+        'body': '<p>OpenStax is used in classrooms across the U.S. and more '
+                'than 160 countries. Find your school on the map.</p>',
+    },
 }
 
 
