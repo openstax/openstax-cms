@@ -1,17 +1,30 @@
+import re
+
 from django.http import HttpResponsePermanentRedirect, HttpResponse
 from django.core.handlers.base import BaseHandler
 from django.middleware.common import CommonMiddleware
+from django.utils.html import escape, strip_tags
 from django.utils.http import escape_leading_slashes
+from django.utils.text import Truncator
 from django.conf import settings
 
 from ua_parser import user_agent_parser
-from urllib.parse import unquote
+from html import unescape
+from urllib.parse import unquote, urlsplit, urlunsplit
+from wagtail.models import Locale, Page
+from wagtail.rich_text import expand_db_html
 
 from api.models import FeatureFlag
 from books.models import Book, BookIndex
+from openstax.frontend_routes import (
+    FORM_PAGE_ROUTES, SLUG_MISMATCHES, STATIC_PAGES, form_headings,
+    form_route_heading,
+)
 from openstax.functions import build_image_url
-from news.models import NewsArticle
-from pages.models import Supporters, PrivacyPolicy, K12Subject, Subject, Subjects, RootPage, FlexPage
+from news.models import NewsArticle, NewsIndex
+from pages.models import (
+    Supporters, PrivacyPolicy, K12Subject, Subject, Subjects, RootPage, FlexPage,
+)
 
 
 class CommonMiddlewareAppendSlashWithoutRedirect(CommonMiddleware):
@@ -82,6 +95,18 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
         'claude-user', 'perplexity-user',
     )
 
+    # FormHeadings copy supports these tags, which only the frontend
+    # interpolates (from the signed-in user's profile).
+    PLACEHOLDER_TAG = re.compile(r'\{\{\w+\}\}')
+
+    # Rich-text tags that end a run of prose. Only block-level ones and <br>:
+    # substituting every tag would put a space before the '.' after a link.
+    BLOCK_BOUNDARY = re.compile(
+        r'</(?:p|div|li|ul|ol|h[1-6]|blockquote|figure|figcaption|table|tr|td|th)>'
+        r'|<(?:br|hr)\s*/?>',
+        re.IGNORECASE,
+    )
+
     def __init__(self, get_response):
         self.get_response = get_response
 
@@ -98,10 +123,23 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
                 page_slug = "home" if url_path == '' else url_path.rsplit('/', 1)[-1]
 
                 if self.redirect_path_found(url_path):
-                    if page_slug == 'foundation':
-                        page_slug = 'supporters'
+                    route = url_path.lstrip('/')
 
-                    page = self.get_page(url_path, page_slug)
+                    # Routes osweb serves from the SPA with no CMS page of
+                    # their own -- see openstax.frontend_routes.
+                    response = self.frontend_only_response(route, full_url)
+                    if response:
+                        return response
+
+                    # A top-level osweb URL can differ from the slug of the CMS
+                    # page it renders. Only remap a whole path: a blog post
+                    # slugged 'press' must not resolve to the press page.
+                    was_remapped = False
+                    if route == page_slug and page_slug in SLUG_MISMATCHES:
+                        page_slug = SLUG_MISMATCHES[page_slug]
+                        was_remapped = True
+
+                    page = self.get_page(url_path, page_slug, was_remapped)
                     if page:
                         instance = page[0]
                         # answer-engine crawlers don't execute JS and can only cite
@@ -109,13 +147,25 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
                         # content-bearing template
                         if isinstance(instance, FlexPage):
                             return instance.serve(request).render()
-                        template = self.build_template(instance, full_url)
+                        template = self.build_template(
+                            instance, full_url, was_remapped, request)
                         return HttpResponse(template)
         return self.get_response(request)
 
-    def get_page(self, url_path, page_slug):
+    def get_page(self, url_path, page_slug, was_remapped=False):
         if '/details/books/' in url_path:
             return Book.objects.filter(slug=page_slug)
+        elif url_path == '/blog':
+            # The blog index, not a post. url_path has already had its trailing
+            # slash stripped, so the '/blog/' test below can never match it --
+            # which left the index 404ing even though sitemap.xml advertises it.
+            #
+            # Narrowed rather than .all(): the caller serves whatever comes back
+            # first, so an unpublished index or the es one could be served in
+            # place of the live English page this route is for.
+            return self.live_public(NewsIndex.objects).filter(
+                locale=Locale.get_default()
+            )
         elif '/blog/' in url_path:
             return NewsArticle.objects.filter(slug=page_slug)
         elif '/privacy' in url_path:
@@ -134,32 +184,173 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
             else:
                 return BookIndex.objects.filter(slug='subjects')
         else:
-            return self.page_by_slug(page_slug)
+            return self.page_by_slug(page_slug, was_remapped)
 
-    def build_template(self, page, page_url):
+    def frontend_only_response(self, route, full_url):
+        """ Crawler snapshot for a route osweb serves from the SPA with no CMS
+            page of its own. Returns None if `route` isn't one of them, so the
+            caller falls through to the normal page lookup.
+        """
+        if route in FORM_PAGE_ROUTES:
+            headings = form_headings()
+            heading = form_route_heading(headings, route)
+            # No copy to build a snapshot from, so fall through rather than
+            # serve empty tags. sitemap_routes() applies the same test, so a
+            # route in this state isn't advertised either.
+            if not heading:
+                return None
+            return HttpResponse(
+                self.build_form_page_template(headings, heading, route, full_url))
+
+        if route in STATIC_PAGES:
+            snapshot = STATIC_PAGES[route]
+            return HttpResponse(self.build_snapshot(
+                snapshot['title'],
+                snapshot['description'],
+                full_url,
+                # only where the route has published prose to show -- see
+                # STATIC_PAGES for why /adopters must not have one
+                body=snapshot.get('body', ''),
+            ))
+
+        return None
+
+    def build_form_page_template(self, headings, heading, route, full_url):
+        # `heading` comes from form_route_heading(), i.e. always the logged-out
+        # field -- a crawler is never signed in, and the logged-in variants are
+        # the ones that carry {{first_name}} tags.
+        heading = self.strip_placeholders(heading)
+        description_html = self.strip_placeholders(expand_db_html(
+            getattr(headings, '{}_intro_description'.format(route), '') or ''
+        ))
+
+        return self.build_snapshot(
+            heading,
+            self.meta_description(description_html),
+            full_url,
+            # emitted as markup, not text, so answer engines get real prose and
+            # the internal /adoption <-> /interest links survive as anchors
+            body=description_html,
+            image_url=self.image_url(headings.promote_image),
+        )
+
+    @classmethod
+    def strip_placeholders(cls, text):
+        """ Drop any {{tag}} the frontend would have interpolated. Nothing
+            interpolates them here, so one left in place would be published
+            verbatim to a crawler.
+        """
+        return cls.PLACEHOLDER_TAG.sub('', text)
+
+    @classmethod
+    def meta_description(cls, rich_text, limit=155):
+        """ Flatten rich text into a meta description.
+
+            Block boundaries become spaces first: strip_tags() just deletes the
+            tags, so two paragraphs would run together as
+            "...adopted!Not using OpenStax yet?" -- a coined word in the one
+            sentence search results actually show.
+
+            strip_tags leaves entities alone (&#x27;), so they're unescaped here
+            to stop build_snapshot's escape() double-encoding them into
+            &amp;#x27;. Plain CharField copy must not go through this.
+        """
+        spaced = cls.BLOCK_BOUNDARY.sub(' ', rich_text)
+        text = ' '.join(unescape(strip_tags(spaced)).split())
+        return Truncator(text).chars(limit)
+
+    def build_snapshot(self, title, description, full_url, body='', image_url=''):
+        """ Snapshot for a route with no CMS page to hand to build_template.
+
+            Everything landing in an attribute is escaped. `body` is trusted
+            CMS rich text and is emitted as markup on purpose.
+        """
         # canonical and og:url point at the clean URL so query-string
         # variants consolidate their signal onto one page
-        page_url = page_url.split('?', 1)[0].rstrip('/')
-        image_url = self.image_url(page.promote_image)
-        # Use seo_title if available, otherwise fall back to title
-        display_title = page.seo_title if page.seo_title else page.title
+        page_url = escape(full_url.split('?', 1)[0].rstrip('/'))
+        title = escape(title)
+        description = escape(description)
+        image_url = escape(image_url)
         return f'''<!DOCTYPE html>
             <html>
             <head>
                 <meta charset="utf-8">
-                <title>{page.title}</title>
-                <meta name="description" content="{page.search_description}">
+                <title>{title}</title>
+                <meta name="description" content="{description}">
+                <link rel="canonical" href="{page_url}">
+                <meta property="og:url" content="{page_url}">
+                <meta property="og:type" content="website">
+                <meta property="og:site_name" content="OpenStax">
+                <meta property="og:title" content="{title}">
+                <meta property="og:description" content="{description}">
+                <meta property="og:image" content="{image_url}">
+                <meta property="og:image:alt" content="OpenStax: {title}">
+                <meta name="twitter:card" content="summary_large_image">
+                <meta name="twitter:site" content="@OpenStax">
+                <meta name="twitter:title" content="{title}">
+                <meta name="twitter:description" content="{description}">
+                <meta name="twitter:image" content="{image_url}">
+                <meta name="twitter:image:alt" content="OpenStax">
+            </head>
+            <body>{body}</body>
+            </html>'''
+
+    def build_template(self, page, page_url, was_remapped=False, request=None):
+        # canonical and og:url point at the clean URL so query-string
+        # variants consolidate their signal onto one page
+        page_url = page_url.split('?', 1)[0].rstrip('/')
+        if was_remapped:
+            # The request arrived on an osweb alias, and the alias is not
+            # always the canonical URL: /openstax-ally-technology-partner-
+            # program serves that page too, and is the one to keep. Point the
+            # alias at the page's own URL so the two consolidate instead of
+            # competing for the same content. Where the page reports the alias
+            # itself -- institutional-partnership does, via
+            # PAGE_ROUTES_BY_SLUG -- this changes nothing.
+            #
+            # Only the path is taken from the page. The host stays the one the
+            # request came in on, so a non-production site can't emit a
+            # canonical pointing at the default site's hostname.
+            url_parts = page.get_url_parts(request)
+            if url_parts:
+                requested = urlsplit(page_url)
+                page_url = urlunsplit((
+                    requested.scheme, requested.netloc,
+                    url_parts[2].rstrip('/'), '', '',
+                ))
+        # promote_image is a RootPage field, and SLUG_MISMATCHES can land on a
+        # plain Page (institutional-partnership is a pages.InstitutionalPartnership)
+        image_url = self.image_url(getattr(page, 'promote_image', None))
+        # Use seo_title if available, otherwise fall back to title. The <title>
+        # uses it too: pages/templates/page.html has always rendered
+        # seo_title|default:page.title, so a crawler served this snapshot
+        # instead of that template was the only visitor losing the editor's
+        # chosen title.
+        display_title = page.seo_title if page.seo_title else page.title
+        # Escaped for the same reason build_snapshot escapes: these are CMS
+        # strings going into attributes, and a quote in one would end the
+        # attribute early.
+        display_title = escape(display_title)
+        description = escape(page.search_description)
+        page_url = escape(page_url)
+        image_url = escape(image_url)
+        return f'''<!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <title>{display_title}</title>
+                <meta name="description" content="{description}">
                 <link rel="canonical" href="{page_url}">
                 <meta property="og:url" content="{page_url}">
                 <meta property="og:type" content="article">
                 <meta property="og:title" content="{display_title}">
-                <meta property="og:description" content="{page.search_description}">
+                <meta property="og:description" content="{description}">
                 <meta property="og:image" content="{image_url}">
                 <meta property="og:image:alt" content="OpenStax: {display_title}">
                 <meta name="twitter:card" content="summary_large_image">
                 <meta name="twitter:site" content="@OpenStax">
                 <meta name="twitter:title" content="{display_title}">
-                <meta name="twitter:description" content="{page.search_description}">
+                <meta name="twitter:description" content="{description}">
                 <meta name="twitter:image" content="{image_url}">
                 <meta name="twitter:image:alt" content="OpenStax">
             </head>
@@ -172,8 +363,40 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
     def image_url(self, image):
         return build_image_url(image) or ''
 
-    def page_by_slug(self, page_slug):
+    @staticmethod
+    def live_public(manager):
+        """ Published pages a signed-out visitor may read.
+
+            Anything this middleware selects is rendered straight to the
+            crawler, bypassing the routing and restriction checks Wagtail would
+            normally apply -- so the queryset has to do that job itself. live()
+            drops drafts and unpublished pages; public() drops pages behind a
+            view restriction.
+        """
+        return manager.live().public()
+
+    def page_by_slug(self, page_slug, was_remapped=False):
         if page_slug == 'supporters':
             return Supporters.objects.all()
         if page_slug == 'home':
             return RootPage.objects.filter(locale=1)
+        # Only for a path SLUG_MISMATCHES actually remapped, where the osweb URL
+        # differs from where the page sits in the tree -- so Wagtail's own
+        # routing can't serve it and falling through would 404. Every other
+        # path keeps falling through to Wagtail, which serves the page's full
+        # template rather than a bare meta snapshot.
+        #
+        # Testing the slug alone wasn't enough: /news and /institutional-
+        # partnership match it when requested directly, and both are 301s in
+        # production (to /blog and /higher-education). Answering them here
+        # short-circuits RedirectMiddleware, so a crawler got a 200 snapshot of
+        # a page that had deliberately been moved -- competing with the URL it
+        # was moved to.
+        if was_remapped:
+            # live() alone isn't enough: this result is served directly, so it
+            # never reaches Wagtail's view-restriction check. public() is what
+            # keeps a restricted page from becoming crawler-readable here.
+            return self.live_public(Page.objects).filter(
+                slug=page_slug, locale=Locale.get_default()
+            ).specific()
+        return None
