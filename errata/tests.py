@@ -130,6 +130,43 @@ class ActiveBookListFilterTests(TestCase):
         self.assertEqual(book_filter.lookup_val, "2")
 
 
+class ErrataAdminSharedInstanceTest(TestCase):
+    """ErrataAdmin is registered once and reused by Django across every request.
+    get_fields/get_readonly_fields/get_list_display must be computed per-request
+    rather than assigned to self, or one user's role can leak into another's
+    concurrent request. See the comment above these methods in errata/admin.py.
+    """
+
+    def test_get_form_is_stable_when_interleaved_with_a_different_role(self):
+        from django.test import RequestFactory
+        from django.contrib.auth.models import User, Group
+        from django.contrib.admin.utils import flatten_fieldsets
+        from errata.admin import ErrataAdmin
+
+        rf = RequestFactory()
+        errata_admin = ErrataAdmin(Errata, admin.site)
+
+        vendor_group = Group.objects.create(name='Editorial Vendor')
+        plain_user = User.objects.create_user('plain', is_staff=True)
+        vendor_user = User.objects.create_user('vendor', is_staff=True)
+        vendor_user.groups.add(vendor_group)
+
+        plain_request = rf.get('/errata/add/')
+        plain_request.user = plain_user
+        vendor_request = rf.get('/errata/add/')
+        vendor_request.user = vendor_user
+
+        # Mirrors the cross-request interleaving in Django’s _changeform_view:
+        # one request runs get_form() (mutating admin state in the pre-fix code),
+        # then another request runs get_fieldsets() followed by get_form() using
+        # those fieldsets. That mismatch is what produced the "Unknown field(s)
+        # specified for Errata" 500s in production.
+        fieldsets = errata_admin.get_fieldsets(vendor_request, None)
+        form_class = errata_admin.get_form(vendor_request, None, fields=flatten_fieldsets(fieldsets))
+
+        self.assertIsNotNone(form_class)
+
+
 class ErrataPostHogCaptureTest(TestCase):
     def _instance(self, account_id=None):
         return mock.Mock(
