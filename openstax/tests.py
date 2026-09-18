@@ -9,7 +9,7 @@ from django.core.files.uploadedfile import SimpleUploadedFile
 from openstax.frontend_routes import form_route_heading
 from openstax.middleware import CommonMiddlewareAppendSlashWithoutRedirect
 from wagtail.contrib.redirects.models import Redirect
-from wagtail.models import Locale, Page, PageViewRestriction
+from wagtail.models import Locale, Page, PageViewRestriction, Site
 from pages.models import (
     RootPage, FlexPage, FormHeadings, GeneralPage, InstitutionalPartnership,
 )
@@ -607,6 +607,30 @@ class TestOpenGraphMiddleware(TestCase):
         response = self.client.get('/edtech-partner-program')
         self.assertContains(
             response, 'Partner with OpenStax on educational technology')
+
+    def test_alias_snapshot_is_canonical_to_the_real_page(self):
+        """/openstax-ally-technology-partner-program is the canonical page, and
+        it serves crawlers too. So the snapshot on the alias has to point at
+        it: two URLs each claiming to be canonical compete with each other."""
+        # the page has to sit in the site tree for it to have a URL at all,
+        # which in production it does
+        site = Site.objects.filter(is_default_site=True).first()
+        site.root_page = self.homepage
+        site.save()
+        partner_program = GeneralPage(
+            title='OpenStax Technology Partner Program',
+            slug='openstax-ally-technology-partner-program',
+            search_description='Partner with OpenStax on educational technology',
+        )
+        self.homepage.add_child(instance=partner_program)
+
+        response = self.client.get('/edtech-partner-program')
+        self.assertContains(
+            response,
+            'rel="canonical" href="http://testserver/openstax-ally-technology-'
+            'partner-program"')
+        self.assertNotContains(
+            response, 'href="http://testserver/edtech-partner-program"')
 
     def test_mismatch_target_requested_directly_still_redirects(self):
         """/news and /institutional-partnership are 301s in production (to

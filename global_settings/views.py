@@ -1,6 +1,9 @@
+from datetime import datetime, time, timezone
+
 from django.contrib.sitemaps import Sitemap as StaticSitemap
 from django.contrib.sitemaps import views as sitemap_views
 from django.http import HttpResponseServerError, HttpResponse
+from django.utils.http import http_date
 from wagtail.contrib.sitemaps.sitemap_generator import Sitemap
 from global_settings.functions import invalidate_cloudfront_caches
 from openstax.frontend_routes import FORM_PAGE_ROUTES, form_headings, sitemap_routes
@@ -107,6 +110,7 @@ def sitemap(request, sitemaps=None, **kwargs):
             "frontend-only": FrontendOnlyPagesSitemap(),
         }
     response = sitemap_views.sitemap(request, sitemaps, **kwargs)
+    _keep_last_modified(response, sitemaps)
     # The frontend-only section is derived from CMS state at request time, so a
     # cached copy can advertise /adoption after the middleware has stopped
     # serving it -- the inconsistency this section exists to prevent, just
@@ -117,3 +121,34 @@ def sitemap(request, sitemaps=None, **kwargs):
     # Saying it in the response keeps the invariant independent of both.
     response.headers['Cache-Control'] = 'no-cache'
     return response
+
+
+def _keep_last_modified(response, sitemaps):
+    """ Date the document from the newest date any section reports.
+
+        views.sitemap sets Last-Modified only when *every* section reports a
+        latest_lastmod, and Django only sets that when every item in a section
+        has a lastmod. The frontend-only section can't always manage it: with
+        no FormHeadings record it has nothing but /adopters, whose copy lives
+        in this repo and has no honest date. Left alone, adding that section
+        takes the header off the whole document, including the Wagtail section
+        that supplies it in production today.
+
+        Sections have already built their URLs by the time this runs, so
+        latest_lastmod is populated where there was anything to populate it
+        with.
+    """
+    if response.headers.get('Last-Modified'):
+        return
+    known = [
+        lastmod for lastmod in
+        (getattr(section, 'latest_lastmod', None) for section in sitemaps.values())
+        if lastmod is not None
+    ]
+    if not known:
+        return
+    newest = max(known)
+    if not isinstance(newest, datetime):
+        # a date, which Sitemap allows; midnight is the only defensible time
+        newest = datetime.combine(newest, time.min, tzinfo=timezone.utc)
+    response.headers['Last-Modified'] = http_date(newest.timestamp())

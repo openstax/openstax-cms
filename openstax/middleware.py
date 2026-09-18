@@ -10,7 +10,7 @@ from django.conf import settings
 
 from ua_parser import user_agent_parser
 from html import unescape
-from urllib.parse import unquote
+from urllib.parse import unquote, urlsplit, urlunsplit
 from wagtail.models import Locale, Page
 from wagtail.rich_text import expand_db_html
 
@@ -147,7 +147,8 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
                         # content-bearing template
                         if isinstance(instance, FlexPage):
                             return instance.serve(request).render()
-                        template = self.build_template(instance, full_url)
+                        template = self.build_template(
+                            instance, full_url, was_remapped, request)
                         return HttpResponse(template)
         return self.get_response(request)
 
@@ -294,10 +295,29 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
             <body>{body}</body>
             </html>'''
 
-    def build_template(self, page, page_url):
+    def build_template(self, page, page_url, was_remapped=False, request=None):
         # canonical and og:url point at the clean URL so query-string
         # variants consolidate their signal onto one page
         page_url = page_url.split('?', 1)[0].rstrip('/')
+        if was_remapped:
+            # The request arrived on an osweb alias, and the alias is not
+            # always the canonical URL: /openstax-ally-technology-partner-
+            # program serves that page too, and is the one to keep. Point the
+            # alias at the page's own URL so the two consolidate instead of
+            # competing for the same content. Where the page reports the alias
+            # itself -- institutional-partnership does, via
+            # PAGE_ROUTES_BY_SLUG -- this changes nothing.
+            #
+            # Only the path is taken from the page. The host stays the one the
+            # request came in on, so a non-production site can't emit a
+            # canonical pointing at the default site's hostname.
+            url_parts = page.get_url_parts(request)
+            if url_parts:
+                requested = urlsplit(page_url)
+                page_url = urlunsplit((
+                    requested.scheme, requested.netloc,
+                    url_parts[2].rstrip('/'), '', '',
+                ))
         # promote_image is a RootPage field, and SLUG_MISMATCHES can land on a
         # plain Page (institutional-partnership is a pages.InstitutionalPartnership)
         image_url = self.image_url(getattr(page, 'promote_image', None))

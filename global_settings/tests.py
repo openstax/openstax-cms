@@ -502,6 +502,24 @@ class SitemapDocumentTest(TestCase):
             'the added section changed the document date',
         )
 
+    def test_last_modified_survives_with_no_form_headings_record(self):
+        """The state the previous fix missed. With no FormHeadings record the
+        static section has no dated item at all -- /adopters copy lives in this
+        repo -- so nothing sets latest_lastmod and the header came off the
+        whole document, Wagtail section included."""
+        self.headings.delete()
+        response = Client().get('/sitemap.xml')
+        self.assertIn('Last-Modified', response.headers)
+
+        request = RequestFactory().get('/sitemap.xml')
+        wagtail_only = sitemap(
+            request, sitemaps={'wagtail': SlashlessSitemap(request)})
+        self.assertEqual(
+            response.headers['Last-Modified'],
+            wagtail_only.headers['Last-Modified'],
+            'the added section changed the document date',
+        )
+
     def test_form_routes_report_their_records_publish_date(self):
         """A crawler learns the copy changed from <lastmod>, and for these
         routes that date is a real one: when the FormHeadings record was last

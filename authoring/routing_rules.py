@@ -35,6 +35,12 @@ RESERVED_SLUGS = frozenset({
     "k12", "subjects", "press", "news", "openstax-news",
     # frontend name-mismatch targets
     "edtech-partner-program", "foundation", "supporters",
+    # ...and the CMS slugs those names resolve to, which are owned by an
+    # existing page. openstax.frontend_routes maps a slug to the osweb URL, so
+    # a second page taking one of these would report the same URL as the page
+    # that owns it, and the crawler middleware's slug lookup could return
+    # either. "news" and "supporters" are already reserved above.
+    "institutional-partnership", "openstax-ally-technology-partner-program",
 })
 
 

@@ -48,6 +48,17 @@ class RoutingRulesTests(TestCase):
         with self.assertRaises(RoutingError):
             validate_page_location(self.home, "Books")
 
+    def test_mismatch_source_slugs_are_reserved(self):
+        """openstax.frontend_routes maps these slugs to an osweb URL, so the
+        page that owns the slug also owns that URL. A second page on the same
+        slug would report the same URL, and the crawler middleware's slug
+        lookup could return either one."""
+        for slug in ('institutional-partnership',
+                     'openstax-ally-technology-partner-program',
+                     'news'):
+            with self.assertRaises(RoutingError, msg=slug):
+                validate_page_location(self.home, slug)
+
     def test_non_rootpage_parent_raises(self):
         portal = page_models.FlexPage(title="Portal", slug="portal", layout=LANDING_LAYOUT, body=[])
         self.home.add_child(instance=portal)
