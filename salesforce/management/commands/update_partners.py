@@ -3,7 +3,7 @@ from django.core.management.base import BaseCommand
 from django.core.files.base import ContentFile
 
 from global_settings.functions import invalidate_cloudfront_caches
-from salesforce.models import Partner, PartnerFieldNameMapping
+from salesforce.models import Partner
 from salesforce.salesforce import Salesforce
 
 
@@ -35,7 +35,6 @@ class Command(BaseCommand):
                     "Landing_page__c, " \
                     "Account__c, " \
                     "Affordability_Cost__c, " \
-                    "Affordability_institutional__c, " \
                     "App_available__c, " \
                     "Adaptivity_adaptive_presentation__c, " \
                     "Adaptivity_affective_state__c, " \
@@ -160,7 +159,6 @@ class Command(BaseCommand):
                 p.integrated = partner['Integrated_with_OpenStax_content__c']
                 p.partner_sf_account_id = partner['Account__c'] # TODO: this can be replaced with the newer Account__r.Id field after checking where it's used (also remove from SF)
                 p.affordability_cost = affordability_cost
-                p.affordability_institutional = self.str2bool(partner['Affordability_Institutional__c'])
                 p.app_available = self.str2bool(partner['App_available__c'])
                 p.adaptivity_adaptive_presentation = self.str2bool(partner['Adaptivity_adaptive_presentation__c'])
                 p.adaptivity_affective_state = self.str2bool(partner['Adaptivity_affective_state__c'])
@@ -174,7 +172,7 @@ class Command(BaseCommand):
                 p.admin_realtime_progress = self.str2bool(partner['Admin_realtime_progress__c'])
                 p.admin_shared_students = self.str2bool(partner['Admin_shared_students__c'])
                 p.admin_syllabus = self.str2bool(partner['Admin_Syllabus__c'])
-                p.assigment_outside_resources = self.str2bool(partner['Assignment_outside_resources__c'])
+                p.assignment_outside_resources = self.str2bool(partner['Assignment_outside_resources__c'])
                 p.assignment_editing = self.str2bool(partner['Assignment_editing__c'])
                 p.assignment_multimedia = self.str2bool(partner['Assignment_multimedia__c'])
                 p.assignment_multiple_quantitative = self.str2bool(partner['Assignment_multiple_quantitative__c'])
@@ -288,42 +286,4 @@ class Command(BaseCommand):
             stale_partners = Partner.objects.exclude(salesforce_id__in=partner_ids)
             stale_partners.delete()
 
-            # set Partner Field Names to hidden = true, if they are not used by any partner
-            partners = Partner.objects.all()
-            partner_field_names = PartnerFieldNameMapping.objects.values_list('salesforce_name', flat=True)
-            hidden_field_names = PartnerFieldNameMapping.objects.values_list('salesforce_name', flat=True).filter(hidden=True)
-            partner_field_names = list(partner_field_names)
-
-            for partner in partners.iterator():
-                partner_field_names = self.check_field_names(partner, partner_field_names)
-                if partner_field_names is None:
-                    break
-            hidden_fields_to_update = [x for x in hidden_field_names if x not in partner_field_names]
-            self.check_cost_fields(partner_field_names, hidden_fields_to_update)
-            PartnerFieldNameMapping.objects.filter(salesforce_name__in=partner_field_names).update(hidden=True)
-            PartnerFieldNameMapping.objects.filter(salesforce_name__in=(list(hidden_fields_to_update))).update(hidden=False)
-
             invalidate_cloudfront_caches('salesforce/partners')
-
-    def check_field_names(self, partner, field_names):
-        attributes_to_remove = []
-        for attribute in field_names:
-            attr_value = getattr(partner, str(attribute))
-            if str(attr_value) == 'True' and partner.visible_on_website:
-                attributes_to_remove.append(attribute)
-        return [x for x in field_names if x not in attributes_to_remove]
-
-    def check_cost_fields(self, partner_field_names, hidden_fields_to_update):
-        # make sure affordability_institutional is hidden
-        if 'affordability_institutional' not in partner_field_names:
-            partner_field_names.append('affordability_institutional')
-
-        if 'affordability_institutional' in hidden_fields_to_update:
-            hidden_fields_to_update.remove('affordability_institutional')
-
-        # make sure affordability_cost is not hidden
-        if 'affordability_cost' in partner_field_names:
-            partner_field_names.remove('affordability_cost')
-
-        if 'affordability_cost' not in hidden_fields_to_update:
-            hidden_fields_to_update.append('affordability_cost')
