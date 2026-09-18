@@ -54,6 +54,7 @@ urlpatterns = [
 
     path('apps/cms/api/', include(api_urls)),
     path('apps/cms/api/search/', search, name='search'),
+    path('apps/cms/api/search/v2/', include('search.urls')),
     path('apps/cms/api/v2/pages/flex/', include('authoring.urls')),
     path('apps/cms/api/v2/', api_router.urls),
     path('apps/cms/api/salesforce/', include('salesforce.urls')),
