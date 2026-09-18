@@ -321,25 +321,36 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
         # promote_image is a RootPage field, and SLUG_MISMATCHES can land on a
         # plain Page (institutional-partnership is a pages.InstitutionalPartnership)
         image_url = self.image_url(getattr(page, 'promote_image', None))
-        # Use seo_title if available, otherwise fall back to title
+        # Use seo_title if available, otherwise fall back to title. The <title>
+        # uses it too: pages/templates/page.html has always rendered
+        # seo_title|default:page.title, so a crawler served this snapshot
+        # instead of that template was the only visitor losing the editor's
+        # chosen title.
         display_title = page.seo_title if page.seo_title else page.title
+        # Escaped for the same reason build_snapshot escapes: these are CMS
+        # strings going into attributes, and a quote in one would end the
+        # attribute early.
+        display_title = escape(display_title)
+        description = escape(page.search_description)
+        page_url = escape(page_url)
+        image_url = escape(image_url)
         return f'''<!DOCTYPE html>
             <html>
             <head>
                 <meta charset="utf-8">
-                <title>{page.title}</title>
-                <meta name="description" content="{page.search_description}">
+                <title>{display_title}</title>
+                <meta name="description" content="{description}">
                 <link rel="canonical" href="{page_url}">
                 <meta property="og:url" content="{page_url}">
                 <meta property="og:type" content="article">
                 <meta property="og:title" content="{display_title}">
-                <meta property="og:description" content="{page.search_description}">
+                <meta property="og:description" content="{description}">
                 <meta property="og:image" content="{image_url}">
                 <meta property="og:image:alt" content="OpenStax: {display_title}">
                 <meta name="twitter:card" content="summary_large_image">
                 <meta name="twitter:site" content="@OpenStax">
                 <meta name="twitter:title" content="{display_title}">
-                <meta name="twitter:description" content="{page.search_description}">
+                <meta name="twitter:description" content="{description}">
                 <meta name="twitter:image" content="{image_url}">
                 <meta name="twitter:image:alt" content="OpenStax">
             </head>

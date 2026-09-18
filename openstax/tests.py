@@ -632,6 +632,44 @@ class TestOpenGraphMiddleware(TestCase):
         self.assertNotContains(
             response, 'href="http://testserver/edtech-partner-program"')
 
+    def test_snapshot_title_uses_seo_title(self):
+        """pages/templates/page.html renders seo_title|default:page.title, so a
+        crawler served this snapshot instead of that template was the only
+        visitor losing the title the editor chose."""
+        partnership = InstitutionalPartnership(
+            title='Institutional Partnership Program Application',
+            slug='institutional-partnership',
+            seo_title='Apply to the Institutional Partner Program',
+            search_description='Partner with OpenStax',
+            heading_year='2026',
+            heading='Institutional Partner Program',
+            quote='OpenStax changed our budget.',
+            quote_author='A Partner',
+        )
+        self.homepage.add_child(instance=partnership)
+        response = self.client.get('/institutional-partnership-application')
+        self.assertContains(
+            response, '<title>Apply to the Institutional Partner Program</title>')
+
+    def test_snapshot_escapes_cms_text(self):
+        """These are CMS strings going into attributes. A quote in one would
+        end the attribute early, so they are escaped -- as build_snapshot
+        already does for the routes with no page."""
+        partnership = InstitutionalPartnership(
+            title='Institutional Partnership Program Application',
+            slug='institutional-partnership',
+            seo_title='The "Institutional" Partner Program',
+            search_description='Say "yes" to OpenStax',
+            heading_year='2026',
+            heading='Institutional Partner Program',
+            quote='OpenStax changed our budget.',
+            quote_author='A Partner',
+        )
+        self.homepage.add_child(instance=partnership)
+        response = self.client.get('/institutional-partnership-application')
+        self.assertContains(response, 'content="Say &quot;yes&quot; to OpenStax"')
+        self.assertNotContains(response, 'content="Say "yes" to OpenStax"')
+
     def test_mismatch_target_requested_directly_still_redirects(self):
         """/news and /institutional-partnership are 301s in production (to
         /blog and /higher-education). Matching on the target slug alone let a

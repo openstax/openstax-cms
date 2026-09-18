@@ -3,6 +3,9 @@ from django.test import TestCase
 from wagtail.models import Page
 from pages import models as page_models
 from authoring.routing_rules import validate_page_location, RoutingError
+from openstax.frontend_routes import (
+    FORM_PAGE_ROUTES, PAGE_ROUTES_BY_SLUG, SLUG_MISMATCHES, STATIC_PAGES,
+)
 from django.contrib.auth import get_user_model
 from authoring.permissions import CanDraftFlexPages
 from authoring.drafts import (
@@ -48,14 +51,31 @@ class RoutingRulesTests(TestCase):
         with self.assertRaises(RoutingError):
             validate_page_location(self.home, "Books")
 
+    def test_every_frontend_route_slug_is_reserved(self):
+        """openstax.frontend_routes owns these slugs and URLs: the crawler
+        middleware resolves them, and the page models report them from
+        get_url_parts. A FlexPage on one would claim a URL another page already
+        answers.
+
+        Derived from the registry rather than listed, so a route added there is
+        covered without anyone remembering this file. The test asserts the
+        derivation rather than a copy of it -- a hardcoded list here would go
+        stale in exactly the way the derivation prevents."""
+        registry_slugs = frozenset({
+            *SLUG_MISMATCHES, *SLUG_MISMATCHES.values(),
+            *PAGE_ROUTES_BY_SLUG, *PAGE_ROUTES_BY_SLUG.values(),
+            *FORM_PAGE_ROUTES, *STATIC_PAGES,
+        })
+        self.assertTrue(registry_slugs)
+        for slug in sorted(registry_slugs):
+            with self.assertRaises(RoutingError, msg=slug):
+                validate_page_location(self.home, slug)
+
     def test_mismatch_source_slugs_are_reserved(self):
-        """openstax.frontend_routes maps these slugs to an osweb URL, so the
-        page that owns the slug also owns that URL. A second page on the same
-        slug would report the same URL, and the crawler middleware's slug
-        lookup could return either one."""
+        """The case that prompted the derivation: the slug a mismatch resolves
+        to is owned by the page that has it, and was not reserved."""
         for slug in ('institutional-partnership',
-                     'openstax-ally-technology-partner-program',
-                     'news'):
+                     'openstax-ally-technology-partner-program'):
             with self.assertRaises(RoutingError, msg=slug):
                 validate_page_location(self.home, slug)
 
