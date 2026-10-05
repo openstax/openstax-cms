@@ -485,6 +485,7 @@ CRONJOBS = [
 if ENVIRONMENT == 'prod':
     CRONJOBS.append(('0 6 1 * *', 'django.core.management.call_command', ['check_redirects']))
     CRONJOBS.append(('0 0 * * *', 'django.core.management.call_command', ['update_opportunities']))
+    CRONJOBS.append(('0 1 * * *', 'django.core.management.call_command', ['update_book_adoptions']))
 
 CRONTAB_COMMAND_PREFIX = os.getenv('CRONTAB_COMMAND_PREFIX', '')
 CRONTAB_COMMAND_SUFFIX = os.getenv('CRONTAB_COMMAND_SUFFIX', '')

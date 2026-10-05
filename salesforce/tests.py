@@ -13,8 +13,9 @@ from django.utils import timezone
 from books.models import BookIndex, Book
 from donations.models import ThankYouNote
 from pages.models import RootPage
-from salesforce.models import SalesforceSettings, MapBoxDataset, Partner, AdoptionOpportunityRecord, SalesforceForms, School, ResourceDownload
+from salesforce.models import SalesforceSettings, MapBoxDataset, Partner, AdoptionOpportunityRecord, SalesforceForms, SavingsNumber, School, ResourceDownload
 from salesforce.management.commands.update_opportunities import Command as UpdateOpportunitiesCommand
+from salesforce.school_year import school_year_base_year
 from salesforce.salesforce import Salesforce as SF
 from salesforce.serializers import PartnerSerializer
 from simple_salesforce.exceptions import SalesforceMalformedRequest
@@ -530,6 +531,147 @@ class UpdateOpportunitiesCommandTest(TestCase):
         record['Opportunity__r']['Contact__r']['Accounts_UUID__c'] = 'not-a-uuid'
         self.run_command([record], [])
         self.assertEqual(AdoptionOpportunityRecord.objects.count(), 0)
+
+
+class SchoolYearBaseYearTest(TestCase):
+    def test_rolls_over_on_july_first(self):
+        self.assertEqual(school_year_base_year(datetime.date(2024, 6, 30)), 2023)
+        self.assertEqual(school_year_base_year(datetime.date(2024, 7, 1)), 2024)
+        self.assertEqual(school_year_base_year(datetime.date(2025, 1, 15)), 2024)
+
+
+class UpdateBookAdoptionsCommandTest(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        root_page = Page.objects.get(title="Root")
+        homepage = RootPage(title="Hello World", slug="hello-world")
+        root_page.add_child(instance=homepage)
+        book_index = BookIndex(title="Book Index",
+                               page_description="Test",
+                               dev_standard_1_description="Test",
+                               dev_standard_2_description="Test",
+                               dev_standard_3_description="Test",
+                               dev_standard_4_description="Test",
+                               )
+        homepage.add_child(instance=book_index)
+        with open("pages/static/images/openstax.png", 'rb') as image_file:
+            image_content = image_file.read()
+        cls.test_doc = Document.objects.create(
+            title='Test Doc', file=SimpleUploadedFile(name='openstax.png', content=image_content))
+
+    def make_book(self, slug, salesforce_name, **fields):
+        book = Book(title=slug, slug=slug, description="Test Book", salesforce_name=salesforce_name,
+                    cover=self.test_doc, title_image=self.test_doc,
+                    publish_date=datetime.date.today(), locale=Page.objects.get(title="Root").locale,
+                    **fields)
+        BookIndex.objects.get(title="Book Index").add_child(instance=book)
+        return book
+
+    def row(self, name='Precalc', official_name='Precalculus', adoptions=276, savings=410881.32):
+        return {'attributes': {}, 'name': name, 'official_name': official_name,
+                'adoptions': adoptions, 'savings': savings}
+
+    def run_command(self, records, *args):
+        with patch('salesforce.management.commands.update_book_adoptions.invalidate_cloudfront_caches') as invalidate, \
+                patch('salesforce.management.commands.update_book_adoptions.Salesforce') as salesforce:
+            sf = salesforce.return_value.__enter__.return_value
+            sf.query_all.return_value = {'records': records}
+            call_command('update_book_adoptions', *args)
+        self.sf = sf
+        self.invalidate = invalidate
+        return sf.query_all.call_args.args[0]
+
+    def test_matches_book_by_name(self):
+        book = self.make_book('precalc', 'Precalc')
+
+        self.run_command([self.row()])
+
+        book.refresh_from_db()
+        self.assertEqual(book.adoptions, 276)
+        self.invalidate.assert_called_once_with('books')
+
+    def test_matches_book_by_official_name(self):
+        book = self.make_book('precalculus', 'Precalculus')
+
+        self.run_command([self.row()])
+
+        book.refresh_from_db()
+        self.assertEqual(book.adoptions, 276)
+
+    def test_books_sharing_a_salesforce_name_both_update(self):
+        first = self.make_book('precalc-a', 'Precalc')
+        second = self.make_book('precalc-b', 'Precalc')
+
+        self.run_command([self.row()])
+
+        for book in (first, second):
+            book.refresh_from_db()
+            self.assertEqual(book.adoptions, 276)
+
+    def test_unmatched_book_is_cleared(self):
+        book = self.make_book('stale', 'Gone Book', adoptions=50, savings=1000)
+        no_name = self.make_book('unnamed', None, adoptions=5, savings=10)
+
+        self.run_command([self.row()])
+
+        for b in (book, no_name):
+            b.refresh_from_db()
+            self.assertIsNone(b.adoptions)
+            self.assertIsNone(b.savings)
+
+    def test_savings_rounded_to_int(self):
+        book = self.make_book('precalc', 'Precalc')
+
+        self.run_command([self.row(savings=410881.6)])
+
+        book.refresh_from_db()
+        self.assertEqual(book.savings, 410882)
+
+    def test_savings_number_row_updated(self):
+        SavingsNumber.objects.create(adoptions_count=1, savings=1)
+        self.make_book('precalc', 'Precalc')
+
+        self.run_command([self.row(), self.row(name='Anatomy & Physiology', official_name='Anatomy and Physiology',
+                                               adoptions=24, savings=100.4)])
+
+        self.assertEqual(SavingsNumber.objects.count(), 1)
+        latest = SavingsNumber.objects.get()
+        self.assertEqual(latest.adoptions_count, 300)
+        self.assertEqual(latest.savings, 410982)
+
+    def test_savings_number_row_created_when_missing(self):
+        self.run_command([self.row()])
+
+        self.assertEqual(SavingsNumber.objects.get().adoptions_count, 276)
+
+    def test_base_year_argument_is_used_in_query(self):
+        query = self.run_command([], '--base-year', '2024')
+
+        self.assertIn('Base_Year__c = 2024', query)
+
+    def test_default_base_year_follows_july_rollover(self):
+        real_datetime = datetime.datetime
+        for today, expected in ((real_datetime(2026, 6, 30), 2025), (real_datetime(2026, 7, 1), 2026)):
+            with patch('salesforce.management.commands.update_book_adoptions.datetime') as dt:
+                dt.datetime.now.return_value = today
+                query = self.run_command([])
+            self.assertIn(f'Base_Year__c = {expected}', query)
+
+    def test_query_counts_only_confirmed_adoptions(self):
+        query = self.run_command([])
+
+        self.assertIn("'OpenStax Confirmed Adoption'", query)
+        self.assertIn("'Third Party Confirmed Adoption'", query)
+        self.assertNotIn('User Behavior Informed Adoption', query)
+
+    def test_row_without_a_book_is_skipped(self):
+        book = self.make_book('precalc', 'Precalc')
+
+        self.run_command([self.row(name=None, official_name=None, adoptions=999, savings=5), self.row()])
+
+        book.refresh_from_db()
+        self.assertEqual(book.adoptions, 276)
+        self.assertEqual(SavingsNumber.objects.get().adoptions_count, 276)
 
 
 class ResourceDownloadTest(TestCase):

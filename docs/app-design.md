@@ -131,6 +131,7 @@
   * Opportunities
 * Uses SimpleSalesforce to connect to Salesforce API
 * Opportunities are used for the renewal form which users are asked to update after a period of time.
+* `update_book_adoptions` runs nightly in prod and writes each book's confirmed adoption and savings counts (`Book.adoptions`, `Book.savings`) and the `SavingsNumber` totals from Salesforce. Those fields have no editor panel; the sync owns them.
 
 ### Snippets
 * Snippets are objects that can be reused on pages for specific content

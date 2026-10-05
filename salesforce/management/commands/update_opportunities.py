@@ -4,6 +4,7 @@ from django.core.management.base import BaseCommand
 from django.db import transaction
 from salesforce.models import AdoptionOpportunityRecord
 from salesforce.salesforce import Salesforce
+from salesforce.school_year import school_year_base_year
 from global_settings.functions import invalidate_cloudfront_caches
 import sentry_sdk
 from sentry_sdk.crons import monitor
@@ -33,9 +34,7 @@ class Command(BaseCommand):
         return query
 
     def school_year_base_year(self, date):
-        if date.month < 7:
-            return date.year - 1
-        return date.year
+        return school_year_base_year(date)
 
     def account_uuid(self, record):
         """Return the parsed Accounts UUID for a Salesforce adoption record.
