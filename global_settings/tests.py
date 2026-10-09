@@ -8,7 +8,7 @@ from botocore.exceptions import ClientError, NoCredentialsError
 from django.test import TestCase, Client
 from django.utils import timezone
 from wagtail.contrib.sitemaps.sitemap_generator import Sitemap
-from wagtail.models import Site
+from wagtail.models import Page, Site
 from wagtail.signals import page_published
 
 from global_settings.functions import (
@@ -19,6 +19,7 @@ from global_settings.functions import (
 )
 from global_settings.models import CloudfrontDistribution, Footer
 from global_settings.views import SlashlessSitemap
+from pages.models import FlexPage, InstitutionalPartnership, RootPage
 
 
 class SlashlessSitemapTest(TestCase):
@@ -72,6 +73,47 @@ class SitemapViewTest(TestCase):
                 f'sitemap <loc> should be slash-less: {loc}',
             )
 
+
+class SitemapMismatchedPagesTest(TestCase):
+    """ A page whose slug differs from the URL osweb serves it at has to be
+        listed at that URL. get_url_parts feeds the sitemap <loc>, so without
+        the override the sitemap advertised /news (which 301s to /blog) and
+        /institutional-partnership (which 301s to /higher-education) while the
+        URLs that work went unlisted (CORE-736).
+    """
+
+    def setUp(self):
+        root_page = Page.objects.get(title='Root')
+        site = Site.objects.filter(is_default_site=True).first()
+        site.root_page = root_page
+        site.save()
+        self.homepage = RootPage(title='Hello World', slug='openstax-homepage')
+        root_page.add_child(instance=self.homepage)
+
+    def test_mismatched_pages_are_listed_at_the_url_osweb_serves(self):
+        press = FlexPage(title='Press', slug='news')
+        self.homepage.add_child(instance=press)
+        partnership = InstitutionalPartnership(
+            title='Institutional Partnership Program Application',
+            slug='institutional-partnership',
+            heading_year='2026',
+            heading='Institutional Partner Program',
+            quote='OpenStax changed our budget.',
+            quote_author='A Partner',
+        )
+        self.homepage.add_child(instance=partnership)
+
+        response = Client().get('/sitemap.xml')
+        self.assertEqual(response.status_code, 200)
+        paths = [
+            re.sub(r'^https?://[^/]+', '', loc)
+            for loc in re.findall(r'<loc>(.*?)</loc>', response.content.decode())
+        ]
+        self.assertIn('/press', paths)
+        self.assertIn('/institutional-partnership-application', paths)
+        # ...and not the slugs that redirect away
+        self.assertNotIn('/news', paths)
+        self.assertNotIn('/institutional-partnership', paths)
 
 
 class FooterSocialLinksApiTest(TestCase):

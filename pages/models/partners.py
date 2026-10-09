@@ -7,6 +7,7 @@ from wagtail.models import Page
 from wagtail.api import APIField
 
 from openstax.api_fields import ExpandedRichTextField
+from openstax.frontend_routes import PAGE_ROUTES_BY_SLUG
 from openstax.functions import build_image_url
 from openstax.preview import FrontendPreviewMixin
 
@@ -164,6 +165,24 @@ class InstitutionalPartnership(FrontendPreviewMixin, Page):
     parent_page_types = ['pages.RootPage']
     template = 'page.html'
     max_count = 1
+
+    def get_url_parts(self, *args, **kwargs):
+        url_parts = super().get_url_parts(*args, **kwargs)
+
+        if url_parts is None:
+            return None
+
+        # osweb serves this page at /institutional-partnership-application, not
+        # at its slug: /institutional-partnership 301s to /higher-education. So
+        # the tree path this would otherwise report is a URL that redirects
+        # away -- which is how it came to be the sitemap entry for a page whose
+        # working URL was never listed at all. Same map FlexPage uses.
+        route = PAGE_ROUTES_BY_SLUG.get(self.slug)
+        if route:
+            site_id, site_root_url, _ = url_parts
+            return site_id, site_root_url, '/{}'.format(route)
+
+        return url_parts
 
 
 class InstitutionalPartnerProgramPage(FrontendPreviewMixin, Page):
