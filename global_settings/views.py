@@ -1,7 +1,12 @@
+from datetime import datetime, time, timezone
+
+from django.contrib.sitemaps import Sitemap as StaticSitemap
 from django.contrib.sitemaps import views as sitemap_views
 from django.http import HttpResponseServerError, HttpResponse
+from django.utils.http import http_date
 from wagtail.contrib.sitemaps.sitemap_generator import Sitemap
 from global_settings.functions import invalidate_cloudfront_caches
+from openstax.frontend_routes import FORM_PAGE_ROUTES, form_headings, sitemap_routes
 
 
 def throw_error(request):
@@ -39,7 +44,111 @@ class SlashlessSitemap(Sitemap):
         return urls
 
 
+class FrontendOnlyPagesSitemap(StaticSitemap):
+    """ Routes osweb serves from the SPA with no Wagtail page of their own.
+
+        SlashlessSitemap walks the page tree, so it cannot see these -- which is
+        why /adoption was absent from sitemap.xml entirely and Google had no way
+        to discover it. Sourced from the same registry the OG middleware
+        resolves, so a route cannot be advertised here while still 404ing to
+        crawlers (the failure /blog is in today).
+
+        <loc>s are slash-less to match SlashlessSitemap and the canonical URLs
+        the frontend serves.
+    """
+    protocol = 'https'
+    changefreq = 'monthly'
+
+    def items(self):
+        # sitemap_routes() is evaluated per request, not at import: the form
+        # routes it returns depend on CMS content, and a route the middleware
+        # can't answer must not be advertised here. The record is held for
+        # lastmod() below, so this is one query rather than one per route.
+        self.headings = form_headings()
+        return list(sitemap_routes(self.headings))
+
+    def location(self, route):
+        return '/{}'.format(route)
+
+    def lastmod(self, route):
+        """ When the copy behind `route` last changed.
+
+            Only the form routes have a CMS record to date. STATIC_PAGES copy
+            lives in this repo, so there is nothing truthful to report for it
+            and it gets no <lastmod> rather than an invented one.
+        """
+        if route in FORM_PAGE_ROUTES:
+            return getattr(self.headings, 'last_published_at', None)
+        return None
+
+    def _urls(self, page, protocol, domain):
+        urls = super()._urls(page, protocol, domain)
+        # Django sets latest_lastmod only when *every* item has a lastmod, and
+        # views.sitemap drops the response's Last-Modified header unless every
+        # section reports one. So an undated /adopters here would have taken
+        # that header off the whole document, including the Wagtail section
+        # that supplies it today. Report the newest date this section knows.
+        if getattr(self, 'latest_lastmod', None) is None:
+            known = [url['lastmod'] for url in urls if url.get('lastmod')]
+            if known:
+                self.latest_lastmod = max(known)
+        return urls
+
+
 def sitemap(request, sitemaps=None, **kwargs):
+    """ Both sections in one document.
+
+        django.contrib.sitemaps.views.sitemap concatenates every section's URLs
+        into a single <urlset>; it is views.index that emits a sitemap index and
+        reverses a per-section URL name. Only the former is routed
+        (openstax/urls.py), so there are no sitemap-<section>.xml URLs to wire
+        up and adding a section needs no URLconf change.
+    """
     if not sitemaps:
-        sitemaps = {"wagtail": SlashlessSitemap(request)}
-    return sitemap_views.sitemap(request, sitemaps, **kwargs)
+        sitemaps = {
+            "wagtail": SlashlessSitemap(request),
+            "frontend-only": FrontendOnlyPagesSitemap(),
+        }
+    response = sitemap_views.sitemap(request, sitemaps, **kwargs)
+    _keep_last_modified(response, sitemaps)
+    # The frontend-only section is derived from CMS state at request time, so a
+    # cached copy can advertise /adoption after the middleware has stopped
+    # serving it -- the inconsistency this section exists to prevent, just
+    # moved to the edge. CloudFront doesn't cache this path today (every
+    # request is a Miss, no Cache-Control, no Age), but that is CDN
+    # configuration rather than anything this repo controls, and page-publish
+    # invalidation only covers /apps/cms/api/* (global_settings.functions).
+    # Saying it in the response keeps the invariant independent of both.
+    response.headers['Cache-Control'] = 'no-cache'
+    return response
+
+
+def _keep_last_modified(response, sitemaps):
+    """ Date the document from the newest date any section reports.
+
+        views.sitemap sets Last-Modified only when *every* section reports a
+        latest_lastmod, and Django only sets that when every item in a section
+        has a lastmod. The frontend-only section can't always manage it: with
+        no FormHeadings record it has nothing but /adopters, whose copy lives
+        in this repo and has no honest date. Left alone, adding that section
+        takes the header off the whole document, including the Wagtail section
+        that supplies it in production today.
+
+        Sections have already built their URLs by the time this runs, so
+        latest_lastmod is populated where there was anything to populate it
+        with.
+    """
+    if response.headers.get('Last-Modified'):
+        return
+    known = [
+        lastmod for lastmod in
+        (getattr(section, 'latest_lastmod', None) for section in sitemaps.values())
+        if lastmod is not None
+    ]
+    if not known:
+        return
+    newest = max(known)
+    if not isinstance(newest, datetime):
+        # a date, which Sitemap allows; midnight is the only defensible time
+        newest = datetime.combine(newest, time.min, tzinfo=timezone.utc)
+    response.headers['Last-Modified'] = http_date(newest.timestamp())
