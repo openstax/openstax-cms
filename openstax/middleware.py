@@ -206,7 +206,8 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
             headings = form_headings()
             heading = form_route_heading(headings, route)
             # No copy to build a snapshot from, so fall through rather than
-            # serve empty tags.
+            # serve empty tags. sitemap_routes() applies the same test, so a
+            # route in this state isn't advertised either.
             if not heading:
                 return None
             return HttpResponse(
