@@ -1,17 +1,22 @@
 from django.http import HttpResponsePermanentRedirect, HttpResponse
 from django.core.handlers.base import BaseHandler
 from django.middleware.common import CommonMiddleware
+from django.utils.html import escape
 from django.utils.http import escape_leading_slashes
 from django.conf import settings
 
 from ua_parser import user_agent_parser
-from urllib.parse import unquote
+from urllib.parse import unquote, urlsplit, urlunsplit
+from wagtail.models import Locale, Page
 
 from api.models import FeatureFlag
 from books.models import Book, BookIndex
+from openstax.frontend_routes import SLUG_MISMATCHES
 from openstax.functions import build_image_url
-from news.models import NewsArticle
-from pages.models import Supporters, PrivacyPolicy, K12Subject, Subject, Subjects, RootPage, FlexPage
+from news.models import NewsArticle, NewsIndex
+from pages.models import (
+    Supporters, PrivacyPolicy, K12Subject, Subject, Subjects, RootPage, FlexPage,
+)
 
 
 class CommonMiddlewareAppendSlashWithoutRedirect(CommonMiddleware):
@@ -98,10 +103,17 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
                 page_slug = "home" if url_path == '' else url_path.rsplit('/', 1)[-1]
 
                 if self.redirect_path_found(url_path):
-                    if page_slug == 'foundation':
-                        page_slug = 'supporters'
+                    route = url_path.lstrip('/')
 
-                    page = self.get_page(url_path, page_slug)
+                    # A top-level osweb URL can differ from the slug of the CMS
+                    # page it renders. Only remap a whole path: a blog post
+                    # slugged 'press' must not resolve to the press page.
+                    was_remapped = False
+                    if route == page_slug and page_slug in SLUG_MISMATCHES:
+                        page_slug = SLUG_MISMATCHES[page_slug]
+                        was_remapped = True
+
+                    page = self.get_page(url_path, page_slug, was_remapped)
                     if page:
                         instance = page[0]
                         # answer-engine crawlers don't execute JS and can only cite
@@ -109,57 +121,112 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
                         # content-bearing template
                         if isinstance(instance, FlexPage):
                             return instance.serve(request).render()
-                        template = self.build_template(instance, full_url)
+                        template = self.build_template(
+                            instance, full_url, was_remapped, request)
                         return HttpResponse(template)
         return self.get_response(request)
 
-    def get_page(self, url_path, page_slug):
+    def get_page(self, url_path, page_slug, was_remapped=False):
+        # Whatever this returns is rendered straight to the crawler, so every
+        # branch goes through live_public(). Only the lookups added for the
+        # mismatch map and the blog index are also pinned to the default
+        # locale; doing that to the older routes would change which page a
+        # crawler gets today, which is a separate decision from keeping
+        # drafts and restricted pages out.
         if '/details/books/' in url_path:
-            return Book.objects.filter(slug=page_slug)
+            return self.live_public(Book.objects).filter(slug=page_slug)
+        elif url_path == '/blog':
+            # The blog index, not a post. url_path has already had its trailing
+            # slash stripped, so the '/blog/' test below can never match it --
+            # which left the index 404ing even though sitemap.xml advertises it.
+            #
+            # Narrowed rather than .all(): the caller serves whatever comes back
+            # first, so an unpublished index or the es one could be served in
+            # place of the live English page this route is for.
+            return self.live_public(NewsIndex.objects).filter(
+                locale=Locale.get_default()
+            )
         elif '/blog/' in url_path:
-            return NewsArticle.objects.filter(slug=page_slug)
+            return self.live_public(NewsArticle.objects).filter(slug=page_slug)
         elif '/privacy' in url_path:
-            return PrivacyPolicy.objects.filter(slug='privacy-policy')
+            return self.live_public(PrivacyPolicy.objects).filter(
+                slug='privacy-policy')
         elif '/k12' in url_path:
-            return (K12Subject.objects.filter(slug='k12-' + page_slug)
-                    or FlexPage.objects.filter(slug='k12-' + page_slug))
+            slug = 'k12-' + page_slug
+            return (self.live_public(K12Subject.objects).filter(slug=slug)
+                    or self.live_public(FlexPage.objects).filter(slug=slug))
         elif '/subjects' in url_path:
             flag = FeatureFlag.objects.filter(name='new_subjects')
             if flag[0].feature_active:
                 if page_slug == 'subjects':
                     page_slug = 'new-subjects'
-                    return Subjects.objects.filter(slug=page_slug)
+                    return self.live_public(Subjects.objects).filter(
+                        slug=page_slug)
                 else:
-                    return Subject.objects.filter(slug=page_slug + '-books')
+                    return self.live_public(Subject.objects).filter(
+                        slug=page_slug + '-books')
             else:
-                return BookIndex.objects.filter(slug='subjects')
+                return self.live_public(BookIndex.objects).filter(
+                    slug='subjects')
         else:
-            return self.page_by_slug(page_slug)
+            return self.page_by_slug(page_slug, was_remapped)
 
-    def build_template(self, page, page_url):
+    def build_template(self, page, page_url, was_remapped=False, request=None):
         # canonical and og:url point at the clean URL so query-string
         # variants consolidate their signal onto one page
         page_url = page_url.split('?', 1)[0].rstrip('/')
-        image_url = self.image_url(page.promote_image)
-        # Use seo_title if available, otherwise fall back to title
+        if was_remapped:
+            # The request arrived on an osweb alias, and the alias is not
+            # always the canonical URL: /openstax-ally-technology-partner-
+            # program serves that page too, and is the one to keep. Point the
+            # alias at the page's own URL so the two consolidate instead of
+            # competing for the same content. Where the page reports the alias
+            # itself -- institutional-partnership does, via
+            # PAGE_ROUTES_BY_SLUG -- this changes nothing.
+            #
+            # Only the path is taken from the page. The host stays the one the
+            # request came in on, so a non-production site can't emit a
+            # canonical pointing at the default site's hostname.
+            url_parts = page.get_url_parts(request)
+            if url_parts:
+                requested = urlsplit(page_url)
+                page_url = urlunsplit((
+                    requested.scheme, requested.netloc,
+                    url_parts[2].rstrip('/'), '', '',
+                ))
+        # promote_image is a RootPage field, and SLUG_MISMATCHES can land on a
+        # plain Page (institutional-partnership is a pages.InstitutionalPartnership)
+        image_url = self.image_url(getattr(page, 'promote_image', None))
+        # Use seo_title if available, otherwise fall back to title. The <title>
+        # uses it too: pages/templates/page.html has always rendered
+        # seo_title|default:page.title, so a crawler served this snapshot
+        # instead of that template was the only visitor losing the editor's
+        # chosen title.
         display_title = page.seo_title if page.seo_title else page.title
+        # Escaped for the same reason build_snapshot escapes: these are CMS
+        # strings going into attributes, and a quote in one would end the
+        # attribute early.
+        display_title = escape(display_title)
+        description = escape(page.search_description)
+        page_url = escape(page_url)
+        image_url = escape(image_url)
         return f'''<!DOCTYPE html>
             <html>
             <head>
                 <meta charset="utf-8">
-                <title>{page.title}</title>
-                <meta name="description" content="{page.search_description}">
+                <title>{display_title}</title>
+                <meta name="description" content="{description}">
                 <link rel="canonical" href="{page_url}">
                 <meta property="og:url" content="{page_url}">
                 <meta property="og:type" content="article">
                 <meta property="og:title" content="{display_title}">
-                <meta property="og:description" content="{page.search_description}">
+                <meta property="og:description" content="{description}">
                 <meta property="og:image" content="{image_url}">
                 <meta property="og:image:alt" content="OpenStax: {display_title}">
                 <meta name="twitter:card" content="summary_large_image">
                 <meta name="twitter:site" content="@OpenStax">
                 <meta name="twitter:title" content="{display_title}">
-                <meta name="twitter:description" content="{page.search_description}">
+                <meta name="twitter:description" content="{description}">
                 <meta name="twitter:image" content="{image_url}">
                 <meta name="twitter:image:alt" content="OpenStax">
             </head>
@@ -172,8 +239,46 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
     def image_url(self, image):
         return build_image_url(image) or ''
 
-    def page_by_slug(self, page_slug):
+    @staticmethod
+    def live_public(manager):
+        """ Published pages a signed-out visitor may read.
+
+            Anything this middleware selects is rendered straight to the
+            crawler, bypassing the routing and restriction checks Wagtail would
+            normally apply -- so the queryset has to do that job itself. live()
+            drops drafts and unpublished pages; public() drops pages behind a
+            view restriction.
+        """
+        return manager.live().public()
+
+    def page_by_slug(self, page_slug, was_remapped=False):
         if page_slug == 'supporters':
-            return Supporters.objects.all()
+            # Reached as /supporters and, through SLUG_MISMATCHES, as
+            # /foundation. Either way the result is served directly, so it has
+            # to be filtered like the other lookups here: .all() would hand a
+            # crawler a draft, a view-restricted page, or the es copy.
+            return self.live_public(Supporters.objects).filter(
+                locale=Locale.get_default()
+            )
         if page_slug == 'home':
-            return RootPage.objects.filter(locale=1)
+            return self.live_public(RootPage.objects).filter(locale=1)
+        # Only for a path SLUG_MISMATCHES actually remapped, where the osweb URL
+        # differs from where the page sits in the tree -- so Wagtail's own
+        # routing can't serve it and falling through would 404. Every other
+        # path keeps falling through to Wagtail, which serves the page's full
+        # template rather than a bare meta snapshot.
+        #
+        # Testing the slug alone wasn't enough: /news and /institutional-
+        # partnership match it when requested directly, and both are 301s in
+        # production (to /blog and /higher-education). Answering them here
+        # short-circuits RedirectMiddleware, so a crawler got a 200 snapshot of
+        # a page that had deliberately been moved -- competing with the URL it
+        # was moved to.
+        if was_remapped:
+            # live() alone isn't enough: this result is served directly, so it
+            # never reaches Wagtail's view-restriction check. public() is what
+            # keeps a restricted page from becoming crawler-readable here.
+            return self.live_public(Page.objects).filter(
+                slug=page_slug, locale=Locale.get_default()
+            ).specific()
+        return None

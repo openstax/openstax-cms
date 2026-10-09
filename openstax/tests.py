@@ -6,8 +6,12 @@ from django.test import TestCase, SimpleTestCase, Client, RequestFactory, overri
 from django.http import HttpResponse, HttpResponseNotFound
 from django.core.files.uploadedfile import SimpleUploadedFile
 from openstax.middleware import CommonMiddlewareAppendSlashWithoutRedirect
-from wagtail.models import Page
-from pages.models import RootPage, FlexPage
+from wagtail.contrib.redirects.models import Redirect
+from wagtail.models import Locale, Page, PageViewRestriction, Site
+from pages.models import (
+    RootPage, FlexPage, GeneralPage, InstitutionalPartnership, PrivacyPolicy,
+    Supporters,
+)
 from books.models import BookIndex, Book
 from news.models import NewsIndex, NewsArticle
 from snippets.models import Subject, BlogContentType, BlogCollection
@@ -372,3 +376,342 @@ class TestOpenGraphMiddleware(TestCase):
         self.assertContains(response, '<body></body>')
         self.assertNotContains(response, 'application/ld+json')
 
+
+    # --- Routes osweb serves under a URL that isn't their CMS slug, and the
+    # blog index. These 404'd to crawlers while returning a working page to
+    # every browser (CORE-736).
+
+    def test_press_resolves_the_news_page(self):
+        """osweb serves /press from the CMS page slugged 'news' -- a slug
+        mismatch the middleware has to mirror, or /press (plus /newsletter and
+        /newsroom, which redirect to it) all dead-end."""
+        press = FlexPage(title='Press', slug='news',
+                         seo_title='OpenStax Press Room',
+                         search_description='News and press resources')
+        self.homepage.add_child(instance=press)
+        response = self.client.get('/press')
+        self.assertContains(response, 'OpenStax Press Room')
+
+    def test_institutional_partnership_application_resolves_its_page(self):
+        """osweb serves /institutional-partnership-application from the page
+        slugged 'institutional-partnership' -- the second slug mismatch, and
+        the one that exercises the generic Page lookup: that page is a
+        pages.InstitutionalPartnership, so it gets the meta snapshot rather
+        than a FlexPage's full template."""
+        partnership = InstitutionalPartnership(
+            title='Institutional Partnership Program Application',
+            slug='institutional-partnership',
+            seo_title='Institutional Partnership Program Application',
+            search_description='Apply to the Institutional Partner Program',
+            heading_year='2026',
+            heading='Institutional Partner Program',
+            quote='OpenStax changed our budget.',
+            quote_author='A Partner',
+        )
+        self.homepage.add_child(instance=partnership)
+        response = self.client.get('/institutional-partnership-application')
+        self.assertContains(response, 'Apply to the Institutional Partner Program')
+        # the snapshot's canonical is the requested URL, which is also what
+        # this page's get_url_parts now reports (see PAGE_ROUTES_BY_SLUG)
+        self.assertContains(
+            response,
+            'rel="canonical" href="http://testserver/institutional-partnership-application"')
+
+    def test_restricted_page_is_not_served_through_a_slug_mismatch(self):
+        """A mismatched slug is served directly rather than through Wagtail's
+        routing, so its view restrictions are never checked. public() has to
+        exclude the page here or /press hands a restricted page to crawlers."""
+        press = FlexPage(title='Press', slug='news',
+                         seo_title='OpenStax Press Room',
+                         search_description='News and press resources')
+        self.homepage.add_child(instance=press)
+        PageViewRestriction.objects.create(
+            page=press, restriction_type=PageViewRestriction.LOGIN)
+        response = self.client.get('/press')
+        self.assertNotContains(response, 'OpenStax Press Room', status_code=404)
+
+    def test_unpublished_page_is_not_served_through_a_slug_mismatch(self):
+        press = FlexPage(title='Press', slug='news',
+                         seo_title='OpenStax Press Room',
+                         search_description='News and press resources')
+        self.homepage.add_child(instance=press)
+        press.live = False
+        press.save()
+        response = self.client.get('/press')
+        self.assertNotContains(response, 'OpenStax Press Room', status_code=404)
+
+    def _assert_served_only_while_live_and_public(self, path, page, marker):
+        """Every page the middleware picks is rendered to the crawler directly,
+        without Wagtail's routing, so a draft or a view-restricted page is
+        served unless the lookup itself excludes it. Status is left open: once
+        the middleware declines, Wagtail decides, and a restricted page gets a
+        login redirect rather than a 404."""
+        self.assertContains(self.client.get(path), marker)
+
+        restriction = PageViewRestriction.objects.create(
+            page=page, restriction_type=PageViewRestriction.LOGIN)
+        response = self.client.get(path)
+        self.assertNotEqual(response.status_code, 200, 'restricted: ' + path)
+        self.assertNotIn(marker, response.content.decode(), 'restricted: ' + path)
+        restriction.delete()
+
+        page.live = False
+        page.save()
+        response = self.client.get(path)
+        self.assertNotEqual(response.status_code, 200, 'unpublished: ' + path)
+        self.assertNotIn(marker, response.content.decode(), 'unpublished: ' + path)
+
+    def test_home_page_is_served_only_while_live_and_public(self):
+        self._assert_served_only_while_live_and_public(
+            '/', self.homepage, 'OpenStax Home')
+
+    def test_k12_page_is_served_only_while_live_and_public(self):
+        k12_math = FlexPage(title='Math', slug='k12-math',
+                            seo_title='K12 Math SEO Title',
+                            search_description='K12 Math page description')
+        self.homepage.add_child(instance=k12_math)
+        self._assert_served_only_while_live_and_public(
+            '/k12/math', k12_math, 'K12 Math SEO Title')
+
+    def test_privacy_page_is_served_only_while_live_and_public(self):
+        privacy = PrivacyPolicy(
+            title='Privacy Policy', slug='privacy-policy',
+            intro_heading='Privacy', privacy_content='<p>We value privacy.</p>',
+            seo_title='OpenStax Privacy Notice',
+            search_description='How OpenStax handles data')
+        self.homepage.add_child(instance=privacy)
+        self._assert_served_only_while_live_and_public(
+            '/privacy', privacy, 'OpenStax Privacy Notice')
+
+    def test_book_is_served_only_while_live_and_public(self):
+        test_image = SimpleUploadedFile(
+            name='openstax.png',
+            content=open("pages/static/images/openstax.png", 'rb').read())
+        doc = Document.objects.create(title='Test Doc', file=test_image)
+        book_index = BookIndex(title="Book Index", page_description="Test",
+                               dev_standard_1_description="Test",
+                               dev_standard_2_description="Test",
+                               dev_standard_3_description="Test",
+                               dev_standard_4_description="Test")
+        self.homepage.add_child(instance=book_index)
+        book = Book(title="Biology 2e", slug="biology-2e",
+                    cnx_id='031da8d3-b525-429c-80cf-6c8ed997733a',
+                    description="Test Book", cover=doc, title_image=doc,
+                    publish_date=datetime.date.today(),
+                    locale=self.root_page.locale,
+                    license_name='Creative Commons Attribution License',
+                    seo_title='Biology 2e Draft Check',
+                    search_description='2nd edition of Biology')
+        book_index.add_child(instance=book)
+        self._assert_served_only_while_live_and_public(
+            '/details/books/biology-2e', book, 'Biology 2e Draft Check')
+
+    def _supporters_page(self, **overrides):
+        fields = dict(
+            title='Supporters', slug='supporters',
+            seo_title='OpenStax Supporters',
+            search_description='The people who fund OpenStax',
+            # required by the model's full_clean() on save
+            banner_heading='Our supporters',
+            banner_description='Thank you.',
+            disclaimer='Not an endorsement.',
+        )
+        fields.update(overrides)
+        page = Supporters(**fields)
+        self.homepage.add_child(instance=page)
+        return page
+
+    def assertSupportersNotServed(self, path):
+        """The snapshot is absent. The status is left open on purpose: once the
+        middleware declines, Wagtail's own routing decides, and it answers a
+        restricted page with a login redirect rather than a 404."""
+        response = self.client.get(path)
+        self.assertNotEqual(response.status_code, 200, path)
+        self.assertNotIn(
+            'The people who fund OpenStax', response.content.decode(), path)
+
+    def test_foundation_resolves_the_supporters_page(self):
+        self._supporters_page()
+        for path in ('/foundation', '/supporters'):
+            response = self.client.get(path)
+            self.assertContains(response, 'The people who fund OpenStax')
+
+    def test_restricted_supporters_page_is_not_served(self):
+        """/foundation reaches Supporters through the mismatch map and
+        /supporters reaches it directly. Both are served without Wagtail's
+        routing, so neither checks view restrictions unless the lookup does."""
+        page = self._supporters_page()
+        PageViewRestriction.objects.create(
+            page=page, restriction_type=PageViewRestriction.LOGIN)
+        for path in ('/foundation', '/supporters'):
+            self.assertSupportersNotServed(path)
+
+    def test_unpublished_supporters_page_is_not_served(self):
+        page = self._supporters_page()
+        page.live = False
+        page.save()
+        for path in ('/foundation', '/supporters'):
+            self.assertSupportersNotServed(path)
+
+    def test_supporters_page_resolves_the_default_locale(self):
+        spanish = Locale.objects.create(language_code='es')
+        self._supporters_page(
+            slug='supporters-es', search_description='Quienes financian OpenStax',
+            locale=spanish)
+        self._supporters_page()
+        response = self.client.get('/foundation')
+        self.assertContains(response, 'The people who fund OpenStax')
+        self.assertNotContains(response, 'Quienes financian OpenStax')
+
+    def test_edtech_partner_program_resolves_its_general_page(self):
+        """The entry reading osweb's router turned up: /edtech-partner-program
+        is in its mismatch map, serves 200 in a browser, and 404'd to crawlers.
+        The page is a GeneralPage under a much longer slug."""
+        partner_program = GeneralPage(
+            title='OpenStax Technology Partner Program',
+            slug='openstax-ally-technology-partner-program',
+            seo_title='OpenStax Technology Partner Program',
+            search_description='Partner with OpenStax on educational technology',
+        )
+        self.homepage.add_child(instance=partner_program)
+        response = self.client.get('/edtech-partner-program')
+        self.assertContains(
+            response, 'Partner with OpenStax on educational technology')
+
+    def test_alias_snapshot_is_canonical_to_the_real_page(self):
+        """/openstax-ally-technology-partner-program is the canonical page, and
+        it serves crawlers too. So the snapshot on the alias has to point at
+        it: two URLs each claiming to be canonical compete with each other."""
+        # the page has to sit in the site tree for it to have a URL at all,
+        # which in production it does
+        site = Site.objects.filter(is_default_site=True).first()
+        site.root_page = self.homepage
+        site.save()
+        partner_program = GeneralPage(
+            title='OpenStax Technology Partner Program',
+            slug='openstax-ally-technology-partner-program',
+            search_description='Partner with OpenStax on educational technology',
+        )
+        self.homepage.add_child(instance=partner_program)
+
+        response = self.client.get('/edtech-partner-program')
+        self.assertContains(
+            response,
+            'rel="canonical" href="http://testserver/openstax-ally-technology-'
+            'partner-program"')
+        self.assertNotContains(
+            response, 'href="http://testserver/edtech-partner-program"')
+
+    def test_snapshot_title_uses_seo_title(self):
+        """pages/templates/page.html renders seo_title|default:page.title, so a
+        crawler served this snapshot instead of that template was the only
+        visitor losing the title the editor chose."""
+        partnership = InstitutionalPartnership(
+            title='Institutional Partnership Program Application',
+            slug='institutional-partnership',
+            seo_title='Apply to the Institutional Partner Program',
+            search_description='Partner with OpenStax',
+            heading_year='2026',
+            heading='Institutional Partner Program',
+            quote='OpenStax changed our budget.',
+            quote_author='A Partner',
+        )
+        self.homepage.add_child(instance=partnership)
+        response = self.client.get('/institutional-partnership-application')
+        self.assertContains(
+            response, '<title>Apply to the Institutional Partner Program</title>')
+
+    def test_snapshot_escapes_cms_text(self):
+        """These are CMS strings going into attributes. A quote in one would
+        end the attribute early, so they are escaped -- as build_snapshot
+        already does for the routes with no page."""
+        partnership = InstitutionalPartnership(
+            title='Institutional Partnership Program Application',
+            slug='institutional-partnership',
+            seo_title='The "Institutional" Partner Program',
+            search_description='Say "yes" to OpenStax',
+            heading_year='2026',
+            heading='Institutional Partner Program',
+            quote='OpenStax changed our budget.',
+            quote_author='A Partner',
+        )
+        self.homepage.add_child(instance=partnership)
+        response = self.client.get('/institutional-partnership-application')
+        self.assertContains(response, 'content="Say &quot;yes&quot; to OpenStax"')
+        self.assertNotContains(response, 'content="Say "yes" to OpenStax"')
+
+    def test_mismatch_target_requested_directly_still_redirects(self):
+        """/news and /institutional-partnership are 301s in production (to
+        /blog and /higher-education). Matching on the target slug alone let a
+        crawler requesting them directly be answered here, which
+        short-circuits RedirectMiddleware -- so a page that had deliberately
+        been moved served a 200 snapshot competing with the URL it moved to."""
+        press = FlexPage(title='Press', slug='news',
+                         seo_title='OpenStax Press Room',
+                         search_description='News and press resources')
+        self.homepage.add_child(instance=press)
+        Redirect.add_redirect('/news', '/blog')
+
+        response = self.client.get('/news')
+        self.assertEqual(response.status_code, 301)
+        self.assertEqual(response['Location'], '/blog')
+
+    def test_mismatch_target_without_a_redirect_is_left_to_wagtail(self):
+        """Without a redirect entry the request simply falls through, rather
+        than being answered from the mismatch branch."""
+        press = FlexPage(title='Press', slug='news',
+                         seo_title='OpenStax Press Room',
+                         search_description='News and press resources')
+        self.homepage.add_child(instance=press)
+        response = self.client.get('/news')
+        self.assertNotContains(response, 'OpenStax Press Room', status_code=404)
+
+    def test_blog_post_slug_is_not_remapped_by_slug_mismatch(self):
+        """Slug remapping applies to whole top-level paths only: a post slugged
+        'press' must stay itself rather than resolving to the press page."""
+        press = FlexPage(title='Press', slug='news',
+                         seo_title='OpenStax Press Room',
+                         search_description='News and press resources')
+        self.homepage.add_child(instance=press)
+        response = self.client.get('/blog/press')
+        self.assertNotContains(response, 'OpenStax Press Room', status_code=404)
+
+    def test_blog_index_resolves_to_news_index(self):
+        """The index, not a post. url_path is stripped of its trailing slash
+        before the '/blog/' test, so /blog matched nothing and 404'd even though
+        sitemap.xml advertises it."""
+        blog = NewsIndex(title='Blog', slug='openstax-news',
+                         seo_title='OpenStax Blog',
+                         search_description='OpenStax news and updates')
+        self.homepage.add_child(instance=blog)
+        response = self.client.get('/blog')
+        self.assertContains(response, 'OpenStax Blog')
+
+    def test_unpublished_blog_index_is_not_served(self):
+        """The caller serves whatever this lookup returns first, so .all()
+        would hand over a draft index."""
+        blog = NewsIndex(title='Blog', slug='openstax-news',
+                         seo_title='OpenStax Blog',
+                         search_description='OpenStax news and updates')
+        self.homepage.add_child(instance=blog)
+        blog.live = False
+        blog.save()
+        response = self.client.get('/blog')
+        self.assertNotContains(response, 'OpenStax Blog', status_code=404)
+
+    def test_blog_index_resolves_the_default_locale_index(self):
+        """There is an index per locale, and .all() picked by insertion order.
+        /blog is the English route, so it has to name the locale."""
+        spanish = Locale.objects.create(language_code='es')
+        es_blog = NewsIndex(title='Blog es', slug='openstax-news-es',
+                            seo_title='OpenStax Blog es',
+                            search_description='Noticias de OpenStax',
+                            locale=spanish)
+        self.homepage.add_child(instance=es_blog)
+        en_blog = NewsIndex(title='Blog', slug='openstax-news',
+                            seo_title='OpenStax Blog',
+                            search_description='OpenStax news and updates')
+        self.homepage.add_child(instance=en_blog)
+        response = self.client.get('/blog')
+        self.assertContains(response, 'OpenStax Blog')
+        self.assertNotContains(response, 'Noticias de OpenStax')
