@@ -589,30 +589,35 @@ class TestOpenGraphMiddleware(TestCase):
         response = self.client.get('/press')
         self.assertNotContains(response, 'OpenStax Press Room', status_code=404)
 
-    def _assert_served_only_while_live_and_public(self, path, page, marker):
+    def _assert_served_only_while_live_and_public(
+            self, path, page, marker, check_status=True):
         """Every page the middleware picks is rendered to the crawler directly,
         without Wagtail's routing, so a draft or a view-restricted page is
         served unless the lookup itself excludes it. Status is left open: once
         the middleware declines, Wagtail decides, and a restricted page gets a
-        login redirect rather than a 404."""
+        login redirect rather than a 404. `check_status=False` is for '/', which
+        Wagtail itself answers with the site root once the middleware declines,
+        so only the absence of the snapshot says anything there."""
         self.assertContains(self.client.get(path), marker)
 
         restriction = PageViewRestriction.objects.create(
             page=page, restriction_type=PageViewRestriction.LOGIN)
         response = self.client.get(path)
-        self.assertNotEqual(response.status_code, 200, 'restricted: ' + path)
+        if check_status:
+            self.assertNotEqual(response.status_code, 200, 'restricted: ' + path)
         self.assertNotIn(marker, response.content.decode(), 'restricted: ' + path)
         restriction.delete()
 
         page.live = False
         page.save()
         response = self.client.get(path)
-        self.assertNotEqual(response.status_code, 200, 'unpublished: ' + path)
+        if check_status:
+            self.assertNotEqual(response.status_code, 200, 'unpublished: ' + path)
         self.assertNotIn(marker, response.content.decode(), 'unpublished: ' + path)
 
     def test_home_page_is_served_only_while_live_and_public(self):
         self._assert_served_only_while_live_and_public(
-            '/', self.homepage, 'OpenStax Home')
+            '/', self.homepage, 'OpenStax Home', check_status=False)
 
     def test_k12_page_is_served_only_while_live_and_public(self):
         k12_math = FlexPage(title='Math', slug='k12-math',
