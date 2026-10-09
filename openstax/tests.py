@@ -633,9 +633,11 @@ class TestOpenGraphMiddleware(TestCase):
             '/privacy', privacy, 'OpenStax Privacy Notice')
 
     def test_book_is_served_only_while_live_and_public(self):
+        with open("pages/static/images/openstax.png", 'rb') as image_file:
+            image_content = image_file.read()
         test_image = SimpleUploadedFile(
             name='openstax.png',
-            content=open("pages/static/images/openstax.png", 'rb').read())
+            content=image_content)
         doc = Document.objects.create(title='Test Doc', file=test_image)
         book_index = BookIndex(title="Book Index", page_description="Test",
                                dev_standard_1_description="Test",
