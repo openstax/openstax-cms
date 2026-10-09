@@ -1,16 +1,18 @@
 import datetime
 import json
+import re
 from .functions import remove_locked_links_detail, remove_locked_links_listing, build_document_url, build_image_url
 
 from django.test import TestCase, SimpleTestCase, Client, RequestFactory, override_settings
 from django.http import HttpResponse, HttpResponseNotFound
 from django.core.files.uploadedfile import SimpleUploadedFile
+from openstax.frontend_routes import form_route_heading
 from openstax.middleware import CommonMiddlewareAppendSlashWithoutRedirect
 from wagtail.contrib.redirects.models import Redirect
 from wagtail.models import Locale, Page, PageViewRestriction, Site
 from pages.models import (
-    RootPage, FlexPage, GeneralPage, InstitutionalPartnership, PrivacyPolicy,
-    Supporters,
+    RootPage, FlexPage, FormHeadings, GeneralPage, InstitutionalPartnership,
+    PrivacyPolicy, Supporters,
 )
 from books.models import BookIndex, Book
 from news.models import NewsIndex, NewsArticle
@@ -381,6 +383,152 @@ class TestOpenGraphMiddleware(TestCase):
     # --- Routes osweb serves from the SPA, with no CMS page of their own ---
     # These 404'd to crawlers while returning a working page to every browser,
     # which is why /adoption could never be indexed (CORE-736).
+
+    def _form_headings(self, **overrides):
+        fields = dict(
+            title='Form Headings',
+            slug='form-headings',
+            adoption_intro_heading="Let us know you're using OpenStax",
+            adoption_intro_description=(
+                '<p>Help us keep making free materials by letting us know '
+                'you&#x27;ve adopted!</p>'
+                '<p>Not using OpenStax yet? Go to our '
+                '<a href="/interest">interest form</a>.</p>'
+            ),
+            interest_intro_heading='Interested in learning more about OpenStax?',
+            interest_intro_description=(
+                '<p>Fill out the form below and we will send you more '
+                'information.</p><p><a href="/adoption">Let us know!</a></p>'
+            ),
+        )
+        fields.update(overrides)
+        headings = FormHeadings(**fields)
+        self.homepage.add_child(instance=headings)
+        return headings
+
+    def _meta_description(self, response):
+        match = re.search(
+            r'<meta name="description" content="([^"]*)"',
+            response.content.decode(),
+        )
+        self.assertIsNotNone(match, 'snapshot has no meta description')
+        return match.group(1)
+
+    def test_adoption_snapshot_comes_from_form_headings(self):
+        """/adoption has no page of its own, so its title and description come
+        from the FormHeadings adoption_* fields -- which means marketing edits
+        what crawlers see in Wagtail, with no redeploy."""
+        self._form_headings()
+        response = self.client.get('/adoption')
+        self.assertContains(response, 'Let us know you&#x27;re using OpenStax')
+        self.assertContains(
+            response, 'rel="canonical" href="http://testserver/adoption"')
+
+    def test_adoption_snapshot_body_keeps_prose_and_internal_links(self):
+        """Answer engines can only cite what's in the raw HTML, so the rich-text
+        description is emitted as markup rather than flattened away."""
+        self._form_headings()
+        response = self.client.get('/adoption')
+        self.assertContains(response, 'Help us keep making free materials')
+        self.assertContains(response, 'href="/interest"')
+        self.assertNotContains(response, '<body></body>')
+
+    def test_interest_snapshot_uses_its_own_fields(self):
+        """Both form routes read the same FormHeadings record, so the route has
+        to pick the matching field prefix."""
+        self._form_headings()
+        response = self.client.get('/interest')
+        self.assertContains(response, 'Interested in learning more about OpenStax?')
+        self.assertContains(response, 'href="/adoption"')
+        self.assertNotContains(response, 'Help us keep making free materials')
+
+    def test_form_snapshot_meta_description_is_flattened_text(self):
+        """The body keeps its markup but the meta description can't: it needs
+        tags stripped, and entities unescaped first so escaping the attribute
+        doesn't double-encode them into &amp;#x27;."""
+        self._form_headings()
+        description = self._meta_description(self.client.get('/adoption'))
+        self.assertIn('you&#x27;ve adopted', description)
+        self.assertNotIn('&amp;', description)
+        self.assertNotIn('&lt;p&gt;', description)
+
+    def test_meta_description_keeps_words_apart_across_blocks(self):
+        """strip_tags() only deletes tags, so two paragraphs ran together as
+        "adopted!Not using OpenStax yet?" -- a coined word in the one sentence
+        search results actually show. Block boundaries become spaces first."""
+        self._form_headings()
+        description = self._meta_description(self.client.get('/adoption'))
+        self.assertIn('adopted! Not using OpenStax yet?', description)
+        self.assertNotIn('adopted!Not', description)
+
+    def test_meta_description_does_not_space_out_inline_markup(self):
+        """Only block-level tags are boundaries: spacing every tag would put a
+        space before the period after a link, and break a word wrapped in
+        <em>."""
+        self._form_headings(adoption_intro_description=(
+            '<p>Read the <a href="/interest">interest form</a>. '
+            'It is <em>free</em>.</p>'
+        ))
+        description = self._meta_description(self.client.get('/adoption'))
+        self.assertIn('interest form. It is free.', description)
+
+    def test_form_snapshot_drops_placeholder_tags(self):
+        """FormHeadings copy supports {{first_name}} tags that only the frontend
+        interpolates. A crawler is never signed in, so any tag reaching the
+        snapshot would be published verbatim."""
+        self._form_headings(
+            adoption_intro_heading='Welcome back, {{first_name}}',
+            adoption_intro_description='<p>Your school is {{school}}.</p>',
+        )
+        response = self.client.get('/adoption')
+        self.assertContains(response, 'Welcome back,')
+        self.assertNotContains(response, 'first_name')
+        self.assertNotContains(response, 'school}}')
+
+    def test_adoption_falls_through_when_form_headings_missing(self):
+        """With no FormHeadings record there is nothing to build a snapshot
+        from, so the request must fall through rather than serve empty tags."""
+        response = self.client.get('/adoption')
+        self.assertEqual(response.status_code, 404)
+
+    def test_unpublished_form_headings_are_not_served(self):
+        """The snapshot is rendered straight to the crawler, with none of the
+        checks Wagtail's own routing would run. So a record an editor has
+        drafted or unpublished must not reach it -- this path would otherwise
+        publish unreleased copy to Google on its own."""
+        headings = self._form_headings()
+        headings.live = False
+        headings.save()
+        self.assertEqual(self.client.get('/adoption').status_code, 404)
+
+    def test_restricted_form_headings_are_not_served(self):
+        """Same for a view restriction: live() doesn't exclude it, and nothing
+        downstream of this queryset enforces it."""
+        headings = self._form_headings()
+        PageViewRestriction.objects.create(
+            page=headings, restriction_type=PageViewRestriction.LOGIN)
+        self.assertEqual(self.client.get('/adoption').status_code, 404)
+
+    def test_no_copy_means_no_snapshot_for_that_route(self):
+        """The gate itself. It answers per route, not per record: a route
+        added to FORM_PAGE_ROUTES before its FormHeadings fields exist has
+        nothing to render and must stay unserved rather than publish an empty
+        title."""
+        headings = self._form_headings()
+        self.assertTrue(form_route_heading(headings, 'adoption'))
+        self.assertEqual(form_route_heading(headings, 'scholarship'), '')
+        self.assertEqual(form_route_heading(None, 'adoption'), '')
+
+    def test_browser_user_agent_gets_no_adoption_snapshot(self):
+        """The snapshot is crawler-only; browsers keep getting the React form
+        from S3, so Django must not answer them here."""
+        self._form_headings()
+        self.client = Client(HTTP_USER_AGENT=(
+            'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 '
+            '(KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36'
+        ))
+        response = self.client.get('/adoption')
+        self.assertNotContains(response, 'using OpenStax', status_code=404)
 
     def test_press_resolves_the_news_page(self):
         """osweb serves /press from the CMS page slugged 'news' -- a slug

@@ -1,17 +1,25 @@
+import re
+
 from django.http import HttpResponsePermanentRedirect, HttpResponse
 from django.core.handlers.base import BaseHandler
 from django.middleware.common import CommonMiddleware
-from django.utils.html import escape
+from django.utils.html import escape, strip_tags
 from django.utils.http import escape_leading_slashes
+from django.utils.text import Truncator
 from django.conf import settings
 
 from ua_parser import user_agent_parser
+from html import unescape
 from urllib.parse import unquote, urlsplit, urlunsplit
 from wagtail.models import Locale, Page
+from wagtail.rich_text import expand_db_html
 
 from api.models import FeatureFlag
 from books.models import Book, BookIndex
-from openstax.frontend_routes import SLUG_MISMATCHES, STATIC_PAGES
+from openstax.frontend_routes import (
+    FORM_PAGE_ROUTES, SLUG_MISMATCHES, STATIC_PAGES, form_headings,
+    form_route_heading,
+)
 from openstax.functions import build_image_url
 from news.models import NewsArticle, NewsIndex
 from pages.models import (
@@ -85,6 +93,18 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
     AI_CRAWLER_USER_AGENT_SUBSTRINGS = (
         'chatgpt-user', 'google-extended', 'anthropic-ai', 'claude-web',
         'claude-user', 'perplexity-user',
+    )
+
+    # FormHeadings copy supports these tags, which only the frontend
+    # interpolates (from the signed-in user's profile).
+    PLACEHOLDER_TAG = re.compile(r'\{\{\w+\}\}')
+
+    # Rich-text tags that end a run of prose. Only block-level ones and <br>:
+    # substituting every tag would put a space before the '.' after a link.
+    BLOCK_BOUNDARY = re.compile(
+        r'</(?:p|div|li|ul|ol|h[1-6]|blockquote|figure|figcaption|table|tr|td|th)>'
+        r'|<(?:br|hr)\s*/?>',
+        re.IGNORECASE,
     )
 
     def __init__(self, get_response):
@@ -182,6 +202,16 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
             page of its own. Returns None if `route` isn't one of them, so the
             caller falls through to the normal page lookup.
         """
+        if route in FORM_PAGE_ROUTES:
+            headings = form_headings()
+            heading = form_route_heading(headings, route)
+            # No copy to build a snapshot from, so fall through rather than
+            # serve empty tags.
+            if not heading:
+                return None
+            return HttpResponse(
+                self.build_form_page_template(headings, heading, route, full_url))
+
         if route in STATIC_PAGES:
             snapshot = STATIC_PAGES[route]
             # Title and description only: see STATIC_PAGES for why none of
@@ -190,6 +220,50 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
                 snapshot['title'], snapshot['description'], full_url))
 
         return None
+
+    def build_form_page_template(self, headings, heading, route, full_url):
+        # `heading` comes from form_route_heading(), i.e. always the logged-out
+        # field -- a crawler is never signed in, and the logged-in variants are
+        # the ones that carry {{first_name}} tags.
+        heading = self.strip_placeholders(heading)
+        description_html = self.strip_placeholders(expand_db_html(
+            getattr(headings, '{}_intro_description'.format(route), '') or ''
+        ))
+
+        return self.build_snapshot(
+            heading,
+            self.meta_description(description_html),
+            full_url,
+            # emitted as markup, not text, so answer engines get real prose and
+            # the internal /adoption <-> /interest links survive as anchors
+            body=description_html,
+            image_url=self.image_url(headings.promote_image),
+        )
+
+    @classmethod
+    def strip_placeholders(cls, text):
+        """ Drop any {{tag}} the frontend would have interpolated. Nothing
+            interpolates them here, so one left in place would be published
+            verbatim to a crawler.
+        """
+        return cls.PLACEHOLDER_TAG.sub('', text)
+
+    @classmethod
+    def meta_description(cls, rich_text, limit=155):
+        """ Flatten rich text into a meta description.
+
+            Block boundaries become spaces first: strip_tags() just deletes the
+            tags, so two paragraphs would run together as
+            "...adopted!Not using OpenStax yet?" -- a coined word in the one
+            sentence search results actually show.
+
+            strip_tags leaves entities alone (&#x27;), so they're unescaped here
+            to stop build_snapshot's escape() double-encoding them into
+            &amp;#x27;. Plain CharField copy must not go through this.
+        """
+        spaced = cls.BLOCK_BOUNDARY.sub(' ', rich_text)
+        text = ' '.join(unescape(strip_tags(spaced)).split())
+        return Truncator(text).chars(limit)
 
     def build_snapshot(self, title, description, full_url, body='', image_url=''):
         """ Snapshot for a route with no CMS page to hand to build_template.

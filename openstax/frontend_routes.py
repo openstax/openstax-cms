@@ -66,6 +66,12 @@ PAGE_ROUTES_BY_SLUG = {
     'institutional-partnership': 'institutional-partnership-application',
 }
 
+# Routes whose copy lives on the single FormHeadings record instead of on a page
+# of their own, in fields named ``<route>_intro_heading`` and
+# ``<route>_intro_description``. Keeping the copy there means marketing edits
+# what crawlers see in Wagtail, with no redeploy and no duplicate page.
+FORM_PAGE_ROUTES = ('adoption', 'interest')
+
 # Routes with no CMS record at all. This is the only hardcoded SEO copy here;
 # everything else is editable in Wagtail, so each entry takes its wording from
 # whatever the osweb page itself already declares rather than inventing any.
@@ -97,3 +103,42 @@ STATIC_PAGES = {
                        'OpenStax textbooks',
     },
 }
+
+
+def form_headings():
+    """ The published FormHeadings record the form routes read their copy from.
+
+        max_count = 1 is per-locale (there is an en record and an es one), so
+        this pins the default locale rather than assuming a single row. Returns
+        None when there is no such record, e.g. on a fresh database.
+
+        live() and public() are what keep unreleased copy out of a crawler's
+        hands: the middleware renders this straight into a snapshot, so a record
+        an editor has only drafted (or has unpublished, or has put behind a view
+        restriction) would otherwise be published to Google by this path alone.
+
+        Imported inside the function because this module is imported from
+        pages.models, so importing the models here would be circular.
+    """
+    from pages.models import FormHeadings
+    from wagtail.models import Locale
+
+    return FormHeadings.objects.live().public().filter(
+        locale=Locale.get_default()
+    ).first()
+
+
+def form_route_heading(headings, route):
+    """ The heading `route` builds its crawler snapshot around, or '' if the
+        FormHeadings record has no copy for it.
+
+        Always the logged-out field: a crawler is never signed in, and the
+        logged-in variants are the ones carrying {{first_name}} tags.
+
+        This is the one place that decides whether a form route can be served,
+        so anything else that needs to know -- the sitemap, in a follow-up --
+        can ask the same question instead of guessing.
+    """
+    if headings is None:
+        return ''
+    return (getattr(headings, '{}_intro_heading'.format(route), '') or '').strip()

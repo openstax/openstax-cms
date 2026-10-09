@@ -4,7 +4,7 @@ from wagtail.models import Page
 from pages import models as page_models
 from authoring.routing_rules import validate_page_location, RoutingError
 from openstax.frontend_routes import (
-    PAGE_ROUTES_BY_SLUG, SLUG_MISMATCHES, STATIC_PAGES,
+    FORM_PAGE_ROUTES, PAGE_ROUTES_BY_SLUG, SLUG_MISMATCHES, STATIC_PAGES,
 )
 from django.contrib.auth import get_user_model
 from authoring.permissions import CanDraftFlexPages
@@ -64,7 +64,7 @@ class RoutingRulesTests(TestCase):
         registry_slugs = frozenset({
             *SLUG_MISMATCHES, *SLUG_MISMATCHES.values(),
             *PAGE_ROUTES_BY_SLUG, *PAGE_ROUTES_BY_SLUG.values(),
-            *STATIC_PAGES,
+            *FORM_PAGE_ROUTES, *STATIC_PAGES,
         })
         self.assertTrue(registry_slugs)
         for slug in sorted(registry_slugs):
