@@ -14,6 +14,7 @@ from pages.models import (
 )
 from books.models import BookIndex, Book
 from news.models import NewsIndex, NewsArticle
+from salesforce.models import Adopter
 from snippets.models import Subject, BlogContentType, BlogCollection
 from wagtail.documents.models import Document
 
@@ -377,9 +378,9 @@ class TestOpenGraphMiddleware(TestCase):
         self.assertNotContains(response, 'application/ld+json')
 
 
-    # --- Routes osweb serves under a URL that isn't their CMS slug, and the
-    # blog index. These 404'd to crawlers while returning a working page to
-    # every browser (CORE-736).
+    # --- Routes osweb serves from the SPA, with no CMS page of their own ---
+    # These 404'd to crawlers while returning a working page to every browser,
+    # which is why /adoption could never be indexed (CORE-736).
 
     def test_press_resolves_the_news_page(self):
         """osweb serves /press from the CMS page slugged 'news' -- a slug
@@ -715,3 +716,35 @@ class TestOpenGraphMiddleware(TestCase):
         response = self.client.get('/blog')
         self.assertContains(response, 'OpenStax Blog')
         self.assertNotContains(response, 'Noticias de OpenStax')
+
+    def test_separatemap_snapshot_describes_the_map(self):
+        """The map page does describe itself -- but in JavaScript, via
+        useDocumentHead(), where a crawler never sees it. The snapshot serves
+        the same strings and nothing more: the page has no prose, and the
+        sentence that introduces it on /about would be text only a crawler
+        sees."""
+        response = self.client.get('/separatemap')
+        self.assertContains(response, '<title>Institution Map - OpenStax</title>')
+        self.assertContains(response, 'Searchable map of institutions')
+        self.assertNotContains(response, 'more than 160 countries')
+        self.assertContains(response, '<body></body>')
+        self.assertContains(
+            response, 'rel="canonical" href="http://testserver/separatemap"')
+
+    def test_adopters_snapshot_carries_no_adopter_records(self):
+        """/adopters renders 11,000+ institutions from /apps/cms/api/adopters/,
+        whose description field is unpublished CRM free text the page itself
+        never shows. Serving that to crawlers only would leak internal notes and
+        be cloaking, so the snapshot is title and description with no body."""
+        Adopter.objects.create(
+            sales_id='001',
+            name='Centre College',
+            description='use moodle for course management system at univ.',
+            website='http://www.centre.edu/',
+        )
+        response = self.client.get('/adopters')
+        self.assertContains(
+            response, 'Complete list of institutions that have adopted OpenStax')
+        self.assertNotContains(response, 'Centre College')
+        self.assertNotContains(response, 'use moodle')
+        self.assertContains(response, '<body></body>')

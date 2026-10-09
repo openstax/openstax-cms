@@ -11,7 +11,7 @@ from wagtail.models import Locale, Page
 
 from api.models import FeatureFlag
 from books.models import Book, BookIndex
-from openstax.frontend_routes import SLUG_MISMATCHES
+from openstax.frontend_routes import SLUG_MISMATCHES, STATIC_PAGES
 from openstax.functions import build_image_url
 from news.models import NewsArticle, NewsIndex
 from pages.models import (
@@ -105,6 +105,12 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
                 if self.redirect_path_found(url_path):
                     route = url_path.lstrip('/')
 
+                    # Routes osweb serves from the SPA with no CMS page of
+                    # their own -- see openstax.frontend_routes.
+                    response = self.frontend_only_response(route, full_url)
+                    if response:
+                        return response
+
                     # A top-level osweb URL can differ from the slug of the CMS
                     # page it renders. Only remap a whole path: a blog post
                     # slugged 'press' must not resolve to the press page.
@@ -170,6 +176,56 @@ class CommonMiddlewareOpenGraphRedirect(CommonMiddleware):
                     slug='subjects')
         else:
             return self.page_by_slug(page_slug, was_remapped)
+
+    def frontend_only_response(self, route, full_url):
+        """ Crawler snapshot for a route osweb serves from the SPA with no CMS
+            page of its own. Returns None if `route` isn't one of them, so the
+            caller falls through to the normal page lookup.
+        """
+        if route in STATIC_PAGES:
+            snapshot = STATIC_PAGES[route]
+            # Title and description only: see STATIC_PAGES for why none of
+            # these routes carries a body.
+            return HttpResponse(self.build_snapshot(
+                snapshot['title'], snapshot['description'], full_url))
+
+        return None
+
+    def build_snapshot(self, title, description, full_url, body='', image_url=''):
+        """ Snapshot for a route with no CMS page to hand to build_template.
+
+            Everything landing in an attribute is escaped. `body` is trusted
+            CMS rich text and is emitted as markup on purpose.
+        """
+        # canonical and og:url point at the clean URL so query-string
+        # variants consolidate their signal onto one page
+        page_url = escape(full_url.split('?', 1)[0].rstrip('/'))
+        title = escape(title)
+        description = escape(description)
+        image_url = escape(image_url)
+        return f'''<!DOCTYPE html>
+            <html>
+            <head>
+                <meta charset="utf-8">
+                <title>{title}</title>
+                <meta name="description" content="{description}">
+                <link rel="canonical" href="{page_url}">
+                <meta property="og:url" content="{page_url}">
+                <meta property="og:type" content="website">
+                <meta property="og:site_name" content="OpenStax">
+                <meta property="og:title" content="{title}">
+                <meta property="og:description" content="{description}">
+                <meta property="og:image" content="{image_url}">
+                <meta property="og:image:alt" content="OpenStax: {title}">
+                <meta name="twitter:card" content="summary_large_image">
+                <meta name="twitter:site" content="@OpenStax">
+                <meta name="twitter:title" content="{title}">
+                <meta name="twitter:description" content="{description}">
+                <meta name="twitter:image" content="{image_url}">
+                <meta name="twitter:image:alt" content="OpenStax">
+            </head>
+            <body>{body}</body>
+            </html>'''
 
     def build_template(self, page, page_url, was_remapped=False, request=None):
         # canonical and og:url point at the clean URL so query-string

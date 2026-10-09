@@ -15,7 +15,9 @@ repo, so RESERVED_SLUGS may be incomplete. Backfill when that map is available.
 """
 from wagtail.models import Page
 
-from openstax.frontend_routes import PAGE_ROUTES_BY_SLUG, SLUG_MISMATCHES
+from openstax.frontend_routes import (
+    PAGE_ROUTES_BY_SLUG, SLUG_MISMATCHES, STATIC_PAGES,
+)
 
 # Every slug and URL openstax.frontend_routes already owns, derived rather than
 # copied. Those routes are resolved by the crawler middleware and reported by
@@ -29,6 +31,7 @@ FRONTEND_ROUTE_SLUGS = frozenset({
     *SLUG_MISMATCHES.values(),        # the CMS slugs they resolve to, e.g. news
     *PAGE_ROUTES_BY_SLUG,             # slugs whose get_url_parts is rewritten
     *PAGE_ROUTES_BY_SLUG.values(),    # ...and the URL each one reports
+    *STATIC_PAGES,                    # adopters, separatemap
 })
 
 # Agent-created FlexPages may only be created top-level under the single site root.

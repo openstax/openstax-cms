@@ -65,3 +65,35 @@ PAGE_ROUTES_BY_SLUG = {
     'news': 'press',
     'institutional-partnership': 'institutional-partnership-application',
 }
+
+# Routes with no CMS record at all. This is the only hardcoded SEO copy here;
+# everything else is editable in Wagtail, so each entry takes its wording from
+# whatever the osweb page itself already declares rather than inventing any.
+STATIC_PAGES = {
+    # Title is the <h1> in os-webview src/app/pages/adopters/adopters.tsx,
+    # which is all that page declares.
+    #
+    # No body, on purpose: /adopters renders 11,000+ institutions from
+    # /apps/cms/api/adopters/, and that payload's ``description`` field is
+    # unpublished CRM free text which the page itself never displays. Serving
+    # it to crawlers alone would leak internal notes and be cloaking.
+    'adopters': {
+        'title': 'Complete list of institutions that have adopted OpenStax',
+        'description': 'Institutions around the world that have adopted '
+                       'OpenStax free, openly licensed textbooks.',
+    },
+    # Title and description are the ones separatemap.tsx passes to
+    # useDocumentHead() -- the page does describe itself, just in JavaScript,
+    # where a crawler never sees it. Serving the same strings keeps the
+    # crawler's title identical to the browser's.
+    #
+    # No body either. The page is an interactive map with no prose of its own,
+    # and the sentence that introduces it on /about would be text a crawler
+    # sees and a visitor to /separatemap does not -- the same parity problem as
+    # /adopters.
+    'separatemap': {
+        'title': 'Institution Map - OpenStax',
+        'description': 'Searchable map of institutions that have adopted '
+                       'OpenStax textbooks',
+    },
+}
