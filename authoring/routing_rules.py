@@ -15,10 +15,35 @@ repo, so RESERVED_SLUGS may be incomplete. Backfill when that map is available.
 """
 from wagtail.models import Page
 
+from openstax.frontend_routes import (
+    FORM_PAGE_ROUTES, PAGE_ROUTES_BY_SLUG, SLUG_MISMATCHES, STATIC_PAGES,
+)
+
+# Every slug and URL openstax.frontend_routes already owns, derived rather than
+# copied. Those routes are resolved by the crawler middleware and reported by
+# the page models' get_url_parts, so a FlexPage on one of these slugs would
+# claim a URL another page already answers -- and the middleware's slug lookup
+# could then return either page. Deriving keeps this list correct when a route
+# is added there: a copy would go stale silently, which is the whole failure
+# mode this module exists to prevent.
+FRONTEND_ROUTE_SLUGS = frozenset({
+    *SLUG_MISMATCHES,                 # osweb URLs, e.g. press
+    *SLUG_MISMATCHES.values(),        # the CMS slugs they resolve to, e.g. news
+    *PAGE_ROUTES_BY_SLUG,             # slugs whose get_url_parts is rewritten
+    *PAGE_ROUTES_BY_SLUG.values(),    # ...and the URL each one reports
+    *FORM_PAGE_ROUTES,                # adoption, interest
+    *STATIC_PAGES,                    # adopters, separatemap
+})
+
 # Agent-created FlexPages may only be created top-level under the single site root.
 ALLOWED_PARENT_TYPES = frozenset({"pages.RootPage"})
 
 # Top-level slugs owned by another layer (matched case-insensitively).
+#
+# FRONTEND_ROUTE_SLUGS is unioned in at the end rather than listed here, so
+# adding a route to openstax.frontend_routes reserves it here too. Several
+# entries below are also in that set; the duplication is harmless, and writing
+# them out keeps this list readable as the record of what each layer owns.
 RESERVED_SLUGS = frozenset({
     # nginx -> Django backend
     "api", "ping", "admin", "django-admin", "blog-feed", "accounts", "oxauth",
@@ -35,7 +60,7 @@ RESERVED_SLUGS = frozenset({
     "k12", "subjects", "press", "news", "openstax-news",
     # frontend name-mismatch targets
     "edtech-partner-program", "foundation", "supporters",
-})
+}) | FRONTEND_ROUTE_SLUGS
 
 
 class RoutingError(Exception):
