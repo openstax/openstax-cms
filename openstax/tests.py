@@ -487,7 +487,11 @@ class TestOpenGraphMiddleware(TestCase):
 
     def test_adoption_falls_through_when_form_headings_missing(self):
         """With no FormHeadings record there is nothing to build a snapshot
-        from, so the request must fall through rather than serve empty tags."""
+        from, so the request must fall through rather than serve empty tags.
+
+        sitemap_routes() reads the same record through the same helper, so a
+        route in this state isn't advertised either -- see
+        global_settings.tests.FrontendOnlyPagesSitemapTest."""
         response = self.client.get('/adoption')
         self.assertEqual(response.status_code, 404)
 
@@ -510,10 +514,11 @@ class TestOpenGraphMiddleware(TestCase):
         self.assertEqual(self.client.get('/adoption').status_code, 404)
 
     def test_no_copy_means_no_snapshot_for_that_route(self):
-        """The gate itself. It answers per route, not per record: a route
-        added to FORM_PAGE_ROUTES before its FormHeadings fields exist has
-        nothing to render and must stay unserved rather than publish an empty
-        title."""
+        """The gate itself, which the middleware and sitemap_routes() share so
+        a route cannot be advertised while 404ing. It answers per route, not
+        per record: a route added to FORM_PAGE_ROUTES before its FormHeadings
+        fields exist has nothing to render and must stay unserved and
+        unadvertised rather than publish an empty title."""
         headings = self._form_headings()
         self.assertTrue(form_route_heading(headings, 'adoption'))
         self.assertEqual(form_route_heading(headings, 'scholarship'), '')

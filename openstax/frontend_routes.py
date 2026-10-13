@@ -116,6 +116,8 @@ def form_headings():
         hands: the middleware renders this straight into a snapshot, so a record
         an editor has only drafted (or has unpublished, or has put behind a view
         restriction) would otherwise be published to Google by this path alone.
+        Skipping it here also drops the route from sitemap_routes(), since both
+        go through form_route_heading() below.
 
         Imported inside the function because this module is imported from
         pages.models, so importing the models here would be circular.
@@ -136,9 +138,34 @@ def form_route_heading(headings, route):
         logged-in variants are the ones carrying {{first_name}} tags.
 
         This is the one place that decides whether a form route can be served,
-        so anything else that needs to know -- the sitemap, in a follow-up --
-        can ask the same question instead of guessing.
+        so the middleware and sitemap_routes() below agree by construction -- a
+        route with nothing to render must not be advertised, which is the bug
+        (advertised in sitemap.xml, 404 to crawlers) this module exists to make
+        unrepresentable.
     """
     if headings is None:
         return ''
     return (getattr(headings, '{}_intro_heading'.format(route), '') or '').strip()
+
+
+# Distinguishes "no record supplied" from "supplied, and there isn't one".
+_UNSET = object()
+
+
+def sitemap_routes(headings=_UNSET):
+    """ Routes sitemap.xml has to advertise itself, because no Wagtail page's
+        get_sitemap_urls() covers them.
+
+        Routes in SLUG_MISMATCHES are excluded: the CMS page they resolve to is
+        already in the Wagtail-generated section. Form routes appear only while
+        their copy exists, since that is exactly when the middleware can answer
+        them.
+
+        Pass `headings` to reuse a record the caller has already fetched -- the
+        sitemap needs it again for each route's <lastmod>.
+    """
+    if headings is _UNSET:
+        headings = form_headings()
+    return tuple(
+        route for route in FORM_PAGE_ROUTES if form_route_heading(headings, route)
+    ) + tuple(STATIC_PAGES)
