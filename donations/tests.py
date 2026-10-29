@@ -6,6 +6,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
 from django.contrib import admin
+from django.core.files.storage import FileSystemStorage
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.test import RequestFactory, TestCase, override_settings
 from django.urls import reverse
@@ -414,6 +415,25 @@ class ThankYouNoteAttachmentTest(APITestCase, TestCase):
         response = self._post(SimpleUploadedFile(
             'IMG_0001.HEIC', b'heic bytes', content_type='application/octet-stream'))
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_stored_content_type_comes_from_the_extension_not_the_client(self):
+        """S3 storage keeps the content type the upload carries, so a forged
+        text/html on a file named photo.jpg would be served as a page from the
+        media domain."""
+        stored = []
+        original_save = FileSystemStorage._save
+
+        def record(storage, name, content):
+            stored.append((name, content.content_type))
+            return original_save(storage, name, content)
+
+        with mock.patch.object(FileSystemStorage, '_save', autospec=True, side_effect=record):
+            for name, claimed in (('photo.jpg', 'text/html'),
+                                  ('clip.MOV', 'application/octet-stream'),
+                                  ('pic.png', 'image/svg+xml')):
+                self._post(SimpleUploadedFile(name, b'<script>alert(1)</script>', content_type=claimed))
+        self.assertEqual([content_type for _, content_type in stored],
+                         ['image/jpeg', 'video/quicktime', 'image/png'])
 
     def test_note_without_an_attachment_still_works(self):
         response = self._post()

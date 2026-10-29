@@ -9,21 +9,29 @@ from django.db.models import Q
 from django.utils import timezone
 from django.http import JsonResponse
 
-# The thank-you note form lets people attach a photo or video. Extensions rather
-# than content types: the browser supplies the type (HEIC often arrives as
-# application/octet-stream), and the file is served from the media domain by its
-# extension. SVG is left out on purpose, since it can carry script.
-ATTACHMENT_EXTENSIONS = frozenset({
-    '.jpg', '.jpeg', '.png', '.gif', '.webp', '.heic', '.heif',
-    '.mp4', '.mov', '.m4v', '.webm',
-})
+# The thank-you note form lets people attach a photo or video. The extension
+# decides what is accepted, not the content type the browser reports (HEIC often
+# arrives as application/octet-stream), and it also decides what type the file
+# is stored and served as: S3 keeps whatever content type the upload carries, so
+# a client-supplied text/html on a file named photo.jpg would be served from the
+# media domain as a page. SVG is left out on purpose, since it can carry script.
+ATTACHMENT_TYPES = {
+    '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg', '.png': 'image/png',
+    '.gif': 'image/gif', '.webp': 'image/webp', '.heic': 'image/heic',
+    '.heif': 'image/heif',
+    '.mp4': 'video/mp4', '.mov': 'video/quicktime', '.m4v': 'video/x-m4v',
+    '.webm': 'video/webm',
+}
 ATTACHMENT_MAX_BYTES = 100 * 1024 * 1024
+
+
+def attachment_extension(upload):
+    return os.path.splitext(upload.name)[1].lower()
 
 
 def attachment_error(upload):
     """ Why `upload` can't be stored, or None if it can. """
-    extension = os.path.splitext(upload.name)[1].lower()
-    if extension not in ATTACHMENT_EXTENSIONS:
+    if attachment_extension(upload) not in ATTACHMENT_TYPES:
         return 'Attach a photo or a video (JPG, PNG, GIF, WEBP, HEIC, MP4, MOV, M4V or WEBM).'
     if upload.size > ATTACHMENT_MAX_BYTES:
         return 'The file is too large. The limit is {} MB.'.format(
@@ -47,6 +55,9 @@ class ThankYouNoteViewSet(viewsets.ModelViewSet):
             error = attachment_error(attachment)
             if error:
                 return JsonResponse(status=400, data={'attachment': error})
+            # Replace the type the client claimed with one derived from the
+            # extension that was just validated.
+            attachment.content_type = ATTACHMENT_TYPES[attachment_extension(attachment)]
 
         # 'institution' is the pre-2025 field name, still posted by stale cached SPA bundles
         institution = request.data.get('school') or request.data.get('institution', '')
