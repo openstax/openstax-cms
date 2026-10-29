@@ -1,3 +1,5 @@
+import os
+
 from rest_framework import viewsets
 from .models import ThankYouNote, DonationPopup, DonationLink, Fundraiser, SiteBanner
 from .serializers import (ThankYouNoteSerializer, DonationPopupSerializer, DonationLinkSerializer,
@@ -6,6 +8,27 @@ from rest_framework.decorators import action
 from django.db.models import Q
 from django.utils import timezone
 from django.http import JsonResponse
+
+# The thank-you note form lets people attach a photo or video. Extensions rather
+# than content types: the browser supplies the type (HEIC often arrives as
+# application/octet-stream), and the file is served from the media domain by its
+# extension. SVG is left out on purpose, since it can carry script.
+ATTACHMENT_EXTENSIONS = frozenset({
+    '.jpg', '.jpeg', '.png', '.gif', '.webp', '.heic', '.heif',
+    '.mp4', '.mov', '.m4v', '.webm',
+})
+ATTACHMENT_MAX_BYTES = 100 * 1024 * 1024
+
+
+def attachment_error(upload):
+    """ Why `upload` can't be stored, or None if it can. """
+    extension = os.path.splitext(upload.name)[1].lower()
+    if extension not in ATTACHMENT_EXTENSIONS:
+        return 'Attach a photo or a video (JPG, PNG, GIF, WEBP, HEIC, MP4, MOV, M4V or WEBM).'
+    if upload.size > ATTACHMENT_MAX_BYTES:
+        return 'The file is too large. The limit is {} MB.'.format(
+            ATTACHMENT_MAX_BYTES // (1024 * 1024))
+    return None
 
 
 class ThankYouNoteViewSet(viewsets.ModelViewSet):
@@ -17,6 +40,14 @@ class ThankYouNoteViewSet(viewsets.ModelViewSet):
         if not thank_you_note:
             return JsonResponse(status=400, data={'thank_you_note': 'This field is required.'})
 
+        # Checked before anything is saved, so a rejected file doesn't leave a
+        # note behind with the attachment missing.
+        attachment = request.FILES.get('attachment')
+        if attachment:
+            error = attachment_error(attachment)
+            if error:
+                return JsonResponse(status=400, data={'attachment': error})
+
         # 'institution' is the pre-2025 field name, still posted by stale cached SPA bundles
         institution = request.data.get('school') or request.data.get('institution', '')
 
@@ -27,7 +58,8 @@ class ThankYouNoteViewSet(viewsets.ModelViewSet):
                                               consent_to_share_or_contact=request.data.get('consent_to_share_or_contact', False),
                                               contact_email_address=request.data.get('contact_email_address', ''),
                                               source=request.data.get('source', ''),
-                                              account_uuid=request.data.get('account_uuid') or None)
+                                              account_uuid=request.data.get('account_uuid') or None,
+                                              attachment=attachment)
 
         return JsonResponse(status=201, data=ThankYouNoteSerializer(ty_note).data)
 
