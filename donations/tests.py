@@ -1,13 +1,18 @@
+import tempfile
 from datetime import timedelta
 from unittest import mock
 
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import IntegrityError, transaction
-from django.test import TestCase
+from django.contrib import admin
+from django.core.files.storage import FileSystemStorage
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import RequestFactory, TestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 
+from donations.admin import ThankYouNoteAdmin
 from donations.models import DonationPopup, DonationLink, ThankYouNote, Fundraiser, SiteBanner
 from donations.serializers import DonationPopupSerializer, DonationLinkSerializer, FundraiserSerializer
 
@@ -371,6 +376,103 @@ class ThankYouNoteTest(APITestCase, TestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         tyn = ThankYouNote.objects.get(last_name='Reed')
         self.assertEqual(str(tyn.account_uuid), account_uuid)
+
+
+class ThankYouNoteAttachmentTest(APITestCase, TestCase):
+    """ The thank-you note form posts multipart form data with an optional
+        photo or video in a field named "attachment" (CORE-3226).
+    """
+    URL = '/apps/cms/api/donations/thankyounote/'
+
+    def setUp(self):
+        # uploads land in a throwaway directory, not public/media
+        media = tempfile.TemporaryDirectory()
+        self.addCleanup(media.cleanup)
+        override = override_settings(MEDIA_ROOT=media.name)
+        override.enable()
+        self.addCleanup(override.disable)
+
+    def _post(self, upload=None, **extra):
+        data = {'thank_you_note': 'Thank you!', 'first_name': 'Ada', 'last_name': 'Lovelace',
+                'school': 'Rice University', **extra}
+        if upload is not None:
+            data['attachment'] = upload
+        return self.client.post(self.URL, data, format='multipart')
+
+    def test_photo_is_stored_with_the_note(self):
+        response = self._post(SimpleUploadedFile('class.JPG', b'jpeg bytes', content_type='image/jpeg'))
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        note = ThankYouNote.objects.get(last_name='Lovelace')
+        self.assertTrue(note.attachment.name.startswith('thank_you_notes/'))
+        self.assertEqual(note.attachment.read(), b'jpeg bytes')
+
+    def test_video_is_stored_with_the_note(self):
+        response = self._post(SimpleUploadedFile('thanks.mp4', b'video bytes', content_type='video/mp4'))
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertTrue(ThankYouNote.objects.get(last_name='Lovelace').attachment)
+
+    def test_heic_is_accepted_whatever_type_the_browser_reports(self):
+        response = self._post(SimpleUploadedFile(
+            'IMG_0001.HEIC', b'heic bytes', content_type='application/octet-stream'))
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_stored_content_type_comes_from_the_extension_not_the_client(self):
+        """S3 storage keeps the content type the upload carries, so a forged
+        text/html on a file named photo.jpg would be served as a page from the
+        media domain."""
+        stored = []
+        original_save = FileSystemStorage._save
+
+        def record(storage, name, content):
+            stored.append((name, content.content_type))
+            return original_save(storage, name, content)
+
+        with mock.patch.object(FileSystemStorage, '_save', autospec=True, side_effect=record):
+            for name, claimed in (('photo.jpg', 'text/html'),
+                                  ('clip.MOV', 'application/octet-stream'),
+                                  ('pic.png', 'image/svg+xml')):
+                self._post(SimpleUploadedFile(name, b'<script>alert(1)</script>', content_type=claimed))
+        self.assertEqual([content_type for _, content_type in stored],
+                         ['image/jpeg', 'video/quicktime', 'image/png'])
+
+    def test_note_without_an_attachment_still_works(self):
+        response = self._post()
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+        self.assertFalse(ThankYouNote.objects.get(last_name='Lovelace').attachment)
+
+    def test_other_file_types_are_rejected_and_nothing_is_saved(self):
+        for name in ('notes.pdf', 'run.exe', 'logo.svg', 'noextension'):
+            with self.subTest(name=name):
+                response = self._post(SimpleUploadedFile(name, b'data'))
+                self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+                self.assertIn('attachment', response.json())
+        self.assertFalse(ThankYouNote.objects.exists())
+
+    def test_oversized_file_is_rejected_and_nothing_is_saved(self):
+        with mock.patch('donations.views.ATTACHMENT_MAX_BYTES', 10):
+            response = self._post(SimpleUploadedFile('big.png', b'x' * 11))
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIn('too large', response.json()['attachment'])
+        self.assertFalse(ThankYouNote.objects.exists())
+
+    def test_file_at_the_limit_is_accepted(self):
+        with mock.patch('donations.views.ATTACHMENT_MAX_BYTES', 10):
+            response = self._post(SimpleUploadedFile('ok.png', b'x' * 10))
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+    def test_response_does_not_expose_the_attachment(self):
+        response = self._post(SimpleUploadedFile('class.png', b'png bytes'))
+        self.assertNotIn('attachment', response.json())
+
+    def test_csv_export_links_the_attachment(self):
+        self._post(SimpleUploadedFile('class.png', b'png bytes'))
+        self._post(last_name='Hopper')
+        model_admin = ThankYouNoteAdmin(ThankYouNote, admin.site)
+        response = model_admin.export_as_csv(RequestFactory().get('/'), ThankYouNote.objects.order_by('pk'))
+        rows = response.content.decode().splitlines()
+        self.assertTrue(rows[0].endswith('Attachment URL'))
+        self.assertIn('thank_you_notes/', rows[1])
+        self.assertTrue(rows[2].endswith(','))
 
 
 class FundraiserTest(APITestCase, TestCase):
