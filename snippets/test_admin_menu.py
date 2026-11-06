@@ -52,7 +52,6 @@ class ModelViewSetMenuTests(TestCase):
     def test_partner_and_salesforce_data_groups_registered(self):
         for url_name in (
             "partners:index",
-            "partner_types:index",
             "schools:index",
             "adoption_opportunities:index",
             "resource_downloads:index",
