@@ -8,7 +8,10 @@ from wagtail.models import Page
 from pages.models import RootPage
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
 from unittest.mock import MagicMock, patch
+from django.db import connection
+from django.test.utils import CaptureQueriesContext
 from news.models import NewsIndex, NewsArticle, PressIndex, PressRelease
+from news.search import MAX_SEARCH_TERMS
 from snippets.models import Subject, BlogContentType, BlogCollection
 
 
@@ -446,6 +449,65 @@ class NewsTests(WagtailPageTestCase, TestCase):
             slugs.index('thermo-body-only'),
             "Title-match (older) article should appear before body-only (newer) article when ordered by relevance"
         )
+
+    def test_very_long_query_does_not_blow_the_recursion_limit(self):
+        """A query with more terms than the backend can nest must still return 200."""
+        self._populate_search_index()
+
+        response = self.client.get(
+            '/apps/cms/api/search/',
+            {'q': ' '.join(f'term{i}' for i in range(500))}
+        )
+        self.assertEqual(response.status_code, 200)
+
+    def test_query_is_capped_to_max_search_terms(self):
+        long_query = ' '.join(f'term{i}' for i in range(500))
+
+        with patch('news.search._live_articles') as live_articles:
+            self.client.get('/apps/cms/api/search/', {'q': long_query})
+
+        searched = live_articles.return_value.search.call_args[0][0]
+        self.assertEqual(len(searched.split()), MAX_SEARCH_TERMS)
+
+    def test_degenerate_query_falls_back_to_tag_search(self):
+        with patch('news.search._live_articles') as live_articles:
+            self.client.get('/apps/cms/api/search/', {'q': '---', 'tag': 'Physics'})
+
+        live_articles.return_value.search.assert_not_called()
+        live_articles.return_value.filter.assert_called_once_with(
+            tags__name__in=['Physics']
+        )
+
+    def test_result_count_does_not_change_query_count(self):
+        """Serializing images and tags must not run per-article queries."""
+        news_index = NewsIndex.objects.all()[0]
+
+        def article_count_queries():
+            with CaptureQueriesContext(connection) as queries:
+                response = self.client.get('/apps/cms/api/search/')
+                self.assertEqual(response.status_code, 200)
+            return len(json.loads(response.content)), len(queries)
+
+        baseline_articles, baseline_queries = article_count_queries()
+
+        for i in range(5):
+            news_index.add_child(instance=NewsArticle(
+                title=f"N+1 article {i}",
+                slug=f"n-plus-one-{i}",
+                date=timezone.now(),
+                heading="Heading",
+                subheading="Subheading",
+                author="OpenStax",
+                body=json.dumps([{"type": "paragraph", "value": "<p>Body.</p>"}]),
+                article_subjects=json.dumps([]),
+                content_types=json.dumps([]),
+                collections=json.dumps([]),
+            ))
+
+        grown_articles, grown_queries = article_count_queries()
+
+        self.assertEqual(grown_articles, baseline_articles + 5)
+        self.assertEqual(grown_queries, baseline_queries)
 
 
 class PressTests(WagtailPageTestCase):
