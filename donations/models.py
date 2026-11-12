@@ -29,6 +29,9 @@ class ThankYouNote(models.Model):
     source = models.CharField(max_length=255, default="", blank=True)
     account_uuid = models.UUIDField(null=True, blank=True, help_text="OpenStax Accounts UUID, set when the note is submitted by a logged-in user")
     salesforce_id = models.CharField(max_length=255, default="", blank=True, help_text="Not null if uploaded to Salesforce")
+    attachment = models.FileField(
+        upload_to='thank_you_notes/%Y/%m/', blank=True, null=True,
+        help_text="Photo or video the submitter attached to their note")
 
 
     def __str__(self):
