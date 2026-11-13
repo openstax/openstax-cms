@@ -186,7 +186,6 @@ class Partner(models.Model):
     integrated = models.BooleanField(default=False)
     partner_sf_account_id = models.CharField(max_length=255, blank=True, null=True, help_text="Deprecated. Use Account Id.")
     affordability_cost = models.CharField(max_length=255, blank=True, null=True)
-    affordability_institutional = models.BooleanField(default=False)
     app_available = models.BooleanField(default=False)
     adaptivity_adaptive_presentation = models.BooleanField(default=False)
     adaptivity_affective_state = models.BooleanField(default=False)
@@ -200,12 +199,11 @@ class Partner(models.Model):
     admin_realtime_progress = models.BooleanField(default=False)
     admin_shared_students = models.BooleanField(default=False)
     admin_syllabus = models.BooleanField(default=False)
-    assigment_outside_resources = models.BooleanField(default=False)
+    assignment_outside_resources = models.BooleanField(default=False)
     assignment_editing = models.BooleanField(default=False)
     assignment_multimedia = models.BooleanField(default=False)
     assignment_multiple_quantitative = models.BooleanField(default=False)
     assignment_pretest = models.BooleanField(default=False)
-    address_Longitude = models.BooleanField(default=False)
     assignment_scientific_structures = models.BooleanField(default=False)
     assignment_summative_assessments = models.BooleanField(default=False)
     autonomy_digital_badges = models.BooleanField(default=False)
@@ -301,30 +299,6 @@ class Partner(models.Model):
     @property
     def rating_count(self):
         return 0
-
-
-class PartnerFieldNameMapping(models.Model):
-    salesforce_name = models.CharField(max_length=255)
-    display_name = models.CharField(max_length=255)
-    hidden = models.BooleanField(default=False)
-
-    def __str__(self):
-        return self.display_name
-
-
-class PartnerCategoryMapping(models.Model):
-    salesforce_name = models.CharField(max_length=255)
-    display_name = models.CharField(max_length=255)
-
-    def __str__(self):
-        return self.display_name
-
-
-class PartnerTypeMapping(models.Model):
-    display_name = models.CharField(max_length=255)
-
-    def __str__(self):
-        return self.display_name
 
 
 class ResourceDownload(models.Model):
