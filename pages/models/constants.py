@@ -10,6 +10,7 @@ from pages.custom_blocks import APIImageChooserBlock, \
     LinksGroupBlock, \
     QuoteBlock, \
     BookBlock, \
+    ContentCardBlock, \
     PersonBlock, \
     BigNumberBlock, \
     BigNumbersBlock, \
@@ -125,6 +126,7 @@ BASE_CONTENT_BLOCKS = [
     ('book_list', blocks.StructBlock([
         ('books', blocks.ListBlock(BookBlock(required=True))),
     ], label="Books Block")),
+    ('content_card', ContentCardBlock()),
     ('person', PersonBlock()),
     ('table', TableBlock()),
 ]
