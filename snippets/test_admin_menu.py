@@ -33,11 +33,14 @@ class SnippetRegistrationTests(TestCase):
 class ModelViewSetMenuTests(TestCase):
     def test_retired_modeladmins_now_have_viewset_urls(self):
         # Webinars, OX Menu, and the Site Messaging models moved off
-        # wagtail_modeladmin onto ModelViewSets.
+        # wagtail_modeladmin onto ModelViewSets. OX Menu was later split into
+        # separate Header/Footer viewsets (see oxmenus/wagtail_hooks.py).
         for url_name in (
             "webinars:index",
-            "oxmenus:index",
+            "headermenus:index",
+            "footermenus:index",
             "donationpopup:index",
+            "donationlink:index",
             "fundraiser:index",
             "sitebanner:index",
         ):
@@ -164,6 +167,133 @@ class MainMenuStructureTests(TestCase):
         )
         response = self.client.get(reverse("books:index"))
         self.assertEqual(response.status_code, 200)
+
+
+class GivingGroupMenuTests(TestCase):
+    """Everything to do with giving lives under one top-level "Giving" group:
+    the three donation viewsets plus deep-links to the two settings pages that
+    hold give links. Nothing giving-related sits loose beside it."""
+
+    def setUp(self):
+        from django.contrib.auth.models import User
+        from django.test import RequestFactory
+
+        self.request = RequestFactory().get("/admin/")
+        self.request.user = User.objects.create_superuser(
+            "givingadmin", "giving@openstax.org", "pw"
+        )
+
+    def giving_submenu_names(self):
+        from wagtail.admin.menu import admin_menu
+
+        items = admin_menu.menu_items_for_request(self.request)
+        giving = next(item for item in items if item.name == "giving")
+
+        return [
+            item.name
+            for item in sorted(
+                giving.menu.menu_items_for_request(self.request),
+                key=lambda item: item.order,
+            )
+        ]
+
+    def test_giving_group_holds_every_give_link(self):
+        self.assertEqual(
+            [
+                "donation-popup",
+                "donation-links",
+                "fundraisers",
+                "give-today-settings",
+                "footer-give-link-settings",
+            ],
+            self.giving_submenu_names(),
+        )
+
+    def test_nothing_giving_related_sits_beside_the_group(self):
+        from wagtail.admin.menu import admin_menu
+
+        names = [
+            item.name for item in admin_menu.menu_items_for_request(self.request)
+        ]
+
+        self.assertIn("giving", names)
+        self.assertNotIn("give-today-settings", names)
+        self.assertNotIn("footer-give-link-settings", names)
+
+    def test_site_messaging_no_longer_holds_donation_popup_or_fundraisers(self):
+        from wagtail.admin.menu import admin_menu
+
+        items = admin_menu.menu_items_for_request(self.request)
+        site_messaging = next(item for item in items if item.name == "site-messaging")
+        names = [
+            item.name
+            for item in site_messaging.menu.menu_items_for_request(self.request)
+        ]
+
+        self.assertEqual(["site-banners"], names)
+
+    def test_settings_deep_links_point_at_the_settings_edit_pages(self):
+        from django.urls import reverse
+        from wagtail.admin.menu import admin_menu
+
+        from global_settings.models import Footer, GiveToday
+
+        items = admin_menu.menu_items_for_request(self.request)
+        giving = next(item for item in items if item.name == "giving")
+        by_name = {
+            item.name: item
+            for item in giving.menu.menu_items_for_request(self.request)
+        }
+
+        for name, model in (
+            ("give-today-settings", GiveToday),
+            ("footer-give-link-settings", Footer),
+        ):
+            self.assertEqual(
+                reverse(
+                    "wagtailsettings:edit",
+                    args=(model._meta.app_label, model._meta.model_name),
+                ),
+                by_name[name].url,
+            )
+
+    def test_settings_deep_links_are_hidden_without_change_permission(self):
+        from django.contrib.auth.models import User
+        from django.test import RequestFactory
+        from wagtail.admin.menu import admin_menu
+
+        editor = User.objects.create_user("plainadmin", "plain@openstax.org", "pw")
+        editor.is_staff = True
+        editor.save()
+        request = RequestFactory().get("/admin/")
+        request.user = editor
+
+        giving = [
+            item
+            for item in admin_menu.menu_items_for_request(request)
+            if item.name == "giving"
+        ]
+        names = [
+            item.name
+            for item in (
+                giving[0].menu.menu_items_for_request(request) if giving else []
+            )
+        ]
+
+        self.assertNotIn("give-today-settings", names)
+        self.assertNotIn("footer-give-link-settings", names)
+
+    def test_give_settings_are_not_duplicated_in_the_settings_menu(self):
+        from wagtail.admin.menu import settings_menu
+
+        names = [
+            item.name for item in settings_menu.menu_items_for_request(self.request)
+        ]
+
+        # Both are reachable from Giving, and Footer from the Footer group too, so a
+        # second Settings entry for either is just another place to look.
+        self.assertNotIn("give-today", names)
+        self.assertNotIn("footer", names)
 
 
 class GiveTodaySettingTests(TestCase):

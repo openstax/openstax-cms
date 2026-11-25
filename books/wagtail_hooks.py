@@ -3,8 +3,19 @@ from wagtail import hooks
 from wagtail.admin.menu import MenuItem
 from wagtail.admin.views.pages.listing import IndexView
 from wagtail.admin.viewsets.pages import PageListingViewSet
+from wagtail.snippets.models import register_snippet
+from wagtail.snippets.views.snippets import SnippetViewSet
 
-from books.models import Book
+from books.models import Book, BookCallout
+
+
+class BookCalloutViewSet(SnippetViewSet):
+    model = BookCallout
+    icon = "comment"
+    menu_label = "Book Callout"
+
+
+register_snippet(BookCalloutViewSet)
 
 
 class BookListingIndexView(IndexView):

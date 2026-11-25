@@ -2,15 +2,31 @@ from wagtail.test.utils import WagtailPageTestCase
 from wagtail.models import Page, Site
 
 import snippets.models
-from pages.models import RootPage
-from books.models import BookIndex, Book, BookFacultyResources, BookStudentResources
+from pages.models import FlexPage, RootPage
+from books.models import (
+    BookIndex,
+    Book,
+    BookCategories,
+    BookFacultyResources,
+    BookStudentResources,
+    BookSubjects,
+    K12BookSubjects,
+    VideoFacultyResources,
+)
+from pages.custom_blocks import BookBlock
 from shared.test_utilities import assertPathDoesNotRedirectToTrailingSlash
 from salesforce.tests import openstax_vcr as vcr
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.core.management import call_command
 from django.test import Client, TestCase
 from unittest.mock import patch
 from wagtail.documents.models import Document
+import csv
 import datetime
+import os
+import tempfile
+
+from books.management.commands.backfill_remediation_status import parse_table, resolve_book
 
 
 class BookTests(WagtailPageTestCase):
@@ -93,6 +109,44 @@ class BookTests(WagtailPageTestCase):
             self.assertIn("https://openstax.org", found)
             self.assertIn("https://amazon.com", found)
 
+    def test_book_block_has_resources_flags_via_bulk_to_python(self):
+        # Regression: BookBlock.bulk_to_python (added to fix N+1 queries when
+        # resolving a Book Block/Book List) is the only path that populates
+        # prefetched_faculty_resources/prefetched_student_resources, which
+        # has_faculty_resources/has_student_resources read. Also covers that
+        # hidden resources don't count as "has resources" (prefetch_book_
+        # resources filters hidden=False).
+        book_index = BookIndex.objects.all()[0]
+        root_page = Page.objects.get(title="Root")
+
+        def make_book(slug):
+            book = Book(title=slug, slug=slug, description="Test Book",
+                        cover=self.test_doc, title_image=self.test_doc,
+                        publish_date=datetime.date.today(), locale=root_page.locale)
+            book_index.add_child(instance=book)
+            return book
+
+        visible_book = make_book("has-visible-resources")
+        BookFacultyResources.objects.create(book_faculty_resource=visible_book, hidden=False)
+        BookStudentResources.objects.create(book_student_resource=visible_book, hidden=False)
+
+        hidden_only_book = make_book("has-only-hidden-resources")
+        BookFacultyResources.objects.create(book_faculty_resource=hidden_only_book, hidden=True)
+        BookStudentResources.objects.create(book_student_resource=hidden_only_book, hidden=True)
+
+        no_resources_book = make_book("has-no-resources")
+
+        block = BookBlock()
+        books = block.bulk_to_python([visible_book.id, hidden_only_book.id, no_resources_book.id])
+        data = {book.slug: block.get_api_representation(book) for book in books}
+
+        self.assertTrue(data["has-visible-resources"]["has_faculty_resources"])
+        self.assertTrue(data["has-visible-resources"]["has_student_resources"])
+        self.assertFalse(data["has-only-hidden-resources"]["has_faculty_resources"])
+        self.assertFalse(data["has-only-hidden-resources"]["has_student_resources"])
+        self.assertFalse(data["has-no-resources"]["has_faculty_resources"])
+        self.assertFalse(data["has-no-resources"]["has_student_resources"])
+
     def test_can_create_ap_book(self):
         with vcr.use_cassette('fixtures/vcr_cassettes/books_prealgebra.yaml'):
             book_index = BookIndex.objects.all()[0]
@@ -110,6 +164,264 @@ class BookTests(WagtailPageTestCase):
             book_index.add_child(instance=book)
             self.assertEqual(book.salesforce_abbreviation, 'Prealgebra')
 
+
+    def test_book_callout_snippet_exists_and_is_editable(self):
+        from wagtail.models import Locale
+        from books.models import BookCallout
+        callout = BookCallout.objects.create(
+            locale=Locale.get_default(),
+            rex_callout_title='Recommended',
+            rex_callout_blurb='Highlight and add notes — 100% free!',
+        )
+        self.assertEqual(BookCallout.objects.count(), 1)
+        self.assertEqual(callout.rex_callout_title, 'Recommended')
+        # webinar_content is a StreamField (empty is fine)
+        self.assertEqual(list(callout.webinar_content), [])
+
+    def test_callout_fields_sourced_from_snippet(self):
+        from books.models import BookCallout
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            BookCallout.objects.create(
+                locale=root_page.locale,
+                rex_callout_title='Shared Title',
+                rex_callout_blurb='Shared Blurb',
+            )
+            book = Book(title="Callout Book", slug="callout-book",
+                        book_uuid='031da8d3-b525-429c-80cf-6c8ed997733a',
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test", cover=self.test_doc, title_image=self.test_doc,
+                        publish_date=datetime.date.today(), locale=root_page.locale)
+            book_index.add_child(instance=book)
+            # property reads the snippet
+            self.assertEqual(book.rex_callout_title, 'Shared Title')
+            self.assertEqual(book.rex_callout_blurb, 'Shared Blurb')
+            # API still exposes the same keys with the same types
+            resp = self.client.get(
+                '/apps/cms/api/v2/pages/{}/?fields=rex_callout_title,rex_callout_blurb,webinar_content'.format(book.id))
+            data = resp.json()
+            self.assertEqual(data['rex_callout_title'], 'Shared Title')
+            self.assertEqual(data['rex_callout_blurb'], 'Shared Blurb')
+            self.assertEqual(data['webinar_content'], [])   # empty StreamField -> []
+
+    def test_cover_is_image_with_alt_and_url_fallback(self):
+        from wagtail.images import get_image_model
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        Image = get_image_model()
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            with open('pages/static/images/openstax.png', 'rb') as f:
+                image_bytes = f.read()
+            img = Image.objects.create(
+                title='Cover img',
+                description='A maths textbook cover',
+                file=SimpleUploadedFile('c.png', image_bytes),
+            )
+            book = Book(title="Img Book", slug="img-book",
+                        book_uuid='031da8d3-b525-429c-80cf-6c8ed997733a',
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test",
+                        cover_image=img, banner_image=img,
+                        publish_date=datetime.date.today(), locale=root_page.locale)
+            book_index.add_child(instance=book)
+            resp = self.client.get(
+                '/apps/cms/api/v2/pages/{}/?fields=cover_url,title_image_url,cover_alt,title_image_alt'.format(book.id))
+            data = resp.json()
+            self.assertTrue(data['cover_url'])                      # non-empty URL string
+            self.assertTrue(data['title_image_url'])                # non-empty URL string
+            self.assertEqual(data['cover_alt'], 'A maths textbook cover')
+            self.assertEqual(data['title_image_alt'], 'A maths textbook cover')
+
+    def test_cover_url_falls_back_to_legacy_document(self):
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            book = Book(title="Legacy Book", slug="legacy-book",
+                        book_uuid='031da8d3-b525-429c-80cf-6c8ed997733a',
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test",
+                        cover=self.test_doc, title_image=self.test_doc,
+                        publish_date=datetime.date.today(), locale=root_page.locale)
+            book_index.add_child(instance=book)
+            # No Image set yet -> url falls back to the legacy document
+            self.assertTrue(book.cover_url)
+            self.assertTrue(book.title_image_url)
+            self.assertIsNone(book.cover_alt)   # no Image -> no alt
+            self.assertIsNone(book.title_image_alt)   # no Image -> no alt
+
+    def test_convert_book_images_command(self):
+        from django.core.management import call_command
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            book = Book(title="Convert Book", slug="convert-book",
+                        book_uuid='031da8d3-b525-429c-80cf-6c8ed997733a',
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test",
+                        cover=self.test_doc, title_image=self.test_doc,
+                        publish_date=datetime.date.today(), locale=root_page.locale)
+            book_index.add_child(instance=book)
+            self.assertIsNone(book.cover_image)
+
+            call_command('convert_book_images')
+
+            book.refresh_from_db()
+            self.assertIsNotNone(book.cover_image)        # Image created + linked
+            self.assertIsNotNone(book.banner_image)
+            self.assertTrue(book.cover_url)
+            # Idempotent: a second run does not create duplicates / change links
+            first_cover_id = book.cover_image_id
+            call_command('convert_book_images')
+            book.refresh_from_db()
+            self.assertEqual(book.cover_image_id, first_cover_id)
+
+    def test_convert_book_images_continues_after_bad_document(self):
+        from django.core.management import call_command
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            broken_doc = Document.objects.create(
+                title='Broken Doc',
+                file=SimpleUploadedFile('broken.png', b'not a real image'))
+            bad_book = Book(title="Bad Book", slug="bad-book",
+                        book_uuid='11111111-1111-1111-1111-111111111111',
+                        description="Test", cover=broken_doc,
+                        publish_date=datetime.date.today(), locale=root_page.locale)
+            book_index.add_child(instance=bad_book)
+            good_book = Book(title="Good Book", slug="good-book",
+                        book_uuid='22222222-2222-2222-2222-222222222222',
+                        description="Test", cover=self.test_doc,
+                        publish_date=datetime.date.today(), locale=root_page.locale)
+            book_index.add_child(instance=good_book)
+
+            call_command('convert_book_images')  # must not raise/abort
+
+            bad_book.refresh_from_db()
+            good_book.refresh_from_db()
+            self.assertIsNone(bad_book.cover_image)          # skipped, not converted
+            self.assertIsNotNone(good_book.cover_image)      # still converted despite the earlier failure
+
+    def test_salesforce_name_is_synced_dropdown(self):
+        from django import forms as dj_forms
+        from books.models import Book
+        from salesforce.models import SalesforceBookName
+        SalesforceBookName.objects.create(
+            salesforce_id='a1', name='UP', official_name='University Physics (Calculus)')
+        SalesforceBookName.objects.create(
+            salesforce_id='a2', name='CA', official_name='College Algebra')
+
+        form_class = Book.get_edit_handler().get_form_class()
+
+        form = form_class(instance=Book(salesforce_name=''))
+        field = form.fields['salesforce_name']
+        self.assertIsInstance(field, dj_forms.ChoiceField)
+        values = [c[0] for c in field.choices]
+        self.assertIn('University Physics (Calculus)', values)
+        self.assertIn('College Algebra', values)
+
+        # An existing value not in the synced list is preserved as an option
+        form2 = form_class(instance=Book(salesforce_name='Legacy Drifted Name'))
+        values2 = [c[0] for c in form2.fields['salesforce_name'].choices]
+        self.assertIn('Legacy Drifted Name', values2)
+
+    def test_book_uuid_is_canonical_and_syncs_cnx_id(self):
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            book = Book(title="UUID Sync Book",
+                        slug="uuid-sync-book",
+                        book_uuid='aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee',
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test",
+                        cover=self.test_doc,
+                        title_image=self.test_doc,
+                        publish_date=datetime.date.today(),
+                        locale=root_page.locale)
+            book_index.add_child(instance=book)
+            book.refresh_from_db()
+            # cnx_id mirrors the canonical book_uuid
+            self.assertEqual(book.cnx_id, 'aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee')
+            # cnx_id stays a real, filterable column
+            self.assertTrue(
+                Book.objects.filter(cnx_id='aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee').exists()
+            )
+
+    def test_legacy_cnx_id_backfills_book_uuid(self):
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            book = Book(title="Legacy CNX Book",
+                        slug="legacy-cnx-book",
+                        cnx_id='bbbbbbbb-cccc-dddd-eeee-ffffffffffff',
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test",
+                        cover=self.test_doc,
+                        title_image=self.test_doc,
+                        publish_date=datetime.date.today(),
+                        locale=root_page.locale)
+            book_index.add_child(instance=book)
+            book.refresh_from_db()
+            self.assertEqual(book.book_uuid, 'bbbbbbbb-cccc-dddd-eeee-ffffffffffff')
+            self.assertEqual(book.cnx_id, 'bbbbbbbb-cccc-dddd-eeee-ffffffffffff')
+            self.assertTrue(
+                Book.objects.filter(cnx_id='bbbbbbbb-cccc-dddd-eeee-ffffffffffff').exists()
+            )
+
+    def test_pdf_api_keys(self):
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            book = Book(title="PDF Book", slug="pdf-book",
+                        book_uuid='031da8d3-b525-429c-80cf-6c8ed997733a',
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test", cover=self.test_doc, title_image=self.test_doc,
+                        pdf=self.test_doc,
+                        publish_date=datetime.date.today(),
+                        locale=root_page.locale)
+            book_index.add_child(instance=book)
+            resp = self.client.get(
+                '/apps/cms/api/v2/pages/{}/?fields=pdf_url,high_resolution_pdf_url'.format(book.id))
+            data = resp.json()
+            self.assertIn('pdf_url', data)
+            self.assertIn('high_resolution_pdf_url', data)            # deprecated alias retained
+            self.assertEqual(data['pdf_url'], data['high_resolution_pdf_url'])
+            self.assertNotIn('low_resolution_pdf_url', data)
+
+    def test_dead_fields_removed_from_api(self):
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            book = Book(title="Lean Book", slug="lean-book",
+                        book_uuid='031da8d3-b525-429c-80cf-6c8ed997733a',
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test", cover=self.test_doc, title_image=self.test_doc,
+                        publish_date=datetime.date.today(),
+                        locale=root_page.locale)
+            book_index.add_child(instance=book)
+            resp = self.client.get('/apps/cms/api/v2/pages/{}/?fields=*'.format(book.id))
+            data = resp.json()
+            for gone in ['ibook_link', 'ibook_link_volume_2', 'ibook_isbn_13',
+                         'ibook_volume_2_isbn_13', 'enable_study_edge', 'tutor_marketing_book',
+                         'amazon_iframe', 'comp_copy_available', 'comp_copy_content']:
+                self.assertNotIn(gone, data)
+
+    def test_kindle_chegg_removed_from_api(self):
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            book = Book(title="No KC Book", slug="no-kc-book",
+                        book_uuid='031da8d3-b525-429c-80cf-6c8ed997733a',
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test", cover=self.test_doc, title_image=self.test_doc,
+                        publish_date=datetime.date.today(),
+                        locale=root_page.locale)
+            book_index.add_child(instance=book)
+            resp = self.client.get('/apps/cms/api/v2/pages/{}/?fields=*'.format(book.id))
+            data = resp.json()
+            for gone in ['kindle_link', 'chegg_link', 'chegg_link_text']:
+                self.assertNotIn(gone, data)
 
     def test_can_create_book_without_cnx_id(self):
         with vcr.use_cassette('fixtures/vcr_cassettes/books_no_cnx_id.yaml'):
@@ -175,8 +487,7 @@ class BookTests(WagtailPageTestCase):
 
         faculty_resource = snippets.models.FacultyResource(heading="Instructor Getting Started Guide",
                                                            description="<p data-block-key=\"6o2yl\">Download our helpful guide to all things OpenStax.<br/></p>",
-                                                           unlocked_resource=False,
-                                                           creator_fest_resource=False)
+                                                           unlocked_resource=False)
         faculty_resource.save()
 
         book_faculty_resource = BookFacultyResources.objects.create(link_external="https://openstax.org",
@@ -193,6 +504,46 @@ class BookTests(WagtailPageTestCase):
         # run test with flag
         response = self.client.get('/apps/cms/api/books/resources/?slug=university-physics&x=y')
         self.assertEqual(response.data['book_faculty_resources'][0]['link_external'], '')
+
+    def test_resources_api_survives_deleted_resource_snippet(self):
+        """Deleting a resource snippet SET_NULLs the FK; the API must not 500."""
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            book = Book(title="University Physics",
+                        slug="university-physics",
+                        cnx_id='031da8d3-b525-429c-80cf-6c8ed997733a',
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test Book",
+                        cover=self.test_doc,
+                        title_image=self.test_doc,
+                        publish_date=datetime.date.today(),
+                        locale=root_page.locale
+                        )
+            book_index.add_child(instance=book)
+
+        faculty_resource = snippets.models.FacultyResource.objects.create(heading="Orphan me")
+        student_resource = snippets.models.StudentResource.objects.create(heading="Orphan me too")
+        BookFacultyResources.objects.create(link_external="https://openstax.org", link_text="Go!",
+                                            resource=faculty_resource, book_faculty_resource=book)
+        BookStudentResources.objects.create(link_external="https://openstax.org", link_text="Go!",
+                                            resource=student_resource, book_student_resource=book)
+        faculty_resource.delete()
+        student_resource.delete()
+
+        # the page API is where the resource_* properties are serialized
+        response = self.client.get('/apps/cms/api/v2/pages/{}/'.format(book.pk))
+        self.assertEqual(response.status_code, 200)
+        for key in ('book_faculty_resources', 'book_student_resources'):
+            resource = response.data[key][0]
+            self.assertIsNone(resource['resource_description'])
+            self.assertIsNone(resource['resource_heading'])
+            self.assertIsNone(resource['link_document_url'])
+
+        # ...and the resources endpoint reads the nested snippet directly
+        response = self.client.get('/apps/cms/api/books/resources/?slug=university-physics')
+        self.assertEqual(response.status_code, 200)
+        self.assertIsNone(response.data['book_faculty_resources'][0]['resource'])
 
     def test_bad_faculty_resources_slug(self):
         response = self.client.get('/apps/cms/api/books/resources/?slug=university-physic')
@@ -238,14 +589,12 @@ class BookTests(WagtailPageTestCase):
 
         faculty_resource = snippets.models.FacultyResource(heading="Visible Resource",
                                                            description="Visible",
-                                                           unlocked_resource=False,
-                                                           creator_fest_resource=False)
+                                                           unlocked_resource=False)
         faculty_resource.save()
 
         hidden_faculty_resource = snippets.models.FacultyResource(heading="Hidden Resource",
                                                                    description="Hidden",
-                                                                   unlocked_resource=False,
-                                                                   creator_fest_resource=False)
+                                                                   unlocked_resource=False)
         hidden_faculty_resource.save()
 
         BookFacultyResources.objects.create(link_external="https://openstax.org",
@@ -258,6 +607,68 @@ class BookTests(WagtailPageTestCase):
         response = self.client.get('/apps/cms/api/books/resources/?slug=university-physics-hidden')
         self.assertEqual(len(response.data['book_faculty_resources']), 1)
         self.assertEqual(response.data['book_faculty_resources'][0]['link_text'], 'Visible')
+
+    def test_student_resources_available_from_resources_api(self):
+        """book_student_resources must be served with the same flat shape
+        (resource_heading/resource_description/resource_unlocked) os-webview
+        already reads from the Book page API, plus its own id, hidden filtered
+        out, and locked links redacted only when verified (?x=y)."""
+        with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
+            book_index = BookIndex.objects.all()[0]
+            root_page = Page.objects.get(title="Root")
+            book = Book(title="University Physics",
+                        slug="university-physics-student",
+                        cnx_id='031da8d3-b525-429c-80cf-6c8ed997733a',
+                        salesforce_book_id='a0ZU0000008pyvQMAQ',
+                        description="Test Book",
+                        cover=self.test_doc,
+                        title_image=self.test_doc,
+                        publish_date=datetime.date.today(),
+                        locale=root_page.locale
+                        )
+            book_index.add_child(instance=book)
+
+        locked_resource = snippets.models.StudentResource(heading="Study Guide",
+                                                           description="Solutions",
+                                                           unlocked_resource=False)
+        locked_resource.save()
+
+        hidden_resource = snippets.models.StudentResource(heading="Hidden Guide",
+                                                           description="Hidden",
+                                                           unlocked_resource=True)
+        hidden_resource.save()
+
+        row = BookStudentResources.objects.create(link_external="https://openstax.org/solutions",
+                                                   link_text="Get it", resource=locked_resource,
+                                                   book_student_resource=book)
+        BookStudentResources.objects.create(link_external="https://openstax.org/hidden",
+                                            link_text="Hidden", resource=hidden_resource,
+                                            book_student_resource=book, hidden=True)
+
+        # hidden rows filtered out, flat fields present, id present
+        response = self.client.get('/apps/cms/api/books/resources/?slug=university-physics-student')
+        student_resources = response.data['book_student_resources']
+        self.assertEqual(len(student_resources), 1)
+        resource = student_resources[0]
+        self.assertEqual(resource['id'], row.pk)
+        self.assertEqual(resource['resource_heading'], 'Study Guide')
+        self.assertEqual(resource['resource_description'], 'Solutions')
+        self.assertFalse(resource['resource_unlocked'])
+        # book back-reference cleared, matching the faculty resources shape
+        self.assertEqual(resource['book_student_resource'], {})
+        # unverified: locked resource's link stays intact
+        self.assertEqual(resource['link_external'], 'https://openstax.org/solutions')
+
+        # verified flag on a locked resource: link redacted
+        response = self.client.get('/apps/cms/api/books/resources/?slug=university-physics-student&x=y')
+        self.assertEqual(response.data['book_student_resources'][0]['link_external'], '')
+
+        # verified flag on an unlocked resource: link stays intact
+        locked_resource.unlocked_resource = True
+        locked_resource.save()
+        response = self.client.get('/apps/cms/api/books/resources/?slug=university-physics-student&x=y')
+        self.assertEqual(response.data['book_student_resources'][0]['link_external'],
+                         'https://openstax.org/solutions')
 
     def test_hidden_faculty_resources_filtered_from_pages_api(self):
         """HiddenFilterChildRelationField excludes hidden faculty resources from Wagtail Pages API."""
@@ -278,14 +689,12 @@ class BookTests(WagtailPageTestCase):
 
         faculty_resource = snippets.models.FacultyResource(heading="Visible Resource",
                                                            description="Visible",
-                                                           unlocked_resource=False,
-                                                           creator_fest_resource=False)
+                                                           unlocked_resource=False)
         faculty_resource.save()
 
         hidden_faculty_resource = snippets.models.FacultyResource(heading="Hidden Resource",
                                                                    description="Hidden",
-                                                                   unlocked_resource=False,
-                                                                   creator_fest_resource=False)
+                                                                   unlocked_resource=False)
         hidden_faculty_resource.save()
 
         BookFacultyResources.objects.create(link_external="https://openstax.org",
@@ -339,6 +748,99 @@ class BookTests(WagtailPageTestCase):
         self.assertEqual(len(student_resources), 1)
         self.assertEqual(student_resources[0]['link_text'], 'Visible')
 
+    @patch('books.models.capture_exception')
+    def test_page_api_book_list_skips_missing_book_promote_snippet(self, capture_exception):
+        book_index = BookIndex.objects.all()[0]
+        root_page = Page.objects.get(title="Root")
+        promote_snippet = snippets.models.PromoteSnippet.objects.create(name="Assignable")
+        book = Book(
+            title="Promoted Book",
+            slug="promoted-book",
+            description="Test Book",
+            cover=self.test_doc,
+            title_image=self.test_doc,
+            publish_date=datetime.date.today(),
+            locale=root_page.locale,
+            promote_snippet=[
+                {"type": "content", "value": promote_snippet.id},
+                {"type": "content", "value": None},
+            ],
+        )
+        book_index.add_child(instance=book)
+
+        page = RootPage.objects.get(slug="hello-world")
+        page.body = [
+            {
+                "type": "section",
+                "value": {
+                    "content": [
+                        {
+                            "type": "book_list",
+                            "value": {"books": [book.id]},
+                        }
+                    ],
+                    "config": [],
+                },
+            },
+        ]
+        page.save_revision().publish()
+
+        response = self.client.get('/apps/cms/api/v2/pages/{}/?fields=body'.format(page.pk))
+
+        self.assertEqual(response.status_code, 200)
+        capture_exception.assert_not_called()
+        book_data = response.data['body'][0]['value']['content'][0]['value']['books'][0]
+        self.assertEqual(book_data['id'], book.id)
+        self.assertEqual(book_data['promote_snippet'][0]['value']['name'], 'Assignable')
+        self.assertEqual(book_data['promote_snippet'][1]['type'], 'content')
+        self.assertIsNone(book_data['promote_snippet'][1]['value'])
+        self.assertEqual(book_data['promote_tags'], ['Assignable'])
+
+    @patch('books.models.capture_exception')
+    def test_page_api_book_list_skips_missing_book_subject_relations(self, capture_exception):
+        book_index = BookIndex.objects.all()[0]
+        root_page = Page.objects.get(title="Root")
+        book = Book(
+            title="Book With Missing Subjects",
+            slug="book-with-missing-subjects",
+            description="Test Book",
+            cover=self.test_doc,
+            title_image=self.test_doc,
+            publish_date=datetime.date.today(),
+            locale=root_page.locale,
+        )
+        book_index.add_child(instance=book)
+        BookSubjects.objects.create(book_subject=book, subject=None)
+        K12BookSubjects.objects.create(k12book_subject=book, subject=None)
+        BookCategories.objects.create(book_category=book, category=None)
+
+        page = RootPage.objects.get(slug="hello-world")
+        page.body = [
+            {
+                "type": "section",
+                "value": {
+                    "content": [
+                        {
+                            "type": "book_list",
+                            "value": {"books": [book.id]},
+                        }
+                    ],
+                    "config": [],
+                },
+            },
+        ]
+        page.save_revision().publish()
+
+        response = self.client.get('/apps/cms/api/v2/pages/{}/?fields=body'.format(page.pk))
+
+        self.assertEqual(response.status_code, 200)
+        capture_exception.assert_not_called()
+        book_data = response.data['body'][0]['value']['content'][0]['value']['books'][0]
+        self.assertEqual(book_data['id'], book.id)
+        self.assertEqual(book_data['subjects'], [])
+        self.assertEqual(book_data['k12subject'], [])
+        self.assertEqual(book_data['subject_categories'], [])
+
     def test_non_hidden_resources_still_appear(self):
         """Resources with hidden=False (default) should appear normally."""
         with vcr.use_cassette('fixtures/vcr_cassettes/books_univ_physics.yaml'):
@@ -358,14 +860,12 @@ class BookTests(WagtailPageTestCase):
 
         faculty_resource = snippets.models.FacultyResource(heading="Resource 1",
                                                            description="First",
-                                                           unlocked_resource=False,
-                                                           creator_fest_resource=False)
+                                                           unlocked_resource=False)
         faculty_resource.save()
 
         faculty_resource_2 = snippets.models.FacultyResource(heading="Resource 2",
                                                               description="Second",
-                                                              unlocked_resource=False,
-                                                              creator_fest_resource=False)
+                                                              unlocked_resource=False)
         faculty_resource_2.save()
 
         BookFacultyResources.objects.create(link_external="https://openstax.org/1",
@@ -434,3 +934,204 @@ class BookPreviewTests(TestCase):
             mock_super.return_value = 'fallback'
             result = book.serve_preview(None, 'some-mode')
         self.assertEqual(result, 'fallback')
+
+
+FIXTURE_HTML = """
+<table class="os-rem"><tbody>
+<tr class="os-subj-row"><td colspan="3">Business</td></tr>
+<tr class="os-book-row"><td colspan="3"><a href="https://openstax.org/details/books/principles-financial-accounting">Principles of Accounting Volume 1: Financial Accounting</a></td></tr>
+<tr><td>Instructor</td><td>Blackboard Course Package</td><td><span class="os-st os-st-fixed">Fixed</span></td></tr>
+<tr><td>Book</td><td>Web PDF</td><td><span class="os-st os-st-fixed">Fixed</span></td></tr>
+</tbody></table>
+"""
+
+
+class RemediationBackfillTests(TestCase):
+    """books/management/commands/backfill_remediation_status.py"""
+
+    @classmethod
+    def setUpTestData(cls):
+        root_page = Page.objects.get(title="Root")
+        homepage = RootPage(title="Remediation Home", slug="remediation-home")
+        root_page.add_child(instance=homepage)
+        cls.homepage = Page.objects.get(id=homepage.id)
+
+        book_index = BookIndex(title="Remediation Book Index", page_description="Test",
+                               dev_standard_1_description="Test", dev_standard_2_description="Test",
+                               dev_standard_3_description="Test", dev_standard_4_description="Test")
+        cls.homepage.add_child(instance=book_index)
+        cls.book_index = Page.objects.get(id=book_index.id)
+
+    def _make_book(self, slug, title="Test Book"):
+        book = Book(title=title, slug=slug, description="Test", locale=self.book_index.locale,
+                   publish_date=datetime.date.today())
+        self.book_index.add_child(instance=book)
+        return Book.objects.get(id=book.id)
+
+    def _write_html(self, html):
+        f = tempfile.NamedTemporaryFile(mode='w', suffix='.html', delete=False)
+        f.write(html)
+        f.close()
+        self.addCleanup(os.unlink, f.name)
+        return f.name
+
+    def _report_path(self):
+        f = tempfile.NamedTemporaryFile(mode='w', suffix='.csv', delete=False)
+        f.close()
+        self.addCleanup(os.unlink, f.name)
+        return f.name
+
+    def test_parse_table_extracts_subject_book_and_resource_rows(self):
+        rows = parse_table(FIXTURE_HTML)
+        self.assertEqual(len(rows), 2)
+        self.assertEqual(rows[0]['subject'], 'Business')
+        self.assertEqual(rows[0]['book_slug'], 'principles-financial-accounting')
+        self.assertEqual(rows[0]['resource_type'], 'Instructor')
+        self.assertEqual(rows[0]['ancillary'], 'Blackboard Course Package')
+        self.assertEqual(rows[0]['status_value'], 'fixed')
+        self.assertEqual(rows[1]['resource_type'], 'Book')
+        self.assertEqual(rows[1]['ancillary'], 'Web PDF')
+        self.assertEqual(rows[1]['status_value'], 'fixed')
+
+    def test_slug_matching_wins_over_typo_title(self):
+        book = self._make_book('principles-financial-accounting',
+                               title='Principles of Financial Accounting')
+        # href/slug are correct; the hand-typed title is not — slug must win.
+        resolved, via_title = resolve_book(
+            'https://openstax.org/details/books/principles-financial-accounting',
+            'principles-financial-accounting',
+            'Principels of Financial Accountingg')
+        self.assertEqual(resolved.id, book.id)
+        self.assertFalse(via_title)
+
+    def test_title_fallback_used_only_when_no_href(self):
+        book = self._make_book('no-href-book', title='No Href Book')
+        resolved, via_title = resolve_book(None, None, 'No Href Book')
+        self.assertEqual(resolved.id, book.id)
+        self.assertTrue(via_title)
+        # A row with a real (but unmatched) href/slug never falls back to title.
+        resolved2, via_title2 = resolve_book(
+            'https://openstax.org/details/books/wrong-slug', 'wrong-slug', 'No Href Book')
+        self.assertIsNone(resolved2)
+
+    def test_web_pdf_routes_to_book_field(self):
+        book = self._make_book('principles-financial-accounting')
+        call_command('backfill_remediation_status',
+                     html=self._write_html(FIXTURE_HTML), commit=True, report=self._report_path())
+        book.refresh_from_db()
+        self.assertEqual(book.remediation_status, 'fixed')
+
+    def test_normalized_ancillary_matches_apostrophe_and_case_differences(self):
+        book = self._make_book('normalize-book')
+        resource = snippets.models.FacultyResource(heading="Instructor's Manual")
+        resource.save()
+        BookFacultyResources.objects.create(book_faculty_resource=book, resource=resource)
+
+        html = """
+        <table class="os-rem"><tbody>
+        <tr class="os-book-row"><td colspan="3"><a href="https://openstax.org/details/books/normalize-book">Normalize Book</a></td></tr>
+        <tr><td>Instructor</td><td>instructors manual</td><td><span class="os-st os-st-fixed">Fixed</span></td></tr>
+        </tbody></table>
+        """
+        call_command('backfill_remediation_status',
+                     html=self._write_html(html), commit=True, report=self._report_path())
+
+        faculty_row = BookFacultyResources.objects.get(book_faculty_resource=book)
+        self.assertEqual(faculty_row.remediation_status, 'fixed')
+
+    def test_videos_resource_type_routes_to_video_model_leaving_others_alone(self):
+        book = self._make_book('videos-book')
+        faculty_snippet = snippets.models.FacultyResource(heading="Instructor Guide")
+        faculty_snippet.save()
+        faculty_row = BookFacultyResources.objects.create(
+            book_faculty_resource=book, resource=faculty_snippet)
+        video_row = VideoFacultyResources.objects.create(
+            book_video_faculty_resource=book, resource_heading="Interface")
+
+        html = """
+        <table class="os-rem"><tbody>
+        <tr class="os-book-row"><td colspan="3"><a href="https://openstax.org/details/books/videos-book">Videos Book</a></td></tr>
+        <tr><td>Videos</td><td>Interface</td><td><span class="os-st os-st-fixed">Fixed</span></td></tr>
+        </tbody></table>
+        """
+        call_command('backfill_remediation_status',
+                     html=self._write_html(html), commit=True, report=self._report_path())
+
+        video_row.refresh_from_db()
+        faculty_row.refresh_from_db()
+        self.assertEqual(video_row.remediation_status, 'fixed')
+        self.assertEqual(faculty_row.remediation_status, '')  # untouched
+
+    def test_ambiguous_and_no_match_rows_are_reported_not_written(self):
+        book = self._make_book('ambiguous-book')
+        r1 = snippets.models.FacultyResource(heading="Study Guide")
+        r1.save()
+        r2 = snippets.models.FacultyResource(heading="Study  Guide")  # normalizes the same as r1
+        r2.save()
+        fr1 = BookFacultyResources.objects.create(book_faculty_resource=book, resource=r1)
+        fr2 = BookFacultyResources.objects.create(book_faculty_resource=book, resource=r2)
+
+        html = """
+        <table class="os-rem"><tbody>
+        <tr class="os-book-row"><td colspan="3"><a href="https://openstax.org/details/books/ambiguous-book">Ambiguous Book</a></td></tr>
+        <tr><td>Instructor</td><td>Study Guide</td><td><span class="os-st os-st-fixed">Fixed</span></td></tr>
+        <tr><td>Instructor</td><td>Nonexistent Ancillary</td><td><span class="os-st os-st-fixed">Fixed</span></td></tr>
+        </tbody></table>
+        """
+        report_path = self._report_path()
+        call_command('backfill_remediation_status', html=self._write_html(html), commit=True, report=report_path)
+
+        fr1.refresh_from_db()
+        fr2.refresh_from_db()
+        self.assertEqual(fr1.remediation_status, '')
+        self.assertEqual(fr2.remediation_status, '')
+
+        with open(report_path) as f:
+            reasons = [row['reason'] for row in csv.DictReader(f)]
+        self.assertIn('ambiguous', reasons)
+        self.assertIn('no_resource', reasons)
+
+    def test_dry_run_writes_nothing(self):
+        book = self._make_book('dry-run-book')
+        html = """
+        <table class="os-rem"><tbody>
+        <tr class="os-book-row"><td colspan="3"><a href="https://openstax.org/details/books/dry-run-book">Dry Run Book</a></td></tr>
+        <tr><td>Book</td><td>Web PDF</td><td><span class="os-st os-st-fixed">Fixed</span></td></tr>
+        </tbody></table>
+        """
+        call_command('backfill_remediation_status', html=self._write_html(html), report=self._report_path())
+        book.refresh_from_db()
+        self.assertEqual(book.remediation_status, '')
+
+    def test_existing_differing_value_needs_overwrite_flag(self):
+        book = self._make_book('overwrite-book')
+        book.remediation_status = 'in_progress'
+        book.save()
+        html = """
+        <table class="os-rem"><tbody>
+        <tr class="os-book-row"><td colspan="3"><a href="https://openstax.org/details/books/overwrite-book">Overwrite Book</a></td></tr>
+        <tr><td>Book</td><td>Web PDF</td><td><span class="os-st os-st-fixed">Fixed</span></td></tr>
+        </tbody></table>
+        """
+        html_path = self._write_html(html)
+
+        call_command('backfill_remediation_status', html=html_path, commit=True, report=self._report_path())
+        book.refresh_from_db()
+        self.assertEqual(book.remediation_status, 'in_progress')  # unchanged without --overwrite
+
+        call_command('backfill_remediation_status', html=html_path, commit=True, overwrite=True,
+                     report=self._report_path())
+        book.refresh_from_db()
+        self.assertEqual(book.remediation_status, 'fixed')
+
+    def test_page_lookup_by_slug_finds_os_rem_table(self):
+        book = self._make_book('principles-financial-accounting')
+        flex = FlexPage(title="Accessibility Hub", slug="accessibility-hub",
+                        layout=[{"type": "default", "value": {}}],
+                        body=[{"type": "html", "value": FIXTURE_HTML}])
+        self.homepage.add_child(instance=flex)
+
+        call_command('backfill_remediation_status', commit=True, report=self._report_path())
+
+        book.refresh_from_db()
+        self.assertEqual(book.remediation_status, 'fixed')

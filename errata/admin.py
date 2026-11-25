@@ -67,7 +67,7 @@ class ActiveBookListFilter(RelatedFieldListFilter):
 
 class ErrataAdmin(ImportExportActionModelAdmin, VersionAdmin):
     def get_queryset(self, request):
-        return super(ErrataAdmin, self).get_queryset(request).prefetch_related('book')
+        return super(ErrataAdmin, self).get_queryset(request).select_related('book')
 
     class Media:
         js = (

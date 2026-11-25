@@ -3,11 +3,12 @@ import json
 import unittest
 from unittest.mock import patch
 
-from django.test import Client
+from django.test import Client, TestCase
 from wagtail.test.utils import WagtailPageTestCase
-from wagtail.models import Page
+from wagtail.models import Page, Site
 
 from pages import models as page_models
+from pages.models import FlexPage, InstitutionalPartnership, RootPage
 from shared.test_utilities import mock_user_login
 
 
@@ -664,3 +665,62 @@ class SubjectPageTest(WagtailPageTestCase):
 
         retrieved_page = Page.objects.get(id=subject_page.id)
         self.assertEqual(retrieved_page.title, "Business")
+
+
+class FlexPageUrlTest(TestCase):
+    """ FlexPage URLs have to be the ones osweb serves, not /<slug>, because
+        get_url_parts feeds canonical, og:url and the sitemap <loc>. The press
+        content lives on a page slugged 'news' that osweb serves at /press; when
+        that reported /news the sitemap advertised a URL that redirected away
+        and dead-ended (CORE-736).
+    """
+
+    def setUp(self):
+        self.root_page = Page.objects.get(id=1)
+        # get_url_parts returns None for a page outside any site's tree, so
+        # point the default site at root before building the page.
+        site = Site.objects.filter(is_default_site=True).first()
+        if site is None:
+            Site.objects.create(
+                hostname='localhost', root_page=self.root_page,
+                is_default_site=True,
+            )
+        else:
+            site.root_page = self.root_page
+            site.save()
+        self.homepage = RootPage(title='Hello World', slug='openstax-homepage')
+        self.root_page.add_child(instance=self.homepage)
+
+    def _flex_page(self, slug):
+        page = FlexPage(title=slug, slug=slug)
+        self.homepage.add_child(instance=page)
+        return page
+
+    def test_news_slug_reports_the_press_route(self):
+        self.assertEqual(self._flex_page('news').get_url_parts()[2], '/press')
+
+    def test_k12_slug_still_reports_the_k12_route(self):
+        self.assertEqual(
+            self._flex_page('k12-math').get_url_parts()[2], '/k12/math')
+
+    def test_other_slugs_are_unchanged(self):
+        self.assertEqual(self._flex_page('about').get_url_parts()[2], '/about')
+
+    def test_institutional_partnership_reports_the_application_route(self):
+        """Not a FlexPage, so it needs the same treatment on its own model: its
+        slug's URL 301s to /higher-education, which is how the sitemap came to
+        advertise a redirect while /institutional-partnership-application --
+        the URL that actually serves this page -- went unlisted."""
+        partnership = InstitutionalPartnership(
+            title='Institutional Partnership Program Application',
+            slug='institutional-partnership',
+            heading_year='2026',
+            heading='Institutional Partner Program',
+            quote='OpenStax changed our budget.',
+            quote_author='A Partner',
+        )
+        self.homepage.add_child(instance=partnership)
+        self.assertEqual(
+            partnership.get_url_parts()[2],
+            '/institutional-partnership-application',
+        )

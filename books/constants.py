@@ -105,6 +105,27 @@ K12_CATEGORIES = (
     (NONE, 'None'),
 )
 
+# Accessibility remediation status, published on the Accessibility Hub. Blank
+# means "not tracked" and keeps the row off the hub table entirely — the honest
+# default for records nobody has assessed yet.
+REMEDIATION_FIXED = 'fixed'
+REMEDIATION_IN_PROGRESS = 'in_progress'
+REMEDIATION_DEPRECATED = 'deprecated'
+REMEDIATION_REMOVED = 'removed'
+REMEDIATION_NA = 'na'
+REMEDIATION_STATUSES = (
+    (REMEDIATION_FIXED, 'Fixed (remediated)'),
+    (REMEDIATION_IN_PROGRESS, 'In Progress (being remediated)'),
+    (REMEDIATION_DEPRECATED, 'Deprecated (temporarily removed)'),
+    (REMEDIATION_REMOVED, 'Removed (will not return)'),
+    (REMEDIATION_NA, 'N/A (already accessible)'),
+)
+# Statuses the hub's "outstanding items" table shows. Fixed and N/A both mean
+# "nothing to do", so only these read as outstanding.
+REMEDIATION_OUTSTANDING = (
+    REMEDIATION_IN_PROGRESS, REMEDIATION_DEPRECATED, REMEDIATION_REMOVED,
+)
+
 CC_BY_LICENSE_NAME = 'Creative Commons Attribution License'
 CC_BY_LICENSE_VERSION = '4.0'
 CC_BY_LICENSE_URL = 'https://creativecommons.org/licenses/by/4.0/'

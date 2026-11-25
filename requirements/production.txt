@@ -1,2 +1,2 @@
 -r base.txt
-uwsgi>=2.0.20
+uwsgi>=2.0.31

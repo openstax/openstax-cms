@@ -104,6 +104,22 @@ When you modify model fields in `pages/models/` or other model files:
 - **Use makemigrations** - Don't write migrations manually
 - **One logical change per migration** - Keep migrations focused
 - **Include in PR** - Always commit migrations with model changes
+- **Renumber when two branches claim the same number** - Two open PRs that both
+  add a migration to the same app will generate the same number. Whichever merges
+  second must renumber its files and fix their `dependencies` before merge. That
+  renumbering breaks any local DB that already applied the pre-merge names:
+  `migrate` treats the renumbered file as unapplied and re-runs it, typically
+  failing with `ProgrammingError: column "<name>" ... already exists`. The schema
+  is correct; only `django_migrations` is stale. Fix it by renaming the recorded
+  rows to the merged names, then migrating:
+
+  ```sql
+  UPDATE django_migrations SET name = '<new_name>'
+   WHERE app = '<app>' AND name = '<old_name>';
+  ```
+
+  Compare `django_migrations` against the files on disk to find the stale rows;
+  ignore rows for apps that no longer exist (removed apps leave history behind).
 
 ## Wagtail Concepts
 
@@ -147,6 +163,80 @@ publishes** (a human reviews and publishes in the Wagtail admin).
 
 Wagtail 7.4 note: prefer **deferred validation** for draft saves (required-field
 checks happen at publish time) and `ImageRenditionField` for headless images.
+
+## AI Authoring Assists (`ai_assist/`)
+
+Wagtail AI integration (wagtail-ai + django-ai-core + any-llm) lives in
+`ai_assist/`; see `ai_assist/README.md` for the whole picture. Two things worth
+knowing before touching it:
+
+- **Two provider stacks.** Rich-text prompts run on the legacy `llm` library
+  (`WAGTAIL_AI["BACKENDS"]`); everything else — title/description, alt text,
+  content feedback, the OpenStax voice rewrite — runs on any-llm
+  (`WAGTAIL_AI["PROVIDERS"]`). New work should use the any-llm path.
+- **OpenStax voice rewrite** is ours, not wagtail-ai's: it round-trips
+  ContentState through Wagtail's `ContentstateConverter` server-side so the
+  field's own feature list survives the rewrite, and briefs the model with the
+  page it is editing.
+
+## Accessibility Remediation Status
+
+The Accessibility Hub (`/accessibility-hub`) publishes per-ancillary WCAG
+remediation status. It used to be a hand-maintained raw-HTML table of 653 rows;
+it is now driven by `TableBlock` data sources.
+
+- **Field:** `remediation_status` on `books.FacultyResources`,
+  `books.StudentResources` (per-book, because the same resource snippet can have
+  a different status on each book) and on `books.Book` (the book's own Web PDF).
+  Choices: `books.constants.REMEDIATION_STATUSES`; `REMEDIATION_OUTSTANDING`
+  names the subset the hub shows. Blank = untracked, stays off the hub.
+- **Table config:** the `book_resources` source gained `remediation`
+  (`outstanding` is what the hub uses), `include_web_pdf`, and
+  `resource_type='all'`; the `books` source gained `remediation='clear'` for the
+  "fully remediated" list at the top of the page.
+- **Backfill:** `manage.py backfill_remediation_status` parses the old HTML
+  table into the fields. Dry-run by default, `--commit` to write. Matches books
+  by the slug in each row's href (hub titles are hand-typed and contain typos).
+
+**Locked resources:** `RESOURCE_FIELDS['link']` fails closed via
+`_resource_link_cell` — a locked (or FK-null) resource emits a login prompt, never
+its file URL. The per-request `?x=y` redaction in `books/serializers.py` cannot
+work here: `get_api_representation` runs with no user and its output is cached and
+served to every visitor.
+
+The cell also carries a `resource_ref` marker (book slug/id, resource id, heading,
+resource type) that os-webview uses to swap in the real per-user resource box
+client-side. It matches the marker back to a `books/resources/` row by
+`resource_id` (the through-row pk) first, falling back to heading matching when
+`resource_id` is absent — either a synthetic row (e.g. Web PDF) or already-cached
+table JSON (up to 30 days old) from before `resource_id` existed. Renaming those
+keys breaks that override — and note os-webview camelCases every key of a page
+payload before a block sees it, so it reads them as
+`bookSlug`/`bookId`/`resourceId`/`resourceType`.
+
+**Adding config to a nested StreamField block requires a migration.** Wagtail
+bakes each StreamField's full block-tree deconstruction into migration state, so
+editing `TableBlock`'s sub-blocks drifts every StreamField that nests it
+(`news.PressIndex.faqs`, `pages.RootPage.body`, …). These are state-only, no
+schema change — but CI runs `makemigrations --check`, so generate them.
+
+## Home Page Workflow (Promote to Home)
+
+The `RootPage` (site root, serves `/`) never moves between environments — it was
+created after the wagtail-transfer preseed, so its ID differs per env and
+transfers would duplicate it (and drag the whole child tree along). Instead:
+
+1. Stage a homepage redesign as a **FlexPage** (previewable at `/<slug>`,
+   transferable between envs — first transfer creates the ID mapping).
+2. On the target env, use **"Promote to home page"** (button on FlexPages in
+   the page listing "..." menu and editor header) — it copies `layout`, `body`,
+   `school`, `promote_image`, `seo_title`, `search_description` onto that env's
+   RootPage as a **draft revision only**. A human reviews and publishes.
+
+Service: `pages/promote_home.py` (`promote_to_home(flex_page, user)`); view/hooks:
+`pages/views_promote.py`, `pages/wagtail_hooks.py`. Rollback = revision revert.
+Note: `RootPage.max_count = 1` is dead code (MTI — `RootPage.objects.count()`
+includes FlexPages), left in place deliberately.
 
 ## Additional Documentation
 

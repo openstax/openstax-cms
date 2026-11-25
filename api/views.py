@@ -58,6 +58,7 @@ def footer(request):
         'facebook_link': footer.facebook_link,
         'twitter_link': footer.twitter_link,
         'linkedin_link': footer.linkedin_link,
+        'social_links': footer.social_links_json(),
     })
 
 
@@ -188,6 +189,7 @@ def give_today(request):
     return JsonResponse({
         'give_link_text': give_today.give_link_text,
         'give_link': give_today.give_link,
+        'default_give_link': give_today.default_give_link,
         'start': give_today.start,
         'expires': give_today.expires,
         'menu_start': give_today.menu_start,

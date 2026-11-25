@@ -40,6 +40,7 @@ warnings.filterwarnings("ignore", message="No directory at", module="whitenoise.
 # an agent/embedding client fails loudly instead of making a billable API call.
 # CISafetyTests asserts both stay stubbed.
 AI_TEST_STUB_PROVIDER = "openstax-test-stub"
+from .base import WAGTAIL_AI as _PROD_WAGTAIL_AI
 WAGTAIL_AI = {
     "BACKENDS": {
         "default": {"CLASS": "wagtail_ai.ai.echo.EchoBackend", "CONFIG": {"MODEL_ID": "echo"}},
@@ -48,10 +49,11 @@ WAGTAIL_AI = {
     },
     "IMAGE_DESCRIPTION_BACKEND": "default",
     "IMAGE_DESCRIPTION_PROVIDER": "image_description",
+    # Real value, not a stub: the rendition format is what the provider validates.
+    "IMAGE_DESCRIPTION_RENDITION_FILTER": _PROD_WAGTAIL_AI["IMAGE_DESCRIPTION_RENDITION_FILTER"],
     "PROVIDERS": {
         "default": {"provider": AI_TEST_STUB_PROVIDER, "model": "stub"},
         "image_description": {"provider": AI_TEST_STUB_PROVIDER, "model": "stub"},
-        "content_feedback": {"provider": AI_TEST_STUB_PROVIDER, "model": "stub"},
         "embedding": {"provider": AI_TEST_STUB_PROVIDER, "model": "stub"},
     },
 }

@@ -1,5 +1,4 @@
 from wagtail import blocks
-from wagtail_html_editor.blocks import EnhancedHTMLBlock
 
 
 
@@ -10,16 +9,21 @@ from pages.custom_blocks import APIImageChooserBlock, \
     CTAButtonBarBlock, \
     LinksGroupBlock, \
     QuoteBlock, \
-    CTALinkBlock, \
     BookBlock, \
     ContentCardBlock, \
+    PersonBlock, \
+    BigNumberBlock, \
+    BigNumbersBlock, \
     CARDS_STYLE_CHOICES, \
+    CARDS_LAYOUT_CHOICES, \
     TEXT_ALIGNMENT_CHOICES, \
-    FLEX_CHOICES, \
-    hex_color_block, \
-    gradient_config_options, \
-    gradient_block_counts, \
-    id_config_block
+    FLEX_CHOICES
+
+from pages.shared_blocks import CTALinkBlock, OpenStaxColorBlock, hex_color_block, \
+    gradient_config_options, gradient_block_counts, id_config_block, CollapsedHTMLBlock, \
+    rendering_condition_block
+
+from pages.table_block import TableBlock
 
 
 
@@ -44,61 +48,87 @@ BASE_CONTENT_BLOCKS = [
                     max_num=1,
                     label='Call To Action'
                 )),
+                ('config', blocks.StreamBlock([
+                    ('accent_color', OpenStaxColorBlock(help_text='Accent color for this card: the border on rounded style, the top accent bar on square (needs Accent Size). Leave unset for the default palette.')),
+                    ('divider_color', OpenStaxColorBlock(help_text='Color for divider lines in this card. Leave unset for the default palette.')),
+                ], block_counts={
+                    'accent_color': {'max_num': 1},
+                    'divider_color': {'max_num': 1},
+                }, required=False, collapsed=True)),
             ]),
         )),
         ('config', blocks.StreamBlock([
             ('card_size', blocks.IntegerBlock(min_value=0, help_text='Sets the width of the individual cards. default 27.')),
             ('card_style', blocks.ChoiceBlock(choices=CARDS_STYLE_CHOICES, help_text='The border style of the cards. default borderless.')),
+            ('layout', blocks.ChoiceBlock(choices=CARDS_LAYOUT_CHOICES,
+                help_text='Grid aligns cards into rows (default); Masonry packs them into columns by height, for decorative card walls.')),
             ('card_columns', blocks.IntegerBlock(min_value=1, max_value=6, help_text='Number of columns for the cards grid. default auto.')),
-            ('accent_colors', blocks.ListBlock(
-                hex_color_block('Accent color for a card. Must be hex eg: #ff0000.'),
-                default=[], label='Accent Colors',
-            )),
-            ('divider_colors', blocks.ListBlock(
-                hex_color_block('Divider color between cards. Must be hex eg: #ff0000.'),
-                default=[], label='Divider Colors',
-            )),
             ('background_color', hex_color_block('Background color for the cards block. Must be hex eg: #ff0000.')),
             ('border_size', blocks.IntegerBlock(min_value=0, help_text='Outer border width in px (all sides). Omit to use the style default; 0 = no border.')),
-            ('accent_size', blocks.IntegerBlock(min_value=0, help_text='Top accent bar height in px, independent of the border. Color comes from Accent Colors.')),
+            ('accent_size', blocks.IntegerBlock(min_value=0, help_text='Top accent bar height in px, independent of the border. Color comes from each card\'s Accent Color.')),
             ('padding', blocks.IntegerBlock(min_value=0, help_text='Top and bottom spacing around the block, in 10px increments.')),
             ('padding_top', blocks.IntegerBlock(min_value=0, help_text='Top spacing around the block, in 10px increments.')),
             ('padding_bottom', blocks.IntegerBlock(min_value=0, help_text='Bottom spacing around the block, in 10px increments.')),
         ], block_counts={
             'card_size': {'max_num': 1},
             'card_style': {'max_num': 1},
+            'layout': {'max_num': 1},
             'card_columns': {'max_num': 1},
-            'accent_colors': {'max_num': 1},
-            'divider_colors': {'max_num': 1},
             'background_color': {'max_num': 1},
             'border_size': {'max_num': 1},
             'accent_size': {'max_num': 1},
             'padding': {'max_num': 1},
             'padding_top': {'max_num': 1},
             'padding_bottom': {'max_num': 1},
-        }, required=False)),
+        }, required=False, collapsed=True)),
     ], label="Cards Block")),
     ('text', APIRichTextBlock()),
-    ('html', EnhancedHTMLBlock()),
+    ('html', CollapsedHTMLBlock()),
     ('cta_block', CTAButtonBarBlock()),
     ('links_group', LinksGroupBlock()),
     ('quote', QuoteBlock()),
-    ('big_number', blocks.StructBlock([
-        ('number', blocks.CharBlock(help_text='The statistic to display large, e.g. 8M+.')),
-        ('caption', blocks.CharBlock(required=False, help_text='Optional supporting text shown below the number.')),
-        ('color', blocks.ChoiceBlock(required=False, choices=[
-            ('blue', 'Blue'),
-            ('green', 'Green'),
-            ('orange', 'Orange'),
-        ], help_text='Brand color for the number. Defaults to the inherited text color.')),
-    ], label="Big Number")),
+    ('big_number', BigNumberBlock()),
+    ('big_numbers', BigNumbersBlock()),
     ('faq', blocks.StreamBlock([
         ('faq', FAQBlock()),
     ])),
+    ('accordion', blocks.StructBlock([
+        ('items', blocks.ListBlock(
+            blocks.StructBlock([
+                ('header', blocks.CharBlock(required=True, help_text='The visible text of the item.')),
+                ('content', APIRichTextBlock(required=True, help_text='Hidden until the item is expanded.')),
+                ('id', id_config_block()),
+                ('config', blocks.StreamBlock([
+                    ('accent_color', OpenStaxColorBlock(help_text='Accent color for this item: the expand/collapse icon and divider. Leave blank for the default.')),
+                ], block_counts={
+                    'accent_color': {'max_num': 1},
+                }, required=False, collapsed=True)),
+            ]),
+            label='Items',
+        )),
+        ('config', blocks.StreamBlock([
+            ('heading_level', blocks.ChoiceBlock(choices=[
+                ('2', 'H2'),
+                ('3', 'H3'),
+                ('4', 'H4'),
+            ], help_text='Heading level for each item, for the document outline and screen-reader navigation. Default H3.')),
+            ('allow_multiple', blocks.ChoiceBlock(choices=[
+                ('false', 'No'),
+                ('true', 'Yes'),
+            ], help_text='Allow more than one item to be open at the same time. Default No.')),
+            ('top_border_color', hex_color_block('Adds a colored border above the whole accordion.')),
+        ], block_counts={
+            'heading_level': {'max_num': 1},
+            'allow_multiple': {'max_num': 1},
+            'top_border_color': {'max_num': 1},
+        }, required=False, collapsed=True)),
+    ], label="Accordion")),
     ('book_list', blocks.StructBlock([
         ('books', blocks.ListBlock(BookBlock(required=True))),
     ], label="Books Block")),
     ('content_card', ContentCardBlock()),
+    ('person', PersonBlock()),
+    ('table', TableBlock()),
 ]
 
 # Layer 2: Content blocks + well (well references BASE, not itself)
@@ -135,7 +165,7 @@ SECTION_CONTENT_BLOCKS = BASE_CONTENT_BLOCKS + [
             'text_alignment': {'max_num': 1},
             'analytics_label': {'max_num': 1},
             'id': {'max_num': 1},
-        }, required=False)),
+        }, required=False, collapsed=True)),
     ], label="Well")),
 ]
 
@@ -163,7 +193,7 @@ BODY_BLOCKS = [
                 help_text='How much the image overhangs the section boundary. Must be a valid css measurement. eg: 30px, 50%, 10rem.',
                 error_messages={'invalid': 'not a valid size.'},
             )),
-            ('rendering_condition', blocks.CharBlock(required=False, help_text='Condition that determines if this block should render. eg: defined by the frontend.')),
+            ('rendering_condition', rendering_condition_block()),
         ], block_counts={
             'image_alignment': {'max_num': 1},
             'id': {'max_num': 1},
@@ -179,7 +209,7 @@ BODY_BLOCKS = [
             'image_border_size': {'max_num': 1},
             'image_overhang': {'max_num': 1},
             'rendering_condition': {'max_num': 1},
-        }, required=False))
+        }, required=False, collapsed=True))
     ])),
     ('section', blocks.StructBlock([
         ('content', blocks.StreamBlock(SECTION_CONTENT_BLOCKS)),
@@ -193,7 +223,7 @@ BODY_BLOCKS = [
             ('text_alignment', blocks.ChoiceBlock(choices=TEXT_ALIGNMENT_CHOICES, default='left', help_text='Configures text alignment within the container. Default Left.')),
             ('analytics_label', blocks.CharBlock(required=False, help_text='Sets the "analytics nav" field for links within this section.')),
             ('flex', blocks.ChoiceBlock(choices=FLEX_CHOICES, help_text='Flex behavior of this section. Default none.')),
-            ('rendering_condition', blocks.CharBlock(required=False, help_text='Condition that determines if this block should render. eg: defined by the frontend.')),
+            ('rendering_condition', rendering_condition_block()),
         ], block_counts={
             'id': {'max_num': 1},
             'background_color': {'max_num': 1},
@@ -205,7 +235,7 @@ BODY_BLOCKS = [
             'analytics_label': {'max_num': 1},
             'flex': {'max_num': 1},
             'rendering_condition': {'max_num': 1},
-        }, required=False))
+        }, required=False, collapsed=True))
     ])),
     ('columns', blocks.StructBlock([
         ('left_content', blocks.StreamBlock(SECTION_CONTENT_BLOCKS)),
@@ -234,10 +264,10 @@ BODY_BLOCKS = [
             'gap': {'max_num': 1},
             'left_size': {'max_num': 1},
             'right_size': {'max_num': 1},
-        }, required=False)),
+        }, required=False, collapsed=True)),
     ], label="Columns")),
     ('divider', DividerBlock()),
-    ('html', EnhancedHTMLBlock()),
+    ('html', CollapsedHTMLBlock()),
 ]
 
 # we have one RootPage, which is the parent of all other pages

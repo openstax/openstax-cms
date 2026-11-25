@@ -6,6 +6,7 @@ import sentry_sdk
 from sentry_sdk.integrations.django import DjangoIntegration
 
 from dotenv import load_dotenv
+from django.core.exceptions import ImproperlyConfigured
 
 import logging.config
 from django.utils.log import DEFAULT_LOGGING
@@ -20,8 +21,13 @@ DEPLOYMENT_VERSION = os.getenv('DEPLOYMENT_VERSION')
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = os.path.join(os.path.dirname(__file__), '..', '..')
 
-# Default to a key starting with django-insecure for local development.
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-wq21wtjo3@d_qfjvd-#td!%7gfy2updj2z+nev^k$iy%=m4_tr')
+SECRET_KEY = os.getenv('SECRET_KEY')
+if not SECRET_KEY:
+    if ENVIRONMENT in ('local', 'test'):
+        # Default to a key starting with django-insecure for local development.
+        SECRET_KEY = 'django-insecure-wq21wtjo3@d_qfjvd-#td!%7gfy2updj2z+nev^k$iy%=m4_tr'
+    else:
+        raise ImproperlyConfigured(f"SECRET_KEY is required when ENVIRONMENT is {ENVIRONMENT!r}. Set the SECRET_KEY environment variable.")
 
 # check if running local dev server - else default to DEBUG=False
 if len(sys.argv) > 1:
@@ -283,17 +289,25 @@ INSTALLED_APPS = [
 WAGTAILTRANSFER_SECRET_KEY = os.getenv('WAGTAILTRANSFER_SECRET_KEY', 'change-me-in-production')
 WAGTAILTRANSFER_INSECURE_SECRET_KEY = 'change-me-in-production'
 
+# Chooser-proxy read timeout (s); the 5s default is too tight when the source is
+# slow to serialize a page tree.
+WAGTAILTRANSFER_CHOOSER_API_PROXY_TIMEOUT = int(os.getenv('WAGTAILTRANSFER_CHOOSER_API_PROXY_TIMEOUT', '30'))
+
 # Models the importer must NOT follow into when it encounters a reference.
-# This is the package default (wagtailcore.page, contenttypes.contenttype) plus
-# auth.user: transferred objects such as wagtailcore.revision carry a `user` FK,
-# and following it would 404 on the export allowlist (auth.user is intentionally
-# not exportable) and try to pull user PII across. Leaving it unfollowed nulls
-# the FK instead — fine, since these user FKs are nullable. Keep the two package
-# defaults here; this setting REPLACES the default rather than extending it.
+# REPLACES the package default, so wagtailcore.page + contenttypes.contenttype
+# must stay listed. Additions:
+#   auth.user — the `user` FK on transferred objects; not exportable, so following
+#     it 404s and would try to pull staff account fields across environments.
+#     Nulled instead (the FKs are nullable).
+#   wagtailcore.revision — page.latest_revision forms a Page<->Revision cycle that
+#     wagtail-transfer breaks only when it enters via the soft edge, which it picks
+#     nondeterministically — otherwise a CircularDependencyException 500. Safe to
+#     drop: run() calls save_revision() on every imported page anyway.
 WAGTAILTRANSFER_NO_FOLLOW_MODELS = [
     'wagtailcore.page',
     'contenttypes.contenttype',
     'auth.user',
+    'wagtailcore.revision',
 ]
 
 # The secret key is validated two ways, both living outside this (declarative)
@@ -426,33 +440,26 @@ WAGTAIL_AI = {
         },
     },
     "IMAGE_DESCRIPTION_BACKEND": "default",
-    # Image description uses the django-ai-core agent path, which sends images
-    # as OpenAI `image_url` content blocks. any-llm 0.20.3's Anthropic provider
-    # doesn't translate that block (Anthropic expects `image`/`source`), so route
-    # image requests to OpenAI, whose native format is `image_url`. Text prompts
-    # stay on the Anthropic "default" provider. Revert to "default" once any-llm
-    # is upgraded to >=1.x (its Anthropic provider converts the block).
+    # wagtail-ai hardcodes "data:image/jpeg" on the image it uploads, and
+    # Anthropic rejects a payload whose bytes don't match that media type. Our
+    # WAGTAILIMAGES_FORMAT_CONVERSIONS turns every rendition into webp, so the
+    # rendition sent for alt text has to be pinned back to jpeg.
+    "IMAGE_DESCRIPTION_RENDITION_FILTER": "max-800x600|format-jpeg",
+    # Alt text is cheap and high-volume, so it gets its own alias on a smaller
+    # model instead of the "default" Sonnet one (mirrors the BACKENDS split).
     "IMAGE_DESCRIPTION_PROVIDER": "image_description",
     "PROVIDERS": {
         "default": {
             "provider": "anthropic",
             "model": os.getenv("WAGTAIL_AI_AGENT_MODEL", "claude-sonnet-4-6"),
         },
-        "image_description": {  # OpenAI vision: any-llm passes image_url natively
-            "provider": "openai",
-            "model": os.getenv("WAGTAIL_AI_IMAGE_DESCRIPTION_MODEL", "gpt-4o-mini"),
+        "image_description": {
+            "provider": "anthropic",
+            "model": os.getenv(
+                "WAGTAIL_AI_IMAGE_DESCRIPTION_MODEL", "claude-haiku-4-5-20251001"
+            ),
         },
-        # Content feedback is the only agent that requests structured output
-        # (response_format). any-llm 0.20.3's Anthropic provider raises
-        # UnsupportedParameterError on it (Anthropic has no OpenAI-style JSON
-        # mode), so route it to OpenAI, whose provider supports response_format.
-        # ContentFeedbackAgent hardcodes provider_alias="default" with no setting
-        # to override it, so ai_assist.agent_patches points it at this alias.
-        # Revert to "default" once any-llm is upgraded to >=1.x.
-        "content_feedback": {
-            "provider": "openai",
-            "model": os.getenv("WAGTAIL_AI_CONTENT_FEEDBACK_MODEL", "gpt-4o-mini"),
-        },
+        # Anthropic has no embedding models, so embeddings stay on OpenAI.
         "embedding": {
             "provider": "openai",
             "model": os.getenv("WAGTAIL_AI_EMBEDDING_MODEL", "text-embedding-3-small"),
@@ -472,6 +479,7 @@ CRONJOBS = [
     ('0 0 8 * *', 'django.core.management.call_command', ['update_schools_and_mapbox']),
     ('0 10 * * *', 'django.core.management.call_command', ['update_partners']),
     ('0 11 * * *', 'django.core.management.call_command', ['sync_thank_you_notes']),
+    ('*/5 * * * *', 'django.core.management.call_command', ['flush_cloudfront_invalidations']),
 ]
 
 if ENVIRONMENT == 'prod':
@@ -635,7 +643,10 @@ WAGTAILIMAGES_FORMAT_CONVERSIONS = {
     'png': 'webp',
 }
 WAGTAILIMAGES_MAX_UPLOAD_SIZE = 20 * 1024 * 1024  # 20MB
-DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
+# A manual table block posts ~6 fields per cell (+5 per row), so a few hundred
+# rows blows past Django's default. Note: raising the ceiling, not removing it —
+# tables that big should use the block's Data source instead of manual rows.
+DATA_UPLOAD_MAX_NUMBER_FIELDS = 51200
 
 # CodeMirror-based HTML editor (wagtail-html-editor) for raw-HTML StreamField
 # blocks. Values below are the package defaults, spelled out for discoverability.

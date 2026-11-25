@@ -291,6 +291,9 @@ Expected: PASS (3 tests).
 
 ### Task 4: Capture `thank_you_note_submitted` on donation thank-you creation (TDD)
 
+> Superseded: the event ships as `thankyou_note_submitted`, matching PostHog action 259398
+> and the GTM tag it replaced. Do not reintroduce the underscored spelling.
+
 **Files:**
 - Modify: `donations/signals.py` (import `ThankYouNote`; add receiver)
 - Test: `donations/tests.py` (append)

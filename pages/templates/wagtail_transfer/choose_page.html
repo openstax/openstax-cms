@@ -12,6 +12,11 @@ addition is the how-to panel above the form.
     {{ block.super }}
 
     <link rel="stylesheet" href="{% versioned_static 'wagtail_transfer/css/transfer-styles.css' %}">
+    <style>
+        .help-block details { margin: 0.75em 0; }
+        .help-block summary { cursor: pointer; font-weight: bold; }
+        .help-block details[open] summary { margin-bottom: 0.5em; }
+    </style>
 {% endblock %}
 
 {% block extra_js %}
@@ -29,61 +34,93 @@ addition is the how-to panel above the form.
             {% icon name="help" %}
             <h3>Importing content from another environment</h3>
             <p>
-                This page pulls content <strong>into this site</strong> from the
-                environment you select below. Nothing is changed on the source
-                environment.
+                Pulls a page or snippet <strong>into this site</strong> from the
+                environment you pick below. Nothing changes on the source.
+                <a href="https://scribehow.com/o/jGUaNi72Qay710Vi452_JA/viewer/How_to_Import_Pages_in_the_OpenStax_Admin_Dashboard__FWajw9pwQxeYK34ZZWEcsg" target="_blank" rel="noopener">
+                    Step-by-step walkthrough with screenshots (Scribe) →
+                </a>
             </p>
             <ol>
-                <li>
-                    <strong>Get the content ready on the source.</strong> Pages come
-                    across in their current state on the source environment, so finish
-                    and publish your changes there first.
-                </li>
-                <li>
-                    <strong>Select the source environment</strong> from the dropdown
-                    (for example, staging when you are promoting content to production).
-                </li>
-                <li>
-                    <strong>Find the page or snippet</strong> you want to import by
-                    browsing the source's page tree or snippet list.
-                </li>
-                <li>
-                    <strong>For a new page, choose where it should live</strong> on
-                    this site by picking the destination parent page.
-                </li>
-                <li>
-                    <strong>Review and import.</strong> Images, documents, and snippets
-                    that the content references are brought across automatically.
-                </li>
-                <li>
-                    <strong>Check the result.</strong> Open the imported page or snippet
-                    on this site and confirm it looks right before sharing links to it.
-                </li>
+                <li><strong>Publish your changes on the source first</strong> — drafts don't get exported.</li>
+                <li><strong>Pick the source environment</strong>, then find the page or snippet.</li>
+                <li><strong>For a brand-new page</strong>, pick a destination parent page.</li>
+                <li><strong>Review and import.</strong> Referenced images, documents, and snippets come across automatically.</li>
+                <li><strong>Check the result</strong> here before sharing a link to it.</li>
             </ol>
-            <p><strong>Good to know before you import:</strong></p>
             <ul>
-                <li>
-                    If the item was imported before (or a snippet here shares its
-                    name/title with the source's), the import <strong>updates the
-                    existing item in place</strong> — any edits made on this site since
-                    the last import are replaced by the source version.
-                </li>
-                <li>
-                    A page that was created separately on both environments is
-                    <em>not</em> recognized as the same page — importing it creates a
-                    duplicate. See <code>docs/wagtail-transfer-page-sync.md</code> in the
-                    CMS repository before importing a page that already exists here.
-                </li>
                 <li>
                     To rebuild an entire environment (for example, refreshing dev or
                     staging from production), don't import page by page — follow
                     <code>docs/refresh-from-prod-runbook.md</code> instead.
                 </li>
                 <li>
-                    Stuck or unsure? Ask in the CMS support channel before importing —
-                    imports overwrite content and can't be undone from this screen.
+                    Stuck or unsure? Ask in
+                    <a href="https://openstax.slack.com/archives/C69BU01RC" target="_blank" rel="noopener">#openstax-dot-org</a>
+                    before importing — imports overwrite content and can't be undone from this screen.
                 </li>
             </ul>
+
+            <details>
+                <summary>What actually gets imported</summary>
+                <ul>
+                    <li>
+                        <strong>Draft edits never transfer.</strong> The export reads the
+                        source page's currently published content, not a pending draft
+                        revision — publish on the source first or you'll import stale content.
+                    </li>
+                    <li>
+                        <strong>Published state carries over.</strong> A published source
+                        page is published here too, automatically — no extra "Publish" click.
+                        A source page that's never been published imports as a draft here.
+                    </li>
+                    <li>
+                        <strong>Comes across:</strong> title, slug, SEO fields, body content,
+                        and anything it references — images, documents, collections, tags,
+                        and snippets.
+                    </li>
+                    <li>
+                        <strong>Does not come across:</strong> owner, lock status, scheduled
+                        go-live/expiry dates, and revision history (a single fresh revision
+                        is created here instead).
+                    </li>
+                </ul>
+            </details>
+
+            <details>
+                <summary>Updating a page vs. replacing one at a different URL</summary>
+                <p>
+                    <strong>The common case — re-importing a page you've already brought
+                    over:</strong> Wagtail Transfer remembers it, so the import
+                    <strong>updates it in place</strong> — same URL, same tree position —
+                    no matter what destination parent you pick above. Rebuild on staging,
+                    re-import to prod as many times as you like.
+                </p>
+                <p>
+                    <strong>The rare case — a page built under a different slug</strong>
+                    (for example, staging an "FAQ" rebuild at <code>/faq-staxify</code> to
+                    later replace the live <code>/faq</code>): Wagtail Transfer has never
+                    linked the two, so importing it creates a brand-new page alongside the
+                    old one. A page created independently on both environments hits this
+                    same case — see <code>docs/wagtail-transfer-page-sync.md</code>. To
+                    swap the new one into the old URL:
+                </p>
+                <ol>
+                    <li>Import the new page here, into production.</li>
+                    <li>
+                        On the <strong>old live page</strong>, change the title (e.g. add
+                        "(old)") and slug (e.g. add "-old"), then save as a draft.
+                    </li>
+                    <li>Unpublish the old page. The URL is briefly down until the next step.</li>
+                    <li>
+                        On the <strong>newly imported page</strong>, set the title and slug
+                        back to the original values, then publish.
+                    </li>
+                </ol>
+                <p>
+                    The home page is the one exception — don't import over it. Use
+                    "Promote to home page" on the new FlexPage instead.
+                </p>
+            </details>
         </div>
 
         <div data-wagtail-component="content-import-form" data-local-api-base-url="{% url 'wagtail_transfer_admin:page_chooser_api:pages:listing' %}" data-local-check-uid-url="{% url 'wagtail_transfer_admin:check_uid' %}" data-sources="{{ sources_data }}" data-action="{% url 'wagtail_transfer_admin:import' %}" data-csrf-token="{{ csrf_token }}"></div>

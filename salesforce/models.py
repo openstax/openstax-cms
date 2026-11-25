@@ -34,6 +34,20 @@ class AdoptionOpportunityRecord(models.Model):
         return self.opportunity_id
 
 
+class SalesforceBookName(models.Model):
+    """Local mirror of the Salesforce Book__c list, synced by
+    sync_salesforce_book_names. Source for the Book.salesforce_name dropdown."""
+    salesforce_id = models.CharField(max_length=255, unique=True)
+    name = models.CharField(max_length=255, blank=True, null=True)
+    official_name = models.CharField(max_length=255, blank=True, null=True)
+
+    class Meta:
+        ordering = ['official_name']
+
+    def __str__(self):
+        return self.official_name or self.name or self.salesforce_id
+
+
 class School(index.Indexed, models.Model):
     salesforce_id = models.CharField(max_length=255, blank=True, null=True)
     name = models.CharField(max_length=255)
@@ -332,6 +346,13 @@ class ResourceDownload(models.Model):
     last_access = models.DateTimeField()
     resource_name = models.CharField(max_length=255, null=True, blank=True)
     contact_id = models.CharField(max_length=100, null=True, blank=True)
+    # The path, not a page type: /dual-credit and any other flex page are the
+    # same type but not the same signal, and a new page needs no code change
+    # here to show up in the data.
+    source = models.CharField(max_length=255, null=True, blank=True,
+                              help_text="Path of the page the reader downloaded from")
+    role = models.CharField(max_length=20, null=True, blank=True,
+                            help_text="Whether the reader was an instructor or a student")
 
     class Meta:
         indexes = [

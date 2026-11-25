@@ -94,3 +94,28 @@ class Group(models.Model):
         FieldPanel('heading'),
         FieldPanel('people'),
     ]
+
+
+class PersonTag(models.Model):
+    """Controlled-vocabulary tag for people (e.g. "Core Team", "Advisor").
+
+    A Wagtail snippet so editors pick from a shared list and new tags need no
+    migration. Serialized inline by PersonTagChooserBlock as {id, name, slug}."""
+    name = models.CharField(max_length=100, help_text='Display label, e.g. "Core Team".')
+    slug = models.SlugField(max_length=100, unique=True,
+        help_text='Stable key used by the frontend for styling/filtering.')
+    sort_order = models.IntegerField(default=0,
+        help_text='Lower numbers sort first.')
+
+    panels = [
+        FieldPanel('name'),
+        FieldPanel('slug'),
+        FieldPanel('sort_order'),
+    ]
+
+    class Meta:
+        ordering = ['sort_order', 'name']
+        verbose_name = 'Person tag'
+
+    def __str__(self):
+        return self.name

@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 from django.db import models
 from modelcluster.fields import ParentalKey
 from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel
@@ -60,13 +62,18 @@ class Subjects(FrontendPreviewMixin, Page):
     @property
     def subjects(self):
         subject_list = {}
-        for subject in snippets.Subject.objects.filter(locale=self.locale).order_by('name'):
+        subjects = list(snippets.Subject.objects.filter(locale=self.locale).order_by('name'))
+        if not subjects:
+            return subject_list
+        subject_ids = [subject.id for subject in subjects]
+        categories_by_subject_id = defaultdict(list)
+        for category in snippets.SubjectCategory.objects.filter(subject_id__in=subject_ids).order_by('subject_category'):
+            categories_by_subject_id[category.subject_id].append(category.subject_category)
+
+        for subject in subjects:
             subject_categories = {}
-            categories = []
             subject_categories['icon'] = subject.subject_icon
-            for category in snippets.SubjectCategory.objects.filter(subject_id=subject.id).order_by('subject_category'):
-                categories.append(category.subject_category)
-            subject_categories['categories'] = categories
+            subject_categories['categories'] = categories_by_subject_id.get(subject.id, [])
             subject_list[subject.name] = subject_categories
 
         return subject_list
@@ -210,19 +217,29 @@ class Subject(FrontendPreviewMixin, Page):
     @property
     def subjects(self):
         subject_list = {}
-        for subject in snippets.Subject.objects.filter(name=str(self.selected_subject[0].subject_name)):
+        first_selected = self.selected_subject.first()
+        if first_selected is None:
+            return subject_list
+        selected_subjects = list(snippets.Subject.objects.filter(name=str(first_selected.subject_name), locale=self.locale))
+        subject_ids = [subject.id for subject in selected_subjects]
+        categories_by_subject_id = defaultdict(list)
+        for category in snippets.SubjectCategory.objects.filter(subject_id__in=subject_ids).order_by('subject_category'):
+            categories_by_subject_id[category.subject_id].append(category)
+
+        for subject in selected_subjects:
             subject_categories = {}
             categories = {}
 
             subject_categories['icon'] = subject.subject_icon
-            all_books = [book for book in Book.objects.all().order_by('title') if subject.name in book.subjects()]
-            for category in snippets.SubjectCategory.objects.filter(subject_id=subject.id).order_by('subject_category'):
+            all_books = Book.objects.filter(book_subjects__subject=subject).exclude(
+                book_state__in=['retired', 'unlisted']
+            ).prefetch_related('book_subjects__subject', 'book_categories__category').order_by('title').distinct()
+            for category in categories_by_subject_id.get(subject.id, []):
                 books = {}
                 book_list = {}
                 for book in all_books:
                     if book.subject_categories is not None \
-                            and category.subject_category in book.subject_categories \
-                            and book.book_state not in ['retired', 'unlisted']:
+                            and category.subject_category in book.subject_categories:
                         book_data = []
                         book_data.append({
                             'id': book.id,
@@ -235,18 +252,14 @@ class Subject(FrontendPreviewMixin, Page):
                             'is_ap': book.is_ap,
                             'cover_url': book.cover_url,
                             'cover_color': book.cover_color,
-                            'high_resolution_pdf_url': book.high_resolution_pdf_url,
-                            'low_resolution_pdf_url': book.low_resolution_pdf_url,
-                            'ibook_link': book.ibook_link,
-                            'ibook_link_volume_2': book.ibook_link_volume_2,
+                            'pdf_url': book.pdf_url,
+                            'high_resolution_pdf_url': book.pdf_url,  # deprecated alias
                             'webview_link': book.webview_link,
                             'webview_rex_link': book.webview_rex_link,
                             'bookshare_link': book.bookshare_link,
-                            'kindle_link': book.kindle_link,
                             'amazon_coming_soon': book.amazon_coming_soon,
                             'amazon_link': book.amazon_link,
                             'bookstore_coming_soon': book.bookstore_coming_soon,
-                            'comp_copy_available': book.comp_copy_available,
                             'salesforce_abbreviation': book.salesforce_abbreviation,
                             'salesforce_name': book.salesforce_name,
                             'urls': book.book_urls(),
@@ -315,5 +328,4 @@ class Subject(FrontendPreviewMixin, Page):
 
     class Meta:
         verbose_name = "Subject Page"
-
 

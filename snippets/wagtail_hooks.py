@@ -70,8 +70,8 @@ class FacultyResourceViewSet(SnippetViewSet):
     model = FacultyResource
     icon = "download"
     menu_label = "Faculty Resources"
-    list_display = ("heading", "unlocked_resource", "creator_fest_resource", "resource_category")
-    list_filter = ("unlocked_resource", "creator_fest_resource")
+    list_display = ("heading", "unlocked_resource", "resource_category")
+    list_filter = ("unlocked_resource",)
 
 
 class StudentResourceViewSet(SnippetViewSet):

@@ -15,7 +15,7 @@ from .constants import (
     SECTION_CONTENT_BLOCKS,
     BODY_BLOCKS,
 )
-from .bases import Quote, Institutions, Group
+from .bases import Quote, Institutions, Group, PersonTag
 from .core import RootPage, FlexPageRelatedPage, FlexPage, GeneralPage
 from .about import AboutUsPage, OpenStaxPeople, TeamPage, LearningResearchPage, Careers
 from .giving import Supporters, MapPage, ImpactStory, Impact

@@ -23,6 +23,67 @@ class ObjectivePatchTests(TestCase):
         self.assertIs(objective.model, get_base_model(RootPage))
 
 
+class GetBaseModelPatchTests(TestCase):
+    """Patch 0: get_base_model must return the top of a multi-level MTI chain
+    (Page for FlexPage), not the nearest parent (RootPage)."""
+
+    def _models_get_base_model(self):
+        import importlib
+        return importlib.import_module('wagtail_transfer.models').get_base_model
+
+    def test_flexpage_resolves_to_page_not_rootpage(self):
+        from wagtail.models import Page
+        from pages.models import FlexPage
+
+        apply_patches()
+        self.assertIs(self._models_get_base_model()(FlexPage), Page)
+
+    def test_rebound_in_every_module_that_imported_it_by_name(self):
+        import importlib
+        from wagtail.models import Page
+        from pages.models import FlexPage
+
+        apply_patches()
+        for name in (
+            'wagtail_transfer.operations',
+            'wagtail_transfer.serializers',
+            'wagtail_transfer.field_adapters',
+            'wagtail_transfer.locators',
+            'wagtail_transfer.richtext',
+            'wagtail_transfer.streamfield',
+        ):
+            gbm = importlib.import_module(name).get_base_model
+            self.assertIs(gbm(FlexPage), Page, msg=f'{name} still holds the unpatched get_base_model')
+
+    def test_get_base_model_for_path_follows_the_fix(self):
+        import importlib
+        from wagtail.models import Page
+
+        apply_patches()
+        for_path = importlib.import_module('wagtail_transfer.models').get_base_model_for_path
+        self.assertIs(for_path('pages.flexpage'), Page)
+
+    def test_single_level_and_leaf_models_are_unchanged(self):
+        from wagtail.models import Page
+        from pages.models import RootPage
+
+        apply_patches()
+        gbm = self._models_get_base_model()
+        # RootPage -> Page is single-level; result matches upstream.
+        self.assertIs(gbm(RootPage), Page)
+        # A model with no MTI parents returns itself.
+        self.assertIs(gbm(Page), Page)
+
+    def test_objective_now_normalizes_flexpage_all_the_way_to_page(self):
+        from wagtail.models import Page
+        from pages.models import FlexPage
+
+        apply_patches()
+        # Patch 1 leans on patch 0: a FlexPage objective must key on Page.
+        objective = Objective(FlexPage, 1, context=None)
+        self.assertIs(objective.model, Page)
+
+
 # A Django/nginx HTTP error page — what the wagtail-transfer source returns on a
 # failed digest check, a missing page, or an allowlist rejection. The importer's
 # add_json() json-parses the response body blindly, so without a guard this

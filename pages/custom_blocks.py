@@ -1,33 +1,22 @@
+import copy
+
 from django import forms
-import json
-from django.utils.functional import cached_property
 
 from wagtail import blocks
 from wagtail.blocks import FieldBlock, StructBlock
 from wagtail.images.blocks import ImageChooserBlock
 from wagtail.documents.blocks import DocumentChooserBlock
+from wagtail.snippets.blocks import SnippetChooserBlock
 from wagtail_ai.blocks import ai_image_block
-from wagtail_color_panel.blocks import NativeColorBlock
-from wagtail_color_panel.widgets import ColorInputWidget, ColorInputWidgetAdapter
-from wagtail.admin.telepath import register
 
 from api.serializers import ImageSerializer
 from openstax.functions import build_image_url, build_document_url
 from openstax.api_fields import APIRichTextBlock
+from pages.shared_blocks import CTALinkBlock, LinkInfoBlock, hex_color_block, id_config_block, rendering_condition_block
+from pages.table_block import TableBlock
 
 
 # --- Choice constants ---
-GRADIENT_DIRECTION_CHOICES = [
-    ('to right', 'To Right'),
-    ('to left', 'To Left'),
-    ('to top', 'To Top'),
-    ('to bottom', 'To Bottom'),
-    ('to top right', 'To Top Right'),
-    ('to top left', 'To Top Left'),
-    ('to bottom right', 'To Bottom Right'),
-    ('to bottom left', 'To Bottom Left'),
-]
-
 TEXT_ALIGNMENT_CHOICES = [
     ('left', 'Left'),
     ('center', 'Center'),
@@ -46,218 +35,10 @@ CARDS_STYLE_CHOICES = [
     ('impact', 'Impact'),
 ]
 
-OPENSTAX_BRAND_COLORS = [
-    {'label': 'Green Dark', 'value': '#204B00'},
-    {'label': 'Green Warm', 'value': '#538E1D'},
-    {'label': 'Green Bright', 'value': '#76AE43'},
-    {'label': 'Green Light', 'value': '#F5FFEC'},
-    {'label': 'Teal Dark', 'value': '#0A5B50'},
-    {'label': 'Teal Warm', 'value': '#0C9372'},
-    {'label': 'Teal Bright', 'value': '#00CCA0'},
-    {'label': 'Teal Light', 'value': '#F0FEFE'},
-    {'label': 'Blue Dark', 'value': '#002E6D'},
-    {'label': 'Blue Warm', 'value': '#026AA1'},
-    {'label': 'Blue Bright', 'value': '#00C1DE'},
-    {'label': 'Blue Light', 'value': '#F7FCFF'},
-    {'label': 'Pink Dark', 'value': '#461347'},
-    {'label': 'Pink Warm', 'value': '#9A2959'},
-    {'label': 'Pink Bright', 'value': '#B72567'},
-    {'label': 'Pink Light', 'value': '#FFF0F7'},
-    {'label': 'Orange Dark', 'value': '#D4450C'},
-    {'label': 'Orange Warm', 'value': '#EF6428'},
-    {'label': 'Orange Bright', 'value': '#FF8753'},
-    {'label': 'Orange Light', 'value': '#FFF5F0'},
-    {'label': 'Yellow Dark', 'value': '#FDBD3E'},
-    {'label': 'Yellow Warm', 'value': '#F4D019'},
-    {'label': 'Yellow Bright', 'value': '#FFE665'},
-    {'label': 'Yellow Light', 'value': '#FFFCEF'},
-    {'label': 'Gray Dark', 'value': '#424242'},
-    {'label': 'Gray Warm', 'value': '#6A6A6A'},
-    {'label': 'Gray Bright', 'value': '#9A9A9B'},
-    {'label': 'Gray Light', 'value': '#F5F5F5'},
+CARDS_LAYOUT_CHOICES = [
+    ('grid', 'Grid'),
+    ('masonry', 'Masonry (Pinterest-style columns, packed by height)'),
 ]
-
-
-class OpenStaxColorInputWidget(ColorInputWidget):
-    """ColorInputWidget extended with the OpenStax brand-swatch picker.
-
-    - ``format_value`` renders empty / invalid values as blank rather than the
-      literal string "None" (the native <input type="color"> rejects non-#rrggbb
-      values with a browser console warning; blank harmlessly becomes #000000).
-    - ``build_attrs`` attaches the ``openstax-color-swatches`` Stimulus controller
-      alongside the package's own ``color-input`` controller, so the swatch panel
-      auto-initialises whenever the field enters the DOM — including
-      dynamically-added StreamField blocks — with no MutationObserver.
-    - ``media`` ships the swatch CSS/JS, loaded only when a colour field is on the
-      page (the idiomatic Wagtail mechanism; ``insert_editor_css`` is not rendered
-      in Wagtail 7.4)."""
-
-    def format_value(self, value):
-        # Return an empty STRING (not None) for blank values: the package's
-        # color-input template renders the native chip as value="{{ widget.value }}"
-        # with no None-guard, and Django renders Python None as the string "None"
-        # — which the <input type="color"> rejects. value="" harmlessly becomes
-        # #000000 instead.
-        if value is None:
-            return ''
-        text = str(value).strip()
-        if text == '' or text.lower() == 'none':
-            return ''
-        return super().format_value(value)
-
-    def build_attrs(self, *args, **kwargs):
-        attrs = super().build_attrs(*args, **kwargs)
-        controllers = (attrs.get('data-controller') or '').split()
-        if 'openstax-color-swatches' not in controllers:
-            controllers.append('openstax-color-swatches')
-        attrs['data-controller'] = ' '.join(controllers)
-        return attrs
-
-    @property
-    def media(self):
-        return super().media + forms.Media(
-            css={'all': ['pages/openstax-color-swatches.css']},
-            js=['pages/openstax-color-swatches.js'],
-        )
-
-
-class OpenStaxColorInputWidgetAdapter(ColorInputWidgetAdapter):
-    # Reuses the package's JS constructor + Media; telepath needs an adapter
-    # registered against this exact widget subclass.
-    pass
-
-
-register(OpenStaxColorInputWidgetAdapter(), OpenStaxColorInputWidget)
-
-
-class OpenStaxColorBlock(NativeColorBlock):
-    """Native color picker with OpenStax brand swatches for quick selection."""
-
-    def __init__(self, required=True, help_text=None, validators=(), brand_colors=None, **kwargs):
-        self.brand_colors = brand_colors or OPENSTAX_BRAND_COLORS
-        super().__init__(required=required, help_text=help_text, validators=validators, **kwargs)
-
-    @cached_property
-    def field(self):
-        field = super().field
-        field.widget = OpenStaxColorInputWidget()
-        # Stimulus value: the controller reads this as `this.paletteValue`.
-        field.widget.attrs['data-openstax-color-swatches-palette-value'] = json.dumps(self.brand_colors)
-        return field
-
-    def value_for_form(self, value):
-        # An empty color is sometimes stored as the literal string "None", which
-        # the native <input type="color"> rejects. Coerce it (and any non-hex
-        # junk) to blank before it reaches the widget; valid hex passes through.
-        # Also cleans a stored "None" back to blank on the next save.
-        if value is None:
-            return value
-        text = str(value).strip()
-        if text == '' or text.lower() == 'none':
-            return ''
-        return super().value_for_form(value)
-
-
-# --- Helper factories ---
-def hex_color_block(help_text):
-    return OpenStaxColorBlock(help_text=help_text)
-
-
-def gradient_config_options():
-    return [
-        ('gradient_color', hex_color_block('Sets the gradient end color. Must be hex eg: #ff0000.')),
-        ('gradient_direction', blocks.ChoiceBlock(
-            choices=GRADIENT_DIRECTION_CHOICES,
-            help_text='Direction of the gradient. Default to right.',
-        )),
-    ]
-
-
-def gradient_block_counts():
-    return {
-        'gradient_color': {'max_num': 1},
-        'gradient_direction': {'max_num': 1},
-    }
-
-
-def id_config_block():
-    return blocks.RegexBlock(
-        regex=r'^[a-zA-Z0-9_-]+$',
-        help_text='HTML id of this element. not visible to users, but is visible in urls and is used to link to a certain part of the page with an anchor link. eg: cool_section',
-        error_messages={'invalid': 'not a valid id.'}
-    )
-
-
-class LinkBlock(blocks.StreamBlock):
-    external = blocks.URLBlock(required=False, help_text='External links are full urls that can go anywhere')
-    internal = blocks.PageChooserBlock(required=False)
-    document = DocumentChooserBlock(required=False)
-    anchor = blocks.CharBlock(required=False, help_text='Anchor links reference the ID of an element on the page, and scroll the page there.')
-
-    class Meta:
-        icon = 'link'
-        max_num = 1
-
-    def get_api_representation(self, value, context=None):
-        for child in value:
-            if child.block_type == 'document':
-                return {
-                    'value': child.value.url,
-                    'type': child.block_type,
-                    'metadata': child.value.content_type,
-                }
-            elif child.block_type == 'external':
-                return {
-                    'value': child.block.get_prep_value(child.value),
-                    'type': child.block_type,
-                }
-            elif child.block_type == 'internal':
-                if child.value is None:
-                    return None
-                page = child.value.specific
-                return {
-                    'value': page.url or page.url_path,
-                    'type': child.block_type,
-                }
-            elif child.block_type == 'anchor':
-                return {
-                    'value': "#{anchor}".format(anchor=child.value),
-                    'type': child.block_type,
-                }
-            else:
-                return None
-
-
-class LinkInfoBlock(blocks.StructBlock):
-    text = blocks.CharBlock(required=True, help_text='Visible text of the link or button.')
-    aria_label = blocks.CharBlock(required=False, help_text='Accessible label for the link or button. if provided, must begin with the visible text.')
-    target = LinkBlock(required=True)
-
-    class Meta:
-        icon = 'placeholder'
-        label = "Link"
-
-class CTALinkBlock(LinkInfoBlock):
-    text = blocks.CharBlock(required=True, help_text='Visible text of the link or button.')
-    aria_label = blocks.CharBlock(required=False, help_text='Accessible label for the link or button. if provided, must begin with the visible text.')
-    target = LinkBlock(required=True)
-    config = blocks.StreamBlock([
-        ('style', blocks.ChoiceBlock(choices=[
-            ('orange', 'Orange'),
-            ('white', 'White'),
-            ('blue_outline', 'Blue Outline'),
-            ('deep_green_outline', 'Deep Green Outline'),
-        ], help_text='Specifies the button style. Default unspecified, meaning the first button in the block is orange and the second is white.')),
-        ('custom_color', hex_color_block('Custom color for the button. Must be hex eg: #ff0000.')),
-    ], block_counts={
-        'style': {'max_num': 1},
-        'custom_color': {'max_num': 1},
-    }, required=False)
-
-    class Meta:
-        icon = 'placeholder'
-        label = "Call to Action"
-
 
 class LinksGroupBlock(blocks.StructBlock):
     links = blocks.ListBlock(
@@ -292,7 +73,7 @@ class LinksGroupBlock(blocks.StructBlock):
         'size': {'max_num': 1},
         'layout': {'max_num': 1},
         'analytics_label': {'max_num': 1},
-    }, required=False)
+    }, required=False, collapsed=True)
 
     class Meta:
         icon = 'placeholder'
@@ -309,12 +90,12 @@ class CTAButtonBarBlock(blocks.StructBlock):
         ('layout', blocks.ChoiceBlock(choices=[
             ('inline', 'Inline'),
         ], help_text='Layout of the buttons. Inline places description and buttons side-by-side.')),
-        ('rendering_condition', blocks.CharBlock(required=False, help_text='Condition that determines if this block should render. eg: defined by the frontend.')),
+        ('rendering_condition', rendering_condition_block()),
     ], block_counts={
         'analytics_label': {'max_num': 1},
         'layout': {'max_num': 1},
         'rendering_condition': {'max_num': 1},
-    }, required=False)
+    }, required=False, collapsed=True)
 
     class Meta:
         icon = 'placeholder'
@@ -338,7 +119,7 @@ class APIImageChooserBlock(ImageChooserBlock):
             return None
 
 class QuoteBlock(StructBlock):
-    image = APIImageChooserBlock()
+    image = APIImageChooserBlock(required=False, help_text="Optional profile image for the quote.")
     content = APIRichTextBlock(help_text="The quote content.")
     name = blocks.CharBlock(help_text="The name of the person or entity to attribute the quote to.")
     title = blocks.CharBlock(required=False, help_text="Additional title or label about the quotee.")
@@ -353,7 +134,7 @@ class QuoteBlock(StructBlock):
     ], block_counts={
         'layout': {'max_num': 1},
         'accent_color': {'max_num': 1},
-    }, required=False)
+    }, required=False, collapsed=True)
 
 
 class DividerBlock(StructBlock):
@@ -388,7 +169,7 @@ class DividerBlock(StructBlock):
         'height': {'max_num': 1},
         'offset_vertical': {'max_num': 1},
         'offset_horizontal': {'max_num': 1},
-    }, required=False)
+    }, required=False, collapsed=True)
 
 
 @ai_image_block()
@@ -412,11 +193,44 @@ class ColumnBlock(blocks.StructBlock):
         icon = 'placeholder'
 
 
+class BigNumberBlock(blocks.StructBlock):
+    number = blocks.CharBlock(help_text='The statistic to display large, e.g. 8M+.')
+    caption = blocks.CharBlock(required=False, help_text='Optional supporting text shown below the number.')
+    color = blocks.ChoiceBlock(required=False, choices=[
+        ('blue', 'Blue'),
+        ('green', 'Green'),
+        ('orange', 'Orange'),
+    ], help_text='Brand color for the number. Defaults to the inherited text color.')
+
+    class Meta:
+        icon = 'placeholder'
+        label = 'Big Number'
+
+
+class BigNumbersBlock(blocks.StructBlock):
+    content = blocks.StreamBlock([
+        ('big_number', BigNumberBlock()),
+    ], required=False)
+
+    class Meta:
+        icon = 'placeholder'
+        label = 'Big Numbers'
+
+
 class FAQBlock(blocks.StructBlock):
     question = APIRichTextBlock(required=True, help_text='The visible text of the question (does not collapse).')
     slug = blocks.CharBlock(required=True, help_text='Not visible to user, must be unique in this FAQ.')
     answer = APIRichTextBlock(required=True, help_text='The answer to the question, is hidden until the question is expanded.')
     document = DocumentChooserBlock(required=False, help_text='Not sure this does anything.')
+    content = blocks.StreamBlock([
+        ('table', TableBlock()),
+        ('image', blocks.StructBlock([
+            ('image', APIImageChooserBlock(required=True)),
+            ('alt_text', blocks.CharBlock(required=False)),
+        ], label='Image')),
+        ('text', APIRichTextBlock()),
+    ], required=False, collapsed=True, label='Additional content',
+        help_text='Optional table, image, or extra text shown as part of the answer.')
 
     class Meta:
         icon = 'bars'
@@ -533,7 +347,7 @@ class AssignableBookBlock(blocks.StructBlock):
     def get_api_representation(self, value, context=None):
         if value:
             return {
-                'cover': build_document_url(value['cover'].url),
+                'cover': build_document_url(value['cover'].url) if value['cover'] else None,
                 'title': value['title'],
             }
 
@@ -542,6 +356,70 @@ class BookBlock(blocks.PageChooserBlock):
         kwargs['page_type'] = ['books.Book']
         kwargs['label'] = kwargs.get('label', 'Book')
         super().__init__(*args, **kwargs)
+
+    def bulk_to_python(self, values):
+        # get_api_representation (via get_book_data, and book_urls() sweeping
+        # every one of Book.api_fields) touches book_subjects/k12book_subjects/
+        # book_categories, plus every plain FK Book has — cover_image/cover/
+        # title_image/banner_image/pdf/locale/content_warning/
+        # require_login_message/community_resource_logo/
+        # community_resource_feature_link/promote_image — and the faculty/
+        # student resource flags, for every book in a Book Block or Book
+        # List. Resolving those one book at a time turns an N-book block
+        # into 15+N DB queries. Fetch them all at once.
+        from books.models import prefetch_book_resources
+        queryset = prefetch_book_resources(
+            self.model_class.objects
+            .select_related(
+                'cover_image', 'cover', 'title_image', 'banner_image', 'pdf', 'locale',
+                'content_warning', 'require_login_message',
+                'community_resource_logo', 'community_resource_feature_link', 'promote_image',
+            )
+            .prefetch_related('book_subjects__subject', 'k12book_subjects__subject', 'book_categories__category')
+        )
+        objects = queryset.in_bulk(values)
+        seen_ids = set()
+        result = []
+        for id in values:
+            obj = objects.get(id)
+            if obj is not None and id in seen_ids:
+                obj = copy.copy(obj)
+            result.append(obj)
+            seen_ids.add(id)
+
+        self._prefetch_locale_keyed_content(book for book in result if book is not None)
+        return result
+
+    def _prefetch_locale_keyed_content(self, books):
+        # book_urls() (called for every book to build the 'urls' API field)
+        # sweeps all of Book.api_fields, which includes rex_callout_title/
+        # rex_callout_blurb/webinar_content (backed by a single BookCallout
+        # row per locale) and errata_content (an ErrataContent row per
+        # book_state+locale). Neither is a real FK on Book, so select_related
+        # can't fetch them — but a block's books usually share just a
+        # handful of locale/book_state combos, so look each combo up once
+        # and reuse it instead of querying per book.
+        from books.models import BookCallout
+        import snippets.models as snippets
+
+        callout_cache = {}
+        errata_cache = {}
+        for book in books:
+            if book.locale_id not in callout_cache:
+                callout_cache[book.locale_id] = BookCallout.objects.filter(locale_id=book.locale_id).first()
+            book.__dict__['_book_callout'] = callout_cache[book.locale_id]
+
+            # Matches errata_content's existing (buggy but unchanged-here)
+            # `self.locale == 'es'` check, which compares a Locale instance
+            # to a string and is therefore always False — see PR comments.
+            is_es = book.locale == 'es'
+            errata_key = ('es', book.locale_id) if is_es else (book.book_state, book.locale_id)
+            if errata_key not in errata_cache:
+                errata_qs = snippets.ErrataContent.objects.filter(locale_id=book.locale_id)
+                if not is_es:
+                    errata_qs = errata_qs.filter(book_state=book.book_state)
+                errata_cache[errata_key] = errata_qs.first()
+            book._prefetched_errata_content = errata_cache[errata_key]
 
     def get_api_representation(self, value, context=None):
         from books.models import get_book_data
@@ -613,3 +491,82 @@ class ContentCardBlock(blocks.StructBlock):
     class Meta:
         icon = 'doc-empty'
         label = 'Content Card'
+
+
+class PersonTagChooserBlock(SnippetChooserBlock):
+    """Serializes a PersonTag snippet inline as {id, name, slug} so the renderer
+    needs no extra fetch (same technique as books.SharedContentChooserBlock)."""
+    def get_api_representation(self, value, context=None):
+        if value:
+            return {'id': value.id, 'name': value.name, 'slug': value.slug}
+        return None
+
+
+PERSON_LINK_TYPE_CHOICES = [
+    ('linkedin', 'LinkedIn'),
+    ('orcid', 'ORCID'),
+    ('website', 'Website'),
+    ('email', 'Email'),
+    ('scholar', 'Google Scholar'),
+    ('x', 'X'),
+]
+
+
+class PersonLinkBlock(blocks.StructBlock):
+    type = blocks.ChoiceBlock(choices=PERSON_LINK_TYPE_CHOICES, required=True,
+        help_text='Determines the icon shown for this link.')
+    # CharBlock (not URLBlock) so the "Email" type can hold a mailto: link or a
+    # bare address — URLBlock only allows http/https/ftp and would reject both.
+    url = blocks.CharBlock(required=True,
+        help_text='Full URL, or for the Email type a mailto: link or email address.')
+
+    class Meta:
+        label = 'Link'
+
+
+class PersonBlock(blocks.StructBlock):
+    heading = blocks.CharBlock(required=False,
+        help_text='Optional title shown above the grid.')
+    people = blocks.ListBlock(blocks.StructBlock([
+        ('name', blocks.CharBlock(required=True)),
+        ('title', blocks.CharBlock(required=False, help_text='Role, e.g. "Director of Research".')),
+        ('image', APIImageChooserBlock(required=False)),
+        ('short_bio', blocks.TextBlock(required=False, help_text='Shown on the card.')),
+        ('full_bio', APIRichTextBlock(required=False,
+            help_text='If set, the card becomes clickable and opens an expanded modal.')),
+        ('links', blocks.ListBlock(PersonLinkBlock(), default=[], required=False)),
+        ('tags', blocks.ListBlock(PersonTagChooserBlock('pages.PersonTag'), default=[], required=False)),
+    ]))
+    config = blocks.StreamBlock([
+        ('card_columns', blocks.IntegerBlock(min_value=1, max_value=6, help_text='Number of columns for the grid. default auto.')),
+        ('card_style', blocks.ChoiceBlock(choices=CARDS_STYLE_CHOICES, help_text='The border style of the cards. default borderless.')),
+        ('card_size', blocks.IntegerBlock(min_value=0, help_text='Width of individual cards. default 27.')),
+        ('accent_colors', blocks.RegexBlock(
+            regex=r'^#[0-9a-fA-F]{6}(\s*,\s*#[0-9a-fA-F]{6})*$', required=False,
+            label='Accent Colors',
+            help_text='Comma-separated hex colors for a card accent, cycled per card. eg: #ff0000,#00ff00,#0000ff.',
+            error_messages={'invalid': 'Must be comma-separated hex colors. eg: #ff0000,#00ff00.'},
+        )),
+        ('divider_colors', blocks.RegexBlock(
+            regex=r'^#[0-9a-fA-F]{6}(\s*,\s*#[0-9a-fA-F]{6})*$', required=False,
+            label='Divider Colors',
+            help_text='Comma-separated hex colors for card divider lines, cycled per card. eg: #ff0000,#00ff00.',
+            error_messages={'invalid': 'Must be comma-separated hex colors. eg: #ff0000,#00ff00.'},
+        )),
+        ('background_color', hex_color_block('Background color for the cards. Must be hex eg: #ff0000.')),
+        ('border_size', blocks.IntegerBlock(min_value=0, help_text='Border width in px.')),
+        ('id', id_config_block()),
+    ], block_counts={
+        'card_columns': {'max_num': 1},
+        'card_style': {'max_num': 1},
+        'card_size': {'max_num': 1},
+        'accent_colors': {'max_num': 1},
+        'divider_colors': {'max_num': 1},
+        'background_color': {'max_num': 1},
+        'border_size': {'max_num': 1},
+        'id': {'max_num': 1},
+    }, required=False, collapsed=True)
+
+    class Meta:
+        label = 'People'
+        icon = 'group'

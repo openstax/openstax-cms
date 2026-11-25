@@ -13,9 +13,10 @@ closes both:
    returns 403 on deployed environments still using the placeholder.
 
 2. ``models_for_export`` / ``objects_for_export`` will serialize *any* model
-   addressable by ``app_label.model`` — including ``auth.user`` (names, emails,
-   password hashes). ``restrict_exportable_models`` limits them to an explicit
-   allowlist: pages, images, documents, and the snippets we actually transfer.
+   addressable by ``app_label.model`` — including ``auth.user`` (staff account
+   fields, password hashes). ``restrict_exportable_models`` limits them to an
+   explicit allowlist: pages, images, documents, and the snippets we actually
+   transfer.
 
 These wrap the package views in ``openstax/wagtail_transfer_urls.py``.
 """
@@ -29,19 +30,23 @@ from django.http import Http404
 # Models always allowed through the object/model export endpoints, on top of
 # whatever snippets are configured for transfer via WAGTAILTRANSFER_LOOKUP_FIELDS.
 #
-# wagtailcore.revision is required: importing a page fetches its latest revision
-# (the content snapshot) via api/objects/, so without it the import 404s. The
-# revision's `user` FK is not a leak risk here because auth.user is in
-# WAGTAILTRANSFER_NO_FOLLOW_MODELS (settings/base.py) — the importer leaves it
-# null rather than pulling the user across.
+# wagtailcore.revision is now NO_FOLLOW'd (settings/base.py), so the importer
+# should never request one; kept exportable as a guard against a regression that
+# starts following revisions again.
+# wagtailcore.collection: images/documents have a non-nullable collection FK, so
+# page imports fetch it via api/objects/. Preseed it (see transfer runbook).
+# taggit.taggeditem: the join row linking a tagged page to a taggit.tag. Pages
+# with tags fetch it via api/objects/ alongside the tag itself.
 _ALWAYS_EXPORTABLE = {
     'wagtailcore.page',
     'wagtailcore.revision',
     'wagtailimages.image',
     'wagtaildocs.document',
+    'wagtailcore.collection',
     'wagtailcore.locale',
     'contenttypes.contenttype',
     'taggit.tag',
+    'taggit.taggeditem',
 }
 
 

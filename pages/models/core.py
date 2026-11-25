@@ -11,18 +11,17 @@ from wagtail.fields import StreamField
 from wagtail.models import Orderable, Page
 from wagtail.api import APIField
 
+from openstax.frontend_routes import PAGE_ROUTES_BY_SLUG
 from openstax.preview import FrontendPreviewMixin
 
 from salesforce.models import School
 
 from pages.custom_blocks import APIImageChooserBlock, \
     APIRichTextBlock, \
-    LinkInfoBlock, \
-    TEXT_ALIGNMENT_CHOICES, \
-    hex_color_block, \
-    gradient_config_options, \
-    gradient_block_counts, \
-    id_config_block
+    TEXT_ALIGNMENT_CHOICES
+
+from pages.shared_blocks import LinkInfoBlock, hex_color_block, \
+    gradient_config_options, gradient_block_counts, id_config_block
 
 
 from .constants import BODY_BLOCKS
@@ -65,7 +64,7 @@ class RootPage(FrontendPreviewMixin, Page):
                 'analytics_label': {'max_num': 1},
                 'border_width': {'max_num': 1},
                 'id': {'max_num': 1},
-            }, required=False)),
+            }, required=False, collapsed=True)),
         ], label="Tabbed Content")),
     ], use_json_field=True)
 
@@ -169,6 +168,16 @@ class FlexPage(RootPage):
             return None
 
         site_id, site_root_url, page_url_relative_to_site_root = url_parts
+
+        # the osweb SPA serves these at /k12/<subject> (see os-webview page-routes)
+        if self.slug.startswith('k12-'):
+            return site_id, site_root_url, '/k12/{}'.format(self.slug.removeprefix('k12-'))
+
+        # ...and serves a few others at a path that isn't /<slug> at all
+        route = PAGE_ROUTES_BY_SLUG.get(self.slug)
+        if route:
+            return site_id, site_root_url, '/{}'.format(route)
+
         return site_id, site_root_url, '/{}'.format(self.slug)
 
 

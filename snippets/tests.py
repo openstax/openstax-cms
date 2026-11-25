@@ -141,6 +141,7 @@ class SnippetsTestCase(TestCase):
     def test_can_fetch_subject_category(self):
         response = self.client.get('/apps/cms/api/snippets/subjectcategory/?format=json')
         self.assertIn(b"subject category description", response.content)
+        self.assertEqual(response.json()[0]["subject_name"], "")
 
     def test_can_fetch_blog_collection(self):
         response = self.client.get('/apps/cms/api/snippets/blogcollection/?format=json')

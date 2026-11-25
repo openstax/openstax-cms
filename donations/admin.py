@@ -7,7 +7,7 @@ from .models import ThankYouNote, DonationPopup, Fundraiser
 
 
 class ThankYouNoteAdmin(admin.ModelAdmin):
-    list_display = ['thank_you_note', 'first_name', 'last_name', 'institution', 'created']
+    list_display = ['thank_you_note', 'first_name', 'last_name', 'institution', 'created', 'attachment']
     list_filter = (['created', 'consent_to_share_or_contact'])
     search_fields = ['created', 'consent_to_share_or_contact']
     actions = ['export_as_csv']
@@ -27,7 +27,8 @@ class ThankYouNoteAdmin(admin.ModelAdmin):
                          "Institution",
                          "Created Date",
                          "Consent To Share Or Contact",
-                         "Contact Email Address"])
+                         "Contact Email Address",
+                         "Attachment URL"])
         for t in queryset:
             writer.writerow([t.pk,
                              t.thank_you_note,
@@ -36,7 +37,8 @@ class ThankYouNoteAdmin(admin.ModelAdmin):
                              t.institution,
                              t.created,
                              t.consent_to_share_or_contact,
-                             t.contact_email_address])
+                             t.contact_email_address,
+                             t.attachment.url if t.attachment else ''])
 
         return response
 

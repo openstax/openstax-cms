@@ -9,10 +9,11 @@
     <title>{{ page.seo_title|default:page.title }}</title>
     <meta name="description" content="{{ page.search_description }}">
     <link rel="canonical" href="{{page.get_full_url}}" />
-    <meta http-equiv="refresh">
 
     <meta property="og:url" content="{{page.get_full_url}}" />
-    <meta property="og:type" content="article" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="OpenStax" />
+    <meta property="og:locale" content="en_US" />
     <meta property="og:title" content="{{ page.seo_title|default:page.title }}" />
     <meta property="og:description" content="{{ page.search_description }}" />
     <meta property="og:image" content="{{ promote_image.url }}" />
@@ -24,6 +25,24 @@
     <meta name="twitter:description" content="{{ page.search_description }}">
     <meta name="twitter:image" content="{{ promote_image.url }}">
     <meta name="twitter:image:alt" content="OpenStax">
+
+    {% if page.slug|slice:":4" == "k12-" %}
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "name": "{{ page.title|escapejs }}",
+      "url": "{{ page.get_full_url }}",
+      "description": "{{ page.search_description|escapejs }}",
+      "isPartOf": {"@type": "WebSite", "name": "OpenStax", "url": "https://openstax.org"},
+      "publisher": {"@type": "EducationalOrganization", "name": "OpenStax", "url": "https://openstax.org"},
+      "breadcrumb": {"@type": "BreadcrumbList", "itemListElement": [
+        {"@type": "ListItem", "position": 1, "name": "K12", "item": "https://openstax.org/k12"},
+        {"@type": "ListItem", "position": 2, "name": "{{ page.title|escapejs }}", "item": "{{ page.get_full_url }}"}
+      ]}
+    }
+    </script>
+    {% endif %}
 </head>
 <body>
 {% block content %}

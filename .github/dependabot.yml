@@ -11,3 +11,17 @@ updates:
           - "*"  # Group all Actions updates into a single larger pull request
     schedule:
       interval: weekly
+
+  # Keep pinned Python deps current instead of waiting for security alerts
+  # to accumulate (Django sat 3 patch releases behind in mid-2026).
+  - package-ecosystem: pip
+    directory: /requirements
+    groups:
+      pip:
+        patterns:
+          - "*"  # One grouped PR per week
+    schedule:
+      interval: weekly
+    cooldown:
+      default-days: 3  # minimum release age before proposing an update
+
